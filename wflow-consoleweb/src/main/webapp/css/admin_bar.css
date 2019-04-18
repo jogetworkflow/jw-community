@@ -185,33 +185,55 @@ body.rtl div#quickEditModeOption:before {
 }
 .quickOverlayButton {
     position: fixed;
-    top: 5px;
-    right: 5px;
+    top: 12px;
+    left: 30px;
     z-index: 15000;
+    transition: all 0.2s ease-in-out;
+}
+.minimize:not(.pinned) .quickOverlayButton{
+    display:none;
 }
 body.rtl .quickOverlayButton {
-    right: auto;
-    left: 5px;
+    left: auto;
+    right: 30px;
+    text-align:right;
 }
 .quickOverlayButton a i { 
-    padding-top:4px;
+    padding-top:3px;
 }
 .quickOverlayButton a { 
     text-decoration: none;
-    display: block;
-    width: 35px;
-    height: 35px;
-    background: #202124;
-    color: #CFD8DC;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: #f65150;
+    color: #00000080;
     border-radius: 50%;
     text-align: center;
-    font-size: 24px;
-    box-shadow: #666 1px 1px 2px 1px;
+    font-size: 11px;
+    box-shadow: #f00505 0px 0px 1px 1px;
     box-sizing: border-box;
     padding: 3px;
+    margin: 0 3px;
+}
+.quickOverlayButton a:focus{
+    color: #00000080;
+} 
+.quickOverlayButton a.max { 
+    background: #02cf40;
+    box-shadow: #009c30 0px 0px 1px 1px;
+    padding-left: 2px;
+}
+.quickOverlayButton a.pin { 
+    background: #f8b13d;
+    box-shadow: #b9842d 0px 0px 1px 1px;
+}
+.quickOverlayButton a.pin.disabled { 
+    background: #dcdbdc;
+    box-shadow: #a8a8a8 0px 0px 1px 1px;
 }
 .quickOverlayButton a:hover {
-    color: #fff;
+    color: #000;
 }
 #quickOverlayFrameDiv {
     position: fixed;
@@ -240,10 +262,10 @@ body.rtl #quickOverlayFrameDiv {
     left: 25px;
     transform-origin: bottom left;
 }
-#quickOverlayContainer.minimize #quickOverlayFrameDiv {
+#quickOverlayContainer.minimize:not(.pinned) #quickOverlayFrameDiv {
     transform: scale(0.6);
 }
-#quickOverlayContainer.minimize .quickOverlay {
+#quickOverlayContainer.minimize:not(.pinned) .quickOverlay {
     opacity: 0.2;
 }
 #quickEditModeOption {
@@ -521,14 +543,32 @@ body.fixiosframe.stop-scrolling {
     #page .analyzer-page {
         display: none !important;
     }
+    .quickOverlayFrame #nav #nav-title {
+        padding-top: 35px;
+    }
 }
 @media screen and (max-width:680px) { 
     #adminBar .analyzer-page {
         display: none !important;
     }
+    .quickOverlayButton a i {
+        padding-top:4px;
+    }
+    .quickOverlayButton a {
+        width: 35px;
+        height: 35px;
+        background: #202124;
+        color: #CFD8DC;
+        font-size: 24px;
+        box-shadow: #666 1px 1px 2px 1px;
+    }
+    .quickOverlayButton a.pin, .quickOverlayButton a.max {
+        display:none;
+    }
     .quickOverlayButton {
         top: 5px;
         right: 5px;
+        left: auto;
     }
     body.rtl .quickOverlayButton {
         right: auto;

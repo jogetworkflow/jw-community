@@ -23,7 +23,7 @@ var AdminBar = {
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
                 '<div id="quickOverlayContainer" class="quickOverlayContainer"><div id="quickOverlay" class="quickOverlay"></div>\
-                <div id="quickOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a></div>\
+                <div id="quickOverlayButton" class="quickOverlayButton"><a class="overlayClose" href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a><a class="pin disabled" href="#" onclick="AdminBar.togglePinQuickOverlay()"><i class="fas fa-thumbtack"></i></a><a class="max" href="#" onclick="AdminBar.maxQuickOverlay()"><i class="fas fa-window-maximize"></i></a></div>\
                 <div id="quickOverlayFrameDiv"><iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div></div>';
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
@@ -63,6 +63,21 @@ var AdminBar = {
         });
         
         return false;
+    },
+    togglePinQuickOverlay: function() {
+        var pinActive =  $.cookie("pinModeActive");
+        if (pinActive === "true") {
+            pinActive = "false";
+        } else {
+            pinActive = "true";
+        }
+        $.cookie("pinModeActive", pinActive, {
+            path: AdminBar.cookiePath
+        });
+        AdminBar.initPinMode();
+    },
+    maxQuickOverlay: function() {
+        document.location = $("#quickOverlayFrame").attr("src");
     },
     hideQuickOverlay: function() {
         $("#adminBarButtons a").removeClass("current");
@@ -122,6 +137,16 @@ var AdminBar = {
             AdminBar.showQuickEdit();
         } else {
             AdminBar.hideQuickEdit();
+        }
+    },
+    initPinMode: function() {
+        var pinActive =  $.cookie("pinModeActive");
+        if (pinActive === "true") {
+            $("#quickOverlayContainer").addClass("pinned");
+            $("#quickOverlayButton a.pin").removeClass("disabled");
+        } else {
+            $("#quickOverlayContainer").removeClass("pinned");
+            $("#quickOverlayButton a.pin").addClass("disabled");
         }
     },
     initAdminBar: function() {
@@ -225,6 +250,7 @@ var AdminBar = {
             path: path
         });
         AdminBar.initQuickEditMode();
+        AdminBar.initPinMode();
     },
     hideAdminBar: function() {
         $("body, html").removeClass("adminBarShown");
