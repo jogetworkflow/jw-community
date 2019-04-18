@@ -1803,7 +1803,7 @@ public class AppServiceImpl implements AppService {
                 AppResourceUtil.addResourcesToZip(appId, version, zip);
                 
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                if (request != null && request.getParameterValues("exportplugins") != null) {
+                if (request != null && request.getParameterValues("exportplugins") != null && !SetupManager.isSecureMode()) {
                     AppDevUtil.addPluginsToZip(appDef, zip);
                 }
                 if (request != null && request.getParameterValues("tablenames") != null) {

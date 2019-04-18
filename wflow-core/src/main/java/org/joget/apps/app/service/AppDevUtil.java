@@ -1219,4 +1219,30 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             LogUtil.error(AppDevUtil.class.getName(), e, "");
         }
     }
+    
+    public static Collection<String> getPluginJarList(AppDefinition appDef) {
+        if (appDef == null) {
+            appDef = AppUtil.getCurrentAppDefinition();
+        }
+        
+        Collection<String> plugins = new ArrayList<String>();
+        String baseDir = AppDevUtil.getAppDevBaseDirectory();
+        String projectDirName = getAppGitDirectory(appDef);
+        try {
+            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+            String targetDirName = "plugins";
+            File targetDir = new File(projectDir, targetDirName);
+            
+            if (targetDir.exists()) {
+                File[] files = targetDir.listFiles();
+                for (File file : files)
+                {
+                    plugins.add(file.getName());
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "");
+        }
+        return plugins;
+    }
 }

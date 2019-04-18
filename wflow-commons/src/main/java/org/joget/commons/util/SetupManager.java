@@ -15,6 +15,7 @@ import net.sf.ehcache.Element;
 public class SetupManager {
 
     public static final String SYSTEM_PROPERTY_WFLOW_HOME = "wflow.home";
+    public static final String SYSTEM_PROPERTY_WFLOW_SECURE = "wflow.secure";
     public static final String DIRECTORY_PROFILES = "app_profiles";
     public static final String MASTER_LOGIN_PASSWORD = "masterLoginPassword";
     public static final String SMTP_PASSWORD = "smtpPassword";
@@ -203,5 +204,9 @@ public class SetupManager {
      */
     public void setSetupDao(SetupDao setupDao) {
         this.setupDao = setupDao;
+    }
+    
+    public static boolean isSecureMode() {
+        return HostManager.isVirtualHostEnabled() || "true".equalsIgnoreCase(System.getProperty(SYSTEM_PROPERTY_WFLOW_SECURE));
     }
 }
