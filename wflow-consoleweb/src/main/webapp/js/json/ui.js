@@ -124,7 +124,11 @@ UI = {
     restoreIframe : function(id) {
         if ($("iframe#" + id).length > 0) {
             var iframe = $("iframe#" + id);
-            $(iframe).attr("style", $(iframe).data("style"));
+            var style = $(iframe).data("style");
+            if (style === null || style === undefined) {
+                style = "";
+            }
+            $(iframe).attr("style", style);
             $(iframe).removeAttr("frameBorder");
             if ($(iframe).data("frameBorder") !== undefined) {
                 $(iframe).attr("frameBorder", $(iframe).data("frameBorder"));
