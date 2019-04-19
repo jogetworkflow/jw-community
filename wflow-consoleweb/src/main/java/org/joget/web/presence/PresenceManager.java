@@ -12,10 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,13 +25,13 @@ import org.apache.commons.io.FileUtils;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
 
 public class PresenceManager {
     
     private static boolean running;
-    private static String serverId = null;
         
     // Keeps all open connections from browsers
     private static final Map<String, AsyncContext> asyncContexts = new ConcurrentHashMap<>(); 
@@ -44,6 +41,22 @@ public class PresenceManager {
     
     // Blocking queue to wake notifier
     private static BlockingQueue waitQueue = new LinkedBlockingQueue();
+    
+    private static Runnable cleaning = new Runnable() {
+        @Override
+        public void run() {
+            if (HostManager.isVirtualHostEnabled()) {
+                //remove presence files
+                for (String key : PresenceManager.profilePathMap.keySet()) {
+                    String presenceFilePath = SetupManager.getBaseDirectory() + File.separator + SetupManager.DIRECTORY_PROFILES + File.separator + key + File.separator + "/app_presence.json";
+                    FileUtils.deleteQuietly(new File(presenceFilePath));
+                }
+            } else {
+                String presenceFilePath = SetupManager.getBaseDirectory() + "/app_presence.json";
+                FileUtils.deleteQuietly(new File(presenceFilePath));
+            }
+        }
+    };
 
     // Thread that waits for new message and then redistribute it
     private static final Thread notifier = new Thread(new Runnable() {
@@ -66,7 +79,7 @@ public class PresenceManager {
             }
         }
 
-    });    
+    });   
 
     protected static void sendResponse(String path) {
         for (String key: asyncContexts.keySet()) {
@@ -103,6 +116,8 @@ public class PresenceManager {
     }
     
     public static void startNotifier() {
+        ServerUtil.addAllServersShutdownCleaningTask("cleanAppPresence", cleaning);
+        
         // Start thread
         running = true;
         notifier.setDaemon(true);
@@ -255,58 +270,6 @@ public class PresenceManager {
         LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
     }
     
-    public static void registerServer() {
-        if (serverId != null) {
-            return;
-        }
-        serverId = UUID.randomUUID().toString();
-        writeServer(serverId);
-    }
-    
-    public static void unregisterServer() {
-        writeServer(serverId);
-        serverId = null;
-    }
-    
-    public static void writeServer(String serverId) {
-        Set<String> servers = new HashSet<String>();
-        Gson gson = new Gson();
-                
-        String serverFilePath = SetupManager.getBaseSharedDirectory() + "/servers.json";
-        try {
-            String serverJson = FileUtils.readFileToString(new File(serverFilePath));
-            servers = gson.fromJson(serverJson, new TypeToken<Set<String>>(){}.getType());
-        } catch (Exception e) {
-            LogUtil.debug(PresenceManager.class.getName(), "Error read servers file: " + e.getMessage());
-        }
-        
-        if (!servers.contains(serverId)) {
-            servers.add(serverId);
-        } else {
-            servers.remove(serverId);
-
-            if (servers.isEmpty()) {
-                if (HostManager.isVirtualHostEnabled()) {
-                    //remove presence files
-                    for (String key : profilePathMap.keySet()) {
-                        String presenceFilePath = SetupManager.getBaseDirectory() + File.separator + SetupManager.DIRECTORY_PROFILES + File.separator + key + File.separator + "/app_presence.json";
-                        FileUtils.deleteQuietly(new File(presenceFilePath));
-                    }
-                } else {
-                    String presenceFilePath = SetupManager.getBaseDirectory() + "/app_presence.json";
-                    FileUtils.deleteQuietly(new File(presenceFilePath));
-                }
-            }
-        }
-        
-        try {
-            String serverJson = gson.toJson(servers);
-            FileUtils.writeStringToFile(new File(serverFilePath), serverJson, "UTF-8");
-        } catch (Exception e) {
-            LogUtil.debug(PresenceManager.class.getName(), "Error write servers file: " + e.getMessage());
-        }
-    }
-
     public static Map<String, UserEntry> getUsers(String path) {
         Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
         Map<String, UserEntry> sessionMap = pathMap.get(path);

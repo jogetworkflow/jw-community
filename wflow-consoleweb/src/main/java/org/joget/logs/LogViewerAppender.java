@@ -24,6 +24,7 @@ import org.eclipse.jgit.util.FileUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 
 public class LogViewerAppender extends AppenderSkeleton {
@@ -38,7 +39,6 @@ public class LogViewerAppender extends AppenderSkeleton {
     public static final String LOG_NAME_EXT = ".log";
     public static final String LOG_ROLLING_EXT = ".rolling";
     public static final String CONSOLE_LOG = "CONSOLE_LOG";
-    protected static String serverName = null;
     
     protected static boolean startLogging = false;
     
@@ -48,18 +48,6 @@ public class LogViewerAppender extends AppenderSkeleton {
     
     public LogViewerAppender (Layout layout) throws IOException {
         this.layout = layout;
-    }
-    
-    protected static String getServerName() {
-        if (serverName == null) {
-            serverName = System.getProperty(SYSTEM_PROPERTY_NODE_NAME); //To support for clustering
-            if (serverName == null) {
-                serverName = "";
-            } else {
-                serverName = File.separator + serverName;
-            }
-        }
-        return serverName;
     }
     
     protected LoadingCache<String, CountingQuietWriter> getCache() {
@@ -155,7 +143,7 @@ public class LogViewerAppender extends AppenderSkeleton {
         if (appId == null) {
             appId = getCurrentAppId();
         }
-        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + getServerName() + File.separator + appId;
+        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + File.separator + ServerUtil.getServerName() + File.separator + appId;
     }
     
     public static String getFileName(String appId) {
