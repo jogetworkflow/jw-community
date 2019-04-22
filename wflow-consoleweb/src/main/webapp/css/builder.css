@@ -425,6 +425,28 @@ li.jsondiffpatch-unchanged {
 #advancedToolsOverlay.quickOverlay {
     z-index: 1300;
 }
+#advancedToolsOverlayButton {
+    top: 5px;
+    right: 5px;
+    left: auto;
+}
+body.rtl #advancedToolsOverlayButton {
+    right: auto;
+    left: 5px;
+}
+#advancedToolsOverlayButton a,
+#advancedToolsOverlayButton a:focus{ 
+    display: block;
+    width: 35px;
+    height: 35px;
+    background: #202124;
+    color: #CFD8DC;
+    font-size: 24px;
+    box-shadow: #666 1px 1px 2px 1px;
+}
+#advancedToolsOverlayButton a:hover {
+    color: #fff;
+}
 #advancedToolsFrame { 
     position: fixed;
     height: calc(100% - 35px);
