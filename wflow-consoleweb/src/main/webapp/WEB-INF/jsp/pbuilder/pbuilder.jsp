@@ -69,6 +69,8 @@
                     if (xpdl && xpdl !== '') {
                         ProcessBuilder.Designer.init(xpdl);
                     }
+                    ProcessBuilder.ApiClient.appId = "<c:out value="${appId}"/>";
+                    ProcessBuilder.ApiClient.appVersion = "<c:out value="${version}"/>";
                 </c:otherwise>
                 </c:choose>
                 $(window).bind('beforeunload', function() {
