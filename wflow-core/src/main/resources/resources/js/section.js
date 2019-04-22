@@ -124,6 +124,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var thisObject = this;
     
     var names = new Array();
+    var radios = new Array();
     $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
@@ -149,14 +150,19 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                 names.push(n);
             }
         }
+        if ($(this).is("[type='radio']") && $.inArray($(this).attr("name"), radios) < 0) {
+            radios.push($(this).attr("name"));
+        }
         $(this).trigger("jsection:hide");
     });
+    thisObject.handleRadio(targetEl, radios);
     thisObject.triggerChange(targetEl, names);
 };
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var thisObject = this;
     
     var names = new Array();
+    var radios = new Array();
     $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
         if($(this).is(".section-visibility-disabled")){
             $(this).removeClass("section-visibility-disabled").removeAttr("disabled");
@@ -182,9 +188,13 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                 names.push(n);
             }
         }
+        if ($(this).is("[type='radio']") && $.inArray($(this).attr("name"), radios) < 0) {
+            radios.push($(this).attr("name"));
+        }
         $(this).trigger("jsection:show");
     });
     
+    thisObject.handleRadio(targetEl, radios);
     thisObject.triggerChange(targetEl, names);
     $(window).trigger("resize");
 };
@@ -201,5 +211,12 @@ VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
         if (temp) {
             $(newObject).remove();
         }
+    });
+};
+VisibilityMonitor.prototype.handleRadio = function(targetEl, names) {
+    $.each(names, function(i) {
+        $("[name=" + names[i] + "][checked].section-visibility-disabled").removeAttr("checked").attr("data-checked", "checked");
+        $("[name=" + names[i] + "][checked]:not(.section-visibility-disabled)").attr("checked", "checked");
+        $("[name=" + names[i] + "][data-checked]:not(.section-visibility-disabled)").removeAttr("data-checked").attr("checked", "checked");
     });
 };

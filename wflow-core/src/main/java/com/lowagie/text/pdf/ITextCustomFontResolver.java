@@ -600,10 +600,10 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.setName(fontFamilyName);
         addDefaultFonts(fontFamilyName);
 
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",BoldItalic", encoding, false), IdentValue.OBLIQUE, 700));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Italic", encoding, false), IdentValue.OBLIQUE, 400));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Bold", encoding, false), IdentValue.NORMAL, 700));
-        fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, false), IdentValue.NORMAL, 400));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",BoldItalic", encoding, true), IdentValue.OBLIQUE, 700));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Italic", encoding, true), IdentValue.OBLIQUE, 400));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Bold", encoding, true), IdentValue.NORMAL, 700));
+        fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, true), IdentValue.NORMAL, 400));
 
         fontFamilyMap.put(fontFamilyName, fontFamily);
     }
@@ -655,7 +655,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.setName(fontFamilyName);
         addDefaultFonts(fontFamilyName);
         
-        fontFamily.addFontDescription(new FontDescription(createFont(path, encoding, false), IdentValue.NORMAL, 400));
+        fontFamily.addFontDescription(new FontDescription(createFont(path, encoding, true), IdentValue.NORMAL, 400));
         fontFamilyMap.put(fontFamilyName, fontFamily);
     }
     

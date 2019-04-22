@@ -54,7 +54,7 @@
     <c:choose>
         <c:when test="${empty properties.customHeader && !empty properties.headerTitle}">
             <div class="viewForm-body-header">
-                <c:out value="${properties.headerTitle}"/>
+                <c:out value="${properties.headerTitle}" escapeXml="false"/>
             </div>
         </c:when>
         <c:otherwise>

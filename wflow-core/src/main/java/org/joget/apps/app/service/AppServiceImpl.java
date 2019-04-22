@@ -2184,21 +2184,25 @@ public class AppServiceImpl implements AppService {
             }
         }
 
-        if (appDef.getEnvironmentVariableList() != null) {
-            for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
-                    EnvironmentVariable temp = environmentVariableDao.loadById(o.getId(), orgAppDef);
-                    if (temp != null) {
-                        o.setValue(temp.getValue());
+        if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
+                EnvironmentVariable temp = new EnvironmentVariable();
+                temp.setAppDefinition(newAppDef);
+                temp.setId(o.getId());
+                temp.setValue(o.getValue());
+                temp.setRemarks(o.getRemarks());
+                environmentVariableDao.add(temp);
+            }
+        } else {
+            if (appDef.getEnvironmentVariableList() != null) {
+                for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                    if (o.getValue() == null) {
+                        o.setValue("");
                     }
+                    o.setAppDefinition(newAppDef);
+
+                    environmentVariableDao.add(o);
                 }
-                
-                if (o.getValue() == null) {
-                    o.setValue("");
-                }
-                o.setAppDefinition(newAppDef);
-                
-                environmentVariableDao.add(o);
             }
         }
         
@@ -2498,53 +2502,58 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
+        AppDefinition orgAppDef = AppUtil.getCurrentAppDefinition();
         Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
-        Collection<AppDefinition> appDefinitionList;
-        if (appId == null || appId.trim().isEmpty()) {
-            // get list of published apps.
-            appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
-        } else {
-            // get specific app
-            appDefinitionList = new ArrayList<AppDefinition>();
-            AppDefinition appDef = getPublishedAppDefinition(appId);
-            if (appDef != null) {
-                appDefinitionList.add(appDef);
+        try {
+            Collection<AppDefinition> appDefinitionList;
+            if (appId == null || appId.trim().isEmpty()) {
+                // get list of published apps.
+                appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+            } else {
+                // get specific app
+                appDefinitionList = new ArrayList<AppDefinition>();
+                AppDefinition appDef = getPublishedAppDefinition(appId);
+                if (appDef != null) {
+                    appDefinitionList.add(appDef);
+                }
             }
-        }
 
-        // filter based on availability and permission of userviews to run.
-        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
-            AppDefinition appDef = i.next();
+            // filter based on availability and permission of userviews to run.
+            for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
+                AppDefinition appDef = i.next();
+                AppUtil.setCurrentAppDefinition(appDef);
+                try {
+                    Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
+                    Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
 
-            try {
-                Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
-                Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
-
-                for (UserviewDefinition uvDef : uvDefList) {
-                    UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, uvDef.getJson());
-                    if (userviewSetting != null && (userviewSetting.getPermission() == null || (userviewSetting.getPermission() != null && userviewSetting.getPermission().isAuthorize()))
-                            && (!mobileView || !userviewSetting.getTheme().isMobileViewDisabled())
-                            && (!mobileCache || "true".equals(userviewSetting.getProperty("mobileCacheEnabled")))) {
-                        if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
-                            uvDef.setThumbnail(userviewSetting.getPropertyString("userview_thumbnail"));
+                    for (UserviewDefinition uvDef : uvDefList) {
+                        UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, uvDef.getJson());
+                        if (userviewSetting != null && (userviewSetting.getPermission() == null || (userviewSetting.getPermission() != null && userviewSetting.getPermission().isAuthorize()))
+                                && (!mobileView || !userviewSetting.getTheme().isMobileViewDisabled())
+                                && (!mobileCache || "true".equals(userviewSetting.getProperty("mobileCacheEnabled")))) {
+                            if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
+                                uvDef.setThumbnail(userviewSetting.getPropertyString("userview_thumbnail"));
+                            }
+                            uvDef.setName(AppUtil.processHashVariable(uvDef.getName(), null, null, null, appDef));
+                            uvDef.setDescription(AppUtil.processHashVariable(uvDef.getDescription(), null, null, null, appDef));
+                            newUvDefList.add(uvDef);
                         }
-                        uvDef.setName(AppUtil.processHashVariable(uvDef.getName(), null, null, null, appDef));
-                        uvDef.setDescription(AppUtil.processHashVariable(uvDef.getDescription(), null, null, null, appDef));
-                        newUvDefList.add(uvDef);
                     }
-                }
 
-                if (!newUvDefList.isEmpty()) {
-                    AppDefinition tempAppDef = new AppDefinition();
-                    tempAppDef.setAppId(appDef.getId());
-                    tempAppDef.setVersion(appDef.getVersion());
-                    tempAppDef.setName(appDef.getName());
-                    tempAppDef.setUserviewDefinitionList(newUvDefList);
-                    resultAppDefinitionList.add(tempAppDef);
+                    if (!newUvDefList.isEmpty()) {
+                        AppDefinition tempAppDef = new AppDefinition();
+                        tempAppDef.setAppId(appDef.getId());
+                        tempAppDef.setVersion(appDef.getVersion());
+                        tempAppDef.setName(appDef.getName());
+                        tempAppDef.setUserviewDefinitionList(newUvDefList);
+                        resultAppDefinitionList.add(tempAppDef);
+                    }
+                } catch(Exception e) {
+                    LogUtil.error(AppServiceImpl.class.getName(), e, "Error generating userviews for  " + appDef.getId());
                 }
-            } catch(Exception e) {
-                LogUtil.error(AppServiceImpl.class.getName(), e, "Error generating userviews for  " + appDef.getId());
             }
+        } finally {
+            AppUtil.setCurrentAppDefinition(orgAppDef);
         }
         return resultAppDefinitionList;
     }    
