@@ -2596,7 +2596,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             builder = "userview";
         } else if (lname.indexOf("processid") !== -1 || lname.indexOf("processdefid") !== -1) {
             builder = "process";
-        } else if (AdvancedTools !== undefined && AdvancedTools !== null 
+        } else if (typeof AdvancedTools !== "undefined" && AdvancedTools !== null 
                 && AdvancedTools.treeViewer !== undefined && AdvancedTools.treeViewer !== null 
                 && AdvancedTools.treeViewer.builderType !== undefined) {
             for (var key in AdvancedTools.treeViewer.builderType) {
