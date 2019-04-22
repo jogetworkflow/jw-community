@@ -3712,12 +3712,21 @@ ProcessBuilder.Designer = {
 
         // add participants
         xml += '<xpdl:Participants>';
+        
+        var existingSwimlaneIds = [];
+        for (var id in model.processes) {
+            var swimlaneIds = model.processes[id].swimlanes.split(";");
+            existingSwimlaneIds = existingSwimlaneIds.concat(swimlaneIds);
+        }
+        
         var participants = model.participants;
         for (var id in participants) {
-            var participant = participants[id];
-            xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
-                    <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
-                    </xpdl:Participant>';
+            if ($.inArray(id, existingSwimlaneIds) !== -1) {
+                var participant = participants[id];
+                xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
+                        <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
+                        </xpdl:Participant>';
+            }
         }
         
         if (duplicateProcessId !== undefined) {
