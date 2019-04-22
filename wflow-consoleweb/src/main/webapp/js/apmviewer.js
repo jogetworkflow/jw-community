@@ -1504,7 +1504,7 @@ APMViewer = {
         
         if ($("#alertpopup").find("ul").length === 0) {
             $("#alertpopup").append('<h3 class=\"boxy-content-header\">' + get_apmviewer_msg('apm.performanceAlert') + '</h3><div class="boxy-content-body alert-info"><ul class="tabs"></ul><div class="tab-contents"></div></div>');
-            $("#alertpopup").find(".tabs").append('<li data-tab="alert" class="active">'+get_apmviewer_msg('apm.manageAlert')+'</li>');
+            $("#alertpopup").find(".tabs").append('<li data-tab="apm-alert" class="active">'+get_apmviewer_msg('apm.manageAlert')+'</li>');
             $("#alertpopup").find(".tabs").append('<li data-tab="smtp" class="">'+get_apmviewer_msg('apm.smtp')+'</li>');
 
             $("#alertpopup").find(".tabs li").on("click", function() {
@@ -1519,12 +1519,12 @@ APMViewer = {
                 }
             });
 
-            $("#alertpopup").find(".tab-contents").append('<div class="alert"></div>');
+            $("#alertpopup").find(".tab-contents").append('<div class="apm-alert"></div>');
         } else {
             $("#alertpopup").find(".tab-contents > div").hide();
             $("#alertpopup").find(".tabs > li").removeClass("active");
             $("#alertpopup").find(".tabs > li:eq(0)").addClass("active");
-            $("#alertpopup").find(".tab-contents > .alert").show();
+            $("#alertpopup").find(".tab-contents > .apm-alert").show();
         }
             
         APMViewer.loadAlertList(function(){
@@ -1536,24 +1536,26 @@ APMViewer = {
     loadAlertList : function(callback) {
         var thisObj = this;
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['config'], function(data){
-            $("#alertpopup .alert").html('<div class="apmtableview"></div>');
+            $("#alertpopup .apm-alert").html('<div class="apmtableview"></div>');
             
             var list = [];
-            var reg = new RegExp('^([^-]+) - (.+) over the last (.+) minute[s]* is (.+) than or equal to (.+)$');
-            $.each(data, function(i, d){
-                var found = d.display.match(reg);
-                if (APMViewer.alertTexts[found[2]] !== undefined) {
-                    list.push({
-                        id: d.version,
-                        name : APMViewer.alertTexts[found[2]],
-                        time : found[3],
-                        operator : found[4],
-                        threshold : found[5]
-                    });
-                }
-            });
+            if (data['alerts'] !== undefined) {
+                var reg = new RegExp('^([^-]+) - (.+) over the last (.+) minute[s]* is (.+) than or equal to (.+)$');
+                $.each(data['alerts'], function(i, d){
+                    var found = d.display.match(reg);
+                    if (APMViewer.alertTexts[found[2]] !== undefined) {
+                        list.push({
+                            id: d.version,
+                            name : APMViewer.alertTexts[found[2]],
+                            time : found[3],
+                            operator : found[4],
+                            threshold : found[5]
+                        });
+                    }
+                });
+            }
             
-            var table = new APMTable($("#alertpopup .alert .apmtableview"), {
+            var table = new APMTable($("#alertpopup .apm-alert .apmtableview"), {
                 columns : [
                     {
                         name : "name", 
@@ -1600,20 +1602,20 @@ APMViewer = {
             });
             table.renderTable();
             
-            $("#alertpopup .alert").append('<div class="buttons"><a class="addalert btn">'+get_apmviewer_msg('apm.addAlert')+'</a></div>');
+            $("#alertpopup .apm-alert").append('<div class="buttons"><a class="addalert btn">'+get_apmviewer_msg('apm.addAlert')+'</a></div>');
             
-            $("#alertpopup .alert").find("a.addalert").off("click");
-            $("#alertpopup .alert").find("a.addalert").on("click", function(){
+            $("#alertpopup .apm-alert").find("a.addalert").off("click");
+            $("#alertpopup .apm-alert").find("a.addalert").on("click", function(){
                 APMViewer.loadAlertDetail();
             });
             
-            $("#alertpopup .alert").find("table .rowaction.edit").off("click");
-            $("#alertpopup .alert").find("table .rowaction.edit").on("click", function() {
+            $("#alertpopup .apm-alert").find("table .rowaction.edit").off("click");
+            $("#alertpopup .apm-alert").find("table .rowaction.edit").on("click", function() {
                 APMViewer.loadAlertDetail($(this).data("id"));
             });
             
-            $("#alertpopup .alert").find("table .rowaction.delete").off("click");
-            $("#alertpopup .alert").find("table .rowaction.delete").on("click", function() {
+            $("#alertpopup .apm-alert").find("table .rowaction.delete").off("click");
+            $("#alertpopup .apm-alert").find("table .rowaction.delete").on("click", function() {
                 var thisRowObj = $(this);
                 var id = $(this).data("id");
                 APMViewer.httpPost(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['removeAlert'], {
@@ -1630,7 +1632,7 @@ APMViewer = {
         });
     },
     loadAlertDetail : function(id) {
-        $("#alertpopup .alert").html('<div class="alertproperty"></div>');
+        $("#alertpopup .apm-alert").html('<div class="alertproperty"></div>');
         
         var propertyValues = {};
         
@@ -1825,7 +1827,7 @@ APMViewer = {
                     });
                 }
             };
-            $("#alertpopup .alert .alertproperty").propertyEditor(options);
+            $("#alertpopup .apm-alert .alertproperty").propertyEditor(options);
         });  
     },
     smtpView : function() {

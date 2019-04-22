@@ -3,15 +3,10 @@ package org.joget.commons.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.Query;
 import org.apache.commons.io.FileUtils;
 
 public class ServerUtil {
@@ -43,7 +38,10 @@ public class ServerUtil {
     
     public static String getServerName() {
         if (serverName == null) {
-            serverName = System.getProperty(SYSTEM_PROPERTY_NODE_NAME, getEndPoint()); //To support override node name
+            serverName = System.getProperty(SYSTEM_PROPERTY_NODE_NAME);
+            if (serverName == null) {
+                serverName = "";
+            }
         }
         return serverName;
     }
@@ -91,21 +89,5 @@ public class ServerUtil {
         } catch (Exception e) {
             LogUtil.debug(ServerUtil.class.getName(), "Error write servers file: " + e.getMessage());
         }
-    }
-    
-    protected static String getEndPoint() {
-        try {
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            Set<ObjectName> objs = mbs.queryNames( new ObjectName( "*:type=Connector,*" ),
-                    Query.match( Query.attr( "protocol" ), Query.value( "HTTP/1.1" ) ) );
-            String hostname = InetAddress.getLocalHost().getHostName();
-            for ( ObjectName obj : objs ) {
-                String port = obj.getKeyProperty( "port" );
-                return (hostname + "_" + port).replaceAll("[^a-zA-Z0-9_-]", "");
-            }
-        } catch (Exception ex ) {
-            LogUtil.error(ServerUtil.class.getName(), ex, "");
-        }
-        return "";
     }
 }

@@ -143,7 +143,11 @@ public class LogViewerAppender extends AppenderSkeleton {
         if (appId == null) {
             appId = getCurrentAppId();
         }
-        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + File.separator + ServerUtil.getServerName() + File.separator + appId;
+        String serverName = ServerUtil.getServerName();
+        if (!serverName.isEmpty()) {
+            serverName = File.separator + serverName;
+        }
+        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + serverName + File.separator + appId;
     }
     
     public static String getFileName(String appId) {
