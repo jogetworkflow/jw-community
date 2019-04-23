@@ -1068,7 +1068,9 @@ PropertyEditor.Model.Editor.prototype = {
     },
     render: function() {
         var html = '';
-        if (this.options.propertiesDefinition === undefined || this.options.propertiesDefinition === null) {
+        if (this.options.propertiesDefinition === undefined 
+                || this.options.propertiesDefinition === null
+                || this.options.propertiesDefinition.length === 0) {
             html += this.renderNoPropertyPage();
         } else {
             var editorObject = this;
