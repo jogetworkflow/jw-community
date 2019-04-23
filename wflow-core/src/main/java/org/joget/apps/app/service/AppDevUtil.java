@@ -77,6 +77,7 @@ import org.json.JSONObject;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.BeansException;
+import org.springframework.util.ClassUtils;
 
 public class AppDevUtil {
 
@@ -987,7 +988,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             }
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
-                String pluginClassName = plugin.getClass().getName();
+                String pluginClassName = ClassUtils.getUserClass(plugin).getName();
                 if (concatAppDef.contains(pluginClassName)) {
                     // plugin used, copy
                     String path = pluginManager.getOsgiPluginPath(pluginClassName);
