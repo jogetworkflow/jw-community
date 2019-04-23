@@ -510,8 +510,13 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 if (!formResult.getStay() &&errorCount == 0) {
                     if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
                         setProperty("view", "redirect");
-                        boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-                        setRedirectUrl(getRedirectUrl(form, formResult), redirectToParent);
+                        String redirectTarget = "";
+                        if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
+                            redirectTarget = "parent";
+                        } else {
+                            redirectTarget = getPropertyString("redirectTarget");
+                        }
+                        setRedirectUrlToWindow(getRedirectUrl(form, formResult), redirectTarget);
                     } else {
                         setProperty("view", "assignmentUpdated");
                     }
@@ -561,8 +566,13 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         setAlertMessage(getPropertyString("messageShowAfterComplete"));
         if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
             setProperty("view", "redirect");
-            boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));            
-            setRedirectUrl(getRedirectUrl(form, formData), redirectToParent);
+            String redirectTarget = "";
+            if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
+                redirectTarget = "parent";
+            } else {
+                redirectTarget = getPropertyString("redirectTarget");
+            }
+            setRedirectUrlToWindow(getRedirectUrl(form, formData), redirectTarget);
         } else {
             setProperty("headerTitle", "Process Started");
             setProperty("view", "processStarted");

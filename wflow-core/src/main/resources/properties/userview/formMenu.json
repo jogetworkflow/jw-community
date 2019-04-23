@@ -70,6 +70,24 @@
         type : 'textfield'
     },
     {
+        name : 'redirectTargetOnComplete',
+        label : '@@userview.formmenu.redirectTargetOnComplete@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : 'top',
+            label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'parent',
+            label : '@@userview.formmenu.target.parent@@'
+        },
+        {
+            value : '',
+            label : '@@userview.formmenu.target.window@@'
+        }]
+    },
+    {
         name : 'redirectUrlOnCancel',
         label : '@@userview.formmenu.redirectOnCancel@@',
         type : 'textfield'
@@ -82,6 +100,10 @@
         options : [{
             value : 'top',
             label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'parent',
+            label : '@@userview.formmenu.target.parent@@'
         },
         {
             value : 'window',

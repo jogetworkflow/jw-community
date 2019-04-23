@@ -270,8 +270,14 @@ public class FormMenu extends UserviewMenu {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
                 setAlertMessage(getPropertyString("messageShowAfterComplete"));
-                boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-                setRedirectUrl(redirectUrl, redirectToParent);
+                
+                String redirectTarget = "";
+                if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
+                    redirectTarget = "parent";
+                } else {
+                    redirectTarget = getPropertyString("redirectTargetOnComplete");
+                }
+                setRedirectUrlToWindow(redirectUrl, redirectTarget);
             } else {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
@@ -300,8 +306,13 @@ public class FormMenu extends UserviewMenu {
             setAlertMessage(getPropertyString("messageShowAfterComplete"));
             if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
                 setProperty("redirectUrlAfterComplete", redirectUrl);
-                boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-                setRedirectUrl(redirectUrl, redirectToParent);
+                String redirectTarget = "";
+                if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
+                    redirectTarget = "parent";
+                } else {
+                    redirectTarget = getPropertyString("redirectTargetOnComplete");
+                }
+                setRedirectUrlToWindow(redirectUrl, redirectTarget);
             } else {
                 setProperty("view", "assignmentUpdated");
             }
@@ -479,7 +490,7 @@ public class FormMenu extends UserviewMenu {
 
         setProperty("submitted", Boolean.TRUE);
         setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
-
+        
         return form;
     }
 }

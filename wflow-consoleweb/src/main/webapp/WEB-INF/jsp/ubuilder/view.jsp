@@ -145,9 +145,16 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 </c:when>
 <c:when test="${!empty redirectUrlValue}">
     <c:choose>
-        <c:when test="${redirectParentValue}">
+        <c:when test="${!empty redirectParentValue && redirectParentValue ne 'false'}">
             <script>
-                parent.location.href = "${redirectUrlValue}";
+                <c:choose>
+                    <c:when test="${redirectParentValue eq 'top'}">
+                        top.location.href = "${redirectUrlValue}";
+                    </c:when>
+                    <c:otherwise>    
+                        parent.location.href = "${redirectUrlValue}";
+                    </c:otherwise> 
+                </c:choose>        
             </script>
         </c:when>
         <c:otherwise>

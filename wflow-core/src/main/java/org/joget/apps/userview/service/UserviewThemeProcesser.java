@@ -630,7 +630,7 @@ public class UserviewThemeProcesser {
             } catch (Exception e) {}
         }
 
-        if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && "true".equalsIgnoreCase(redirectParent))) {
+        if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && !redirectParent.isEmpty() && !redirectParent.equalsIgnoreCase("false"))) {
             if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
                 Map<String, String> data = new HashMap<String, String>();
                 data.put("alertMessage", menuAlertMessage);

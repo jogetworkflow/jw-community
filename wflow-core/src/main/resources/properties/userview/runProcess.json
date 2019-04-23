@@ -65,6 +65,24 @@
         type : 'textfield'
     },
     {
+        name : 'redirectTarget',
+        label : '@@userview.formmenu.redirectTargetOnComplete@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : 'top',
+            label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'parent',
+            label : '@@userview.formmenu.target.parent@@'
+        },
+        {
+            value : '',
+            label : '@@userview.formmenu.target.window@@'
+        }]
+    },
+    {
         name : 'fieldPassover',
         label : '@@userview.formmenu.fieldNamePassover@@',
         type : 'textfield'

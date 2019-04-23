@@ -5,7 +5,7 @@
             <#if alertMessage != "" >
                 alert("${alertMessage?js_string}");
             </#if>
-            <#if redirectParent == "true" >parent.</#if>location.href = "${redirectUrl}";
+            <#if redirectParent == "true" >parent.<#elseif redirectParent == "top" >top.</#if>location.href = "${redirectUrl}";
         </script>
     </head>
     <body>
