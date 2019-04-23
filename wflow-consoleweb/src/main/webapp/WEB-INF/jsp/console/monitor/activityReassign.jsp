@@ -66,6 +66,7 @@
     });
     function submitUser(username){
         if(username.length > 0){
+            username = decodeURIComponent(username);
             if (confirm("<fmt:message key="console.monitoring.running.label.reassign.confirm"/>")) {
                 var callback = {
                     success : function() {
