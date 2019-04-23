@@ -23,7 +23,7 @@ var AdminBar = {
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
                 '<div id="quickOverlayContainer" class="quickOverlayContainer"><div id="quickOverlay" class="quickOverlay"></div>\
-                <div id="quickOverlayButton" class="quickOverlayButton"><a class="overlayClose" href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a><a class="pin disabled" href="#" onclick="AdminBar.togglePinQuickOverlay()"><i class="fas fa-thumbtack"></i></a><a class="max" href="#" onclick="AdminBar.maxQuickOverlay()"><i class="fas fa-window-maximize"></i></a></div>\
+                <div id="quickOverlayButton" class="quickOverlayButton"><a class="max" href="#" onclick="AdminBar.maxQuickOverlay()"><i class="fas fa-window-maximize"></i></a><a class="pin disabled" href="#" onclick="AdminBar.togglePinQuickOverlay()"><i class="fas fa-thumbtack"></i></a><a class="overlayClose" href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a></div>\
                 <div id="quickOverlayFrameDiv"><iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div></div>';
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
