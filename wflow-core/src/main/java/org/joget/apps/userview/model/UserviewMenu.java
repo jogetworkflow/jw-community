@@ -183,7 +183,7 @@ public abstract class UserviewMenu extends ExtElement{
         if (redirectToParent) {
             windowType = "true";
         }
-        setProperty(REDIRECT_PARENT_PROPERTY, windowType);
+        setRedirectUrlToWindow(redirectUrl, windowType);
     }
     
     public void setRedirectUrlToWindow(String redirectUrl, String windowType) {
