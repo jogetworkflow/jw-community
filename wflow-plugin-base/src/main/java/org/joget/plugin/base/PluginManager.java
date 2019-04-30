@@ -514,6 +514,10 @@ public class PluginManager implements ApplicationContextAware {
                     if (out != null) {
                         out.close();
                     }
+                } catch (IOException ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
+                }
+                try {
                     if (in != null) {
                         in.close();
                     }
