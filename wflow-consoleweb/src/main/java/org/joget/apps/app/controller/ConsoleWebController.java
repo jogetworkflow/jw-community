@@ -2208,13 +2208,13 @@ public class ConsoleWebController {
                 processDefId =  URLEncoder.encode(processDefId, "UTF-8");
             } catch (UnsupportedEncodingException e) {}
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/"+activityType+"/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
             if (pluginName != null) {
                 url += "&pluginname="+URLEncoder.encode(pluginName, "UTF-8");
             }
             map.addAttribute("actionUrl", url);
             
-            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/"+activityType+"/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
+            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
             map.addAttribute("cancelUrl", cancelUrl);
             
             map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
