@@ -176,8 +176,8 @@ public class TensorFlowUtil {
     
     public static Tensor imageInput(InputStream inputStream, String imageType, int height, int width, float mean, float scale, String type) throws IOException {
         DataType dataType = getDataType(type);
-        byte[] imageBytes = IOUtils.toByteArray(inputStream);
         try (Graph g = new Graph()) {
+            byte[] imageBytes = IOUtils.toByteArray(inputStream);
             GraphBuilder b = new GraphBuilder(g);
             final Output input = b.constant("input", imageBytes);
             LogUtil.debug(TensorFlowUtil.class.getName(), "Normalizing image " + imageType);
@@ -199,6 +199,10 @@ public class TensorFlowUtil {
                 Tensor result = s.runner().fetch(output.op().name()).run().get(0);
                 LogUtil.debug(TensorFlowUtil.class.getName(), "Normalized image " + imageType);
                 return result;
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
             }
         }
     }
@@ -394,31 +398,43 @@ public class TensorFlowUtil {
     
     public static Map<Float, String> getSortedLabelResultMap(InputStream labelInputStream, float[] results, Float threshold) throws IOException {
         Map<Float, String> resultMap = new TreeMap<>(Collections.reverseOrder());
-        List<String> labels = IOUtils.readLines(labelInputStream);
-        if (threshold == null || threshold < 0) {
-            threshold = 0.01f;
-        }
-        int i=0;
-        for (String label: labels) {
-            float probability = results[i];
-            if (probability > threshold) {
-                resultMap.put(probability, label);
+        try {
+            List<String> labels = IOUtils.readLines(labelInputStream);
+            if (threshold == null || threshold < 0) {
+                threshold = 0.01f;
             }
-            i++;
+            int i=0;
+            for (String label: labels) {
+                float probability = results[i];
+                if (probability > threshold) {
+                    resultMap.put(probability, label);
+                }
+                i++;
+            }
+        } finally {
+            if (labelInputStream != null) {
+                labelInputStream.close();
+            }
         }
         return resultMap;
     }
     
     public static List<String> getValueToLabelList(InputStream labelInputStream, float[] results, Integer numberOfValues, Boolean unique) throws IOException {
-        List<String> labels = IOUtils.readLines(labelInputStream);
         List<String> resultLabels = new ArrayList<String>();
-        if (numberOfValues == null) {
-            numberOfValues = results.length;
-        }
-        for (int i=0; i < numberOfValues; i++) {
-            String label = labels.get((int)(results[i] - 1));
-            if (unique == null || !unique || (unique && !resultLabels.contains(label))) {
-                resultLabels.add(label);
+        try {
+            List<String> labels = IOUtils.readLines(labelInputStream);
+            if (numberOfValues == null) {
+                numberOfValues = results.length;
+            }
+            for (int i=0; i < numberOfValues; i++) {
+                String label = labels.get((int)(results[i] - 1));
+                if (unique == null || !unique || (unique && !resultLabels.contains(label))) {
+                    resultLabels.add(label);
+                }
+            }
+        } finally {
+            if (labelInputStream != null) {
+                labelInputStream.close();
             }
         }
         return resultLabels;
