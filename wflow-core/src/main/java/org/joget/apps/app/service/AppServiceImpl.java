@@ -959,7 +959,9 @@ public class AppServiceImpl implements AppService {
                 }
             }
         } catch (IOException | GitAPIException | URISyntaxException e) {
-            LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
+            if (appDef != null) {
+                LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
+            }
         }
 
         // set into thread
@@ -2705,7 +2707,9 @@ public class AppServiceImpl implements AppService {
         } catch(Exception e){
             LogUtil.error(AppServiceImpl.class.getName(), e, "Error importing PO file " + e.getMessage());
         } finally {
-            inputStream.close();
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
     }
     
