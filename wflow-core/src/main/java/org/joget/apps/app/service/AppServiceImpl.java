@@ -1836,6 +1836,7 @@ public class AppServiceImpl implements AppService {
     public void exportFormData(String appId, String version, ZipOutputStream zip, String[] formTables) throws UnsupportedEncodingException, IOException {
         if (formTables != null && formTables.length > 0) {
             for (String formTable : formTables) {
+                formTable = SecurityUtil.validateStringInput(formTable);
                 FormRowSet rows = formDataDao.find(formTable, formTable, null, null, null, null, null, null);
                 if (!rows.isEmpty()) {
                     String json = FormUtil.formRowSetToJson(rows);
