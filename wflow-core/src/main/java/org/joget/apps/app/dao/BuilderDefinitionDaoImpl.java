@@ -12,6 +12,7 @@ import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 
 public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<BuilderDefinition> implements BuilderDefinitionDao  {
     public static final String ENTITY_NAME = "BuilderDefinition";
@@ -119,9 +120,11 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         boolean result = super.update(object);
 
         // save json
-        String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
+        String type = SecurityUtil.validateStringInput(object.getType());
+        String id = SecurityUtil.validateStringInput(object.getId());
+        String filename = "builder/" + type + "/" + id + ".json";
         String json = AppDevUtil.formatJson(object.getJson());
-        String commitMessage = "Update " + object.getType() + " " + object.getId();
+        String commitMessage = "Update " + type + " " + id;
         AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
         // sync app plugins

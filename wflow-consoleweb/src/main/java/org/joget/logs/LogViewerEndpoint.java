@@ -10,6 +10,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 
 @ServerEndpoint(value = "/applog/{appId}", configurator = ServletAwareConfigurator.class)
 public class LogViewerEndpoint {
@@ -19,6 +20,7 @@ public class LogViewerEndpoint {
     
     @OnOpen
     public void onOpen(Session session, @PathParam("appId") String appId, EndpointConfig config) throws IOException {
+        appId = SecurityUtil.validateStringInput(appId);
         this.session = session;
         this.thread = new LogViewerThread(HostManager.getCurrentProfile(), appId, this);
         this.thread.start();

@@ -1047,6 +1047,9 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
     }
 
     public static AppDefinition createDummyAppDefinition(String appId, Long appVersion) {
+        // validate appId
+        appId = SecurityUtil.validateStringInput(appId);
+        
         // app version not in db, create dummy object
         AppDefinition appDef = new AppDefinition();
         appDef.setAppId(appId);

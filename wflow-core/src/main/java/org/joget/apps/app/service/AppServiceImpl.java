@@ -1088,6 +1088,7 @@ public class AppServiceImpl implements AppService {
             version = appDefinitionDao.getLatestVersion(appId);
         }
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, version);
+        appId = appDef.getAppId();
 
         Serializer serializer = new Persister();
         AppDefinition newAppDef = null;
