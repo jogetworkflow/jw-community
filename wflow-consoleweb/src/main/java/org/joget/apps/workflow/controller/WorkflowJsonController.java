@@ -26,6 +26,7 @@ import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpResponse;
@@ -39,6 +40,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.model.WorkflowPackage;
@@ -1131,6 +1133,13 @@ public class WorkflowJsonController {
     public void installMarketplaceApp(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("url") final String url) throws IOException, JSONException {
         JSONObject jsonObject = new JSONObject();
         
+        // validate trusted URL
+        boolean trusted = validateTrustedUrl(url);
+        if (!trusted) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Untrusted URL");
+            return;
+        }
+        
         // get URL InputStream
         HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
         CloseableHttpClient client = builder.build();
@@ -1209,6 +1218,12 @@ public class WorkflowJsonController {
     
     @RequestMapping(value = "/json/apps/verify", method = RequestMethod.HEAD)
     public void verifyUrl(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("url") String url) throws IOException {
+        boolean trusted = validateTrustedUrl(url);
+        if (!trusted) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Untrusted URL");
+            return;
+        }
+        
         CloseableHttpClient client = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy()).build();
         try {
             HttpHead head = new HttpHead(url);
@@ -1217,6 +1232,23 @@ public class WorkflowJsonController {
         } finally {
             client.close();
         }
+    }
+
+    protected boolean validateTrustedUrl(String url) {
+        boolean trusted = false;
+        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
+        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
+        if (trustedUrls != null && !trustedUrls.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
+            while (st.hasMoreTokens()) {
+                String trustedUrl = st.nextToken().trim();
+                if (url.startsWith(trustedUrl)) {
+                    trusted = true;
+                    break;
+                }
+            }
+        }
+        return trusted;
     }
 
     @RequestMapping("/json/monitoring/activity/previous/(*:activityId)")
