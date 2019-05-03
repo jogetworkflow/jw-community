@@ -884,7 +884,7 @@ a.guider_button:hover {
     display: block;
     position: absolute;
     top: 5px;
-    right: 25px;
+    right: 100px;
     z-index: 10001;
 }
 .marketplaceAppHeader{
