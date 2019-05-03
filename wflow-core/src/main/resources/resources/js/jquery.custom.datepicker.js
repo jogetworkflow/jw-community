@@ -5,47 +5,49 @@
                 var element = $(this);
                 var elementParent = element.parent();
 
-                o.beforeShow = function(input, inst) {
-                    $(element).addClass("popup-picker");
-                    setTimeout(function(){
-                        var tabbables = $("#ui-datepicker-div").find(':tabbable');
-                        var first = tabbables.filter(':first');
-                        var last  = tabbables.filter(':last');
+                if (!/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                    o.beforeShow = function(input, inst) {
+                        $(element).addClass("popup-picker");
+                        setTimeout(function(){
+                            var tabbables = $("#ui-datepicker-div").find(':tabbable');
+                            var first = tabbables.filter(':first');
+                            var last  = tabbables.filter(':last');
 
-                        $("#ui-datepicker-div").off("keydown", ":tabbable");
-                        $("#ui-datepicker-div").on("keydown", ":tabbable", function(e) {
-                            var keyCode = e.keyCode || e.which;
-                            if (keyCode === 9) {
-                                var focusedElement = $(e.target);
+                            $("#ui-datepicker-div").off("keydown", ":tabbable");
+                            $("#ui-datepicker-div").on("keydown", ":tabbable", function(e) {
+                                var keyCode = e.keyCode || e.which;
+                                if (keyCode === 9) {
+                                    var focusedElement = $(e.target);
 
-                                var isFirstInFocus = (first.get(0) === focusedElement.get(0));
-                                var isLastInFocus = (last.get(0) === focusedElement.get(0));
+                                    var isFirstInFocus = (first.get(0) === focusedElement.get(0));
+                                    var isLastInFocus = (last.get(0) === focusedElement.get(0));
 
-                                var tabbingForward = !e.shiftKey;
+                                    var tabbingForward = !e.shiftKey;
 
-                                if (tabbingForward) {
-                                    if (isLastInFocus) {
-                                        first.focus();
-                                        e.preventDefault();
+                                    if (tabbingForward) {
+                                        if (isLastInFocus) {
+                                            first.focus();
+                                            e.preventDefault();
+                                        }
+                                    } else {
+                                        if (isFirstInFocus) {
+                                            last.focus();
+                                            e.preventDefault();
+                                        }
                                     }
-                                } else {
-                                    if (isFirstInFocus) {
-                                        last.focus();
-                                        e.preventDefault();
-                                    }
+                                } else if (keyCode === 27) {
+                                    $(element).datepicker("hide");
+                                    $(element).next("a.trigger").focus();
                                 }
-                            } else if (keyCode === 27) {
-                                $(element).datepicker("hide");
-                                $(element).next("a.trigger").focus();
-                            }
-                        });
-                        first.focus();
-                    }, 100);
-                };
-                o.onClose = function(selectedDate) {
-                    $(element).removeClass("popup-picker");
-                    $(element).focus();
-                };
+                            });
+                            first.focus();
+                        }, 100);
+                    };
+                    o.onClose = function(selectedDate) {
+                        $(element).removeClass("popup-picker");
+                        $(element).focus();
+                    };
+                }
                 
                 if (o.datePickerType === "dateTime") {
                     $(element).datetimepicker(o);
