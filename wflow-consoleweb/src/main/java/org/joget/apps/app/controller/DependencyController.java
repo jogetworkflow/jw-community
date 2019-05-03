@@ -67,7 +67,9 @@ public class DependencyController {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return;
         }
-        
+
+        id = SecurityUtil.validateStringInput(id);
+        postfix = SecurityUtil.validateStringInput(postfix);
         response.setHeader("Content-Type", "image/png");
         response.setHeader("Content-Disposition", "attachment; filename="+id+postfix+".png");
 
