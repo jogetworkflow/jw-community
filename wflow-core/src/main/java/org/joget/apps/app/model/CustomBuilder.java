@@ -113,6 +113,12 @@ public interface CustomBuilder {
     public Object getBuilderResult(String json, Map<String, Object> config);
     
     /**
+     * HTML to add to the create new page
+     * @return 
+     */
+    public String getCreateNewPageHtml();
+    
+    /**
      * Used to create the JSON definition of new object
      * @param id
      * @param name

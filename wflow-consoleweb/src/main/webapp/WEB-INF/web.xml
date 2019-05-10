@@ -64,6 +64,15 @@
         <load-on-startup>3</load-on-startup>
     </servlet>
     <servlet>
+        <servlet-name>apiServlet</servlet-name>
+        <servlet-class>org.joget.apps.app.web.ApiServlet</servlet-class>
+        <init-param>
+            <param-name>prefix</param-name>
+            <param-value>/api</param-value>
+        </init-param>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet>
         <servlet-name>setup</servlet-name>
         <servlet-class>org.joget.apps.app.web.SetupServlet</servlet-class>
         <load-on-startup>5</load-on-startup>
@@ -79,6 +88,10 @@
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/web/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>apiServlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>pluginResource</servlet-name>

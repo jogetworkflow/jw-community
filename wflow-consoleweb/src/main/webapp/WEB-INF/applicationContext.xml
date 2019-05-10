@@ -83,6 +83,9 @@
         <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/plugin/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         
+        <!-- API web service paths: permissions controlled by plugin -->
+        <security:intercept-url pattern="/api/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        
         <!-- Web Console normal user paths -->
         <security:intercept-url pattern="/web/console/run/inbox" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/run/processes" access="ROLE_ADMIN, ROLE_USER"/>

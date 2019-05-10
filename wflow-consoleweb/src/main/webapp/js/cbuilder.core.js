@@ -17,6 +17,7 @@ CustomBuilder = {
         },
         advanced_tools : {
             tree_viewer : {
+                disabled : false,
                 childs_properties : ["elements"],
                 matchers : {
                     'editable' : {
@@ -35,6 +36,9 @@ CustomBuilder = {
                         }
                     }
                 }
+            },
+            usage : {
+                disabled : false
             },
             i18n : {
                 disabled : false,
@@ -83,7 +87,8 @@ CustomBuilder = {
                 childs_properties : ["elements"],
                 ignore_classes : [],
                 render_elements_callback : "" 
-            }
+            },
+            customTabsCallback : ""
         }
     },
     propertiesOptions: null,
@@ -545,12 +550,24 @@ CustomBuilder = {
         CustomBuilder.merge(CustomBuilder.save);
     }, 
     
+    supportTreeViewer: function() {
+        return !CustomBuilder.config.advanced_tools.tree_viewer.disabled;
+    },
+    
     supportI18n: function() {
         return !CustomBuilder.config.advanced_tools.i18n.disabled;
     },
     
+    supportUsage: function() {
+        return !CustomBuilder.config.advanced_tools.usage.disabled;
+    },
+    
     supportPermission: function() {
         return !CustomBuilder.config.advanced_tools.permission.disabled;
+    },
+    
+    customAdvancedToolTabs: function() {
+        CustomBuilder.callback(CustomBuilder.config.advanced_tools["customTabsCallback"]);
     },
     
     getPermissionElementLabel: function(element) {

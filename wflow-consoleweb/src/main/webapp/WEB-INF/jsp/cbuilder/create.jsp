@@ -32,6 +32,7 @@
                     <label for="field1"><fmt:message key="console.datalist.common.label.description"/></label>
                     <span class="form-input"><form:textarea path="description" cssErrorClass="form-input-error" cols="40" rows="10" /></span>
                 </div>
+                ${builder.createNewPageHtml}
                 <div class="form-row">
                     <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
                     <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>

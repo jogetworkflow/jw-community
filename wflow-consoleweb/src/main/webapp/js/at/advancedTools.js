@@ -12,11 +12,15 @@ var AdvancedTools = {
         var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fas fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
         $(document.body).append(overlayContainer);
         
-        AdvancedTools.initTreeViewer();
-        if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportPermission())) {
-            AdvancedTools.initPermission();
+        if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportTreeViewer())) {
+            AdvancedTools.initTreeViewer();
+            if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportPermission())) {
+                AdvancedTools.initPermission();
+            }
         }
-        AdvancedTools.initUsage();
+        if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportUsage())) {
+            AdvancedTools.initUsage();
+        }
         if (window['FormBuilder'] !== undefined) {
             AdvancedTools.initTable();
         }
@@ -29,13 +33,19 @@ var AdvancedTools = {
         AdvancedTools.initDiffChecker();
         AdvancedTools.initDefinitionTab();
         
+        if (AdvancedTools.options.builder === "custom") {
+            CustomBuilder.customAdvancedToolTabs();
+        }
+        
         $(".builder_tool_tabs_container").tabs();
         
         $("#builder-bar .controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fas fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
         $("#advanced_tool").click(function(){
             $(".builder_tool_tabs li:first-child input").prop("checked", true);
             AdvancedTools.showQuickOverlay();
-            AdvancedTools.treeViewer.render();            
+            if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportTreeViewer())) {
+                AdvancedTools.treeViewer.render();    
+            }
         });
         
     },
@@ -370,8 +380,10 @@ var AdvancedTools = {
                     AdvancedTools.silentChange = false;
                 }
 
-                //calling tree viewer hide to clean extra elements created during generate image
-                AdvancedTools.treeViewer.hide();
+                if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportTreeViewer())) {
+                    //calling tree viewer hide to clean extra elements created during generate image
+                    AdvancedTools.treeViewer.hide();
+                }
             }
 
             $(".quickOverlayButton, #advancedToolsFrame").fadeOut();

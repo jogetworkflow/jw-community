@@ -20,4 +20,9 @@ public abstract class CustomBuilderAbstract extends ExtDefaultPlugin implements 
     public String getDescriptionFromJSON(String json) {
         return CustomBuilderUtil.getDescriptionFromJSON(json);
     }
+    
+    @Override
+    public String getCreateNewPageHtml() {
+        return "";
+    }
 }
