@@ -25,13 +25,19 @@ public class EnhancedDirectoryManagerProxyImpl extends DirectoryManagerProxyImpl
                 roles.add(sa);
             }
 
-            // check for app admin role, remove if app admin role configured for specific users
-            if (roles.contains(ra) && EnhancedWorkflowUserManager.isAppAdminRoleRestricted()) {
-                roles.remove(ra);
+            // add app admin role configured for specific users
+            if (!roles.contains(ra) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+                roles.add(ra);
+            }
+            if (EnhancedWorkflowUserManager.isAppAdminRole()) {
+                Role aa = new Role();
+                aa.setId(EnhancedWorkflowUserManager.ROLE_APPADMIN);
+                aa.setName(EnhancedWorkflowUserManager.ROLE_APPADMIN);
+                roles.add(aa);
             }
             return roles;
         }
-        return new ArrayList<Role>();
+        return new ArrayList<>();
     }    
     
 }

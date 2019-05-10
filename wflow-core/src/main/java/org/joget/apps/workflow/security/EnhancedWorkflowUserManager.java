@@ -22,55 +22,78 @@ import org.springframework.util.StringUtils;
 public class EnhancedWorkflowUserManager extends WorkflowUserManager {
 
     public static final String ROLE_SYSADMIN = "ROLE_SYSADMIN";
+    public static final String ROLE_APPADMIN = "ROLE_APPADMIN";
     public static final String ROLE_ADMIN_GROUP = "ROLE_ADMIN_GROUP";
     public static final String ROLE_ADMIN_ORG = "ROLE_ADMIN_ORG";
     
-    public static boolean isAppAdminRoleRestricted() {
+    public static boolean checkCustomAppAdmin() {
+        boolean isAppAdmin = false;
         AppDefinition appDef = null;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
+            // determine appId from request path
             String url = (String)request.getAttribute("javax.servlet.forward.request_uri");
             if (url == null || url.isEmpty()) {
                 url = request.getRequestURI();
             }
-            String pattern = request.getContextPath() + "\\/web(\\/json)?\\/console\\/app\\/(.*)\\/(.*)";
+            // extract appDef from /web/userview, /web/embed/userview, /web/console/app or /web/json/console/app
+            String pattern = request.getContextPath() + "\\/web\\/(userview|embed\\/userview|console\\/app|json\\/console\\/app)\\/(.*)\\/(.*)";
             Matcher m = Pattern.compile(pattern).matcher(url);
             if (m.find()) {
                 String appPath = m.group(2);
                 String[] appPathElements = appPath.split("/");
                 String appId = appPathElements[0];
-                String appVersion = (appPathElements.length > 1) ? appPathElements[1] : null;                
-                AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
-                appDef = appService.getAppDefinition(appId, appVersion);
-            }
-        }
-        if (appDef != null) {
-            // check for custom app admin role assignments
-            Collection<String> adminUserSet = new HashSet<>();
-            Properties props = AppDevUtil.getAppDevProperties(appDef);
-            String roleAdmin = props.getProperty(ROLE_ADMIN);
-            String roleAdminGroup = props.getProperty(ROLE_ADMIN_GROUP);
-            if ((roleAdmin != null && !roleAdmin.isEmpty()) || (roleAdminGroup != null && !roleAdminGroup.isEmpty())) {
-                String[] adminUsers = StringUtils.tokenizeToStringArray(roleAdmin, ";,", true, true);
-                if (adminUsers != null && adminUsers.length > 0) {
-                    adminUserSet.addAll(Arrays.asList(adminUsers));
+                if (!"screenshot".equals(appId)) { // ignore screenshot preview URL
+                    String appVersion = (appPathElements.length > 1) ? appPathElements[1] : null;                
+                    AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+                    appDef = appService.getAppDefinition(appId, appVersion);
                 }
-                String[] adminGroups = StringUtils.tokenizeToStringArray(roleAdminGroup, ";,", true, true);
-                if (adminGroups != null && adminGroups.length > 0) {
-                    UserDao userDao = (UserDao)AppUtil.getApplicationContext().getBean("userDao");
-                    for (String groupId: adminGroups) {
-                        Collection<User> groupUsers = userDao.getUsers(null, null, null, null, groupId, null, "1", null, null, null, null);
-                        for (User user: groupUsers) {
-                            adminUserSet.add(user.getUsername());
+            }
+            if (appDef != null) {
+                // check for custom app admin role assignments
+                Collection<String> adminUserSet = new HashSet<>();
+                Properties props = AppDevUtil.getAppDevProperties(appDef);
+                String roleAdmin = props.getProperty(ROLE_ADMIN);
+                String roleAdminGroup = props.getProperty(ROLE_ADMIN_GROUP);
+                if ((roleAdmin != null && !roleAdmin.isEmpty()) || (roleAdminGroup != null && !roleAdminGroup.isEmpty())) {
+                    String[] adminUsers = StringUtils.tokenizeToStringArray(roleAdmin, ";,", true, true);
+                    if (adminUsers != null && adminUsers.length > 0) {
+                        adminUserSet.addAll(Arrays.asList(adminUsers));
+                    }
+                    String[] adminGroups = StringUtils.tokenizeToStringArray(roleAdminGroup, ";,", true, true);
+                    if (adminGroups != null && adminGroups.length > 0) {
+                        UserDao userDao = (UserDao)AppUtil.getApplicationContext().getBean("userDao");
+                        for (String groupId: adminGroups) {
+                            Collection<User> groupUsers = userDao.getUsers(null, null, null, null, groupId, null, "1", null, null, null, null);
+                            for (User user: groupUsers) {
+                                adminUserSet.add(user.getUsername());
+                            }
                         }
                     }
+                    String currentUsername = WorkflowUtil.getCurrentUsername();
+                    isAppAdmin = adminUserSet.contains(currentUsername);
                 }
-                String currentUsername = WorkflowUtil.getCurrentUsername();
-                return !adminUserSet.contains(currentUsername);
+            }
+            if (isAppAdmin) {
+                // add app admin role to session
+                String key = EnhancedWorkflowUserManager.ROLE_APPADMIN;
+                request.getSession().setAttribute(key, "true");
             }
         }
-        return false;
+
+        return isAppAdmin;
     }    
+    
+    public static boolean isAppAdminRole() {
+        boolean isAppAdmin = false;
+        // check session for app admin role
+        String key = EnhancedWorkflowUserManager.ROLE_APPADMIN;
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            isAppAdmin = Boolean.valueOf((String)request.getSession().getAttribute(key));
+        }
+        return isAppAdmin;        
+    }
     
     public static boolean isSysAdminRoleAvailable() {
         RoleDao roleDao = (RoleDao)AppUtil.getApplicationContext().getBean("roleDao");
@@ -87,12 +110,25 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
             roles.add(ROLE_SYSADMIN);
         }
         
-        // check for app admin role, remove if app admin role configured for specific users
-        if (roles.contains(ROLE_ADMIN) && EnhancedWorkflowUserManager.isAppAdminRoleRestricted()) {
-            roles.remove(ROLE_ADMIN);
+        // add app admin role configured for specific users
+        if (!roles.contains(ROLE_ADMIN) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+            roles.add(ROLE_ADMIN);
+        }
+        if (EnhancedWorkflowUserManager.isAppAdminRole()) {
+            roles.add(EnhancedWorkflowUserManager.ROLE_APPADMIN);
+
+            // set admin role for backward compatibility on plugin webService calls checking for ROLE_ADMIN
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();            
+            String url = (String)request.getAttribute("javax.servlet.forward.request_uri");
+            if (url == null || url.isEmpty()) {
+                url = request.getRequestURI();
+            }
+            if (url.startsWith(request.getContextPath() + "/web/json/plugin/")) {
+                roles.add(ROLE_ADMIN);                
+            }
         }
         
         return roles;
     }
-    
+
 }

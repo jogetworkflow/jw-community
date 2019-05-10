@@ -1,11 +1,12 @@
+<%@page import="org.joget.apps.workflow.security.EnhancedWorkflowUserManager"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:if test="${isQuickEditEnabled || param.webConsole =='true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
-    <c:if test="${isAdmin}">
+    <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
+    <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
         <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
         <script>
             loadCSS("${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css");
@@ -30,10 +31,13 @@
                     <div>
                         <a class="adminBarButton" title="CTRL-3: <fmt:message key='adminBar.label.app.properties'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties')"><i class="fas fa-cog"></i><span><fmt:message key='adminBar.label.app.properties'/></span></a>
                     </div>
+                    <c:if test="${!isCustomAppAdmin}">
                     <div class="separator">
                         <h5><fmt:message key='adminBar.label.system'/></h5>
                     </div> 
+                    </c:if>
                 </c:if>
+                <c:if test="${!isCustomAppAdmin}">
                 <c:if test="${!empty param.appControls || isDefaultUserview}">
                     <div>
                         <a class="adminBarButton" title="CTRL-1: <fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-wrench"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
@@ -48,6 +52,7 @@
                 <div>
                     <a class="adminBarButton" title="CTRL-<c:out value="${key + 3}"/>: <fmt:message key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fas fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
                 </div>
+                </c:if>
             </c:if>
             </div>
             <div id="quickEditModeOption">
