@@ -3,6 +3,14 @@ PropertyEditor.Model = {};
 PropertyEditor.Type = {};
 PropertyEditor.Validator = {};
 
+PropertyEditor.SimpleMode = {
+    render : function(container, options) {
+        options["simpleMode"] = true;
+        options["closeAfterSaved"] = false;
+        $(container).propertyEditor(options);
+    }
+};
+
 PropertyEditor.Popup = {
     propertyDialog : {},
     hasDialog : function(id) {
@@ -1025,7 +1033,8 @@ PropertyEditor.Model.Editor = function(element, options) {
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
     this.saved = false;
-    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="' + get_peditor_msg('peditor.compress') + '"><i class="fas fa-compress" aria-hidden="true"></i></a><a class="expand" title="' + get_peditor_msg('peditor.expand') + '"><i class="fas fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
+    var simplecss = (options.simpleMode)?" simple":"";
+    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container '+simplecss+'" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="' + get_peditor_msg('peditor.compress') + '"><i class="fas fa-compress" aria-hidden="true"></i></a><a class="expand" title="' + get_peditor_msg('peditor.expand') + '"><i class="fas fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
     this.editor = $(this.element).find('div#' + this.editorId);
 };
 PropertyEditor.Model.Editor.prototype = {
@@ -1127,7 +1136,14 @@ PropertyEditor.Model.Editor.prototype = {
             });
         }
         
-        if (this.options.autoSave) {
+        if (this.options.simpleMode) {
+            $(this.editor).on("change", function() {
+                if (thisObject.isChange()) {
+                    console.log("here");
+                    thisObject.save();
+                }
+            });
+        } else if (this.options.autoSave) {
             $(thisObject.editor).css("z-index", "102");
             if ($(thisObject.editor).parent().find(".peautosaveblock").length === 0) {
                 $(thisObject.editor).parent().prepend('<div class="peautosaveblock" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index: 101;"></div>');
@@ -4909,7 +4925,9 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
                 mandatoryMessage: get_peditor_msg('peditor.mandatory'),
                 skipValidation: false,
                 isPopupDialog: false,
-                autoSave: false
+                autoSave: false,
+                simpleMode: false,
+                simpleModeOnChangeCallback: null
             };
             var o = $.extend(true, defaults, options);
             $.ajaxSetup({

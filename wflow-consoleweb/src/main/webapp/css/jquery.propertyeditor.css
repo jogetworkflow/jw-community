@@ -1103,6 +1103,22 @@ body .boxy-wrapper .autosave input {
     margin: 0;
     padding: 0;
 }
+.property-editor-container.simple,
+.property-editor-container.simple .property-editor-property-container{
+    height:auto !important;
+}
+.property-editor-container.simple .property-editor-display,
+.property-editor-container.simple .property-editor-nav,
+.property-editor-container.simple .property-editor-buttons,
+.property-editor-container.simple .property-editor-page-buffer,
+.property-editor-container.simple .property-editor-page-title,
+.property-editor-container.simple .property-editor-page-step-indicator,
+.property-editor-container.simple .property-editor-page-button-panel{
+    display:none !important;
+}
+.property-editor-container.simple .property-page-show {
+    display:block !important;
+}
 /* mobile styles */
 @media screen and (max-width:680px) {
     .property-label-container {
