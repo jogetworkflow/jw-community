@@ -237,6 +237,13 @@ var AdminBar = {
             $("#adminBarButtons a").removeClass("current");
             $(this).addClass("current");
         });
+//        var $quickOverlayFrame;
+//        try {
+//            $quickOverlayFrame = $(parent.document).find("#quickOverlayFrame");
+//        } catch(e) {
+//            // catch cross-domain error
+//        }
+//        if (typeof $quickOverlayFrame == "undefined" || $quickOverlayFrame.length === 0) {
         if (window === parent) {
             $("#adminControl").fadeIn();
         }
@@ -271,8 +278,10 @@ var AdminBar = {
     }
 };
 $(window).on("load", function() {
-    setTimeout(function () {
-        AdminBar.initAdminBar();
-    }, 0);
+    if (window === parent) {
+        setTimeout(function () {
+            AdminBar.initAdminBar();
+        }, 0);
+    }
 });
 
