@@ -1210,13 +1210,16 @@ and dependencies (minified).
 				var offset=draggable.offset(),y=_coordinates(e)[0]-offset.top,x=_coordinates(e)[1]-offset.left;
 				_drag(dragY,dragX,y,x);
 			});
-			$(document).add(eds).bind("mousemove."+namespace+" pointermove."+namespace+" MSPointerMove."+namespace,function(e){
-				if(draggable){
-					var offset=draggable.offset(),y=_coordinates(e)[0]-offset.top,x=_coordinates(e)[1]-offset.left;
-					if(dragY===y && dragX===x){return;} /* has it really moved? */
-					_drag(dragY,dragX,y,x);
-				}
-			}).add(rds).bind("mouseup."+namespace+" touchend."+namespace+" pointerup."+namespace+" MSPointerUp."+namespace,function(e){
+                        if (typeof eds[0] === 'object') {
+                            $(document).add(eds).bind("mousemove."+namespace+" pointermove."+namespace+" MSPointerMove."+namespace,function(e){
+                                    if(draggable){
+                                            var offset=draggable.offset(),y=_coordinates(e)[0]-offset.top,x=_coordinates(e)[1]-offset.left;
+                                            if(dragY===y && dragX===x){return;} /* has it really moved? */
+                                            _drag(dragY,dragX,y,x);
+                                    }
+                            });
+                        };
+                        $(document).add(rds).bind("mouseup."+namespace+" touchend."+namespace+" pointerup."+namespace+" MSPointerUp."+namespace,function(e){
 				if(draggable){
 					_onDragClasses(draggable,"active",o.autoExpandScrollbar); 
 					draggable=null;
