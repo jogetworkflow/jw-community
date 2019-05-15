@@ -1655,6 +1655,9 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
     /* jquery ui */
 
     /* flexigrid tables */
+    body .flexigrid {
+        max-width: 90vw;
+    }
     body .flexigrid div.pDiv .pDiv2 > div:nth-child(10),
     body .flexigrid div.pDiv .pDiv2 > div:nth-child(11){
         display: none;
