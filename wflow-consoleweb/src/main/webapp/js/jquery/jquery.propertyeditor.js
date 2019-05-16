@@ -1811,43 +1811,98 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     buttonProperties = buttonProp;
                 }
             });
-
-            var pageProperties = page.properties.properties;
-            pageProperties = $.grep(pageProperties, function(property) {
-                if (buttonProperties.fields !== undefined && buttonProperties.fields.indexOf(property.name) !== -1) {
-                    if (buttonProperties.require_fields !== undefined && buttonProperties.require_fields.indexOf(property.name) !== -1) {
-                        property.required = "true";
-                    }
-                    return true;
-                }
-                return false;
-            });
-
-            page.validation(function(data) {
-                //popup form for extra input
-                if ($("#" + id + "_form").length === 1) {
-                    var object = $("#" + id + "_form");
-                    $(object).dialog({
-                        modal: true,
-                        width: "70%",
-                        buttons: [{
-                            text: $(button).val(),
-                            click: function() {
-                                page.validation(function(addition_data) {
-                                    data = $.extend(data, addition_data);
-                                    panel.executeButtonEvent(data, $(button));
-                                    $(object).dialog("close");
-                                }, function(errors) {}, true, buttonProperties.addition_fields);
-                            }
-                        }],
-                        close: function(event, ui) {
-                            $(object).dialog("destroy");
+            
+            if (buttonProperties.allFields !== undefined && buttonProperties.allFields === "true") {
+                var deferreds = [];
+                var errors = [];
+                var data = {};
+                
+                var elementId = $(currentPage).attr("elementid");
+                if (elementId !== null && elementId !== undefined) {
+                    var propertyName = $(panel.editor).find("#" + elementId).closest(".property-editor-property").attr("property-name");
+                    var elementSelect = page.editorObject.fields[propertyName];
+                    
+                    var eldata = elementSelect.getData(true);
+                    data = eldata[propertyName]["properties"];
+                    deferreds = elementSelect.validate(eldata, errors, true);
+                } else {
+                    page.editorObject.getData();
+                    $.each(panel.options.propertiesDefinition, function(i, page) {
+                        var p = page.propertyEditorObject;
+                        var deffers = p.validate(data, errors, true);
+                        if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                            deferreds = $.merge(deferreds, deffers);
                         }
                     });
-                } else {
-                    panel.executeButtonEvent(data, $(button));
                 }
-            }, function(errors) {}, true, pageProperties);
+                
+                $.when.apply($, deferreds).then(function() {
+                    if (errors.length > 0) {
+                        page.editorObject.alertValidationErrors(errors);
+                    } else {
+                        //popup form for extra input
+                        if ($("#" + id + "_form").length === 1) {
+                            var object = $("#" + id + "_form");
+                            $(object).dialog({
+                                modal: true,
+                                width: "70%",
+                                buttons: [{
+                                    text: $(button).val(),
+                                    click: function() {
+                                        page.validation(function(addition_data) {
+                                            data = $.extend(data, addition_data);
+                                            panel.executeButtonEvent(data, $(button));
+                                            $(object).dialog("close");
+                                        }, function(errors) {}, true, buttonProperties.addition_fields);
+                                    }
+                                }],
+                                close: function(event, ui) {
+                                    $(object).dialog("destroy");
+                                }
+                            });
+                        } else {
+                            panel.executeButtonEvent(data, $(button));
+                        }
+                    }
+                });
+            } else {
+                var pageProperties = page.properties.properties;
+                pageProperties = $.grep(pageProperties, function(property) {
+                    if (buttonProperties.fields !== undefined && buttonProperties.fields.indexOf(property.name) !== -1) {
+                        if (buttonProperties.require_fields !== undefined && buttonProperties.require_fields.indexOf(property.name) !== -1) {
+                            property.required = "true";
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                page.validation(function(data) {
+                    //popup form for extra input
+                    if ($("#" + id + "_form").length === 1) {
+                        var object = $("#" + id + "_form");
+                        $(object).dialog({
+                            modal: true,
+                            width: "70%",
+                            buttons: [{
+                                text: $(button).val(),
+                                click: function() {
+                                    page.validation(function(addition_data) {
+                                        data = $.extend(data, addition_data);
+                                        panel.executeButtonEvent(data, $(button));
+                                        $(object).dialog("close");
+                                    }, function(errors) {}, true, buttonProperties.addition_fields);
+                                }
+                            }],
+                            close: function(event, ui) {
+                                $(object).dialog("destroy");
+                            }
+                        });
+                    } else {
+                        panel.executeButtonEvent(data, $(button));
+                    }
+                }, function(errors) {}, true, pageProperties);
+            }
             return false;
         });
     },
@@ -2123,7 +2178,7 @@ PropertyEditor.Model.Type.prototype = {
             }
         }
 
-        var html = '<div id="property_' + this.number + '" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
+        var html = '<div id="property_' + this.number + '" property-name="'+this.properties.name+'" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
 
         html += this.renderLabel();
         html += this.renderFieldWrapper();
