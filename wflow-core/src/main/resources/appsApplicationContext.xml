@@ -231,6 +231,13 @@
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
     </bean>
     
+    <bean id="commonTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+        <property name="removeOnCancelPolicy" value="true" />
+        <property name="threadNamePrefix" value="CommonScheduler-" />
+    </bean>
+    
     <bean id="formDataAuditTrailDao" class="org.joget.apps.form.dao.FormDataAuditTrailDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
