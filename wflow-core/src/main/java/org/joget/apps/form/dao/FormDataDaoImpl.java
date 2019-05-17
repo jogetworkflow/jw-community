@@ -1257,21 +1257,25 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     // get JSON
                     String json = formDef.getJson();
                     if (json != null) {
-                        Form form = (Form) getFormService().createElementFromJson(json, false);
-                        Collection<String> tempColumnList = new HashSet<String>();
-                        findAllElementIds(form, tempColumnList);
-                        
-                        LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
-                        for (String c : tempColumnList) {
-                            if (!c.isEmpty()) {
-                                String exist = checkDuplicateMap.get(c.toLowerCase());
-                                if (exist != null && !exist.equals(c)) {
-                                    LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                    columnList.remove(exist);
+                        try {
+                            Form form = (Form) getFormService().createElementFromJson(json, false);
+                            Collection<String> tempColumnList = new HashSet<String>();
+                            findAllElementIds(form, tempColumnList);
+
+                            LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                            for (String c : tempColumnList) {
+                                if (!c.isEmpty()) {
+                                    String exist = checkDuplicateMap.get(c.toLowerCase());
+                                    if (exist != null && !exist.equals(c)) {
+                                        LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                        columnList.remove(exist);
+                                    }
+                                    checkDuplicateMap.put(c.toLowerCase(), c);
+                                    columnList.add(c);
                                 }
-                                checkDuplicateMap.put(c.toLowerCase(), c);
-                                columnList.add(c);
                             }
+                        } catch (Exception e) {
+                            LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
                         }
                     }
                 }
