@@ -153,6 +153,12 @@ body:not(#login) #footer {
     background: #004d40;
     color: #fff;
 }
+#nav-list li.divider {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: #aaa;
+    height: 2px;
+}
 #nav-list .nav-steps {
     position: absolute;
     top: 10px;
