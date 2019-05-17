@@ -1,19 +1,19 @@
+/* app center */
 body:not(.popupBody) {
     background-color: #f8f8f8;
 }
-body:not(#login) #content > main > div:not(.quickEdit),
-body:not(#login) #content > main > table {
-    background: 0;
+body:not(#login) #content > main > div:not(.quickEdit), body:not(#login) #content > main > table {
+    background: none;
 }
 body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     text-transform: uppercase;
 }
 #search {
     position: relative;
-    margin: 0 auto 30px;
+    margin: 0px auto 30px;
     width: 165px;
 }
-#search .filterform {
+#search .filterform{
     position: relative;
     display: block;
 }
@@ -23,16 +23,15 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     max-width: inherit;
     padding-left: 25px;
 }
-#search .filterlabel {
+#search .filterlabel{
     position: absolute;
     left: 5px;
-    top: 5px;
+    top:5px;
 }
 #apps {
-    max-width: 88%;
+    max-width:88%;
     margin: 0 auto;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 0;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -40,33 +39,32 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
 #apps li {
     width: 140px;
     height: 220px;
-    box-shadow: none;
-    border-radius: 0;
+    box-shadow: 0px 0px 1px 1px #ddd;
+    border-radius: 4px;
     overflow: hidden;
-    background: 0;
+    background: #ffffff;
     display: block;
     margin: 0 20px 50px;
     position: relative;
 }
 #apps li.grid-dummy-fix {
-    height: 1px !important;
-    border: 0 !important;
-    margin-bottom: 0 !important;
-    box-shadow: none;
+    height:1px !important;
+    border:0 !important; 
+    margin-bottom:0 !important;
+    box-shadow:none;
     background: transparent;
 }
 #apps li:hover {
-    box-shadow: none;
+    box-shadow: 0px 0px 1px 2px #ccc;
 }
 #apps span.userview-icon {
     display: inline-block;
-    height: 140px;
-    width: 140px;
+    height: 120px;
+    width: 120px;
     overflow: hidden;
     float: left;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border: 0;
+    margin: 10px;
+    border: none;
     box-shadow: none;
     background-size: cover;
     background-repeat: no-repeat;
@@ -83,7 +81,7 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     font-size: 13px;
     color: #555;
     word-wrap: break-word;
-    padding: 0 5px;
+    padding: 0px 5px;
     text-align: center;
     max-height: 39px;
     overflow: hidden;
@@ -103,10 +101,10 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     color: #999;
 }
 #apps div.userview-summary {
-    background-color: #eee;
-    display: none;
-    position: absolute;
-    width: 100px;
+    background-color: #eeeeee; 
+    display: none; 
+    position: absolute; 
+    width: 100px; 
     height: 70px;
     padding: 10px;
     text-align: center;
@@ -121,17 +119,17 @@ a.print-button {
 }
 .app-design-button {
     cursor: pointer;
-    background: #37c8a9;
+    background: #37C8A9;
     padding: 4px;
-    color: #fff;
+    color: white;
     border-radius: 12px;
     margin-top: 4px;
     position: absolute;
     display: none;
-    box-shadow: #666 1px 1px 2px 0;
+    box-shadow: #666 1px 1px 2px 0px;
     bottom: 3px;
     right: 4px;
-}
+}    
 .app-design-button i {
     display: inline-block;
     width: 1.25em;
@@ -150,25 +148,33 @@ div#apps_section {
 }
 body #form-canvas .form-section {
     padding: 10px;
-    border: 0;
+    border: none;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 0px;
     background: inherit;
 }
 #sidebar {
-    border-right: 0;
+    border-right: 0px;
 }
+
+/** banner positioning **/
 div#appcenter_banner {
     position: absolute;
     top: -95px;
     left: -15%;
     width: 130%;
 }
+
+/* banner */
 body #page header.navbar {
     box-shadow: none;
 }
+body.horizontal_menu.inline_menu #sidebar {
+}
+header.navbar .header-nav {
+}
 #banner {
-    background: url(/jw/home/banner7.jpg) #ff7bac;
+    background: url(/jw/home/banner7.jpg) #FF7BAC no-repeat center;
     background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
@@ -176,8 +182,8 @@ body #page header.navbar {
     width: 100%;
 }
 #banner h1 {
-    background: 0;
-    color: #fff;
+    background: none;
+    color: white;
     margin: auto;
     width: max-content;
     text-align: center;
@@ -186,27 +192,31 @@ body #page header.navbar {
     top: -40px;
     z-index: 500;
 }
-div#banner h1 a {
+#banner h1 a {
     color: white;
 }
 body#home ul.breadcrumb {
     display: none;
 }
+
+/* footer */
 body > #page > footer {
     position: fixed;
-    bottom: 0;
-    padding: 0;
+    bottom: 0px;
+    padding: 0px;
     width: 100%;
     background: #ddd;
     opacity: 0.7;
     font-size: 10px;
 }
+
+/* help hint icon */
 #main-action-help {
     display: block;
     width: 18px;
     height: 18px;
     cursor: pointer;
-    margin: 0;
+    margin: 0px;
     position: absolute;
     right: -8px;
     top: -267px;
@@ -216,28 +226,14 @@ body > #page > footer {
     font-size: 20px;
     line-height: 20px;
 }
-body#home div#brand_logo img {
-    display: block;
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    width: 300px;
+
+/** mobile view **/
+@media (max-width:900px) {
+    #page #banner h1 {
+        width: 400px;
+    }    
 }
-body#home div#clock {
-    position: absolute;
-    right: 580px;
-    height: 200px;
-    display: block;
-    top: 50px;
-    width: auto;
-    color: #fff;
-    font-size: 64px;
-}
-body div#brand_logo img,
-body #clock {
-    display: none;
-}
-@media (max-width: 767px) {
+@media (max-width:767px) {
     #apps li {
         float: none;
         display: inline-block;
@@ -251,122 +247,29 @@ body #clock {
     }
     #apps span.userview-icon {
         float: none;
-        margin: auto;
+        margin: 10px auto;
     }
     #apps {
         max-width: 100%;
     }
-    #apps li {
+    #apps li{
         margin: 10px 2%;
     }
     #page #banner h1 {
-        padding-top: 0;
+        padding-top: 5px;
         position: relative;
-        top: 0;
+        top: 0px;
         z-index: 100;
-    }
+    }    
     body#home #page #banner {
         background-size: cover;
     }
     body > #page > footer {
         display: none;
-    }
+    }    
     #page #appcenter_admin {
         top: -120px;
         display: none;
     }
 }
-@media (max-width: 900px) {
-    #page #banner h1 {
-        width: 300px;
-    }
-}
-@media (max-width: 1024px) {
-    body #page div#brand_logo,
-    body #page div#clock {
-        display: none;
-    }
-    #page #banner h1 {
-        top: 80px;
-    }
-}
-@media (min-width: 1025px) {
-    body#home div.home_banner {
-        float: left;
-        width: calc(100% - 550px);
-    }
-    body#home div#banner {
-        height: 100vh;
-        width: 100%;
-    }
-    body#home #page header.navbar {
-        width: 550px;
-        float: right;
-    }
-    body#home.horizontal_menu #main {
-        width: 550px;
-        float: right;
-        display: table-cell;
-        height: 88vh;
-        overflow: auto;
-        padding-bottom: 20px;
-    }
-    body#home div#header-name img {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        display: none;
-    }
-    body#home #header-name a#header-link {
-        position: fixed;
-        top: 10px;
-        left: 40px;
-        display: none;
-    }
-    body#home div#main-action-help {
-        top: 20px;
-        right: 580px;
-        position: fixed;
-        z-index: 200;
-    }
-    ul#apps {
-        max-width: 92%;
-    }
-    ul#apps li {
-        box-shadow: none;
-        background: 0;
-        width: 100px;
-        height: 170px;
-        margin: 0 12px 30px;
-    }
-    #apps span.userview-icon {
-        border-radius: 0;
-        height: 100px;
-        width: 100px;
-    }
-    ul#apps li:hover {
-        box-shadow: none;
-    }
-    div #appcenter_admin a {
-        font-size: 12px;
-    }
-    body#home div#banner h1 {
-        position: absolute;
-        top: 40%;
-        height: 200px;
-        max-width: 400px;
-        left: 15%;
-        font-size: 28px;
-        color: white;
-    }
-}
-@media (min-width: 1281px) {
-    body#home div#banner h1 {
-        left: 20%;
-    }
-}
-@media (min-width: 1601px) {
-    body#home div#banner h1 {
-        left: 25%;
-    }
-}
+

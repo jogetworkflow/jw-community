@@ -46,7 +46,7 @@ var AppCenter = {
         // load JSON
         $.ajax({ 
             url : jsonUrl,
-            dataType:'jsonp',
+            dataType:'json',
             success:function(data) {
                 var content = "";
                 var urlParams = UrlUtil.getUrlParams(location.href);
@@ -144,7 +144,38 @@ var AppCenter = {
             HelpGuide.show();
             HelpGuide.reposition();
         }
-    }
+    },
+    updateClock: function(clock){
+        var date = new Date();
+        var ampm = date.getHours() < 12 ? 'AM' : 'PM';
+        var hours = date.getHours() == 0
+                  ? 12
+                  : date.getHours() > 12
+                    ? date.getHours() - 12
+                    : date.getHours();
+        var minutes = date.getMinutes() < 10 
+                    ? '0' + date.getMinutes() 
+                    : date.getMinutes();
+        $(clock).text(hours + ":" + minutes + " " + ampm);
+    },
+    updateNotifications: function(banner) {
+        $("li a.refresh").click();
+        setTimeout(function() {
+            var $messageSpan = $("li.dropdown-menu-title span");
+            if ($messageSpan.length > 0) {
+                var message = $messageSpan.text();
+                var html = $messageSpan.html();
+                if (message  === "You have 1 assignments.") {
+                    message = "You have 1 assignment.";
+                    html.replace("assignments", "assignment");
+                    $messageSpan.html(html);
+                }
+                var newHtml = '<a href="_ja_inbox">' + html + '</a>';
+                $(banner).html(newHtml);
+            }
+        }, 3000);
+    },
+    showNotifications: false
 }
 $(function() {
     if (window.self === window.top) {
@@ -154,6 +185,20 @@ $(function() {
         }, 500);
     } else {
         $("#main-action-help").hide();
+    }
+    var clock = $("#clock");
+    if (clock.length > 0) {
+        AppCenter.updateClock(clock);
+        window.setInterval(function() {
+            AppCenter.updateClock(clock);
+        }, 1000);        
+    }
+    var banner = $("#banner h1");
+    if (AppCenter.showNotifications && banner.length > 0) {
+        AppCenter.updateNotifications(banner);
+        window.setInterval(function() {
+            AppCenter.updateNotifications(banner);
+        }, 30000);
     }
 });
 //AppCenter.searchFilter($("#search"), $("#apps")); 
