@@ -60,11 +60,11 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
 }
 #apps span.userview-icon {
     display: inline-block;
-    height: 140px;
-    width: 140px;
+    height: 120px;
+    width: 120px;
     overflow: hidden;
     float: left;
-    margin-right: 10px;
+    margin-right: 20px;
     margin-bottom: 10px;
     border: 0;
     box-shadow: none;
