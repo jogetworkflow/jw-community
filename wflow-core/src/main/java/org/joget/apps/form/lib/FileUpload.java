@@ -79,6 +79,15 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         Map<String, String> filePaths = new LinkedHashMap<String, String>();
         
         String primaryKeyValue = getPrimaryKeyValue(formData);
+        if (primaryKeyValue == null) {
+            String filePathPostfix = "_path";
+            String id = FormUtil.getElementParameterName(this);
+            String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
+            if (tempExisting != null) {
+                values = tempExisting;
+            }
+        }
+        
         String formDefId = "";
         Form form = FormUtil.findRootForm(this);
         if (form != null) {

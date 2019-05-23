@@ -8,7 +8,7 @@ ECHO.
 
 REM Stop Tomcat
 set JAVA_HOME=.\jre11.0.2
-set CATALINA_HOME=.\apache-tomcat-8.5.38
+set CATALINA_HOME=.\apache-tomcat-8.5.41
 ECHO == Stopping Tomcat from %CATALINA_HOME% ==
 ECHO.
 %CATALINA_HOME%\bin\shutdown.bat

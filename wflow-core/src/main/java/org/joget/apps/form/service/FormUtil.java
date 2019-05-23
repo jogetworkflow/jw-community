@@ -2,11 +2,13 @@ package org.joget.apps.form.service;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -533,16 +535,22 @@ public class FormUtil implements ApplicationContextAware {
                     if (element.getStoreBinder() == null && (storeBinderProp == null 
                             || "".equals(storeBinderProp.get(FormUtil.PROPERTY_CLASS_NAME)))) {
                         try {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             // create json object
                             JSONArray jsonArray = new JSONArray();
                             for (FormRow row : elementResult) {
                                 JSONObject jsonObject = new JSONObject();
                                 for (Map.Entry entry : row.entrySet()) {
                                     String key = (String) entry.getKey();
-                                    String value = (String) entry.getValue();
+                                    String value = "";
+                                    if (entry.getValue() instanceof Date) {
+                                        value = sdf.format((Date) entry.getValue());
+                                    } else {
+                                        value = (String) entry.getValue();
+                                    }
                                     jsonObject.put(key, value);
                                 }
-                                
+
                                 //File upload is not support when no binder is set.
                                 jsonArray.put(jsonObject);
                             }
