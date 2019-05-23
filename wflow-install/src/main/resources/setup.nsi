@@ -349,10 +349,9 @@ Section "Uninstall"
   RMDir /r "$SMPROGRAMS\Joget DX 7"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
-  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.41\webapps\jw.war
-    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
-    StrCpy $EXISTING_TOMCAT_VERSION "8.5.41"  
-
+  RmDir /r "$INSTDIR\jre11.0.2"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.41\webapps\jw"
+  Delete "$INSTDIR\apache-tomcat-8.5.41\webapps\jw.war"
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\NOTICE.txt"
@@ -389,7 +388,3 @@ Function un.onInit
   !insertmacro MUI_UNGETLANGUAGE
 
 FunctionEnd
-  RmDir /r "$INSTDIR\jre11.0.2"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.41\webapps\jw"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.41\webapps\jwdesigner"
-  Delete "$INSTDIR\apache-tomcat-8.5.41\webapps\jw.war"
