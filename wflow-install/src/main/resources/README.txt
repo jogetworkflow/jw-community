@@ -4,7 +4,7 @@ README
 
 Prerequisites:
 --------------
-- Java 7 and above
+- Java 8 and above
 - MySQL 5 and above
 
 
