@@ -60,11 +60,12 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
 }
 #apps span.userview-icon {
     display: inline-block;
-    height: 120px;
-    width: 120px;
+    height: 100px;
+    width: 100px;
     overflow: hidden;
     float: left;
     margin-right: 20px;
+    margin-left: 20px;
     margin-bottom: 10px;
     border: 0;
     box-shadow: none;
@@ -343,6 +344,7 @@ body #clock {
         border-radius: 0;
         height: 100px;
         width: 100px;
+        margin-left: 0px;
     }
     ul#apps li:hover {
         box-shadow: none;
