@@ -175,7 +175,7 @@ var AppCenter = {
             }
         }, 3000);
     },
-    showNotifications: false
+    showNotifications: true
 }
 $(function() {
     if (window.self === window.top) {
