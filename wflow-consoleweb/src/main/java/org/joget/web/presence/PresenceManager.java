@@ -217,6 +217,8 @@ public class PresenceManager {
             @Override
             public void onTimeout(AsyncEvent event) throws IOException {
                 asyncContexts.remove(key);
+                // close the request and the context gracefully to avoid net:ERR_INCOMPLETE_CHUNKED_ENCODING
+                event.getAsyncContext().complete();                
             }
         });
 
