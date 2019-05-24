@@ -184,7 +184,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
             icon = userviewSetting.getPropertyString("userview_thumbnail");
         }
-        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/";
+        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/index";
         String primaryColor = getPrimaryColor();
         String backgroundColor = "#FFFFFF";
         String scope = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
@@ -215,7 +215,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         String contextPath = request.getContextPath();
         String pathName = getPathName();
-        String startUrl = contextPath + "/web/userview/" + appId + "/" + userviewId + "/_/";
+        String startUrl = contextPath + "/web/userview/" + appId + "/" + userviewId + "/_/index";
         String urlsToCache = 
             "'" + startUrl + "'," +
             "'" + contextPath + "/wro/common.css'," +
