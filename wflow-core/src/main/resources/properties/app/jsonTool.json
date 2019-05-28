@@ -90,6 +90,7 @@
     {
         name : 'debugMode',
         label : '@@app.jsontool.debugMode@@',
+        description : '@@app.jsontool.debugMode.desc@@',
         type : 'checkbox',
         options : [{
             value : 'true',

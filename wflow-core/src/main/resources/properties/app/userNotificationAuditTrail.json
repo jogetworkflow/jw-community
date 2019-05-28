@@ -14,6 +14,7 @@
     {
         name : 'emailMessage',
         label : '@@app.usernotificationaudittrail.message@@',
+        description : '@@app.usernotificationaudittrail.message.desc@@',
         type : 'textarea',
         cols : '60',
         rows : '15',
@@ -40,6 +41,7 @@
     {
         name : 'urlName',
         label : '@@app.usernotificationaudittrail.urlName@@',
+        description : '@@app.usernotificationaudittrail.urlName.desc@@',
         type : 'textfield'
     },
     {
@@ -80,21 +82,25 @@
     {
         name : 'from',
         label : '@@app.usernotificationaudittrail.from@@',
+        description : '@@app.usernotificationaudittrail.from.desc@@',
         type : 'textfield'
     },
     {
         name : 'host',
         label : '@@app.usernotificationaudittrail.host@@',
+        description : '@@app.usernotificationaudittrail.host.desc@@',
         type : 'textfield'
     },
     {
         name : 'port',
         label : '@@app.usernotificationaudittrail.port@@',
+        description : '@@app.usernotificationaudittrail.port.desc@@',
         type : 'textfield'
     },
     {
         name : 'security',
         label : '@@app.usernotificationaudittrail.security@@',
+        description : '@@app.usernotificationaudittrail.security.desc@@',
         type : 'selectbox',
         options : [{
             value : '',
@@ -199,6 +205,7 @@
     },
     {
         label : '@@app.emailtool.ics@@',
+        description : '@@app.emailtool.ics.desc@@',
         type : 'header'
     },
     {
@@ -319,6 +326,7 @@
     properties : [{
         name : 'exclusion',
         label : '@@app.usernotificationaudittrail.activityExclusion@@',
+        description : '@@app.usernotificationaudittrail.activityExclusion.desc@@',
         type : 'multiselect',
         size : '10',
         options_ajax : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.UserNotificationAuditTrail/service?action=getActivities'

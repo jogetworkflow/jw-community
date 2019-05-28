@@ -47,22 +47,26 @@
     properties : [{
         name : 'from',
         label : '@@app.emailtool.from@@',
-        type : 'textfield'
+        type : 'textfield',
+        description : '@@app.emailtool.from.desc@@'
     },
     {
         name : 'host',
         label : '@@app.emailtool.host@@',
-        type : 'textfield'
+        type : 'textfield',
+        description : '@@app.emailtool.host.desc@@'
     },
     {
         name : 'port',
         label : '@@app.emailtool.port@@',
-        type : 'textfield'
+        type : 'textfield',
+        description : '@@app.emailtool.port.desc@@'
     },
     {
         name : 'security',
         label : '@@app.emailtool.security@@',
         type : 'selectbox',
+        description : '@@app.emailtool.security.desc@@',
         options : [{
             value : '',
             label : ''
@@ -154,7 +158,8 @@
     },
     {
         label : '@@app.emailtool.ics@@',
-        type : 'header'
+        type : 'header',
+        description : '@@app.emailtool.ics.desc@@'
     },
     {
         name : 'icsAttachement',

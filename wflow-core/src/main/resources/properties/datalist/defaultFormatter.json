@@ -56,11 +56,13 @@
             {
                 name:'size',
                 label:'@@datalist.defaultformatter.fontSize@@',
+                description:'@@datalist.defaultformatter.fontSize.desc@@',
                 type:'textfield'
             },
             {
                 name:'color',
                 label:'@@datalist.defaultformatter.fontColorCode@@',
+                description:'@@datalist.defaultformatter.fontColorCode.desc@@',
                 type:'textfield'
             },
             {
