@@ -44,6 +44,10 @@ public interface EmploymentDao {
     Collection<Employment> getEmploymentsNoHaveOrganization(String filterString, String sort, Boolean desc, Integer start, Integer rows);
 
     Long getTotalEmploymentsNoHaveOrganization(String filterString);
+    
+    Collection<Employment> getEmploymentsNotInOrganization(String filterString, String organizationId, String sort, Boolean desc, Integer start, Integer rows);
+
+    Long getTotalEmploymentsNotInOrganization(String filterString, String organizationId);
 
     Collection<Employment> getEmploymentsNotInDepartment(String filterString, String organizationId, String departmentId, String sort, Boolean desc, Integer start, Integer rows);
 

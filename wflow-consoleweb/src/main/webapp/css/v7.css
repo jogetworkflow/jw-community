@@ -954,6 +954,21 @@ fieldset legend,
     font-style: italic;
     color: #999;
 }
+.form-input a i {
+    font-style: normal;
+    color: yellowgreen;
+}
+.form-input a.delete i {
+    color:red;
+}
+.form-input a.delete{
+    display: inline-block;
+    margin-right: 10px;
+}
+.form-input a.add{
+    display: inline-block;
+    margin-left: 3px;
+}
 .form-row .form-input.withPrefix {
     position: relative;
 }
