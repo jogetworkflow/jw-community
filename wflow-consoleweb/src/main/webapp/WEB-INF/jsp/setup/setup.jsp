@@ -272,8 +272,8 @@
                             $("#dbPort").val("1521");
                             dbPort = 1521;
                         }
-                        $("#jdbcUrl").val("jdbc:oracle:thin:@" + dbHost + ":" + dbPort + ":" + dbName);
-                        $("#jdbcFullUrl").val("jdbc:oracle:thin:@" + dbHost + ":" + dbPort + ":" + dbName);
+                        $("#jdbcUrl").val("jdbc:oracle:thin:@" + dbHost + ":" + dbPort + "/" + dbName);
+                        $("#jdbcFullUrl").val("jdbc:oracle:thin:@" + dbHost + ":" + dbPort + "/" + dbName);
                     } else if (dbType === "sqlserver") {
                         $("#jdbcSetup").hide();
                         $("#dbSetup").show();
