@@ -569,7 +569,9 @@ public class StandardPanelValidator implements PanelValidator {
         if (!isValid) {
             XMLBasicPanel.errorMessage(pnl.getWindow(), ResourceManager.getLanguageDependentString("ErrorMessageKey"), "",
                     ResourceManager.getLanguageDependentString(XPDLValidationErrorIds.ERROR_INVALID_ID));
-            idPanel.requestFocus();
+            if (idPanel != null) {
+                idPanel.requestFocus();
+            }
             return false;
         }
 
