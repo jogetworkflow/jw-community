@@ -109,6 +109,7 @@
     font-size: 16px;
     display:block;
     position: relative;
+    box-sizing: border-box;
 }
 
 .single-page .property-editor-page-title h1{
