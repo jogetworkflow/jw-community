@@ -770,7 +770,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
                     }
                 }
 
-                if (offset > 0 && descr.getWeight() > desiredWeight) {
+                if (descr != null && offset > 0 && descr.getWeight() > desiredWeight) {
                     return matches[offset-1];
                 } else {
                     return descr;
