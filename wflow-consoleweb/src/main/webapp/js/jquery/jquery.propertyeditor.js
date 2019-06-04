@@ -1192,6 +1192,19 @@ PropertyEditor.Model.Editor.prototype = {
                 $(thisObject.editor).addClass("pediting");
                 $(thisObject.editor).parent().find(".peautosaveblock").show();
             }).on("mouseleave", function(event) {
+                //check cursor position still within editor
+                var e = event || window.event;
+                e = jQuery.event.fix(e);
+                
+                var pageX = e.pageX;
+                var pageY = e.pageY;
+                
+                var offset = $(thisObject.editor).offset();
+                if (!(pageY < offset.top || pageY > (offset.top + $(thisObject.editor).height())
+                        || pageX < offset.left || pageX > (offset.left + $(thisObject.editor).width()))) {
+                    return;
+                }
+                
                 if ($(thisObject.editor).hasClass("pediting") && thisObject.isChange()) {
                     thisObject.save();
                 } else {
