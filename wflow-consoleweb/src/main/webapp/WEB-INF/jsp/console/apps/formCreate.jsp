@@ -32,7 +32,7 @@
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.form.common.label.tableName"/></label>
-                    <span class="form-input"><form:input path="tableName" cssErrorClass="form-input-error" maxlength="28" autocomplete="off"/> *</span>
+                    <span class="form-input withPrefix large"><span class="prefix">app_fd_</span><form:input path="tableName" cssErrorClass="form-input-error" maxlength="28" autocomplete="off"/> *</span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="form.form.description"/></label>

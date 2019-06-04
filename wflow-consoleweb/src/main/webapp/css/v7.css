@@ -988,6 +988,12 @@ fieldset legend,
     padding-left: 55px;
     box-sizing: border-box;
 }
+.form-row .form-input.withPrefix.large .prefix {
+    width: 65px;
+}
+.form-row .form-input.withPrefix.large input {
+    padding-left: 70px;
+}
 .row-content dl dt{
     width: 180px;
     margin-right: 15px;

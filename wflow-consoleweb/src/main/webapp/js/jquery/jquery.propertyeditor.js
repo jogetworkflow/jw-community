@@ -2107,6 +2107,7 @@ PropertyEditor.Model.Type = function(page, number, prefix, properties, value, de
     this.isDataReady = true;
 };
 PropertyEditor.Model.Type.prototype = {
+    supportPrefix : false,
     initialize: function() {},
     validate: function(data, errors, checkEncryption) {
         var wrapper = $('#' + this.id + '_input');
@@ -2279,7 +2280,17 @@ PropertyEditor.Model.Type.prototype = {
     },
     renderFieldWrapper: function() {
         var html = '<div id="' + this.id + '_input" class="property-input">';
+        
+        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
+            html += '<span class="withPrefix"><span class="prefix">'+this.properties.prefix+'</span>';
+        }
+        
         html += this.renderField();
+        
+        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
+            html += '</span>';
+        }
+        
         html += this.renderDefault();
         html += '</div>';
         return html;
@@ -2296,6 +2307,11 @@ PropertyEditor.Model.Type.prototype = {
     },
     initDefaultScripting: function() {
         PropertyEditor.Util.handleOptionsField(this);
+        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
+            var container = $("#" + this.id).closest(".property-input");
+            var prefixWidth = $(container).find(".withPrefix .prefix").outerWidth(true);
+            $(container).find(".withPrefix input").css("padding-left", (prefixWidth + 5) + "px");
+        }
     },
     initScripting: function() {},
     handleAjaxOptions: function(options, reference) {
@@ -2360,6 +2376,7 @@ PropertyEditor.Type.Label = PropertyEditor.Util.inherit(PropertyEditor.Model.Typ
 PropertyEditor.Type.Readonly = function() {};
 PropertyEditor.Type.Readonly.prototype = {
     shortname: "readonly",
+    supportPrefix: true,
     renderField: function() {
         if (this.value === null) {
             this.value = "";
@@ -2381,6 +2398,7 @@ PropertyEditor.Type.Readonly = PropertyEditor.Util.inherit(PropertyEditor.Model.
 PropertyEditor.Type.TextField = function() {};
 PropertyEditor.Type.TextField.prototype = {
     shortname: "textfield",
+    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {
@@ -2404,6 +2422,7 @@ PropertyEditor.Type.TextField = PropertyEditor.Util.inherit(PropertyEditor.Model
 PropertyEditor.Type.Number = function() {};
 PropertyEditor.Type.Number.prototype = {
     shortname: "number",
+    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {
@@ -4823,6 +4842,7 @@ PropertyEditor.Type.AutoComplete = function() {};
 PropertyEditor.Type.AutoComplete.prototype = {
     shortname: "autocomplete",
     source: [],
+    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {

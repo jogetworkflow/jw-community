@@ -289,6 +289,23 @@
     color:#888888;
 }
 
+.property-input .withPrefix{
+    position: relative;
+    display: block;
+}
+
+.property-input .withPrefix .prefix{
+    position: absolute;
+    background: #ccc;
+    padding: 6px 8px 7px;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.property-input .withPrefix input{
+    box-sizing: border-box;
+}
+
 .property-input .default .label{
     display:inline-block;
     margin-left: 2px;
