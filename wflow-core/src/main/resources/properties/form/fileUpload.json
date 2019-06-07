@@ -65,6 +65,37 @@
         }]
     },
     {
+        label : '@@form.fileupload.resize@@',
+        type : 'header'
+    },
+    {
+        name : 'resizeWidth',
+        label : '@@form.fileupload.resizeWidth@@',
+        type : 'textfield'
+    },
+    {
+        name : 'resizeHeight',
+        label : '@@form.fileupload.resizeHeight@@',
+        type : 'textfield'
+    },
+    {
+        name : 'resizeQuality',
+        label : '@@form.fileupload.resizeQuality@@',
+        type : 'textfield',
+        value : '0.8'
+    },
+    {
+        name:'resizeMethod',
+        label:'@@form.fileupload.resizeMethod@@',
+        type:'selectbox',
+        value : '',
+        options : [{
+            value : '', label : '@@form.fileupload.contain@@'
+        },{
+            value : 'crop', label : '@@form.fileupload.crop@@'
+        }]
+    },
+    {
         label : '@@form.section.permission@@',
         type : 'header'
     },

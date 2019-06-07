@@ -70,7 +70,11 @@
                     fileType : "${element.properties.fileType!}",
                     fileTypeMsg : "${element.properties.fileTypeMsg!}",
                     padding : "${element.properties.padding!}",
-                    removeFile : "${element.properties.removeFile!}"
+                    removeFile : "${element.properties.removeFile!}",
+                    resizeWidth : "${element.properties.resizeWidth!}",
+                    resizeHeight : "${element.properties.resizeHeight!}",
+                    resizeQuality : "${element.properties.resizeQuality!}",
+                    resizeMethod : "${element.properties.resizeMethod!}"
                 });
             });
         </script>
