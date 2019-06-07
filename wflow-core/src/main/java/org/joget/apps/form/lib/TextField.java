@@ -97,7 +97,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
                     }
                 }
                 
-                if ("true".equalsIgnoreCase(getPropertyString("encryption"))) {
+                if (!FormUtil.isReadonly(this, formData) && "true".equalsIgnoreCase(getPropertyString("encryption"))) {
                     value = SecurityUtil.encrypt(value);
                 }
                 
