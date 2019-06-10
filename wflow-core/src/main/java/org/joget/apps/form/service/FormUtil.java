@@ -2137,8 +2137,12 @@ public class FormUtil implements ApplicationContextAware {
                 for (Object p : r.getCustomProperties().keySet()) {
                     obj.put(p.toString(), r.getProperty(p.toString()));
                 }
-                obj.put(FormUtil.PROPERTY_DATE_CREATED, r.getDateCreated());
-                obj.put(FormUtil.PROPERTY_DATE_MODIFIED, r.getDateModified());
+                if (r.getDateCreated() != null) {
+                    obj.put(FormUtil.PROPERTY_DATE_CREATED, r.getDateCreated());
+                }
+                if (r.getDateModified() != null) {
+                    obj.put(FormUtil.PROPERTY_DATE_MODIFIED, r.getDateModified());
+                }
                 
                 if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
                     JSONObject filePaths = new JSONObject();
