@@ -2,6 +2,25 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.19
+=================
+6b7d45ae Fixed: wflow-plugin-base - Plugin Manager - OSGI plugin does not show as Uninstallable. 6.0-SNAPSHOT
+55e88aef Fixed: wflow-core - FormUtil - dateCreated & dateModified from JDBC binder is not handle correctly. #6527 6.0-SNAPSHOT
+48678eee Fixed: wflow-core - Text Field - Encryption is not handled correctly for readonly. #6577 6.0-SNAPSHOT
+e44e19c7 Fixed: wflow-consoleweb - Process Builder - Process Deadline duration unit "yyyy-MM-dd HH:mm" reverts to "yyyy-MM-dd" after save. #6571 6.0-SNAPSHOT
+bf6d397f Fixed: wflow-designer/wflow-core - Correction for d83450a. Fixed possible NPE. 6.0-SNAPSHOT
+d83450ac Fixed: wflow-designer/wflow-core - Fixed possible NPE. 6.0-SNAPSHOT
+5997a1f9 Modified: wflow-consoleweb - MS SQL Server - Updated DDL schema SQL @6.0-SNAPSHOT
+9436b91c Modified: wflow-consoleweb - Oracle - Updated DDL schema SQL @6.0-SNAPSHOT
+6480118b Modified: wflow-install - Installer - Updated README to indicate Java 8 as minimum requirement @6.0-SNAPSHOT
+3d179670 Modified: wflow-install - Upgraded to Apache Tomcat 8.5.41 @6.0-SNAPSHOT
+31674f6a Fixed: wflow-core - Grid - Data type exception when grid does not having store binder and dateCreated/dateModified is used as grid column. #6529 @6.0-SNAPSHOT
+592b28d8 Fixed: wflow-core - File Upload - File not store when form having partially store enabled Multi Paged Form element. #6520 @6.0-SNAPSHOT
+90cd319a Fixed: wflow-consoleweb: Update ace editor to 1.4.4 to fix IOS not rendering editor issue. @6.0-SNAPSHOT
+f6d82aaf Fixed: wflow-consoleweb - Process Builder - Participants of removed process is not clean from XPDL and causing App Generator fail to regenerate the same process. #6460 @6.0-SNAPSHOT
+85c8acf9 Fixed: wflow-consoleweb - Process Builder - Not able to deploy after update from "Debug" textarea. @6.0-SNAPSHOT
+fce9062d Fixed: wflow-core - Date Picker - Picker is covered by on-screen keyboard on IOS. #6461 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.18
 =================
 c0dccae3 Fixed: wflow-consoleweb - Form - Header title is not allowed to put HTML tag. #6393 @6.0-SNAPSHOT
