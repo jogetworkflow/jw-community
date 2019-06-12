@@ -8,9 +8,9 @@
     <name>wflow-designer</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
-        <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
-        <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
+        <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
+        <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
+        <url>ssh://git@repo.joget.org:2224/joget/jw-community.git</url>
       <tag>HEAD</tag>
   </scm>
     <build>
