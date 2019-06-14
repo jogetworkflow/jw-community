@@ -5,44 +5,6 @@
         padding: 0px;
     }
 </style>
-<script>
-    (function ($) {
-        jQuery.expr[':'].Contains = function(a,i,m){ 
-            return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
-        };
-
-        function listFilter(header, list) {
-            var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
-            input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-            $(form).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).append(input).appendTo(header);
-            $(input) .change( function () { 
-                var filter = $(this).val();
-                if(filter) { 
-                    $(list).find("a:not(:Contains(" + filter + "))").parent().slideUp();
-                    $(list).find("a:Contains(" + filter + ")").parent().slideDown();
-                } else {
-                    $(list).find("li").slideDown();
-                }
-                return false;
-            }) .keyup( function () { 
-                $(this).change();
-            });
-        }
-
-        $(function () {
-            <c:forEach items="${builders}" var="builderEntry">
-                listFilter($("#nv-${builderEntry.value.objectName} h4"), $("#nv-${builderEntry.value.objectName} ul"));
-            </c:forEach>            
-            if (parent && parent.PopupDialog.closeDialog) {
-                var locationUrl = top.location.href;
-                if (locationUrl.indexOf("/web/console/app") > 0 && locationUrl.indexOf("/builder/") > 0) {
-                    $("#nv a.nv-link").attr("target", "_top");
-                }
-            }
-        });
-    }(jQuery));
-</script>
-
 <div id="nv" style="min-width:<c:out value="${(32 * fn:length(builders))}" />%;">
     <c:forEach items="${builders}" var="builderEntry" varStatus="loop">
         <c:set var="builderType" value="${builderEntry.key}" />
@@ -53,8 +15,10 @@
             <ul class="nv-list">
                 <c:forEach items="${builderDefinitionList}" var="builderDef">
                     <c:if test="${builderDef.type eq builderType}">
-                        <li>
-                            <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/cbuilder/${builderType}/design/${builderDef.id}" target="_blank" title='<fmt:message key="console.userview.common.label.id"/>: ${builderDef.id};&#13;<fmt:message key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${builderDef.dateCreated}"/>;&#13;<fmt:message key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${builderDef.dateModified}"/>;&#13;<fmt:message key="console.userview.common.label.description"/>: <c:out value="${builderDef.description}"/>'><button href="#" onclick="return checkBuilderUsageDelete('${builderDef.id}', '${builderType}', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fas fa-times"></i></button><span class="nv-link-name"><i class="${builder.icon}" style="color:${builder.color};"></i> <c:out value="${builderDef.name}"/></span></a>
+                        <li data-id="${builderDef.id}">
+                            <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/cbuilder/${builderType}/design/${builderDef.id}" target="_blank" title='<fmt:message key="console.userview.common.label.id"/>: ${builderDef.id};&#13;<fmt:message key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${builderDef.dateCreated}"/>;&#13;<fmt:message key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${builderDef.dateModified}"/>;&#13;<fmt:message key="console.userview.common.label.description"/>: <c:out value="${builderDef.description}"/>'><button href="#" onclick="return checkBuilderUsageDelete('${builderDef.id}', '${builderType}', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fas fa-times"></i></button><span class="nv-link-name"><i class="${builder.icon}" style="color:${builder.color};"></i> <c:out value="${builderDef.name}"/></span>
+                                <div class="nv-extra" style="display:none"><div class="nv-subinfo"><c:out value="${builderDef.description}"/></div></div>
+                            </a>
                         </li>
                     </c:if>
                 </c:forEach>
@@ -95,6 +59,7 @@
     }
     function builderDelete(selectedList, type, event) {
         UI.blockUI();
+        Nav.deleteItem(selectedList, type);
         var callback = {
             success: function () {
                 UI.unblockUI();
@@ -103,29 +68,25 @@
         };
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/cbuilder/'+type+'/delete', callback, 'ids=' + selectedList);
     }
-    function showInfo() {
-        $(".nv-link").each(function() {
-            var info = $(this).prop("title");
-            info = UI.escapeHTML(info);
-            info = info.replace(/: /g, ": <b>");
-            info = info.replace(/;/g, "</b><br/>");
-            info = info.replace(/\n/g, "<br/>");
-            var sub=$("<div class='nv-subinfo'></div>").append(info);  
-            $(this).append(sub);
+    $(function () {
+        Nav.init($("#nv-container"), ${tagDef}, {
+            contextPath : "${pageContext.request.contextPath}",
+            buttons : "#nv-refresh",
+            refreshBtn : "#refreshBtn",
+            infoBtn : "#toggleInfo",
+            search : "#nv-search",
+            url : '${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/customBuilders?hidden=true',
+            tagUrl : '${pageContext.request.contextPath}/web/json/console/app/${appDef.id}/${appDef.version}/tagging',
+            message : {
+                'tags' : '<fmt:message key="console.tag.tags"/>',
+                'createNew' : '<fmt:message key="console.tag.create"/>',
+                'edit' : '<fmt:message key="console.tag.edit"/>',
+                'save' : '<fmt:message key="general.method.label.save"/>',
+                'create' : '<fmt:message key="general.method.label.create"/>',
+                'delete' : '<fmt:message key="general.method.label.delete"/>',
+                'name' : '<fmt:message key="console.tag.name"/>',
+                'color' : '<fmt:message key="console.tag.color"/>'
+            }
         });
-        $(".nv-link-name").addClass("nv-link-hilite");
-        $("#toggleInfo i").attr("class", "fas fa-list-ul");
-    }
-    function hideInfo() {
-        $(".nv-subinfo").remove();
-        $(".nv-link-name").removeClass("nv-link-hilite");
-        $("#toggleInfo i").attr("class", "fas fa-th-list");
-    }
-    function toggleInfo() {
-        if ($(".nv-subinfo").length === 0) {
-            showInfo();
-        } else {
-            hideInfo();
-        }
-    }
+    });
 </script>

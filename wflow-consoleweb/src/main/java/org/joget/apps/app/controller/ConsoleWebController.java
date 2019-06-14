@@ -59,6 +59,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.PushServiceUtil;
+import org.joget.apps.app.service.TaggingUtil;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -1608,6 +1609,20 @@ public class ConsoleWebController {
         }
         appService.deleteAppDefinitionVersion(appId, appVersion);
         return "console/apps/dialogClose";
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/tagging")
+    public void consoleAppTaggingJson(HttpServletRequest request, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String patch) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        String json = "";
+        if ("post".equalsIgnoreCase(request.getMethod())) {
+            json = TaggingUtil.updateDefinitionWithPatch(appDef, patch);
+        } else {
+            json = TaggingUtil.getDefinition(appDef);
+        }
+        
+        writer.write(json);
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/exportconfig")
@@ -5276,6 +5291,7 @@ public class ConsoleWebController {
         }
 
         map.addAttribute("appDef", appDef);
+        map.addAttribute("tagDef", TaggingUtil.getDefinition(appDef));
         map.addAttribute("formDefinitionList", formDefinitionList);
         map.addAttribute("datalistDefinitionList", datalistDefinitionList);
         map.addAttribute("userviewDefinitionList", userviewDefinitionList);
@@ -5294,6 +5310,7 @@ public class ConsoleWebController {
         }
 
         map.addAttribute("appDef", appDef);
+        map.addAttribute("tagDef", TaggingUtil.getDefinition(appDef));
         map.addAttribute("builderDefinitionList", builderDefinitionList);
         
         Map<String, CustomBuilder> builders = CustomBuilderUtil.getBuilderList();
