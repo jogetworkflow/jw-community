@@ -312,7 +312,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     }
                 }
                 
-                if (ue.getEmploymentReportTo() != null) {
+                if (ue != null && ue.getEmploymentReportTo() != null) {
                     //delete current report to
                     employmentReportToDao.deleteEmploymentReportTo(ue.getEmploymentReportTo().getId());
                 }
