@@ -1006,7 +1006,7 @@ public class ConsoleWebController {
             }
         }
 
-        if (invalid) {
+        if (invalid || u == null) {
             Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
             model.addAttribute("organizations", organizations);
             model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));

@@ -276,10 +276,21 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
 
             //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && reportToUser != null && reportToUser.getEmployments() != null && reportToUser.getEmployments().size() > 0) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                Employment reportToEmployment = (Employment) reportToUser.getEmployments().iterator().next();
-
-                if (employment.getEmploymentReportTo() != null) {
+                Employment ue = null;
+                Employment rte = null;
+                
+                for (Employment employment : (Set<Employment>)user.getEmployments()) {
+                    if (ue == null || employment.getEmploymentReportTo() != null) {
+                        ue = employment;
+                    }
+                }
+                for (Employment reportToEmployment : (Set<Employment>)reportToUser.getEmployments()) {
+                    if (rte == null || (reportToEmployment.getSubordinates() != null && !reportToEmployment.getSubordinates().isEmpty())) {
+                        rte = reportToEmployment;
+                    }
+                }
+                
+                if (ue != null && ue.getEmploymentReportTo() != null) {
                     //delete current report to
                     employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
                 }
