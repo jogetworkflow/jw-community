@@ -1158,6 +1158,9 @@ body#webconsole .welcome-box ul li{
     right: 25px;
     top: 5px;
 }
+#nv-refresh a {
+    cursor: pointer;
+}
 #nv-search input {
     width: 70%;
 }

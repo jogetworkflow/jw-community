@@ -25,7 +25,7 @@
             });
 
             if ($(Nav.options.search).find("input").length === 0) {
-                var input = $("<input>").attr({"class":"filterinput","type":"text"}); 
+                var input = $("<input>").attr({"class":"filterinput","type":"text","placeholder":Nav.options.message.search}); 
                 $(Nav.options.search).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).append(input);
                 $(input).on("change keyup", function(){
                     Nav.filter();
@@ -90,12 +90,14 @@
             $(".nv-link .nv-extra").show();
             $(".nv-link-name").addClass("nv-link-hilite");
             $(Nav.options.infoBtn).find("i").attr("class", "fas fa-list-ul");
+            $(Nav.options.infoBtn).find("span").text(Nav.options.message.hide);
         },
         hideInfo: function() {
             $(Nav.options.infoBtn).removeClass("show");
             $(".nv-link .nv-extra").hide();
             $(".nv-link-name").removeClass("nv-link-hilite");
-            $(Nav.options.infoBtn).find("i").attr("class", "fas fa-th-list");
+            $(Nav.options.infoBtn).find("i").attr("class", "fas fa-tags");
+            $(Nav.options.infoBtn).find("span").text(Nav.options.message.show);
         },
         filter: function() {
             var filter = $(Nav.options.search).find("input").val();

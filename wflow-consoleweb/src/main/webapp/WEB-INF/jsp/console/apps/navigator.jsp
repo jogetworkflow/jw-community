@@ -135,7 +135,10 @@
                 'create' : '<fmt:message key="general.method.label.create"/>',
                 'delete' : '<fmt:message key="general.method.label.delete"/>',
                 'name' : '<fmt:message key="console.tag.name"/>',
-                'color' : '<fmt:message key="console.tag.color"/>'
+                'color' : '<fmt:message key="console.tag.color"/>',
+                'search' : '<fmt:message key="console.tag.search"/>',
+                'show' : '<fmt:message key="console.tag.show"/>',
+                'hide' : '<fmt:message key="console.tag.hide"/>'
             }
         });
     });

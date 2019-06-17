@@ -35,8 +35,8 @@
                 
             </div>    
             <div id='nv-refresh'>
-                <a id="toggleInfo" ><i class='fas fa-th-list'></i></a>&nbsp;&nbsp;
-                <a id="refreshBtn" ><i class="fas fa-sync-alt"></i> <fmt:message key="general.method.label.refresh"/></a>
+                <a id="toggleInfo" ><i class='fas fa-tags'></i> <span><fmt:message key="console.tag.show"/></span></a>&nbsp;&nbsp;
+                <a id="refreshBtn" ><i class="fas fa-sync-alt"></i> <span><fmt:message key="general.method.label.refresh"/></span></a>
             </div>
         </div>
         <div id="nv-container">
