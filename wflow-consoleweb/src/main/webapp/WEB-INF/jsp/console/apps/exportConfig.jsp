@@ -13,18 +13,7 @@
 
         <form id="exportform" method="get" target="_blank" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/export" class="form blockui" enctype="multipart/form-data">
             
-            <fieldset>  
-                <c:set var="pluginList" value="<%= AppDevUtil.getPluginJarList(null) %>"/>
-                <c:if test="${!empty(pluginList)}"> 
-                    <div class="alert alert-warning">
-                        <fmt:message key="console.app.export.label.exportpluginsDisabled"/>
-                        <ul>
-                            <c:forEach items="${pluginList}" var="plugin">
-                                <li>${plugin}</li>
-                            </c:forEach>
-                        </ul>  
-                    </div>    
-                </c:if>  
+            <fieldset>
                 <c:if test="${!isSecureMode}">   
                     <div class="form-row">                
                         <label for="exportplugins"><fmt:message key="console.app.export.label.exportplugins"/></label>
@@ -33,6 +22,19 @@
                         </div>
                     </div>
                 </c:if>
+                <c:if test="${isSecureMode}">   
+                    <c:set var="pluginList" value="<%= AppDevUtil.getPluginJarList(null) %>"/>
+                    <c:if test="${!empty(pluginList)}"> 
+                        <div class="alert alert-warning">
+                            <fmt:message key="console.app.export.label.exportpluginsDisabled"/>
+                            <ul>
+                                <c:forEach items="${pluginList}" var="plugin">
+                                    <li>${plugin}</li>
+                                </c:forEach>
+                            </ul>  
+                        </div>    
+                    </c:if>     
+                </c:if> 
                 <div class="form-row">
                     <label for="formdatas"><fmt:message key="console.app.export.label.formdatas"/></label>
                     <div class="form-input">

@@ -22,8 +22,7 @@
                 regex_validation : '^[a-zA-Z0-9_]{1,20}$',
                 validation_message : '@@form.form.invalidId@@',
                 options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/tableNameList',
-                options_ajax_mapping: {arrayObj: 'tableName', value: '', label: ''},
-                prefix : 'app_fd_'
+                options_ajax_mapping: {arrayObj: 'tableName', value: '', label: ''}
             },
             {
                 name:'description',

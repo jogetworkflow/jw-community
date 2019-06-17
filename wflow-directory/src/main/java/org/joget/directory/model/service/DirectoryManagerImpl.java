@@ -10,7 +10,6 @@ import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
 import org.joget.directory.dao.EmploymentDao;
@@ -313,22 +312,19 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
         if (user != null && user.getEmployments() != null) {
             Collection<Employment> employments = user.getEmployments();
 
+            //get only 1st employment record, currently only support 1 employment per user
             if (employments != null && !employments.isEmpty()) {
-                //find reportTo
-                for (Employment e : employments) {
-                    if (e.getEmploymentReportTo() != null) {
-                        userList.add(e.getEmploymentReportTo().getReportTo().getUser());
-                    }
-                }
+                Employment employment = employments.iterator().next();
 
-                if (userList.isEmpty()) {
-                    for (Employment e : employments) {
-                        Department dept = e.getDepartment();
-                        if (dept != null) {
-                            User hod = getDepartmentHod(dept.getId());
-                            if (hod != null) {
-                                userList.add(hod);
-                            }
+                if (employment.getEmploymentReportTo() != null) {
+                    EmploymentReportTo employmentReportTo = employment.getEmploymentReportTo();
+                    userList.add(employmentReportTo.getReportTo().getUser());
+                } else {
+                    Department dept = employment.getDepartment();
+                    if (dept != null) {
+                        User hod = getDepartmentHod(dept.getId());
+                        if (hod != null) {
+                            userList.add(hod);
                         }
                     }
                 }
@@ -346,11 +342,10 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
         User user = getUserDao().getUser(username);
         if (user != null && user.getEmployments() != null && !user.getEmployments().isEmpty()) {
             Collection<Employment> employments = user.getEmployments();
-            Collection<User> users = new HashSet<User>();
-            for (Employment e : employments) {
-                if (e.getDepartment() != null) {
-                    users.addAll(getUserDao().getUsers(null, null, e.getDepartment().getId(), null, null, null, null, "username", false, null, null));
-                }
+            //get only 1st employment record, currently only support 1 employment per user
+            Employment employment = employments.iterator().next();
+            if (employment.getDepartment() != null) {
+                return getUserDao().getUsers(null, null, employment.getDepartment().getId(), null, null, null, null, "username", false, null, null);
             }
         }
         return null;

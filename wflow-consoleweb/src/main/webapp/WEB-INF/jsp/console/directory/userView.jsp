@@ -20,11 +20,9 @@
             <li><button onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
             <li><button onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
             <li><button onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
-            <c:forEach items="${user.employments}" var="e" >
-                <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo}">
-                    <li><button onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
-                </c:if>
-            </c:forEach>
+            <c:if test="${!empty employment.employmentReportTo && !empty employment.employmentReportTo.reportTo}">
+                <li><button onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
+            </c:if>
             <li><button onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
         </ul>
         <c:if test="${!empty addOnButtons}">
@@ -83,6 +81,30 @@
                 <span class="form-input"><c:out value="${employment.role}"/></span>
             </div>
             <div class="form-row">
+                <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
+                <span class="form-input">
+                    <c:if test="${!empty employment.department}">
+                        <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${employment.department.id}"><c:out value="${employment.department.name}"/></a>
+                    </c:if>
+                </span>
+            </div>
+            <div class="form-row">
+                <label for="field1"><fmt:message key="console.directory.employment.common.label.grade"/></label>
+                <span class="form-input">
+                    <c:if test="${!empty employment.grade}">
+                        <a href="${pageContext.request.contextPath}/web/console/directory/grade/view/${employment.grade.id}"><c:out value="${employment.grade.name}"/></a>
+                    </c:if>
+                </span>
+            </div>
+            <div class="form-row">
+                <label for="field1"><fmt:message key="console.directory.employment.common.label.organization"/></label>
+                <span class="form-input">
+                    <c:if test="${!empty employment.organization}">
+                        <a href="${pageContext.request.contextPath}/web/console/directory/org/view/${employment.organization.id}"><c:out value="${employment.organization.name}"/></a>
+                    </c:if>
+                </span>
+            </div>
+            <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.startDate"/></label>
                 <span class="form-input"><c:out value="${employment.startDate}"/></span>
             </div>
@@ -90,74 +112,28 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.endDate"/></label>
                 <span class="form-input"><c:out value="${employment.endDate}"/></span>
             </div>
-            <c:set var="hasHod" value="false" />
-            <div class="form-row">
-                <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
-                <span class="form-input">
-                    <c:set var="counter" value="0" />
-                    <c:forEach items="${user.employments}" var="e" >
-                        <c:if test="${!empty e.department}">
-                            <c:if test="${counter gt 0}">
-                                , 
-                            </c:if>
-                            <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${e.department.id}"><c:out value="${e.department.name}"/> (<c:out value="${e.organization.name}"/>)</a>
-                            <c:set var="counter" value="${counter + 1}" />
-                            <c:if test="${!empty e.hods}">
-                                <c:set var="hasHod" value="true" />
-                            </c:if>
-                        </c:if>
-                    </c:forEach>
-                </span>
-            </div>
-            <c:if test="${hasHod}">   
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.hod"/></label>
                 <span class="form-input">
-                    <c:set var="counter" value="0" />
-                    <c:forEach items="${user.employments}" var="e" >
-                        <c:if test="${!empty e.department && !empty e.hods}">
-                            <c:if test="${counter gt 0}">
-                                , 
-                            </c:if>
-                            <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${e.department.id}"><c:out value="${e.department.name}"/> (<c:out value="${e.organization.name}"/>)</a>
-                            <c:set var="counter" value="${counter + 1}" />
-                        </c:if>
-                    </c:forEach>
-                </span>
-            </div>   
-            </c:if>        
-            <div class="form-row">
-                <label for="field1"><fmt:message key="console.directory.employment.common.label.grade"/></label>
-                <span class="form-input">
-                    <c:set var="counter" value="0" />
-                    <c:set var="displayed" value="" />
-                    <c:forEach items="${user.employments}" var="e">
-                        <c:if test="${!empty e.grade}">
-                            <c:set var="check" value="${e.grade.id};" />
-                            <c:if test="${!fn:contains(displayed, check)}">
-                               <c:if test="${counter gt 0}">
-                                   , 
-                               </c:if>
-                               <a href="${pageContext.request.contextPath}/web/console/directory/grade/view/${e.grade.id}"><c:out value="${e.grade.name}"/> (<c:out value="${e.organization.name}"/>)</a>
-                               <c:set var="counter" value="${counter + 1}" />
-                               <c:set var="displayed" value="${displayed}${e.grade.id};" />
-                            </c:if>
-                        </c:if>
-                    </c:forEach>
+                    <c:choose>
+                        <c:when test="${!empty employment.hods}">
+                            <fmt:message key="console.directory.employment.common.label.hod.yes"/>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:message key="console.directory.employment.common.label.hod.no"/>
+                        </c:otherwise>
+                    </c:choose>
                 </span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.reportTo"/></label>
                 <span class="form-input">
-                    <c:forEach items="${user.employments}" var="e">
-                        <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo && !empty e.employmentReportTo.reportTo.user}">
-                            <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${e.employmentReportTo.reportTo.user.id}."><c:out value="${e.employmentReportTo.reportTo.user.firstName} ${e.employmentReportTo.reportTo.user.lastName}"/></a>
-                        </c:if>
-                    </c:forEach>
+                    <c:if test="${!empty employment.employmentReportTo && !empty employment.employmentReportTo.reportTo && !empty employment.employmentReportTo.reportTo.user}">
+                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${employment.employmentReportTo.reportTo.user.id}."><c:out value="${employment.employmentReportTo.reportTo.user.firstName} ${employment.employmentReportTo.reportTo.user.lastName}"/></a>
+                    </c:if>
                 </span>
             </div>
         </fieldset>
-             
         <div class="view">
             <div class="main-body-content-subheader"><span><fmt:message key="console.directory.user.common.label.groupList"/><span></div>
             <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/user/group/list?userId=${user.id}&${pageContext.request.queryString}"
@@ -236,7 +212,7 @@
     function assignReportTo(){
         popupDialog3.init();
     }
-    
+
     function unassignReportTo(){
          if (confirm('<fmt:message key="console.directory.user.reportTo.unassign.label.confirmation"/>')) {
             UI.blockUI(); 

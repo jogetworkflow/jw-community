@@ -694,11 +694,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     protected String getHomeLink(Map<String, Object> data) {
-        String home_page_link = data.get("context_path").toString() + "/home";
-        if (!getPropertyString("homeUrl").isEmpty()) {
-            home_page_link = getPropertyString("homeUrl");
-        }
-        return "<li class=\"\"><a class=\"btn\" href=\"" + home_page_link + "\" title=\"" + ResourceBundleUtil.getMessage("theme.universal.home") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
+        return "<li class=\"\"><a class=\"btn\" href=\"" + data.get("home_page_link") + "\" title=\"" + ResourceBundleUtil.getMessage("theme.universal.home") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
     }
     
     protected String getNavbar(Map<String, Object> data) {

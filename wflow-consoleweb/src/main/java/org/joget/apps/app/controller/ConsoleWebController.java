@@ -59,7 +59,6 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.PushServiceUtil;
-import org.joget.apps.app.service.TaggingUtil;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -812,7 +811,7 @@ public class ConsoleWebController {
         user.setRoles(roles);
         //user.setTimeZone(TimeZoneUtil.getServerTimeZone());
         model.addAttribute("user", user);
-        model.addAttribute("employments", new HashSet<Employment>());
+        model.addAttribute("employeeDepartmentHod", "no");
         return "console/directory/userCreate";
     }
 
@@ -876,9 +875,12 @@ public class ConsoleWebController {
 
         model.addAttribute("employeeCode", employment.getEmployeeCode());
         model.addAttribute("employeeRole", employment.getRole());
+        model.addAttribute("employeeOrganization", employment.getOrganizationId());
+        model.addAttribute("employeeDepartment", employment.getDepartmentId());
+        model.addAttribute("employeeGrade", employment.getGradeId());
         model.addAttribute("employeeStartDate", employment.getStartDate());
         model.addAttribute("employeeEndDate", employment.getEndDate());
-        model.addAttribute("employments", (user.getEmployments() != null)?user.getEmployments():(new HashSet<Employment>()));
+        model.addAttribute("employeeDepartmentHod", (employment.getHods() != null && employment.getHods().size() > 0) ? "yes" : "no");
         
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
@@ -893,17 +895,13 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/directory/user/submit/(*:action)", method = RequestMethod.POST)
     public String consoleUserSubmit(ModelMap model, @RequestParam("action") String action, @ModelAttribute("user") User user, BindingResult result,
             @RequestParam(value = "employeeCode", required = false) String employeeCode, @RequestParam(value = "employeeRole", required = false) String employeeRole,
-            @RequestParam(value = "employeeDeptOrganization", required = false) String[] employeeDeptOrganization,
-            @RequestParam(value = "employeeDepartment", required = false) String[] employeeDepartment,
-            @RequestParam(value = "employeeDepartmentHod", required = false) String[] employeeDepartmentHod, 
-            @RequestParam(value = "employeeGradeOrganization", required = false) String[] employeeGradeOrganization,
-            @RequestParam(value = "employeeGrade", required = false) String[] employeeGrade,
+            @RequestParam(value = "employeeOrganization", required = false) String employeeOrganization, @RequestParam(value = "employeeDepartment", required = false) String employeeDepartment,
+            @RequestParam(value = "employeeDepartmentHod", required = false) String employeeDepartmentHod, @RequestParam(value = "employeeGrade", required = false) String employeeGrade,
             @RequestParam(value = "employeeStartDate", required = false) String employeeStartDate, @RequestParam(value = "employeeEndDate", required = false) String employeeEndDate) {
         // validate ID
         validator.validate(user, result);
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
-        User u = null;
 
         boolean invalid = result.hasErrors();
         if (!invalid) {
@@ -951,7 +949,6 @@ public class ConsoleWebController {
                     if (us != null && !invalid) {
                         us.insertUserPostProcessing(user);
                     }
-                    u = user;
                 }
             } else {
                 user.setUsername(user.getId());
@@ -968,7 +965,7 @@ public class ConsoleWebController {
                 if (errors.isEmpty()) {
                     boolean passwordReset = false;
 
-                    u = userDao.getUserById(user.getId());
+                    User u = userDao.getUserById(user.getId());
                     u.setFirstName(user.getFirstName());
                     u.setLastName(user.getLastName());
                     u.setEmail(user.getEmail());
@@ -1024,28 +1021,12 @@ public class ConsoleWebController {
 
             model.addAttribute("employeeCode", employeeCode);
             model.addAttribute("employeeRole", employeeRole);
+            model.addAttribute("employeeOrganization", employeeOrganization);
+            model.addAttribute("employeeDepartment", employeeDepartment);
+            model.addAttribute("employeeGrade", employeeGrade);
             model.addAttribute("employeeStartDate", employeeStartDate);
             model.addAttribute("employeeEndDate", employeeEndDate);
-            
-            //convert department & grade to employments
-            Collection<Employment> employments = new ArrayList<Employment>();
-            for (int i = 0; i < employeeDepartment.length; i++) {
-                Employment t = new Employment();
-                t.setOrganizationId(employeeDeptOrganization[i]);
-                t.setDepartmentId(employeeDepartment[i]);
-                if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
-                    Set<String> hod = new HashSet<String>();
-                    hod.add(employeeDepartment[i]);
-                    t.setHods(hod);
-                }
-                for (int j = 0; j < employeeGradeOrganization.length; j++) {
-                    if (employeeGradeOrganization[j].equals(employeeDeptOrganization[i])) {
-                        t.setGradeId(employeeGrade[j]);
-                    }
-                }
-                employments.add(t);
-            }
-            model.addAttribute("employments", employments);
+            model.addAttribute("employeeDepartmentHod", employeeDepartmentHod);
             
             if (us != null) {
                 if ("create".equals(action)) {
@@ -1063,21 +1044,28 @@ public class ConsoleWebController {
                 return "console/directory/userEdit";
             }
         } else {
+            String prevDepartmentId = null;
+            
             //set employment detail
             Employment employment = null;
             if ("create".equals(action)) {
                 employment = new Employment();
             } else {
                 try {
-                    employment = (Employment) u.getEmployments().iterator().next();
+                    employment = (Employment) userDao.getUserById(user.getId()).getEmployments().iterator().next();
                 } catch (Exception e) {
                     employment = new Employment();
                 }
             }
+            
+            prevDepartmentId = employment.getDepartmentId();
 
             employment.setUserId(user.getId());
             employment.setEmployeeCode(employeeCode);
             employment.setRole(employeeRole);
+            employment.setOrganizationId((employeeOrganization != null && !employeeOrganization.isEmpty()) ? employeeOrganization : null);
+            employment.setDepartmentId((employeeDepartment != null && !employeeDepartment.isEmpty()) ? employeeDepartment : null);
+            employment.setGradeId((employeeGrade != null && !employeeGrade.isEmpty()) ? employeeGrade : null);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {
@@ -1100,55 +1088,24 @@ public class ConsoleWebController {
                 employmentDao.updateEmployment(employment);
             }
 
-            //handle departments & grade
-            Set<String> existingDepartments = new HashSet<String>();
-            Set<String> existingHods = new HashSet<String>();
-            Set<String> existingGrades = new HashSet<String>();
-            if (u.getEmployments() != null && !u.getEmployments().isEmpty()) {
-                for (Employment e : (Set<Employment>) u.getEmployments()) {
-                    if (e.getDepartmentId() != null) {
-                        existingDepartments.add(e.getDepartmentId());
-                    }
-                    if (e.getHods() != null && !e.getHods().isEmpty()) {
-                        existingHods.add(e.getDepartmentId());
-                    }
-                    if (e.getGradeId() != null) {
-                        existingGrades.add(e.getGradeId());
+            //Hod
+            if ("yes".equals(employeeDepartmentHod) && employeeDepartment != null && employeeDepartment.trim().length() > 0) {
+                if (prevDepartmentId != null) {
+                    User prevHod = userDao.getHodByDepartmentId(prevDepartmentId);
+                    if (prevHod != null) {
+                        employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), prevDepartmentId);
                     }
                 }
-            }
-            for (int i = 0; i < employeeDepartment.length; i++) {
-                if (existingDepartments.contains(employeeDepartment[i])) {
-                    existingDepartments.remove(employeeDepartment[i]);
-                } else {
-                    employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
-                }
-                
-                if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
-                    if (existingHods.contains(employeeDepartment[i])) {
-                        existingHods.remove(employeeDepartment[i]);
-                    } else {
-                        employmentDao.assignUserAsDepartmentHOD(u.getId(), employeeDepartment[i]);
+                employmentDao.assignUserAsDepartmentHOD(user.getId(), employeeDepartment);
+            } else {
+                if (prevDepartmentId != null) {
+                    User prevHod = userDao.getHodByDepartmentId(prevDepartmentId);
+                    if (prevHod != null && prevHod.getId().equals(user.getId())) {
+                        employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), prevDepartmentId);
                     }
                 }
             }
-            for (int i = 0; i < employeeGrade.length; i++) {
-                if (existingGrades.contains(employeeGrade[i])) {
-                    existingGrades.remove(employeeGrade[i]);
-                } else {
-                    employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
-                }
-            }
-            for (String d : existingHods) {
-                employmentDao.unassignUserAsDepartmentHOD(u.getId(), d);
-            }
-            for (String d : existingDepartments) {
-                employmentDao.unassignUserFromDepartment(u.getId(), d);
-            }
-            for (String d : existingGrades) {
-                employmentDao.unassignUserFromGrade(u.getId(), d);
-            }
-            
+
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath;
             url += "/web/console/directory/user/view/" + StringEscapeUtils.escapeHtml(user.getId()) + ".";
@@ -1609,20 +1566,6 @@ public class ConsoleWebController {
         }
         appService.deleteAppDefinitionVersion(appId, appVersion);
         return "console/apps/dialogClose";
-    }
-    
-    @RequestMapping("/json/console/app/(*:appId)/(~:version)/tagging")
-    public void consoleAppTaggingJson(HttpServletRequest request, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String patch) throws IOException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        
-        String json = "";
-        if ("post".equalsIgnoreCase(request.getMethod())) {
-            json = TaggingUtil.updateDefinitionWithPatch(appDef, patch);
-        } else {
-            json = TaggingUtil.getDefinition(appDef);
-        }
-        
-        writer.write(json);
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/exportconfig")
@@ -5291,7 +5234,6 @@ public class ConsoleWebController {
         }
 
         map.addAttribute("appDef", appDef);
-        map.addAttribute("tagDef", TaggingUtil.getDefinition(appDef));
         map.addAttribute("formDefinitionList", formDefinitionList);
         map.addAttribute("datalistDefinitionList", datalistDefinitionList);
         map.addAttribute("userviewDefinitionList", userviewDefinitionList);
@@ -5310,7 +5252,6 @@ public class ConsoleWebController {
         }
 
         map.addAttribute("appDef", appDef);
-        map.addAttribute("tagDef", TaggingUtil.getDefinition(appDef));
         map.addAttribute("builderDefinitionList", builderDefinitionList);
         
         Map<String, CustomBuilder> builders = CustomBuilderUtil.getBuilderList();

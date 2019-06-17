@@ -33,9 +33,6 @@ public class LinkButton extends FormButton {
         if (getPropertyString("target") == null || getPropertyString("target").isEmpty()) {
             setProperty("target", "top");
         }
-        if ("parent".equalsIgnoreCase(getPropertyString("target"))) {
-            setProperty("target", "window.parent");
-        }
         
         String template = "linkButton.ftl";
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);

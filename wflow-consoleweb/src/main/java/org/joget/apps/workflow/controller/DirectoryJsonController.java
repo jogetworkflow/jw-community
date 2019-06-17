@@ -477,42 +477,6 @@ public class DirectoryJsonController {
             jsonObject.write(writer);
         }
     }
-    
-    @RequestMapping("/json/directory/admin/employment/notInOrganization/list")
-    public void listEmploymentNotInOrganization(Writer writer, @RequestParam(value = "callback", required = false) String callback,
-            @RequestParam(value = "name", required = false) String name, @RequestParam(value = "orgId", required = false) String orgId,
-            @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc,
-            @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-
-        Collection<Employment> employments = null;
-
-        employments = employmentDao.getEmploymentsNotInOrganization(name, orgId, sort, desc, start, rows);
-
-        JSONObject jsonObject = new JSONObject();
-        if (employments != null) {
-            for (Employment employment : employments) {
-                Map data = new HashMap();
-                data.put("user.id", employment.getUser().getId());
-                data.put("user.username", employment.getUser().getUsername());
-                data.put("user.firstName", employment.getUser().getFirstName());
-                data.put("user.lastName", employment.getUser().getLastName());
-                data.put("employeeCode", employment.getEmployeeCode());
-                data.put("role", employment.getRole());
-                jsonObject.accumulate("data", data);
-            }
-        }
-
-        jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNotInOrganization(name, orgId));
-        jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
-        jsonObject.accumulate("desc", desc);
-
-        if (callback != null && callback.trim().length() != 0) {
-            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
-        } else {
-            jsonObject.write(writer);
-        }
-    }
 
     @RequestMapping("/json/directory/admin/employment/noHaveOrganization/list")
     public void listEmploymentNoHaveOrganization(Writer writer, @RequestParam(value = "callback", required = false) String callback,

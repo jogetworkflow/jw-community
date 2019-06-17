@@ -1289,13 +1289,7 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public boolean isOsgi(String classname) {
-        BundleContext context = felix.getBundleContext();
-        ServiceReference sr = context.getServiceReference(classname);
-        if (sr != null) {
-            context.ungetService(sr);
-            return true;
-        }
-        return false;
+        return osgiPluginClassCache.containsKey(classname);
     }
     
     public String getOsgiPluginPath(String className) {

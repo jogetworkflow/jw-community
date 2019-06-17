@@ -109,7 +109,6 @@
     font-size: 16px;
     display:block;
     position: relative;
-    box-sizing: border-box;
 }
 
 .single-page .property-editor-page-title h1{
@@ -287,23 +286,6 @@
     font-size:12px;
     font-style:italic;
     color:#888888;
-}
-
-.property-input .withPrefix{
-    position: relative;
-    display: block;
-}
-
-.property-input .withPrefix .prefix{
-    position: absolute;
-    background: #ccc;
-    padding: 6px 8px 7px;
-    box-sizing: border-box;
-    z-index: 2;
-}
-
-.property-input .withPrefix input{
-    box-sizing: border-box;
 }
 
 .property-input .default .label{
@@ -715,7 +697,6 @@ td.error .chosen-container, td.error input {
 .repeater-row .actions > a, .repeater-row .actions > i {
     position: absolute; 
     top:50%;
-    left:50%;
     transform: translate(-50%, -50%);
     color: #888;
 }

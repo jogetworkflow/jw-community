@@ -569,9 +569,7 @@ public class StandardPanelValidator implements PanelValidator {
         if (!isValid) {
             XMLBasicPanel.errorMessage(pnl.getWindow(), ResourceManager.getLanguageDependentString("ErrorMessageKey"), "",
                     ResourceManager.getLanguageDependentString(XPDLValidationErrorIds.ERROR_INVALID_ID));
-            if (idPanel != null) {
-                idPanel.requestFocus();
-            }
+            idPanel.requestFocus();
             return false;
         }
 
@@ -590,9 +588,7 @@ public class StandardPanelValidator implements PanelValidator {
             if (!isUniqueId) {
                 XMLBasicPanel.errorMessage(pnl.getWindow(), ResourceManager.getLanguageDependentString("ErrorMessageKey"),
                         "", ResourceManager.getLanguageDependentString(XPDLValidationErrorIds.ERROR_NON_UNIQUE_ID));
-                if (idPanel != null) {
-                    idPanel.requestFocus();
-                }
+                idPanel.requestFocus();
                 return false;
             }
         }

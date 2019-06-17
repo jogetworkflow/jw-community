@@ -1030,11 +1030,6 @@
         }]
     },    
     {
-        name : 'homeUrl',
-        label : '@@theme.universal.homeUrl@@',
-        type : 'textfield'
-    },    
-    {
         name : 'shortcutLinkLabel',
         label : '@@theme.universal.shortcutLinkLabel@@',
         value : '@@theme.universal.shortcut@@',

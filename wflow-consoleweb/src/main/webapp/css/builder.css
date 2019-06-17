@@ -120,6 +120,7 @@ div, label, input, button, select, th, td, a, span {
     left: 10px;
     position: relative;
     top: 100px; 
+    margin-right: 60px;
 }
 #builder-bar ul {
     list-style: none;

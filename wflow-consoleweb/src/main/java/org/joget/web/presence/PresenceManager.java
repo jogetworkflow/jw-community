@@ -11,11 +11,8 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,7 +31,6 @@ import org.joget.directory.model.User;
 
 public class PresenceManager {
     
-    private final static long INACTIVE_THRESHOLD = 7200000; //2 hours
     private static boolean running;
         
     // Keeps all open connections from browsers
@@ -238,14 +234,10 @@ public class PresenceManager {
             sessionMap = new HashMap<>();
             pathMap.put(path, sessionMap);
         }
-        
-        removeInactive(sessionMap, path);
-        
         if (user != null) {
             UserEntry userEntry = new UserEntry();
             userEntry.setUsername(user.getUsername());
             userEntry.setEmail(user.getEmail());
-            userEntry.setLastAccess(new Date());
             sessionMap.put(sessionId, userEntry);
             LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
         } else {
@@ -260,9 +252,6 @@ public class PresenceManager {
         Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
         if (path != null) {
             Map<String, UserEntry> sessionMap = pathMap.get(path);
-            
-            removeInactive(sessionMap, path);
-            
             if (sessionMap != null) {
                 sessionMap.remove(sessionId);
                 if (sessionMap.isEmpty()) {
@@ -272,9 +261,6 @@ public class PresenceManager {
         } else {
             for (String tempPath : pathMap.keySet()) {
                 Map<String, UserEntry> sessionMap = pathMap.get(tempPath);
-                
-                removeInactive(sessionMap, tempPath);
-        
                 sessionMap.remove(sessionId);
                 if (sessionMap.isEmpty()) {
                     pathMap.remove(tempPath);
@@ -284,31 +270,6 @@ public class PresenceManager {
         savePathMap(pathMap);
         resumeNotifier();
         LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
-    }
-    
-    protected static void removeInactive(Map<String, UserEntry> sessionMap, String path) {
-        if (sessionMap == null || sessionMap.isEmpty() || path == null) {
-            return;
-        }
-        Set<String> remove = new HashSet<String>();
-        for (String sessionId : sessionMap.keySet()) {
-            UserEntry ue = sessionMap.get(sessionId);
-            if (asyncContexts.containsKey(sessionId + ":" + path)) {
-                ue.setLastAccess(new Date());
-            } else {
-                if (ue.lastAccess != null) {
-                    Date now = new Date();
-                    if (now.getTime() - ue.lastAccess.getTime() >= INACTIVE_THRESHOLD) {
-                        remove.add(sessionId);
-                    }
-                } else {
-                    ue.setLastAccess(new Date());
-                }
-            }
-        }
-        for (String s : remove) {
-            sessionMap.remove(s);
-        }
     }
     
     public static Map<String, UserEntry> getUsers(String path) {
@@ -326,7 +287,6 @@ public class PresenceManager {
     public static class UserEntry {
         String username;
         String email;
-        Date lastAccess;
 
         public String getUsername() {
             return username;
@@ -344,17 +304,9 @@ public class PresenceManager {
             this.email = email;
         }
 
-        public Date getLastAccess() {
-            return lastAccess;
-        }
-
-        public void setLastAccess(Date lastAccess) {
-            this.lastAccess = lastAccess;
-        }
-
         @Override
         public String toString() {
-            return "{\"username:\"" + this.username + "\",\"email\":" + this.email + "\",\"lastAccess\":" + this.lastAccess + "\"}";
+            return "{\"username:\"" + this.username + "\",\"email\":" + this.email + "\"}";
         }
         
     }

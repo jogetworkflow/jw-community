@@ -149,12 +149,13 @@
                        checkboxButton2="console.directory.org.user.unassign.label"
                        checkboxCallback2="unassignUsers"
                        searchItems="name|Name"
-                       fields="['user.id','user.username','user.firstName','user.lastName','employeeCode','role','grade.name']"
+                       fields="['user.id','user.username','user.firstName','user.lastName','employeeCode','role','department.name','grade.name']"
                        column1="{key: 'user.username', label: 'console.directory.user.common.label.username', sortable: true}"
                        column2="{key: 'user.firstName', label: 'console.directory.user.common.label.firstName', sortable: true}"
                        column3="{key: 'user.lastName', label: 'console.directory.user.common.label.lastName', sortable: true}"
                        column4="{key: 'employeeCode', label: 'console.directory.employment.common.label.employeeCode', sortable: true}"
                        column5="{key: 'role', label: 'console.directory.employment.common.label.role', sortable: true}"
+                       column6="{key: 'department.name', label: 'console.directory.employment.common.label.department', sortable: true}"
                        column7="{key: 'grade.name', label: 'console.directory.employment.common.label.grade', sortable: true}"
                        />
         </div>

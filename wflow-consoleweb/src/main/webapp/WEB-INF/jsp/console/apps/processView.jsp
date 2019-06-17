@@ -450,44 +450,6 @@
         </div>
 
         <script>
-            (function ($) {
-                jQuery.expr[':'].Contains = function(a,i,m){ 
-                    return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
-                };
-
-                function listFilter(location, list) {
-                    var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
-                    input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-                    $(form).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).append(input).insertAfter(location);
-                    $(input) .change( function () { 
-                        var filter = $(this).val();
-                        if(filter) { 
-                            $(list).find("div.main-body-row").each(function(){
-                                var found = $(this).find(".row-content:Contains(" + filter + "), dd:Contains(" + filter + ")");
-                                if (found.length > 0) {
-                                    $(this).slideDown();
-                                } else {
-                                    $(this).slideUp();
-                                }
-                            });
-                        } else {
-                            $(list).find("div.main-body-row").slideDown();
-                        }
-                        return false;
-                    }) .keyup( function () { 
-                        $(this).change();
-                    });
-                }
-
-                $(function () {
-                    listFilter($("#participantList .tabSummary"), $("#participantList"));
-                    listFilter($("#activityList .tabSummary"), $("#activityList"));
-                    listFilter($("#toolList .tabSummary"), $("#toolList"));
-                    listFilter($("#routeList .tabSummary"), $("#routeList"));
-                    listFilter($("#variableList .tabSummary"), $("#variableList"));
-                });
-            }(jQuery));
-    
             var retry = 0;
             
             function remove_generator() {

@@ -108,8 +108,8 @@ var AdminBar = {
         AdminBar.initQuickEditMode();
     },
     isQuickEditMode: function() {
-        var quickEditModeActive = $.cookie("quickEditModeActive");
-        return quickEditModeActive === null || quickEditModeActive === "true";
+        var quickEditModeActive =  $.cookie("quickEditModeActive");
+        return quickEditModeActive === "true";
     },
     isAdminBarHide: function() {
         var adminBarModeHide =  $.cookie("adminBarModeHide");

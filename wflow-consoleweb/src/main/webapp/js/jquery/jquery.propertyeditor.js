@@ -461,22 +461,14 @@ PropertyEditor.Util = {
             $(pageContainer).find("[data-control_field][data-control_value]").each(function() {
                 PropertyEditor.Util.bindDynamicOptionsEvent($(this), page);
             });
-            $(pageContainer).find("[data-required_control_field][data-required_control_value]").each(function() {
-                PropertyEditor.Util.bindDynamicRequiredEvent($(this), page);
-            });
         }
     },
     bindDynamicOptionsEvent: function(element, page) {
         var control_field = element.data("control_field");
         var controlVal = String(element.data("control_value"));
         var isRegex = element.data("control_use_regex");
-        
-        var field = null;
-        if (page.editorObject !== undefined) {
-            field = page.editorObject.fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
+
+        var field = page.editorObject.fields[control_field];
         if (field !== null && field !== undefined) {
             $(field.editor).on("change", "[name=\"" + field.id + "\"]", function() {
                 var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
@@ -503,16 +495,9 @@ PropertyEditor.Util = {
                     }
                 }
                 element.find("input, select, textarea, table").trigger("change");
-                if (page.properties !== undefined && page.properties.properties !== undefined) {
+                if (page.properties.properties !== undefined) {
                     $.each(page.properties.properties, function(i, property) {
                         var type = property.propertyEditorObject;
-                        if (element.find("[name='" + type.id + "']").length > 0) {
-                            type.pageShown();
-                        }
-                    });
-                } else {
-                    $.each(page, function(i, property) {
-                        var type = property;
                         if (element.find("[name='" + type.id + "']").length > 0) {
                             type.pageShown();
                         }
@@ -532,29 +517,6 @@ PropertyEditor.Util = {
                     var buttonPanel = $(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true);
                     $(buttonPanel).find(".button_form").remove();
                     $(field.editor).find('.property-editor-buttons').append(buttonPanel);
-                }
-            });
-            $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
-        }
-    },
-    bindDynamicRequiredEvent: function(element, page) {
-        var control_field = element.data("required_control_field");
-        var controlVal = String(element.data("required_control_value"));
-        var isRegex = element.data("required_control_use_regex");
-        
-        var field = null;
-        if (page.editorObject !== undefined) {
-            field = page.editorObject.fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
-        if (field !== null && field !== undefined) {
-            $(field.editor).on("change", "[name=\"" + field.id + "\"]", function() {
-                var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
-                if (match) {
-                    element.find(".property-required").show();
-                } else {
-                    element.find(".property-required").hide();
                 }
             });
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
@@ -809,12 +771,10 @@ PropertyEditor.Util = {
             return false;
         }
 
-        var data = control.getData(true);
-        return PropertyEditor.Util.internalDynamicOptionsCheckValue(data, control.properties.name, controlVal, isRegex);
-    },
-    internalDynamicOptionsCheckValue: function(data, name, controlVal, isRegex) {
         var values = new Array();
-        var value = data[name];
+
+        var data = control.getData(true);
+        var value = data[control.properties.name];
 
         if (value !== undefined && value !== null && value["className"] !== undefined) {
             values = [value["className"]];
@@ -1179,6 +1139,7 @@ PropertyEditor.Model.Editor.prototype = {
         if (this.options.simpleMode) {
             $(this.editor).on("change", function() {
                 if (thisObject.isChange()) {
+                    console.log("here");
                     thisObject.save();
                 }
             });
@@ -1192,19 +1153,6 @@ PropertyEditor.Model.Editor.prototype = {
                 $(thisObject.editor).addClass("pediting");
                 $(thisObject.editor).parent().find(".peautosaveblock").show();
             }).on("mouseleave", function(event) {
-                //check cursor position still within editor
-                var e = event || window.event;
-                e = jQuery.event.fix(e);
-                
-                var pageX = e.pageX;
-                var pageY = e.pageY;
-                
-                var offset = $(thisObject.editor).offset();
-                if (!(pageY < offset.top || pageY > (offset.top + $(thisObject.editor).height())
-                        || pageX < offset.left || pageX > (offset.left + $(thisObject.editor).width()))) {
-                    return;
-                }
-                
                 if ($(thisObject.editor).hasClass("pediting") && thisObject.isChange()) {
                     thisObject.save();
                 } else {
@@ -2120,7 +2068,6 @@ PropertyEditor.Model.Type = function(page, number, prefix, properties, value, de
     this.isDataReady = true;
 };
 PropertyEditor.Model.Type.prototype = {
-    supportPrefix : false,
     initialize: function() {},
     validate: function(data, errors, checkEncryption) {
         var wrapper = $('#' + this.id + '_input');
@@ -2137,21 +2084,9 @@ PropertyEditor.Model.Type.prototype = {
             ($.isArray(value) && value.length === 0)) {
             hasValue = false;
         }
-        
-        var checkRequired = false;
-        if (this.properties.required_validation_control_field !== undefined && this.properties.required_validation_control_field !== null &&
-            this.properties.required_validation_control_value !== undefined && this.properties.required_validation_control_value !== null) {
-            var cf_name = this.properties.required_validation_control_field;
-            var cf_value = this.properties.required_validation_control_value;
-            var cf_isRegex = (this.properties.required_validation_control_use_regex.toLowerCase() === "true");
-            
-            checkRequired = PropertyEditor.Util.internalDynamicOptionsCheckValue(data, cf_name, cf_value, cf_isRegex);
-        }
-        if (this.properties.required !== undefined && this.properties.required.toLowerCase() === "true") {
-            checkRequired = true;
-        }
 
-        if (checkRequired &&
+        if (this.properties.required !== undefined &&
+            this.properties.required.toLowerCase() === "true" &&
             defaultValue === null && !hasValue) {
             var obj = new Object();
             obj.field = this.properties.name;
@@ -2242,16 +2177,6 @@ PropertyEditor.Model.Type.prototype = {
                 showHide += ' data-control_use_regex="false"';
             }
         }
-        if (this.properties.required_validation_control_field !== undefined && this.properties.required_validation_control_field !== null &&
-            this.properties.required_validation_control_value !== undefined && this.properties.required_validation_control_value !== null) {
-            showHide += ' data-required_control_field="' + this.properties.required_validation_control_field + '" data-required_control_value="' + this.properties.required_validation_control_value + '"';
-
-            if (this.properties.required_validation_control_use_regex !== undefined && this.properties.required_validation_control_use_regex.toLowerCase() === "true") {
-                showHide += ' data-required_control_use_regex="true"';
-            } else {
-                showHide += ' data-required_control_use_regex="false"';
-            }
-        }
 
         var html = '<div id="property_' + this.number + '" property-name="'+this.properties.name+'" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
 
@@ -2266,9 +2191,7 @@ PropertyEditor.Model.Type.prototype = {
         var html = "";
         if (this.properties.label !== undefined && this.properties.label !== null) {
             var required = '';
-            if ((this.properties.required !== undefined && this.properties.required.toLowerCase() === 'true') 
-                    || (this.properties.required_validation_control_field !== undefined && this.properties.required_validation_control_field !== null &&
-                        this.properties.required_validation_control_value !== undefined && this.properties.required_validation_control_value !== null)) {
+            if (this.properties.required !== undefined && this.properties.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
 
@@ -2293,17 +2216,7 @@ PropertyEditor.Model.Type.prototype = {
     },
     renderFieldWrapper: function() {
         var html = '<div id="' + this.id + '_input" class="property-input">';
-        
-        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
-            html += '<span class="withPrefix"><span class="prefix">'+this.properties.prefix+'</span>';
-        }
-        
         html += this.renderField();
-        
-        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
-            html += '</span>';
-        }
-        
         html += this.renderDefault();
         html += '</div>';
         return html;
@@ -2320,11 +2233,6 @@ PropertyEditor.Model.Type.prototype = {
     },
     initDefaultScripting: function() {
         PropertyEditor.Util.handleOptionsField(this);
-        if (this.supportPrefix && this.properties.prefix !== undefined && this.properties.prefix !== null) {
-            var container = $("#" + this.id).closest(".property-input");
-            var prefixWidth = $(container).find(".withPrefix .prefix").outerWidth(true);
-            $(container).find(".withPrefix input").css("padding-left", (prefixWidth + 5) + "px");
-        }
     },
     initScripting: function() {},
     handleAjaxOptions: function(options, reference) {
@@ -2389,7 +2297,6 @@ PropertyEditor.Type.Label = PropertyEditor.Util.inherit(PropertyEditor.Model.Typ
 PropertyEditor.Type.Readonly = function() {};
 PropertyEditor.Type.Readonly.prototype = {
     shortname: "readonly",
-    supportPrefix: true,
     renderField: function() {
         if (this.value === null) {
             this.value = "";
@@ -2411,7 +2318,6 @@ PropertyEditor.Type.Readonly = PropertyEditor.Util.inherit(PropertyEditor.Model.
 PropertyEditor.Type.TextField = function() {};
 PropertyEditor.Type.TextField.prototype = {
     shortname: "textfield",
-    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {
@@ -2435,7 +2341,6 @@ PropertyEditor.Type.TextField = PropertyEditor.Util.inherit(PropertyEditor.Model
 PropertyEditor.Type.Number = function() {};
 PropertyEditor.Type.Number.prototype = {
     shortname: "number",
-    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {
@@ -4309,13 +4214,12 @@ PropertyEditor.Type.Repeater.prototype = {
         var row = $('<div class="repeater-row compress"><div class="actions expand-compress"><a class="expand"><i class="fas fa-expand"></i></a></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
         
         var fields = $.extend(true, {}, thisObj.properties.fields);
-        var fieldsHolder = {};
         
         var html = "";
         var cId = thisObj.id + "-" + ((new Date()).getTime());
         if (fields !== null && fields !== undefined) {
             $.each(fields, function(i, property) {
-                html += thisObj.renderProperty(i, cId, property, value, fieldsHolder);
+                html += thisObj.renderProperty(i, cId, property, value);
             });
         }
         $(row).find(".inputs .inputs-container").append(html);
@@ -4358,16 +4262,9 @@ PropertyEditor.Type.Repeater.prototype = {
             }
         });
         
-        $(row).find("[data-control_field][data-control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicOptionsEvent($(this), fieldsHolder);
-        });
-        $(row).find("[data-required_control_field][data-required_control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicRequiredEvent($(this), fieldsHolder);
-        });
-        
         thisObj.updateBtn();
     },
-    renderProperty: function(i, prefix, property, values, fieldsHolder) {
+    renderProperty: function(i, prefix, property, values) {
         var type = property.propertyEditorObject;
 
         if (type === undefined) {
@@ -4381,7 +4278,9 @@ PropertyEditor.Type.Repeater.prototype = {
             type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, null);
             property.propertyEditorObject = type;
 
-            fieldsHolder[property.name] = type;
+            if (prefix === "" || prefix === null || prefix === undefined) {
+                this.editorObject.fields[property.name] = type;
+            }
         }
 
         if (type !== null) {
@@ -4855,7 +4754,6 @@ PropertyEditor.Type.AutoComplete = function() {};
 PropertyEditor.Type.AutoComplete.prototype = {
     shortname: "autocomplete",
     source: [],
-    supportPrefix: true,
     renderField: function() {
         var size = '';
         if (this.value === null) {
