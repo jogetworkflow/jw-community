@@ -954,6 +954,21 @@ fieldset legend,
     font-style: italic;
     color: #999;
 }
+.form-input a i {
+    font-style: normal;
+    color: yellowgreen;
+}
+.form-input a.delete i {
+    color:red;
+}
+.form-input a.delete{
+    display: inline-block;
+    margin-right: 10px;
+}
+.form-input a.add{
+    display: inline-block;
+    margin-left: 3px;
+}
 .form-row .form-input.withPrefix {
     position: relative;
 }
@@ -972,6 +987,12 @@ fieldset legend,
 .form-row .form-input.withPrefix input {
     padding-left: 55px;
     box-sizing: border-box;
+}
+.form-row .form-input.withPrefix.large .prefix {
+    width: 65px;
+}
+.form-row .form-input.withPrefix.large input {
+    padding-left: 70px;
 }
 .row-content dl dt{
     width: 180px;
@@ -1135,6 +1156,13 @@ body#webconsole .welcome-box ul li{
 #nv-refresh {
     position: absolute;
     right: 25px;
+    top: 5px;
+}
+#nv-refresh a {
+    cursor: pointer;
+}
+#nv-search input {
+    width: 70%;
 }
 .nv-list li {
     position: relative;
@@ -1215,6 +1243,124 @@ body#webconsole .welcome-box ul li{
     padding: 10px 20px;
     border-bottom: 1px dotted #ccc;
     margin-bottom: 5px;
+}
+.nv-tags {
+    font-size: 10px;
+    line-height: 14px;
+    padding: 10px 20px 0;
+}
+.nv-tags label {
+    display: block;
+}
+.nv-tag, .nv-tag-plus {
+    display: inline-block;
+    color:#fff;
+    padding: 2px 6px; 
+    margin-right: 4px;
+    margin-top: 3px;
+    border-radius:3px;
+}
+.nv-tag {
+    min-width:30px;
+}
+.nv-tag-plus{
+    background: #999797;
+    opacity: 0.7;
+}
+.nv-tag-plus:hover{
+    background: #999797;
+    opacity: 1;
+}
+.tag-red {
+    background:#eb5a46;
+}
+.tag-pink {
+    background:#ff78cb;
+}
+.tag-orange {
+    background:#ff9f1a;
+}
+.tag-yellow {
+    background:#f2d600;
+}
+.tag-green {
+    background:#61bd4f;
+}
+.tag-lime {
+    background:#51e898;
+}
+.tag-blue {
+    background:#0079bf;
+}
+.tag-sky {
+    background:#00c2e0;
+}
+.tag-purple {
+    background:#c377e0;
+}
+.tag-black {
+    background:#344563;
+}
+#tooltip-tags {
+    width: 250px;
+    max-height: 90vh;
+    max-width: 480px;
+}
+#tooltip-tags h4 {
+    margin: 10px 0;
+    color: #000;
+    border-bottom: 1px solid #e4e9e8;
+    padding-bottom: 10px;
+    position: relative;
+}
+#tooltip-tags h4 a.close{
+    position: absolute;
+    right: 0px;
+}
+#tooltip-tags .tag-options .nv-tag {
+    width: calc(100% - 20px);
+    margin-bottom: 2px;
+    padding: 5px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+}
+#tooltip-tags .tag-options .nv-tag .check {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    visibility: hidden;
+}
+#tooltip-tags .tag-options .checked.nv-tag .check {
+    visibility: visible;
+}
+#tooltip-tags .tag-buttons{
+    border-top: 1px solid #e4e9e8;
+    margin-top: 10px;
+    padding: 10px 0;
+}
+#tooltip-tags .tag-buttons .delete{
+    background: red;
+}
+#tooltip-tags a {
+    cursor: pointer;
+}
+#tooltip-tags .field-row label{
+    display: block;
+    color: #535353;
+}
+#tooltip-tags .field-row input {
+    width: 100%;
+}
+#tooltip-tags .field-row .colors > div {
+    text-align: center;
+    cursor: pointer;
+}
+#tooltip-tags .field-row .colors > div i {
+    visibility: hidden;
+}
+#tooltip-tags .field-row .colors > div.checked i {
+    visibility: visible;
 }
 .filterform {
     margin-top: 10px;
@@ -1728,6 +1874,12 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
     }
     .nv-col {
         min-height: auto;
+    }
+    #nv-search {
+        padding-top:30px;
+    }
+    #nv-search input {
+        width: 90%;
     }
     #processTabView .main-body-row .row-content:first-child {
         max-width: 50%;

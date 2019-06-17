@@ -5,8 +5,12 @@
 
 <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
 <link href="${pageContext.request.contextPath}/js/at/usages.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-shadow.min.css" />
 <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
 <script type='text/javascript' src="${pageContext.request.contextPath}/js/at/usages.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/tooltipster/js/tooltipster.bundle.min.js"></script>
+<script type='text/javascript' src="${pageContext.request.contextPath}/js/nav.js"></script>
 
 <div id="nav">
     <div id="nav-title">
@@ -26,35 +30,25 @@
         </ul>
     </div>
     <div id="main-body">
-
-        <div id='nv-refresh'>
-            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='fas fa-th-list'></i></a>&nbsp;&nbsp;
-            <a href='#' onclick='return refreshNavigator()'><i class="fas fa-sync-alt"></i> <fmt:message key="general.method.label.refresh"/></a>
+        <div id="nv-toolbar">
+            <div id="nv-search">
+                
+            </div>    
+            <div id='nv-refresh'>
+                <a id="toggleInfo" ><i class='fas fa-tags'></i> <span><fmt:message key="console.tag.show"/></span></a>&nbsp;&nbsp;
+                <a id="refreshBtn" ><i class="fas fa-sync-alt"></i> <span><fmt:message key="general.method.label.refresh"/></span></a>
+            </div>
         </div>
         <div id="nv-container">
         <jsp:include page="/web/console/app/${appId}/${appVersion}/customBuilders" flush="true"/>
         </div>
         <script>
             function refreshNavigator() {
-                if ($("#nv-refresh").css("visibility") != "hidden") {
-                    var loading = $("<img id='nv-loading' src='${pageContext.request.contextPath}/images/v3/loading.gif'>");
-                    $("#nv-refresh a").css("visibility", "hidden");
-                    $("#nv-refresh").append(loading);
-                }
-                $.ajax({
-                    url: "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/customBuilders?hidden=true&_=" + jQuery.now(),
-                    success: function(data) {
-                        $("#nv-container").html(data);
-                    },
-                    complete: function() {
-                        $("#nv-refresh a").css("visibility", "visible");
-                        $(loading).remove();
-                    }
-                });
+                Nav.refresh();
                 return false;
             }
             function closeDialog() {
-                refreshNavigator();
+                 Nav.refresh();
             }            
         </script>
     </div>

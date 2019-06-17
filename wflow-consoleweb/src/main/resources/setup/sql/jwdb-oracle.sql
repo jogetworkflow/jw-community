@@ -8,8 +8,10 @@
 	"NAME" VARCHAR2(255 CHAR), 
 	"PUBLISHED" NUMBER(1,0), 
 	"DATECREATED" TIMESTAMP (6), 
-	"DATEMODIFIED" TIMESTAMP (6),
-	"LICENSE" VARCHAR2(4000)
+	"DATEMODIFIED" TIMESTAMP (6), 
+	"LICENSE" VARCHAR2(4000), 
+	"DESCRIPTION" VARCHAR2(4000), 
+	"META" VARCHAR2(4000)
    ) ;
 --------------------------------------------------------
 --  DDL for Table APP_DATALIST
@@ -57,7 +59,23 @@
 	"DATECREATED" TIMESTAMP (6), 
 	"DATEMODIFIED" TIMESTAMP (6), 
 	"TABLENAME" VARCHAR2(255 CHAR), 
-	"JSON" CLOB
+	"JSON" CLOB, 
+	"DESCRIPTION" VARCHAR2(4000)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table APP_FORM_DATA_AUDIT_TRAIL
+--------------------------------------------------------
+
+  CREATE TABLE "APP_FORM_DATA_AUDIT_TRAIL" 
+   (	"ID" VARCHAR2(255 CHAR), 
+	"APPID" VARCHAR2(255 CHAR), 
+	"APPVERSION" VARCHAR2(255 CHAR), 
+	"FORMID" VARCHAR2(255 CHAR), 
+	"TABLENAME" VARCHAR2(255 CHAR), 
+	"USERNAME" VARCHAR2(255 CHAR), 
+	"ACTION" VARCHAR2(255 CHAR), 
+	"DATA" VARCHAR2(4000), 
+	"DATETIME" TIMESTAMP (6)
    ) ;
 --------------------------------------------------------
 --  DDL for Table APP_MESSAGE
@@ -98,7 +116,8 @@
 	"FORMID" VARCHAR2(255 CHAR), 
 	"FORMURL" VARCHAR2(255 CHAR), 
 	"FORMIFRAMESTYLE" VARCHAR2(255 CHAR), 
-	"AUTOCONTINUE" NUMBER(1,0)
+	"AUTOCONTINUE" NUMBER(1,0), 
+	"DISABLESAVEASDRAFT" NUMBER(1,0)
    ) ;
 --------------------------------------------------------
 --  DDL for Table APP_PACKAGE_ACTIVITY_PLUGIN
@@ -217,6 +236,18 @@
 	"PROCESSUID" VARCHAR2(255 CHAR)
    ) ;
 --------------------------------------------------------
+--  DDL for Table APP_RESOURCE
+--------------------------------------------------------
+
+  CREATE TABLE "APP_RESOURCE" 
+   (	"APPID" VARCHAR2(255 CHAR), 
+	"APPVERSION" NUMBER(19,0), 
+	"ID" VARCHAR2(255 CHAR), 
+	"FILESIZE" NUMBER(19,0), 
+	"PERMISSIONCLASS" VARCHAR2(255 CHAR), 
+	"PERMISSIONPROPERTIES" VARCHAR2(4000)
+   ) ;
+--------------------------------------------------------
 --  DDL for Table APP_USERVIEW
 --------------------------------------------------------
 
@@ -332,8 +363,25 @@
 	"LASTLOGEDINDATE" TIMESTAMP (6), 
 	"LOCKOUTDATE" TIMESTAMP (6), 
 	"LASTPASSWORDCHANGEDATE" TIMESTAMP (6), 
-	"REQUIREDPASSWORDCHANGE" NUMBER(10,0),
+	"REQUIREDPASSWORDCHANGE" NUMBER(10,0), 
 	"NOPASSWORDEXPIRATION" NUMBER(10,0)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table DIR_USER_GROUP
+--------------------------------------------------------
+
+  CREATE TABLE "DIR_USER_GROUP" 
+   (	"GROUPID" VARCHAR2(255 CHAR), 
+	"USERID" VARCHAR2(255 CHAR)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table DIR_USER_META
+--------------------------------------------------------
+
+  CREATE TABLE "DIR_USER_META" 
+   (	"USERNAME" VARCHAR2(255 CHAR), 
+	"META_KEY" VARCHAR2(255 CHAR), 
+	"META_VALUE" VARCHAR2(4000)
    ) ;
 --------------------------------------------------------
 --  DDL for Table DIR_USER_PASSWORD_HISTORY
@@ -347,12 +395,17 @@
 	"UPDATEDDATE" TIMESTAMP (6)
    ) ;
 --------------------------------------------------------
---  DDL for Table DIR_USER_GROUP
+--  DDL for Table DIR_USER_REPLACEMENT
 --------------------------------------------------------
 
-  CREATE TABLE "DIR_USER_GROUP" 
-   (	"GROUPID" VARCHAR2(255 CHAR), 
-	"USERID" VARCHAR2(255 CHAR)
+  CREATE TABLE "DIR_USER_REPLACEMENT" 
+   (	"ID" VARCHAR2(255 CHAR), 
+	"USERNAME" VARCHAR2(255 CHAR), 
+	"REPLACEMENTUSER" VARCHAR2(255 CHAR), 
+	"APPID" VARCHAR2(255 CHAR), 
+	"PROCESSIDS" VARCHAR2(255 CHAR), 
+	"STARTDATE" TIMESTAMP (6), 
+	"ENDDATE" TIMESTAMP (6)
    ) ;
 --------------------------------------------------------
 --  DDL for Table DIR_USER_ROLE
@@ -3601,6 +3654,40 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
  
   ALTER TABLE "WF_SETUP" ADD PRIMARY KEY ("ID") ENABLE;
 --------------------------------------------------------
+--  Constraints for Table APP_FORM_DATA_AUDIT_TRAIL
+--------------------------------------------------------
+
+  ALTER TABLE "APP_FORM_DATA_AUDIT_TRAIL" MODIFY ("ID" NOT NULL ENABLE);
+
+  ALTER TABLE "APP_FORM_DATA_AUDIT_TRAIL" ADD PRIMARY KEY ("ID") ENABLE;
+--------------------------------------------------------
+--  Constraints for Table APP_RESOURCE
+--------------------------------------------------------
+
+  ALTER TABLE "APP_RESOURCE" MODIFY ("ID" NOT NULL ENABLE);
+
+  ALTER TABLE "APP_RESOURCE" MODIFY ("APPVERSION" NOT NULL ENABLE);
+
+  ALTER TABLE "APP_RESOURCE" MODIFY ("APPID" NOT NULL ENABLE);
+
+  ALTER TABLE "APP_RESOURCE" ADD PRIMARY KEY ("APPID", "APPVERSION", "ID") ENABLE;
+--------------------------------------------------------
+--  Constraints for Table DIR_USER_META
+--------------------------------------------------------
+
+  ALTER TABLE "DIR_USER_META" MODIFY ("META_KEY" NOT NULL ENABLE);
+
+  ALTER TABLE "DIR_USER_META" MODIFY ("USERNAME" NOT NULL ENABLE);
+
+  ALTER TABLE "DIR_USER_META" ADD PRIMARY KEY ("USERNAME", "META_KEY") ENABLE;
+--------------------------------------------------------
+--  Constraints for Table DIR_USER_REPLACEMENT
+--------------------------------------------------------
+
+  ALTER TABLE "DIR_USER_REPLACEMENT" MODIFY ("ID" NOT NULL ENABLE);
+
+  ALTER TABLE "DIR_USER_REPLACEMENT" ADD PRIMARY KEY ("ID") ENABLE;
+--------------------------------------------------------
 --  DDL for Index I1_SHKACTIVITIES
 --------------------------------------------------------
 
@@ -4749,7 +4836,12 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
 
   ALTER TABLE "SHKXPDLREFERENCES" ADD CONSTRAINT "SHKXPDLREFERENCES_REFERR1" FOREIGN KEY ("REFERRINGXPDL")
 	  REFERENCES "SHKXPDLS" ("OID") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table APP_RESOURCE
+--------------------------------------------------------
 
+  ALTER TABLE "APP_RESOURCE" ADD CONSTRAINT "FK_NNVKG0H6YY8O3F4YJHD20URY0" FOREIGN KEY ("APPID", "APPVERSION")
+	  REFERENCES "APP_APP" ("APPID", "APPVERSION") ENABLE;
 
 
 
