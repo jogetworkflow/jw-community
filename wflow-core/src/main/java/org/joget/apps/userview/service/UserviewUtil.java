@@ -223,11 +223,13 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef != null) {
             UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            String json = userviewDef.getJson();
-            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
-            UserviewTheme theme = userviewSetting.getTheme();
-            if (theme instanceof UserviewPwaTheme) {
-                manifest = ((UserviewPwaTheme)theme).getManifest(appId, userviewId);
+            if (userviewDef != null) {
+                String json = userviewDef.getJson();
+                UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+                UserviewTheme theme = userviewSetting.getTheme();
+                if (theme instanceof UserviewPwaTheme) {
+                    manifest = ((UserviewPwaTheme)theme).getManifest(appId, userviewId);
+                }
             }
         }
         return manifest;    
@@ -241,11 +243,13 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef != null) {
             UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            String json = userviewDef.getJson();
-            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
-            UserviewTheme theme = userviewSetting.getTheme();
-            if (theme instanceof UserviewPwaTheme) {
-                serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId);
+            if (userviewDef != null) {
+                String json = userviewDef.getJson();
+                UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+                UserviewTheme theme = userviewSetting.getTheme();
+                if (theme instanceof UserviewPwaTheme) {
+                    serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId);
+                }
             }
         }
         return serviceWorkerJs;
