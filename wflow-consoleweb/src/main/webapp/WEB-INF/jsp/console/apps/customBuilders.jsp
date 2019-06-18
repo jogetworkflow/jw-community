@@ -88,7 +88,17 @@
                 'color' : '<fmt:message key="console.tag.color"/>',
                 'search' : '<fmt:message key="console.tag.search"/>',
                 'show' : '<fmt:message key="console.tag.show"/>',
-                'hide' : '<fmt:message key="console.tag.hide"/>'
+                'hide' : '<fmt:message key="console.tag.hide"/>',
+                'red' : '<fmt:message key="console.tag.red"/>',
+                'pink' : '<fmt:message key="console.tag.pink"/>',
+                'orange' : '<fmt:message key="console.tag.orange"/>',
+                'yellow' : '<fmt:message key="console.tag.yellow"/>',
+                'green' : '<fmt:message key="console.tag.green"/>',
+                'lime' : '<fmt:message key="console.tag.lime"/>',
+                'blue' : '<fmt:message key="console.tag.blue"/>',
+                'sky' : '<fmt:message key="console.tag.sky"/>',
+                'purple' : '<fmt:message key="console.tag.purple"/>',
+                'black' : '<fmt:message key="console.tag.black"/>'
             }
         });
     });

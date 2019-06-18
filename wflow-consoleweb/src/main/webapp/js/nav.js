@@ -170,7 +170,7 @@
                     
                     for (var i in tags) {
                         var tinfo = Nav.definition["labels"][tags[i]];
-                        var label = "&nbsp;";
+                        var label = "<span style=\"visibility:hidden\">"+tinfo.color + " " + Nav.options.message[tinfo.color]+"</span>";
                         if (tinfo.label !== undefined && tinfo.label !== "") {
                             label = tinfo.label;
                         }
@@ -336,7 +336,7 @@
                 value : tagId
             });
             
-            var label = "&nbsp;";
+            var label = "<span style=\"visibility:hidden\">"+tag.color+" "+Nav.options.message[tag.color]+"</span>";
             if (tag.label !== undefined && tag.label !== "") {
                 label = tag.label;
             }
