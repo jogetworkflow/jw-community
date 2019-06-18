@@ -59,6 +59,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.MockRequest;
 import org.joget.plugin.base.Plugin;
@@ -2194,8 +2195,12 @@ public class FormUtil implements ApplicationContextAware {
                 for (Object p : r.getCustomProperties().keySet()) {
                     obj.put(p.toString(), r.getProperty(p.toString()));
                 }
-                obj.put(FormUtil.PROPERTY_DATE_CREATED, r.getDateCreated());
-                obj.put(FormUtil.PROPERTY_DATE_MODIFIED, r.getDateModified());
+                if (r.getDateCreated() != null) {
+                    obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), null, AppUtil.getAppDateFormat()));
+                }
+                if (r.getDateModified() != null) {
+                    obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
+                }
                 
                 if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
                     JSONObject filePaths = new JSONObject();

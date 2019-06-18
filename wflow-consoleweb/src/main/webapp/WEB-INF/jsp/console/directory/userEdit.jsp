@@ -82,42 +82,6 @@
                     </span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.employment.common.label.organization"/></label>
-                    <span class="form-input">
-                        <select id="employeeOrganization" name="employeeOrganization">
-                            <option value=""></option>
-                            <c:forEach items="${organizations}" var="org">
-                                <option value="<c:out value="${org.id}"/>" <c:if test="${org.id eq employeeOrganization}">selected</c:if>><c:out value="${org.name}"/></option>
-                            </c:forEach>
-                        </select>
-                    </span>
-                </div>
-                <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
-                    <span class="form-input">
-                        <select id="employeeDepartment" name="employeeDepartment">
-                            <option value=""></option>
-                        </select>
-                    </span>
-                </div>
-                <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.employment.common.label.hod"/></label>
-                    <span class="form-input">
-                        <select id="employeeDepartmentHod" name="employeeDepartmentHod">
-                            <option value="no" <c:if test="${employeeDepartmentHod eq 'no'}">selected</c:if>><fmt:message key="console.directory.employment.common.label.hod.no"/></option>
-                            <option value="yes" <c:if test="${employeeDepartmentHod eq 'yes'}">selected</c:if>><fmt:message key="console.directory.employment.common.label.hod.yes"/></option>
-                        </select>
-                    </span>
-                </div>
-                <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.employment.common.label.grade"/></label>
-                    <span class="form-input">
-                        <select id="employeeGrade" name="employeeGrade">
-                            <option value=""></option>
-                        </select>
-                    </span>
-                </div>
-                <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.employment.common.label.startDate"/></label>
                     <span class="form-input">
                         <input id="employeeStartDate" name="employeeStartDate" type="text" value="<c:out value="${employeeStartDate}"/>"/>
@@ -129,6 +93,119 @@
                         <input id="employeeEndDate" name="employeeEndDate" type="text" value="<c:out value="${employeeEndDate}"/>"/>
                     </span>
                 </div>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
+                    <span class="form-input">
+                        <table>
+                            <tr class="template" style="display:none;">
+                                <td class="delete">
+                                    <a class="delete"><i class="fas fa-minus-circle"></i><a>
+                                </td>
+                                <td class="org">
+                                    <select name="employeeDeptOrganization" disabled="true">
+                                        <option value=""><fmt:message key="console.directory.employment.common.label.organization"/></option>
+                                        <c:forEach items="${organizations}" var="org">
+                                            <option value="<c:out value="${org.id}"/>"><c:out value="${org.name}"/></option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                                <td class="dept">
+                                    <select name="employeeDepartment" disabled="true">
+                                        <option value=""><fmt:message key="console.directory.employment.common.label.department"/></option>
+                                    </select>
+                                </td>
+                                <td class="isHod">
+                                    <input type="hidden" name="employeeDepartmentHod" value="" disabled="true"/>
+                                    <label><input value="true" type="checkbox" disabled="true"/><fmt:message key="console.directory.employment.common.label.hod"/></label>
+                                </td>
+                            </tr>
+                            <c:if test="${!empty employments}">
+                                <c:forEach items="${employments}" var="e" >
+                                    <c:if test="${!empty e.departmentId}">
+                                        <tr class="row">
+                                            <td class="delete">
+                                                <a class="delete"><i class="fas fa-minus-circle"></i><a>
+                                            </td>
+                                            <td class="org">
+                                                <select name="employeeDeptOrganization">
+                                                    <option value=""><fmt:message key="console.directory.employment.common.label.organization"/></option>
+                                                    <c:forEach items="${organizations}" var="org">
+                                                        <option value="<c:out value="${org.id}"/>" <c:if test="${org.id eq e.organizationId}">selected</c:if>><c:out value="${org.name}"/></option>
+                                                    </c:forEach>
+                                                </select>
+                                            </td>
+                                            <td class="dept">
+                                                <select name="employeeDepartment" data-value="<c:out value="${e.departmentId}"/>">
+                                                    <option value=""><fmt:message key="console.directory.employment.common.label.department"/></option>
+                                                </select>
+                                            </td>
+                                            <td class="isHod">
+                                                <input type="hidden" name="employeeDepartmentHod" value="<c:if test="${!empty e.hods}">true</c:if>"/>
+                                                <label><input value="true" type="checkbox" <c:if test="${!empty e.hods}">checked</c:if>/> <fmt:message key="console.directory.employment.common.label.hod"/></label>
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                </c:forEach>
+                            </c:if>
+                        </table> 
+                        <a class="add addDept"><i class="fas fa-plus-circle"></i></a>        
+                    </span>
+                </div>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.directory.employment.common.label.grade"/></label>
+                    <span class="form-input">
+                        <table>
+                            <tr class="template" style="display:none;">
+                                <td class="delete">
+                                    <a class="delete"><i class="fas fa-minus-circle"></i><a>
+                                </td>
+                                <td class="org">
+                                    <select name="employeeGradeOrganization" disabled="true">
+                                        <option value=""><fmt:message key="console.directory.employment.common.label.organization"/></option>
+                                        <c:forEach items="${organizations}" var="org">
+                                            <option value="<c:out value="${org.id}"/>"><c:out value="${org.name}"/></option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                                <td class="grade">
+                                    <select name="employeeGrade" disabled="true">
+                                        <option value=""><fmt:message key="console.directory.employment.common.label.grade"/></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <c:set var="displayed" value="" />
+                            <c:if test="${!empty employments}">
+                                <c:forEach items="${employments}" var="e" >
+                                    <c:if test="${!empty e.gradeId}">
+                                        <c:set var="check" value="${e.gradeId};" />
+                                        <c:if test="${!fn:contains(displayed, check)}">
+                                            <tr class="row">
+                                                <td class="delete">
+                                                    <a class="delete"><i class="fas fa-minus-circle"></i><a>
+                                                </td>
+                                                <td class="org">
+                                                    <select name="employeeOrganization">
+                                                        <option value=""><fmt:message key="console.directory.employment.common.label.organization"/></option>
+                                                        <c:forEach items="${organizations}" var="org">
+                                                            <option value="<c:out value="${org.id}"/>" <c:if test="${org.id eq e.organizationId}">selected</c:if>><c:out value="${org.name}"/></option>
+                                                        </c:forEach>
+                                                    </select>
+                                                </td>
+                                                <td class="grade">
+                                                    <select name="employeeGrade" data-value="<c:out value="${e.gradeId}"/>">
+                                                        <option value=""><fmt:message key="console.directory.employment.common.label.grade"/></option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <c:set var="displayed" value="${displayed}${e.grade.id};" />
+                                        </c:if>
+                                    </c:if>
+                                </c:forEach>
+                            </c:if>
+                        </table> 
+                        <a class="add addGrade"><i class="fas fa-plus-circle"></i></a>        
+                    </span>
+                </div>                
             </fieldset>
             ${userFormFooter} 
             <div class="form-buttons">
@@ -139,16 +216,35 @@
     </div>
 
     <script type="text/javascript">
+        var orgs = {};
+        
         $(document).ready(function(){
-            loadDepartmentAndGradeOption();
-            showHideHod();
-
-            $('#employeeOrganization').change(function(){
-                loadDepartmentAndGradeOption();
+            $("table").on("click", "a.delete", function(){
+               $(this).closest("tr").remove();
+               return false;
             });
             
-            $('#employeeDepartment').change(function(){
-                showHideHod();
+            $("a.add").on("click", function(){
+               var table = $(this).closest(".form-input").find("table");
+               var template = $(table).find("tr.template").html();
+               $(table).append("<tr class=\"row\">"+template+"</tr>");
+               $(table).find("tr:last").find("select, input").removeAttr("disabled");
+               return false;
+            });
+            
+            loadDepartmentAndGradeOption();
+
+            $('table').on("change", "tr.row td.org select", function(){
+                updateDepartmentOrGradeOption(this);
+            });
+            
+            $('table').on("change", "tr.row td.isHod input[type=checkbox]", function(){
+                var hidden = $(this).closest("td").find("input[type=hidden]");
+                if ($(this).is(":checked")) {
+                    $(hidden).val("true");
+                } else {
+                    $(hidden).val("");
+                }
             });
         });
 
@@ -168,53 +264,61 @@
         }
 
         function loadDepartmentAndGradeOption(){
-            if($('#employeeOrganization').val() != ""){
-                var callback = {
-                    success : function(data) {
-                        var obj = eval('(' + data + ')');
-                        var departments = obj.departments;
-                        var grades = obj.grades;
-
-                        $('#employeeDepartment option').remove();
-                        $('#employeeGrade option').remove();
-
-                        if(departments !=null && departments.length > 0){
-                            for(i=0; i<departments.length; i++){
-                                $('#employeeDepartment').append('<option value="' + UI.escapeHTML(departments[i].id) + '">' + departments[i].prefix + ' ' + UI.escapeHTML(departments[i].name) + '</option>');
-                            }
-                        }
-
-                        if(grades !=null && grades.length > 0){
-                            for(i=0; i<grades.length; i++){
-                                $('#employeeGrade').append('<option value="' + UI.escapeHTML(grades[i].id) + '">' + UI.escapeHTML(grades[i].name) + '</option>');
-                            }
-                        }
-
-                        if($('#employeeOrganization').val() == "<c:out value="${employeeOrganization}"/>"){
-                            $('#employeeDepartment option[value=<c:out value="${employeeDepartment}"/>]').attr("selected", "selected");
-                            $('#employeeGrade option[value=<c:out value="${employeeGrade}"/>]').attr("selected", "selected");
-                        }
-                        showHideHod();
-                    }
+            $('tr.row td.org select').each(function(){
+                if ($(this).val() !== "" && orgs[$(this).val()] === undefined) {
+                    orgs[$(this).val()] = {};
                 }
-                ConnectionManager.get('${pageContext.request.contextPath}/web/json/directory/admin/user/deptAndGrade/options', callback, 'rnd=' + new Date().valueOf().toString() + '&orgId='+$('#employeeOrganization').val());
-            }else{
-                $('#employeeDepartment option').remove();
-                $('#employeeGrade option').remove();
-                showHideHod();
+            });
+            
+            for (var property in orgs) {
+                if (orgs.hasOwnProperty(property)) {
+                    retrieveOptions(property);
+                }
             }
         }
         
-        function showHideHod(){
-            if($('#employeeDepartment').val() != "" && $('#employeeDepartment').val() != undefined){
-                $('#employeeDepartmentHod').parent().parent().show();
-                $('#employeeDepartmentHod').removeAttr("disabled");
-            }else{
-                $('#employeeDepartmentHod').parent().parent().hide();
-                $('#employeeDepartmentHod').attr("disabled", "disabled");
+        function retrieveOptions(orgId) {
+            if (orgs[orgId] === undefined || orgs[orgId].departments === undefined) {
+                ConnectionManager.get('${pageContext.request.contextPath}/web/json/directory/admin/user/deptAndGrade/options', {
+                    success : function(data) {
+                        var obj = eval('(' + data + ')');
+                        orgs[orgId] = obj;
+                        $('tr.row td.org select').each(function(){
+                            if ($(this).val() === orgId) {
+                                updateDepartmentOrGradeOption(this);
+                            }
+                        });
+                    }
+                }, 'rnd=' + new Date().valueOf().toString() + '&orgId='+orgId);
             }
         }
-
+        
+        function updateDepartmentOrGradeOption(select) {
+            var orgId = $(select).val();
+            if (orgs[orgId] === undefined || orgs[orgId].departments === undefined) {
+                retrieveOptions(orgId);
+            } else {
+                var td = $(select).closest("tr").find("td.grade, td.dept");
+                var options = [];
+                if ($(td).hasClass("grade") && Array.isArray(orgs[orgId].grades)) {
+                    options = orgs[orgId].grades;
+                } else if ($(td).hasClass("dept") && Array.isArray(orgs[orgId].departments)) {
+                    options = orgs[orgId].departments;
+                }
+                
+                var field = $(td).find("select");
+                var dvalue = $(field).data("value");
+                if (dvalue === undefined || dvalue === null) {
+                    dvalue = "";
+                }
+                $(field).find("option:not(:eq(1))").remove();
+                for(var i=0; i < options.length; i++){
+                    $(field).append('<option value="' + UI.escapeHTML(options[i].id) + '">' + UI.escapeHTML(options[i].name) + '</option>');
+                }
+                $(field).val(dvalue);
+            }
+        }
+        
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {
                 parent.PopupDialog.closeDialog();

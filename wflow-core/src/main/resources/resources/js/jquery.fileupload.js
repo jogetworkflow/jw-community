@@ -52,6 +52,20 @@
                 if (o.width !== "") {
                     options.thumbnailWidth = o.width + "px";
                 }
+                if (o.resizeWidth !== "" || o.resizeHeight !== "") {
+                    if (o.resizeWidth !== "") {
+                        options.resizeWidth = o.resizeWidth;
+                    }
+                    if (o.resizeHeight !== "") {
+                        options.resizeHeight = o.resizeHeight;
+                    }
+                    if (o.resizeQuality !== "") {
+                        options.resizeQuality = o.resizeQuality;
+                    }
+                    if (o.resizeMethod !== "") {
+                        options.resizeMethod = o.resizeMethod;
+                    }
+                }
                 
                 var myDropzone = new Dropzone("#"+$(target).attr("id"), options);
                 myDropzone.on("success", function(file, resp) {

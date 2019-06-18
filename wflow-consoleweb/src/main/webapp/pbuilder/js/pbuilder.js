@@ -2467,14 +2467,14 @@ ProcessBuilder.Designer = {
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
                             }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
-                            durationUnit = "1";
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
+                            durationUnit = "2";
                             var matches = deadlineCondition.match("parse\(.+\)");
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
                             }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
-                            durationUnit = "2";
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
+                            durationUnit = "1";
                             var matches = deadlineCondition.match("parse\(.+\)");
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);

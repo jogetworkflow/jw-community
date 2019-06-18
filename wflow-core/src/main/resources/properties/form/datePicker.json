@@ -61,6 +61,7 @@
         name : 'dataFormat',
         label : '@@form.datepicker.dataFormat@@',
         type : 'textfield',
+        value : 'yyyy-MM-dd',
         description : '@@form.datepicker.dataFormat.eg@@',
         control_field: 'datePickerType',
         control_value: '^$|dateTime',

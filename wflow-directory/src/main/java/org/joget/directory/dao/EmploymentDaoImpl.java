@@ -81,6 +81,22 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
     public Boolean updateEmployment(Employment employment) {
         try {
             merge("Employment", employment);
+            
+            User user = employment.getUser();
+            if (user != null) {
+                //update all employments under same user
+                Set<Employment> employments = user.getEmployments();
+                for (Employment e : employments) {
+                    if (!e.getId().equals(employment.getId())) {
+                        e.setEmployeeCode(employment.getEmployeeCode());
+                        e.setRole(employment.getRole());
+                        e.setStartDate(employment.getStartDate());
+                        e.setEndDate(employment.getEndDate());
+                        merge("Employment", e);
+                    }
+                }
+            }
+            
             return true;
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Update Employment Error!");
@@ -114,10 +130,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     for (EmploymentReportTo r : (Set<EmploymentReportTo>) employment.getSubordinates()) {
                         employmentReportToDao.deleteEmploymentReportTo(r.getId());
                     }
+                    employment.getSubordinates().clear();
                 }
 
                 if (employment.getEmploymentReportTo() != null) {
                     employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
+                    employment.setEmploymentReportTo(null);
                 }
 
                 delete("Employment", employment);
@@ -183,6 +201,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 condition += " and e.grade.id = ?";
                 param.add(gradeId);
             }
+            
+            condition += " group by e.userId";
 
             return find("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
@@ -217,6 +237,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 condition += " and e.grade.id = ?";
                 param.add(gradeId);
             }
+            
+            condition += " group by e.userId";
 
             return count("Employment", condition, param.toArray());
         } catch (Exception e) {
@@ -231,14 +253,16 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Department department = departmentDao.getDepartment(departmentId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                    employment.getHods().clear();
-                    employment.getHods().add(department);
-                saveOrUpdate("Employment", employment);
-                department.setHod(employment);
-                departmentDao.updateDepartment(department);
+                for (Employment employment : (Set<Employment>) user.getEmployments()) {
+                    if (department.getId().equals(employment.getDepartmentId())) {
+                        employment.getHods().clear();
+                        employment.getHods().add(department);
+                        saveOrUpdate("Employment", employment);
+                        department.setHod(employment);
+                        departmentDao.updateDepartment(department);
+                    }
+                }
                 return true;
             }
         } catch (Exception e) {
@@ -252,15 +276,14 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Department department = departmentDao.getDepartment(departmentId);
 
-            //get only 1st employment
-            if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (department != null && employment.getHods().contains(department)) {
-                    employment.getHods().clear();
-                    saveOrUpdate("Employment", employment);
-                    department.setHod(null);
-                    departmentDao.updateDepartment(department);
-                    return true;
+            if (department != null && user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
+                for (Employment employment : (Set<Employment>) user.getEmployments()) {
+                    if (department.getId().equals(employment.getDepartmentId()) && !employment.getHods().isEmpty()) {
+                        employment.getHods().clear();
+                        saveOrUpdate("Employment", employment);
+                        department.setHod(null);
+                        departmentDao.updateDepartment(department);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -274,7 +297,6 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             User reportToUser = userDao.getUserById(reportToUserId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && reportToUser != null && reportToUser.getEmployments() != null && reportToUser.getEmployments().size() > 0) {
                 Employment ue = null;
                 Employment rte = null;
@@ -292,12 +314,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 
                 if (ue != null && ue.getEmploymentReportTo() != null) {
                     //delete current report to
-                    employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
+                    employmentReportToDao.deleteEmploymentReportTo(ue.getEmploymentReportTo().getId());
                 }
-
+                
                 EmploymentReportTo employmentReportTo = new EmploymentReportTo();
-                employmentReportTo.setSubordinate(employment);
-                employmentReportTo.setReportTo(reportToEmployment);
+                employmentReportTo.setSubordinate(ue);
+                employmentReportTo.setReportTo(rte);
                 employmentReportToDao.addEmploymentReportTo(employmentReportTo);
 
                 return true;
@@ -312,13 +334,14 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         try {
             User user = userDao.getUserById(userId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-
-                if (employment.getEmploymentReportTo() != null) {
-                    return employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
+                for (Employment employment : (Set<Employment>)user.getEmployments()) {
+                    if (employment.getEmploymentReportTo() != null) {
+                        //delete current report to
+                        employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
+                    }
                 }
+                return true;
             }
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Unassign User Report To Error!");
@@ -331,21 +354,39 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Organization organization = organizationDao.getOrganization(organizationId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && organization != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (!organization.getId().equals(employment.getOrganizationId())) {
-                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
-                        Department orgDepartment = employment.getDepartment();
-                        orgDepartment.setHod(null);
-                        departmentDao.updateDepartment(orgDepartment);
+                boolean found = false;
+                Employment isNull = null;
+                Employment first = null;
+                
+                for (Employment employment : (Set<Employment>) user.getEmployments()) {
+                    if (first == null) {
+                        first = employment;
                     }
-                    
-                    employment.setOrganizationId(organization.getId());
-                    employment.setDepartmentId(null);
-                    employment.setGradeId(null);
-                    employment.getHods().clear();
-                    saveOrUpdate("Employment", employment);
+                    if (employment.getOrganizationId() == null) {
+                        isNull = employment;
+                    } else if (organization.getId().equals(employment.getOrganizationId())) {
+                        found = true;
+                    }
+                }
+                
+                if (!found) {
+                    if (isNull == null) {
+                        isNull = new Employment();
+                        isNull.setUserId(userId);
+                        if (first != null) {
+                            isNull.setEmployeeCode(first.getEmployeeCode());
+                            isNull.setRole(first.getRole());
+                            isNull.setStartDate(first.getStartDate());
+                            isNull.setEndDate(first.getEndDate());
+                        }
+                        isNull.setHods(new HashSet());
+                    }
+                    isNull.setOrganizationId(organization.getId());
+                    isNull.setDepartmentId(null);
+                    isNull.setGradeId(null);
+                    isNull.getHods().clear();
+                    saveOrUpdate("Employment", isNull);
                 }
                 return true;
             }
@@ -360,23 +401,25 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Organization organization = organizationDao.getOrganization(organizationId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && organization != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (organization.getId().equals(employment.getOrganizationId())) {
-                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
-                        Department orgDepartment = employment.getDepartment();
-                        orgDepartment.setHod(null);
-                        departmentDao.updateDepartment(orgDepartment);
+                //always keep 1, delete the others;
+                int size = user.getEmployments().size();
+                for (Employment e : (Set<Employment>) user.getEmployments()) {
+                    if (organization.getId().equals(e.getOrganizationId())) {
+                        if (size > 1) {
+                            delete("Employment", e);
+                            size--;
+                        } else {
+                            e.setOrganizationId(null);
+                            e.setDepartmentId(null);
+                            e.setGradeId(null);
+                            e.getHods().clear();
+                            saveOrUpdate("Employment", e);
+                        }
                     }
-                    
-                    employment.setOrganizationId(null);
-                    employment.setDepartmentId(null);
-                    employment.setGradeId(null);
-                    employment.getHods().clear();
-                    saveOrUpdate("Employment", employment);
-                    return true;
                 }
+                
+                return true;
             }
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Unassign User From Organization Error!");
@@ -389,20 +432,38 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Department department = departmentDao.getDepartment(departmentId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (!department.getId().equals(employment.getDepartmentId())) {
-                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
-                        Department orgDepartment = employment.getDepartment();
-                        orgDepartment.setHod(null);
-                        departmentDao.updateDepartment(orgDepartment);
+                boolean found = false;
+                Employment isNull = null;
+                Employment first = null;
+                
+                for (Employment employment : (Set<Employment>) user.getEmployments()) {
+                    if (first == null) {
+                        first = employment;
                     }
-                    
-                    employment.setOrganizationId(department.getOrganization().getId());
-                    employment.setDepartmentId(department.getId());
-                    employment.getHods().clear();
-                    saveOrUpdate("Employment", employment);
+                    if (employment.getOrganizationId() == null 
+                            || (employment.getOrganizationId().equals(department.getOrganization().getId()) && employment.getDepartmentId() == null)) {
+                        isNull = employment;
+                    } else if (department.getOrganization().getId().equals(employment.getOrganizationId()) && department.getId().equals(employment.getDepartmentId())) {
+                        found = true;
+                    }
+                }
+                
+                if (!found) {
+                    if (isNull == null) {
+                        isNull = new Employment();
+                        isNull.setUserId(userId);
+                        if (first != null) {
+                            isNull.setEmployeeCode(first.getEmployeeCode());
+                            isNull.setRole(first.getRole());
+                            isNull.setStartDate(first.getStartDate());
+                            isNull.setEndDate(first.getEndDate());
+                        }
+                        isNull.setHods(new HashSet());
+                    }
+                    isNull.setOrganizationId(department.getOrganization().getId());
+                    isNull.setDepartmentId(department.getId());
+                    saveOrUpdate("Employment", isNull);
                 }
                 return true;
             }
@@ -417,21 +478,34 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Department department = departmentDao.getDepartment(departmentId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (department.getId().equals(employment.getDepartmentId())) {
-                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
-                        Department orgDepartment = employment.getDepartment();
+                int sameOrg = 0;
+                Employment found = null;
+                
+                for (Employment e : (Set<Employment>) user.getEmployments()) {
+                    if (department.getOrganization().getId().equals(e.getOrganizationId())) {
+                        if (department.getId().equals(e.getDepartmentId())) {
+                            found = e;
+                        }
+                        sameOrg++;
+                    }
+                }
+                
+                if (found != null) {
+                    if (found.getHods() != null && !found.getHods().isEmpty() && found.getDepartment() != null) {
+                        Department orgDepartment = found.getDepartment();
                         orgDepartment.setHod(null);
                         departmentDao.updateDepartment(orgDepartment);
                     }
-                    
-                    employment.setDepartmentId(null);
-                    employment.getHods().clear();
-                    saveOrUpdate("Employment", employment);
-                    return true;
+                    if (sameOrg > 1) {
+                        delete("Employment", found);
+                    } else {
+                        found.setDepartmentId(null);
+                        found.getHods().clear();
+                        saveOrUpdate("Employment", found);
+                    }
                 }
+                return true;
             }
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Unassign User from Department Error!");
@@ -444,13 +518,43 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Grade grade = gradeDao.getGrade(gradeId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && grade != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (!grade.getId().equals(employment.getGradeId())) {
-                    employment.setGradeId(grade.getId());
-                    saveOrUpdate("Employment", employment);
+                Employment isNull = null;
+                Employment first = null;
+                boolean isUpdated = false;
+                
+                for (Employment employment : (Set<Employment>) user.getEmployments()) {
+                    if (first == null) {
+                        first = employment;
+                    }
+                    if (employment.getOrganizationId() == null) {
+                        isNull = employment;
+                    } else if (grade.getOrganization().getId().equals(employment.getOrganizationId())) {
+                        employment.setGradeId(grade.getId());
+                        saveOrUpdate("Employment", employment);
+                        isUpdated = true;
+                    }
                 }
+                
+                if (isUpdated) {
+                    return true;
+                }
+                
+                if (isNull == null) {
+                    isNull = new Employment();
+                    isNull.setUserId(userId);
+                    if (first != null) {
+                        isNull.setEmployeeCode(first.getEmployeeCode());
+                        isNull.setRole(first.getRole());
+                        isNull.setStartDate(first.getStartDate());
+                        isNull.setEndDate(first.getEndDate());
+                    }
+                    isNull.setHods(new HashSet());
+                }
+                isNull.setOrganizationId(grade.getOrganization().getId());
+                isNull.setGradeId(grade.getId());
+                saveOrUpdate("Employment", isNull);
+                
                 return true;
             }
         } catch (Exception e) {
@@ -464,14 +568,29 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             User user = userDao.getUserById(userId);
             Grade grade = gradeDao.getGrade(gradeId);
 
-            //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && grade != null) {
-                Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (grade.getId().equals(employment.getGradeId())) {
-                    employment.setGradeId(null);
-                    saveOrUpdate("Employment", employment);
-                    return true;
+                Collection<Employment> sameOrgs = new ArrayList<Employment>();
+
+                for (Employment e : (Set<Employment>) user.getEmployments()) {
+                    if (grade.getOrganization().getId().equals(e.getOrganizationId())) {
+                        sameOrgs.add(e);
+                    }
                 }
+                
+                int size = sameOrgs.size();
+                for (Employment e : sameOrgs) {
+                    if (gradeId.equals(e.getGradeId())) {
+                        if (size > 1 && e.getDepartmentId() == null) {
+                            delete("Employment", e);
+                            size--;
+                        } else {
+                            e.setGradeId(null);
+                            saveOrUpdate("Employment", e);
+                        }
+                    }
+                }
+                
+                return true;
             }
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "UnAssign User from Grade Error!");
@@ -491,7 +610,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and (e.organizationId is null or e.organizationId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) group by e.userId";
 
             return find("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
@@ -513,7 +632,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and (e.organizationId is null or e.organizationId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) group by e.userId";
 
             return count("Employment", condition, param.toArray());
         } catch (Exception e) {
@@ -535,7 +654,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and (e.organizationId = ? or e.organizationId is null) and (e.departmentId <> ? or e.departmentId is null or e.departmentId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) group by e.userId";
             param.add(organizationId);
             param.add(departmentId);
 
@@ -559,7 +678,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and (e.organizationId = ? or e.organizationId is null) and (e.departmentId <> ? or e.departmentId is null or e.departmentId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) group by e.userId";
             param.add(organizationId);
             param.add(departmentId);
 
@@ -583,7 +702,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.organizationId = ? and (e.gradeId <> ? or e.gradeId is null or e.gradeId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) group by e.userId";
             param.add(organizationId);
             param.add(gradeId);
 
@@ -607,7 +726,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.organizationId = ? and (e.gradeId <> ? or e.gradeId is null or e.gradeId = '')";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) group by e.userId";
             param.add(organizationId);
             param.add(gradeId);
 
@@ -617,5 +736,81 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         }
 
         return 0L;
+    }
+    
+    public Collection<Employment> getEmploymentsNotInOrganization(String filterString, String organizationId, String sort, Boolean desc, Integer start, Integer rows) {
+        try {
+            if (filterString == null) {
+                filterString = "";
+            }
+            Collection param = new ArrayList();
+            String condition = "where (e.user.username like ? or e.user.firstName like ? or e.user.lastName like ? or e.user.email like ?)";
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) group by e.userId";
+            param.add(organizationId);
+
+            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+        } catch (Exception e) {
+            LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Users No Have Organization Error!");
+        }
+
+        return null;
+    }
+
+    public Long getTotalEmploymentsNotInOrganization(String filterString, String organizationId) {
+        try {
+            if (filterString == null) {
+                filterString = "";
+            }
+            Collection param = new ArrayList();
+            String condition = "where (e.user.username like ? or e.user.firstName like ? or e.user.lastName like ? or e.user.email like ?)";
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+            param.add("%" + filterString + "%");
+
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) group by e.userId";
+            param.add(organizationId);
+
+            return count("Employment", condition, param.toArray());
+        } catch (Exception e) {
+            LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments No Have Organization Error!");
+        }
+
+        return 0L;
+    }
+    
+    @Override
+    protected void delete(String entityName, Object obj) {
+        //transfer reportTo if exist
+        Employment e = (Employment) obj;
+        if (e.getEmploymentReportTo() != null || (e.getSubordinates() != null && !e.getSubordinates().isEmpty())) {
+            User u = e.getUser();
+            if (u.getEmployments().size() > 1) {
+                for (Employment o : (Set<Employment>) u.getEmployments()) {
+                    if (!o.getId().equals(e.getId())) {
+                        if (e.getEmploymentReportTo() != null) {
+                            EmploymentReportTo ert = e.getEmploymentReportTo();
+                            ert.setSubordinate(o);
+                            employmentReportToDao.updateEmploymentReportTo(ert);
+                        }
+                        if (e.getSubordinates() != null && !e.getSubordinates().isEmpty()) {
+                            for (EmploymentReportTo ert : (Set<EmploymentReportTo>) e.getSubordinates()) {
+                                ert.setReportTo(o);
+                                employmentReportToDao.updateEmploymentReportTo(ert);
+                            }
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+        }
+        
+        super.delete(entityName, obj);
     }
 }
