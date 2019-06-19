@@ -49,6 +49,13 @@
                 return false;
             });
             
+            $(Nav.target).on("click", ".nv-tags .nv-tag", function(){
+                Nav.searchTag($(this));
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            });
+            
             $.tooltipster.off('close');
             $.tooltipster.on('close', function(event){
                 Nav.saveTags();
@@ -485,6 +492,25 @@
                 });
                 Nav.saveTags();
             }
+        },
+        searchTag: function(tag){
+            var searchTxt = "";
+            if ($(tag).find("span").length > 0) {
+                searchTxt = $(tag).find("span").text();
+                if (searchTxt.indexOf(" ") !== -1) {
+                    searchTxt = searchTxt.substring(searchTxt.indexOf(" ") + 1);
+                }
+            } else {
+                searchTxt = $(tag).text();
+            }
+            var filter = $(Nav.options.search).find("input").val();
+            if (filter.indexOf("#"+searchTxt) === -1) {
+                if (filter !== "") {
+                    filter += " ";
+                }
+                $(Nav.options.search).find("input").val(filter + "#" + searchTxt);
+            }
+            Nav.filter();
         }
     };
     window.Nav = Nav;
