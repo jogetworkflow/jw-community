@@ -15,7 +15,7 @@
 <div id="main">
     <div id="main-body">
         <div id="main-body-content">
-            <div class="followbuttondiv" style="display:none;"><a class="followbtn btn"><fmt:message key="console.log.unfollow"/></a></div>
+            <div class="followbuttondiv" style="display:none;"><a class="downloadbtn btn"><fmt:message key="general.method.label.download"/></a> <a class="followbtn btn"><fmt:message key="console.log.unfollow"/></a></div>
             <div id="logviewer">
                 <div id="logs">
                 </div> 
@@ -28,6 +28,8 @@
     $(document).ready(function() {
         var status = "";
         var navHeight = $("#nav").outerHeight(true);
+        var textFile = null;
+        var textChange = false;
         
         $(".followbtn").on("click", function(){
             if ($(this).hasClass("unfollow")) {
@@ -37,8 +39,27 @@
                 $(this).addClass("unfollow");
                 $(this).text("<fmt:message key="console.log.unfollow"/>");
             }
+        });
+        
+        $(".downloadbtn").on("click", function(){
+            var text = "";
+            $("#logviewer #logs .text").each(function(){
+                text += $(this).text() + "\n";
+            });
+            var data = new Blob([text], {type: 'text/plain'});
             
+            if (textFile !== null) {
+                window.URL.revokeObjectURL(textFile);
+                $(".hiddenLink").remove();
+            }
             
+            textFile = window.URL.createObjectURL(data);
+            textChange = false;
+            
+            var hiddenLink = $('<a class="hiddenLink" style="display:none" target="_blank" download="log_${appId}.txt">text</a>');
+            $(hiddenLink).attr("href", textFile);
+            $(".downloadbtn").after(hiddenLink);
+            $(hiddenLink)[0].click();
         });
         
         var scrollSmoothToBottom = function() {
@@ -61,6 +82,7 @@
         let messages = [];
         let timer;
         websocket.onmessage = function(event) {
+            textChange = true;
             var text = event.data;
             if (text.startsWith("INFO")) {
                 status = "info";
