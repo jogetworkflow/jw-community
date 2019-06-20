@@ -4,7 +4,7 @@
     <script type="text/javascript" src="${request.contextPath}/js/jquery/jquery.jeditable.js"></script>
     <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.Grid/js/jquery.formgrid.js"></script>
     <style type="text/css">
-        .grid table {
+        .cgrid table {
             width: 100%;
         }
         .grid th, .grid td {
@@ -39,7 +39,7 @@
 
     <label class="label">${element.properties.label!} <span class="form-cell-validator">${decoration}${customDecorator}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <div class="form-clear"></div>
-    <div class="grid grid_${element.properties.elementUniqueKey!} form-element" id="${elementParamName!}" name="${elementParamName!}">
+    <div class="grid cgrid grid_${element.properties.elementUniqueKey!} form-element" id="${elementParamName!}" name="${elementParamName!}">
         <table cellspacing="0" class="tablesaw tablesaw-stack" data-tablesaw-mode="stack">
             <thead>
                 <tr>
