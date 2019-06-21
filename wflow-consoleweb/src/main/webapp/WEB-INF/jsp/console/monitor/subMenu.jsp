@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ page import="org.joget.commons.util.HostManager"%>
+<%@ page import="org.joget.apm.APMUtil"%>
 
 <li id="nav-monitor-running"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/running"><span class="nav-steps"><i class="fas fa-play"></i></span><fmt:message key="console.header.submenu.label.runningProcesses"/></a></li>
 <li id="nav-monitor-completed"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/completed"><span class="nav-steps"><i class="fas fa-stop"></i></span><fmt:message key="console.header.submenu.label.completedProcesses"/></a></li>
@@ -12,8 +13,10 @@
 </c:if>
 <li id="nav-monitor-slog"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/slogs"><span class="nav-steps"><i class="fas fa-scroll"></i></span><fmt:message key="console.log.mtitle"/></a></li>
 <%--<li id="nav-monitor-sla"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/sla"><span class="nav-steps">&nbsp;</span><fmt:message key="wflowAdmin.sla.list.label.title"/></a></li>--%>
+<c:set var="isGlowrootAvailable" value="<%= APMUtil.isGlowrootAvailable() %>"/>
+<c:if test="${isGlowrootAvailable}">
 <li id="nav-monitor-apm"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/apm"><span class="nav-steps"><i class="fas fa-tachometer-alt"></i></span><fmt:message key="apm.performance"/></a></li>
-
+</c:if>
 <div id="adminWelcome">
     <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
 </div>
