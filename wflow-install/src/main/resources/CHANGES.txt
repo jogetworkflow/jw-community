@@ -9,7 +9,6 @@ SUMMARY IN 7.0-PREVIEW
   - Progressive Web Apps (PWA) supported Userview Theme 
 - DevOps & Application Performance Management (APM)
   - Embedded Git Integration
-  - Built-in Application Performance Management (APM)
   - Web App Log Viewer
   - JSON API for Deployment Automation
   - Online Presence Indicator
