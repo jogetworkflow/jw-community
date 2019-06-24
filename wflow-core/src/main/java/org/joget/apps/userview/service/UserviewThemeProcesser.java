@@ -270,7 +270,7 @@ public class UserviewThemeProcesser {
                     url += menuId; 
                 }
                 if (request.getQueryString() != null) {
-                    url += "?" + request.getQueryString();
+                    url += "?" + StringUtil.decodeURL(request.getQueryString());
                 }
             } else {
                 url += userview.getProperty("homeMenuId"); 
