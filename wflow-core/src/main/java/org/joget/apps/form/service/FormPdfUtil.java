@@ -429,7 +429,7 @@ public class FormPdfUtil {
         Matcher matcher = pattern.matcher(html);
         while (matcher.find()) {
             String text = matcher.group(0);
-            if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;") && !text.contains("&#")) {
+            if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;") && !text.contains("&quot;") && !text.contains("&#")) {
                 String replace = StringEscapeUtils.escapeXml(text);
                 html = html.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
             }

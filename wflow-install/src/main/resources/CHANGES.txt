@@ -2,8 +2,16 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.20
+=================
+4f63cf21 Fixed: wflow-core - Userview - Redirection URL after login is double encoded. #6609 @6.0-SNAPSHOT
+b5beee9d Fixed: wflow-wfengine - Monitoring - Number of activities in activities listing is incorrect on last page. @6.0-SNAPSHOT
+d4aa7082 Fixed: wflow-core - FormPdfUtil - Double quote in value is not render correctly in PDF. #6605 @6.0-SNAPSHOT
+37f1fc4f Fixed: wflow-core - Grid - Style affected other grid. #6603 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.19
 =================
+c7fcf6af Fixed: wflow-core - FormUtil - Format dateCreated & dateModified according to System Date Format. #6527 6.0-SNAPSHOT
 6b7d45ae Fixed: wflow-plugin-base - Plugin Manager - OSGI plugin does not show as Uninstallable. 6.0-SNAPSHOT
 55e88aef Fixed: wflow-core - FormUtil - dateCreated & dateModified from JDBC binder is not handle correctly. #6527 6.0-SNAPSHOT
 48678eee Fixed: wflow-core - Text Field - Encryption is not handled correctly for readonly. #6577 6.0-SNAPSHOT

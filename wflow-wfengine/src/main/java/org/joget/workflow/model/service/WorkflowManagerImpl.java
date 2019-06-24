@@ -1519,12 +1519,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
             filter = aieb.setStartPosition(sessionHandle, filter, start);
-            String strSize = String.valueOf(activitySize);
-            Integer size = Integer.parseInt(strSize.substring(strSize.length() - 1, strSize.length()));
-            if ((start + rows) <= activitySize || Integer.parseInt(strSize) < rows) {
+            if ((start + rows) <= activitySize) {
                 filter = aieb.setLimit(sessionHandle, filter, rows);
             } else {
-                filter = aieb.setLimit(sessionHandle, filter, size);
+                filter = aieb.setLimit(sessionHandle, filter, (activitySize - start));
             }
 
             ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
