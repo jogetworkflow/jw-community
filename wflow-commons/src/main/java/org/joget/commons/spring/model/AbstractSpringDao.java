@@ -104,8 +104,13 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
                 i++;
             }
         }
-
-        return ((Long) q.iterate().next());
+        
+        List result = q.list();
+        if (result.size() == 1) {
+            return (Long) result.get(0);
+        } else {
+            return new Long(result.size());
+        }
     }
     
     /**
