@@ -1029,21 +1029,25 @@ public class ConsoleWebController {
             
             //convert department & grade to employments
             Collection<Employment> employments = new ArrayList<Employment>();
-            for (int i = 0; i < employeeDepartment.length; i++) {
-                Employment t = new Employment();
-                t.setOrganizationId(employeeDeptOrganization[i]);
-                t.setDepartmentId(employeeDepartment[i]);
-                if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
-                    Set<String> hod = new HashSet<String>();
-                    hod.add(employeeDepartment[i]);
-                    t.setHods(hod);
-                }
-                for (int j = 0; j < employeeGradeOrganization.length; j++) {
-                    if (employeeGradeOrganization[j].equals(employeeDeptOrganization[i])) {
-                        t.setGradeId(employeeGrade[j]);
+            if (employeeDepartment != null) {
+                for (int i = 0; i < employeeDepartment.length; i++) {
+                    Employment t = new Employment();
+                    t.setOrganizationId(employeeDeptOrganization[i]);
+                    t.setDepartmentId(employeeDepartment[i]);
+                    if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
+                        Set<String> hod = new HashSet<String>();
+                        hod.add(employeeDepartment[i]);
+                        t.setHods(hod);
                     }
+                    if (employeeGradeOrganization != null) {
+                        for (int j = 0; j < employeeGradeOrganization.length; j++) {
+                            if (employeeGradeOrganization[j].equals(employeeDeptOrganization[i])) {
+                                t.setGradeId(employeeGrade[j]);
+                            }
+                        }
+                    }
+                    employments.add(t);
                 }
-                employments.add(t);
             }
             model.addAttribute("employments", employments);
             
@@ -1117,26 +1121,30 @@ public class ConsoleWebController {
                     }
                 }
             }
-            for (int i = 0; i < employeeDepartment.length; i++) {
-                if (existingDepartments.contains(employeeDepartment[i])) {
-                    existingDepartments.remove(employeeDepartment[i]);
-                } else {
-                    employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
-                }
-                
-                if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
-                    if (existingHods.contains(employeeDepartment[i])) {
-                        existingHods.remove(employeeDepartment[i]);
+            if (employeeDepartment != null) {
+                for (int i = 0; i < employeeDepartment.length; i++) {
+                    if (existingDepartments.contains(employeeDepartment[i])) {
+                        existingDepartments.remove(employeeDepartment[i]);
                     } else {
-                        employmentDao.assignUserAsDepartmentHOD(u.getId(), employeeDepartment[i]);
+                        employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
+                    }
+
+                    if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
+                        if (existingHods.contains(employeeDepartment[i])) {
+                            existingHods.remove(employeeDepartment[i]);
+                        } else {
+                            employmentDao.assignUserAsDepartmentHOD(u.getId(), employeeDepartment[i]);
+                        }
                     }
                 }
             }
-            for (int i = 0; i < employeeGrade.length; i++) {
-                if (existingGrades.contains(employeeGrade[i])) {
-                    existingGrades.remove(employeeGrade[i]);
-                } else {
-                    employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
+            if (employeeGrade != null) {
+                for (int i = 0; i < employeeGrade.length; i++) {
+                    if (existingGrades.contains(employeeGrade[i])) {
+                        existingGrades.remove(employeeGrade[i]);
+                    } else {
+                        employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
+                    }
                 }
             }
             for (String d : existingHods) {
