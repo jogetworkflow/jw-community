@@ -288,7 +288,6 @@ public class PluginManager implements ApplicationContextAware {
         templateCache.clear();
         resourceBundleCache.clear();
         noResourceBundleCache.clear();
-        customPluginInterfaces.clear();
     }
 
     protected boolean startBundle(Bundle bundle) {
@@ -1317,6 +1316,10 @@ public class PluginManager implements ApplicationContextAware {
     
     public static void registerCustomPluginInterface(CustomPluginInterface interfaceClass) {
         customPluginInterfaces.put(interfaceClass.getClassname(), interfaceClass);
+    }
+    
+    public static void unregisterCustomPluginInterface(String className) {
+        customPluginInterfaces.remove(className);
     }
     
     public static CustomPluginInterface getCustomPluginInterface(String className) {
