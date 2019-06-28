@@ -36,8 +36,8 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
             if (url == null || url.isEmpty()) {
                 url = request.getRequestURI();
             }
-            // extract appDef from /web/userview, /web/embed/userview, /web/console/app or /web/json/console/app
-            String pattern = request.getContextPath() + "\\/web\\/(userview|embed\\/userview|console\\/app|json\\/console\\/app)\\/(.*)\\/(.*)";
+            // extract appDef from /web/userview, /web/embed/userview, /web/console/app or /web/json/console/app or /web/json/app
+            String pattern = request.getContextPath() + "\\/web\\/(userview|embed\\/userview|console\\/app|json\\/console\\/app|json\\/app)\\/(.*)\\/(.*)";
             Matcher m = Pattern.compile(pattern).matcher(url);
             if (m.find()) {
                 String appPath = m.group(2);
