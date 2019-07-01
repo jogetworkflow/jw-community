@@ -881,6 +881,12 @@ td.error .chosen-container, td.error input {
 .pewrapper .error {
     border:1px solid red;
 }
+.pewrapper input.error, .pewrapper select.error {
+    border-bottom:1px solid red !important;
+}
+.pewrapper input.error:focus, .pewrapper select.error:focus {
+    box-shadow: 0 1px 0 0 red !important;
+}
 .pewrapper .error + span.label {
     color: red;
 }

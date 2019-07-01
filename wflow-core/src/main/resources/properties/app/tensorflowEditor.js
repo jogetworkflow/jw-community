@@ -44,6 +44,11 @@
             obj.message = this.options.mandatoryMessage;
             errors.push(obj);
             $(wrapper).append('<div class="property-input-error">' + obj.message + '</div>');
+            
+            var fields = $(wrapper).find("input.error, select.error");
+            if ($(fields).length > 0) {
+                $(fields).first().focus();
+            }
         }
     },
     getData: function(useDefault) {
