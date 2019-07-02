@@ -138,7 +138,7 @@ public class TFAudioMelSpectrogramInput implements TensorFlowInput {
 
     @Override
     public String getUI() {
-        String label = ResourceBundleUtil.getMessage("app.simpletfai.urlorfieldid");
+        String label = ResourceBundleUtil.getMessage("app.simpletfai.urlorAudioFilefieldid");
         String heightLabel = ResourceBundleUtil.getMessage("app.simpletfai.height");
         String widthLabel = ResourceBundleUtil.getMessage("app.simpletfai.width");
         String fftSizeLabel = ResourceBundleUtil.getMessage("app.simpletfai.fftSize");
