@@ -79,7 +79,7 @@ var AdminBar = {
         AdminBar.initPinMode();
     },
     maxQuickOverlay: function() {
-        document.location = $("#quickOverlayFrame").attr("src");
+        document.location = $("#quickOverlayFrame")[0].contentWindow.location.href;
     },
     hideQuickOverlay: function() {
         $("#adminBarButtons a").removeClass("current");
