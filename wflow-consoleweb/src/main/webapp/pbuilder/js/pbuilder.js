@@ -4360,7 +4360,7 @@ ProcessBuilder.Mapper = {
                 $(node).tooltipster("destroy");
             } catch (err) {}
         }
-        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fas fa-times-circle"></i></a><dl></dl></div></div>');
+        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fas fa-trash-alt"></i></a><dl></dl></div></div>');
         $(node).find(".mapping_detail").data("parent",  $(node));
 
         if (type === "participant" || type === "whitelist") {
