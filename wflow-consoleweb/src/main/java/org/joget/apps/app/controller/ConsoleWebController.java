@@ -685,7 +685,7 @@ public class ConsoleWebController {
         if (group.getOrganization() != null) {
             group.setOrganizationId(group.getOrganization().getId());
         }
-        model.addAttribute("group", groupDao.getGroup(id));
+        model.addAttribute("group", group);
         return "console/directory/groupEdit";
     }
 
