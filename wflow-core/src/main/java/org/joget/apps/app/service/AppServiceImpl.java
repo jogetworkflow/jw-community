@@ -578,13 +578,13 @@ public class AppServiceImpl implements AppService {
                     formResult = submitForm(startForm, formResult, true);
                     errors = formResult.getFormErrors();
                     if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
-                        result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
-
                         //if origin id is not equal to record id after submission, add linkage
                         if (!originId.equals(startForm.getPrimaryKeyValue(formData))) {
                             workflowProcessLinkDao.addWorkflowProcessLink(startForm.getPrimaryKeyValue(formData), originId);
                         }
                         
+                        result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
+
                         // set next activity if configured
                         boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
                         if (!autoContinue) {
