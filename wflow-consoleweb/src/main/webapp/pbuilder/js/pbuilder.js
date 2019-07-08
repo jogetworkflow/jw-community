@@ -4209,6 +4209,7 @@ ProcessBuilder.Designer = {
 /* Mapper settings and functions */
 ProcessBuilder.Mapper = {
     mappingData : null,
+    timer : null,
     popupDialog : new PopupDialog("", " "),
     load : function(processDefId) {
         if (processDefId === null) {
@@ -4504,6 +4505,7 @@ ProcessBuilder.Mapper = {
                         delete ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+id];
                     }
                 }
+                ProcessBuilder.Mapper.refresh();
             }
         };
        
@@ -4518,6 +4520,7 @@ ProcessBuilder.Mapper = {
         var removeItem = {
             success : function(response) {
                 $(valueRemoveLink).closest(".single_value").remove();
+                ProcessBuilder.Mapper.refresh();
             }
         };
         var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/processes/' + escape(ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + processDefId) + '/participant/' + id + '/remove';
@@ -4562,6 +4565,7 @@ ProcessBuilder.Mapper = {
                     };
                 }
                 ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id][key] = checked; 
+                ProcessBuilder.Mapper.refresh();
             }
         };
         
@@ -4594,6 +4598,19 @@ ProcessBuilder.Mapper = {
             }
             
             ProcessBuilder.Mapper.attachDetail($(node));
+            ProcessBuilder.Mapper.refresh();
         });
+    },
+    refresh : function() {
+        if (ProcessBuilder.Mapper.timer !== null) {
+            clearTimeout(ProcessBuilder.Mapper.timer);
+        }
+        if (window.opener) {
+            ProcessBuilder.Mapper.timer = setTimeout(function() {
+                if (window.opener) {
+                    window.opener.location.reload(true);
+                }
+            }, 5000); //delay 5 sec
+        }
     }
 };
