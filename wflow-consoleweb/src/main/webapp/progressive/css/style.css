@@ -1612,9 +1612,18 @@ body .subform-cell .subform-container.has-frame {
     margin-left: 10px;
     margin-right: 10px;    
 }
-body #form-canvas .form-section.no_label, body #form-canvas .subform-section.no_label {
-    margin-top: 10px;
+body #form-canvas .form-section + .form-section.no_label, body #form-canvas .subform-section + .subform-section.no_label {
+    margin-top: -15px !important;
+    padding-top: 0px;
+    border-top:0px !important;
+}
+body #form-canvas .form-section + .form-section.no_label{
+    box-shadow: 1px 1.5px 1px 1px #ddd !important;
+}
+body #form-canvas #section-actions{
+    margin-top: 10px !important;
     padding-top: 20px;
+    box-shadow: none !important;
 }
 
 /* Lists */
