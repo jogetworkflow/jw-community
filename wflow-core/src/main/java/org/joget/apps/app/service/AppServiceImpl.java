@@ -389,7 +389,20 @@ public class AppServiceImpl implements AppService {
 
         // get and submit mapped form
         if (form != null) {
+            String originId = form.getPrimaryKeyValue(formData);
+            boolean hasExistingRecord = true;
+            if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
+                String id = formData.getLoadBinderData(form).iterator().next().getId();
+                if (id == null || id.isEmpty()) {
+                    hasExistingRecord = false;
+                }
+            }
+            
             formData = submitForm(form, formData, false);
+            
+            if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
+                workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
+            }
         }
 
         Map<String, String> errors = formData.getFormErrors();
@@ -437,7 +450,21 @@ public class AppServiceImpl implements AppService {
                 
                 AppDefinition appDef = getAppDefinition(appId, version);
                 Form form = retrieveForm(appDef, paf, formData, assignment);
+                
+                String originId = form.getPrimaryKeyValue(formData);
+                boolean hasExistingRecord = true;
+                if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
+                    String id = formData.getLoadBinderData(form).iterator().next().getId();
+                    if (id == null || id.isEmpty()) {
+                        hasExistingRecord = false;
+                    }
+                }
+            
                 formData = submitForm(form, formData, false);
+                
+                if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
+                    workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
+                }
             }
         }
 
