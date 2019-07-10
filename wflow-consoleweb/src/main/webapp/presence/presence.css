@@ -35,8 +35,20 @@ body.rtl #presence{
     -webkit-box-sizing: unset;
     box-sizing: unset;
 }
+#presence li:hover {
+    transition: ease-in-out;
+    transform:scale(1.5);
+    transform-origin:top right;
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
 body.rtl #presence li {
     float: left;
+}
+body.rtl #presence li:hover {
+    transform-origin:top left;
+    margin-right: 15px;
+    margin-left: 2px;
 }
 #presence span.username {
     position: relative;
