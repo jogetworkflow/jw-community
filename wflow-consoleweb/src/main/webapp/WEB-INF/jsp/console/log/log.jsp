@@ -95,7 +95,7 @@
             }
             
             if(text.trim() !== ""){
-                let line = '<div class="line '+status+'"><div class="linenumber">'+(i++)+'</div><div class="text">'+ text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') + '</div></div>';
+                let line = '<div class="line '+status+'"><div class="linenumber">'+(i++)+'</div><div class="text">'+ UI.escapeHTML(text).replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') + '</div></div>';
                 messages.push(line);
                 clearTimeout(timer);
                 timer = setTimeout(function() {
