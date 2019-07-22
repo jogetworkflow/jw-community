@@ -1,0 +1,249 @@
+/* reset xadmin*/
+table th, table td{
+    word-break: initial;
+}
+
+body {
+    color: #666;
+}
+.x-admin-sm body {
+    font-size: 12px;
+}
+body.embeded, body.popupBody {
+    background: #fff;
+}
+body.popupBody #main-body-header{
+    display: none;
+}
+body.popupBody {
+    padding-top: 0 !important;
+}
+.embeded .hasAnalyzer{
+    padding-top: 0;
+}
+@media screen and (min-width: 681px) {
+    .quickEditModeActive #page .analyzer-page{
+        display: inline-block !important;
+    }
+}
+#main{
+    min-height: 90vh;
+}
+main h1, main h2, main h3, main h4, main h5, main h6 {
+    margin-bottom: 15px;
+}
+main a:hover {
+    color:#5FB878;
+    opacity: 0.8;
+}
+.profile-img {
+    border-radius:50%; 
+    margin-right:3px; 
+    max-width:30px; 
+    max-height:30px;
+}
+main [class*="-body-content"],
+main > [class*="_body"],
+main > .ui-html,
+body.popupBody #main-body-content,
+body.popupBody #listGridPopup,
+body.popupBody > #form-canvas{
+    border-radius:2px; 
+    background-color:#fff; 
+    box-shadow:0 1px 2px 0 rgba(0,0,0,.05); 
+    position:relative; 
+    padding:15px; 
+    line-height:24px;
+}
+body.embeded main [class*="-body-content"], 
+body.embeded main > [class*="_body"],
+body.embeded main > .ui-html,
+body.popupBody #main-body-content,
+body.popupBody #listGridPopup,
+body.popupBody > #form-canvas{
+    box-shadow:none; 
+}
+.form-button, .btn, .button {
+    border: 1px solid #009688;
+    background-color: #009688;
+    color: #fff;
+    display: inline-block;
+    padding: 7px 15px;
+    white-space: nowrap;
+    text-align: center;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+.x-admin-sm .form-button, .x-admin-sm .btn, .x-admin-sm .button {
+    font-size: 12px;
+}
+.form-button:hover, .btn:hover, .button:hover {
+    opacity: 0.8;
+}
+.form-button + .form-button, .btn + .btn, .button + .button {
+    margin-left: 10px;
+}
+.btn-xs {
+    padding: 2px 10px;
+}
+.btn-danger {
+    background-color: #FF5722 !important;
+    border-color: #FF5722 !important;
+}
+.btn-secondary {
+    border-color: #C9C9C9 !important;
+    background-color: #fff !important;
+    color: #555 !important;
+}
+.menu-link .badge {
+    background: #189f92;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 2px;
+}
+.x-admin-sm .menu-link .badge {
+    font-size: 12px;
+}
+.menu-link.active .badge, .menu-link:hover .badge {
+    background: #fff;
+    color: #189f92;
+}
+.layui-breadcrumb a:hover {
+    color: #999!important;
+}    
+.x-admin-sm .left-nav #nav li a span {
+    font-size: 12px;
+}
+    
+    
+/*dashboard*/
+body .dashboard_menu .grid-stack {
+    margin: 0 -5px;
+}
+body .dashboard_menu .reset_position {
+    cursor: pointer;
+}
+body .dashboard_menu .grid-stack>.grid-stack-item>.grid-stack-item-content{
+    left:5px;
+    right: 5px;
+    border-radius: 2px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05)
+}
+body .dashboard_menu .grid-stack-item .grid-stack-item-header{
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    border-bottom: 1px solid #f6f6f6;
+    color: #333;
+    border-radius: 2px 2px 0 0;
+    font-size: 14px;
+    background: transparent;
+    margin-bottom: 0;
+}
+body .dashboard_menu .grid-stack-item .grid-stack-item-header h4 {
+    font-size: 14px;
+    color: #333;
+    font-weight: normal;
+    padding: 0;
+}
+body .dashboard_menu .grid-stack-item-header-action{
+    top: 0px;
+    right: 15px;
+}
+body .dashboard_menu .grid-stack-item-header-action i{
+    font-family: "layui-icon" !important;
+    cursor: pointer;
+    vertical-align: middle;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+.x-admin-sm body .dashboard_menu .grid-stack-item-header-action i{
+    font-size:12px;
+}
+body .dashboard_menu .grid-stack-item-header-open i:before{
+    content:"\e638";
+}
+body .dashboard_menu .grid-stack-item-header-refresh{
+    right: 35px;
+}
+body .dashboard_menu .grid-stack-item-header-refresh i:before{
+    content:"\e669";
+}
+.userProfile-body-header {
+    display: none;
+}
+body.has-logo .container{
+    height: 80px;
+}
+body.has-logo .left-nav {
+    top:80px;
+}
+body.has-logo .page-content{
+    top:80px;
+}
+body.has-logo img.logo{
+    height: 60px;
+    margin-top: 10px;
+}
+body.has-logo #header-name span{
+    display: none;
+}
+body.has-logo .container > .left_open,
+body.has-logo .container > .layui-nav{
+    margin-top: 15px;
+}
+.user-menu > a > i {
+    font-size: 20px !important;
+}
+.inbox-notification > a > .badge {
+    background: #189f92;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 2px;
+    position: relative;
+    top: -12px;
+}
+.inbox-notification dl.layui-nav-child {
+    width:220px;
+}
+.inbox-notification dd.inbox-title{
+    color : #666;
+    text-align: center;
+}
+.inbox-notification dd.inbox-title a{
+    display: inline-block;
+    padding: 5px;
+}
+.inbox-notification dd.task a{
+    line-height: 14px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.inbox-notification dd.task a span {
+    display: block;
+}
+.inbox-notification dd.task a .message {
+    font-size: 80%;
+    color: #aaa;
+}
+.inbox-notification dd.task a .time {
+    font-size: 80%;
+    color: #009688;
+}
+body .layui-nav dd.inbox-title.layui-this{
+    color :#fff;
+}
+.inner-frame #sidebar{
+    display: none;
+}
+footer {
+    background: #f1f1f1;
+    color:#666;
+    text-align: center;
+    padding: 10px;
+}

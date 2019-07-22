@@ -1,5 +1,6 @@
 package org.joget.apps.datalist.lib;
 
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -69,6 +70,12 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
             confirm = "Please Confirm";
         }
         return confirm;
+    }
+    
+    @Override
+    public void setProperties(Map<String, Object> properties) {
+        super.setProperties(properties);
+        properties.put("cssClasses", "btn-danger");
     }
 
     @Transactional

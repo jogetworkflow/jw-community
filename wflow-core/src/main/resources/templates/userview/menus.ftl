@@ -21,13 +21,13 @@ ${nav_before!}
                 <#if combine_single_menu_category! && category.menus?size == 1>
                     <li id="${firstMenu.properties.id}" class="${cClass}">
                         ${category_inner_before!}
-                        ${firstMenu.menu}
+                        ${theme.decorateMenu(category, firstMenu)}
                         ${category_inner_after!}
                     </li>
                 <#else>
                     <li class="${cClass}">
                         ${category_inner_before!}
-                        <a class="${category_label_classes!} dropdown" href="#"><span>${theme.decorateCategoryLabel(category)}</span></a>
+                        <a class="${category_label_classes!} dropdown" href="javascript:;">${theme.decorateCategoryLabel(category)}</a>
                         ${menu_container_before!}
                         <ul class="${menus_container_classes!}" >
                             ${menu_container_inner_before!}
@@ -45,7 +45,7 @@ ${nav_before!}
                                 ${menu_before!}
                                 <li id="${menu.properties.id!}" class="${mClass}">
                                     ${menu_inner_before!}
-                                    ${menu.menu}
+                                    ${theme.decorateMenu(category, menu)}
                                     ${menu_inner_after!}
                                 </li>
                                 ${menu_after!}

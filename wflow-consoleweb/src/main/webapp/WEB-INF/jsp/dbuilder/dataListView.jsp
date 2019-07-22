@@ -123,17 +123,23 @@
                     <form name="form_${dataListId}" action="?<c:out value="${qs}" escapeXml="true"/>" method="POST">
                         <!-- Display Buttons -->
                         <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
-                            <div class="actions top ${buttonFloat}">
-                                <c:forEach items="${dataList.actions}" var="action">
-                                    <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
-                                        <c:set var="buttonConfirmation" value="" />
-                                        <c:if test="${!empty action.confirmation}">
-                                            <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
+                            <c:if test="${!empty dataList.actions}">
+                                <div class="actions top ${buttonFloat}">
+                                    <c:forEach items="${dataList.actions}" var="action">
+                                        <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
+                                            <c:set var="buttonConfirmation" value="" />
+                                            <c:if test="${!empty action.confirmation}">
+                                                <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
+                                            </c:if>
+                                            <c:set var="buttonCssClasses" value="" />
+                                            <c:if test="${!empty action.properties.cssClasses}">
+                                                <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
+                                            </c:if>
+                                            <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
-                                        <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
-                                    </c:if>
-                                </c:forEach>
-                            </div>
+                                    </c:forEach>
+                                </div>
+                            </c:if>        
                         </c:if>
                         <div class="footable-buttons" data-disableresponsive="${dataList.disableResponsive}" data-searchpopup="${dataList.responsiveSearchPopup}" data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
                             <button class="expandAll"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
@@ -199,17 +205,23 @@
 
                         <!-- Display Buttons -->
                         <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
-                            <div class="actions bottom ${buttonFloat}">
-                                <c:forEach items="${dataList.actions}" var="action">
-                                    <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
-                                        <c:set var="buttonConfirmation" value="" />
-                                        <c:if test="${!empty action.confirmation}">
-                                            <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
+                            <c:if test="${!empty dataList.actions}">
+                                <div class="actions bottom ${buttonFloat}">
+                                    <c:forEach items="${dataList.actions}" var="action">
+                                        <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
+                                            <c:set var="buttonConfirmation" value="" />
+                                            <c:if test="${!empty action.confirmation}">
+                                                <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
+                                            </c:if>
+                                            <c:set var="buttonCssClasses" value="" />
+                                            <c:if test="${!empty action.properties.cssClasses}">
+                                                <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
+                                            </c:if>
+                                            <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
-                                        <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
-                                    </c:if>
-                                </c:forEach>
-                            </div>
+                                    </c:forEach>
+                                </div>
+                            </c:if>    
                         </c:if>
                     </form>
                 </c:if>    

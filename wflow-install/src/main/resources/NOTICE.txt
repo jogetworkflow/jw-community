@@ -119,4 +119,8 @@ http://msdn.microsoft.com/en-us/sqlserver/jj589698
 WebSocket Server API
 https://oss.oracle.com/licenses/CDDL+GPL-1.1
 
+X-Admin Template
+https://gitee.com/daniuit/X-admin
 
+Lay UI
+https://github.com/sentsin/layui/blob/master/LICENSE

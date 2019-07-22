@@ -1,0 +1,225 @@
+body .dataList .filters {
+    text-align: left;
+}
+body .dataList .filters .filter-cell{
+    padding-left: 0px;
+    padding-right: 5px;
+    position: relative;
+    vertical-align: top;
+}
+body .dataList .filters .filter-cell span{
+    vertical-align: top;
+}
+body .dataList .filters .filter-cell input[type=submit]{
+    color:#009688;
+    width: 37px !important;
+}
+body .dataList .filters .filter-cell:last-child:hover{
+    opacity: 0.8;
+}
+body .dataList .filters .filter-cell:last-child:after{
+    content: '\e6ac';
+    font-family: "iconfont" !important;
+    position: absolute;
+    color: #fff;
+    top:4px;
+    left:12px;
+    font-size:14px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+    cursor: pointer;
+}
+.x-admin-sm body .dataList table {
+    font-size: 12px;
+}
+body .dataList table, body .dataList th, body .dataList td {
+    border: 1px solid #e6e6e6;
+}
+body .dataList th {
+    background: #f2f2f2;
+    font-weight:normal;
+}
+body .dataList th a, 
+body .dataList th a:visited,
+body .dataList th a:hover {
+    color:#666;
+}
+body .dataList th, body .dataList td {
+    padding: 8px 15px !important;
+}
+body .dataList td {
+    color: #666;
+}
+body .dataList tr:hover td {
+    background: #f2f2f2;
+}
+body .dataList tr.tableRowEven, body tr.even {
+    background-color: transparent;
+}
+body .dataList .actions.top{
+    padding-bottom: 6px; 
+    position: relative;
+}
+body .dataList .actions.top:after{
+    content: "";
+    border-bottom: 1px solid #e6e6e6;
+    position: absolute;
+    bottom: 0px;
+    left:-15px;
+    right: -15px;
+}
+body .dataList .actions.bottom:before{
+    clear: both;
+    content: "";
+    border-top: 1px solid #e6e6e6;
+    position: absolute;
+    top: 0px;
+    left:-15px;
+    right: -15px;
+}
+body .dataList .actions.bottom {
+    padding-top: 6px; 
+    margin-bottom: 15px;
+    position: relative;
+    clear: both;
+}
+body .dataList td a.btn-danger{
+    background-color: transparent;
+    color: #FF5722;
+}
+body .dataList form:after,
+body .dataList .pagebanner:after{
+    clear: both;
+    content: "";
+    display: block;
+}
+body .dataList .pagelinks {
+    float: left;
+}
+body .dataList span.pagelinks {
+    text-align: left;
+    font-size: 0;
+    color:transparent;
+}
+body.rtl .dataList span.pagelinks {
+    text-align: right;
+}
+
+body .dataList span.pagelinks a, body .dataList span.pagelinks strong, body .dataList span.pagelinks > span {
+    border-radius: 2px;
+    padding: 1px 4px;
+    width: auto;
+    min-width: 15px;
+    height: 20px;
+    line-height: 22px;
+    text-align: center;
+    font-size: 14px;
+    z-index: 1;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    z-index: 3;
+    margin:1px;
+    color: #888;
+    background-color: #fff;
+    border: 1px solid #E2E2E2;
+}
+
+body .dataList span.pagelinks strong {
+    cursor: default;
+    color: #fff;
+    background-color: #009688;
+    font-weight: normal;
+    border-color: #009688;
+}
+
+body .dataList .pagelinks .pc{
+    background-image: none !important;
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: auto;
+    vertical-align: top;
+}
+
+body .dataList .pagelinks .pc.first-disabled:before,
+body .dataList .pagelinks .pc.first:before{
+    content: "\f100";
+}
+
+body .dataList .pagelinks .pc.prev-disabled:before,
+body .dataList .pagelinks .pc.prev:before{
+    content: "\f104";
+}
+
+body .dataList .pagelinks .pc.next-disabled:before,
+body .dataList .pagelinks .pc.next:before{
+    content: "\f105";
+}
+
+body .dataList .pagelinks .pc.last-disabled:before,
+body .dataList .pagelinks .pc.last:before{
+    content: "\f101";
+}
+
+body .dataList .pagelinks a .pc{
+    padding: 3px 0;
+}
+body .dataList .pagelinks a:hover {
+    color:#009688;
+    border-color:#009688;
+}
+body .dataList .pagelinks .pc.first-disabled,
+body .dataList .pagelinks .pc.prev-disabled,
+body .dataList .pagelinks .pc.next-disabled,
+body .dataList .pagelinks .pc.last-disabled{
+    cursor: not-allowed;
+    line-height: 20px;
+    color: #fff;
+    background-color: #d2d2d2;
+}
+body .dataList div.exportlinks{
+    background-color: transparent;
+    border: 0;
+    display: block;
+    float:right;
+}
+body .dataList div.exportlinks:before{
+    content: '\e601';
+    font-family: "layui-icon" !important;
+    font-size:16px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
+    position:relative;
+    top:2px;
+} 
+body .dataList div.exportlinks a span.export {
+    background: none;
+    padding: 2px;
+}
+body .dataList .select_checkbox,
+body .dataList .select_radio{
+    text-align: center;
+}
+body .dataList .select_checkbox{
+    position: relative;
+    width: 25px;
+}
+body .dataList .select_checkbox label{
+    position: absolute;
+    overflow: hidden;
+    top:9px;
+    left:50%;
+    transform: translateX(-50%);
+    margin-top: -5px;
+}
+body .dataList .select_checkbox label i {
+    margin: 0;
+}

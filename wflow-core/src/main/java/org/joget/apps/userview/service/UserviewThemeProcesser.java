@@ -82,6 +82,8 @@ public class UserviewThemeProcesser {
         if (mobileViewRedirection != null) {
             return mobileViewRedirection;
         }
+        
+        init();
 
         String homePageRedirection = homePageRedirection();
         if (homePageRedirection != null) {
@@ -93,7 +95,10 @@ public class UserviewThemeProcesser {
             return loginPageRedirection;
         }
 
-        init();
+        String themeRedirection = theme.handleRedirection();
+        if (themeRedirection != null) {
+            return themeRedirection;
+        }
 
         return "ubuilder/v5view";
     }
@@ -449,7 +454,12 @@ public class UserviewThemeProcesser {
     }
 
     protected String getHomePageLink() {
-        return getBaseLink() + userview.getPropertyString("homeMenuId");
+        String customHomePage = theme.getCustomHomepage();
+        if (customHomePage == null || customHomePage.isEmpty()) {
+            customHomePage = userview.getPropertyString("homeMenuId");
+        }
+            
+        return getBaseLink() + customHomePage;
     }
 
     protected String getLoginLink() {

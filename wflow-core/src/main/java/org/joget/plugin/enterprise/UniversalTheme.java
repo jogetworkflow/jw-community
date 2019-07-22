@@ -90,9 +90,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         BLACK("#000000", "#222222", ""),
         WHITE("#FFFFFF", "", "#DDDDDD");
         
-        private final String color;  
-        private final String dark; 
-        private final String light;
+        protected final String color;  
+        protected final String dark; 
+        protected final String light;
         Color(String color, String dark, String light) {
             this.color = color;
             this.dark = dark;
@@ -140,7 +140,12 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String meta = super.getMetas(data) + "\n";
         meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
-        
+        meta += getInternalMetas(data);
+        return meta;
+    }
+    
+    protected String getInternalMetas(Map<String, Object> data) {
+        String meta = "";
         // set description
         String description = userview.getPropertyString("description");
         if (description != null && !description.trim().isEmpty()) {
@@ -158,7 +163,6 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         String manifestUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/manifest";
         meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
-
         return meta;
     }
 
@@ -273,10 +277,17 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" async></script>\n";
         
         if (enableResponsiveSwitch()) {
-            jsCssLink += "<script src=\"" + path + "/lib/responsive-switch.min.js\" defer></script>\n";
-        }        
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/js/responsive-switch.min.js\" defer></script>\n";
+        } 
         jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
-        
+        jsCssLink += getInternalJsCssLib(data);
+            
+        return jsCssLink;
+    }
+    
+    protected String getInternalJsCssLib(Map<String, Object> data) {
+        String jsCssLink = "";
+               
         // PWA: register service worker
         if (!"true".equals(getPropertyString("disablePwa"))) {
             WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
@@ -295,7 +306,6 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         + "});</script>";
             }
         }
-            
         return jsCssLink;
     }
 

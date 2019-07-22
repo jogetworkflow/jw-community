@@ -126,4 +126,13 @@
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/progressive/js/main.js</js>
     </group>
+    <group name="xadmin.min">
+        <css>/xadmin/lib/layui/css/layui.css</css>
+        <css>/xadmin/css/xadmin.css</css>
+        <css>/xadmin/css/custom.css</css>
+        <css>/xadmin/css/form.css</css>
+        <css>/xadmin/css/list.css</css>
+        <js>/xadmin/js/xadmin.js</js>
+        <js>/xadmin/js/xadminExt.js</js>
+    </group>  
 </groups> 

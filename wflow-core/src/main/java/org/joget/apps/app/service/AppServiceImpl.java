@@ -354,6 +354,7 @@ public class AppServiceImpl implements AppService {
             cancelButton.setProperty(FormUtil.PROPERTY_ID, "cancel");
             cancelButton.setProperty("label", ResourceBundleUtil.getMessage("general.method.label.cancel"));
             cancelButton.setProperty("url", cancelUrl);
+            cancelButton.setProperty("cssClass", cancelButton.getPropertyString("cssClass") + " btn-secondary");
             form.addAction((FormAction) cancelButton);
         }
         form = decorateFormActions(form);
@@ -859,6 +860,7 @@ public class AppServiceImpl implements AppService {
             cancelButton.setProperty(FormUtil.PROPERTY_ID, "cancel");
             cancelButton.setProperty("label", cancelButtonLabel);
             cancelButton.setProperty("url", cancelUrl);
+            cancelButton.setProperty("cssClass", cancelButton.getPropertyString("cssClass") + " btn-secondary");
             if (cancelButtonTarget != null) {
                 cancelButton.setProperty("target", cancelButtonTarget);
             }

@@ -1,0 +1,869 @@
+body #form-canvas {
+    padding:0px; 
+    margin: 0px; 
+    background: transparent; 
+    border:0px;
+}
+.x-admin-sm body #form-canvas {
+    font-size: 12px; 
+}
+.x-admin-sm body #form-canvas * {
+    font-size: 12px; 
+}
+body #form-canvas *:focus {
+    outline:0;
+}
+body #form-canvas .h1,
+body #form-canvas h1 {
+    font-size: 27px
+}
+
+body #form-canvas .h2,
+body #form-canvas h2 {
+    font-size: 22px
+}
+
+body #form-canvas .h3,
+body #form-canvas h3 {
+    font-size: 18px
+}
+
+body #form-canvas .h4,
+body #form-canvas h4 {
+    font-size: 16px
+}
+
+body #form-canvas .h5,
+body #form-canvas h5 {
+    font-size: 13px
+}
+
+body #form-canvas .h6,
+body #form-canvas h6 {
+    font-size: 12px
+}
+body #form-canvas .form-container .form-section, 
+body #form-canvas .subform-container .subform-section {
+    margin-top: 0px;
+    clear: both;
+}
+body .form fieldset, 
+body #form-canvas .form-container .form-section {
+    border:1px solid #e6e6e6;
+    border-radius: 2px;
+}
+body .form fieldset{
+    padding: 15px;
+} 
+body #form-canvas .form-container .form-section + .form-section:not(.no_label), 
+body #form-canvas .subform-container .subform-section + .subform-section:not(.no_label) {
+    margin-top: 15px;
+}
+body #form-canvas .form-container .form-section.no_label, 
+body #form-canvas .subform-container .subform-section.no_label {
+    padding-top: 15px;
+}
+body #form-canvas .form-container .form-section + .form-section.no_label, 
+body #form-canvas .subform-container .subform-section + .subform-section.no_label {
+    margin-top: -1px;
+    border-top: 0px; 
+    padding-top: 0px;
+}
+body .form fieldset.has-legend legend, 
+body #form-canvas .form-section-title span, 
+body #form-canvas .subform-section-title span {
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    color: #333;
+    background-color: #f2f2f2;
+    font-size: 14px;
+    overflow: hidden;
+    border-radius: 0px;
+    font-weight: normal;
+    text-shadow: none;
+    border-bottom: 1px solid #e6e6e6;
+}
+body .form fieldset.has-legend + fieldset.has-legend{
+    margin-top: 15px;
+}
+body .form fieldset.has-legend legend{
+    width: 100%;
+    float: left;
+    transform: translate(-15px, -15px);
+    margin-bottom: 15px;
+}
+body #form-canvas #section-actions{
+    margin-top: 15px;
+    border:0px;
+    padding-left: 150px;
+    margin-bottom: 15px;
+}
+body #form-canvas #section-actions .form-cell {
+    margin-right: 10px;
+}
+body #form-canvas .form-column,
+body #form-canvas .subform-column {
+    padding: 0 15px;
+    box-sizing: border-box;
+    background: #fff;
+    min-width: 230px;
+}
+body #form-canvas .form-cell, 
+body #form-canvas .subform-cell {
+    padding: 0;
+    color: inherit;
+}
+body .form .form-row > label,
+body #form-canvas .form-cell .label, 
+body #form-canvas .subform-cell .label {
+    max-width: 150px;
+    text-align: right;
+    padding-right: 15px;
+    padding-top: 3px;
+    box-sizing: border-box;
+}
+body .form .form-row > label{
+    width: 30%;
+    margin-right: 0;
+}
+body .form .form-row .form-input{
+    margin-left: 0;
+    min-width: 50%;
+    min-height: 45px;
+    box-sizing: border-box;
+}
+body .form .form-buttons {
+    padding: 15px 15px 15px 170px;
+}
+body #form-canvas .subform-container.no-frame{
+    margin-left: -15px;
+    margin-right: -15px;
+    position: relative;
+}
+body #form-canvas .subform-container.has-frame{
+    border: 1px solid #e6e6e6;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+}
+body #form-canvas .subform-container.has-frame .subform-title{
+    background: #fff;
+    top: -13px;
+    padding: 0 10px;
+    font-size: 14px !important;
+    left: 5px;
+}
+body #form-canvas .subform-container, body #form-canvas .subform-section{
+    background: transparent;
+}
+body #form-canvas .subform-container.has-frame .subform-section-title span{
+    border-bottom: 0;
+}
+.form-cell-validator, .subform-cell-validator {
+    display: none;
+}
+.fieldtooltip:hover {
+    color:#5FB878;
+}
+body #form-canvas .form-message{
+    margin-bottom: 10px;
+    padding: 15px;
+    line-height: 22px;
+    border-left: 5px solid #009688;
+    border-radius: 0 2px 2px 0;
+    background-color: #f2f2f2;
+}
+body #form-canvas .form-message.form-errors{
+    border-left-color: red;
+    background-color: #f8ebeb;
+}
+.print-button {
+    display: inline-block;
+    margin: 15px;
+}
+.print-button:before {
+    font-family: "iconfont" !important;
+    font-size: 25px;
+    content: "\e6c9";
+    display:inline-block;
+    width: 17px;
+    cursor: pointer;
+    vertical-align: middle;
+    font-size:14px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Text inputs */
+body input:not([type]),
+body input[type=text],
+body input[type=password],
+body input[type=email],
+body input[type=url],
+body input[type=time],
+body input[type=date],
+body input[type=datetime],
+body input[type=datetime-local],
+body input[type=tel],
+body input[type=number],
+body input[type=search],
+body textarea,
+body select:not([class^=ui]),
+body .editor-cell input:not([type]),
+body .editor-cell input[type=text],
+body .editor-cell input[type=password],
+body .editor-cell input[type=email],
+body .editor-cell input[type=url],
+body .editor-cell input[type=time],
+body .editor-cell input[type=date],
+body .editor-cell input[type=datetime],
+body .editor-cell input[type=datetime-local],
+body .editor-cell input[type=tel],
+body .editor-cell input[type=number],
+body .editor-cell input[type=search],
+body .editor-cell textarea,
+body .editor-cell select:not([class^=ui]){
+    outline: none;
+    height: 30px;
+    min-height: 30px;
+    min-width: 50%;
+    max-width: 70%;
+    margin: 0 0 15px 0;
+    padding: 0 10px;
+    box-shadow: none;
+    box-sizing: border-box;
+    transition: all 0.3s;
+    background-color: #fff;
+    border: 1px solid #e6e6e6;
+    color: inherit;
+    background-color: #fff;
+    border-radius: 2px;
+    float: left;
+}
+body textarea {
+    padding: 5px 10px; 
+    margin-bottom: 8px;
+    height: auto;
+}
+.x-admin-sm body textarea {
+    font-size: 12px;
+}
+body .mce-form input:not([type]),
+body .mce-form input[type=text],
+body .mce-form input[type=password],
+body .mce-form input[type=email],
+body .mce-form input[type=url],
+body .mce-form input[type=time],
+body .mce-form input[type=date],
+body .mce-form input[type=datetime],
+body .mce-form input[type=datetime-local],
+body .mce-form input[type=tel],
+body .mce-form input[type=number],
+body .mce-form input[type=search],
+body .mce-form textarea,
+body .mce-form select:not([class^=ui]) {
+    width: auto;
+    max-width: inherit;
+}
+body select[multiple]:not([class^=ui]),
+body .editor-cell select[multiple]:not([class^=ui]){
+  height: auto;
+}
+body select[multiple]:not([class^=ui]) option,
+body .editor-cell select[multiple]:not([class^=ui]) option{
+  padding: 5px 2px;
+}
+body input:not([type]):focus:not([readonly]),
+body input[type=text]:focus:not([readonly]),
+body input[type=password]:focus:not([readonly]),
+body input[type=email]:focus:not([readonly]),
+body input[type=url]:focus:not([readonly]),
+body input[type=time]:focus:not([readonly]),
+body input[type=date]:focus:not([readonly]),
+body input[type=datetime]:focus:not([readonly]),
+body input[type=datetime-local]:focus:not([readonly]),
+body input[type=tel]:focus:not([readonly]),
+body input[type=number]:focus:not([readonly]),
+body input[type=search]:focus:not([readonly]),
+body textarea:focus:not([readonly]),
+body select:focus:not([readonly]):not([class^=ui]),
+body input.focus,
+body .editor-cell input:not([type]):focus:not([readonly]),
+body .editor-cell input[type=text]:focus:not([readonly]),
+body .editor-cell input[type=password]:focus:not([readonly]),
+body .editor-cell input[type=email]:focus:not([readonly]),
+body .editor-cell input[type=url]:focus:not([readonly]),
+body .editor-cell input[type=time]:focus:not([readonly]),
+body .editor-cell input[type=date]:focus:not([readonly]),
+body .editor-cell input[type=datetime]:focus:not([readonly]),
+body .editor-cell input[type=datetime-local]:focus:not([readonly]),
+body .editor-cell input[type=tel]:focus:not([readonly]),
+body .editor-cell input[type=number]:focus:not([readonly]),
+body .editor-cell input[type=search]:focus:not([readonly]),
+body .editor-cell textarea:focus:not([readonly]),
+body .editor-cell select:focus:not([readonly]):not([class^=ui]),
+body .editor-cell input.focus,
+body .dropzone:active{
+    border-color: #5FB878;
+}
+body .dropzone {
+    border: 1px solid #e6e6e6;
+    outline: none !important;
+    padding: 5px 10px !important; 
+}
+body .dropzone .dz-message{
+    color:#a1a1a1;
+    margin: 5px 0;
+}
+body .filter-cell input:not([type]),
+body .filter-cell input[type=text],
+body .filter-cell input[type=password],
+body .filter-cell input[type=email],
+body .filter-cell input[type=url],
+body .filter-cell input[type=time],
+body .filter-cell input[type=date],
+body .filter-cell input[type=datetime],
+body .filter-cell input[type=datetime-local],
+body .filter-cell input[type=tel],
+body .filter-cell input[type=number],
+body .filter-cell input[type=search],
+body .filter-cell textarea,
+body .filter-cell select:not([class^=ui]){
+    width: auto;
+    max-width: none;
+    min-width:0px;
+}
+
+body #form-canvas .form-cell-value,
+body #form-canvas .subform-cell-value,
+body #form-canvas .selector_element,
+body #form-canvas .form-fileupload,
+body #form-canvas .subform-fileupload,
+body #form-canvas .grid,
+body #form-canvas .spreadsheet_container,
+body #form-canvas .calculationField_value{
+    padding-top: 3px;
+    min-height: 31px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+body #form-canvas .customHtml.no_label .form-cell-value,
+body #form-canvas .customHtml.no_label .subform-cell-value{
+    min-height: 0px;
+    margin-bottom: 0px;
+}
+
+body .form-container.readonly .form-cell-value,
+body .form-container .readonly .subform-cell-value,
+body .form-container.readonly .form-fileupload,
+body .form-container .readonly .subform-fileupload{
+    margin-bottom: 5px;
+}
+
+body .form-container .pq-td-div .form-cell-value,
+body .form-container .pq-td-div .subform-cell-value {
+    min-height: auto;
+    margin-bottom: 0;
+}
+
+body input:-webkit-autofill, body textarea:-webkit-autofill, body select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    -webkit-text-fill-color: initial !important;
+}
+body input:focus:-webkit-autofill, body textarea:focus:-webkit-autofill, body select:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 1px 0 0 #727272, 0 0 0px 1000px #fff inset !important;
+}
+/* Radio Buttons
+   ========================================================================== */
+body .select_radio label, body .select_checkbox label {
+    margin-bottom: 0;
+}
+body .select_radio label > input[type="radio"]:not(:checked),
+body .select_radio label > input[type="radio"]:checked,
+body label > [type="radio"]:not(:checked),
+body label > [type="radio"]:checked {
+    display:none;
+}
+
+body .select_radio label > input[type="radio"] + i:after,
+body label > input[type="radio"] + i:after {
+    font-family: "layui-icon" !important;
+    font-size: 25px;
+    content: "\e63f";
+    display:inline-block;
+    width: 17px;
+    cursor: pointer;
+    vertical-align: middle;
+    font-size:14px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+    color: #d2d2d2;
+}
+
+body .select_radio label > input[type="radio"]:checked + i:after,
+body label > input[type="radio"]:checked + i:after {
+    content: "\e643";
+    color:#5FB878;
+}
+
+body .select_radio label > input[type="radio"]:disabled + i:after,
+body label > input[type="radio"]:disabled + i:after {
+    color: #d2d2d2 !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Checkboxes
+   ========================================================================== */
+/* CUSTOM CSS CHECKBOXES */
+/* Remove default checkbox */
+
+body .select_checkbox label > [type="checkbox"]:not(:checked),
+body .select_checkbox label > [type="checkbox"]:checked,
+body label > [type="checkbox"]:not(:checked),
+body label > [type="checkbox"]:checked {
+    display:none;
+}
+body .select_checkbox label,
+body .form-cell-value label,
+body .subform-cell-value label{
+    outline: 0;
+}
+body .select_checkbox label > [type="checkbox"] + i,
+body label > input[type=checkbox] + i{
+    display: inline-block;
+    border: 1px solid #d2d2d2;
+    border-radius: 2px;
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    position: relative;
+    top: 4px;
+    color:transparent;
+}
+body .select_checkbox label > [type="checkbox"]:checked + i,
+body label > input[type=checkbox]:checked + i{
+    border: 1px solid #5FB878;
+    background: #5FB878;
+    color:#fff;
+}
+body .select_checkbox label > [type="checkbox"] + i:after,
+body label > input[type=checkbox] + i:after {
+    font-family: "layui-icon" !important;
+    content: "\e605";
+    display:inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    font-size:12px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+    position: absolute;
+    left: 2px;
+    line-height: 12px;
+    top: 3px;
+}
+body .select_checkbox label > [type="checkbox"]:checked:disabled + i,
+body label > input[type=checkbox]:checked:disabled + i{
+    border: 1px solid #d2d2d2;
+    background: #d2d2d2;
+    color:#fff;
+}
+body .select_checkbox label > [type="checkbox"]:disabled + i:after,
+body label > input[type=checkbox]:disabled + i:after {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color:#fff;
+}
+
+/* Select Field
+   ========================================================================== */
+body select:not([class^="ui-"]),
+body .editor-cell select:not([class^="ui-"]) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9E9E' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+body select:not([class^="ui-"])::-ms-expand,
+body .editor-cell select:not([class^="ui-"])::-ms-expand {
+    display: none;
+}
+body.rtl select:not([class^="ui-"]),
+body.rtl .editor-cell select:not([class^="ui-"]) {
+  background-position: 0% 50%;
+}
+
+body select:not([class^="ui-"]) option,
+body .editor-cell select:not([class^="ui-"]) option {
+    color: #000;
+    background: #fff;
+}
+
+body .filter-cell select:not([class^="ui-"]){
+  padding-right: 30px;
+}
+body.rtl .filter-cell select:not([class^="ui-"]){
+  padding-left: 30px;
+  padding-right: 0;
+}
+  
+body select:not([class^="ui-"]):disabled {
+  background-image: none;
+}
+
+body select:not([class^="ui-"]):focus,
+body .editor-cell select:not([class^="ui-"]):focus{
+    border-color: #5FB878;
+}
+
+/* chosen */
+body .chosen-container {
+    margin-bottom: 15px;
+    box-shadow:none !important;
+}
+body .chosen-container-multi .chosen-choices{
+    border:1px solid #e6e6e6;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body .chosen-container-multi.chosen-container-active .chosen-choices{
+    border:1px solid #5FB878;
+}
+body .chosen-container-multi .chosen-choices li.search-choice {
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body .chosen-container-multi .chosen-choices li.search-choice{
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+}
+body .chosen-container .chosen-results li.highlighted {
+    background-image: none !important;
+    background-color: #5FB878;
+}
+body .chosen-container .chosen-search input{
+    min-width: auto !important;
+    max-width: none !important;
+}
+body .chosen-container-single .chosen-single{
+    border-color: #e6e6e6;
+    border-radius: 2px;
+    height: 28px;
+    background-image:none !important;
+    box-shadow: none !important;
+}
+/*sign pad*/
+body .sigPad .pad{
+    border-color: #e6e6e6;
+}
+body .sigPad .pad:hover{
+    border-color: #5FB878;
+}
+
+/* datepicker */
+body .hasDatepicker + a, body .hasDatepicker + img {
+    position: absolute;
+    padding: 2px 5px;
+    display: inline-block;
+}
+body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
+    right: auto;
+    margin-left: -21px;
+}
+body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker + img {
+    left: auto;
+    margin-left: auto;
+    margin-right: -21px;
+}
+body .filter-cell input.hasDatepicker {
+    padding-right: 25px;
+}
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 25px;
+    padding-right: auto;
+}
+body .hasDatepicker + a + .close-icon, body .hasDatepicker + img + .close-icon{
+    position: relative;
+    top: -3px;
+    left: 15px;
+}
+
+/* multi page form*/
+body #form-canvas .page span{
+    border:0px !important;
+}
+body #form-canvas .multiPagedForm.tab .page-nav-panel .nav_item button{
+    border-radius: 2px 2px 0 0;
+    font-weight: normal;
+}
+body #form-canvas .multiPagedForm.tab .page-nav-panel{
+    border-bottom-width: 1px;
+}
+body #form-canvas .page-button-panel .button{
+    border-color: #5FB878;
+    background-color: #5FB878;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 2px;
+}
+
+/* popup select */
+body #form-canvas .selector_element{    
+    margin-left: 150px;
+}
+body #form-canvas .selector_element .selector_button {
+    border-color: #5FB878;
+    background-color: #5FB878;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 2px;
+}
+body #form-canvas .selector_element .selector_item{
+    border-radius: 2px;
+    border: 1px solid #e6e6e6;
+    min-width: 90px;
+    margin-bottom: 2px;
+    position: relative;
+    padding: 2px 27px 2px 5px;
+    box-sizing: border-box;
+}
+body #form-canvas .selector_element .selector_remove{
+    color:#fff;
+    background: #fff;
+    position: absolute;
+    border-radius: 50%;
+    display: block;
+    top: 3px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+}
+body #form-canvas .selector_element .selector_remove:after{
+    font-family: "layui-icon" !important;
+    content: "\1006";
+    display:inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    font-size:14px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+    color: #e6e6e6;
+    display: block;
+    position: absolute;
+    top:8px;
+    right: 2px;
+}
+body #form-canvas .selector_element .selector_remove:hover{
+    background: #FF5722;
+    color:#FF5722;
+}
+body #form-canvas .selector_element .selector_remove:hover:after{
+    color: #fff;
+}
+
+/* grid */
+body #form-canvas .grid table.tablesaw,
+body #form-canvas .grid table.tablesaw th,
+body #form-canvas .grid table.tablesaw td{
+    border: 1px solid #e6e6e6;
+}
+body #form-canvas .grid table.tablesaw th, 
+body #form-canvas .grid table.tablesaw td {
+    padding: 8px 15px !important;
+}
+body #form-canvas .grid table.tablesaw th {
+    background: #f2f2f2;
+    font-weight: normal;
+}
+body .grid.readonly a.grid-action-edit,
+body .grid-action-edit, body .grid-action-delete, body .grid-action-moveup, body .grid-action-moveup.disabled,
+body .grid-action-movedown, body .grid-action-movedown.disabled, body .grid-action-add{
+    background: none !important;
+    position: relative;
+    padding: 0;
+    height: 10px;
+    width: 12px;
+    margin: 0 4px 2px;
+}
+body .grid.readonly a.grid-action-edit:after,
+body .grid-action-edit:after, body .grid-action-delete:after, body .grid-action-moveup:after, body .grid-action-moveup.disabled:after,
+body .grid-action-movedown:after, body .grid-action-movedown.disabled:after, body .grid-action-add:after{
+    height: 16px;
+    width: 16px;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 16px;
+    margin-right: 0px;
+    margin-top: 0px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 16px;
+    position: absolute;
+    top:0;
+    left: 0;
+}
+body .grid-action-edit:after{
+    content: '\f040';
+}
+body .grid-action-delete:after{
+    content: '\f00d';
+    color: #FF5722;
+}
+body .grid-action-moveup:after{
+    content: '\f077';
+}
+body .grid-action-movedown:after{
+    content: '\f078';
+}
+body .grid-action-add:after {
+    content: '\f055';
+    color: #5FB878;
+}
+body .grid-action-moveup.disabled:after, body .grid-action-movedown.disabled:after{
+    color: #999999;
+}
+body .grid.readonly a.grid-action-edit:after {
+    content: '\f0f6';
+}
+
+/* advanced grid */
+body #form-canvas .adgrid .pq-grid-inner{
+    border-color: #e6e6e6;
+    border-radius: 2px;
+}
+body #form-canvas .pq-grid div.pq-header-outer {
+    background: #f2f2f2;
+    border-bottom-color: #e6e6e6;
+}
+body #form-canvas .pq-grid-header td.pq-grid-col, 
+body #form-canvas .pq-grid-header td.pq-grid-col{
+    background: #f2f2f2;
+}
+body #form-canvas .pq-grid-header td.pq-col-sort-asc, 
+body #form-canvas .pq-grid-header td.pq-col-sort-desc{
+    background: #e6e6e6;
+}
+body #form-canvas .form-container .pq-td-div,
+body #form-canvas .form-container .pq-grid-header-table-div{
+    padding: 8px 5px;
+    min-height: 30px;
+    box-sizing: border-box;
+}
+body #form-canvas .form-container .pq-td-div .form-cell-value,
+body #form-canvas .form-container .pq-td-div .subform-cell-value {
+    min-height: auto;
+    margin-bottom: 8px;
+}
+body #form-canvas .adgrid .editor-cell {
+    background: #f2f2f2;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+}
+body #form-canvas .adgrid .editor-cell .actions-buttons button{
+    border-color: #5FB878;
+    background-color: #5FB878;
+    color: #fff;
+    padding: 3px 10px;
+    margin: 2px;
+    border-radius: 2px;
+}
+body #form-canvas .div.pq-grid-toolbar,
+body #form-canvas .pq-grid-bottom.ui-corner-bottom{
+    padding: 5px 0px;
+}
+
+/* spreadsheet */
+body #form-canvas .handsontable th {
+    background-color: #f2f2f2;
+}
+body #form-canvas .handsontable th.active {
+    background-color: #e6e6e6;
+}
+body #form-canvas .handsontable .table caption+thead tr:first-child td,
+body #form-canvas .handsontable .table caption+thead tr:first-child th,
+body #form-canvas .handsontable .table colgroup+thead tr:first-child td,
+body #form-canvas .handsontable .table colgroup+thead tr:first-child th,
+body #form-canvas .handsontable .table thead:first-child tr:first-child td,
+body #form-canvas .handsontable .table thead:first-child tr:first-child th,
+body #form-canvas .handsontable .table-bordered td:first-child,
+body #form-canvas .handsontable .table-bordered th:first-child,
+body #form-canvas .handsontable td,
+body #form-canvas .handsontable th,
+body #form-canvas .handsontable th:last-child,
+body #form-canvas .handsontable .htNoFrame+td,
+body #form-canvas .handsontable .htNoFrame+th,
+body #form-canvas .handsontable.htRowHeaders thead tr th:nth-child(2),
+body #form-canvas .handsontable td:first-of-type,
+body #form-canvas .handsontable th:first-child,
+body #form-canvas .handsontable th:nth-child(2),
+body #form-canvas .handsontable.listbox .ht_master table,
+body #form-canvas .handsontable tbody tr th:nth-last-child(2),
+body #form-canvas .handsontable thead tr:nth-last-child(2) th.htGroupIndicatorContainer 
+body #form-canvas .ht_clone_top_left_corner thead tr th:nth-last-child(2) {
+    border-top-color: #e6e6e6 !important;
+    border-left-color: #e6e6e6 !important;
+    border-right-color: #e6e6e6 !important;
+    border-bottom-color: #e6e6e6 !important;
+}
+
+@media screen and (max-width: 480px) {
+    body .form-container input:not([type]),
+    body .form-container input[type=text],
+    body .form-container input[type=password],
+    body .form-container input[type=email],
+    body .form-container input[type=url],
+    body .form-container input[type=time],
+    body .form-container input[type=date],
+    body .form-container input[type=datetime],
+    body .form-container input[type=datetime-local],
+    body .form-container input[type=tel],
+    body .form-container input[type=number],
+    body .form-container input[type=search],
+    body .form-container textarea, 
+    body .form-container select:not([class^=ui]),
+    body .form-container .form-cell-value,
+    body .form-container .subform-cell-value,
+    body .form-container .chosen-container,
+    body .form-container .calculationField_value{
+        max-width: 100%;
+        width: 100%;
+        min-width: 0;
+    }
+    body .form-container textarea[cols] {
+        width: 100%;
+        min-width: 0;
+    }
+    body .form .form-row > label, body #form-canvas .form-cell .label, body #form-canvas .subform-cell .label{
+        text-align: left;
+        width: 100%;
+        max-width: 100%;
+    }
+    body .form .form-buttons {
+        padding-left: 0px;
+    }
+    body .form-fileupload{
+        width: 100%;
+    }
+    body #form-canvas #section-actions{
+        padding-left: 0px;
+    }
+    body #form-canvas .hasDatepicker{
+        width: calc(100% - 42px);
+    }
+}

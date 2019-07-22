@@ -166,7 +166,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
             String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : "";
             String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : "";
             String confirm = action.getConfirmation();
-            String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm);
+            String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm, action.getPropertyString("cssClasses"));
             text = link;
         }
 
@@ -185,7 +185,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
                 String link = "";
                 if (isRowActionVisible(action)) {
-                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation());
+                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), action.getPropertyString("cssClasses"));
                 }
                 output += " " + link + " </td><td class=\"row_action\"> ";
             }
@@ -219,6 +219,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String generateLink(String href, String target, String hrefParam, String hrefColumn, String text, String confirmation) {
+        return generateLink(href, target, hrefParam, hrefColumn, text, confirmation, "");
+    }
+    
+    protected String generateLink(String href, String target, String hrefParam, String hrefColumn, String text, String confirmation, String cssClasses) {
         // add links
         String link = href;
         String targetString = "";
@@ -286,7 +290,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     confirmationString = " onclick=\"return confirm('" + confirmation + "')\"";
                 }
             }
-            link = "<a href=\"" + link + "\"" + targetString + confirmationString + ">" + text + "</a>";
+            link = "<a href=\"" + link + "\"" + targetString + confirmationString + " class=\""+cssClasses+"\">" + text + "</a>";
         }
         return link;
     }

@@ -275,6 +275,8 @@ $(window).on("load", function() {
         setTimeout(function () {
             AdminBar.initAdminBar();
         }, 0);
+    } else {
+        AdminBar.initQuickEditMode();
     }
 });
 

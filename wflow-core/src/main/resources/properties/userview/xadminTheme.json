@@ -1,0 +1,355 @@
+[{
+    title : '@@theme.xadmin.config@@',
+    properties : [
+    {
+        name : 'xbackground',
+        label : '@@theme.xadmin.background@@',
+        type : 'color',
+        value : '#F2F1F2'
+    },
+    {
+        name : 'xheaderColor',
+        label : '@@theme.xadmin.headerColor@@',
+        type : 'color',
+        value : '#222222'
+    },
+    {
+        name : 'xnavBackground',
+        label : '@@theme.xadmin.navBackground@@',
+        type : 'color',
+        value : '#EEEEEE'
+    },
+    {
+        name : 'xnavLinkBackground',
+        label : '@@theme.xadmin.navLinkBackground@@',
+        type : 'color',
+        value : '#EEEEEE'
+    },
+    {
+        name : 'xnavLinkColor',
+        label : '@@theme.xadmin.navLinkColor@@',
+        type : 'color',
+        value : '#333333'
+    },
+    {
+        name : 'xnavActiveLinkBackground',
+        label : '@@theme.xadmin.navActiveLinkBackground@@',
+        type : 'color',
+        value : '#009688'
+    },
+    {
+        name : 'xnavActiveLinkColor',
+        label : '@@theme.xadmin.navActiveLinkColor@@',
+        type : 'color',
+        value : '#ffffff'
+    },
+    {
+        name : 'xbuttonBackground',
+        label : '@@theme.xadmin.buttonBackground@@',
+        type : 'color',
+        value : '#009688',
+        supportHash : 'true'
+    },
+    {
+        name : 'xbuttonColor',
+        label : '@@theme.xadmin.buttonColor@@',
+        type : 'color',
+        value : '#ffffff'
+    },
+    {
+        name : 'xprimaryColor',
+        label : '@@theme.xadmin.primaryColor@@',
+        type : 'color',
+        value : '#5FB878'
+    },
+    {
+        name : 'xfontColor',
+        label : '@@theme.xadmin.fontColor@@',
+        type : 'color',
+        value : '#666666'
+    },
+    {
+        name : 'xfooterBackground',
+        label : '@@theme.xadmin.footerBackground@@',
+        type : 'color',
+        value : '#F2F1F2'
+    },
+    {
+        name : 'xfooterColor',
+        label : '@@theme.xadmin.footerColor@@',
+        type : 'color',
+        value : '#666666'
+    },
+    {
+        name : 'disabledFineFont',
+        label : '@@theme.xadmin.disabledFineFont@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@theme.universal.advanced@@',
+    properties : [
+    {
+        name : 'fav_icon',
+        label : '@@theme.universal.favIcon@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:16px;height:16px;'
+    },
+    {
+        name : 'logo',
+        label : '@@theme.universal.logo@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+    },
+    {
+        name : 'profile',
+        label : '@@theme.universal.disabledProfile@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'userImage',
+        label : '@@theme.universal.userImage@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : 'no',
+            label : '@@theme.universal.userImage.no@@'
+        },{
+            value : '',
+            label : '@@theme.universal.userImage.gravatar@@'
+        },{
+            value : 'hashVariable',
+            label : '@@theme.universal.userImage.hashVariable@@'
+        }]
+    },
+    {
+        name : 'userImageUrlHash',
+        label : '@@theme.universal.userImageUrlHash@@',
+        type : 'textfield',
+        control_field: 'userImage',
+        control_value: 'hashVariable',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
+        name : 'inbox',
+        label : '@@theme.universal.inbox@@',
+        type : 'selectbox',
+        value : 'current',
+        options : [{
+            value : '',
+            label : '@@theme.universal.inbox.no@@'
+        },{
+            value : 'all',
+            label : '@@theme.universal.inbox.all@@'
+        },{
+            value : 'current',
+            label : '@@theme.universal.inbox.current@@'
+        }]
+    },    
+    {
+        name : 'homeUrl',
+        label : '@@theme.universal.homeUrl@@',
+        type : 'textfield'
+    },    
+    {
+        name : 'shortcutLinkLabel',
+        label : '@@theme.universal.shortcutLinkLabel@@',
+        value : '@@theme.universal.shortcut@@',
+        type : 'textfield'
+    },
+    {
+        name : 'shortcut',
+        label : '@@theme.universal.shortcut@@',
+        description : '@@theme.universal.shortcut.desc@@',
+        type : 'grid',
+        columns : [{
+            key : 'label',
+            label : '@@theme.universal.label@@'
+        },
+        {
+            key : 'href',
+            label : '@@theme.universal.href@@'
+        },
+        {
+            key : 'target',
+            label : '@@theme.universal.target@@',
+            value : 'tab',
+            options : [
+                {value: '', label: ''},
+                {value: '_blank', label: '@@theme.universal.target.newTab@@'},
+                {value: 'tab', label: '@@theme.xadmin.target.tab@@'},
+                {value: 'popup', label: '@@theme.xadmin.target.popup@@'}
+            ]
+        },
+        {
+            key : 'isPublic',
+            label : '@@theme.universal.shortcut.public@@',
+            type : 'truefalse'
+        }]
+    },
+    {
+        name : 'userMenu',
+        label : '@@theme.universal.userMenu@@',
+        description : '@@theme.universal.userMenu.desc@@',
+        type : 'grid',
+        columns : [{
+            key : 'label',
+            label : '@@theme.universal.label@@'
+        },
+        {
+            key : 'href',
+            label : '@@theme.universal.href@@'
+        },
+        {
+            key : 'target',
+            label : '@@theme.universal.target@@',
+            value : 'tab',
+            options : [
+                {value: '', label: ''},
+                {value: '_blank', label: '@@theme.universal.target.newTab@@'},
+                {value: 'tab', label: '@@theme.xadmin.target.tab@@'},
+                {value: 'popup', label: '@@theme.xadmin.target.popup@@'}
+            ]
+        }]
+    },
+    {
+        name : 'enableResponsiveSwitch',
+        label : '@@theme.universal.enableResponsiveSwitch@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'removeAssignmentTitle',
+        label : '@@theme.universal.removeAssignmentTitle@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'css',
+        label : '@@theme.universal.customCss@@',
+        type : 'codeeditor',
+        mode : 'css'
+    },
+    {
+        name : 'js',
+        label : '@@theme.universal.customJavascript@@',
+        type : 'codeeditor',
+        mode : 'javascript'
+    },
+    {
+        name: 'disableHelpGuide',
+        label: '@@theme.universal.disableHelpGuide@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name : 'loginBackground',
+        label : '@@theme.xadmin.loginBackground@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+    }]
+},
+{
+    title : '@@pwa.settings@@',
+    properties : [
+    {
+        name: 'disablePwa',
+        label: '@@pwa.disablePwa@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name: 'disablePush',
+        label: '@@push.disablePush@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name: 'urlsToCache',
+        label: '@@pwa.urlsToCache@@',
+        type:'textarea',
+        description: '@@pwa.urlsToCache.desc@@',
+        cols:'40',
+        rows:'10'
+    }],
+    buttons : [{
+        name : 'testpush',    
+        label : '@@push.sendTestPush@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/push/message',
+        ajax_method : 'POST',
+        addition_fields : [
+        {
+            name : 'username',
+            label : '@@push.username@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'title',
+            label : '@@push.title@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'text',
+            label : '@@push.text@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'url',
+            label : '@@push.url@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'icon',
+            label : '@@push.icon@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'badge',
+            label : '@@push.badge@@',
+            type : 'textfield',
+            required : 'False'
+        }]
+    }]
+}]

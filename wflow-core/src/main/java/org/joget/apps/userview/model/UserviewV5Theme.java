@@ -244,11 +244,22 @@ public abstract class UserviewV5Theme extends UserviewTheme {
     /**
      * HTML template for menu category label
      * 
-     * @param data
+     * @param category
      * @return 
      */
     public String decorateCategoryLabel(UserviewCategory category) {
-        return StringUtil.stripHtmlRelaxed(category.getPropertyString("label"));
+        return "<span>" + StringUtil.stripHtmlRelaxed(category.getPropertyString("label")) + "</span>";
+    }
+    
+    /**
+     * HTML template for menu 
+     * 
+     * @param category
+     * @param menu
+     * @return 
+     */
+    public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
+        return menu.getMenu();
     }
     
     /**
@@ -257,6 +268,22 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String[] themeDefinedMenusId() {
+        return null;
+    }
+    
+    /**
+     * To handle special redirection case
+     * @return 
+     */
+    public String handleRedirection() {
+        return null;
+    }
+    
+    /**
+     * To get custom homepage
+     * @return 
+     */
+    public String getCustomHomepage() {
         return null;
     }
 }

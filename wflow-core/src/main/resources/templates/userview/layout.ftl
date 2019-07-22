@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="${language!}">
+<html ${html_attributes!} lang="${language!}">
     ${html_inner_before!}
     <head>
         ${head_inner_before!}

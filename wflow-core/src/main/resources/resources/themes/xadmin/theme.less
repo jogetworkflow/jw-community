@@ -1,0 +1,154 @@
+body{
+    background:@background;
+    color: @fontColor;
+}
+body .container{
+    background:@headerColor;
+}
+body .page-content .layui-tab-title {
+    background: @background;
+}
+body .left-nav{
+    background:@navBackground;
+}
+body .left-nav a{
+    color:@navLinkColor;
+    background: @navLinkBackground;
+}
+body .left-nav a.active,
+body .left-nav a:hover{
+    background: @navActiveLinkBackground !important;
+    color: @navActiveLinkColor;
+    border-color: darken(@navActiveLinkBackground, 30%) !important;
+}
+body .menu-link .badge {
+    background: @navActiveLinkBackground;
+    color: @navActiveLinkColor;
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-size: 12px;
+}
+body .menu-link.active .badge, 
+body .menu-link:hover .badge {
+    color: @navActiveLinkBackground;
+    background-color: @navActiveLinkColor;
+}
+body .login .message,
+body .login input[type=submit],
+body .login input[type=button],
+.form-button, .btn, .button,
+.layui-btn,
+body .dataList span.pagelinks strong{
+    background-color: @buttonBackground;
+    color: @buttonColor;
+    border-color: @buttonBackground;
+}
+body .dataList .pagelinks a:hover {
+    color: @buttonBackground;
+    border-color: @buttonBackground;
+}
+body .dataList .filters .filter-cell input[type=submit]{
+    color: @buttonBackground;
+}
+body .dataList .filters .filter-cell:last-child:after{
+    color: @buttonColor;
+}
+body .layui-elem-quote{
+    border-left-color: @primaryColor;
+}
+body .select_radio label > input[type="radio"]:checked + i:after,
+body label > input[type="radio"]:checked + i:after,
+body .fieldtooltip:hover,
+body main a:hover,
+body .layui-form-checked i,
+body .layui-form-checked:hover i,
+body .layui-form-radio>i:hover,
+body .layui-form-radioed>i,
+body .layui-tab-card>.layui-tab-more .layui-this,
+body .layui-timeline-axis,
+body .inbox-notification dd.task a .time,
+body .grid-action-add:after{
+    color:@primaryColor;
+}
+body input:not([type]):focus:not([readonly]),
+body input[type=text]:focus:not([readonly]),
+body input[type=password]:focus:not([readonly]),
+body input[type=email]:focus:not([readonly]),
+body input[type=url]:focus:not([readonly]),
+body input[type=time]:focus:not([readonly]),
+body input[type=date]:focus:not([readonly]),
+body input[type=datetime]:focus:not([readonly]),
+body input[type=datetime-local]:focus:not([readonly]),
+body input[type=tel]:focus:not([readonly]),
+body input[type=number]:focus:not([readonly]),
+body input[type=search]:focus:not([readonly]),
+body textarea:focus:not([readonly]),
+body select:focus:not([readonly]):not([class^=ui]),
+body input.focus,
+body .editor-cell input:not([type]):focus:not([readonly]),
+body .editor-cell input[type=text]:focus:not([readonly]),
+body .editor-cell input[type=password]:focus:not([readonly]),
+body .editor-cell input[type=email]:focus:not([readonly]),
+body .editor-cell input[type=url]:focus:not([readonly]),
+body .editor-cell input[type=time]:focus:not([readonly]),
+body .editor-cell input[type=date]:focus:not([readonly]),
+body .editor-cell input[type=datetime]:focus:not([readonly]),
+body .editor-cell input[type=datetime-local]:focus:not([readonly]),
+body .editor-cell input[type=tel]:focus:not([readonly]),
+body .editor-cell input[type=number]:focus:not([readonly]),
+body .editor-cell input[type=search]:focus:not([readonly]),
+body .editor-cell textarea:focus:not([readonly]),
+body .editor-cell select:focus:not([readonly]):not([class^=ui]),
+body .editor-cell input.focus,
+body .dropzone:active,
+body .select_checkbox label > [type="checkbox"]:checked + i,
+body label > input[type=checkbox]:checked + i,
+body select:not([class^="ui-"]):focus,
+body .editor-cell select:not([class^="ui-"]):focus,
+body .chosen-container-multi.chosen-container-active .chosen-choices,
+body .sigPad .pad:hover,
+body .layui-form-checked,
+body .layui-form-checked:hover,
+body .layui-form-checkbox[lay-skin=primary]:hover i,
+body .layui-form-checked[lay-skin=primary] i,
+body .layui-form-onswitch,
+body #form-canvas .page-button-panel .button,
+body #form-canvas .selector_element .selector_button{
+    border-color: @primaryColor;
+}
+body .layui-table-edit:focus {
+    border-color: @primaryColor!important
+}
+body .select_checkbox label > [type="checkbox"]:checked + i,
+body label > input[type=checkbox]:checked + i,
+body .chosen-container .chosen-results li.highlighted,
+body .layui-progress-bar,
+body .layui-form-select dl dd.layui-this,
+body .layui-form-checked span,
+body .layui-form-checked:hover span,
+body .layui-form-checked[lay-skin=primary] i,
+body .layui-form-onswitch,
+body .layui-nav .layui-this:after,
+body .layui-nav-bar,
+body .layui-nav-tree .layui-nav-itemed:after,
+body .layui-nav .layui-nav-child dd.layui-this a,
+body .layui-nav-child dd.layui-this,
+body #form-canvas .page-button-panel .button,
+body #form-canvas .selector_element .selector_button,
+.inbox-notification > a > .badge {
+    background-color: @primaryColor;
+}
+body .layui-tab-brief>.layui-tab-more li.layui-this:after,
+body .layui-tab-brief>.layui-tab-title .layui-this:after {
+    border-bottom-color: @primaryColor;
+}
+body .dataList th a, 
+body .dataList th a:visited,
+body .dataList th a:hover,
+body .dataList td {
+    color: @fontColor;
+}
+footer {
+    background: @footerBackground;
+    color:@footerColor;
+}

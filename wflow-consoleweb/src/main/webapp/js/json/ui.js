@@ -109,7 +109,7 @@ UI = {
         $.unblockUI();
     },
     maxIframe : function(id) {
-        if ($("iframe#" + id).length > 0) {
+        if (id !== "" && $("iframe#" + id).length > 0) {
             var iframe = $("iframe#" + id);
             $(iframe).trigger("iframe-ui-maxsize");
             if ($(iframe)[0].hasAttribute("frameBorder")) {
@@ -122,7 +122,7 @@ UI = {
         }
     },
     restoreIframe : function(id) {
-        if ($("iframe#" + id).length > 0) {
+        if (id !== "" && $("iframe#" + id).length > 0) {
             var iframe = $("iframe#" + id);
             var style = $(iframe).data("style");
             if (style === null || style === undefined) {
