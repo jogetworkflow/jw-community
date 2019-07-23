@@ -2,6 +2,14 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.26
+=================
+463cf918 Fixed: wflow-core - Text Field - Encryption is not handled correctly for readonly. #6577 5.0-SNAPSHOT
+38354ca5 Fixed: wflow-core - FormPdfUtil - Double quote in value is not render correctly in PDF. #6605 @5.0-SNAPSHOT
+de589567 Fixed: wflow-wfengine - Monitoring - Number of activities in activities listing is incorrect on last page. @5.0-SNAPSHOT
+dd56604a Fixed: wflow-core - Userview - Redirection URL after login is double encoded. #6609 @5.0-SNAPSHOT
+65be5242 Fixed: wflow-designer - Fixed possible NPE. 5.0-SNAPSHOT
+
 CHANGES IN 5.0.25
 =================
 21923c8 Modified: wflow-install - Update to JRE 1.8.0_122. @5.0-SNAPSHOT
