@@ -52,7 +52,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (value != null) {
                 
-                if ("true".equalsIgnoreCase(getPropertyString("encryption"))) {
+                if (!FormUtil.isReadonly(this, formData) && "true".equalsIgnoreCase(getPropertyString("encryption"))) {
                     value = SecurityUtil.encrypt(value);
                 }
                 
