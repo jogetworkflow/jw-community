@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.service.AppService;
@@ -27,7 +28,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
-    
+
     public String getName() {
         return "Process Data Collector";
     }
@@ -60,7 +61,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 } else {
                     String actId = null;
                     Object[] args = auditTrail.getArgs();
-                    
+
                     if (method.equals("getDefaultAssignments") && args.length == 3) {
                         users = (List<String>) auditTrail.getReturnObject();
                         actId = (String) args[1];
@@ -76,12 +77,12 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     } else {
                         actId = auditTrail.getMessage();
                     }
-                    
+
                     activity = workflowManager.getActivityById(actId);
                     trackActivity = workflowManager.getRunningActivityInfo(actId);
                     process = workflowManager.getRunningProcessById(activity.getProcessId());
                     trackProcess = workflowManager.getRunningProcessInfo(activity.getProcessId());
-                    
+
                     if (method.equals("executeTool")) {
                         trackActivity.setStartedTime(trackActivity.getCreatedTime());
                     } else if (method.equals("executeToolCompleted") || method.equals("executeActivity")) {
@@ -89,9 +90,9 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                         trackActivity.setStatus("Completed");
                         trackActivity.setStartedTime(trackActivity.getCreatedTime());
                         trackActivity.setFinishTime(new Date());
-                        
+
                         long timeTakenInSeconds = (trackActivity.getFinishTime().getTime() - trackActivity.getCreatedTime().getTime()) / 1000;
-                        
+
                         trackActivity.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
                         trackActivity.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
                     }
@@ -132,7 +133,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 || auditTrail.getMethod().equals("executeToolCompleted")
                 || auditTrail.getMethod().equals("executeActivity");
     }
-    
+
     protected class ReportTask implements Runnable {
         String profile;
         String appId;
@@ -142,7 +143,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         WorkflowActivity wfActivity;
         WorkflowActivity wfTrackActivity;
         List<String> users;
-        
+
         ReportTask(String profile, WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, List<String> users, String appId, String appVersion) {
             this.profile = profile;
             this.wfActivity = wfActivity;
@@ -153,7 +154,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
             this.appId = appId;
             this.appVersion = appVersion;
         }
-        
+
         @Transactional
         public void run() {
             HostManager.setCurrentProfile(profile);
@@ -163,7 +164,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
             }
         }
-        
+
         protected ReportWorkflowProcessInstance updateProcessData(WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, String appId, String appVersion) {
             String processInstanceId = wfProcess.getInstanceId();
 
@@ -198,19 +199,19 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 pInstance.setTimeConsumingFromStartedTime(wfTrackProcess.getTimeConsumingFromDateStartedInSeconds());
                 pInstance.setReportWorkflowActivityInstanceList(null); //to fix session issue. mapping set to no update
                 reportManager.saveReportWorkflowProcessInstance(pInstance);
-                
+
                 return reportManager.getReportWorkflowProcessInstance(processInstanceId);
             }
             return null;
         }
 
         protected ReportWorkflowActivityInstance updateActivityData(WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, List<String> users, String appId, String appVersion) {
-            String activityInstanceId = wfActivity.getId();
 
             WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             ReportManager reportManager = (ReportManager) AppUtil.getApplicationContext().getBean("reportManager");
 
             if (wfActivity != null) {
+                String activityInstanceId = wfActivity.getId();
                 ReportWorkflowActivityInstance aInstance = reportManager.getReportWorkflowActivityInstance(activityInstanceId);
                 List<String> userList = new ArrayList<String>();
                 if (aInstance == null) {
@@ -259,15 +260,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     }
                 }
 
-                String assignmentUsers = "";
-                if (userList != null) {
-                    for (String username : userList) {
-                        assignmentUsers += username + ",";
-                    }
-                }
-                if (assignmentUsers.endsWith(",")) {
-                    assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
-                }
+                String assignmentUsers = StringUtils.join(userList, ",");
                 aInstance.setAssignmentUsers(assignmentUsers);
 
                 aInstance.setPerformer(wfTrackActivity.getPerformer());
