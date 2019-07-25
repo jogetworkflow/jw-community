@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -43,6 +44,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowPackage;
 import org.joget.report.model.ReportRow;
 import org.joget.report.service.ReportManager;
@@ -73,6 +75,8 @@ public class WorkflowJsonController {
     private AppService appService;
     @Autowired
     private ReportManager reportManager;
+    @Autowired
+    private PluginManager pluginManager;
 
     @RequestMapping("/json/workflow/package/list")
     public void packageList(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException {
@@ -1150,22 +1154,37 @@ public class WorkflowJsonController {
             in = httpResponse.getEntity().getContent();
 
             if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
-                // read InputStream
-                byte[] fileContent = readInputStream(in);
+                String filename = "";
+                //get all headers		
+                Header[] headers = httpResponse.getAllHeaders();
+                for (Header header : headers) {
+                    if ("Content-Disposition".equalsIgnoreCase(header.getName())) {
+                        filename = header.getValue().substring(header.getValue().indexOf("filename=") + 9);
+                        break;
+                    }
+                }
 
-                // import app
-                final AppDefinition appDef = appService.importApp(fileContent);
-                if (appDef != null) {
-                    TransactionTemplate transactionTemplate = (TransactionTemplate)AppUtil.getApplicationContext().getBean("transactionTemplate");
-                    transactionTemplate.execute(new TransactionCallback<Object>() {
-                        public Object doInTransaction(TransactionStatus ts) {
-                            appService.publishApp(appDef.getId(), null);
-                            return false;
-                        }
-                    });
-                    jsonObject.accumulate("appId", appDef.getAppId());
-                    jsonObject.accumulate("appName", appDef.getName());
-                    jsonObject.accumulate("appVersion", appDef.getVersion());
+                if (filename.endsWith(".jar")) {
+                    pluginManager.upload(filename, in);
+                    jsonObject.accumulate("pluginName", filename);
+                } else {
+                    // read InputStream
+                    byte[] fileContent = readInputStream(in);
+                
+                    // import app
+                    final AppDefinition appDef = appService.importApp(fileContent);
+                    if (appDef != null) {
+                        TransactionTemplate transactionTemplate = (TransactionTemplate)AppUtil.getApplicationContext().getBean("transactionTemplate");
+                        transactionTemplate.execute(new TransactionCallback<Object>() {
+                            public Object doInTransaction(TransactionStatus ts) {
+                                appService.publishApp(appDef.getId(), null);
+                                return false;
+                            }
+                        });
+                        jsonObject.accumulate("appId", appDef.getAppId());
+                        jsonObject.accumulate("appName", appDef.getName());
+                        jsonObject.accumulate("appVersion", appDef.getVersion());
+                    }
                 }
             }
         } finally {

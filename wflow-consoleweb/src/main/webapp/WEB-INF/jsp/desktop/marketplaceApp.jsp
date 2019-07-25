@@ -13,7 +13,7 @@
         <button id="installApp" style="display:none"><fmt:message key="appCenter.label.installApp"/></button>
     </div>
     
-    <iframe id="marketplaceAppFrame" src='<c:out value="${appUrl}"/>'></iframe>
+    <iframe id="marketplaceAppFrame" src='<c:out value="${appUrl}"/>' data-support="App;Plugin"></iframe>
 
     <style>
         body {
@@ -65,6 +65,8 @@
                                 PopupDialog.closeDialog();                                
                                 parent.AppCenter.loadPublishedApps();
                                 parent.AdminBar.hideQuickOverlay();
+                            } if (app.pluginName) {
+                                alert("<fmt:message key="appCenter.label.appInstalled"/>");
                             } else {
                                 alert("<fmt:message key="appCenter.label.appNotInstalled"/>");
                             }
