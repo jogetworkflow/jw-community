@@ -7,6 +7,8 @@ import org.joget.commons.util.LogUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,15 +29,25 @@ import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import javax.net.ssl.SSLContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -53,11 +65,15 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 public class WorkflowJsonController {
@@ -1224,13 +1240,38 @@ public class WorkflowJsonController {
             return;
         }
         
-        CloseableHttpClient client = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy()).build();
+        CloseableHttpClient httpClient = null;
+        
         try {
+            TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
+                @Override
+                public boolean isTrusted(
+                    final X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            };
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, 
+              NoopHostnameVerifier.INSTANCE);
+
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("https", sslsf)
+                .register("http", new PlainConnectionSocketFactory())
+                .build();
+
+            BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(socketFactoryRegistry);
+            httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                .setConnectionManager(connectionManager).build();
+
             HttpHead head = new HttpHead(url);
-            HttpResponse httpResponse = client.execute(head);
+            HttpResponse httpResponse = httpClient.execute(head);
             response.setStatus(httpResponse.getStatusLine().getStatusCode());
+        } catch (Exception e) {
+            LogUtil.error(WorkflowJsonController.class.getName(), e, url);
         } finally {
-            client.close();
+            if (httpClient != null) {
+                httpClient.close();
+            }
         }
     }
 
