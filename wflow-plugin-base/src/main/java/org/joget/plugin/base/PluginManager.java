@@ -47,6 +47,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -530,6 +532,19 @@ public class PluginManager implements ApplicationContextAware {
             JarFile jarFile = null;
             try {
                 jarFile = new JarFile(outputFile);
+                
+                //try uninstall previous version
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    String classLocation = entries.nextElement().getName();
+                    if (classLocation.endsWith(".class")) {
+                        String classname = classLocation.replace(".class", "").replace("/", ".");
+                        if (uninstall(classname, true)){
+                            break;
+                        } 
+                    }
+                }
+                
                 isValid = true;
             } catch (IOException ex) {
                 //delete invalid file
@@ -549,7 +564,7 @@ public class PluginManager implements ApplicationContextAware {
                     jarFile.close();
                 }
             }
-
+            
             // install
             if (location != null && isValid) {
                 Bundle newBundle = installBundle(location);
