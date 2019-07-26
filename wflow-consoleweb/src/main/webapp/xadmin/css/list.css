@@ -86,7 +86,7 @@ body .dataList .actions.bottom {
     clear: both;
 }
 body .dataList td a.btn-danger{
-    background-color: transparent;
+    background-color: transparent !important;
     color: #FF5722;
 }
 body .dataList form:after,

@@ -11,7 +11,7 @@
         name : 'xheaderColor',
         label : '@@theme.xadmin.headerColor@@',
         type : 'color',
-        value : '#222222'
+        value : '#000051'
     },
     {
         name : 'xnavBackground',
@@ -35,7 +35,7 @@
         name : 'xnavActiveLinkBackground',
         label : '@@theme.xadmin.navActiveLinkBackground@@',
         type : 'color',
-        value : '#009688'
+        value : '#1A237E'
     },
     {
         name : 'xnavActiveLinkColor',
@@ -47,8 +47,7 @@
         name : 'xbuttonBackground',
         label : '@@theme.xadmin.buttonBackground@@',
         type : 'color',
-        value : '#009688',
-        supportHash : 'true'
+        value : '#1A237E'
     },
     {
         name : 'xbuttonColor',
@@ -60,13 +59,25 @@
         name : 'xprimaryColor',
         label : '@@theme.xadmin.primaryColor@@',
         type : 'color',
-        value : '#5FB878'
+        value : '#534BAE'
     },
     {
         name : 'xfontColor',
         label : '@@theme.xadmin.fontColor@@',
         type : 'color',
         value : '#666666'
+    },
+    {
+        name : 'xlinkColor',
+        label : '@@theme.xadmin.linkColor@@',
+        type : 'color',
+        value : '#2196f3'
+    },
+    {
+        name : 'xlinkActiveColor',
+        label : '@@theme.xadmin.linkActiveColor@@',
+        type : 'color',
+        value : '#0069c0'
     },
     {
         name : 'xfooterBackground',
@@ -83,6 +94,15 @@
     {
         name : 'disabledFineFont',
         label : '@@theme.xadmin.disabledFineFont@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'reopenTab',
+        label : '@@theme.xadmin.reopenTab@@',
         type : 'checkbox',
         options : [{
             value : 'true',

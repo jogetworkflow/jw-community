@@ -68,6 +68,11 @@ body #form-canvas .subform-container .subform-section + .subform-section.no_labe
     margin-top: -1px;
     border-top: 0px; 
     padding-top: 0px;
+    background: #fff;
+}
+body #form-canvas .form-container .form-section.no_label.fix-padding,
+body #form-canvas .form-container .subform-section.no_label.fix-padding{
+    padding-top: 0px;
 }
 body .form fieldset.has-legend legend, 
 body #form-canvas .form-section-title span, 
@@ -768,7 +773,7 @@ body #form-canvas .form-container .pq-grid-header-table-div{
 body #form-canvas .form-container .pq-td-div .form-cell-value,
 body #form-canvas .form-container .pq-td-div .subform-cell-value {
     min-height: auto;
-    margin-bottom: 8px;
+    margin-top: 2px;
 }
 body #form-canvas .adgrid .editor-cell {
     background: #f2f2f2;

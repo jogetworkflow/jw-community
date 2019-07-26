@@ -1,3 +1,116 @@
+#preview-label {
+    box-sizing: initial;
+    position: fixed;
+    top: 75px;
+    right: -225px;
+    width: 230px;
+    padding: 10px 210px;
+    line-height: 26px;
+    font-size: 24px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: 'trebuchet ms', verdana, arial, sans-serif;
+    background-color: rgb(0, 0, 0);
+    border: 1px solid rgb(170, 170, 170);
+    z-index: 3000;
+    opacity: 0.5;
+    -moz-transform: rotate(45deg);  /* FF3.5/3.6 */
+    -o-transform: rotate(45deg);  /* Opera 10.5 */
+    -webkit-transform: rotate(45deg);  /* Saf3.1+ */
+    transform: rotate(45deg);
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476)"; /* IE8 */
+}
+#preview-label.ie {
+    top: -60px;
+    right: -150px;
+    width: 400px;
+    opacity: 1;
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE8 */
+    zoom: 1;
+}
+#preview-label.testing {
+    background-color: red;
+    opacity: 1;
+}
+#preview-label.testing a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -140px;
+    margin-top: -15px;
+}
+body.inner-frame #preview-label{
+    display: none;
+}
+#main-action-help {
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    right: 5px;
+}
+.systemAlert{
+    background:#FFFFD6;
+    position:relative;
+    padding:10px 15px;
+    z-index:7;
+}
+.systemAlertClose{
+    position:absolute;
+    top:10px;
+    right:10px;
+    cursor:pointer;
+}
+.systemAlertMessage {
+    display:inline-block;
+    margin-right:30px;
+}
+.policies {
+    color: #999;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 0 0 10px 10px;
+}
+.policies > span{
+    display:block;
+}
+.rtl .dataList th.dataListAlignRight,
+.dataList th.dataListAlignLeft,
+.rtl .dataList td.dataListAlignRight,
+.dataList td.dataListAlignLeft {
+    text-align: left;
+}
+.rtl .dataList th.dataListAlignLeft,
+.dataList th.dataListAlignRight,
+.rtl .dataList td.dataListAlignLeft,
+.dataList td.dataListAlignRight {
+    text-align: right;
+}
+.rtl .dataList th.dataListAlignCenter,
+.dataList th.dataListAlignCenter,
+.rtl .dataList td.dataListAlignCenter,
+.dataList td.dataListAlignCenter {
+    text-align: center;
+}
+#help-container {display: inline-block; position: relative; float: right;}
+#help-container #main-action-help {position: relative; right:0px; width: 0; padding: 10px 0px;}
+
+@media print {    
+    a[href]:after { content: none !important; }
+    img[src]:after { content: none !important; }
+    #adminControl {display:none !important;}
+}
+#jqueryDialogDiv {overflow: hidden;}
+@media screen and (max-width:680px) {
+    .ui-dialog {
+        max-width: 95%;
+    }
+}
+
 /* reset xadmin*/
 table th, table td{
     word-break: initial;

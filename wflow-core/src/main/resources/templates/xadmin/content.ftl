@@ -21,11 +21,23 @@ ${menus!}
 <#if preloadUrl??>
     <script>
         $(function(){
-            setTimeout(function(){
-                layui.use('layer', function(){
-                    xadmin.add_tab('${preloadLabel}','${preloadUrl}',true);
-                });
-            }, 100);
+            function initTheme() {
+                setTimeout(function(){
+                    layui.use(['layer', 'element'], function(){
+                        if (layer !== undefined && element !== undefined ) {
+                            xadmin.add_tab('${preloadLabel}','${preloadUrl}',true);
+                        } else {
+                            initTheme();
+                        }
+                    });
+                }, 1000); 
+            }
+            initTheme();
+            if (!is_remember) {
+                window.onbeforeunload = function() {
+                    return "@@xadmin.tabsLostOnceLeave@@";
+                };
+            }
         });
     </script>
 </#if>

@@ -365,7 +365,7 @@ public class UserviewThemeProcesser {
         if ("true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
             html += "$(document).ready(function(){\n$('a').click(function(){\n"
                     + "        var action = $(this).attr('href');\n"
-                    + "if (action !== \"\" && action !== undefined && action !== \"#\"){\n"
+                    + "if (action !== \"\" && action !== undefined && action !== \"#\" && action !== \"javascript:;\"){\n"
                     + "        $('#preview').attr('action', action);\n"
                     + "        $('#preview').submit();\n"
                     + "}\n"

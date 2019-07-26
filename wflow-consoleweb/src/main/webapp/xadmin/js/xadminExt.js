@@ -12,6 +12,28 @@
         this.internalEnd();
         $("body").trigger("Xadmin.end");
     };
+    win.xadmin.internalAddtab = win.xadmin.add_tab;
+    win.xadmin.add_tab = function (title,url,is_refresh) {
+        if ($("#preview-form form#preview").length > 0) {
+            var id = md5(url);
+            element.tabAdd('xbs_tab', {
+                title: title,
+                content: '<iframe tab-id="'+id+'" id="'+id+'" name="'+id+'" frameborder="0" src="'+UI.base+'/images/v3/clear.gif" scrolling="yes" class="x-iframe"></iframe>',
+                id: id
+            })
+            element.tabChange('xbs_tab', id);
+
+            var newform = $('<form method="POST" data-ajax="false" style="display:none;" target="'+id+'" action="'+url+'"></form>'); 
+            $("#preview-form form#preview").after(newform); 
+            $(newform).html($("#preview-form form#preview").html());
+            setTimeout(function() {
+                $(newform).submit();
+                $(newform).remove();
+            }, 120);
+        } else {
+            this.internalAddtab(title,url,is_refresh);
+        }
+    };
     win.xadmin.openPopup = function(title, url, width, height, callback) {
         layui.use('layer', function(){
             var index = layer.open({
@@ -178,6 +200,10 @@
             if ($(this).find("> legend").length > 0 && $(this).find("> legend").text().length > 0) {
                 $(this).addClass("has-legend");
             }
+        });
+        //fix section padding
+        $(".form-section.no_label .form-column:eq(0) > div:eq(0) > .subform-container > .subform-section:eq(0):not(.no_label)").each(function(){
+            $(this).closest(".form-section").addClass("fix-padding");
         });
         if (parent && parent.layer && ($("body.popupBody #main-body-header").length > 0 || $("[class*=-body-header]").length > 0)) {
             var index = parent.layer.getFrameIndex(window.name);

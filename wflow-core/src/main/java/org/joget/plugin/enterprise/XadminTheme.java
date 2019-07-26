@@ -90,7 +90,11 @@ public class XadminTheme extends UniversalTheme {
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
         
-        jsCssLink += "<script>var is_remember = false;var _enableResponsiveTable = true;</script>";
+        jsCssLink += "<script>";
+        if (!"true".equalsIgnoreCase(getPropertyString("reopenTab")) || "true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
+            jsCssLink += "var is_remember = false;";
+        }
+        jsCssLink += "var _enableResponsiveTable = true;</script>";
         
         jsCssLink += getInternalJsCssLib(data);
         
@@ -102,16 +106,18 @@ public class XadminTheme extends UniversalTheme {
         String css = "";
         String lessVariables = "";
         String background = "#F2F1F2";
-        String headerColor = "#222222";
+        String headerColor = "#000051";
         String navBackground = "#EEEEEE";
         String navLinkBackground = "#EEEEEE";
         String navLinkColor = "#333333";
-        String navActiveLinkBackground = "#009688";
+        String navActiveLinkBackground = "#1A237E";
         String navActiveLinkColor = "#ffffff";
         String buttonColor = "#ffffff";
-        String buttonBackground = "#009688";
-        String primaryColor = "#5FB878";
+        String buttonBackground = "#1A237E";
+        String primaryColor = "#534BAE";
         String fontColor = "#666666";
+        String linkColor = "#2196f3";
+        String linkActiveColor = "#0069c0";
         String footerBackground = "#F2F1F2";
         String footerColor = "#666666";
         
@@ -154,6 +160,12 @@ public class XadminTheme extends UniversalTheme {
         if (!getPropertyString("xfooterColor").isEmpty()) {
             footerColor = getPropertyString("xfooterColor");
         }
+        if (!getPropertyString("xlinkColor").isEmpty()) {
+            linkColor = getPropertyString("xlinkColor");
+        }
+        if (!getPropertyString("xlinkActiveColor").isEmpty()) {
+            linkActiveColor = getPropertyString("xlinkActiveColor");
+        }
         
         lessVariables += "@background: " + background + ";";
         lessVariables += "@headerColor: " + headerColor + ";";
@@ -168,6 +180,8 @@ public class XadminTheme extends UniversalTheme {
         lessVariables += "@fontColor : " + fontColor + ";";
         lessVariables += "@footerBackground : " + footerBackground + ";";
         lessVariables += "@footerColor : " + footerColor + ";";
+        lessVariables += "@linkColor : " + linkColor + ";";
+        lessVariables += "@linkActiveColor : " + linkActiveColor + ";";
         
         try {
             // process LESS
@@ -219,7 +233,7 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String getFooter(Map<String, Object> data) {
-        if (!((Boolean) data.get("embed")) && !isIndex()) {
+        if (!((Boolean) data.get("embed")) && !isIndex() && !((data.containsKey("is_login_page") && ((Boolean) data.get("is_login_page"))))) {
             return super.getFooter(data);
         }
         return "";
@@ -402,7 +416,11 @@ public class XadminTheme extends UniversalTheme {
                 if (key.isEmpty()) {
                     key = Userview.USERVIEW_KEY_EMPTY_VALUE;
                 }
-                url = data.get("context_path").toString() + "/web/userview/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/" + getUserview().getPropertyString("homeMenuId");
+                if ("true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
+                    url = data.get("context_path").toString() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + getUserview().getPropertyString("homeMenuId");
+                } else {
+                    url = data.get("context_path").toString() + "/web/userview/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/" + getUserview().getPropertyString("homeMenuId");
+                }
                 tempId = getUserview().getPropertyString("homeMenuId");
             } else {
                 tempId = url.substring(url.lastIndexOf("/") + 1);
@@ -629,26 +647,28 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String handleRedirection() {
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        String referer = request.getHeader("referer");
-        if (!"true".equalsIgnoreCase(userview.getParamString("embed")) && !(referer != null && referer.contains("/" + userview.getPropertyString("id") + "/"))) {
-            String url = request.getRequestURI();
-            if (url.contains("/" + userview.getPropertyString("id") + "/") && url.endsWith("/_index")) {
-                return null;
-            }
-            
-            String key = userview.getParamString("key");
-            if (key.isEmpty()) {
-                key = Userview.USERVIEW_KEY_EMPTY_VALUE;
-            }
-            url += (request.getQueryString() == null?"":("?" + StringUtil.decodeURL(request.getQueryString())));
-            try {
-                url = URLEncoder.encode(url, "UTF-8");
-            } catch (Exception e) {
-            }
-            
-            return "redirect:/web/userview/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/_index?url="+url;
-        } 
+        if (!isIndex()) {
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            String referer = request.getHeader("referer");
+            if (!"true".equalsIgnoreCase(userview.getParamString("embed")) && !(referer != null && referer.contains("/" + userview.getPropertyString("id") + "/"))) {
+                String url = request.getRequestURI();
+                if (url.contains("/" + userview.getPropertyString("id") + "/") && url.endsWith("/_index")) {
+                    return null;
+                }
+
+                String key = userview.getParamString("key");
+                if (key.isEmpty()) {
+                    key = Userview.USERVIEW_KEY_EMPTY_VALUE;
+                }
+                url += (request.getQueryString() == null?"":("?" + StringUtil.decodeURL(request.getQueryString())));
+                try {
+                    url = URLEncoder.encode(url, "UTF-8");
+                } catch (Exception e) {
+                }
+
+                return "redirect:/web/userview/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/_index?url="+url;
+            } 
+        }
         return null;
     }
     
@@ -658,6 +678,7 @@ public class XadminTheme extends UniversalTheme {
     }
     
     protected boolean isIndex() {
-        return "_index".equals(userview.getParamString("menuId"));
+        return "_index".equals(userview.getParamString("menuId"))
+                || ("true".equalsIgnoreCase(userview.getParamString("isPreview")) && "".equals(userview.getParamString("menuId")));
     }
 }
