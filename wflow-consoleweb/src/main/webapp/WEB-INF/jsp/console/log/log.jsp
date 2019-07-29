@@ -7,7 +7,7 @@
     #logviewer .line.error {color:red;}
     #logviewer .line.warn {color:yellow;}
     #logviewer .line.debug {color:lightskyblue;}
-    .followbuttondiv {position: fixed; right: 30px; margin-top: 8px;}
+    .followbuttondiv {position: fixed; right: 60px; margin-top: 8px;}
     .linenumber {display: inline-block; width: 45px; text-align: left; color: lightslategrey; font-size: 10px; vertical-align: top; padding-top: 2px;}
     .text {display: inline-block; width: calc(100% - 55px);}
 </style>    
