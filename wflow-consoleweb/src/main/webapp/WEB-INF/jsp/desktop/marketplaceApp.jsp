@@ -98,6 +98,12 @@
                 verifyApp("");
             }
         });
+        $(document).ready(function(){
+            $("#marketplaceAppFrame").on('load', function(){
+                var iframeEl = document.getElementById('marketplaceAppFrame');
+                iframeEl.contentWindow.postMessage("Plugin", '*');
+            });
+        });
     </script>
     
 <commons:popupFooter />
