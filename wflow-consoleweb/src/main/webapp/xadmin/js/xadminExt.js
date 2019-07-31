@@ -57,9 +57,12 @@
         layer.close(index);
     };
     win.xadmin.tabTitle = function(tabId, title) {
-        $(".layui-tab li[lay-id='"+tabId+"']").each(function(){
-            $(this).contents().first()[0].textContent = htmlDecode(title);
-        });
+        title = htmlDecode(title);
+        if (title.trim().length > 0) {
+            $(".layui-tab li[lay-id='"+tabId+"']").each(function(){
+                $(this).contents().first()[0].textContent = title;
+            });
+        }
     };
     win.xadmin.tabMenu = function(tabId, menu) {
         if (menu !== "") {
@@ -245,7 +248,43 @@
                 });
             });    
         }
-        
+        if (parent && parent.layer && !$("body").hasClass("index-window")) {
+            //prevent redirect away from index page
+            $("a[onclick], button[onclick]").each(function(){
+                var onclick = $(this).attr("onclick");
+                if (onclick.indexOf("top.location=") !== -1) {
+                    if ($("body", window.top.document).hasClass("index-window")) {
+                        if (onclick.indexOf("window.top") !== -1) {
+                            onclick = onclick.replace("top.location=", "parent.location=");
+                        } else {
+                            onclick = onclick.replace("top.location=", "window.parent.location=");
+                        }
+                        $(this).attr("onclick", onclick);
+                    }
+                }
+                if (onclick.indexOf("window.parent.location=") !== -1
+                        || onclick.indexOf("parent.document.location.href=") !== -1) {
+                    if ($("body", window.parent.document).hasClass("index-window")) {
+                        onclick = onclick.replace("window.parent.location=", "document.location=");
+                        onclick = onclick.replace("parent.document.location.href=", "document.location=");
+                        $(this).attr("onclick", onclick);
+                    }
+                }
+            });
+            $("a[target='_top'], a[target='_parent']").each(function(){
+                var target = $(this).attr("target");
+                if (target === "_top") {
+                    if ($("body", window.top.document).hasClass("index-window")) {
+                        target = "_parent";
+                        $(this).attr("target", target);
+                    }
+                    if ($("body", window.parent.document).hasClass("index-window")) {
+                        target = "_self";
+                        $(this).attr("target", target);
+                    }
+                }
+            });
+        }
         
         /* ---------- Inbox ------------------------- */
         function loadInbox() {
@@ -278,7 +317,7 @@
                         var footer = $(".inbox-notification dd .dropdown-menu-sub-footer").parent();
                         var link = $(".inbox-notification dd .dropdown-menu-sub-footer").attr("data-href");
                         $.each(data.data, function(i, d) {
-                            var html = "<dd class=\"task\"><a onclick=\"xadmin.open('"+d.activityName+"', '" + link + "?embed=true&_mode=assignment&activityId=" + d.activityId + "')\">";
+                            var html = "<dd class=\"task\"><a onclick=\"xadmin.add_tab('"+d.activityName+"', '" + link + "?_mode=assignment&activityId=" + d.activityId + "', true)\">";
                             html += "<span class=\"header\">" + d.activityName + "</span>";
                             html += "<span class=\"message\">" + d.processName + "</span><span class=\"time\">" + d.dateCreated + "</span>";
                             html += "</a></dd>";

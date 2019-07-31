@@ -516,8 +516,12 @@ public class XadminTheme extends UniversalTheme {
         if (!((Boolean) data.get("embed")) && !getPropertyString("logo").isEmpty()) {
             data.put("body_classes", ((data.get("body_classes") != null)?data.get("body_classes").toString():"") +" has-logo");
         }
-        if (!isIndex()) {
-            data.put("body_classes", ((data.get("body_classes") != null)?data.get("body_classes").toString():"") +" inner-frame");
+        if (!((Boolean) data.get("embed"))) {
+            if (!isIndex()) {
+                data.put("body_classes", ((data.get("body_classes") != null)?data.get("body_classes").toString():"") +" inner-frame");
+            } else {
+                data.put("body_classes", ((data.get("body_classes") != null)?data.get("body_classes").toString():"") +" index-window");
+            }
         }
 
         return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
