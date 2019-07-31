@@ -17,21 +17,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.Role;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.util.FixedUidGenerator;
+import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -1137,6 +1138,7 @@ public class AppUtil implements ApplicationContextAware {
                 calendar.getProperties().add(Version.VERSION_2_0);
                 calendar.getProperties().add(new ProdId("-//Joget DX//iCal4j 1.0//EN"));
                 calendar.getProperties().add(CalScale.GREGORIAN);
+                calendar.getProperties().add(Method.REQUEST); 
                 
                 String eventName = (String) properties.get("icsEventName");
                 if (eventName.isEmpty()) {
@@ -1154,7 +1156,11 @@ public class AppUtil implements ApplicationContextAware {
                 try {
                     if (!timezoneString.isEmpty()) {
                         timezone = registry.getTimeZone(timezoneString);
-                    } else {
+                    }
+                } catch (Exception et) {}
+                
+                try {
+                    if (timezone == null) {
                         timezone = registry.getTimeZone(TimeZoneUtil.getServerTimeZoneID());
                     }
                 } catch (Exception et) {}
@@ -1167,7 +1173,8 @@ public class AppUtil implements ApplicationContextAware {
                 DateTime start = new DateTime(startDate.getTime());
                 
                 VEvent event;
-                if (endDateTime.isEmpty()) {
+                
+                if ("true".equalsIgnoreCase((String) properties.get("icsAllDay")) || endDateTime.isEmpty()) {
                     event = new VEvent(start, eventName);
                 } else {
                     java.util.Calendar endDate = new GregorianCalendar();
@@ -1180,6 +1187,9 @@ public class AppUtil implements ApplicationContextAware {
                     event = new VEvent(start, end, eventName);
                 }
                 
+                UidGenerator ug = new FixedUidGenerator("joget-workflow");
+                event.getProperties().add(ug.generateUid());
+                
                 String eventDesc = (String) properties.get("icsEventDesc");
                 if (!eventDesc.isEmpty()) {
                     event.getProperties().add(new Description(eventDesc));
@@ -1187,11 +1197,8 @@ public class AppUtil implements ApplicationContextAware {
                 
                 if (timezone != null) {
                     VTimeZone tz = timezone.getVTimeZone();
+                    calendar.getComponents().add(tz);
                     event.getProperties().add(tz.getTimeZoneId());
-                }
-                
-                if ("true".equalsIgnoreCase((String) properties.get("icsAllDay"))) {
-                    event.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
                 }
                 
                 String icsLocation = AppUtil.processHashVariable((String) properties.get("icsLocation"), wfAssignment, null, null, appDef);

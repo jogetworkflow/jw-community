@@ -38,8 +38,8 @@ http://www.displaytag.org/10/license.html
 Howl:
 http://howl.ow2.org/license.html
 
-ical4j 2.0.5
-https://github.com/ical4j/ical4j/blob/ical4j-2.0.5/LICENSE
+ical4j 3.0.7
+https://github.com/ical4j/ical4j/blob/ical4j-3.0.7/LICENSE
 
 Groovy:
 http://groovy.codehaus.org/License+Information
