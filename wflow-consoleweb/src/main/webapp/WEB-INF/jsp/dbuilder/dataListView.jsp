@@ -135,7 +135,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
@@ -217,7 +217,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
@@ -278,38 +278,66 @@
         $("form[name='form_${dataListId}'] button").on("click", function(){
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
-            if (target === undefined || target === null || target === "" || target.toLowerCase() === "post") {
-                $("form[name='form_${dataListId}']").removeAttr("target");
-            } else if (target.toLowerCase() === "popup") {
-                var url = "${pageContext.request.contextPath}/images/v3/clear.gif";
-                if (popupActionDialog == null) {
-                    popupActionDialog = new PopupDialog(url);
-                } else {
-                    popupActionDialog.src = url;
-                }
-                $("form[name='form_${dataListId}']").attr("target", "jqueryDialogFrame");
-                var submitForm = true;
+            var href = $(this).data("href");
+            var hrefParam = $(this).data("hrefParam");
+            
+            if (target.toLowerCase() !== "post" && href !== undefined && href !== "" && (hrefParam === undefined || hrefParam === "")) {
+                var doAction = function() {
+                    if (target.toLowerCase() === "popup") {
+                        if (popupActionDialog == null) {
+                            popupActionDialog = new PopupDialog(href);
+                        } else {
+                            popupActionDialog.src = href;
+                        }
+                        popupActionDialog.init();
+                    } else {
+                        document.location = href;
+                    }
+                };
+            
                 if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                    submitForm = showConfirm(this, confirmation);
+                    if (this, confirmation) {
+                        doAction();
+                    }
+                } else {
+                    doAction();
                 }
-                if (submitForm) {
-                    popupActionDialog.init();
-                    var name = $(this).attr("name");
-                    var value = $(this).val();
-                    setTimeout(function(){
-                        $("form[name='form_${dataListId}']").append('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
-                        $("form[name='form_${dataListId}']").submit();
-                        $("form[name='form_${dataListId}'] .temp_button_input").remove();
-                    }, 200);
-                }
+                
                 return false;
             } else {
-                $("form[name='form_${dataListId}']").attr("target", target);
-            }
-            if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                return showConfirm(this, confirmation);
-            } else {
-                return true;
+                if (target === undefined || target === null || target === "" || target.toLowerCase() === "post") {
+                    $("form[name='form_${dataListId}']").removeAttr("target");
+                } else if (target.toLowerCase() === "popup") {
+                    var url = "${pageContext.request.contextPath}/images/v3/clear.gif";
+                    if (popupActionDialog == null) {
+                        popupActionDialog = new PopupDialog(url);
+                    } else {
+                        popupActionDialog.src = url;
+                    }
+                    $("form[name='form_${dataListId}']").attr("target", "jqueryDialogFrame");
+                    var submitForm = true;
+                    if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
+                        submitForm = showConfirm(this, confirmation);
+                    }
+                    if (submitForm) {
+                        popupActionDialog.init();
+                        var name = $(this).attr("name");
+                        var value = $(this).val();
+                        setTimeout(function(){
+                            $("form[name='form_${dataListId}']").append('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
+                            $("form[name='form_${dataListId}']").submit();
+                            $("form[name='form_${dataListId}'] .temp_button_input").remove();
+                        }, 200);
+                    }
+                    return false;
+                } else {
+                    $("form[name='form_${dataListId}']").attr("target", target);
+                }
+                if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
+                    return showConfirm(this, confirmation);
+                } else {
+                    return true;
+                }
             }
         });
     });

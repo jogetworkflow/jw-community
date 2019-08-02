@@ -1,21 +1,33 @@
 package org.joget.apps.userview.service;
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.model.DataList;
+import org.joget.apps.datalist.model.DataListAction;
+import org.joget.apps.datalist.model.DataListCollection;
+import org.joget.apps.datalist.model.DataListColumn;
+import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewSetting;
@@ -25,6 +37,7 @@ import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeansException;
@@ -235,7 +248,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         return manifest;    
     }
     
-    public static String getServiceWorker(String appId, String userviewId) {
+    public static String getServiceWorker(String appId, String userviewId, String userviewKey) {
         String serviceWorkerJs = "";
         AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
         UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
@@ -248,11 +261,160 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
                 UserviewTheme theme = userviewSetting.getTheme();
                 if (theme instanceof UserviewPwaTheme) {
-                    serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId);
+                    serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId, userviewKey);
                 }
             }
         }
         return serviceWorkerJs;
     }
+       
+    public static String getCacheUrls(String appId, String userviewId, String userviewKey, String contextPath) {
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        if (appDef != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            if (userviewDef != null) {
+                String json = userviewDef.getJson();
+                Userview userview = userviewService.createUserview(appDef, json, null, false, contextPath, null, userviewKey, false);
+                JSONArray cacheUrls = new JSONArray();
+                try {
+                    UserviewTheme theme = userview.getSetting().getTheme();
+                    if (theme instanceof UserviewPwaTheme) {
+                        Set<String> themeUrls = ((UserviewPwaTheme) theme).getCacheUrls(appId, userviewId, userviewKey);
+                        if (themeUrls != null && !themeUrls.isEmpty()) {
+                            for (String u : themeUrls) {
+                                cacheUrls.put(processUrl(u, appId, userviewId, userviewKey, contextPath));
+                            }
+                        }      
+                        if (userview.getCategories() != null) {
+                            for (UserviewCategory c : userview.getCategories()) {
+                                if (c.getMenus() != null) {
+                                    for (UserviewMenu m : c.getMenus()) {
+                                        Set<String> urls = m.getOffileCacheUrls();
+                                        if (urls != null && !urls.isEmpty()) {
+                                            for (String u : urls) {
+                                                cacheUrls.put(processUrl(u, appId, userviewId, userviewKey, contextPath));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    return cacheUrls.toString();
+                } catch (Exception e) {
+                    LogUtil.error(UserviewUtil.class.getName(), e, appId + ":" + userviewId);
+                }
+            }
+        }
+        return "[]";
+    }
+    
+    protected static String processUrl(String url, String appId, String userviewId, String userviewKey, String contextPath) {
+        if (url.startsWith(contextPath) || url.startsWith("http://") || url.startsWith("https://")) {
+            return url;
+        } else {
+            url = contextPath + "/web/userview/"+appId+"/"+userviewId+"/"+userviewKey+"/"+url;
+        }
+        return url;
+    }
+    
+    public static Set<String> getDatalistCacheUrls(DataList list, boolean cacheListAction, boolean cacheAllLinks){
+        Set<String> urls = new HashSet<String>();
         
+        if (list != null) {
+            if (cacheListAction) {
+                DataListAction[] actions = list.getActions();
+                if (actions != null) {
+                    for (DataListAction ac : actions) {
+                        String href = ac.getHref();
+                        String hrefParam = ac.getHrefParam();
+                        String hrefTarget = ac.getTarget();
+                        if (!"post".equalsIgnoreCase(hrefTarget) 
+                                && href != null && !href.isEmpty() 
+                                && (hrefParam == null || hrefParam.isEmpty())) {
+                            urls.add(href);
+                        }
+                    }
+                }
+            }
+            if (cacheAllLinks) {
+                DataListAction[] rowActions = list.getRowActions();
+                DataListColumn[] columns = list.getColumns();
+                if ((rowActions != null && rowActions.length > 0) || (columns != null && columns.length > 0)) {
+                    DataListCollection rows = list.getRows();
+                    if (rows != null) {
+                        for (Object r : rows) {
+                            if (columns != null) {
+                                for (DataListColumn c : columns) {
+                                    if (c.getAction() != null) {
+                                        addDatalistRowCacheUrl(urls, c.getAction(), list, r);
+                                    }
+                                }
+                            }
+                            if (rowActions != null) {
+                                for (DataListAction rac : rowActions) {
+                                    addDatalistRowCacheUrl(urls, rac, list, r);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return urls;
+    }
+    
+    protected static void addDatalistRowCacheUrl(Set<String> urls, DataListAction a, DataList list, Object row) {
+        String link = a.getHref();
+        if (link != null && !link.isEmpty()) {
+            if (link.startsWith("?" + list.getActionParamName() + "=")) {
+                return;
+            }
+            
+            String hrefParam = a.getHrefParam();
+            String hrefColumn = a.getHrefColumn();
+            if (hrefParam != null && !hrefParam.isEmpty() && hrefColumn != null && !hrefColumn.isEmpty()) {
+                String[] params = hrefParam.split(";");
+                String[] columns = hrefColumn.split(";");
+                for (int i = 0; i < columns.length; i++ ) {
+                    if (columns[i] != null && !columns[i].isEmpty()) {
+                        boolean isValid = false;
+                        if (params.length > i && params[i] != null && !params[i].isEmpty()) {
+                            if (link.contains("?")) {
+                                link += "&";
+                            } else {
+                                link += "?";
+                            }
+                            link += StringEscapeUtils.escapeHtml(params[i]);
+                            link += "=";
+                            isValid = true;
+                        } if (!link.contains("?")) {
+                            if (!link.endsWith("/")) {
+                                link += "/";
+                            }
+                            isValid = true;
+                        }
+                        
+                        if (isValid) {
+                            Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
+                            if (paramValue == null) {
+                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
+                            }
+                            try {
+                                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
+                            } catch (UnsupportedEncodingException ex) {
+                                link += paramValue;
+                            }
+                        }
+                    }
+                }
+            }
+            urls.add(link);
+        }
+    }
 }

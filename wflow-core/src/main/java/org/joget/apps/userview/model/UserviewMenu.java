@@ -1,5 +1,7 @@
 package org.joget.apps.userview.model;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.joget.commons.util.StringUtil;
 
 /**
@@ -215,5 +217,18 @@ public abstract class UserviewMenu extends ExtElement{
      */
     public void setAlertMessage(String message) {
         setProperty(ALERT_MESSAGE_PROPERTY, message);
+    }
+    
+    public String getOffileOptions() {
+        return "{name : 'enableOffline', label : '@@userview.offile.offlineAvailable@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+    }
+    
+    public Set<String> getOffileCacheUrls() {
+        if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
+            Set<String> urls = new HashSet<String>();
+            urls.add(getUrl());
+            return urls;
+        }
+        return null;
     }
 }

@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,14 +25,13 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
-import org.joget.directory.model.User;
-import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
@@ -545,5 +545,29 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
     protected String addParamToUrl(String url, String name, String value) {
         return StringUtil.addParamsToUrl(url, name, value);
+    }
+    
+    @Override
+    public String getOffileOptions() {
+        String options = super.getOffileOptions();
+        options += ", {name : 'cacheAllLinks', label : '@@userview.offile.cacheList@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+        
+        return options;
+    }
+    
+    @Override
+    public Set<String> getOffileCacheUrls() {
+        if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
+            Set<String> urls = super.getOffileCacheUrls();
+            
+            if ("true".equalsIgnoreCase(getPropertyString("cacheAllLinks"))) {
+                DataList dataList = getDataList();
+                dataList.setRows(getRows(dataList));
+                urls.addAll(UserviewUtil.getDatalistCacheUrls(dataList, false, "true".equalsIgnoreCase(getPropertyString("cacheAllLinks"))));
+            }
+            
+            return urls;
+        }
+        return null;
     }
 }

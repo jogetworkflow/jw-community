@@ -169,13 +169,20 @@ public class UserviewWebController {
         writer.println(manifest);
     }
     
-    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/serviceworker"})
-    public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
-        String serviceWorker = UserviewUtil.getServiceWorker(appId, userviewId);
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/serviceworker"})
+    public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
+        String serviceWorker = UserviewUtil.getServiceWorker(appId, userviewId, userviewKey);
         response.setContentType("application/javascript;charset=UTF-8");
         response.setHeader("Service-Worker-Allowed", request.getContextPath());
         PrintWriter writer = response.getWriter();
         writer.println(serviceWorker);
     }
     
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/cacheUrls"})
+    public void cacheUrls(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
+        String cacheUrlsJSON = UserviewUtil.getCacheUrls(appId, userviewId, userviewKey, request.getContextPath());
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.println(cacheUrlsJSON);
+    }
 }

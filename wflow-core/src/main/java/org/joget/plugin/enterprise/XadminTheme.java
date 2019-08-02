@@ -6,7 +6,10 @@ import de.bripkens.gravatar.Rating;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -684,5 +687,42 @@ public class XadminTheme extends UniversalTheme {
     protected boolean isIndex() {
         return "_index".equals(userview.getParamString("menuId"))
                 || ("true".equalsIgnoreCase(userview.getParamString("isPreview")) && "".equals(userview.getParamString("menuId")));
+    }
+    
+    @Override
+    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String contextPath = request.getContextPath();
+        
+        Set<String> urls = new HashSet<String>();
+        
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/_index");
+        urls.add(contextPath + "/wro/common.css");
+        urls.add(contextPath + "/wro/xadmin.min.css");
+        urls.add(contextPath + "/xadmin/css/font.css");
+        urls.add(contextPath + "/js/font-awesome4/css/font-awesome.min.css");
+        urls.add(contextPath + "/wro/common.js");
+        urls.add(contextPath + "/xadmin/lib/layui/layui.js");
+        urls.add(contextPath + "/wro/xadmin.min.js");
+        urls.add(contextPath + "/xadmin/lib/html5.min.js");
+        urls.add(contextPath + "/xadmin/lib/respond.min.js");
+        urls.add(contextPath + "/xadmin/css/login.css");
+        
+        if (!getPropertyString("urlsToCache").isEmpty()) {
+            String urlsToCache = getPropertyString("urlsToCache");
+            if (urlsToCache != null) {
+                StringTokenizer st = new StringTokenizer(urlsToCache, "\n");
+                while (st.hasMoreTokens()) {
+                    String url = st.nextToken().trim();
+                    if (url.startsWith("/") && !url.startsWith(contextPath)) {
+                        url = contextPath + url;
+                    }
+                    urls.add(url);
+                }
+            }
+        }
+        
+        return urls;
     }
 }

@@ -25,5 +25,7 @@
         description : '@@userview.cache.duration.desc@@',
         type : 'textfield',
         value : '20'
-    }]
+    }
+    %s
+    ]
 }

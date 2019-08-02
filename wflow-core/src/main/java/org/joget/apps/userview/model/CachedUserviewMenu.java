@@ -2,6 +2,7 @@ package org.joget.apps.userview.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewCache;
 import org.joget.plugin.base.PluginProperty;
@@ -412,7 +413,16 @@ public class CachedUserviewMenu extends UserviewMenu {
     @Override
     public String getPropertyOptions() {
         String propertyOptions = PropertyUtil.injectHelpLink(delegate.getHelpLink(), delegate.getPropertyOptions());
-        String cacheOptions = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userviewCache.json", null, true, "message/userview/userviewCache");
+        String offileOptions = "";
+        String menuOffileOptions = delegate.getOffileOptions();
+        if (menuOffileOptions != null && !menuOffileOptions.isEmpty()) {
+            offileOptions = ",{label : '@@userview.offile.offlineSetting@@', type : 'header', description : '@@userview.offile.desc@@'}";
+            offileOptions += "," + menuOffileOptions;
+        } else {
+            offileOptions = ",{label : '@@userview.offile.noOfflineSupport@@', type : 'header'}";
+        }
+        
+        String cacheOptions = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userviewCache.json", new String[]{offileOptions}, true, "message/userview/userviewCache");
         if (cacheOptions != null && !cacheOptions.isEmpty()) {
             propertyOptions = propertyOptions.substring(0, propertyOptions.lastIndexOf("]")) + "," + cacheOptions + "]"; 
         }
@@ -424,5 +434,15 @@ public class CachedUserviewMenu extends UserviewMenu {
             CachedUserviewMenu.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
         }
         return CachedUserviewMenu.defaultPropertyValues.get(getClassName());
+    }
+    
+    @Override
+    public String getOffileOptions() {
+        return delegate.getOffileOptions();
+    }
+    
+    @Override
+    public Set<String> getOffileCacheUrls() {
+        return delegate.getOffileCacheUrls();
     }
 }

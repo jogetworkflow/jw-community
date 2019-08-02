@@ -20,25 +20,59 @@ self.addEventListener('fetch', function (event) {
     var fetchRequest = event.request.clone();
 
     event.respondWith(
-            fetch(fetchRequest)
-            .then(
-                    function (response) {
-                        if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
-                            return response;
-                        } else {
-                            var responseToCache = response.clone();
-                            caches.open(cache)
-                                    .then(function (cache) {
-                                        cache.put(event.request, responseToCache);
-                                    });
-                        }
-
-                        return response;
+        fetch(fetchRequest)
+        .then(function (response) {
+            if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
+                return response;
+            } else {
+                var responseToCache = response.clone();
+                caches.open(cache)
+                .then(function (cache) {
+                    cache.put(event.request, responseToCache);
+                });
+            }
+            
+            const contentType = response.headers.get("content-type");
+            if (fetchRequest.url.indexOf("/web/userview/") !== -1 && contentType && contentType.indexOf("text/html") !== -1) {
+                const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
+                console.log("Retrieve urls to cache by API ("+cacheApi+")");
+                fetch(cacheApi, {  
+                    credentials: 'include'  
+                })
+                .then(function(response) {
+                    if (response.status !== 200) {
+                        console.log("Not able to retrieve cache URLs");
+                        return;
                     }
-            ).catch(function () {
-        return caches.match(event.request);
-    })
-            );
+                    response.json().then(function(data) {
+                        caches.open(cache)
+                        .then(function (cache) {
+                            return Promise.all(
+                                //cache one by one to prevent duplicate url causing DOMexception
+                                data.map(function(url) {
+                                    return cache.addAll([url]).then(function() {
+                                        console.log(url + " cached");
+                                    }).catch(function(err) {
+                                        //ignore
+                                    });
+                                })
+                            ).then(function() {
+                                console.log("URLs retrieved from API cached");
+                            });
+                        });
+                    });
+                })
+                .catch(function(err) {
+                    console.log("Not able to retrieve cache URLs", err);
+                });
+            }
+                    
+            return response;
+        })
+        .catch(function () {
+            return caches.match(event.request);
+        })
+    );
 });
 
 self.addEventListener('activate', function (event) {

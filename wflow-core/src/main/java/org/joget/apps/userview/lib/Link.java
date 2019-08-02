@@ -1,5 +1,6 @@
 package org.joget.apps.userview.lib;
 
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -73,5 +74,15 @@ public class Link extends UserviewMenu {
     @Override
     public String getCategory() {
         return UserviewBuilderPalette.CATEGORY_GENERAL;
+    }
+    
+    @Override
+    public Set<String> getOffileCacheUrls() {
+        if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
+            Set<String> urls = super.getOffileCacheUrls();
+            urls.add(getPropertyString("url"));
+            return urls;
+        }
+        return null;
     }
 }

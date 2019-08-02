@@ -10,7 +10,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -213,38 +215,52 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         return manifest;
     }
     
-    @Override
-    public String getServiceWorker(String appId, String userviewId) {
+    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        
         String contextPath = request.getContextPath();
+        
+        Set<String> urls = new HashSet<String>();
         String pathName = getPathName();
-        String startUrl = contextPath + "/web/userview/" + appId + "/" + userviewId + "/_/index";
-        String urlsToCache = 
-            "'" + startUrl + "'," +
-            "'" + contextPath + "/wro/common.css'," +
-            "'" + contextPath + "/wro/" + pathName + ".preload.min.css'," +
-            "'" + contextPath + "/wro/" + pathName + ".min.css'," +
-            "'" + contextPath + "/js/font-awesome4/css/font-awesome.min.css'," +
-            "'" + contextPath + "/wro/common.js'," +
-            "'" + contextPath + "/wro/" + pathName + ".preload.min.js'," +
-            "'" + contextPath + "/wro/" + pathName + ".min.js'";
-
+        
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
+        urls.add(contextPath + "/wro/common.css");
+        urls.add(contextPath + "/wro/" + pathName + ".preload.min.css");
+        urls.add(contextPath + "/wro/" + pathName + ".min.css");
+        urls.add(contextPath + "/js/font-awesome4/css/font-awesome.min.css");
+        urls.add(contextPath + "/wro/common.js");
+        urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
+        urls.add(contextPath + "/wro/" + pathName + ".min.js");
+        
         if (!getPropertyString("urlsToCache").isEmpty()) {
-            String urls = getPropertyString("urlsToCache");
-            if (urls != null) {
-                StringTokenizer st = new StringTokenizer(urls, "\n");
+            String urlsToCache = getPropertyString("urlsToCache");
+            if (urlsToCache != null) {
+                StringTokenizer st = new StringTokenizer(urlsToCache, "\n");
                 while (st.hasMoreTokens()) {
                     String url = st.nextToken().trim();
                     if (url.startsWith("/") && !url.startsWith(contextPath)) {
                         url = contextPath + url;
                     }
-                    urlsToCache += ",'" + url + "'";
+                    urls.add(url);
                 }
             }
         }
         
-        Object[] arguments = new Object[]{ urlsToCache };
+        return urls;
+    }
+    
+    @Override
+    public String getServiceWorker(String appId, String userviewId, String userviewKey) {
+        Set<String> urls = getCacheUrls(appId, userviewId, userviewKey);
+
+        String urlsToCache = "";
+        for (String url : urls) {
+            if (!urlsToCache.isEmpty()) {
+                urlsToCache += ", ";
+            }
+            urlsToCache += "'" + url + "'";
+        }
+        
+        Object[] arguments = new Object[]{ urlsToCache};
         String js = AppUtil.readPluginResource(getClass().getName(), "/resources/themes/universal/sw.js", arguments, false, "");
         return js;
     }    
@@ -295,7 +311,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             String appId = userview.getParamString("appId");
             if (appId != null && !appId.isEmpty()) {
                 String userviewId = userview.getPropertyString("id");
-                String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/serviceworker";
+                String key = userview.getParamString("key");
+                if (key.isEmpty()) {
+                    key = Userview.USERVIEW_KEY_EMPTY_VALUE;
+                }
+                String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/"+key+"/serviceworker";
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
                 jsCssLink += "<script>$(function() {"
                         + "PwaUtil.contextPath = '" + data.get("context_path") + "';"

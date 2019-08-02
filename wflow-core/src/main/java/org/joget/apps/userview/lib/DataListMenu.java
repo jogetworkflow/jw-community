@@ -2,6 +2,7 @@ package org.joget.apps.userview.lib;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -14,6 +15,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeansException;
@@ -169,5 +171,29 @@ public class DataListMenu extends UserviewMenu {
             }
         }
         return cacheDataList;
+    }
+    
+    @Override
+    public String getOffileOptions() {
+        String options = super.getOffileOptions();
+        options += ", {name : 'cacheListAction', label : '@@userview.offile.cacheListAction@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+        options += ", {name : 'cacheAllLinks', label : '@@userview.offile.cacheList@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+        
+        return options;
+    }
+    
+    @Override
+    public Set<String> getOffileCacheUrls() {
+        if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
+            Set<String> urls = super.getOffileCacheUrls();
+            
+            if ("true".equalsIgnoreCase(getPropertyString("cacheListAction")) || "true".equalsIgnoreCase(getPropertyString("cacheAllLinks"))) {
+                DataList dataList = getDataList();
+                urls.addAll(UserviewUtil.getDatalistCacheUrls(dataList, "true".equalsIgnoreCase(getPropertyString("cacheListAction")), "true".equalsIgnoreCase(getPropertyString("cacheAllLinks"))));
+            }
+            
+            return urls;
+        }
+        return null;
     }
 }
