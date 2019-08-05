@@ -125,6 +125,12 @@ var AdminBar = {
         $(".analyzer-label").css("display", "inline-block");
         $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
         $("body").addClass("quickEditModeActive");
+        
+        $("iframe").each(function(){
+            try {
+                $(this)[0].contentWindow.AdminBar.showQuickEdit();
+            } catch (err) {}
+        });
     },
     hideQuickEdit: function() {
         $("#quickEditMode").addClass("off");
@@ -132,6 +138,12 @@ var AdminBar = {
         $(".analyzer-label, .analyzer-page").css("display", "none");
         $(".analyzer").addClass("analyzer-disabled").removeClass("analyzer");
         $("body").removeClass("quickEditModeActive");
+        
+        $("iframe").each(function(){
+            try {
+                $(this)[0].contentWindow.AdminBar.hideQuickEdit();
+            } catch (err) {}
+        });
     },
     initQuickEditMode: function() {
         var quickEditModeActive = AdminBar.isQuickEditMode();
