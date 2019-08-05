@@ -174,18 +174,18 @@ public class DataListMenu extends UserviewMenu {
     }
     
     @Override
-    public String getOffileOptions() {
-        String options = super.getOffileOptions();
-        options += ", {name : 'cacheListAction', label : '@@userview.offile.cacheListAction@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
-        options += ", {name : 'cacheAllLinks', label : '@@userview.offile.cacheList@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+    public String getOfflineOptions() {
+        String options = super.getOfflineOptions();
+        options += ", {name : 'cacheListAction', label : '@@userview.offline.cacheListAction@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+        options += ", {name : 'cacheAllLinks', label : '@@userview.offline.cacheList@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
         
         return options;
     }
     
     @Override
-    public Set<String> getOffileCacheUrls() {
+    public Set<String> getOfflineCacheUrls() {
         if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
-            Set<String> urls = super.getOffileCacheUrls();
+            Set<String> urls = super.getOfflineCacheUrls();
             
             if ("true".equalsIgnoreCase(getPropertyString("cacheListAction")) || "true".equalsIgnoreCase(getPropertyString("cacheAllLinks"))) {
                 DataList dataList = getDataList();

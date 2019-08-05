@@ -413,16 +413,16 @@ public class CachedUserviewMenu extends UserviewMenu {
     @Override
     public String getPropertyOptions() {
         String propertyOptions = PropertyUtil.injectHelpLink(delegate.getHelpLink(), delegate.getPropertyOptions());
-        String offileOptions = "";
-        String menuOffileOptions = delegate.getOffileOptions();
-        if (menuOffileOptions != null && !menuOffileOptions.isEmpty()) {
-            offileOptions = ",{label : '@@userview.offile.offlineSetting@@', type : 'header', description : '@@userview.offile.desc@@'}";
-            offileOptions += "," + menuOffileOptions;
+        String offlineOptions = "";
+        String menuOfflineOptions = delegate.getOfflineOptions();
+        if (menuOfflineOptions != null && !menuOfflineOptions.isEmpty()) {
+            offlineOptions = ",{label : '@@userview.offline.offlineSetting@@', type : 'header', description : '@@userview.offline.desc@@'}";
+            offlineOptions += "," + menuOfflineOptions;
         } else {
-            offileOptions = ",{label : '@@userview.offile.noOfflineSupport@@', type : 'header'}";
+            offlineOptions = ",{label : '@@userview.offline.noOfflineSupport@@', type : 'header'}";
         }
         
-        String cacheOptions = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userviewCache.json", new String[]{offileOptions}, true, "message/userview/userviewCache");
+        String cacheOptions = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userviewCache.json", new String[]{offlineOptions}, true, "message/userview/userviewCache");
         if (cacheOptions != null && !cacheOptions.isEmpty()) {
             propertyOptions = propertyOptions.substring(0, propertyOptions.lastIndexOf("]")) + "," + cacheOptions + "]"; 
         }
@@ -437,12 +437,12 @@ public class CachedUserviewMenu extends UserviewMenu {
     }
     
     @Override
-    public String getOffileOptions() {
-        return delegate.getOffileOptions();
+    public String getOfflineOptions() {
+        return delegate.getOfflineOptions();
     }
     
     @Override
-    public Set<String> getOffileCacheUrls() {
-        return delegate.getOffileCacheUrls();
+    public Set<String> getOfflineCacheUrls() {
+        return delegate.getOfflineCacheUrls();
     }
 }

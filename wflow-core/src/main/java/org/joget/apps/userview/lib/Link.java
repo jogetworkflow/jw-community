@@ -77,9 +77,9 @@ public class Link extends UserviewMenu {
     }
     
     @Override
-    public Set<String> getOffileCacheUrls() {
+    public Set<String> getOfflineCacheUrls() {
         if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
-            Set<String> urls = super.getOffileCacheUrls();
+            Set<String> urls = super.getOfflineCacheUrls();
             urls.add(getPropertyString("url"));
             return urls;
         }

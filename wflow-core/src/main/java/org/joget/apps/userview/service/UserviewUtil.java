@@ -292,7 +292,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                             for (UserviewCategory c : userview.getCategories()) {
                                 if (c.getMenus() != null) {
                                     for (UserviewMenu m : c.getMenus()) {
-                                        Set<String> urls = m.getOffileCacheUrls();
+                                        Set<String> urls = m.getOfflineCacheUrls();
                                         if (urls != null && !urls.isEmpty()) {
                                             for (String u : urls) {
                                                 cacheUrls.put(processUrl(u, appId, userviewId, userviewKey, contextPath));

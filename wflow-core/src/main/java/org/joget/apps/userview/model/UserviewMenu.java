@@ -219,11 +219,11 @@ public abstract class UserviewMenu extends ExtElement{
         setProperty(ALERT_MESSAGE_PROPERTY, message);
     }
     
-    public String getOffileOptions() {
-        return "{name : 'enableOffline', label : '@@userview.offile.offlineAvailable@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
+    public String getOfflineOptions() {
+        return "{name : 'enableOffline', label : '@@userview.offline.offlineAvailable@@', type : 'checkbox', options : [{value : 'true', label : ''}]}";
     }
     
-    public Set<String> getOffileCacheUrls() {
+    public Set<String> getOfflineCacheUrls() {
         if ("true".equalsIgnoreCase(getPropertyString("enableOffline"))) {
             Set<String> urls = new HashSet<String>();
             urls.add(getUrl());
