@@ -219,6 +219,8 @@ body .dataList .select_checkbox label{
     left:50%;
     transform: translateX(-50%);
     margin-top: -5px;
+    line-height: 0;
+    height: 22px;
 }
 body .dataList .select_checkbox label i {
     margin: 0;

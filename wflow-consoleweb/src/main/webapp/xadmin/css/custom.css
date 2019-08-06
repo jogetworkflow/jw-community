@@ -112,10 +112,12 @@ body.inner-frame #preview-label{
 }
 
 /* reset xadmin*/
+.page{
+    text-align: left;
+}
 table th, table td{
     word-break: initial;
 }
-
 body {
     color: #666;
 }

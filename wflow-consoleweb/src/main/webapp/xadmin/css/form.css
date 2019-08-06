@@ -606,6 +606,9 @@ body .hasDatepicker + a + .close-icon, body .hasDatepicker + img + .close-icon{
     top: -3px;
     left: 15px;
 }
+body .ui-timepicker-div .ui_tpicker_time .ui_tpicker_time_input{
+    float:none;
+}
 
 /* multi page form*/
 body #form-canvas .page span{
@@ -825,6 +828,11 @@ body #form-canvas .ht_clone_top_left_corner thead tr th:nth-last-child(2) {
     border-left-color: #e6e6e6 !important;
     border-right-color: #e6e6e6 !important;
     border-bottom-color: #e6e6e6 !important;
+}
+body .handsontable input, .handsontable textarea{
+    margin: 0;
+    transition: none;
+    float: none;
 }
 
 @media screen and (max-width: 480px) {
