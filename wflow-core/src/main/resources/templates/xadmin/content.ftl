@@ -41,6 +41,21 @@ ${menus!}
                         return "@@xadmin.tabsLostOnceLeave@@";
                     };
                 }
+                var scrollBar = function(selector, theme, mousewheelaxis) {
+                    $(selector).mCustomScrollbar({
+                        theme: theme,
+                        scrollInertia: 100,
+                        axis: "mousewheelaxis",
+                        mouseWheel: {
+                            enable: !0,
+                            axis: mousewheelaxis,
+                            preventDefault: !0
+                        }
+                    });
+                };
+                if ($("#navigation").length > 0) {
+                    scrollBar("#navigation", "minimal-dark", "y");
+                }
             });
         }
     </script>

@@ -127,11 +127,13 @@
         <js>/progressive/js/main.js</js>
     </group>
     <group name="xadmin.min">
+        <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/xadmin/lib/layui/css/layui.css</css>
         <css>/xadmin/css/xadmin.css</css>
         <css>/xadmin/css/custom.css</css>
         <css>/xadmin/css/form.css</css>
         <css>/xadmin/css/list.css</css>
+        <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
     </group>  
