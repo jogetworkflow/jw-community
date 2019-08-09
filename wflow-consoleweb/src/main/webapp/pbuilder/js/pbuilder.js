@@ -72,7 +72,8 @@ ProcessBuilder.Model.Process.prototype = {
                 columns: [{
                     key: 'variableId',
                     label: get_pbuilder_msg("pbuilder.label.variableId")
-                }]
+                }],
+                js_validation: "ProcessBuilder.Designer.validateVariables"
             }]
         },{
             title: get_pbuilder_msg("pbuilder.label.subflowProperties"),
@@ -3995,6 +3996,29 @@ ProcessBuilder.Designer = {
             }
         }
         return !designInvalid;
+    },
+    validateVariables : function (name, values) {
+        try {
+            var result = true;
+            var regex = RegExp('^[$_a-zA-Z][$_a-zA-Z0-9]+$');
+            
+            if ($.isArray(values)) {
+                for (var i=0; i<values.length; i++) {
+                    if (!regex.test(values[i].variableId)) {
+                        result = false;
+                    }
+                }
+            }
+
+            if (result) {
+                return null;
+            } else {
+                return get_pbuilder_msg("pbuilder.label.invalidVariable");
+            }
+        } catch (err) {
+            return get_pbuilder_msg("pbuilder.label.invalidVariable");
+        };
+        return null;
     },
     validateConditions : function (name, value) {
         try {
