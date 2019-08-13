@@ -82,6 +82,7 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.WorkflowVariable;
+import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.simpleframework.xml.Serializer;
@@ -122,6 +123,8 @@ public class AppServiceImpl implements AppService {
     FormDataDao formDataDao;
     @Autowired
     UserviewService userviewService;
+    @Autowired
+    WorkflowProcessLinkDao workflowProcessLinkDao;
     //----- Workflow use cases ------
 
     /**
@@ -568,6 +571,11 @@ public class AppServiceImpl implements AppService {
                     formResult = submitForm(startForm, formResult, true);
                     errors = formResult.getFormErrors();
                     if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
+                        //if origin id is not equal to record id after submission, add linkage
+                        if (!originId.equals(startForm.getPrimaryKeyValue(formData))) {
+                            workflowProcessLinkDao.addWorkflowProcessLink(startForm.getPrimaryKeyValue(formData), originId);
+                        }
+
                         result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
 
                         // set next activity if configured
