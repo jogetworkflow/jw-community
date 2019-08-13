@@ -84,6 +84,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
             }
 
             // read from request if available.
+            boolean hasSubmittedData = false;
             boolean continueLoop = true;
             int i = 0;
             while (continueLoop) {
@@ -102,13 +103,26 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
                         rowSet = new FormRowSet();
                     }
                     rowSet.add(row);
+                    hasSubmittedData = true;
                 } else {
                     // no more rows, stop looping
                     continueLoop = false;
                 }
             }
+            
+            //checking for hidden section submission
+            if (!hasSubmittedData) {
+                for (String header : headerMap.keySet()) {
+                    String paramName = param + "_" + header;
+                    String paramValue = formData.getRequestParameter(paramName);
+                    if (paramValue != null) {
+                        hasSubmittedData = true;
+                    }
+                    break;
+                }
+            }
 
-            if (!FormUtil.isFormSubmitted(this, formData) || FormUtil.isReadonly(this, formData)) {
+            if (!FormUtil.isFormSubmitted(this, formData) || FormUtil.isReadonly(this, formData) || !hasSubmittedData) {
                 // load from binder if available
                 FormRowSet binderRowSet = formData.getLoadBinderData(this);
                 if (binderRowSet != null) {

@@ -47,8 +47,14 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -78,6 +84,9 @@ public class PluginManager implements ApplicationContextAware {
     private Map<String, ResourceBundle> resourceBundleCache = new HashMap<String, ResourceBundle>();
     
     public final static String ESCAPE_JAVASCRIPT = "javascript";
+    
+    private FileAlterationMonitor monitor = null;
+    private Date lastCleared = null;
     
     /**
      * Used by system to initialize Plugin manager
@@ -208,6 +217,41 @@ public class PluginManager implements ApplicationContextAware {
             LogUtil.error(PluginManager.class.getName(), ex, "Could not create framework");
         }
 
+        if (baseDirectory != null) {
+            try {
+                FileAlterationListener listener = new FileAlterationListenerAdaptor() {
+                    @Override
+                    public void onFileCreate(File file) {
+                        handleFileChange(file);
+                    }
+
+                    @Override
+                    public void onFileDelete(File file) {
+                        handleFileChange(file);
+                    }
+                };
+                
+                monitor = new FileAlterationMonitor(1000);
+                
+                FileAlterationObserver observer = new FileAlterationObserver(baseDirectory, FileFilterUtils.suffixFileFilter(".jar"));
+                observer.addListener(listener);
+                monitor.addObserver(observer);
+                monitor.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.error(PluginManager.class.getName(), e, "UNABLE TO MONITOR SERVER");
+            }
+        }
+    }
+    
+    protected void handleFileChange(File file) {
+        Date lastModified = new Date();
+        if (file.lastModified() > 0) {
+            lastModified = new Date(file.lastModified());
+        }
+        if (lastCleared == null || lastCleared.before(lastModified)) {
+            refresh();
+        }
     }
 
     /**
@@ -287,6 +331,7 @@ public class PluginManager implements ApplicationContextAware {
         templateCache.clear();
         resourceBundleCache.clear();
         noResourceBundleCache.clear();
+        lastCleared = new Date();    
     }
 
     protected boolean startBundle(Bundle bundle) {
