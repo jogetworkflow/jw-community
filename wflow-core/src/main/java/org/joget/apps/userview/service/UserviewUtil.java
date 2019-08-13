@@ -278,14 +278,14 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             if (userviewDef != null) {
                 String json = userviewDef.getJson();
                 Userview userview = userviewService.createUserview(appDef, json, null, false, contextPath, null, userviewKey, false);
-                JSONArray cacheUrls = new JSONArray();
+                Set<String> cacheUrls = new HashSet<String>();
                 try {
                     UserviewTheme theme = userview.getSetting().getTheme();
                     if (theme instanceof UserviewPwaTheme) {
                         Set<String> themeUrls = ((UserviewPwaTheme) theme).getCacheUrls(appId, userviewId, userviewKey);
                         if (themeUrls != null && !themeUrls.isEmpty()) {
                             for (String u : themeUrls) {
-                                cacheUrls.put(processUrl(u, appId, userviewId, userviewKey, contextPath));
+                                cacheUrls.add(processUrl(u, appId, userviewId, userviewKey, null, contextPath));
                             }
                         }      
                         if (userview.getCategories() != null) {
@@ -295,7 +295,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                                         Set<String> urls = m.getOfflineCacheUrls();
                                         if (urls != null && !urls.isEmpty()) {
                                             for (String u : urls) {
-                                                cacheUrls.put(processUrl(u, appId, userviewId, userviewKey, contextPath));
+                                                cacheUrls.add(processUrl(u, appId, userviewId, userviewKey, userviewService.getMenuId(m), contextPath));
                                             }
                                         }
                                     }
@@ -304,7 +304,8 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                         }
                     }
                     
-                    return cacheUrls.toString();
+                    JSONArray arr = new JSONArray(cacheUrls);
+                    return arr.toString();
                 } catch (Exception e) {
                     LogUtil.error(UserviewUtil.class.getName(), e, appId + ":" + userviewId);
                 }
@@ -313,7 +314,11 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         return "[]";
     }
     
-    protected static String processUrl(String url, String appId, String userviewId, String userviewKey, String contextPath) {
+    protected static String processUrl(String url, String appId, String userviewId, String userviewKey, String menuId, String contextPath) {
+        if (url.startsWith("?") && menuId != null && !menuId.isEmpty()) {
+            url = menuId + url;
+        }
+        
         if (url.startsWith(contextPath) || url.startsWith("http://") || url.startsWith("https://")) {
             return url;
         } else {
