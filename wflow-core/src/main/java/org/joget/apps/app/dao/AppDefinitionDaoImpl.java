@@ -19,6 +19,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -49,6 +50,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     DatalistDefinitionDao datalistDefinitionDao;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
     @Autowired
     PluginManager pluginManager;    
      
@@ -84,6 +87,9 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
             if (obj.getUserviewDefinitionList() != null) {
                 obj.getUserviewDefinitionList().clear();
+            }
+            if (obj.getBuilderDefinitionList() != null) {
+                obj.getBuilderDefinitionList().clear();
             }
             if (obj.getPackageDefinitionList() != null) {
                 obj.getPackageDefinitionList().clear();
@@ -242,6 +248,10 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                 for (UserviewDefinition userview: userviewList) {
                     userviewDefinitionDao.update(userview);
                 }
+                Collection<BuilderDefinition> builderList = appDef.getBuilderDefinitionList();
+                for (BuilderDefinition builder: builderList) {
+                    builderDefinitionDao.update(builder);
+                }
             }
             saveOrUpdate(appDef);
             
@@ -299,6 +309,9 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         
         // update userviews
         syncUserviews(appDef, newAppDef);
+        
+        // update builders
+        syncBuilders(appDef, newAppDef);
         
         // update package def
         syncPackageDefinition(appDef, newAppDef);
@@ -423,7 +436,16 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
         Collection newList = AppDevUtil.fileFindAll(UserviewDefinition.class, appDef, true);
         currentList.addAll(newList);
-    }      
+    }   
+    
+    protected void syncBuilders(AppDefinition appDef, AppDefinition newAppDef) {
+        LogUtil.debug(getClass().getName(), "Sync builder for " + appDef);
+        Collection<BuilderDefinition> currentList = appDef.getBuilderDefinitionList();
+        currentList.clear();
+
+        Collection newList = AppDevUtil.fileFindAll(BuilderDefinition.class, appDef, true);
+        currentList.addAll(newList);
+    }
     
     protected void syncPackageXpdl(AppDefinition appDef, AppDefinition newAppDef) {
         LogUtil.debug(getClass().getName(), "Sync package XPDL for " + appDef);

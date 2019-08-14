@@ -1136,6 +1136,8 @@ public class AppServiceImpl implements AppService {
             replacement.put("<!--resourceList>", "<resourceList>");
             replacement.put("</resourceList-->", "</resourceList>");
             replacement.put("<!--resourceList/-->", "<resourceList/>");
+            replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
+            replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
             appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
             
             newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData));
@@ -2774,6 +2776,13 @@ public class AppServiceImpl implements AppService {
             Collection<UserviewDefinition> uList = appDef.getUserviewDefinitionList();
             if (uList != null && !uList.isEmpty()) {
                 for (UserviewDefinition def : uList) {
+                    messages.putAll(getMessages(def.getJson()));
+                }
+            }
+            
+            Collection<BuilderDefinition> bList = appDef.getBuilderDefinitionList();
+            if (bList != null && !bList.isEmpty()) {
+                for (BuilderDefinition def : bList) {
                     messages.putAll(getMessages(def.getJson()));
                 }
             }

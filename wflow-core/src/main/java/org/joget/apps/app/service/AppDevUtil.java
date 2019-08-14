@@ -62,6 +62,7 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
@@ -673,6 +674,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
         Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
         Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
         Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
+        Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
         Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
         Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
         Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
@@ -691,6 +693,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             appDef.setFormDefinitionList(null);
             appDef.setDatalistDefinitionList(null);
             appDef.setUserviewDefinitionList(null);
+            appDef.setBuilderDefinitionList(null);
             appDef.setDateCreated(null);
             appDef.setDateModified(null);
             if (packageDef != null) {
@@ -722,6 +725,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             appDef.setFormDefinitionList(formDefinitionList);
             appDef.setDatalistDefinitionList(datalistDefinitionList);
             appDef.setUserviewDefinitionList(userviewDefinitionList);
+            appDef.setBuilderDefinitionList(builderDefinitionList);
             appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
             appDef.setEnvironmentVariableList(envVariableList);
             appDef.setDateCreated(appDateCreated);
@@ -750,6 +754,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
         Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
         Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
         Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
+        Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
         Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
         Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
         Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
@@ -763,6 +768,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             appDef.setFormDefinitionList(null);
             appDef.setDatalistDefinitionList(null);
             appDef.setUserviewDefinitionList(null);
+            appDef.setBuilderDefinitionList(null);
             appDef.setDateCreated(null);
             appDef.setDateModified(null);
             appDef.setPackageDefinitionList(null);
@@ -788,6 +794,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             appDef.setFormDefinitionList(formDefinitionList);
             appDef.setDatalistDefinitionList(datalistDefinitionList);
             appDef.setUserviewDefinitionList(userviewDefinitionList);
+            appDef.setBuilderDefinitionList(builderDefinitionList);
             appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
             appDef.setEnvironmentVariableList(envVariableList);
             appDef.setDateCreated(appDateCreated);
@@ -881,37 +888,17 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             Git git = gitCommitHelper.getGit();
             AppDevUtil.gitCheckout(git, gitBranch);
             
-            // find all definition files
-            final String[] extensions = new String[] { "json", "xml", "xpdl", "jar" };
-            final String[] dirs = new String[] { "forms", "lists", "userviews", "plugins", "resources" };
-            Iterator<File> fileIterator = FileUtils.iterateFiles(projectDir, new AbstractFileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    String path = file.getName();
-                    int dotIndex = path.lastIndexOf(".");
-                    String ext = (dotIndex >= 0) ? path.substring(dotIndex + 1) : path;
-                    return ArrayUtils.contains(extensions, ext);
-                }
-            }, new AbstractFileFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return ArrayUtils.contains(dirs, name);
-                }
-                
-            });
-            // delete file or directory
-            while(fileIterator.hasNext()) {
-                File file = fileIterator.next();
-                if (file.isDirectory()) {
-                    FileUtils.deleteDirectory(file);
-                } else {
-                    file.delete();
-                }
+            final String[] dirs = new String[] { "forms", "lists", "userviews", "plugins", "builder", "resources" };
+            for (String dir : dirs) {
+                // delete dir
+                File tempDir = new File(projectDir, dir);
+                FileUtils.deleteDirectory(tempDir);  
             }
             
-            // delete resources dir
-            File resourcesDir = new File(projectDir, "resources");
-            FileUtils.deleteDirectory(resourcesDir);            
+            Collection<File> files = FileUtils.listFiles(projectDir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+            for (File file : files) {
+                file.delete();
+            }
             
             if (commitMessage != null) {
                 // git commit
@@ -963,7 +950,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
 
             // find all definition files
             final String[] extensions = new String[] { "json", "xml", "xpdl" };
-            final String[] dirs = new String[] { "forms", "lists", "userviews" };
+            final String[] dirs = new String[] { "forms", "lists", "userviews", "builder"};
             Iterator<File> fileIterator = FileUtils.iterateFiles(projectDir, new AbstractFileFilter() {
                 @Override
                 public boolean accept(File file) {
@@ -975,7 +962,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             }, new AbstractFileFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    return ArrayUtils.contains(dirs, name);
+                    return ArrayUtils.contains(dirs, name) || "builder".equals(dir.getName());
                 }
                 
             });
@@ -1125,18 +1112,22 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
         try {
             String type = clazz.getName();
             String path = null;
+            boolean resursive = false;
             if (type.endsWith("FormDefinition")) {
                 path = "forms";
             } else if (type.endsWith("DatalistDefinition")) {
                 path = "lists";
             } else if (type.endsWith("UserviewDefinition")) {
                 path = "userviews";
+            } else if (type.endsWith("BuilderDefinition")) {
+                path = "builder";
+                resursive = true;
             }
             if (path != null) {
                 try {
                     File dir = fileGetFileObject(appDefinition, path, false);
                     if (dir != null && dir.isDirectory()) {
-                        Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json" }, false);
+                        Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json" }, resursive);
                         for (File file: files) {
                             AbstractAppVersionedObject newObj = AppDevUtil.createObjectFromJsonFile(file, clazz, includeDetails, appDefinition);
                             results.add(newObj);
@@ -1180,6 +1171,8 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
                     ((FormDefinition) newObj).setTableName((String)propMap.get("tableName"));
                 } else if (newObj instanceof UserviewDefinition) {
                     ((UserviewDefinition) newObj).setThumbnail((String)propMap.get("thumbnail"));
+                } else if (newObj instanceof BuilderDefinition) {
+                    ((BuilderDefinition) newObj).setType((String)propMap.get("type"));
                 }
             }
         }
