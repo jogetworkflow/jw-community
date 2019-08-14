@@ -690,14 +690,9 @@ public class XadminTheme extends UniversalTheme {
     }
     
     @Override
-    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        String contextPath = request.getContextPath();
-        
+    public Set<String> getOfflineStaticResources() {
         Set<String> urls = new HashSet<String>();
-        
-        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
-        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/_index");
+        String contextPath = AppUtil.getRequestContextPath();
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/xadmin.min.css");
         urls.add(contextPath + "/xadmin/css/font.css");
@@ -708,6 +703,19 @@ public class XadminTheme extends UniversalTheme {
         urls.add(contextPath + "/xadmin/lib/html5.min.js");
         urls.add(contextPath + "/xadmin/lib/respond.min.js");
         urls.add(contextPath + "/xadmin/css/login.css");
+        
+        return urls;
+    }
+    
+    @Override
+    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String contextPath = request.getContextPath();
+        
+        Set<String> urls = new HashSet<String>();
+        
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/_index");
         
         if (!getPropertyString("urlsToCache").isEmpty()) {
             String urlsToCache = getPropertyString("urlsToCache");

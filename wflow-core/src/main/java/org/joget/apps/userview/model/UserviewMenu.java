@@ -8,7 +8,7 @@ import org.joget.commons.util.StringUtil;
  * A base abstract class to develop a Userview Menu plugin. 
  * 
  */
-public abstract class UserviewMenu extends ExtElement{
+public abstract class UserviewMenu extends ExtElement {
 
     public static final String REDIRECT_URL_PROPERTY = "userviewRedirectUrl";
     public static final String REDIRECT_PARENT_PROPERTY = "userviewRedirectParent";
@@ -229,6 +229,10 @@ public abstract class UserviewMenu extends ExtElement{
             urls.add(getUrl());
             return urls;
         }
+        return null;
+    }
+    
+    public Set<String> getOfflineStaticResources() {
         return null;
     }
 }

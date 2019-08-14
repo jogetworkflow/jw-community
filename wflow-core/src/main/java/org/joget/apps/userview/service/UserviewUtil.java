@@ -1,8 +1,12 @@
 package org.joget.apps.userview.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.File;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,11 +17,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppDevUtil;
+import static org.joget.apps.app.service.AppDevUtil.getAppGitDirectory;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
@@ -26,6 +33,7 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -33,7 +41,9 @@ import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
@@ -44,6 +54,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ServletContextAware;
 
 /**
@@ -267,6 +278,71 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         }
         return serviceWorkerJs;
     }
+    
+    public static Set<String> getAppStaticResources(AppDefinition appDef) {
+        Set<String> urls = new HashSet<String>();
+        
+        try {
+            String resourceFilePath = SetupManager.getBaseDirectory() + "/app_pwa/" + appDef.getAppId() + "/resources.json";
+            Gson gson = new Gson();
+            Map<Long, Set<String>> data = null;
+            if ((new File(resourceFilePath)).exists()) {
+                String json = FileUtils.readFileToString(new File(resourceFilePath), "UTF-8");
+                data = gson.fromJson(json, new TypeToken<Map<Long, Set<String>>>(){}.getType());
+            } else {
+                (new File(resourceFilePath)).getParentFile().mkdirs();
+            }
+            
+            Long lastModified = AppDevUtil.dirLastModified(appDef).getTime();
+            if (data != null && !data.isEmpty()) {
+                //check date
+                Long resourceLastModified = data.keySet().iterator().next();
+                if (lastModified.compareTo(resourceLastModified) != 0) {
+                    data = null;
+                } else {
+                    return data.get(resourceLastModified);
+                }
+            }
+            
+            if (data == null) {
+                data = new HashMap<Long, Set<String>>();
+                
+                PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+                Collection<Plugin> pluginList = pluginManager.list(PwaOfflineResources.class);
+                
+                if (pluginList != null && !pluginList.isEmpty()) {
+                    String baseDir = AppDevUtil.getAppDevBaseDirectory();
+                    String projectDirName = getAppGitDirectory(appDef);
+                    File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                    // find all definition files
+                    Collection<File> files = FileUtils.listFiles(projectDir, new String[]{ "json"}, true);
+                    String concatAppDef = "";
+                    for (File file: files) {
+                        String fileContents = FileUtils.readFileToString(file, "UTF-8");
+                        concatAppDef += fileContents + "~~~";
+                    }
+                    // look for plugins used in any definition file
+                    Set<String> temp = null;
+                    for (Plugin plugin: pluginList) {
+                        String pluginClassName = ClassUtils.getUserClass(plugin).getName();
+                        if (concatAppDef.contains(pluginClassName)) {
+                            temp = ((PwaOfflineResources) plugin).getOfflineStaticResources();
+                            if (temp != null) {
+                                urls.addAll(temp);
+                            }
+                        }                
+                    }
+                }
+                
+                data.put(lastModified, urls);
+                String json = gson.toJson(data, new TypeToken<Map<Long, Set<String>>>(){}.getType());
+                FileUtils.writeStringToFile(new File(resourceFilePath), json, "UTF-8");
+            }
+        } catch (Exception e) {
+            LogUtil.error(UserviewUtil.class.getName(), e, "");
+        }
+        return urls;
+    }
        
     public static String getCacheUrls(String appId, String userviewId, String userviewKey, String contextPath) {
         AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
@@ -282,6 +358,8 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 try {
                     UserviewTheme theme = userview.getSetting().getTheme();
                     if (theme instanceof UserviewPwaTheme) {
+                        cacheUrls.addAll(getAppStaticResources(appDef));
+                        
                         Set<String> themeUrls = ((UserviewPwaTheme) theme).getCacheUrls(appId, userviewId, userviewKey);
                         if (themeUrls != null && !themeUrls.isEmpty()) {
                             for (String u : themeUrls) {

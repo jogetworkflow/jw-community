@@ -1,15 +1,18 @@
 package org.joget.apps.datalist.lib;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListFilterTypeDefault;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.joget.apps.userview.model.PwaOfflineResources;
 
-public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
+public class TextFieldDataListFilterType extends DataListFilterTypeDefault implements PwaOfflineResources {
 
     public String getName() {
         return "Text Field Data List Filter Type";
@@ -67,5 +70,14 @@ public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
             return queryObject;
         }
         return null;
+    }
+
+    @Override
+    public Set<String> getOfflineStaticResources() {
+        Set<String> urls = new HashSet<String>();
+        String contextPath = AppUtil.getRequestContextPath();
+        urls.add(contextPath + "/plugin/org.joget.apps.datalist.lib.TextFieldDataListFilterType/js/jquery.placeholder.min.js");
+        
+        return urls;
     }
 }

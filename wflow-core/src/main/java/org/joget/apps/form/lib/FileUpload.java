@@ -32,6 +32,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -44,7 +45,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
-public class FileUpload extends Element implements FormBuilderPaletteElement, FileDownloadSecurity, PluginWebSupport {
+public class FileUpload extends Element implements FormBuilderPaletteElement, FileDownloadSecurity, PluginWebSupport, PwaOfflineResources {
 
     @Override
     public String getName() {
@@ -421,5 +422,16 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 }
             }
         }
+    }
+    
+    @Override
+    public Set<String> getOfflineStaticResources() {
+        Set<String> urls = new HashSet<String>();
+        String contextPath = AppUtil.getRequestContextPath();
+        urls.add(contextPath + "/js/dropzone/dropzone.css");
+        urls.add(contextPath + "/js/dropzone/dropzone.js");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.FileUpload/js/jquery.fileupload.js");
+        
+        return urls;
     }
 }

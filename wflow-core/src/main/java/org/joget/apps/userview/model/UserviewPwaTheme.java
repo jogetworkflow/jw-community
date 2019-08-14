@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Userview themes to implement this interface to support service workers and progressive web apps (PWA)
  */
-public interface UserviewPwaTheme {
+public interface UserviewPwaTheme extends PwaOfflineResources {
 
     /**
      * Return the PWA manifest contents for the userview

@@ -2,8 +2,10 @@ package org.joget.apps.form.lib;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -13,13 +15,14 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-public class DatePicker extends Element implements FormBuilderPaletteElement {
+public class DatePicker extends Element implements FormBuilderPaletteElement, PwaOfflineResources {
     
     @Override
     public String getName() {
@@ -350,5 +353,18 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
             value = formattedDisplayValue(value, displayFormat, formData);
         }
         return value;
+    }
+    
+    @Override
+    public Set<String> getOfflineStaticResources() {
+        Set<String> urls = new HashSet<String>();
+        String contextPath = AppUtil.getRequestContextPath();
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/css/datePicker.css");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js");
+        
+        return urls;
     }
 }

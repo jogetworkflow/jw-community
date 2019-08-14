@@ -46,7 +46,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     protected final static String PROFILE = "_ja_profile"; 
     protected final static String INBOX = "_ja_inbox"; 
     protected static LessEngine lessEngine = new LessEngine();
-    
+
     public enum Color {
         RED("#F44336", "#D32F2F", ""),
         PINK("#E91E63", "#C2185B", ""),
@@ -215,14 +215,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         return manifest;
     }
     
-    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        String contextPath = request.getContextPath();
-        
+    @Override
+    public Set<String> getOfflineStaticResources() {
         Set<String> urls = new HashSet<String>();
+        String contextPath = AppUtil.getRequestContextPath();
         String pathName = getPathName();
-        
-        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.css");
         urls.add(contextPath + "/wro/" + pathName + ".min.css");
@@ -230,6 +227,16 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         urls.add(contextPath + "/wro/common.js");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
         urls.add(contextPath + "/wro/" + pathName + ".min.js");
+        
+        return urls;
+    }
+    
+    public Set<String> getCacheUrls(String appId, String userviewId, String userviewKey) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String contextPath = request.getContextPath();
+        
+        Set<String> urls = new HashSet<String>();
+        urls.add(contextPath + "/web/userview/" + appId + "/" + userviewId + "/"+userviewKey+"/index");
         
         if (!getPropertyString("urlsToCache").isEmpty()) {
             String urlsToCache = getPropertyString("urlsToCache");
@@ -251,7 +258,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String getServiceWorker(String appId, String userviewId, String userviewKey) {
         Set<String> urls = getCacheUrls(appId, userviewId, userviewKey);
-
+        urls.addAll(UserviewUtil.getAppStaticResources(AppUtil.getCurrentAppDefinition()));
         String urlsToCache = "";
         for (String url : urls) {
             if (!urlsToCache.isEmpty()) {

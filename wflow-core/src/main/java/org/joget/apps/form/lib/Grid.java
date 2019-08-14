@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -16,13 +18,14 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Grid extends Element implements FormBuilderPaletteElement, FormContainer {
+public class Grid extends Element implements FormBuilderPaletteElement, FormContainer, PwaOfflineResources {
     protected Map<FormData, FormRowSet> cachedRowSet = new HashMap<FormData, FormRowSet>();
 
     @Override
@@ -302,6 +305,16 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
         }
         
         return fieldNames;
+    }
+    
+    @Override
+    public Set<String> getOfflineStaticResources() {
+        Set<String> urls = new HashSet<String>();
+        String contextPath = AppUtil.getRequestContextPath();
+        urls.add(contextPath + "/js/jquery/jquery.jeditable.js");
+        urls.add(contextPath + "/plugin/org.joget.apps.form.lib.Grid/js/jquery.formgrid.js");
+        
+        return urls;
     }
 }
 
