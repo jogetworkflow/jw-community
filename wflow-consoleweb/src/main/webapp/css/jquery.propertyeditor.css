@@ -83,7 +83,11 @@
 
 .single-page .property-editor-pages {
     overflow-y: scroll;
-    padding: 50px 0 0;
+    position: absolute;
+    top:50px;
+    left:0;
+    right:0;
+    height: calc(100% - 50px);
 }
 
 .single-page .property-page-show {
