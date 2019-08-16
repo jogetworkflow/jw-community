@@ -4699,6 +4699,11 @@ PropertyEditor.Type.ElementSelect.prototype = {
     initScripting: function() {
         var thisObj = this;
         var field = $("#" + this.id);
+        var currentPage = $(this.editor).find("#" + this.page.id);
+        while ($(currentPage).next().data("page") === this.page.id) {
+            currentPage = $(currentPage).next();
+        }
+        $(currentPage).after("<div class=\"anchor property-editor-page\" data-page=\""+this.page.id+"\" anchorField=\""+this.id+"\" style=\"display:none\"></div>");
 
         if (UI.rtl) {
             $(field).addClass("chosen-rtl");
@@ -4720,6 +4725,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var field = $("#" + this.id);
         var value = $(field).filter(":not(.hidden)").val();
         var currentPage = $(this.editor).find("#" + this.page.id);
+        var anchor = $(this.editor).find(".anchor[anchorField=\"" + this.id + "\"]");
 
         var data = null;
         if (this.properties.keep_value_on_change !== undefined && this.properties.keep_value_on_change.toLowerCase() === "true") {
@@ -4772,7 +4778,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                         }
                         html += p.render();
                     });
-                    $(currentPage).after(html);
+                    $(anchor).after(html);
 
                     $.each(thisObj.options.propertiesDefinition, function(i, page) {
                         var p = page.propertyEditorObject;
