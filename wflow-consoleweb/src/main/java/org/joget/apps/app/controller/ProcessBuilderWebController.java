@@ -25,6 +25,8 @@ import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
+import org.joget.apps.app.model.ProcessMappingInfo;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -39,7 +41,7 @@ import org.joget.directory.model.Group;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
-import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.XpdlImageUtil;
@@ -230,6 +232,18 @@ public class ProcessBuilderWebController {
         if (pluginsMap.containsKey(p.getPluginName())) {
             o.put("pluginLabel", pluginsMap.get(p.getPluginName()).getI18nLabel());
             o.put("pluginVersion", pluginsMap.get(p.getPluginName()).getVersion());
+            
+            Plugin plugin = pluginsMap.get(p.getPluginName());
+            if (plugin instanceof ProcessMappingInfo) {
+                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, p.getPluginProperties(), AppUtil.getCurrentAppDefinition(), null);
+                if (plugin instanceof PropertyEditable) {
+                    ((PropertyEditable) plugin).setProperties(propertiesMap);
+                }   
+                String info = ((ProcessMappingInfo) plugin).getMappingInfo();
+                if (info != null && !info.isEmpty()) {
+                    o.put("mappingInfo", info);
+                }
+            }
         } else {
             o.put("pluginLabel", p.getPluginName());
             o.put("pluginVersion", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable"));

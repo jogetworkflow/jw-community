@@ -1724,7 +1724,7 @@ PropertyEditor.Model.Page.prototype = {
                 } else {
                     var value = $("#" + parentElementId).val();
                     var valueLabel = $("#" + parentElementId).find('option[value="' + value + '"]').text();
-                    var label = $("#" + parentElementId).parent().prev(".property-label-container").find(".property-label")
+                    var label = $("#" + parentElementId).closest(".property-editor-property").find(".property-label-container .property-label")
                         .clone().children().remove().end().text();
 
                     if (prev !== parentElementId) {
@@ -2204,7 +2204,10 @@ PropertyEditor.Model.Type.prototype = {
             }
         }
 
-        this.addOnValidation(data, errors, checkEncryption);
+        var deffers = this.addOnValidation(data, errors, checkEncryption);
+        if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+            return deffers;
+        }
     },
     addOnValidation: function(data, errors, checkEncryption) {
         //nothing will happen
@@ -4171,6 +4174,7 @@ PropertyEditor.Type.Repeater.prototype = {
     shortname: "repeater",
     addOnValidation: function(data, errors, checkEncryption) {
         var thisObj = this;
+        var deferreds = [];
         
         var value = data[this.properties.name];
         if (value !== null && value !== undefined && value.length > 0) {
@@ -4179,18 +4183,26 @@ PropertyEditor.Type.Repeater.prototype = {
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
             $("#" + thisObj.id + "_input .repeater-row").each(function(i){
-                thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                    deferreds = $.merge(deferreds, deffers);
+                }
             });
         }
+        return deferreds;
     },
     validateRow: function(row, data, errors, checkEncryption) {
         var fields = $(row).data("fields");
+        var deferreds = [];
         
         if (fields !== null && fields !== undefined) {
             $.each(fields, function(i, property) {
                 var type = property.propertyEditorObject;
                 if (!type.isHidden()) {
-                    type.validate(data, errors, checkEncryption);
+                    var deffers = type.validate(data, errors, checkEncryption);
+                    if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                        deferreds = $.merge(deferreds, deffers);
+                    }
                 }
             });
         }
@@ -4198,6 +4210,7 @@ PropertyEditor.Type.Repeater.prototype = {
         if ($(row).find(".property-input-error").length > 0) {
             $(row).addClass("error");
         }
+        return deferreds;
     },
     getData: function(useDefault) {
         var field = this;
@@ -4558,13 +4571,20 @@ PropertyEditor.Type.ElementSelect = function() {};
 PropertyEditor.Type.ElementSelect.prototype = {
     shortname: "elementselect",
     initialize: function() {
-        this.options = jQuery.extend({}, this.options);
-        this.options.defaultPropertyValues = null;
-        this.options.propertiesDefinition = null;
+        this.pageOptions = {
+            appPath : this.options.appPath,
+            contextPath : this.options.contextPath,
+            showDescriptionAsToolTip: this.options.showDescriptionAsToolTip,
+            changeCheckIgnoreUndefined : this.options.changeCheckIgnoreUndefined,
+            skipValidation : this.options.skipValidation,
+            propertiesDefinition : null,
+            defaultPropertyValues : null,
+            propertyValues : null,
+            mandatoryMessage : this.options.mandatoryMessage
+        };
+        
         if (this.value !== null) {
-            this.options.propertyValues = this.value.properties;
-        } else {
-            this.options.propertyValues = null;
+            this.pageOptions.propertyValues = this.value.properties;
         }
     },
     getData: function(useDefault) {
@@ -4576,8 +4596,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
             element['className'] = $('[name=' + this.id + ']:not(.hidden)').val();
             element['properties'] = new Object();
 
-            if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
-                $.each(this.options.propertiesDefinition, function(i, page) {
+            if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
+                $.each(this.pageOptions.propertiesDefinition, function(i, page) {
                     var p = page.propertyEditorObject;
                     element['properties'] = $.extend(element['properties'], p.getData());
                 });
@@ -4615,8 +4635,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $(wrapper).append('<div class="property-input-error">' + obj.message + '</div>');
         }
 
-        if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
-            $.each(this.options.propertiesDefinition, function(i, page) {
+        if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
+            $.each(this.pageOptions.propertiesDefinition, function(i, page) {
                 var p = page.propertyEditorObject;
                 var deffers = p.validate(value['properties'], errors, true);
                 if (deffers !== null && deffers !== undefined && deffers.length > 0) {
@@ -4729,11 +4749,11 @@ PropertyEditor.Type.ElementSelect.prototype = {
 
         var data = null;
         if (this.properties.keep_value_on_change !== undefined && this.properties.keep_value_on_change.toLowerCase() === "true") {
-            if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
+            if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
                 data = this.getData();
-                this.options.propertyValues = data[this.properties.name].properties;
+                this.pageOptions.propertyValues = data[this.properties.name].properties;
             } else {
-                this.options.propertyValues = (this.value) ? this.value.properties : null;
+                this.pageOptions.propertyValues = (this.value) ? this.value.properties : null;
             }
         }
 
@@ -4753,7 +4773,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function() {
-                if (thisObj.options.propertiesDefinition !== undefined && thisObj.options.propertiesDefinition !== null) {
+                if (thisObj.pageOptions.propertiesDefinition !== undefined && thisObj.pageOptions.propertiesDefinition !== null) {
                     var parentId = thisObj.properties.name;
                     var elementdata = ' elementId="' + thisObj.id + '" elementValue="' + value + '"';
 
@@ -4768,11 +4788,11 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     }
 
                     var html = "";
-                    $.each(thisObj.options.propertiesDefinition, function(i, page) {
+                    $.each(thisObj.pageOptions.propertiesDefinition, function(i, page) {
                         var p = page.propertyEditorObject;
                         if (p === undefined) {
                             p = new PropertyEditor.Model.Page(thisObj.editorObject, i, page, elementdata, parentId);
-                            p.options = thisObj.options;
+                            p.options = thisObj.pageOptions;
                             page.propertyEditorObject = p;
                             thisObj.editorObject.pages[p.id] = p;
                         }
@@ -4780,7 +4800,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     });
                     $(anchor).after(html);
 
-                    $.each(thisObj.options.propertiesDefinition, function(i, page) {
+                    $.each(thisObj.pageOptions.propertiesDefinition, function(i, page) {
                         var p = page.propertyEditorObject;
                         p.initScripting();
                     });
@@ -4807,9 +4827,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
                     var data = eval(response);
-                    thisObj.options.propertiesDefinition = data;
+                    thisObj.pageOptions.propertiesDefinition = data;
                 } else {
-                    thisObj.options.propertiesDefinition = null;
+                    thisObj.pageOptions.propertiesDefinition = null;
                 }
                 d.resolve();
             }
@@ -4830,9 +4850,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 success: function(response) {
                     if (response !== null && response !== undefined && response !== "") {
                         var data = $.parseJSON(response);
-                        thisObj.options.defaultPropertyValues = data;
+                        thisObj.pageOptions.defaultPropertyValues = data;
                     } else {
-                        thisObj.options.defaultPropertyValues = null;
+                        thisObj.pageOptions.defaultPropertyValues = null;
                     }
                     d.resolve();
                 }
@@ -4844,8 +4864,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
         return d;
     },
     removePages: function() {
-        if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
-            $.each(this.options.propertiesDefinition, function(i, page) {
+        if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
+            $.each(this.pageOptions.propertiesDefinition, function(i, page) {
                 var p = page.propertyEditorObject;
                 p.remove();
             });
@@ -4856,6 +4876,431 @@ PropertyEditor.Type.ElementSelect.prototype = {
     }
 };
 PropertyEditor.Type.ElementSelect = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ElementSelect.prototype);
+
+PropertyEditor.Type.ElementMultiSelect = function() {};
+PropertyEditor.Type.ElementMultiSelect.prototype = {
+    shortname: "elementmultiselect",
+    addOnValidation: function(data, errors, checkEncryption) {
+        var thisObj = this;
+        var deferreds = [];
+        
+        var value = data[this.properties.name];
+        if (value !== null && value !== undefined && value.length > 0) {
+            //remove previous error message
+            $("#" + thisObj.id + "_input .error").removeClass("error");
+            $("#" + thisObj.id + "_input .property-input-error").remove();
+
+            $("#" + thisObj.id + "_input .repeater-row").each(function(i){
+                var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                    deferreds = $.merge(deferreds, deffers);
+                }
+            });
+        }
+        
+        return deferreds;
+    },
+    validateRow: function(row, data, errors, checkEncryption) {
+        var deferreds = [];
+        var propertiesDefinition = $(row).data("propertiesDefinition");
+
+        if (propertiesDefinition !== undefined && propertiesDefinition !== null) {
+            $.each(propertiesDefinition, function(i, page) {
+                var p = page.propertyEditorObject;
+                var deffers = p.validate(data['properties'], errors, true);
+                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                    deferreds = $.merge(deferreds, deffers);
+                }
+            });
+        }
+        return deferreds;
+    },
+    getData: function(useDefault) {
+        var thisObj = this;
+        var data = new Object();
+
+        if (this.isDataReady) {
+            var arr = [];
+            $("#" + this.id + "_input .repeater-row").each(function(){
+                var temp = thisObj.getRow($(this), useDefault);
+                if (temp !== null) {
+                    arr.push(thisObj.getRow($(this), useDefault));
+                }
+            });
+            data[this.properties.name] = arr;
+        } else {
+            data[this.properties.name] = this.value;
+        }
+        return data;
+    },
+    getRow: function(row, useDefault) {
+        var thisObj = this;
+        var field = $(row).find("select");
+        var id = $(field).attr("id");
+        var propertiesDefinition = $(row).data("propertiesDefinition");
+
+        if (this.isDataReady) {
+            var element = new Object();
+            element['className'] = $('[name=' + id + ']:not(.hidden)').val();
+            element['properties'] = new Object();
+
+            if (propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
+                $.each(propertiesDefinition, function(i, page) {
+                    var p = page.propertyEditorObject;
+                    element['properties'] = $.extend(element['properties'], p.getData());
+                });
+            }
+
+            return element;
+        } else {
+            return $(row).data("element");
+        }
+        return null;
+    },
+    renderField : function() {
+        var thisObj = this;
+        
+        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+        
+        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container elementmultiselect"></div><div style="text-align:right; margin-bottom: 10px;"><a class="pebutton addrow"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        
+        return html;
+    },
+    initScripting : function() {
+        var thisObj = this;
+        thisObj.properties.propertiesDefinition = {};
+        thisObj.properties.defaultPropertyValues = {};
+        var currentPage = $(thisObj.editor).find("#" + thisObj.page.id);
+        while ($(currentPage).next().data("page") === this.page.id) {
+            currentPage = $(currentPage).next();
+        }
+        $(currentPage).after("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+thisObj.id+"\" style=\"display:none\"></div>");
+        
+        thisObj.loadValues();
+        
+        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
+            thisObj.addRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
+            thisObj.deleteRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input .repeater-rows-container").sortable({
+            opacity: 0.8,
+            axis: 'y',
+            handle: '.sort',
+            tolerance: 'intersect',
+            stop: function (event, ui) {
+                var row = $(ui.item[0]);
+                thisObj.movedRow(row);
+            }
+        });
+    },
+    loadValues : function() {
+        var thisObj = this;
+        
+        if (!((typeof thisObj.value) === "undefined") && thisObj.value !== null && thisObj.value.length > 0) {
+            $.each(thisObj.value, function(i, v) {
+                thisObj.addRow(null, v);
+            });
+        } else {
+            thisObj.addRow(null);
+        }
+        if (this.properties.options !== null && !((typeof this.properties.options) === "undefined")) {
+            thisObj.handleAjaxOptions(this.properties.options);
+        }
+    },
+    addRow : function(before, value) {
+        var thisObj = this;
+        
+        var row = $('<div class="repeater-row property-editor-property" style="margin-bottom:0px;"><div class="actions expand-compress property-label-container"><div class="property-label" style="display:none"></div><div class="num"></div></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
+        
+        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        
+        var valueString = "";
+        if (value !== null && ((typeof value) === "string")) {
+            var temp = value;
+            value = {};
+            value.className = temp;
+        }
+        if (!((typeof value) === "undefined") && value !== null) {
+            valueString = value.className;
+        }
+        var html = '<select id="' + cId + '" name="' + cId + '" data-value="'+PropertyEditor.Util.escapeHtmlTag(valueString)+'" class="initChosen">';
+        
+        if (!((typeof thisObj.properties.options) === "undefined") && thisObj.properties.options !== null) {
+            $.each(thisObj.properties.options, function(i, option) {
+                var selected = "";
+                if (valueString === option.value) {
+                    selected = " selected";
+                }
+                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+            });
+        }
+        html += '</select>';
+        
+        $(row).find(".inputs .inputs-container").append(html);
+        $(row).data("element", value);
+        
+        if (before !== null && !((typeof before) === "undefined") && !$(before).hasClass("pebutton")) {
+            $(before).closest(".repeater-row").before(row);
+            
+            var bid = $(before).find("select").attr("id");
+            var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+bid+"\"]");
+            $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
+        } else {
+            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+            
+            var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+thisObj.id+"\"]");
+            $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
+        }
+        
+        var field = $(row).find("#"+cId);
+        
+        if (UI.rtl) {
+            $(field).addClass("chosen-rtl");
+        }
+        $(field).chosen({ width: "54%", placeholder_text: " " });
+
+        if (!$(field).hasClass("hidden") && !((typeof $(field).val()) === "undefined") && $(field).val() !== null) {
+            thisObj.renderPages($(field));
+        }
+
+        $(field).change(function() {
+            thisObj.renderPages($(field));
+        });
+        this.updateRows();
+    },
+    deleteRow : function(button) {
+        var thisObj = this;
+        var row = $(button).closest(".repeater-row");
+        var id = $(row).find("select").attr("id");
+        $(this.editor).find(".anchor[anchorField=\"" + id + "\"]").remove();
+        thisObj.removePages($(row).find("select"));
+        $(row).remove();
+        this.updateRows();
+    },
+    movedRow : function(row) {
+        var thisObj = this;
+        var fieldId = $(row).find("select").attr("id");
+        console.log(fieldId);
+        var nextRowId = thisObj.id;
+        if ($(row).next(".repeater-row").length > 0) {
+            nextRowId = $(row).next(".repeater-row").find("select").attr("id");
+        }
+        console.log(nextRowId);
+        var movePages = $(".anchor[anchorfield=\""+fieldId+"\"], .property-editor-page[elementid=\""+fieldId+"\"]");
+        $(".anchor[anchorfield=\""+nextRowId+"\"]").before(movePages);
+        
+        this.updateRows();
+    },
+    pageShown: function() {
+        $("#" + this.id + " select").trigger("chosen:updated");
+    },
+    handleAjaxOptions: function(options, reference) {
+        var thisObj = this;
+        if (options !== null && !((typeof options) === "undefined")) {
+            this.properties.options = options;
+            
+            $("#" + thisObj.id + "_input select").each(function(){
+                var value = "";
+                var html = "";
+                var objValue = $(this).data("value");
+                
+                value = $(this).val();
+                if ((value === "" || value === null) && !((typeof objValue) === "undefined") && objValue !== null) {
+                    value = objValue;
+                }
+                
+                $.each(thisObj.properties.options, function(i, option) {
+                    var selected = "";
+                    if (value === option.value) {
+                        selected = " selected";
+                    }
+                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                });
+                $(this).html(html);
+                $(this).trigger("change");
+                $(this).trigger("chosen:updated");
+            });
+        }
+    },
+    renderPages: function(field) {
+        var thisObj = this;
+        var id = $(field).attr("id");
+        var value = $(field).filter(":not(.hidden)").val();
+        var currentPage = $(this.editor).find("#" + this.page.id);
+        var row = $(field).closest(".repeater-row");
+        var anchor = $(this.editor).find(".anchor[anchorField=\"" + id + "\"]");
+        var elData = $(row).data("element");
+
+        var data = null;
+        var propertyValues = null;
+        if (!((typeof this.properties.keep_value_on_change) === "undefined") && this.properties.keep_value_on_change.toLowerCase() === "true") {
+            if (!((typeof thisObj.properties.propertiesDefinition[value]) === "undefined") && thisObj.properties.propertiesDefinition[value] !== null) {
+                data = thisObj.getData(field);
+                propertyValues = data.properties;
+            } else {
+                propertyValues = (elData && elData.properties) ? elData.properties : null;
+            }
+        } else {
+            propertyValues = (elData && elData.properties) ? elData.properties : null;
+        }
+
+        //check if value is different, remove all the related properties page
+        if ($(this.editor).find('.property-editor-page[elementId=' + id + ']:first').attr('elementValue') !== value) {
+            this.removePages(field);
+            thisObj.editorObject.refresh();
+        }
+
+        //if properties page not found, render it now
+        if ($(this.editor).find('.property-editor-page[elementId=' + id + ']').length === 0) {
+            var deferreds = [];
+
+            PropertyEditor.Util.prevAjaxCalls = {};
+            PropertyEditor.Util.showAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
+
+            deferreds.push(thisObj.getElementProperties(row, value));
+            deferreds.push(thisObj.getElementDefaultProperties(value));
+            $.when.apply($, deferreds).then(function() {
+                if (!((typeof $(row).data("propertiesDefinition")) === "undefined") && $(row).data("propertiesDefinition") !== null) {
+                    var parentId = thisObj.properties.name;
+                    var elementdata = ' elementId="' + id + '" elementValue="' + value + '"';
+
+                    //check if the element has a parent element
+                    if (!((typeof currentPage.attr("elementId")) === "undefined") && currentPage.attr("elementId") !== "") {
+                        parentId = currentPage.attr("elementId") + "_" + parentId;
+                        if (!((typeof currentPage.attr("parentElementId")) === "undefined") && currentPage.attr("parentElementId") !== "") {
+                            elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"';
+                        } else {
+                            elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"';
+                        }
+                    }
+                    
+                    var newOptions = {
+                        appPath : thisObj.options.appPath,
+                        contextPath : thisObj.options.contextPath,
+                        showDescriptionAsToolTip: thisObj.options.showDescriptionAsToolTip,
+                        changeCheckIgnoreUndefined : thisObj.options.changeCheckIgnoreUndefined,
+                        skipValidation : thisObj.options.skipValidation,
+                        propertiesDefinition : $(row).data("propertiesDefinition"),
+                        defaultPropertyValues : thisObj.properties.defaultPropertyValues[value],
+                        propertyValues : propertyValues,
+                        mandatoryMessage : thisObj.options.mandatoryMessage
+                    };
+
+                    var html = "";
+                    $.each(newOptions.propertiesDefinition, function(i, page) {
+                        var p = page.propertyEditorObject;
+                        if (((typeof p) === "undefined")) {
+                            p = new PropertyEditor.Model.Page(thisObj.editorObject, i, page, elementdata, id);
+                            p.options = newOptions;
+                            page.propertyEditorObject = p;
+                            thisObj.editorObject.pages[p.id] = p;
+                        }
+                        html += p.render();
+                    });
+                    $(anchor).after(html);
+
+                    $.each(newOptions.propertiesDefinition, function(i, page) {
+                        var p = page.propertyEditorObject;
+                        p.initScripting();
+                    });
+
+                    //add parent properties to plugin header
+                    var valueLabel = $("#" + thisObj.id).find('option[value="' + value + '"]').text();
+                    var parentTitle = '<h1>' + thisObj.properties.label + " (" + valueLabel + ')</h1>';
+                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementId=' + thisObj.id + '].property-page-show:eq(0)');
+                    $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
+                }
+                thisObj.editorObject.refresh();
+                PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
+            });
+        }
+    },
+    getElementProperties: function(row, value) {
+        var thisObj = this;
+        var d = $.Deferred();
+
+        $.ajax({
+            url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
+            data: "value=" + encodeURIComponent(value),
+            dataType: "text",
+            success: function(response) {
+                if (response !== null && !((typeof response) === "undefined") && response !== "") {
+                    var data = eval(response);
+                    $(row).data("propertiesDefinition", data);
+                } else {
+                    $(row).data("propertiesDefinition", null);
+                }
+                d.resolve();
+            }
+        });
+
+        return d;
+    },
+    getElementDefaultProperties: function(value) {
+        var thisObj = this;
+        var d = $.Deferred();
+
+        if (this.properties.default_property_values_url !== null && !((typeof this.properties.default_property_values_url) === "undefined") &&
+            this.properties.default_property_values_url !== "") {
+            if (!((typeof thisObj.properties.defaultPropertyValues[value]) === "undefined")) {
+                $.ajax({
+                    url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
+                    data: "value=" + encodeURIComponent(value),
+                    dataType: "text",
+                    success: function(response) {
+                        if (response !== null && !((typeof response) === "undefined") && response !== "") {
+                            var data = $.parseJSON(response);
+                            thisObj.properties.defaultPropertyValues[value] = data;
+                        } else {
+                            thisObj.properties.defaultPropertyValues[value] = null;
+                        }
+                        d.resolve();
+                    }
+                });
+            } else {
+                d.resolve();
+            }
+        } else {
+            d.resolve();
+        }
+
+        return d;
+    },
+    removePages: function(field) {
+        var thisObj = this;
+        var value = $(field).val();
+        var row = $(field).closest(".repeater-row");
+        var propertiesDefinition = $(row).data("propertiesDefinition")
+        if (!((typeof propertiesDefinition) === "undefined") && propertiesDefinition !== null) {
+            $.each(propertiesDefinition, function(i, page) {
+                var p = page.propertyEditorObject;
+                p.remove();
+            });
+        }
+        thisObj.editorObject.refresh();
+    },
+    remove: function() {
+        var thisObj = this;
+        $("#" + this.id + "_input select").each(function(){
+            thisObj.removePages($(this));
+        });
+    },
+    updateRows: function() {
+        var thisObj = this;
+        var i = 1;
+        $("#" + this.id + "_input .property-label").each(function(){
+            $(this).text(thisObj.properties.label + " " + i);
+            $(this).next().text(i);
+            i++;
+        });
+        thisObj.editorObject.refresh();
+    }
+};
+PropertyEditor.Type.ElementMultiSelect = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ElementMultiSelect.prototype);
 
 PropertyEditor.Type.AutoComplete = function() {};
 PropertyEditor.Type.AutoComplete.prototype = {

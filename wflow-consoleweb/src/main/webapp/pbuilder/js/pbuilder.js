@@ -4421,7 +4421,11 @@ ProcessBuilder.Mapper = {
     },
     attachPluginDetail : function(node, mapping) {
         if (mapping !== undefined) { 
-            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>");
+            var info = "";
+            if ((typeof mapping['mappingInfo']) !== "undefined") {
+                info = "<dt>"+get_pbuilder_msg("pbuilder.label.mappingInfo")+"</dt><dd>"+mapping['mappingInfo']+"</dd>";
+            }
+            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>"+info);
         }
     },
     editMapping : function(node, type, mapping) {

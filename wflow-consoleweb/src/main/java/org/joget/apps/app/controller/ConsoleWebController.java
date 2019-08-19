@@ -53,7 +53,9 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
+import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -1899,15 +1901,27 @@ public class ConsoleWebController {
         runProcessActivity.setName("Run Process");
         runProcessActivity.setType("normal");
         activityList.add(runProcessActivity);
-
+        
         //get activity plugin mapping
         Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
+        Map<String, String> infoMap = new HashMap<String, String>();
         Map<String, PackageActivityPlugin> activityPluginMap = (packageDefinition != null) ? packageDefinition.getPackageActivityPluginMap() : new HashMap<String, PackageActivityPlugin>();
         for (String activityDefId : activityPluginMap.keySet()) {
             PackageActivityPlugin pap = activityPluginMap.get(activityDefId);
             String pluginName = pap.getPluginName();
             Plugin plugin = pluginManager.getPlugin(pluginName);
             pluginMap.put(activityDefId, plugin);
+            
+            if (plugin instanceof ProcessMappingInfo) {
+                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, pap.getPluginProperties(), appDef, null);
+                if (plugin instanceof PropertyEditable) {
+                    ((PropertyEditable) plugin).setProperties(propertiesMap);
+                }   
+                String info = ((ProcessMappingInfo) plugin).getMappingInfo();
+                if (info != null && !info.isEmpty()) {
+                    infoMap.put(activityDefId, info);
+                }
+            }
         }
 
         //get activity form mapping
@@ -1948,6 +1962,7 @@ public class ConsoleWebController {
         map.addAttribute("process", process);
         map.addAttribute("activityList", activityList);
         map.addAttribute("pluginMap", pluginMap);
+        map.addAttribute("pluginInfoMap", infoMap);
         map.addAttribute("participantPluginMap", participantPluginMap);
         map.addAttribute("activityFormMap", activityFormMap);
         map.addAttribute("formMap", formMap);

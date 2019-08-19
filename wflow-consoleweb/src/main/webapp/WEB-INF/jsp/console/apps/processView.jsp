@@ -337,12 +337,17 @@
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
                                             <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                            <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
                                             <c:if test="${plugin ne null}">
                                                 <dl>
                                                     <dt><fmt:message key="console.plugin.label.name"/></dt>
                                                     <dd>${plugin.i18nLabel}&nbsp;</dd>
                                                     <dt><fmt:message key="console.plugin.label.version"/></dt>
                                                     <dd>${plugin.version}&nbsp;</dd>
+                                                    <c:if test="${!empty pluginInfo}">
+                                                        <dt><fmt:message key="pbuilder.label.mappingInfo"/></dt>
+                                                        <dd>${pluginInfo}&nbsp;</dd>
+                                                    </c:if>
                                                     <dt>&nbsp;</dt>
                                                     <dd>
                                                         <div>
@@ -390,12 +395,17 @@
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
                                             <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                            <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
                                             <c:if test="${plugin ne null}">
                                                 <dl>
                                                     <dt><fmt:message key="console.plugin.label.name"/></dt>
                                                     <dd>${plugin.i18nLabel}&nbsp;</dd>
                                                     <dt><fmt:message key="console.plugin.label.version"/></dt>
                                                     <dd>${plugin.version}&nbsp;</dd>
+                                                    <c:if test="${!empty pluginInfo}">
+                                                        <dt><fmt:message key="pbuilder.label.mappingInfo"/></dt>
+                                                        <dd>${pluginInfo}&nbsp;</dd>
+                                                    </c:if>
                                                     <dt>&nbsp;</dt>
                                                     <dd>
                                                         <div>
