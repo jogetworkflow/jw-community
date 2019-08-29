@@ -160,7 +160,15 @@ public class UserviewWebController {
 
         return "ubuilder/login";
     }
-
+    
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/offline"})
+    public String generalOfflineView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey){
+        map.addAttribute("appId", appId);
+        map.addAttribute("userviewId", userviewId);
+        map.addAttribute("userviewKey", userviewKey);
+        return "ubuilder/offline";
+    }
+    
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/manifest"})
     public void manifest(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
         String manifest = UserviewUtil.getManifest(appId, userviewId);

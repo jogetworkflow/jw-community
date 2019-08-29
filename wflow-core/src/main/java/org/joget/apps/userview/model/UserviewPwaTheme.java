@@ -1,11 +1,14 @@
 package org.joget.apps.userview.model;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Userview themes to implement this interface to support service workers and progressive web apps (PWA)
  */
 public interface UserviewPwaTheme extends PwaOfflineResources {
+    
+    public static final String PWA_OFFLINE_MENU_ID = "pwaoffline";
 
     /**
      * Return the PWA manifest contents for the userview
@@ -32,4 +35,12 @@ public interface UserviewPwaTheme extends PwaOfflineResources {
      * @return 
      */
     Set<String> getCacheUrls(String appId, String userviewId, String userviewKey);
+    
+    /**
+     * HTML template to handle PWA offline page.
+     * 
+     * @param data
+     * @return 
+     */
+    String handlePwaOfflinePage(Map<String, Object> data);
 }

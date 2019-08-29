@@ -267,7 +267,13 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             urlsToCache += "'" + url + "'";
         }
         
-        Object[] arguments = new Object[]{ urlsToCache};
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        
+        Object[] arguments = new Object[]{
+            request.getContextPath(),
+            urlsToCache
+        };
+        
         String js = AppUtil.readPluginResource(getClass().getName(), "/resources/themes/universal/sw.js", arguments, false, "");
         return js;
     }    
@@ -322,14 +328,32 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 if (key.isEmpty()) {
                     key = Userview.USERVIEW_KEY_EMPTY_VALUE;
                 }
+                
+                String pwaOnlineNotificationMessage = ResourceBundleUtil.getMessage("pwa.onlineNow");
+                String pwaOfflineNotificationMessage = ResourceBundleUtil.getMessage("pwa.offlineNow");
+                String pwaLoginPromptMessage = ResourceBundleUtil.getMessage("pwa.loginPrompt");
+                String pwaSyncingMessage = ResourceBundleUtil.getMessage("pwa.syncing");
+                String pwaSyncFailedMessage = ResourceBundleUtil.getMessage("pwa.syncFailed");
+                String pwaSyncSuccessMessage = ResourceBundleUtil.getMessage("pwa.syncSuccess");
+                String buildNumber = ResourceBundleUtil.getMessage("build.number");
+                
                 String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/"+key+"/serviceworker";
-                jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js?build=" + buildNumber + "\"></script>";
                 jsCssLink += "<script>$(function() {"
                         + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
+                        + "PwaUtil.userviewKey = '" + key + "';"
                         + "PwaUtil.serviceWorkerPath = '" + serviceWorkerUrl + "';"
                         + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
                         + "PwaUtil.pushEnabled = " + pushEnabled + ";"
+                        + "PwaUtil.currentUsername = '" + workflowUserManager.getCurrentUsername() + "';"
+                        + "PwaUtil.onlineNotificationMessage = '" + pwaOnlineNotificationMessage + "';"
+                        + "PwaUtil.offlineNotificationMessage = '" + pwaOfflineNotificationMessage + "';"
+                        + "PwaUtil.loginPromptMessage = '" + pwaLoginPromptMessage + "';"
+                        + "PwaUtil.syncingMessage = '" + pwaSyncingMessage + "';"
+                        + "PwaUtil.syncFailedMessage = '" + pwaSyncFailedMessage + "';"
+                        + "PwaUtil.syncSuccessMessage = '" + pwaSyncSuccessMessage + "';"
                         + "PwaUtil.register();"
+                        + "PwaUtil.init();"
                         + "});</script>";
             }
         }
@@ -832,6 +856,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>";
         } else if (INBOX.equals(userview.getParamString("menuId"))) {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.inbox") + "</a></li>";
+            } else if (UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(userview.getParamString("menuId"))) {
+            breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("pwa.offline.breadcrumbTitle") + "</a></li>";
         } else {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("ubuilder.pageNotFound") + "</a></li>";
         }
@@ -971,5 +997,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String[] themeDefinedMenusId() {
         return new String[] {PROFILE, INBOX};
-    }    
+    }
+
+    @Override
+    public String handlePwaOfflinePage(Map<String, Object> data) {
+        return UserviewUtil.getTemplate(this, data, "/templates/userview/pwaOffline.ftl");
+    }
 }

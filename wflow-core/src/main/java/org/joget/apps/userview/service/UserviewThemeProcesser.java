@@ -13,6 +13,7 @@ import org.joget.apps.userview.lib.DefaultV5EmptyTheme;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -34,6 +35,7 @@ public class UserviewThemeProcesser {
     String alertMessage = null;
     boolean isAuthorized = false;
     boolean isLoginPage = false;
+    boolean isPwaOfflinePage = false;
     boolean isQuickEditEnabled = AppUtil.isQuickEditEnabled();
 
     public UserviewThemeProcesser(Userview userview, HttpServletRequest request) {
@@ -84,6 +86,15 @@ public class UserviewThemeProcesser {
         }
         
         init();
+        
+        //check if it's PWA theme offline page
+        if(theme instanceof UserviewPwaTheme){
+            String menuId = request.getParameter("menuId");
+            if(UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(menuId)){
+                isPwaOfflinePage = true;
+                return "ubuilder/v5view";
+            }
+        }
 
         String homePageRedirection = homePageRedirection();
         if (homePageRedirection != null) {
@@ -589,7 +600,10 @@ public class UserviewThemeProcesser {
     protected String getContent(Map<String, Object> data) {
         String content = "";
         try {
-            if (isLoginPage) {
+            if(isPwaOfflinePage){
+                UserviewPwaTheme pwaTheme = (UserviewPwaTheme) theme;
+                return pwaTheme.handlePwaOfflinePage(data);
+            }if (isLoginPage) {
                 return getLoginForm(data);
             } else if (!isAuthorized) {
                 return "<h3>"+ResourceBundleUtil.getMessage("ubuilder.noAuthorize")+"</h3>";

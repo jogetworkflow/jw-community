@@ -739,4 +739,14 @@ public class DirectoryJsonController {
 
         AppUtil.writeJson(writer, jsonObject, callback);
     }
+    
+    @RequestMapping("/json/directory/user/csrfToken")
+    public void csrfToken(Writer writer, HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException, ServletException {
+        JSONObject jsonObject = new JSONObject();
+      
+        jsonObject.accumulate("tokenName", SecurityUtil.getCsrfTokenName());
+        jsonObject.accumulate("tokenValue", SecurityUtil.getCsrfTokenValue(httpRequest));
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
 }

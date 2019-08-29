@@ -1,22 +1,120 @@
 var version = "7.0.0";
 var cacheName = "jw-cache";
 var cache = cacheName + "-" + version;
+var contextPath = '%s';
+var userviewKey = '_';
 var urlsToCache = [
+    contextPath + '/css/v7.css',
+    contextPath + '/css/console_custom.css',
+    contextPath + '/css/datalistBuilderView.css',
+    contextPath + '/js/fontawesome5/css/all.min.css',
+    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
+    contextPath + '/home/logo.png',
+    contextPath + '/home/bg.png',
     %s
 ];
 
+var ROLE_ANONYMOUS = 'roleAnonymous';
+
+var indexedDBVersion = 1;
+
+var isSyncing = false;
+
+//from pwa.js
+var formUsername = null;
+var formUserviewAppId = null;
+var formPageTitle = null;
+var formData = null;
+var formDb = null;
+
+var FORM_DB_NAME       = 'joget_form';
+var FORM_DB_STORE_NAME = 'post_requests';
+var STATUS_PENDING     = 0;
+var STATUS_SUCCESS     = 1;
+var STATUS_FAILED      = 2;
+var STATUS_FORM_ERROR  = 3;
+
+
+function cacheUserview(){
+    //const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
+    const cacheApi = self.registration.scope + '/' + userviewKey + "/cacheUrls";
+    console.log("Retrieve urls to cache by API (" + cacheApi + ")");
+    fetch(cacheApi, {  
+        credentials: 'include'  
+    })
+    .then(function(response) {
+        if (response.status !== 200) {
+            console.log("Not able to retrieve cache URLs");
+            return;
+        }
+        response.json().then(function(data) {
+            caches.open(cache)
+            .then(function (cache) {
+                return Promise.all(
+                    //cache one by one to prevent duplicate url causing DOMexception
+                    data.map(function(url) {
+                        return caches.match(url).then(function(checkCache){
+                            if(checkCache === undefined){
+                                cache.addAll([url]).then(function() {
+                                    //console.log(url + " cached");
+                                }).catch(function(err) {
+                                    //ignore
+                                });
+                            }else{
+                                //console.log(url + ' already exists in cache');
+                            }
+                        })
+                    })
+                ).then(function() {
+                    console.log("URLs retrieved from API cached");
+                });
+            });
+        });
+    })
+    .catch(function(err) {
+        console.log("Not able to retrieve cache URLs", err);
+    });
+}
+
 self.addEventListener('install', function (event) {
+    console.log('SW install event');
     event.waitUntil(
             caches.open(cache)
             .then(function (cache) {
-                return cache.addAll(urlsToCache).then(function() {
-                    console.log("URLs cached");
-                });
+                self.skipWaiting();
+
+                var promises = [];
+
+                /*
+                manually fetch "self.registration.scope" 
+                and store the response generated from res.body to cache
+                because of "a redirected response was used for a request whose redirect mode is not "follow"."
+                when navigating back from offline page
+                */
+                promises.push(
+                    fetch(self.registration.scope)
+                        .then(response => cache.put(self.registration.scope, new Response(response.body)))
+                );
+
+                urlsToCache.push(self.registration.scope + '/_/pwaoffline');
+                urlsToCache.push(self.registration.scope + '/_/offline');
+                promises.push(
+                    cache.addAll(urlsToCache).then(function() {
+                        console.log("URLs cached");
+                    })
+                );
+
+                return Promise.all(promises);
             })
-            );
+        );
 });
 
 self.addEventListener('fetch', function (event) {
+    //https://stackoverflow.com/questions/48463483/what-causes-a-failed-to-execute-fetch-on-serviceworkerglobalscope-only-if
+    if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
+        return;
+    }
+    
     var fetchRequest = event.request.clone();
 
     event.respondWith(
@@ -24,70 +122,71 @@ self.addEventListener('fetch', function (event) {
         .then(function (response) {
             if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
                 return response;
+
             } else {
                 var responseToCache = response.clone();
-                caches.open(cache)
-                .then(function (cache) {
-                    cache.put(event.request, responseToCache);
-                });
+                
+                if(fetchRequest.url.indexOf("/web/json/workflow/currentUsername") === -1 
+                        && fetchRequest.url.indexOf('/images/v3/clear.gif') === -1 ){
+                    caches.open(cache)
+                        .then(function (cache) {
+                            cache.put(event.request, responseToCache);
+                        });
+                }
             }
             
+            /*
             const contentType = response.headers.get("content-type");
             if (fetchRequest.url.indexOf("/web/userview/") !== -1 && contentType && contentType.indexOf("text/html") !== -1) {
-                const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
-                console.log("Retrieve urls to cache by API ("+cacheApi+")");
-                fetch(cacheApi, {  
-                    credentials: 'include'  
-                })
-                .then(function(response) {
-                    if (response.status !== 200) {
-                        console.log("Not able to retrieve cache URLs");
-                        return;
-                    }
-                    response.json().then(function(data) {
-                        caches.open(cache)
-                        .then(function (cache) {
-                            return Promise.all(
-                                //cache one by one to prevent duplicate url causing DOMexception
-                                data.map(function(url) {
-                                    return cache.addAll([url]).then(function() {
-                                        console.log(url + " cached");
-                                    }).catch(function(err) {
-                                        //ignore
-                                    });
-                                })
-                            ).then(function() {
-                                console.log("URLs retrieved from API cached");
-                            });
-                        });
-                    });
-                })
-                .catch(function(err) {
-                    console.log("Not able to retrieve cache URLs", err);
-                });
+                cacheUserview
             }
-                    
+            */
+            
             return response;
         })
         .catch(function () {
-            return caches.match(event.request);
+            if(event.request.method === 'POST' && formData !== null){
+                console.log('form POST failed, saving to indexedDB');
+
+                savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
+
+                //redirect instead
+                var response = Response.redirect(self.registration.scope + '/_/pwaoffline', 302);
+                return response;
+
+            }else{
+
+                return new Promise(function(resolve, reject) {
+                    caches.match(event.request).then(function(response){
+                        if(response === undefined){
+                            var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
+                            resolve(offlineResponse);
+                        }else{
+                            resolve(response);
+                        }
+                    })
+                });                
+
+            }
         })
     );
 });
 
 self.addEventListener('activate', function (event) {
+    console.log('SW activate event');
+    self.clients.claim();
     event.waitUntil(
             caches.keys()
             .then(
-                    function (keyList) {
-                        Promise.all(
-                                keyList.map(function (key) {
-                                    if (cache.indexOf(key) === -1) {
-                                        return caches.delete(key);
-                                    }
-                                })
-                                );
-                    })
+                function (keyList) {
+                    Promise.all(
+                            keyList.map(function (key) {
+                                if (cache.indexOf(key) === -1) {
+                                    return caches.delete(key);
+                                }
+                            })
+                        );
+                })
             );
 });
 
@@ -101,14 +200,14 @@ self.addEventListener('push', function (event) {
     var badge;
 
     try {
-        var json = event.data.json(); // {"title":"Title", "text":"Text", "url":"/jw/web/userview/appcenter/v/_/home"}
+        var json = event.data.json(); // {"title":"Title", "text":"Text", "url":contextPath + "/web/userview/appcenter/v/_/home"}
         text = json.text;
         title = json.title;
         url = json.url;
         icon = json.icon;
         badge = json.badge;
     } catch (e) {
-        text = (event && event.data) ? event.data.text() : "Push notification received."
+        text = (event && event.data) ? event.data.text() : "Push notification received.";
     }
     if (!text || typeof text === "undefined") {
         text = 'Push notification received.';
@@ -117,13 +216,13 @@ self.addEventListener('push', function (event) {
         title = 'Push Notification';
     }
     if (typeof url === "undefined") {
-        url = '/jw/';
+        url = contextPath + '/';
     }
     if (typeof icon === "undefined") {
-        icon = '/jw/images/v3/logo.png';
+        icon = contextPath + '/images/v3/logo.png';
     }
     if (typeof badge === "undefined") {
-        badge = '/jw/images/v3/logo.png';
+        badge = contextPath + '/images/v3/logo.png';
     }
     var options = {
         body: text,
@@ -170,3 +269,352 @@ self.addEventListener('notificationclick', function (event) {
     event.waitUntil(promiseChain);
 
 });
+
+function openDatabase() {
+    var indexedDBOpenRequest = indexedDB.open(FORM_DB_NAME, indexedDBVersion);
+
+    indexedDBOpenRequest.onerror = function (error) {
+        console.error('IndexedDB error:', error);
+    }
+
+    indexedDBOpenRequest.onupgradeneeded = function () {
+        this.result.createObjectStore(FORM_DB_STORE_NAME, {
+            autoIncrement: true,
+            keyPath: 'id'
+        });
+    }
+
+    indexedDBOpenRequest.onsuccess = function () {
+        formDb = this.result;
+    }
+}
+
+function getObjectStore(storeName, mode) {
+    return formDb.transaction(storeName, mode).objectStore(storeName);
+}
+
+function replaceUrlParam(url, paramName, paramValue){
+    if (paramValue === null) {
+        paramValue = '';
+    }
+    var pattern = new RegExp('\\b(' + paramName + '=).*?(&|#|$)');
+    if (url.search(pattern) >= 0) {
+        return url.replace(pattern, '$1' + paramValue + '$2');
+    }
+    url = url.replace(/[?#]$/, '');
+    return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
+}
+
+function postMessageToClients(msgObj){
+    self.clients.matchAll().then(function(clients) {
+        clients.forEach(function(client) {
+            client.postMessage(msgObj)
+         })
+    });
+}
+
+function getCurrentUsername(){
+    return new Promise(function(resolve, reject) {
+        fetch(contextPath + '/web/json/workflow/currentUsername', {
+            method: 'GET'
+        }).then(function (response) {
+            response.json()
+                .then(function(json){
+                    resolve(json);
+                })
+                .catch(function(error){
+                    reject(error);
+                })
+        }).catch(function (error) {
+            console.error('get CSRF token failed:', error);
+            reject(error);
+        })
+    });
+}
+
+function getCsrfToken(){
+    return new Promise(function(resolve, reject) {
+        fetch(contextPath + '/web/json/directory/user/csrfToken', {
+            method: 'GET'
+        }).then(function (response) {
+            response.json()
+                .then(function(json){
+                    resolve(json);
+                })
+                .catch(function(error){
+                    reject(error);
+                })
+        }).catch(function (error) {
+            console.error('get CSRF token failed:', error);
+            reject(error);
+        })
+    });
+}
+
+function savePostRequest(url, userviewAppId, title, payload, username) {
+    var request = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').add({
+        url: url,
+        userviewAppId: userviewAppId,
+        username: username,
+        title: title,
+        payload: payload,
+        timestamp: new Date().getTime(),
+        status: STATUS_PENDING,
+        method: 'POST'
+    });
+    
+    request.onsuccess = function (event) {
+        console.log('a new record has been added to indexedb');
+        formData = null;
+    }
+
+    request.onerror = function (error) {
+        console.error(error)
+    }
+}
+
+function sendFormDataToServer(savedRequest){
+    console.log('sendFormDataToServer', savedRequest);
+    
+    return new Promise(function(resolve, reject) {
+        if(savedRequest.status === STATUS_FORM_ERROR){
+            reject();
+            return;
+        }
+
+        getCsrfToken()
+            .then(function(json){
+                var requestUrl = replaceUrlParam(savedRequest.url, 'OWASP_CSRFTOKEN', json.tokenValue);
+                var payload = savedRequest.payload;
+                payload.submit = 'Save';
+
+                var method = savedRequest.method;
+
+                var formDataObj = new FormData();
+
+                var keysToIgnore = [];
+                for(var key in payload){
+                    if((Array.isArray(payload[key]) && payload[key][0] instanceof File)
+                            || payload[key] instanceof File){
+                        //check if {key}_path exists
+                        if(payload[key + '_path'] !== undefined){
+                            keysToIgnore.push(key);
+                        }
+                    }else{
+                    }
+                }
+
+
+                for(var key in payload){
+                    if(keysToIgnore.indexOf(key) > -1){
+                        continue;
+                    }
+
+                    if(key === 'OWASP_CSRFTOKEN'){
+                        formDataObj.append('OWASP_CSRFTOKEN', json.tokenValue);
+                    }else{
+                        //check if File array
+                        //if(Array.isArray(payload[key]) && payload[key][0] instanceof File){
+                        if(Array.isArray(payload[key])){
+                            for(var i in payload[key]){
+                                formDataObj.append(key, payload[key][i]);
+                            }
+                        }else{
+                            formDataObj.append(key, payload[key]);
+                        }
+                    }
+                }
+
+                fetch(requestUrl, {
+                    headers: {
+                        //'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    method: method,
+                    body: formDataObj,
+                }).then(function (response) {
+                    if (response.status < 400) {
+                        //check if form validation error {name="_FORM_ERRORS"}
+                        response.text()
+                            .then(function(text){
+                                if(text.indexOf('name="_FORM_ERRORS"') > -1){
+                                    var textIndex = text.indexOf('name="_FORM_ERRORS"');
+                                    var excerpt = text.substring(textIndex - 120, textIndex);
+                                    console.log('form validation error', excerpt);
+
+                                    savedRequest.status = STATUS_FORM_ERROR;
+                                    getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
+                                    
+                                    reject();
+                                    
+                                }else{
+                                    getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
+                                    
+                                    resolve();
+                                }
+                            })
+                            .catch(function(error){
+                                reject(error);
+                            });
+                    }else{
+                        savedRequest.status = STATUS_FAILED;
+                        getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
+                        
+                        reject();
+                    }
+                }).catch(function (error) {
+                    console.error('Send to Server failed:', error);
+
+                    savedRequest.status = STATUS_FAILED;
+                    getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
+
+                    reject(error);
+                })
+            })
+    });
+    
+        
+}
+
+function processStoredFormData() {
+    if(isSyncing){
+        //console.log('processStoredFormData is syncing, ignoring...');
+        return;
+    }
+    
+    isSyncing = true;
+
+    //delay to make sure already online
+    setTimeout(function(){
+        getCurrentUsername()
+            .then(function(json){
+                var currentUsername = json.username;
+
+                var otherUsernameFound = false;
+
+                var savedRequests = [];
+                var req = getObjectStore(FORM_DB_STORE_NAME).openCursor();
+
+                req.onsuccess = async function(event) {
+                    var cursor = event.target.result;
+                    
+                    if (cursor) {
+                        savedRequests.push(cursor.value);
+                        cursor.continue();
+
+                    } else {
+
+                        if(savedRequests.length > 0){
+                            //show syncing notification
+                            postMessageToClients({
+                                type: 'syncing'
+                            });
+                        }
+
+                        //see if any records not matching the current username
+                        for(let savedRequest of savedRequests) {
+                            if(savedRequest.username !== currentUsername){
+                                otherUsernameFound = true;
+
+                                if(currentUsername !== ROLE_ANONYMOUS){
+                                    console.log('username is different, deleting...', savedRequest, savedRequest.username);
+                                    getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
+                                }
+                            }
+                        }
+
+                        if(otherUsernameFound){
+                            if(currentUsername === ROLE_ANONYMOUS){
+                                //show login prompt
+                                postMessageToClients({
+                                    type: 'login'
+                                })
+                            }
+
+                            isSyncing = false;
+
+                        }else{
+                            //proceed to send the data
+                            var promises = [];
+                            
+                            for(let savedRequest of savedRequests) {
+                                /*
+                                if(savedRequest.status !== STATUS_FORM_ERROR){
+                                    promises.push(sendFormDataToServer(savedRequest));
+                                }
+                                */
+                                promises.push(sendFormDataToServer(savedRequest));
+                            }
+                            
+                            Promise.allSettled(promises).then(function(results){
+                                var hasFailedRequest = false;
+                                
+                                results.forEach(function(result){
+                                    if(result.status === 'rejected'){
+                                        hasFailedRequest = true;
+                                    }
+                                });
+                                
+                                if(hasFailedRequest){
+                                    //show syncFailed notification
+                                    postMessageToClients({
+                                        type: 'syncFailed'
+                                    })
+                                }else{
+                                    if(promises > 0){
+                                        //show syncSuccess notification
+                                        postMessageToClients({
+                                            type: 'syncSuccess'
+                                        })
+                                    }
+                                }
+                                
+                                isSyncing = false;
+                            });
+
+                            //console.log('setting isSyncing to false');
+                            //isSyncing = false;
+                        }
+                    }
+                }
+            })
+            .catch(function(error){
+                isSyncing = false;
+                console.log('error getting username', error);
+            });
+    }, 5000);
+        
+}
+
+self.addEventListener('message', function(event) {
+    if (event.data.hasOwnProperty('sync')) {
+        console.log('sync received');
+        processStoredFormData();
+    }
+    
+    if (event.data.hasOwnProperty('userviewKey')) {
+        console.log('userviewKey received');
+        userviewKey = event.data.userviewKey;
+        cacheUserview();
+    }
+    
+    if (event.data.hasOwnProperty('formData')) {
+        console.log('formData received');
+        formPageTitle = event.data.formPageTitle;
+        formData = event.data.formData;
+        formUserviewAppId = event.data.formUserviewAppId;
+        formUsername = event.data.formUsername;
+    }
+});
+
+
+self.addEventListener('sync', function(event) {
+    console.log('syncing...');
+    //event.tag name checked here must be the same as the one used while registering sync
+    if (event.tag === 'sendFormData') {
+        event.waitUntil(
+            processStoredFormData()
+        )
+    }
+})
+
+openDatabase();
