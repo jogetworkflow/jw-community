@@ -2,6 +2,7 @@ package org.joget.apps.userview.lib;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
@@ -40,7 +42,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
-public class RunProcess extends UserviewMenu implements PluginWebSupport {
+public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOfflineValidation {
 
     @Override
     public String getClassName() {
@@ -634,5 +636,35 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             Element button = FormUtil.findButton(AssignmentCompleteButton.DEFAULT_ID, startForm, formData);
             button.setProperty(FormUtil.PROPERTY_LABEL, label);
         }
+    }
+    
+    @Override
+    public Map<WARNING_TYPE, String[]> validation() {
+        Collection<String> messages = new ArrayList<String>();
+        if (!"Yes".equals(getPropertyString("runProcessDirectly"))) {
+            messages.add(ResourceBundleUtil.getMessage("pwa.runProcessDirectly"));
+        }
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        PackageActivityForm startFormDef = appService.viewStartProcessForm(appDef.getAppId(), appDef.getVersion().toString(), getPropertyString("processDefId"), new FormData(), "");
+        if (startFormDef != null) { 
+            if (startFormDef.getForm() != null) {
+                if (!FormUtil.pwaOfflineValidation(startFormDef.getForm(), WARNING_TYPE.SUPPORTED)) {
+                    messages.add(ResourceBundleUtil.getMessage("pwa.formContainsElementNotCompatible"));
+                }
+            } else if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType())) {
+                messages.add(ResourceBundleUtil.getMessage("pwa.startProcessExternalNotSupported"));
+            } else {
+                messages.add(ResourceBundleUtil.getMessage("pwa.noStartProcessForm"));
+            }
+        } else {
+            messages.add(ResourceBundleUtil.getMessage("pwa.noStartProcessForm"));
+        }
+        if (!messages.isEmpty()) {
+            Map<WARNING_TYPE, String[]> warning = new HashMap<WARNING_TYPE, String[]>();
+            warning.put(WARNING_TYPE.NOT_SUPPORTED, messages.toArray(new String[0]));
+            return warning;
+        }
+        return null;
     }
 }

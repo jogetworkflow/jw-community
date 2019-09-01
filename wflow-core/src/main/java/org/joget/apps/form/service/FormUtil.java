@@ -54,6 +54,10 @@ import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.model.Validator;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.PwaOfflineNotSupported;
+import org.joget.apps.userview.model.PwaOfflineReadonly;
+import org.joget.apps.userview.model.PwaOfflineValidation;
+import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -2306,5 +2310,66 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         return isAuthorize;
+    }
+    
+    public static boolean pwaOfflineValidation(String formDefId, WARNING_TYPE checkingType) {
+        if (formDefId != null && !formDefId.isEmpty()) {
+            Form form = null;
+            FormData formData = new FormData();
+            try {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
+                FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
+                FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
+
+                if (formDef != null && formDef.getJson() != null) {
+                    String formJson = formDef.getJson();
+                    formJson = AppUtil.processHashVariable(formJson, null, StringUtil.TYPE_JSON, null);
+                    form = (Form) formService.loadFormFromJson(formJson, formData);
+                }
+                return pwaOfflineValidation(form, checkingType, formData);
+            } catch (Exception e) {
+                LogUtil.error(FormUtil.class.getName(), e, e.getMessage());
+            }
+        }
+        
+        return true;
+    }
+    
+    public static boolean pwaOfflineValidation(Form form, WARNING_TYPE checkingType) {
+        if (form != null) {
+            FormData formData = new FormData();
+            try {
+                return pwaOfflineValidation(form, checkingType, formData);
+            } catch (Exception e) {
+                LogUtil.error(FormUtil.class.getName(), e, e.getMessage());
+            }
+        }
+        
+        return true;
+    }
+    
+    protected static boolean pwaOfflineValidation(Element element, WARNING_TYPE checkingType, FormData formData) {
+        if ((element instanceof PwaOfflineNotSupported && checkingType.equals(WARNING_TYPE.READONLY))
+            || (element instanceof PwaOfflineReadonly && checkingType.equals(WARNING_TYPE.SUPPORTED))) {
+            return false;
+        } else if (element instanceof PwaOfflineValidation) {
+            Map<WARNING_TYPE, String[]> results = ((PwaOfflineValidation) element).validation();
+            if (results != null) {
+                if ((results.containsKey(WARNING_TYPE.NOT_SUPPORTED) && checkingType.equals(WARNING_TYPE.READONLY))
+                    || (results.containsKey(WARNING_TYPE.READONLY) && checkingType.equals(WARNING_TYPE.SUPPORTED))) {
+                    return false;
+                }
+            }
+        }
+        
+        if (element.getChildren(formData) != null) {
+            for (Element e : element.getChildren(formData)) {
+                if (!(pwaOfflineValidation(e, checkingType, formData))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

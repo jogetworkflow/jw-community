@@ -2,6 +2,7 @@ package org.joget.apps.userview.lib;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
@@ -13,6 +14,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
@@ -27,7 +29,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Represents a menu item that displays a data form and handles form submission.
  */
-public class FormMenu extends UserviewMenu {
+public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
 
     @Override
     public String getIcon() {
@@ -492,5 +494,20 @@ public class FormMenu extends UserviewMenu {
         setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
         
         return form;
+    }
+    
+    @Override
+    public Map<WARNING_TYPE, String[]> validation() {
+        WARNING_TYPE type = WARNING_TYPE.SUPPORTED;
+        if ("yes".equalsIgnoreCase(getPropertyString("readonly"))) {
+            type = WARNING_TYPE.READONLY;
+        }
+        
+        if (!FormUtil.pwaOfflineValidation(getPropertyString("formId"), type)) {
+            Map<WARNING_TYPE, String[]> warning = new HashMap<WARNING_TYPE, String[]>();
+            warning.put(WARNING_TYPE.NOT_SUPPORTED, new String[]{ResourceBundleUtil.getMessage("pwa.formContainsElementNotCompatible")});
+            return warning;
+        }
+        return null;
     }
 }

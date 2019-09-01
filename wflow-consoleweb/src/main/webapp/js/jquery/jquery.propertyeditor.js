@@ -1352,12 +1352,19 @@ PropertyEditor.Model.Editor.prototype = {
         return !PropertyEditor.Util.deepEquals(this, this.getData(), this.options.propertyValues);
     },
     save: function() {
+        var thisObj = this;
         if (this.options.skipValidation || (this.options.propertiesDefinition === undefined || this.options.propertiesDefinition === null)) {
             this.saveCallback(this.getData());
         } else {
             var thisObj = this;
             this.validation(function(data) {
-                thisObj.saveCallback(data);
+                if ($.isFunction(thisObj.options.customSaveValidation)) {
+                    thisObj.options.customSaveValidation(thisObj.element, data, function(){
+                        thisObj.saveCallback(data);
+                    });
+                } else {
+                    thisObj.saveCallback(data);
+                }
             }, function(errors) {
                 thisObj.saveFailureCallback(errors);
             });

@@ -6,7 +6,7 @@
 .jstree-icon {color: darkseagreen;}
 .indicators {display:inline-block; margin-left: 10px;}
 .indicator{display: inline;position: relative;color:green;}
-.indicator:hover:after{
+.indicator[title]:hover:after{
     background: #333;
     background: rgba(0,0,0,.8);
     border-radius: 5px;
@@ -22,8 +22,19 @@
     width: auto;
     word-wrap: break-word;
 }
-.indicator-red {color: red;}
-.indicator-lightgreen {color: darkseagreen;}
+.indicator-red {color: red !important;}
+.indicator-yellow {color: #f8a000 !important;}
+.indicator-lightgreen {color: darkseagreen !important;}
 a.gray, a.gray:hover {color:gray !important;}
 a.properties, a.properties:hover {font-style: italic; color:gray !important; }
 #dependencyTreeExport .fa-stack-1x:before { margin-left: 5px; }
+.alert {
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}

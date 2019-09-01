@@ -23,6 +23,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewUtil;
@@ -41,7 +42,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
-public class InboxMenu extends UserviewMenu implements PluginWebSupport {
+public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOfflineValidation {
     private DataList cacheDataList = null;
 
     public static final String PREFIX_SELECTED = "selected_";
@@ -569,5 +570,12 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             return urls;
         }
         return null;
+    }
+    
+    @Override
+    public Map<WARNING_TYPE, String[]> validation() {
+        Map<WARNING_TYPE, String[]> warning = new HashMap<WARNING_TYPE, String[]>();
+        warning.put(WARNING_TYPE.READONLY, new String[]{ResourceBundleUtil.getMessage("pwa.process")});
+        return warning;
     }
 }

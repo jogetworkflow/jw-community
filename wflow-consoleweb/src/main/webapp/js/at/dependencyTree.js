@@ -23,7 +23,11 @@ $.jstree.plugins.joget = function (options, parent) {
                     if (ind.color !== undefined && ind.color !== "") {
                         $(a).addClass("indicator-"+ind.color);
                     }
-                    $(a).append('<span class="fa-stack"><i class="fas fa-circle fa-stack-2x"></i><i class="'+ind.icon+' fa-stack-1x fa-inverse"></i></span>');
+                    var slash = "";
+                    if (ind.slash) {
+                        slash = '<i class="fas fa-slash fa-stack-1x fa-inverse"></i>';
+                    }
+                    $(a).append('<span class="fa-stack"><i class="fas fa-circle fa-stack-2x"></i>'+slash+'<i class="'+ind.icon+' fa-stack-1x fa-inverse"></i></span>');
                     if (ind.label !== undefined && ind.label !== "") {
                         $(a).attr("title", ind.label);
                         $(a).attr('aria-label', ind.label);
@@ -127,9 +131,12 @@ DependencyTree.Util = {
     hideAndCall: function (viewer, callback) {
         callback(viewer);
     },
-    addIndicator: function (viewer, node, icon, label, color, callback) {
+    addIndicator: function (viewer, node, icon, label, color, callback, slash) {
         if (color === undefined) {
             color = "";
+        }
+        if (slash === undefined) {
+            slash = false;
         }
         if (callback === undefined) {
             callback = null;
@@ -140,13 +147,36 @@ DependencyTree.Util = {
             callbacks.push(callback);
             callback = callbacks.length - 1;
         }
-            
-        node.data["indicators"].push({
+        
+        var ind = {
             icon : icon,
             color : color,
             label : label,
+            slash : slash,
             callback : callback
-        });
+        };
+            
+        node.data["indicators"].push(ind);
+        
+        if (icon.indexOf("pwaoffline") !== -1) {
+            if (viewer['warning']['pwaoffline'] === undefined) {
+                viewer['warning']['pwaoffline'] = [];
+            }
+            viewer['warning']['pwaoffline'].push(ind);
+        } else if (icon.indexOf("missingplugin") !== -1) {
+            if (!(node.data["className"] === "org.joget.apps.userview.model.Userview" 
+                    || node.data["className"] === "org.joget.apps.userview.model.UserviewCategory")) {
+                if (viewer['warning']['missingplugin'] === undefined) {
+                    viewer['warning']['missingplugin'] = [];
+                }
+                viewer['warning']['missingplugin'].push(ind);
+            }
+        } else if (icon.indexOf("missingelement") !== -1) {
+            if (viewer['warning']['missingelement'] === undefined) {
+                viewer['warning']['missingelement'] = [];
+            }
+            viewer['warning']['missingelement'].push(ind);
+        }
     },
     createEditIndicator: function (viewer, node, callback) {
         DependencyTree.Util.addIndicator(viewer, node, 'fas fa-pencil-alt', get_advtool_msg("dependency.tree.Edit.Properties"), "green", function() {
@@ -211,7 +241,7 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
 
                     node.data['className'] = pluginClassName;
                     if (viewer.pluginList[pluginClassName] !== undefined) {
-                        node.data['value'] = viewer.pluginList[pluginClassName];
+                        node.data['value'] = viewer.pluginList[pluginClassName].label;
                         return true;
                     } else {
                         node.data['value'] = pluginClassName;
@@ -220,7 +250,7 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
                             node.data["indicators"] = [];
                         }
                         
-                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red", null, true);
                     }
                 } else {
                     node.a_attr['class'] += " gray";
@@ -280,6 +310,59 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
             
                     viewer.getPluginProperties(jsonObj['className'], function(properties) {
                         DependencyTree.Util.pluginPropertiesWalker(viewer, pnode, node, jsonObj, getProperties, properties);
+                        
+                        if ((typeof viewer.pluginList[node.data['className']]) !== "undefined") {
+                            var checkpwa = true;
+                            if(pnode.data.isUserviewMenu){
+                                if(jsonObj['properties']['enableOffline'] !== "true") {
+                                    checkpwa = false;
+                                }
+                            }
+
+                            if (checkpwa) {
+                                var pwaOffline = viewer.pluginList[node.data['className']].pwaValidation;
+                                if (pwaOffline === "notSupported") {
+                                    DependencyTree.Util.addIndicator(viewer, node, 'pwaoffline fas fa-wifi', get_advtool_msg("pwa.notSupported"), "red", null, true);
+                                } else if (pwaOffline === "readonly") {
+                                    DependencyTree.Util.addIndicator(viewer, node, 'pwaoffline fas fa-wifi', get_advtool_msg("pwa.readonly"), "yellow", null, true);
+                                } else if (pwaOffline === "checking") {
+                                    var checkPwaDeferred = $.Deferred();
+                                    deferreds.push(checkPwaDeferred);
+                                    
+                                    $.ajax({
+                                        url: viewer.options.contextPath + '/web/property/json/'+viewer.options.appId+'/'+viewer.options.appVersion+"/pwaValidation",
+                                        type: "POST",
+                                        data : {
+                                            className : node.data['className'],
+                                            properties : JSON.stringify(jsonObj['properties'])
+                                        },
+                                        beforeSend: function (request) {
+                                           if (ConnectionManager.tokenName !== undefined) { 
+                                               request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                                           }
+                                        },
+                                        dataType : "json",
+                                        success: function(response) {
+                                            if ($.isArray(response)) {
+                                                for (var r in response) {
+                                                    var color = "red";
+                                                    if (response[r].type === "READONLY") {
+                                                        color = "yellow";
+                                                    }
+                                                    for (var i in response[r].messages) {
+                                                        DependencyTree.Util.addIndicator(viewer, node, 'pwaoffline fas fa-wifi', response[r].messages[i], color, null, true);
+                                                    }
+                                                }
+                                            }
+                                            checkPwaDeferred.resolve();
+                                        },
+                                        error: function() {
+                                            checkPwaDeferred.resolve();
+                                        }
+                                    });
+                                }
+                            }
+                        }
                     }, url);
                 }
                 return false;
@@ -423,7 +506,11 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomLoadBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['loadBinder'] !== undefined && jsonObj['properties']['loadBinder']['className'] !== "" && jsonObj['properties']['loadBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']] + ')');
+                    if ((typeof viewer.pluginList[jsonObj['properties']['loadBinder']['className']]) !== "undefined") {
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']].label + ')');
+                    } else {
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + jsonObj['properties']['loadBinder']['className'] + ')', "red");
+                    }
                 }
                 return false;
             }
@@ -431,7 +518,11 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomStoreBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['storeBinder'] !== undefined && jsonObj['properties']['storeBinder']['className'] !== "" && jsonObj['properties']['storeBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']] + ')');
+                    if ((typeof viewer.pluginList[jsonObj['properties']['storeBinder']['className']]) !== "undefined") {
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']].label + ')');
+                    } else {
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + jsonObj['properties']['storeBinder']['className'] + ')', "red");
+                    }
                 }
                 return false;
             }
@@ -439,7 +530,11 @@ DependencyTree.Matchers['formElement'] = {
         'hasOptionsBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['optionsBinder'] !== undefined && jsonObj['properties']['optionsBinder']['className'] !== "") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']] + ')');
+                    if ((typeof viewer.pluginList[jsonObj['properties']['optionsBinder']['className']]) !== "undefined") {
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']].label + ')');
+                    } else {
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + jsonObj['properties']['optionsBinder']['className'] + ')', "red");
+                    }
                 }
                 return false;
             }
@@ -447,7 +542,11 @@ DependencyTree.Matchers['formElement'] = {
         'hasPostProcessor' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['postProcessor'] !== undefined && jsonObj['properties']['postProcessor']['className'] !== "" && jsonObj['properties']['postProcessor']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']] + ')');
+                    if ((typeof viewer.pluginList[jsonObj['properties']['postProcessor']['className']]) !== "undefined") {
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']].label + ')');
+                    } else {
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + jsonObj['properties']['postProcessor']['className'] + ')', "red");
+                    }
                 }
                 return false;
             }
@@ -462,7 +561,11 @@ DependencyTree.Matchers['formElement'] = {
         'hasValidator' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['validator'] !== undefined && jsonObj['properties']['validator']['className'] !== "") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']] + ')');
+                    if ((typeof viewer.pluginList[jsonObj['properties']['validator']['className']]) !== "undefined") {
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']].label + ')');
+                    } else {
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingplugin fas fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + jsonObj['properties']['validator']['className'] + ')', "red");
+                    }
                 }
                 return false;
             }
@@ -657,11 +760,19 @@ DependencyTree.Matchers['datalist'] = {
                     pnode.children.push(cnode);
                     
                     if (c["action"] !== undefined && c["action"]["className"] !== undefined && c["action"]["className"] !== "") {
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]] + ')');
+                        if ((typeof viewer.pluginList[c["action"]["className"]]) !== "undefined") {
+                            DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]].label + ')');
+                        } else {
+                            DependencyTree.Util.addIndicator(viewer, cnode, 'missingplugin fas fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + c["action"]["className"] + ')', "red");
+                        }
                     }
                     
                     if (c["format"] !== undefined && c["format"]["className"] !== undefined && c["format"]["className"] !== "") {
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]] + ')');
+                        if ((typeof viewer.pluginList[c["format"]["className"]]) !== "undefined") {
+                            DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]].label + ')');
+                        } else {
+                            DependencyTree.Util.addIndicator(viewer, cnode, 'missingplugin fas fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + c["format"]["className"] + ')', "red");
+                        }
                     }
 
                     //properties
@@ -741,10 +852,10 @@ DependencyTree.Matchers['datalist'] = {
                     
                     var pluginClassName = c['className'];
                     if (viewer.pluginList[pluginClassName] !== undefined) {
-                        cnode.data['value'] = viewer.pluginList[pluginClassName];
+                        cnode.data['value'] = viewer.pluginList[pluginClassName].label;
                     } else {
                         cnode.data['value'] = pluginClassName;
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'missingplugin fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red", null, true);
                     }
                     
                     if (c["properties"] !== undefined && c["properties"]["rules"] !== undefined && c["properties"]["rules"].length > 0) {
@@ -801,7 +912,7 @@ DependencyTree.Matchers['datalist'] = {
 DependencyTree.Matchers['hasPermission'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['permission'] !== undefined && jsonObj['properties']['permission']['className'] !== "") {
-            DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']] + ')');
+            DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']].label + ')');
         }
         return false;
     }
@@ -965,7 +1076,7 @@ DependencyTree.Matchers['string'] = {
                         node.data['value'] = viewer.formList[jsonObj];
                         DependencyTree.Util.addIndicator(viewer, node, 'fas fa-file-alt', get_advtool_msg("dependency.tree.Form") + ' (' + viewer.formList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/form/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-file-alt', get_advtool_msg("dependency.tree.Missing.Form"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingelement fas fa-file-alt', get_advtool_msg("dependency.tree.Missing.Form"), "red", null, true);
                     }
                 }
                 return false;
@@ -981,7 +1092,7 @@ DependencyTree.Matchers['string'] = {
                         node.data['value'] = viewer.datalistList[jsonObj];
                         DependencyTree.Util.addIndicator(viewer, node, 'fas fa-table', get_advtool_msg("dependency.tree.Datalist") + ' (' + viewer.datalistList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/datalist/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-table', get_advtool_msg("dependency.tree.Missing.Datalist"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingelement fas fa-table', get_advtool_msg("dependency.tree.Missing.Datalist"), "red", null, true);
                     }
                 }
                 return false;
@@ -997,7 +1108,7 @@ DependencyTree.Matchers['string'] = {
                         node.data['value'] = viewer.userviewList[jsonObj];
                         DependencyTree.Util.addIndicator(viewer, node, 'fas fa-desktop', get_advtool_msg("dependency.tree.Userview") + ' (' + viewer.userviewList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/userview/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-desktop', get_advtool_msg("dependency.tree.Missing.Userview"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'missingelement fas fa-desktop', get_advtool_msg("dependency.tree.Missing.Userview"), "red", null, true);
                     }
                 }
                 return false;
@@ -1017,7 +1128,7 @@ DependencyTree.Matchers['string'] = {
                                     node.data['value'] = viewer.builderList[jsonObj];
                                     DependencyTree.Util.addIndicator(viewer, node, builder.icon, builder.label + ' (' + viewer.builderList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilder/'+builder.value+'/design/' + jsonObj);
                                 } else {
-                                    DependencyTree.Util.addIndicator(viewer, node, builder.icon, builder.label, "red");
+                                    DependencyTree.Util.addIndicator(viewer, node, 'missingelement ' + builder.icon, builder.label, "red", null, true);
                                 }
                             }
                         }
@@ -1148,6 +1259,7 @@ DependencyTree.Viewer = function(element, dataSelector, options) {
     this.pluginProperties = {};
     this.callbacks = [];
     this.isInit = false;
+    this.warning = {};
 };
 DependencyTree.Viewer.prototype = {
     init : function() {
@@ -1157,13 +1269,13 @@ DependencyTree.Viewer.prototype = {
             var pl = $.Deferred();
             deferreds.push(pl);
             $.ajax({
-                url: viewer.options.contextPath + '/web/property/json/getElements?classname=org.joget.plugin.property.model.PropertyEditable&includeHidden=true',
+                url: viewer.options.contextPath + '/web/property/json/getElements?classname=org.joget.plugin.property.model.PropertyEditable&includeHidden=true&pwaValidation=true',
                 dataType : "json",
                 success: function(response) {
                     viewer.pluginList = {};
                     for (var i in response) {
                         if (response[i].value !== "") {
-                            viewer.pluginList[response[i].value] = response[i].label;
+                            viewer.pluginList[response[i].value] = response[i];
                         }
                     }
                     pl.resolve();
@@ -1436,7 +1548,18 @@ DependencyTree.Viewer.prototype = {
             $("#dependencyTreeViewer").jstree('destroy');
             $("#dependencyTreeViewer").html("");
             
-            $('#dependencyTreeViewer').jstree({
+            $('#dependencyTreeViewer').on("refresh.jstree ready.jstree", function(){
+                $(viewer.element).find(".warning.alert").remove();
+                if (viewer['warning']['pwaoffline'] !== undefined && viewer['warning']['pwaoffline'].length > 0) {
+                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("pwa.warning") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['pwaoffline']) + '</span></div>');
+                }
+                if (viewer['warning']['missingplugin'] !== undefined && viewer['warning']['missingplugin'].length > 0) {
+                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("dependency.tree.warning.MissingPlugin") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingplugin']) + '</span></div>');
+                }
+                if (viewer['warning']['missingelement'] !== undefined && viewer['warning']['missingelement'].length > 0) {
+                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("dependency.tree.warning.MissingElement") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingelement']) + '</span></div>');
+                }
+            }).jstree({
                 "types" : {
                     "default" : {
                         "icon" : "fas fa-cube"
@@ -1508,5 +1631,30 @@ DependencyTree.Viewer.prototype = {
         $.when.apply($, deferreds).then(function(){
             callback(viewer.pluginProperties[key]);
         });
+    },
+    buildIndicator : function(inds) {
+        var exist = [];
+        var indicators = "";
+        
+        for (var i in inds) {
+            var ind = inds[i];
+            if (exist.indexOf(ind.color + ':' + ind.icon) === -1) {
+                var color = "";
+                if (ind.color !== undefined && ind.color !== "") {
+                    color = "indicator-" + ind.color;
+                }
+                var slash = "";
+                if (ind.slash) {
+                    slash = '<i class="fas fa-slash fa-stack-1x fa-inverse"></i>';
+                }
+
+                var html = '<a class="indicator '+color+'" >';
+                html += '<span class="fa-stack"><i class="fas fa-circle fa-stack-2x"></i>' + slash + '<i class="' + ind.icon + ' fa-stack-1x fa-inverse"></i></span>';
+                html += '</a>';
+                indicators += html;
+                exist.push(ind.color + ':' + ind.icon);
+            }
+        }
+        return indicators;
     }
 };

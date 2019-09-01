@@ -3,13 +3,22 @@ package org.joget.apps.datalist.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import org.displaytag.util.LookupUtil;
+import org.joget.apps.app.dao.DatalistDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
+import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.form.model.FormRow;
+import org.joget.apps.userview.model.PwaOfflineNotSupported;
+import org.joget.apps.userview.model.PwaOfflineReadonly;
+import org.joget.apps.userview.model.PwaOfflineValidation;
+import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -146,5 +155,76 @@ public class DataListService {
             } catch (Exception e) {}
         }
         return null;
+    }
+    
+    public static boolean pwaOfflineValidation(AppDefinition appDef, String listId, boolean checkAction) {
+        if (listId != null && !listId.isEmpty()) {
+            DataListService dataListService = (DataListService) AppUtil.getApplicationContext().getBean("dataListService");
+            DatalistDefinitionDao datalistDefinitionDao = (DatalistDefinitionDao) AppUtil.getApplicationContext().getBean("datalistDefinitionDao");
+            DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(listId, appDef);
+
+            if (datalistDefinition != null) {
+                return pwaOfflineValidation(dataListService.fromJson(datalistDefinition.getJson()), checkAction);
+            }
+        }
+        return true;
+    }
+    
+    public static boolean pwaOfflineValidation(DataList list, boolean checkAction) {
+        if (list != null) {
+            DataListColumn[] columns = list.getColumns();
+            if (columns != null && columns.length > 0) {
+                for (DataListColumn c : columns) {
+                    Collection<DataListColumnFormat> formats = c.getFormats();
+                    if (formats != null && !formats.isEmpty()) {
+                        for (DataListColumnFormat f : formats) {
+                            if (!pwaOfflineValidation(f)) {
+                                return false;
+                            }
+                        }
+                    }
+                    if (checkAction) {
+                        if (!pwaOfflineValidation(c.getAction())) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            if (checkAction) {
+                DataListAction[] actions = list.getActions();
+                if (actions != null && actions.length > 0) {
+                    for (DataListAction a : actions) {
+                        if (!pwaOfflineValidation(a)) {
+                            return false;
+                        }
+                    }
+                }
+                DataListAction[] rowActions = list.getRowActions();
+                if (rowActions != null && rowActions.length > 0) {
+                    for (DataListAction a : rowActions) {
+                        if (!pwaOfflineValidation(a)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    protected static boolean pwaOfflineValidation(Object o) {
+        if (o != null) {
+            if (o instanceof PwaOfflineNotSupported || o instanceof PwaOfflineReadonly) {
+                return false;
+            } else if (o instanceof PwaOfflineValidation) {
+                Map<WARNING_TYPE, String[]> results = ((PwaOfflineValidation) o).validation();
+                if (results != null) {
+                    if (results.containsKey(WARNING_TYPE.NOT_SUPPORTED) || results.containsKey(WARNING_TYPE.READONLY)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

@@ -445,4 +445,16 @@ public class CachedUserviewMenu extends UserviewMenu {
     public Set<String> getOfflineCacheUrls() {
         return delegate.getOfflineCacheUrls();
     }
+    
+    public String getPwaValidationType() {
+        if (delegate instanceof PwaOfflineValidation) {
+            return "checking";
+        } else if (delegate instanceof PwaOfflineReadonly) {
+            return "readonly";
+        } else if (delegate instanceof PwaOfflineNotSupported) {
+            return "notSupported";
+        } else {
+            return "supported";
+        }
+    }
 }

@@ -57,11 +57,12 @@ UserviewBuilder = {
     },
 
     //Initial Menu Type property options
-    initMenuType : function(category, className, label, icon, propertyOptions, defaultPropertiesValues){
+    initMenuType : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, pwaValidation){
         this.menuTypes[className] = new Object();
         this.menuTypes[className]['label'] = label;
         this.menuTypes[className]['propertyOptions'] = propertyOptions;
         this.menuTypes[className]['properties'] = defaultPropertiesValues;
+        this.menuTypes[className]['pwaValidation'] = pwaValidation;
 
         var iconObj = null;
         if (icon !== undefined && icon !== null && icon !== "") {
@@ -501,6 +502,7 @@ UserviewBuilder = {
             showCancelButton:true,
             changeCheckIgnoreUndefined: true,
             saveCallback: thisObject.saveMenu,
+            customSaveValidation: thisObject.saveMenuValidation,
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
         }
@@ -518,6 +520,60 @@ UserviewBuilder = {
         var label = UI.escapeHTML(properties.label);
         $('#'+id+' .menu-label span').html(label);
         UserviewBuilder.adjustJson();
+    },
+    
+    saveMenuValidation : function(container, properties, saveCallback){
+        if(properties['enableOffline'] === "true") {
+            var thisObject = UserviewBuilder;
+
+            var id = $(container).attr('data-id');
+            var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
+            
+            var pwaOffline = thisObject.menuTypes[menu.className].pwaValidation;
+            if (pwaOffline === "checking") {
+                $(container).find(".ajaxLoader").show();
+                $.ajax({
+                    url: UserviewBuilder.contextPath + '/web/property/json/'+ UserviewBuilder.appId + "/" + UserviewBuilder.appVersion+"/pwaValidation",
+                    type: "POST",
+                    data : {
+                        className : menu.className,
+                        properties : JSON.stringify(properties)
+                    },
+                    beforeSend: function (request) {
+                       if (ConnectionManager.tokenName !== undefined) { 
+                           request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                       }
+                    },
+                    dataType : "json",
+                    success: function(response) {
+                        if ($.isArray(response) && response.length > 0) {
+                            var warning = get_ubuilder_msg("ubuilder.pwa.warning") + "\n";
+                            for (var r in response) {
+                                for (var i in response[r].messages) {
+                                    warning += "- " + response[r].messages[i] + '\n';
+                                }
+                            }
+                            warning += get_ubuilder_msg("ubuilder.pwa.confirm");
+
+                            if (confirm(warning)) {
+                                $(container).find(".ajaxLoader").hide();
+                                saveCallback();
+                            } else {
+                                $(container).find(".property-editor-page-step-indicator:visible .step:last").trigger("click");
+                                $(container).find(".ajaxLoader").hide();
+                            }
+                        } else {
+                            $(container).find(".ajaxLoader").hide();
+                            saveCallback();
+                        }
+                    }
+                });
+            } else {
+                saveCallback();
+            }
+        } else {
+            saveCallback();
+        }
     },
 
     saveMenuFailed : function(container, returnedErrors){
