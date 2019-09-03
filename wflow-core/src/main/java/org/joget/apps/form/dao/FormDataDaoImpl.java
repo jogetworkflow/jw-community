@@ -437,7 +437,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?";
+            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? order by e.dateCreated";
 
             Query q = session.createQuery(processQuery(query));
 
