@@ -252,7 +252,7 @@ public class PluginManager implements ApplicationContextAware {
         if (file.lastModified() > 0) {
             lastModified = new Date(file.lastModified());
         }
-        if (lastCleared.before(lastModified)) {
+        if (lastCleared == null || lastCleared.before(lastModified)) {
             refresh();
         }
     }

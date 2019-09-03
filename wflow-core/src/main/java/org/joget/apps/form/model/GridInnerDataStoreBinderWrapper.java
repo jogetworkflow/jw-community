@@ -115,7 +115,9 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         Set<String> ids = new HashSet<String>();
         if (loadedRows != null && !loadedRows.isEmpty()) {
             for (FormRow r : loadedRows) {
-                ids.add(r.getId());
+                if (r.getId() != null && !r.getId().isEmpty()) {
+                    ids.add(r.getId());
+                }
             }
         }
         
