@@ -113,7 +113,7 @@ var AdminBar = {
     },
     isAdminBarHide: function() {
         var adminBarModeHide =  $.cookie("adminBarModeHide");
-        return adminBarModeHide === "true";
+        return adminBarModeHide === null || adminBarModeHide === "true";
     },
     showQuickEdit: function() {
         $(".analyzer-page").css("display", "inline-block");
