@@ -477,6 +477,8 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         HashMap result = new LinkedHashMap();
 
         try {
+            addTimes(result);
+            
             // Try and load the iTextAsian fonts
             if(ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
                 addCJKFonts(result);
@@ -484,7 +486,6 @@ public class ITextCustomFontResolver extends ITextFontResolver {
             
             addCustomLoadedFonts(result);
             
-            addTimes(result);
             addCourier(result);
             addHelvetica(result);
             addSymbol(result);
