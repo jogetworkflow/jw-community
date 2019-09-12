@@ -359,9 +359,9 @@ public class FormPdfUtil {
         String englishFont = "\"Times\",";
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
         String locale = setupManager.getSettingValue("systemLocale");
-        if (locale.startsWith("zh") || locale.startsWith("hu") 
+        if (locale != null && (locale.startsWith("zh") || locale.startsWith("hu") 
                 || locale.startsWith("ar") || locale.startsWith("th") 
-                || locale.startsWith("ja") || locale.startsWith("ko")) {
+                || locale.startsWith("ja") || locale.startsWith("ko"))) {
             englishFont = "";
         }
         
