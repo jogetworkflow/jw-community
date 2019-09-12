@@ -537,11 +537,17 @@ public class PluginManager implements ApplicationContextAware {
             if (!filename.endsWith(".jar")) {
                 filename += ".jar";
             }
+            
+            boolean isOverrideExisting = false;
 
             // write file
             FileOutputStream out = null;
             try {
                 outputFile = new File(getBaseDirectory(), filename);
+                if (outputFile.exists()) {
+                    isOverrideExisting = true;
+                }
+                
                 File outputDir = outputFile.getParentFile();
                 if (!outputDir.exists()) {
                     outputDir.mkdirs();
@@ -578,15 +584,17 @@ public class PluginManager implements ApplicationContextAware {
             try {
                 jarFile = new JarFile(outputFile);
                 
-                //try uninstall previous version
-                Enumeration<JarEntry> entries = jarFile.entries();
-                while (entries.hasMoreElements()) {
-                    String classLocation = entries.nextElement().getName();
-                    if (classLocation.endsWith(".class")) {
-                        String classname = classLocation.replace(".class", "").replace("/", ".");
-                        if (uninstall(classname, true)){
-                            break;
-                        } 
+                if (!isOverrideExisting) {
+                    //try uninstall previous version
+                    Enumeration<JarEntry> entries = jarFile.entries();
+                    while (entries.hasMoreElements()) {
+                        String classLocation = entries.nextElement().getName();
+                        if (classLocation.endsWith(".class")) {
+                            String classname = classLocation.replace(".class", "").replace("/", ".");
+                            if (uninstall(classname, true)){
+                                break;
+                            } 
+                        }
                     }
                 }
                 
