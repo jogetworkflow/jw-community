@@ -9,6 +9,7 @@ import java.util.Set;
 public interface UserviewPwaTheme extends PwaOfflineResources {
     
     public static final String PWA_OFFLINE_MENU_ID = "pwaoffline";
+    public static final String PAGE_UNAVAILABLE_MENU_ID = "offline";
 
     /**
      * Return the PWA manifest contents for the userview
@@ -43,4 +44,12 @@ public interface UserviewPwaTheme extends PwaOfflineResources {
      * @return 
      */
     String handlePwaOfflinePage(Map<String, Object> data);
+    
+    /**
+     * HTML template to handle PWA unavailable page.
+     * 
+     * @param data
+     * @return 
+     */
+    String handlePwaUnavailablePage(Map<String, Object> data);
 }

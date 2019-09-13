@@ -355,10 +355,13 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 String json = userviewDef.getJson();
                 Userview userview = userviewService.createUserview(appDef, json, null, false, contextPath, null, userviewKey, false);
                 Set<String> cacheUrls = new HashSet<String>();
+                
+                JSONObject returnJson = new JSONObject();
+                
                 try {
                     UserviewTheme theme = userview.getSetting().getTheme();
                     if (theme instanceof UserviewPwaTheme) {
-                        cacheUrls.addAll(getAppStaticResources(appDef));
+                        returnJson.accumulate("static", getAppStaticResources(appDef));
                         
                         Set<String> themeUrls = ((UserviewPwaTheme) theme).getCacheUrls(appId, userviewId, userviewKey);
                         if (themeUrls != null && !themeUrls.isEmpty()) {
@@ -382,14 +385,14 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                         }
                     }
                     
-                    JSONArray arr = new JSONArray(cacheUrls);
-                    return arr.toString();
+                    returnJson.accumulate("app", cacheUrls);
+                    return returnJson.toString();
                 } catch (Exception e) {
                     LogUtil.error(UserviewUtil.class.getName(), e, appId + ":" + userviewId);
                 }
             }
         }
-        return "[]";
+        return "{\"app\":[],\"static\":[]}";
     }
     
     protected static String processUrl(String url, String appId, String userviewId, String userviewKey, String menuId, String contextPath) {

@@ -36,6 +36,7 @@ public class UserviewThemeProcesser {
     boolean isAuthorized = false;
     boolean isLoginPage = false;
     boolean isPwaOfflinePage = false;
+    boolean isPwaUnavailablePage = false;
     boolean isQuickEditEnabled = AppUtil.isQuickEditEnabled();
 
     public UserviewThemeProcesser(Userview userview, HttpServletRequest request) {
@@ -92,6 +93,15 @@ public class UserviewThemeProcesser {
             String menuId = request.getParameter("menuId");
             if(UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(menuId)){
                 isPwaOfflinePage = true;
+                return "ubuilder/v5view";
+            }
+        }
+        
+        //check if it's PWA theme page unavailable page
+        if(theme instanceof UserviewPwaTheme){
+            String menuId = request.getParameter("menuId");
+            if(UserviewPwaTheme.PAGE_UNAVAILABLE_MENU_ID.equals(menuId)){
+                isPwaUnavailablePage = true;
                 return "ubuilder/v5view";
             }
         }
@@ -603,7 +613,10 @@ public class UserviewThemeProcesser {
             if(isPwaOfflinePage){
                 UserviewPwaTheme pwaTheme = (UserviewPwaTheme) theme;
                 return pwaTheme.handlePwaOfflinePage(data);
-            }if (isLoginPage) {
+            }else if(isPwaUnavailablePage){
+                UserviewPwaTheme pwaTheme = (UserviewPwaTheme) theme;
+                return pwaTheme.handlePwaUnavailablePage(data);
+            }else if (isLoginPage) {
                 return getLoginForm(data);
             } else if (!isAuthorized) {
                 return "<h3>"+ResourceBundleUtil.getMessage("ubuilder.noAuthorize")+"</h3>";

@@ -588,6 +588,3 @@ body.fixiosframe.stop-scrolling {
         height: calc(100% - 49px);
     }
 }
-.peek-a-bar{
-    z-index: 100000049
-}

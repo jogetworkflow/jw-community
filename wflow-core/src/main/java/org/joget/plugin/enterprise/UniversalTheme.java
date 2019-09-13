@@ -271,6 +271,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         Object[] arguments = new Object[]{
             request.getContextPath(),
+            userviewId,
             urlsToCache
         };
         
@@ -329,6 +330,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                     key = Userview.USERVIEW_KEY_EMPTY_VALUE;
                 }
                 
+                boolean isEmbedded = false;
+                if(data.get("embed") != null){
+                    isEmbedded = (Boolean) data.get("embed");
+                };
+                
                 String pwaOnlineNotificationMessage = ResourceBundleUtil.getMessage("pwa.onlineNow");
                 String pwaOfflineNotificationMessage = ResourceBundleUtil.getMessage("pwa.offlineNow");
                 String pwaLoginPromptMessage = ResourceBundleUtil.getMessage("pwa.loginPrompt");
@@ -352,6 +358,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         + "PwaUtil.syncingMessage = '" + pwaSyncingMessage + "';"
                         + "PwaUtil.syncFailedMessage = '" + pwaSyncFailedMessage + "';"
                         + "PwaUtil.syncSuccessMessage = '" + pwaSyncSuccessMessage + "';"
+                        + "PwaUtil.isEmbedded = " + isEmbedded + ";"
                         + "PwaUtil.register();"
                         + "PwaUtil.init();"
                         + "});</script>";
@@ -856,7 +863,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>";
         } else if (INBOX.equals(userview.getParamString("menuId"))) {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.inbox") + "</a></li>";
-            } else if (UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(userview.getParamString("menuId"))) {
+        } else if (UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(userview.getParamString("menuId")) || UserviewPwaTheme.PAGE_UNAVAILABLE_MENU_ID.equals(userview.getParamString("menuId"))) {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("pwa.offline.breadcrumbTitle") + "</a></li>";
         } else {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("ubuilder.pageNotFound") + "</a></li>";
@@ -1002,5 +1009,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String handlePwaOfflinePage(Map<String, Object> data) {
         return UserviewUtil.getTemplate(this, data, "/templates/userview/pwaOffline.ftl");
+    }
+
+    @Override
+    public String handlePwaUnavailablePage(Map<String, Object> data) {
+        return UserviewUtil.getTemplate(this, data, "/templates/userview/pwaUnavailable.ftl");
     }
 }

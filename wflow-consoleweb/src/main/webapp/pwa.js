@@ -26,13 +26,15 @@ PwaUtil = {
     
     syncSuccessMessage: '',
     
+    isEmbedded: false,
+    
     isOnline: null,
     greenColor: '#3c763d',
     redColor: '#a94442',
     darkColor : '#2d2d2d',
     
     init: function () {
-        if (!navigator.serviceWorker) {
+        if (!navigator.serviceWorker || PwaUtil.isEmbedded) {
             return;
         }
         
@@ -49,6 +51,10 @@ PwaUtil = {
 
             $("form").submit(function(e){
                 var formData = $(this).serializeObject();
+                
+                var $submitButton = $('input[type=submit][clicked=true]');
+                formData[$submitButton.attr('name')] = $submitButton.val();
+                $('input[type=submit]').removeAttr("clicked");
 
                 $('form input[type=file]').each(function(i, elm){
                     var $elm = $(elm);
@@ -71,7 +77,12 @@ PwaUtil = {
                     formUserviewAppId: UI.userview_app_id,
                     formUsername: PwaUtil.currentUsername
                 }
-                navigator.serviceWorker.controller.postMessage(msg);
+                navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
+            });
+            
+            $('form input[type=submit]').click(function() {
+                $('input[type=submit]', $(this).parents('form')).removeAttr('clicked');
+                $(this).attr('clicked', 'true');
             });
 
             navigator.serviceWorker.addEventListener('message', function(event) {
@@ -96,7 +107,7 @@ PwaUtil = {
     },
     
     showToast: function(message, bgColor, textColor) {
-        $.toast({
+        !PwaUtil.isEmbedded && $.toast({
             text: message,
             position: 'bottom-left',
             bgColor: bgColor,
@@ -104,13 +115,9 @@ PwaUtil = {
             //loader: false
         })
     },
-    
-    fetchInitialCache: function(){
-        
-    },
 
     register: function () {
-        if (navigator.serviceWorker) {
+        if (navigator.serviceWorker && !PwaUtil.isEmbedded) {
             function indexesOf(string, substring){
                 var a=[], i=-1;
                 while((i=string.indexOf(substring,i+1)) >= 0) a.push(i);
@@ -149,7 +156,7 @@ PwaUtil = {
                             
                             console.log('Service worker successfully registered and activated.');
                             
-                            navigator.serviceWorker.controller.postMessage({
+                            navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
                                 userviewKey: PwaUtil.userviewKey
                             });
                             
@@ -233,6 +240,10 @@ PwaUtil = {
     },
 
     showOfflineIndicator: function () {
+        if(PwaUtil.isEmbedded){
+            return;
+        }
+        
         var $offlineIndicator = $('#offlineIndicator');
         if($offlineIndicator.length === 0){
             var html = '<div id="offlineIndicator" style="display: none; position: fixed; bottom: 60px; right: 10px; background: #009688; color: white; padding: 10px; box-shadow: #666 1px 1px 2px 1px; border-radius: 50%; z-index: 100000050; cursor: pointer;width: 20px; text-align: center; box-sizing: content-box;">'
@@ -253,7 +264,7 @@ PwaUtil = {
             if(PwaUtil.isOnline === false){
                 PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
                 
-                navigator.serviceWorker.controller.postMessage({
+                navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
                     sync: true
                 });
             }

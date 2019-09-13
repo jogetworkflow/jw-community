@@ -25,12 +25,13 @@
 <script>
     $(document).ready(function(){
         var formDb;
-        var FORM_DB_STORE_NAME = 'post_requests';
+        var DB_NAME = 'joget';
+        var FORM_DB_STORE_NAME = '${userview.properties.id}_post';
 
         var savedRequestsCache = {};
 
         function openDatabase() {
-            var indexedDBOpenRequest = indexedDB.open('joget_form');
+            var indexedDBOpenRequest = indexedDB.open(DB_NAME);
 
             indexedDBOpenRequest.onerror = function (error) {
                 console.error('IndexedDB error:', error);

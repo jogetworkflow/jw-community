@@ -1,8 +1,9 @@
 var version = "7.0.0";
 var cacheName = "jw-cache";
-var cache = cacheName + "-" + version;
 var contextPath = '%s';
+var userviewId = '%s';
 var userviewKey = '_';
+var cache = userviewId + "-" + version;
 var urlsToCache = [
     contextPath + '/css/v7.css',
     contextPath + '/css/console_custom.css',
@@ -27,13 +28,13 @@ var formPageTitle = null;
 var formData = null;
 var formDb = null;
 
-var FORM_DB_NAME       = 'joget_form';
-var FORM_DB_STORE_NAME = 'post_requests';
-var STATUS_PENDING     = 0;
-var STATUS_SUCCESS     = 1;
-var STATUS_FAILED      = 2;
-var STATUS_FORM_ERROR  = 3;
-
+var FORM_DB_NAME         = 'joget';
+var FORM_DB_STORE_NAME   = userviewId + '_post';
+var SYSTEM_DB_STORE_NAME = 'system';
+var STATUS_PENDING       = 0;
+var STATUS_SUCCESS       = 1;
+var STATUS_FAILED        = 2;
+var STATUS_FORM_ERROR    = 3;
 
 function cacheUserview(){
     //const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
@@ -48,8 +49,13 @@ function cacheUserview(){
             return;
         }
         response.json().then(function(data) {
+            data = data.app;
+            
             caches.open(cache)
             .then(function (cache) {
+                var promises = [];
+        
+                /*
                 return Promise.all(
                     //cache one by one to prevent duplicate url causing DOMexception
                     data.map(function(url) {
@@ -68,6 +74,48 @@ function cacheUserview(){
                 ).then(function() {
                     console.log("URLs retrieved from API cached");
                 });
+                */
+                
+                /*
+                manually fetch "self.registration.scope" 
+                and store the response generated from res.body to cache
+                because of "a redirected response was used for a request whose redirect mode is not "follow"."
+                when navigating back from offline page
+                */
+                promises.push(
+                    fetch(self.registration.scope)
+                        .then(response => cache.put(self.registration.scope, new Response(response.body)))
+                        .catch(function(error){
+                            console.log('error caching userview home', error, error.message);
+                        })
+                );
+                
+                data.push(self.registration.scope + '/_/pwaoffline');
+                data.push(self.registration.scope + '/_/offline');
+               
+                promises.push(
+                    //cache one by one to prevent duplicate url causing DOMexception
+                    data.map(function(url) {
+                        return caches.match(url).then(function(checkCache){
+                            if(checkCache === undefined){
+                                cache.addAll([url]).then(function() {
+                                    //console.log(url + " cached");
+                                }).catch(function(err) {
+                                    //ignore
+                                });
+                            }else{
+                                //console.log(url + ' already exists in cache');
+                            }
+                        })
+                    })
+                )
+                
+                return Promise.all(promises).then(function() {
+                    console.log("URLs retrieved from API cached");
+                });
+            })
+            .catch(function(error){
+                console.log('error caching', error, error.message);
             });
         });
     })
@@ -78,11 +126,10 @@ function cacheUserview(){
 
 self.addEventListener('install', function (event) {
     console.log('SW install event');
+    self.skipWaiting();
     event.waitUntil(
-            caches.open(cache)
+        caches.open(cache)
             .then(function (cache) {
-                self.skipWaiting();
-
                 var promises = [];
 
                 /*
@@ -94,19 +141,33 @@ self.addEventListener('install', function (event) {
                 promises.push(
                     fetch(self.registration.scope)
                         .then(response => cache.put(self.registration.scope, new Response(response.body)))
+                        .catch(function(error){
+                            console.log('error caching userview home', error, error.message);
+                        })
                 );
 
                 urlsToCache.push(self.registration.scope + '/_/pwaoffline');
                 urlsToCache.push(self.registration.scope + '/_/offline');
                 promises.push(
-                    cache.addAll(urlsToCache).then(function() {
-                        console.log("URLs cached");
+                    //cache one by one to prevent duplicate url causing DOMexception
+                    urlsToCache.map(function(url) {
+                        return caches.match(url).then(function(checkCache){
+                            if(checkCache === undefined){
+                                cache.addAll([url]).then(function() {
+                                    //console.log(url + " cached");
+                                }).catch(function(err) {
+                                    //ignore
+                                });
+                            }else{
+                                //console.log(url + ' already exists in cache');
+                            }
+                        })
                     })
                 );
 
                 return Promise.all(promises);
             })
-        );
+    );
 });
 
 self.addEventListener('fetch', function (event) {
@@ -386,7 +447,6 @@ function sendFormDataToServer(savedRequest){
             .then(function(json){
                 var requestUrl = replaceUrlParam(savedRequest.url, 'OWASP_CSRFTOKEN', json.tokenValue);
                 var payload = savedRequest.payload;
-                payload.submit = 'Save';
 
                 var method = savedRequest.method;
 
@@ -398,7 +458,7 @@ function sendFormDataToServer(savedRequest){
                             || payload[key] instanceof File){
                         //check if {key}_path exists
                         if(payload[key + '_path'] !== undefined){
-                            keysToIgnore.push(key);
+                            keysToIgnore.push(key + '_path');
                         }
                     }else{
                     }
@@ -560,7 +620,7 @@ function processStoredFormData() {
                                         type: 'syncFailed'
                                     })
                                 }else{
-                                    if(promises > 0){
+                                    if(promises.length > 0){
                                         //show syncSuccess notification
                                         postMessageToClients({
                                             type: 'syncSuccess'
