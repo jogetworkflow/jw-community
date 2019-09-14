@@ -563,6 +563,7 @@ body .chosen-container .chosen-results li.highlighted {
 body .chosen-container .chosen-search input{
     min-width: auto !important;
     max-width: none !important;
+    float:none;
 }
 body .chosen-container-single .chosen-single{
     border-color: #e6e6e6;
