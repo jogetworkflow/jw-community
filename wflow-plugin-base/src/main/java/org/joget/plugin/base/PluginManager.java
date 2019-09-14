@@ -1333,6 +1333,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.app.model.HashVariablePlugin", ResourceBundleUtil.getMessage("setting.plugin.hashVariable"));
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", ResourceBundleUtil.getMessage("setting.plugin.processParticipant"));
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", ResourceBundleUtil.getMessage("setting.plugin.processTool"));
+        pluginTypeMap.put("org.joget.apps.app.model.ProcessFormModifier", ResourceBundleUtil.getMessage("setting.plugin.processFormModifier"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewMenu", ResourceBundleUtil.getMessage("setting.plugin.userviewMenu"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewPermission", ResourceBundleUtil.getMessage("setting.plugin.userviewPermission"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewTheme", ResourceBundleUtil.getMessage("setting.plugin.userviewTheme"));

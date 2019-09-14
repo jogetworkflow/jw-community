@@ -24,6 +24,7 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="pbuilder.label.designProcess"/></button></li>
+            <li><button id="launchMapper" onclick="launchMapper()"><fmt:message key="console.process.config.label.mapFromFlow"/></button></li>
             <li><button id="uploadPackage" onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
             <li><button id="runProcess" onclick="runProcess()"><fmt:message key="console.process.config.label.startProcess"/></button></li>
         </ul>
@@ -62,7 +63,6 @@
                 <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="general.method.label.showAdditionalInfo"/></a>
                 <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="general.method.label.hideAdditionalInfo"/></a>
             </div>
-            <div class="form-buttons"><a class="smallbutton" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/mapper?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>" target="_blank"><fmt:message key="console.process.config.label.mapFromFlow"/></a></div>
             <div id="processTabView" style="min-height: 200px">
                 <ul>
                     <li class="selected"><a href="#participantList"><span><fmt:message key="console.process.config.label.mapParticipants"/></span></a></li>
@@ -299,6 +299,28 @@
                                                 </c:if>
                                                 <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('<c:out value="${processIdWithoutVersion}"/>','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
                                             </dl>
+                                            <c:if test="${activity.id ne 'runProcess' && !(!empty activityForm && activityForm.type == 'EXTERNAL') && fn:length(modifierPluginMap) > 0}">
+                                                <dl>
+                                                    <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                                    <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
+                                                    <c:if test="${plugin ne null && !empty pluginInfo}">
+                                                        <dt>&nbsp;</dt>
+                                                        <dd>${pluginInfo}&nbsp;</dd>
+                                                    </c:if>
+                                                    <dt>&nbsp;</dt>
+                                                    <c:choose>
+                                                        <c:when test="${plugin ne null}">
+                                                            <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                        </c:when>
+                                                        <c:when test="${!empty modifierPlugin}">
+                                                            <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>', '<ui:escape value="${modifierPlugin}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <dd><a onclick="addActivityFormPlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </dl>
+                                            </c:if>
                                         </div>
                                     </div>
                                 </div>
@@ -667,6 +689,10 @@
                     $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
                     window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>");
                 }
+                
+                function launchMapper(){
+                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/mapper?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>");
+                }
 
                 function launchFormBuilder(formId) {
                     window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/" + formId);
@@ -698,6 +724,11 @@
                     popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + encodeURIComponent(participantName);
                     popupDialog.init();
                 }
+                
+                function addActivityFormPlugin(activityId, activityName){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activityForm/" + escape(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
+                    popupDialog.init();
+                }
 
                 function activityRemoveForm(activityId){
                     if (confirm("<fmt:message key="console.process.config.label.mapActivities.removeMapping.confirm"/>")) {
@@ -724,6 +755,16 @@
                 function routeConfigurePlugin(activityId, activityName){
                     var title = " - " + activityName + " (" + activityId + ")";
                     popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/route/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=routeList";
+                    popupDialog.init();
+                }
+                
+                function activityFormConfigurePlugin(activityId, activityName, modifierPlugin){
+                    var title = " - " + activityName + " (" + activityId + ")";
+                    var className = "";
+                    if (modifierPlugin) {
+                        className = "&pluginname=" + encodeURIComponent(modifierPlugin);
+                    }
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activityForm/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=activityList" + className;
                     popupDialog.init();
                 }
 

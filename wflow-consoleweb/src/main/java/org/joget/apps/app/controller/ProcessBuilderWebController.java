@@ -25,6 +25,7 @@ import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
+import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
@@ -161,6 +162,12 @@ public class ProcessBuilderWebController {
             }
             jsonObject.put("participants", participants);
             jsonObject.put("packageVersion", packageDefinition.getVersion().toString());
+            
+            Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
+            jsonObject.put("modifierPluginCount", modifierPluginMap.size());
+            if (modifierPluginMap.size() == 1) {
+                jsonObject.put("modifierPlugin", modifierPluginMap.keySet().iterator().next());
+            }
         }
         AppUtil.writeJson(writer, jsonObject, callback);
     }
@@ -185,6 +192,13 @@ public class ProcessBuilderWebController {
                 PackageActivityForm form = packageDefinition.getPackageActivityForm(processDefId, id);
                 if (form != null) {
                     populateActivityForm(jsonObject, form, appDef, formsMap);
+                }
+                PackageActivityPlugin plugin = packageDefinition.getPackageActivityPlugin(processDefId, id);
+                if (plugin != null) {
+                    Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
+                    JSONObject modifierObject = new JSONObject();
+                    populateActivityPlugin(modifierObject, plugin, pluginsMap);
+                    jsonObject.put("modifier", modifierObject);
                 }
             } else {
                 Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
@@ -234,7 +248,7 @@ public class ProcessBuilderWebController {
             o.put("pluginVersion", pluginsMap.get(p.getPluginName()).getVersion());
             
             Plugin plugin = pluginsMap.get(p.getPluginName());
-            if (plugin instanceof ProcessMappingInfo) {
+            if (plugin instanceof ProcessMappingInfo && p.getPluginProperties() != null) {
                 Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, p.getPluginProperties(), AppUtil.getCurrentAppDefinition(), null);
                 if (plugin instanceof PropertyEditable) {
                     ((PropertyEditable) plugin).setProperties(propertiesMap);

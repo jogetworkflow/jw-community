@@ -45,11 +45,13 @@ import org.hibernate.tool.hbm2ddl.ImportSqlCommandExtractor;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.FormContainer;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -1251,31 +1253,48 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (columnList == null) {
             LogUtil.debug("", "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
-            if (formList != null && !formList.isEmpty()) {
-                for (FormDefinition formDef : formList) {
-                    // get JSON
-                    String json = formDef.getJson();
-                    if (json != null) {
-                        try {
-                            Form form = (Form) getFormService().createElementFromJson(json, false);
-                            Collection<String> tempColumnList = new HashSet<String>();
-                            findAllElementIds(form, tempColumnList);
+            Set<String> customTableColumns = CustomFormDataTableUtil.getColumns(appDef, tableName);
+            if ((formList != null && !formList.isEmpty()) || (customTableColumns != null && !customTableColumns.isEmpty())) {
+                if (formList != null && !formList.isEmpty()) {
+                    for (FormDefinition formDef : formList) {
+                        // get JSON
+                        String json = formDef.getJson();
+                        if (json != null) {
+                            try {
+                                Form form = (Form) getFormService().createElementFromJson(json, false);
+                                Collection<String> tempColumnList = new HashSet<String>();
+                                findAllElementIds(form, tempColumnList);
 
-                            LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
-                            for (String c : tempColumnList) {
-                                if (!c.isEmpty()) {
-                                    String exist = checkDuplicateMap.get(c.toLowerCase());
-                                    if (exist != null && !exist.equals(c)) {
-                                        LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                        columnList.remove(exist);
+                                LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                                for (String c : tempColumnList) {
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
+                                        columnList.add(c);
                                     }
-                                    checkDuplicateMap.put(c.toLowerCase(), c);
-                                    columnList.add(c);
                                 }
+                            } catch (Exception e) {
+                                LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
                             }
-                        } catch (Exception e) {
-                            LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
+                        }
+                    }
+                }
+                if (customTableColumns != null && !customTableColumns.isEmpty()) {
+                    for (String c : customTableColumns) {
+                        if (!c.isEmpty()) {
+                            String exist = checkDuplicateMap.get(c.toLowerCase());
+                            if (exist != null && !exist.equals(c)) {
+                                LogUtil.warn("", "Detected duplicated column in table \"" + tableName + "\" [" + appDef.getAppId() + " v" + appDef.getVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                columnList.remove(exist);
+                            }
+                            checkDuplicateMap.put(c.toLowerCase(), c);
+                            columnList.add(c);
                         }
                     }
                 }

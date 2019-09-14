@@ -57,6 +57,7 @@ import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.LinkButton;
@@ -88,7 +89,9 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowPackage;
@@ -330,35 +333,37 @@ public class AppServiceImpl implements AppService {
         formData.setProcessId(processId);
         formData.setPrimaryKeyValue(originProcessId);
         
-        Form form = retrieveForm(appDef, activityForm, formData, assignment);
-        if (form == null) {
-            form = createDefaultForm(processId, formData);
-        }
-
-        // set action URL
-        form.setProperty("url", formUrl);
-
+        Collection<FormAction> formActions = new ArrayList<FormAction>();
         // decorate form with actions
         if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty() && !activityForm.getDisableSaveAsDraft()) {
             Element saveButton = (Element) pluginManager.getPlugin(SaveAsDraftButton.class.getName());
             saveButton.setProperty(FormUtil.PROPERTY_ID, "saveAsDraft");
             saveButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.saveAsDraft"));
-            form.addAction((FormAction) saveButton);
+            formActions.add((FormAction) saveButton);
         }
         Element completeButton = (Element) pluginManager.getPlugin(AssignmentCompleteButton.class.getName());
         completeButton.setProperty(FormUtil.PROPERTY_ID, AssignmentCompleteButton.DEFAULT_ID);
         completeButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.complete"));
-        form.addAction((FormAction) completeButton);
+        formActions.add((FormAction) completeButton);
         if (cancelUrl != null && !cancelUrl.isEmpty()) {
             Element cancelButton = (Element) pluginManager.getPlugin(LinkButton.class.getName());
             cancelButton.setProperty(FormUtil.PROPERTY_ID, "cancel");
             cancelButton.setProperty("label", ResourceBundleUtil.getMessage("general.method.label.cancel"));
             cancelButton.setProperty("url", cancelUrl);
             cancelButton.setProperty("cssClass", cancelButton.getPropertyString("cssClass") + " btn-secondary");
-            form.addAction((FormAction) cancelButton);
+            formActions.add((FormAction) cancelButton);
         }
-        form = decorateFormActions(form);
+        
+        Form form = retrieveForm(appDef, activityForm, formData, assignment, formActions);
+        if (form == null) {
+            form = createDefaultForm(processId, formData);
+            form.getActions().addAll(formActions);
+        }
 
+        // set action URL
+        form.setProperty("url", formUrl);
+        form = decorateFormActions(form);
+        
         // set to definition
         if (activityForm == null) {
             activityForm = new PackageActivityForm();
@@ -379,6 +384,26 @@ public class AppServiceImpl implements AppService {
         }        
         
         return activityForm;
+    }
+    
+    public void executeProcessFormModifier(Form form, FormData formData, WorkflowAssignment assignment, AppDefinition appDef) {
+        if (assignment != null) {
+            String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            if (packageDef != null) {
+                PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, assignment.getActivityDefId());
+                if (actPlugin != null) {
+                    Plugin plugin = pluginManager.getPlugin(actPlugin.getPluginName());
+                    if (plugin != null && plugin instanceof ProcessFormModifier) {
+                        Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, actPlugin.getPluginProperties(), appDef, assignment);
+                        if (plugin instanceof PropertyEditable) {
+                            ((PropertyEditable) plugin).setProperties(propertiesMap);
+                        }
+                        ((ProcessFormModifier) plugin).modify(form, formData, assignment);
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -421,13 +446,15 @@ public class AppServiceImpl implements AppService {
 
         Map<String, String> errors = formData.getFormErrors();
         if (!formData.getStay() && (errors == null || errors.isEmpty())) {
-            // accept assignment if necessary
-            if (!assignment.isAccepted()) {
-                workflowManager.assignmentAccept(activityId);
+            if (!executeProcessFormModifierSubmission(form, formData, assignment, AppUtil.getCurrentAppDefinition())) {
+                // accept assignment if necessary
+                if (!assignment.isAccepted()) {
+                    workflowManager.assignmentAccept(activityId);
+                }
+
+                // complete assignment
+                workflowManager.assignmentComplete(activityId, workflowVariableMap);
             }
-            
-            // complete assignment
-            workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
         return formData;
     }
@@ -452,7 +479,9 @@ public class AppServiceImpl implements AppService {
         String processId = assignment.getProcessId();
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
-
+        Form form = null;
+        AppDefinition appDef = null;
+        
         // get and submit mapped form
         PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
         if (paf != null) {
@@ -462,8 +491,8 @@ public class AppServiceImpl implements AppService {
                 formData.setPrimaryKeyValue(originProcessId);
                 formData.setProcessId(processId);
                 
-                AppDefinition appDef = getAppDefinition(appId, version);
-                Form form = retrieveForm(appDef, paf, formData, assignment);
+                appDef = getAppDefinition(appId, version);
+                form = retrieveForm(appDef, paf, formData, assignment, null);
                 
                 String originId = form.getPrimaryKeyValue(formData);
                 boolean hasExistingRecord = true;
@@ -484,15 +513,38 @@ public class AppServiceImpl implements AppService {
 
         Map<String, String> errors = formData.getFormErrors();
         if (!formData.getStay() && (errors == null || errors.isEmpty())) {
-            // accept assignment if necessary
-            if (!assignment.isAccepted()) {
-                workflowManager.assignmentAccept(activityId);
+            if (!executeProcessFormModifierSubmission(form, formData, assignment, appDef)) {
+                // accept assignment if necessary
+                if (!assignment.isAccepted()) {
+                    workflowManager.assignmentAccept(activityId);
+                }
+
+                // complete assignment
+                workflowManager.assignmentComplete(activityId, workflowVariableMap);
             }
-        
-            // complete assignment
-            workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
         return formData;
+    }
+    
+    public boolean executeProcessFormModifierSubmission(Form form, FormData formData, WorkflowAssignment assignment, AppDefinition appDef) {
+        if (form != null && assignment != null && appDef != null) {
+            String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            if (packageDef != null) {
+                PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, assignment.getActivityDefId());
+                if (actPlugin != null) {
+                    Plugin plugin = pluginManager.getPlugin(actPlugin.getPluginName());
+                    if (plugin != null && plugin instanceof ProcessFormModifier) {
+                        Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, actPlugin.getPluginProperties(), appDef, assignment);
+                        if (plugin instanceof PropertyEditable) {
+                            ((PropertyEditable) plugin).setProperties(propertiesMap);
+                        }
+                        return ((ProcessFormModifier) plugin).customSubmissionHandling(form, formData, assignment);
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -511,7 +563,7 @@ public class AppServiceImpl implements AppService {
         if (startFormDef != null) {
             if (startFormDef.getFormId() != null && !startFormDef.getFormId().isEmpty()) {
                 // get mapped form
-                Form startForm = retrieveForm(appDef, startFormDef, formData, null);
+                Form startForm = retrieveForm(appDef, startFormDef, formData, null, null);
                 if (startForm != null) {
                     // set action URL
                     startForm.setProperty("url", formUrl);
@@ -697,7 +749,7 @@ public class AppServiceImpl implements AppService {
         return formDef;
     }
 
-    protected Form retrieveForm(AppDefinition appDef, PackageActivityForm activityForm, FormData formData, WorkflowAssignment wfAssignment) {
+    protected Form retrieveForm(AppDefinition appDef, PackageActivityForm activityForm, FormData formData, WorkflowAssignment wfAssignment, Collection<FormAction> formActions) {
         Form form = null;
         if (appDef != null && activityForm != null) {
             String formId = activityForm.getFormId();
@@ -705,6 +757,12 @@ public class AppServiceImpl implements AppService {
                 // retrieve form HTML
                 form = loadFormByFormDefId(appDef.getId(), appDef.getVersion().toString(), formId, formData, wfAssignment);
             }
+        }
+        if (form != null) {
+            if (formActions != null) {
+                form.getActions().addAll(formActions);
+            }
+            executeProcessFormModifier(form, formData, wfAssignment, appDef);
         }
         return form;
     }

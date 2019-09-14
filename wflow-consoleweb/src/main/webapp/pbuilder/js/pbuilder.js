@@ -4270,6 +4270,9 @@ ProcessBuilder.Mapper = {
                 if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId] !== undefined) {
                     mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
                 }
+                if (mapping !== null && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
+                    mapping['modifier'] = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
+                }
             } else if ($(this).hasClass("tool")) {
                 type = "tool";
                 if (ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
@@ -4366,6 +4369,11 @@ ProcessBuilder.Mapper = {
         $("body").on("click", ".mapping_detail .remove_single", function(){
             ProcessBuilder.Mapper.removeSingleMapping($(this).closest(".mapping_detail").data("parent"), $(this));
         });
+        
+        $("body").off("click", ".mapping_detail .more_setting");
+        $("body").on("click", ".mapping_detail .more_setting", function(){
+            ProcessBuilder.Mapper.moreSetting($(this).closest(".mapping_detail").data("parent"), $(this));
+        });
     },
     attachDetail : function (node) {
         var type = $(node).find(".edit_mapping").attr("type");
@@ -4442,6 +4450,27 @@ ProcessBuilder.Mapper = {
             tick = "far fa-check-square";
         }
         $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
+        if (mapping !== null && mapping !== undefined && mapping['type'] !== "EXTERNAL" 
+                && mapping['formId'] !== undefined && $(node).find(".edit_mapping").attr("type") !== "start"
+                && ProcessBuilder.Mapper.mappingData["modifierPluginCount"] > 0) {
+            var id = $(node).find(".edit_mapping").attr("nodeid");
+            var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
+            var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
+            url += "/activityForm/" + escape(id) + "/plugin";
+            var title = $(node).find(".node_label").text();
+            
+            if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
+                if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
+                    $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
+                }
+                url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
+            } else if ((typeof ProcessBuilder.Mapper.mappingData["modifierPlugin"]) !== "undefined") {
+                url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["modifierPlugin"]);
+            } else {
+                url += "?activityName=" + encodeURIComponent(title);
+            }
+            $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
+        }
     },
     attachPluginDetail : function(node, mapping) {
         if (mapping !== undefined) { 
@@ -4538,6 +4567,17 @@ ProcessBuilder.Mapper = {
         };
        
         ProcessBuilder.ApiClient.httpPost(url, reload);
+    },
+    moreSetting : function(node, link) {
+        if ($(".tooltipstered").length > 0) {
+            $(".tooltipstered").tooltipster("close");
+        }
+            
+        $(".currentedit").removeClass("currentedit");
+        $(node).find(".edit_mapping").addClass("currentedit");
+        
+        ProcessBuilder.Mapper.popupDialog.src = $(link).data('url');
+        ProcessBuilder.Mapper.popupDialog.init();
     },
     removeSingleMapping : function (node, valueRemoveLink) {
         var id = $(node).find(".edit_mapping").attr("nodeid");

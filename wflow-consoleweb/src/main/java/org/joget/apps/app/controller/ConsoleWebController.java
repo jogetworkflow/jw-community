@@ -54,6 +54,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessMappingInfo;
+import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppResourceUtil;
@@ -1912,7 +1913,7 @@ public class ConsoleWebController {
             Plugin plugin = pluginManager.getPlugin(pluginName);
             pluginMap.put(activityDefId, plugin);
             
-            if (plugin instanceof ProcessMappingInfo) {
+            if (plugin instanceof ProcessMappingInfo && pap.getPluginProperties() != null) {
                 Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, pap.getPluginProperties(), appDef, null);
                 if (plugin instanceof PropertyEditable) {
                     ((PropertyEditable) plugin).setProperties(propertiesMap);
@@ -1955,6 +1956,9 @@ public class ConsoleWebController {
 
         // get participant plugin map
         Map<String, Plugin> participantPluginMap = pluginManager.loadPluginMap(ParticipantPlugin.class);
+        
+        // get process form modifier plugin map
+        Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
 
         String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         map.addAttribute("processList", processList);
@@ -1964,6 +1968,10 @@ public class ConsoleWebController {
         map.addAttribute("pluginMap", pluginMap);
         map.addAttribute("pluginInfoMap", infoMap);
         map.addAttribute("participantPluginMap", participantPluginMap);
+        map.addAttribute("modifierPluginMap", modifierPluginMap);
+        if (modifierPluginMap.size() == 1) {
+            map.addAttribute("modifierPlugin", modifierPluginMap.keySet().iterator().next());
+        }
         map.addAttribute("activityFormMap", activityFormMap);
         map.addAttribute("formMap", formMap);
         map.addAttribute("variableList", variableList);
@@ -2195,6 +2203,22 @@ public class ConsoleWebController {
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
         return "console/apps/routePluginAdd";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activityForm/(*:activityDefId)/plugin")
+    public String consoleActivityFormPlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        WorkflowProcess process = workflowManager.getProcess(processDefId);
+        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
+        map.addAttribute("process", process);
+        map.addAttribute("activity", activity);
+        map.addAttribute("activityDefId", activityDefId);
+        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        return "console/apps/activityFormPluginAdd";
+    }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/(*:activityType)/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
     public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityType, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
@@ -2294,10 +2318,21 @@ public class ConsoleWebController {
             }
             map.addAttribute("actionUrl", url);
             
-            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
-            map.addAttribute("cancelUrl", cancelUrl);
+            boolean showCancel = true;
             
-            map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
+            if ("activityForm".equalsIgnoreCase(activityType)) {
+                Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
+                if (modifierPluginMap.size() == 1) {
+                    showCancel = false;
+                }
+            }
+            
+            if (showCancel) {
+                String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
+                map.addAttribute("cancelUrl", cancelUrl);
+
+                map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
+            }
         }
 
         return "console/plugin/pluginConfig";
@@ -5176,6 +5211,7 @@ public class ConsoleWebController {
         pluginTypeMap.put("org.joget.workflow.model.DeadlinePlugin", ResourceBundleUtil.getMessage("setting.plugin.deadline"));
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", ResourceBundleUtil.getMessage("setting.plugin.processParticipant"));
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", ResourceBundleUtil.getMessage("setting.plugin.processTool"));
+        pluginTypeMap.put("org.joget.apps.app.model.ProcessFormModifier", ResourceBundleUtil.getMessage("setting.plugin.processFormModifier"));
 
         return PagingUtils.sortMapByValue(pluginTypeMap, false);
     }

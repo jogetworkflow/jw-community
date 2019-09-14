@@ -191,6 +191,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 for (WorkflowActivity a : activityList) {
                     if (a.getType().equalsIgnoreCase("normal")) {
                         activityIds.add(processDefId+"::"+a.getId());
+                        toolIds.add(processDefId+"::"+a.getId());
                     } else if (a.getType().equalsIgnoreCase("tool") || a.getType().equalsIgnoreCase("route")) {
                         toolIds.add(processDefId+"::"+a.getId());
                     }
