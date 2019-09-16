@@ -83,7 +83,7 @@ public class CustomWfActivityWrapper extends WfActivityWrapper {
         try {
             checkSecurity("complete", null);
 
-            WfActivityInternal actInternal = getActivityImpl(this.processId, this.id, 1);
+            WfActivityInternal actInternal = getActivityImpl();
             
             int type = getActivityDefinition().getActivityType();
             if (type == 2) {
@@ -94,5 +94,26 @@ public class CustomWfActivityWrapper extends WfActivityWrapper {
         } finally {
             SharkUtilities.methodEnd(this.shandle, tStamp, "WfActivityWrapper.complete", this);
         }
+    }
+    
+    public void completeWithoutContinue() throws Exception, CannotComplete {
+        long tStamp = SharkUtilities.methodStart(this.shandle, "WfActivityWrapper.complete");
+        try {
+            checkSecurity("complete", null);
+
+            CustomWfActivityImpl actInternal = (CustomWfActivityImpl) getActivityImpl();
+            
+            int type = getActivityDefinition().getActivityType();
+            if (type != 2) {
+                actInternal.finishWithoutContinue(this.shandle);
+            }
+        } finally {
+            SharkUtilities.methodEnd(this.shandle, tStamp, "WfActivityWrapper.complete", this);
+        }
+    }
+    
+    public String getPerformers() throws Exception {
+        WfActivityInternal actInternal = getActivityImpl();
+        return actInternal.getResourceUsername(this.shandle);
     }
 }

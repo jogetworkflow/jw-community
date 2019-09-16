@@ -68,7 +68,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
         String formDefField = null;
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if (appDef != null) {
-            String formJsonUrl = "[CONTEXT_PATH]/web/json/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/forms/options";
+            String formJsonUrl = "[CONTEXT_PATH]/web/json/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/formsWithCustomTable/options";
             formDefField = "{name:'formDefId',label:'@@datalist.formrowdatalistbinder.formId@@',type:'selectbox',options_ajax:'" + formJsonUrl + "'}";
         } else {
             formDefField = "{name:'formDefId',label:'@@datalist.formrowdatalistbinder.formId@@',type:'textfield'}";
@@ -81,25 +81,37 @@ public class FormRowDataListBinder extends DataListBinderDefault {
     @Override
     public DataListColumn[] getColumns() {
         List<DataListColumn> columns = new ArrayList<DataListColumn>();
-
+        FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+            
+        String tableName = null;
+        Form form = null;
+        
         // retrieve columns
-        Form form = getSelectedForm();
+        form = getSelectedForm();
         if (form != null) {
-            FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            String tableName = formDataDao.getFormTableName(form);
+            tableName = formDataDao.getFormTableName(form);
+        } else {
+            tableName = getPropertyString("formDefId");
+        }
+        
+        if (tableName != null) {
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(tableName);
             for (String columnName : columnNames) {
-                Element element = FormUtil.findElement(columnName, form, null, true);
-                if (element != null && !(element instanceof FormContainer)) {
-                    if (!(element instanceof PasswordField)) {
-                        String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-                        String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
-                        if (id != null && !id.isEmpty()) {
-                            if (label == null || label.isEmpty()) {
-                                label = id;
+                if (form != null) {
+                    Element element = FormUtil.findElement(columnName, form, null, true);
+                    if (element != null && !(element instanceof FormContainer)) {
+                        if (!(element instanceof PasswordField)) {
+                            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                            String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
+                            if (id != null && !id.isEmpty()) {
+                                if (label == null || label.isEmpty()) {
+                                    label = id;
+                                }
+                                columns.add(new DataListColumn(id, label, true));
                             }
-                            columns.add(new DataListColumn(id, label, true));
                         }
+                    } else {
+                        columns.add(new DataListColumn(columnName, columnName, true));
                     }
                 } else {
                     columns.add(new DataListColumn(columnName, columnName, true));
@@ -223,6 +235,9 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             if (appDef != null && formDefId != null) {
                 AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
                 tableName = appService.getFormTableName(appDef, formDefId);
+                if (tableName == null) {
+                    tableName = formDefId;
+                }
                 cachedTableName = tableName;
             }
         }

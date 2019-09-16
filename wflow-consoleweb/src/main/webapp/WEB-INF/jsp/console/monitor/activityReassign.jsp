@@ -10,8 +10,12 @@
     <p id="userToReplace">
         <label><fmt:message key="console.monitoring.running.label.reassign.select"/></label>
         <select id="replaceUser" name="replaceUser">
+            <c:set var = "performers" value = "${trackWflowActivity.nameOfAcceptedUser};" />
             <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}" varStatus="index">
-                <option value="<c:out value="${assignmentUser}"/>"><c:out value="${assignmentUser}"/></option>
+                <c:set var = "check" value = "${assignmentUser};" />
+                <c:if test="${!fn:containsIgnoreCase(performers, check) }">
+                    <option value="<c:out value="${assignmentUser}"/>"><c:out value="${assignmentUser}"/></option>
+                </c:if>
             </c:forEach>
         </select>
     </p>

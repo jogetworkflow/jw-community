@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
+import org.enhydra.shark.api.client.wfmodel.CannotAcceptSuspended;
+import org.enhydra.shark.api.client.wfmodel.CannotComplete;
+import org.enhydra.shark.api.client.wfmodel.InvalidData;
+import org.enhydra.shark.api.client.wfmodel.ResultNotAvailable;
+import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.PersistentManagerInterface;
@@ -14,6 +20,8 @@ import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
 
 public class CustomWfActivityImpl extends WfActivityImpl {
+    private final static String MULTI_APPROVAL_PERFORMERS = "MULTI_APPROVAL_PERFORMERS";
+    private boolean isHandleAllAssignments = false;
     
     public CustomWfActivityImpl(WMSessionHandle shandle, WfProcessInternal process, String key, String activityDefId, WfActivityInternal blockActivity) throws Exception {
         super(shandle, process, key, activityDefId, blockActivity);
@@ -77,4 +85,79 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             super.setActivityVariables(shandle);
         }
     }
+    
+    public void finishWithoutContinue(WMSessionHandle shandle) throws Exception, CannotComplete {
+        try {
+            removeAssignments(shandle, true, true);
+            change_state(shandle, "closed.completed");
+            this.process.set_process_context(shandle, resultMap(shandle));
+            //this.process.activity_complete(shandle, this); comment this to not continue the process
+        } catch (InvalidData e) {
+            throw new CannotComplete("Activity "
+                    + this
+                    + " -> can't complete activity. Invalid result data was passed.");
+        } catch (ResultNotAvailable rne) {
+            throw new CannotComplete("Activity "
+                    + this
+                    + " -> can't complete activity. Result of activity is not available.");
+        } catch (UpdateNotAllowed una) {
+            throw new CannotComplete("Activity "
+                    + this
+                    + " -> can't complete activity. Process context update is not allowed.");
+        }
+    }
+    
+    @Override
+    protected boolean handleAllAssignments(WMSessionHandle shandle) throws Exception {
+        return isHandleAllAssignments;
+    }
+    
+    public void setHandleAllAssignments(WMSessionHandle shandle, boolean handleAllAssignments) throws Exception {
+        if (handleAllAssignments) {
+            this.set_priority(shandle, (short) 5); //since priority is not use in joget, use it to indicate multi approval
+        }
+        isHandleAllAssignments = handleAllAssignments;
+    }
+    
+    @Override
+    public String getResourceUsername(WMSessionHandle shandle) throws Exception {
+        if (this.priority == 5) {
+            String usernames = (String) getContext(shandle).get(MULTI_APPROVAL_PERFORMERS);
+            return usernames;
+        }
+        return this.resourceUsername;
+    }
+    
+    @Override
+    public void set_accepted_status(WMSessionHandle shandle, boolean accept, String resourceUname) throws Exception, CannotAcceptSuspended {
+        boolean temp = isHandleAllAssignments;
+        if (accept && this.priority == 5) {
+            String usernames = (String) getContext(shandle).get(MULTI_APPROVAL_PERFORMERS);
+            if (usernames == null || usernames.isEmpty()) {
+                usernames = resourceUname;
+            } else if (!(usernames + ";").contains(resourceUname+";")) {
+                usernames += ";" + resourceUname;
+            }
+            internalVariable(shandle, MULTI_APPROVAL_PERFORMERS, usernames);
+            isHandleAllAssignments = true;
+        }
+        super.set_accepted_status(shandle, accept, resourceUname);
+        isHandleAllAssignments = temp;
+    }
+    
+    protected void internalVariable(WMSessionHandle shandle, String key, String value) throws Exception {
+        getContext(shandle).put(key, value);
+        this.variableIdsToPersist.add(key);
+        persistActivityContext(shandle);
+    }
+    
+    @Override
+    public Map process_context(WMSessionHandle shandle) throws Exception {
+        Map m = super.process_context(shandle);
+        //remove internal variable
+        if (m.containsKey(MULTI_APPROVAL_PERFORMERS)) {
+            m.remove(MULTI_APPROVAL_PERFORMERS);
+        }
+        return m;
+    }    
 }

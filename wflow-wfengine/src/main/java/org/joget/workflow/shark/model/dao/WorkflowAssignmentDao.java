@@ -27,9 +27,9 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
+        condition += " where e.isValid = 1";
+        
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
-            condition += " where 1=1";
-            
             if (packageId != null && !packageId.isEmpty()) {
                 condition += " and p.processDefId like ?";
                 params.add(packageId + "#%");
@@ -156,9 +156,9 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
+        condition += " where e.isValid = 1";
+        
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
-            condition += " where 1=1";
-            
             if (packageId != null && !packageId.isEmpty()) {
                 condition += " and p.processDefId like ?";
                 params.add(packageId + "#%");
@@ -199,9 +199,9 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join e.process p join e.activity a join a.state s"; 
         Collection<String> params = new ArrayList<String>();
         
+        condition += " where e.isValid = 1";
+        
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
-            condition += " where 1=1";
-            
             if (packageId != null && !packageId.isEmpty()) {
                 condition += " and p.processDefId like ?";
                 params.add(packageId + "#%");

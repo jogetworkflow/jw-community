@@ -144,7 +144,36 @@ public interface WorkflowManager {
      * @param replaceUser user to be replaced
      */
     void assignmentReassign(String processDefId, String processId, String activityId, String username, String replaceUser);
+    
+    /**
+     * Complete current assignment with replaceUser and reassigns the new assignment to a user
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @param username
+     * @param replaceUser user to be replaced
+     */
+    void completeAssignmentAndReassign(String processDefId, String processId, String activityId, String username, String replaceUser);
 
+    /**
+     * Complete an assignment and start a activity
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @param startActivityDefId
+     * 
+     */
+    public void completeAssignmentAndStart(String processDefId, String processId, String activityId, String startActivityDefId);
+    
+    /**
+     * Complete an assignment of a single assignee
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * 
+     */
+    public void completeSingleAssignment(String processDefId, String processId, String activityId);
+        
     /**
      * Force completes an assignment of a user
      * @param processDefId

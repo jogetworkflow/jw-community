@@ -59,10 +59,10 @@ import java.util.TreeMap;
 import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.enhydra.shark.CustomWfActivityImpl;
 
 import org.enhydra.shark.CustomWfActivityWrapper;
 import org.enhydra.shark.CustomWfResourceImpl;
-import org.enhydra.shark.SharkEngineManager;
 import org.enhydra.shark.SharkUtil;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
 import org.enhydra.shark.api.client.wfservice.PackageInvalid;
@@ -70,9 +70,7 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessQuery;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
-import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLUtil;
-import org.enhydra.shark.xpdl.elements.Activity;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.PagedList;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -2245,13 +2243,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 actAttributeList = actAttributeIterator.getArray();
             }
 
-            // retrieve the user who accepted the particular activity
-            String username = admin.getActivityResourceUsername(sessionHandle, processInstanceId, activityInstanceId);
-            wfAct.setNameOfAcceptedUser(username);
+            CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processInstanceId, activityInstanceId);
+            String usernames = wrapper.getPerformers();
+            wfAct.setNameOfAcceptedUser(usernames);  
 
-            if (username == null || username.isEmpty()) {
+            if (usernames == null || usernames.isEmpty()) {
                 //check is sub flow
-                CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processInstanceId, activityInstanceId);
                 String subflowId = wrapper.getSubflowProcessId();
                 if (subflowId != null) {
                     wfAct.setNameOfAcceptedUser(subflowId);
@@ -2293,9 +2290,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 wfAct.setPerformer((String) actAttributeList[0].getValue());
             }
-
             if (includeAssignees) {
-                List<String> users = getAssignmentResourceIds(processDefId, processInstanceId, activityInstanceId);
+                List<String> users = wrapper.getAssignmentResourceIds(sessionHandle, processDefId, processInstanceId, activityInstanceId);
                 Collections.sort(users);
                 if (users != null) {
                     wfAct.setAssignmentUsers(users.toArray(new String[users.size()]));
@@ -4478,6 +4474,121 @@ public class WorkflowManagerImpl implements WorkflowManager {
             
             WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentReassignUser", activityId, new Class[]{activityId.getClass()}, new Object[]{activityId}, null);
 
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
+    
+    /**
+     * Complete current assignment with replaceUser and reassigns the new assignment to a user
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @param username
+     * @param replaceUser user to be replaced
+     */
+    @Override
+    public void completeAssignmentAndReassign(String processDefId, String processId, String activityId, String username, String replaceUser) {
+        SharkConnection sc = null;
+
+        try {
+            if (activityId == null || activityId.trim().length() == 0) {
+                return;
+            }
+
+            sc = connect(replaceUser);
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processId, activityId);
+            wrapper.getProcessImpl().setReadOnly(false);
+            WfAssignment wfa = getSharkAssignment(sc, activityId);
+            wfa.set_accepted_status(true);
+            String actDefId = wrapper.getActivityImpl().activity_definition_id(sessionHandle);
+            wrapper.completeWithoutContinue();
+            List<String> users = new ArrayList<String>();
+            users.add(username);
+            ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).put(processId + "_" + actDefId, users);
+            wrapper.getProcessImpl().start_activity(sessionHandle, actDefId, null);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
+    
+    /**
+     * Complete an assignment and start a activity
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @param startActivityDefId
+     * 
+     */
+    @Override
+    public void completeAssignmentAndStart(String processDefId, String processId, String activityId, String startActivityDefId) {
+        SharkConnection sc = null;
+
+        try {
+            if (activityId == null || activityId.trim().length() == 0) {
+                return;
+            }
+
+            sc = connect();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processId, activityId);
+            wrapper.getProcessImpl().setReadOnly(false);
+            WfAssignment wfa = getSharkAssignment(sc, activityId);
+            wfa.set_accepted_status(true);
+            String actDefId = wrapper.getActivityImpl().activity_definition_id(sessionHandle);
+            wrapper.completeWithoutContinue();
+            wrapper.getProcessImpl().start_activity(sessionHandle, startActivityDefId, null);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
+    
+    /**
+     * Complete an assignment of a single assignee
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * 
+     */
+    @Override
+    public void completeSingleAssignment(String processDefId, String processId, String activityId) {
+        SharkConnection sc = null;
+
+        try {
+            if (activityId == null || activityId.trim().length() == 0) {
+                return;
+            }
+
+            sc = connect();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processId, activityId);
+            wrapper.getProcessImpl().setReadOnly(false);
+            CustomWfActivityImpl activity = (CustomWfActivityImpl) wrapper.getActivityImpl();
+            activity.setHandleAllAssignments(sessionHandle, true);
+            activity.set_accepted_status(sessionHandle, true, getWorkflowUserManager().getCurrentUsername());
+            activity.complete(sessionHandle);
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {

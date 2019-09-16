@@ -71,7 +71,7 @@ public class CustomFormDataTableUtil {
     
     public static Collection<String> getTables(AppDefinition appDef) {
         Collection<String> tableNames = new ArrayList<String>();
-        Collection<BuilderDefinition> tables = getDao().getBuilderDefinitionList(TYPE, "", appDef, "id", null, null, null);
+        Collection<BuilderDefinition> tables = getDao().getBuilderDefinitionList(TYPE, "", appDef, "id", false, null, null);
         if (tables != null) {
             for (BuilderDefinition b : tables) {
                 tableNames.add(b.getName());

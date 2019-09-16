@@ -137,9 +137,9 @@ public class PropertyUtil implements ApplicationContextAware {
         try {
             if (json != null) {
                 json = json.replaceAll("\n","\\\\n").replaceAll("\r","\\\\r");
+                JSONObject obj = new JSONObject(json);
+                return getProperties(obj);
             }
-            JSONObject obj = new JSONObject(json);
-            return getProperties(obj);
         } catch (Exception e) {
             LogUtil.error(PropertyUtil.class.getName(), e, e.getMessage());
         }

@@ -4,6 +4,7 @@
     <class entity-name="SharkAssignment" lazy="false" name="org.joget.workflow.shark.model.SharkAssignment" table="SHKAssignmentsTable">
         <id column="oid" name="id" type="long"/>
         <property column="ResourceId" name="assigneeName" type="string"/>
+        <property column="IsValid" name="isValid" type="int"/>
         
         <many-to-one entity-name="SharkActivity" insert="false" fetch="join" lazy="false" update="false" name="activity" column="ActivityId" />
         <many-to-one entity-name="SharkProcess" insert="false" fetch="join" lazy="false" update="false" name="process" column="ActivityProcessId"/>

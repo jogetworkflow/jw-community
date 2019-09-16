@@ -16,7 +16,7 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <c:if test="${activity.state == 'open.not_running.not_started'}">
+            <c:if test="${activity.state == 'open.not_running.not_started' || activity.state == 'open.running'}">
                 <li><button onclick="reevaluate()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
                 <li><button onclick="showReevaluateForUser()"><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></button></li>
             </c:if>
@@ -45,28 +45,20 @@
             <dt><fmt:message key="console.app.activity.common.label.serviceLevelMonitor"/></dt>
             <dd><c:out value="${serviceLevelMonitor}" escapeXml="false"/>&nbsp;</dd>
 
-            <c:if test="${trackWflowActivity.status == 'Pending'}">
+            <c:if test="${trackWflowActivity.status == 'Pending' || activity.state == 'open.running'}">
                 <dt><fmt:message key="console.app.activity.common.label.listOfPending"/></dt>
                 <dd>
-                    <c:choose>
-                        <c:when test="${assignUserSize > 1}">
-                            <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}" varStatus="index">
-                                    <c:choose>
-                                        <c:when test="${index.count < assignUserSize}">
-                                            <span><c:out value="${assignmentUser}, "/></span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span><c:out value="${assignmentUser}"/></span>
-                                        </c:otherwise>
-                                    </c:choose>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}">
-                                <c:out value="${assignmentUser}"/>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:set var = "isFirst" value = "true" />
+                    <c:set var = "performers" value = "${trackWflowActivity.nameOfAcceptedUser};" />
+                    <c:set var = "assignee" value = "" />
+                    <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}" varStatus="index">
+                        <c:set var = "check" value = "${assignmentUser};" />
+                        <c:if test="${!fn:containsIgnoreCase(performers, check) }">
+                            <c:set var = "assignee">${assignee}<c:if test="${isFirst != 'true'}">, </c:if><span><c:out value="${assignmentUser}"/></span></c:set>
+                            <c:set var = "isFirst" value = "false" />
+                        </c:if>
+                    </c:forEach>
+                    ${assignee}            
                 &nbsp;</dd>
             </c:if>
 
@@ -77,12 +69,12 @@
                 </c:when>
                 <c:when test="${trackWflowActivity.status != 'Pending'}">
                     <dt><fmt:message key="console.app.activity.common.label.acceptedUser"/></dt>
-                    <dd><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/>&nbsp;</dd>
+                    <c:set var = "performers" value = "${fn:split(trackWflowActivity.nameOfAcceptedUser, ';')}" />
+                    <c:set var = "performersString" value = "${fn:join(performers, ', ')}" />
+                    <dd><c:out value="${performersString}"/>&nbsp;</dd>
                 </c:when>
             </c:choose>
 
-            <dt><fmt:message key="console.app.activity.common.label.priority"/></dt>
-            <dd><c:out value="${trackWflowActivity.priority}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.createdTime"/></dt>
             <dd><ui:dateToString date="${trackWflowActivity.createdTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dateLimit"/></dt>

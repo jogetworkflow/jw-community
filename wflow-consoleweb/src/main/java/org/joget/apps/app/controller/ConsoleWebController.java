@@ -69,6 +69,7 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.generator.service.GeneratorUtil;
@@ -3766,6 +3767,42 @@ public class ConsoleWebController {
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/formsWithCustomTable/options")
+    public void consoleFormWithCustomTableOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        Collection<FormDefinition> formDefinitionList = null;
+
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        for (FormDefinition formDef : formDefinitionList) {
+            Map data = new HashMap();
+            data.put("value", formDef.getId());
+            data.put("label", formDef.getName());
+            jsonArray.put(data);
+        }
+        
+        Collection<String> customTables = CustomFormDataTableUtil.getTables(appDef);
+        for (String table : customTables) {
+            Map data = new HashMap();
+            data.put("value", table);
+            data.put("label", table);
+            jsonArray.put(data);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/tableName/options")
     public void consoleFormTableNameOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -3782,6 +3819,15 @@ public class ConsoleWebController {
             data.put("label", name);
             jsonArray.put(data);
         }
+        
+        Collection<String> customTables = CustomFormDataTableUtil.getTables(appDef);
+        for (String table : customTables) {
+            Map data = new HashMap();
+            data.put("value", table);
+            data.put("label", table);
+            jsonArray.put(data);
+        }
+        
         jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
@@ -3799,7 +3845,11 @@ public class ConsoleWebController {
         try {
             if (formDefId != null) {
                 String tableName = appService.getFormTableName(appDef, formDefId);
-                populateColumns(jsonArray, tableName, false);
+                if (tableName != null) {
+                    populateColumns(jsonArray, tableName, false);
+                } else {
+                    populateColumns(jsonArray, formDefId, false);
+                }
             }
             if (formTable != null) {
                 populateColumns(jsonArray, formTable, false);
