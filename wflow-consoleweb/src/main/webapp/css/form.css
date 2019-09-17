@@ -154,7 +154,8 @@
     margin-top: 15px;
     display: block;
 }
-.form-column-horizontal .form-cell {
+.form-column-horizontal .form-cell,
+.form-column-horizontal .subform-cell {
     display: block;
     float: left;
     clear: none;
