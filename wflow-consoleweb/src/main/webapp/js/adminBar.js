@@ -116,21 +116,23 @@ var AdminBar = {
         return adminBarModeHide === null || adminBarModeHide === "true";
     },
     showQuickEdit: function() {
-        $(".analyzer-page").css("display", "inline-block");
-        if (AdminBar.isDefaultUserview) {
-            return;
+        if (!AdminBar.isAdminBarHide()) {
+            $(".analyzer-page").css("display", "inline-block");
+            if (AdminBar.isDefaultUserview) {
+                return;
+            }
+            $("#quickEditMode").removeClass("off");
+            $(".quickEdit").fadeIn();
+            $(".analyzer-label").css("display", "inline-block");
+            $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
+            $("body").addClass("quickEditModeActive");
+
+            $("iframe").each(function(){
+                try {
+                    $(this)[0].contentWindow.AdminBar.showQuickEdit();
+                } catch (err) {}
+            });
         }
-        $("#quickEditMode").removeClass("off");
-        $(".quickEdit").fadeIn();
-        $(".analyzer-label").css("display", "inline-block");
-        $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
-        $("body").addClass("quickEditModeActive");
-        
-        $("iframe").each(function(){
-            try {
-                $(this)[0].contentWindow.AdminBar.showQuickEdit();
-            } catch (err) {}
-        });
     },
     hideQuickEdit: function() {
         $("#quickEditMode").addClass("off");
