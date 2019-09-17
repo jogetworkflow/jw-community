@@ -220,6 +220,9 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             String[] paramValue = FormUtil.getElementPropertyValues(controlElement, formData);
 
             if (paramValue != null) {
+                if (paramValue.length == 0) {
+                    paramValue = new String[]{""};
+                }
                 for (String v : paramValue) {
                     if (isRegex) {
                         try {
