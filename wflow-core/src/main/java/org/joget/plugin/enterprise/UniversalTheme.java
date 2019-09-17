@@ -159,10 +159,18 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String primary = getPrimaryColor();
         meta += "<meta name=\"theme-color\" content=\"" + primary + "\"/>\n";
 
+        // PWA: set apple-touch-icon
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String icon = request.getContextPath() + "/images/logo_512x512.png";
+        UserviewSetting userviewSetting = getUserview().getSetting();
+        if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
+            icon = userviewSetting.getPropertyString("userview_thumbnail");
+        }
+        meta += "<link rel=\"apple-touch-icon\" href=\"" + icon + "\">\n";
+        
         // PWA: set manifest URL
         String appId = uv.getParamString("appId");
         String userviewId = uv.getPropertyString("id");
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         String manifestUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/manifest";
         meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
         return meta;
