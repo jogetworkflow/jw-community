@@ -22,6 +22,7 @@ import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,7 @@ public class DataListService {
         Collection<DataListAction> list = new ArrayList<DataListAction>();
         Collection<Plugin> pluginList = pluginManager.list(DataListAction.class);
         for (Plugin plugin : pluginList) {
-            if (plugin instanceof DataListAction) {
+            if (plugin instanceof DataListAction && !(plugin instanceof HiddenPlugin)) {
                 list.add((DataListAction) plugin);
             }
         }
