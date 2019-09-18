@@ -903,7 +903,7 @@ PropertyEditor.Util = {
         var container = $("#" + field.id + "_input");
         if (reference == "CONTAINER") {
             container = $(container).parent();
-        } else if (reference !== undefined) {
+        } else if (typeof(reference) !== "undefined") {
             container = $(container).find(".grid_model [name='" + reference + "']");
         }
         $(container).addClass("ajaxLoading");
@@ -911,9 +911,9 @@ PropertyEditor.Util = {
     },
     removeAjaxLoading: function(editor, field, reference) {
         var container = $("#" + field.id + "_input");
-        if (reference == "CONTAINER") {
+        if (reference === "CONTAINER") {
             container = $(container).parent();
-        } else if (reference !== undefined) {
+        } else if (typeof(reference) !== "undefined") {
             container = $(container).find(".grid_model [name='" + reference + "']");
         }
         $(container).removeClass("ajaxLoading");
@@ -1693,8 +1693,8 @@ PropertyEditor.Model.Page.prototype = {
             var editor = this.editor;
             var currentPage = $(editor).find(".property-page-show.current");
             var currentPageParentElementId = $(currentPage).attr("elementid");
-            if ($(currentPage).attr("parentElementid") !== undefined && $(currentPage).attr("parentElementid") !== "") {
-                currentPageParentElementId = $(currentPage).attr("parentElementid");
+            if ($(currentPage).attr("parentelementid") !== undefined && $(currentPage).attr("parentelementid") !== "") {
+                currentPageParentElementId = $(currentPage).attr("parentelementid");
             }
             var prev = null;
             var html = '';
@@ -1702,8 +1702,8 @@ PropertyEditor.Model.Page.prototype = {
             $(this.editor).find('.property-page-show').each(function(i) {
                 var pageId = $(this).attr("id");
                 var parentElementId = $(this).attr("elementid");
-                if ($(this).attr("parentElementid") !== undefined && $(this).attr("parentElementid") !== "") {
-                    parentElementId = $(this).attr("parentElementid");
+                if ($(this).attr("parentelementid") !== undefined && $(this).attr("parentelementid") !== "") {
+                    parentElementId = $(this).attr("parentelementid");
                 }
 
                 if (prev !== null && prev !== parentElementId && currentPageParentElementId !== prev) {
@@ -4763,15 +4763,14 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 this.pageOptions.propertyValues = (this.value) ? this.value.properties : null;
             }
         }
-
         //check if value is different, remove all the related properties page
-        if ($(this.editor).find('.property-editor-page[elementId=' + this.id + ']:first').attr('elementValue') !== value) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']:first').attr('elementvalue') !== value) {
             this.removePages();
             thisObj.editorObject.refresh();
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementId=' + this.id + ']').length === 0) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && (value !== null && value !== "")) {
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
@@ -4782,15 +4781,15 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $.when.apply($, deferreds).then(function() {
                 if (thisObj.pageOptions.propertiesDefinition !== undefined && thisObj.pageOptions.propertiesDefinition !== null) {
                     var parentId = thisObj.properties.name;
-                    var elementdata = ' elementId="' + thisObj.id + '" elementValue="' + value + '"';
+                    var elementdata = ' elementid="' + thisObj.id + '" elementvalue="' + value + '"';
 
                     //check if the element has a parent element
-                    if (currentPage.attr("elementId") !== undefined && currentPage.attr("elementId") !== "") {
-                        parentId = currentPage.attr("elementId") + "_" + parentId;
-                        if (currentPage.attr("parentElementId") !== undefined && currentPage.attr("parentElementId") !== "") {
-                            elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"';
+                    if (currentPage.attr("elementid") !== undefined && currentPage.attr("elementid") !== "") {
+                        parentId = currentPage.attr("elementid") + "_" + parentId;
+                        if (currentPage.attr("parentelementid") !== undefined && currentPage.attr("parentelementid") !== "") {
+                            elementdata += ' parentelementid="' + currentPage.attr("parentelementid") + '"';
                         } else {
-                            elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"';
+                            elementdata += ' parentelementid="' + currentPage.attr("elementid") + '"';
                         }
                     }
 
@@ -4815,7 +4814,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     //add parent properties to plugin header
                     var valueLabel = $("#" + thisObj.id).find('option[value="' + value + '"]').text();
                     var parentTitle = '<h1>' + thisObj.properties.label + " (" + valueLabel + ')</h1>';
-                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementId=' + thisObj.id + '].property-page-show:eq(0)');
+                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementid=' + thisObj.id + '].property-page-show:eq(0)');
                     $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
                 }
                 thisObj.editorObject.refresh();
@@ -5091,12 +5090,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     movedRow : function(row) {
         var thisObj = this;
         var fieldId = $(row).find("select").attr("id");
-        console.log(fieldId);
         var nextRowId = thisObj.id;
         if ($(row).next(".repeater-row").length > 0) {
             nextRowId = $(row).next(".repeater-row").find("select").attr("id");
         }
-        console.log(nextRowId);
         var movePages = $(".anchor[anchorfield=\""+fieldId+"\"], .property-editor-page[elementid=\""+fieldId+"\"]");
         $(".anchor[anchorfield=\""+nextRowId+"\"]").before(movePages);
         
@@ -5156,13 +5153,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         }
 
         //check if value is different, remove all the related properties page
-        if ($(this.editor).find('.property-editor-page[elementId=' + id + ']:first').attr('elementValue') !== value) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']:first').attr('elementvalue') !== value) {
             this.removePages(field);
             thisObj.editorObject.refresh();
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementId=' + id + ']').length === 0) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && (value !== null && value !== "")) {
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
@@ -5173,15 +5170,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $.when.apply($, deferreds).then(function() {
                 if (!((typeof $(row).data("propertiesDefinition")) === "undefined") && $(row).data("propertiesDefinition") !== null) {
                     var parentId = thisObj.properties.name;
-                    var elementdata = ' elementId="' + id + '" elementValue="' + value + '"';
+                    var elementdata = ' elementid="' + id + '" elementvalue="' + value + '"';
 
                     //check if the element has a parent element
-                    if (!((typeof currentPage.attr("elementId")) === "undefined") && currentPage.attr("elementId") !== "") {
-                        parentId = currentPage.attr("elementId") + "_" + parentId;
-                        if (!((typeof currentPage.attr("parentElementId")) === "undefined") && currentPage.attr("parentElementId") !== "") {
-                            elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"';
+                    if (!((typeof currentPage.attr("elementid")) === "undefined") && currentPage.attr("elementid") !== "") {
+                        parentId = currentPage.attr("elementid") + "_" + parentId;
+                        if (!((typeof currentPage.attr("parentelementid")) === "undefined") && currentPage.attr("parentelementid") !== "") {
+                            elementdata += ' parentelementid="' + currentPage.attr("parentelementid") + '"';
                         } else {
-                            elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"';
+                            elementdata += ' parentelementid="' + currentPage.attr("elementid") + '"';
                         }
                     }
                     
@@ -5218,7 +5215,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     //add parent properties to plugin header
                     var valueLabel = $("#" + thisObj.id).find('option[value="' + value + '"]').text();
                     var parentTitle = '<h1>' + thisObj.properties.label + " (" + valueLabel + ')</h1>';
-                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementId=' + thisObj.id + '].property-page-show:eq(0)');
+                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementid=' + thisObj.id + '].property-page-show:eq(0)');
                     $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
                 }
                 thisObj.editorObject.refresh();
