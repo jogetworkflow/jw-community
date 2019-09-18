@@ -886,6 +886,26 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl) {
+        return viewDataForm(appId, version, formDefId, saveButtonLabel, submitButtonLabel, cancelButtonLabel, cancelButtonTarget, formData, formUrl, cancelUrl, null);
+    }
+    
+    /**
+     * Retrieve a data form
+     * @param appId
+     * @param version
+     * @param formDefId
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @param modifier
+     * @return 
+     */
+    @Override
+    public Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl, ProcessFormModifier modifier) {
         AppDefinition appDef = getAppDefinition(appId, version);
 
         if (formData == null) {
@@ -894,7 +914,7 @@ public class AppServiceImpl implements AppService {
 
         // get form
         Form form = loadFormByFormDefId(appDef.getId(), appDef.getVersion().toString(), formDefId, formData, null);
-        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, cancelButtonTarget, formData, formUrl, cancelUrl);
+        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, cancelButtonTarget, formData, formUrl, cancelUrl, modifier);
     }
     
     /**
@@ -911,6 +931,24 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl) {
+        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, cancelButtonTarget, formData, formUrl, cancelUrl, null);
+    }
+    
+    /**
+     * Retrieve a data form
+     * @param form
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @param modifier
+     * @return 
+     */
+    @Override
+    public Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl, ProcessFormModifier modifier) {
         if (formData == null) {
             formData = new FormData();
         }
@@ -951,6 +989,10 @@ public class AppServiceImpl implements AppService {
             }
             form.addAction((FormAction) cancelButton);
         }
+        if (modifier != null) {
+            modifier.modify(form, formData, null);
+        }
+        
         form = decorateFormActions(form);
 
         return form;

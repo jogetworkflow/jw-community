@@ -4,8 +4,11 @@ public class SharkProcess {
     private String processId;
     private String processName;
     private String processRequesterId;
+    private String resourceRequesterId;
     private String version;
     private String processDefId;
+    
+    private SharkProcessState state;
 
     public String getProcessId() {
         return processId;
@@ -31,6 +34,14 @@ public class SharkProcess {
         this.processRequesterId = processRequesterId;
     }
 
+    public String getResourceRequesterId() {
+        return resourceRequesterId;
+    }
+
+    public void setResourceRequesterId(String resourceRequesterId) {
+        this.resourceRequesterId = resourceRequesterId;
+    }
+
     public String getProcessVersion() {
         return processDefId.split("#")[1];
     }
@@ -49,5 +60,13 @@ public class SharkProcess {
 
     public void setProcessDefId(String processDefId) {
         this.processDefId = processDefId;
+    }
+
+    public SharkProcessState getState() {
+        return state;
+    }
+
+    public void setState(SharkProcessState state) {
+        this.state = state;
     }
 }

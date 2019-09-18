@@ -6,6 +6,7 @@ public class SharkAssignment{
     private SharkProcess process;
     private String assigneeName;
     private int isValid;
+    private int isAccepted;
 
     public long getId() {
         return id;
@@ -45,5 +46,13 @@ public class SharkAssignment{
 
     public void setIsValid(int isValid) {
         this.isValid = isValid;
+    }
+
+    public int getIsAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(int isAccepted) {
+        this.isAccepted = isAccepted;
     }
 }

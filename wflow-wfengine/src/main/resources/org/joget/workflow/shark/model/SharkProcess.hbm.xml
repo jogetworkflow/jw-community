@@ -5,8 +5,11 @@
         <id column="Id" name="processId" type="string"/>
         <property column="Name" name="processName" type="string"/>
         <property column="ActivityRequesterProcessId" name="processRequesterId" type="string"/>
+        <property column="ResourceRequesterId" name="resourceRequesterId" type="string"/>
         <property column="version" name="version" type="string"/>
         <property column="PDefName" name="processDefId" type="string"/>
+        
+        <many-to-one entity-name="SharkProcessState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" />  
     </class>
 </hibernate-mapping>
 

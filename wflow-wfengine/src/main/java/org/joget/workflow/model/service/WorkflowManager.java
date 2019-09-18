@@ -106,6 +106,16 @@ public interface WorkflowManager {
      * @return 
      */
     boolean activityStart(String processId, String activityDefId, boolean abortRunningActivities);
+    
+    /**
+     * Start a specific activity for a running process instance.
+     * @param processId
+     * @param activityDefId
+     * @param usernames
+     * @param abortRunningActivities
+     * @return 
+     */
+    boolean activityStartAndAssignTo(String processId, String activityDefId, String[] usernames, boolean abortRunningActivities);
 
     /**
      * Set workflow variable value based on activity instance ID. 
@@ -576,6 +586,15 @@ public interface WorkflowManager {
      * @return 
      */
     Collection<String> getRunningProcessIds();
+    
+    /**
+     * Returns all the id of running process instances by requester
+     * @param packageId
+     * @param processDefId
+     * @param username
+     * @return 
+     */
+    public Collection<String> getRunningProcessIdsByRequester(String packageId, String processDefId, String username);
 
     /**
      * Returns a list of running processes, filtered by optional parameter values.
@@ -932,4 +951,27 @@ public interface WorkflowManager {
      * @return 
      */
     public Map<String, String> getNonExceptionalOutgoingTransitions(String processDefId, String actDefId);
+    
+    /**
+     * Gets running activity id by using form record id
+     * 
+     * @param id
+     * @param processDefId
+     * @param activityDefId
+     * @param username
+     * @return 
+     */
+    public String getRunningActivityIdByRecordId(String id, String processDefId, String activityDefId, String username);
+    
+    /**
+     * Gets assignment by using form record id
+     * 
+     * @param id
+     * @param processDefId
+     * @param activityDefId
+     * @param username
+     * @return 
+     */
+    public WorkflowAssignment getAssignmentByRecordId(String id, String processDefId, String activityDefId, String username);
+    
 }

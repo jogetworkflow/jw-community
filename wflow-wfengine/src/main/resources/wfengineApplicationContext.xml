@@ -45,6 +45,7 @@
                 <value>/org/joget/workflow/shark/model/SharkActivity.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessState.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">

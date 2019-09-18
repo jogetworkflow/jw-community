@@ -11,6 +11,7 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRowSet;
@@ -214,7 +215,24 @@ public interface AppService {
      * @return 
      */
     Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
-
+    
+    /**
+     * Retrieve a data form
+     * @param appId
+     * @param version
+     * @param formDefId
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @param modifier
+     * @return 
+     */
+    Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl, ProcessFormModifier modifier);
+    
     /**
      * Retrieve a data form
      * @param form
@@ -228,6 +246,21 @@ public interface AppService {
      * @return 
      */
     Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
+
+    /**
+     * Retrieve a data form
+     * @param form
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @param modifier
+     * @return 
+     */
+    Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl, ProcessFormModifier modifier);
 
     /**
      * Returns a Collection of form data for a process based on criteria

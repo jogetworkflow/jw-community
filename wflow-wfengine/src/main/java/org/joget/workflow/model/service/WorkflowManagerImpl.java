@@ -49,6 +49,7 @@ import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
 import com.lutris.dods.builder.generator.query.QueryBuilder;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -4351,6 +4352,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public boolean activityStart(String processId, String activityDefId, boolean abortRunningActivities) {
+        return activityStartAndAssignTo(processId, activityDefId, null, abortRunningActivities);
+    }
+    
+    /**
+     * Start a specific activity for a running process instance.
+     * @param processId
+     * @param activityDefId
+     * @param usernames
+     * @param abortRunningActivities Set to true to abort the current running activities
+     * @return
+     */
+    public boolean activityStartAndAssignTo(String processId, String activityDefId, String[] usernames, boolean abortRunningActivities) {
 
         boolean result = false;
         SharkConnection sc = null;
@@ -4410,6 +4423,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // start required activity
             String blockActivityId = null; // TODO: handle block activity?
             ExecutionAdministration ea = shark.getExecutionAdministration();
+            
+            if (usernames != null && usernames.length > 0) {
+                ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).put(processId + "_" + activityDefId, Arrays.asList(usernames));
+            }
+            
             ea.startActivity(sessionHandle, processId, blockActivityId, activityDef);
             
             result = true;
@@ -5126,37 +5144,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return 
      */
     public Collection<String> getRunningProcessIds() {
-        SharkConnection sc = null;
-        Collection<String> runningProcesseIds = new ArrayList<String>();
-        
-        try {
-            sc = connect();
-            
-            WfProcessIterator pi = sc.get_iterator_process();
-
-            String sharkExpression = "stateequals.(\"open.running\")";
-            String sqlExpression = "State = (SELECT oid FROM SHKProcessStates WHERE Name = 'open.running')";
-
-            String query_expression = "(" + sharkExpression + ")" + " /*sql (" + sqlExpression + ") sql*/ ";
-            pi.set_query_expression(query_expression);
-
-            WfProcess[] wfRunningProcessList = pi.get_next_n_sequence(0);
-
-            for (int i = 0; i < wfRunningProcessList.length; ++i) {
-                WfProcess wfProcess = wfRunningProcessList[i];
-
-                runningProcesseIds.add(wfProcess.key());
-            }
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return runningProcesseIds;
+        return workflowAssignmentDao.getProcessIdsByRequester(null, null, null, "open.running");
+    }
+    
+    /**
+     * Returns all the id of running process instances by requester
+     * @param packageId
+     * @param processDefId
+     * @param username
+     * @return 
+     */
+    public Collection<String> getRunningProcessIdsByRequester(String packageId, String processDefId, String username) {
+        return workflowAssignmentDao.getProcessIdsByRequester(packageId, processDefId, username, "open");
     }
     
     /**
@@ -5674,4 +5673,29 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return nextActivities;
     }
     
+    /**
+     * Gets running activity id by using form record id
+     * 
+     * @param id
+     * @param processDefId
+     * @param activityDefId
+     * @param username
+     * @return 
+     */
+    public String getRunningActivityIdByRecordId(String id, String processDefId, String activityDefId, String username) {
+        return workflowAssignmentDao.getRunningActivityIdByRecordId(id, processDefId, activityDefId, username);
+    }
+    
+    /**
+     * Gets assignment by using form record id
+     * 
+     * @param id
+     * @param processDefId
+     * @param activityDefId
+     * @param username
+     * @return 
+     */
+    public WorkflowAssignment getAssignmentByRecordId(String id, String processDefId, String activityDefId, String username) {
+        return workflowAssignmentDao.getAssignmentByRecordId(id, processDefId, activityDefId, username);
+    }
 }
