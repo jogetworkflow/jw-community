@@ -71,7 +71,7 @@ public class FormOptionsCacheAspect {
         if (thisObj instanceof FormLoadOptionsBinder && !thisObj.getPropertyString("cacheInterval").isEmpty()) {
             String cacheKey = getCacheKey(thisObj);
             if (!isInProgress(cacheKey)) {
-                return getCachedOptions(cacheKey, thisObj.getPropertyString("cacheIdlePause"));
+                return getCachedOptions(cacheKey, thisObj.getPropertyString("cacheIdlePause"), pjp);
             }
         }
         return pjp.proceed();
@@ -120,17 +120,32 @@ public class FormOptionsCacheAspect {
         return jsonObj;
     }
     
-    public static FormRowSet getCachedOptions(String cacheKey, String idleStr) {
+    public static FormRowSet getCachedOptions(String cacheKey, String idleStr, ProceedingJoinPoint pjp) throws Throwable {
         FormRowSet rowset = null;
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
         if (cache != null) {
             Element element = cache.get(cacheKey);
             try {
-                while (element == null) {
+                int count = 0;
+                while (element == null && count < 100) { //try for 10sec
+                    if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {
+                        LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not ready! waiting...");
+                    }
                     Thread.sleep(100);
                     element = cache.get(cacheKey);
+                    count++;
                 }
-            } catch (Exception e) {}
+                if (element == null && count == 100) { //fallback
+                    if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {
+                        LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not able to retrieve after 10sec");
+                    }
+                    return (FormRowSet) pjp.proceed();
+                }
+            } catch (Exception e) {
+                if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
+                    LogUtil.error(FormOptionsCacheAspect.class.getName(), e, "getCachedOptions: " + cacheKey);
+                }
+            }
             if (element != null) {
                 rowset = (FormRowSet) element.getObjectValue();
                 updateLastActive(cacheKey, idleStr);
@@ -152,6 +167,9 @@ public class FormOptionsCacheAspect {
             }
 
             if (duration > 0) {
+                if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
+                    LogUtil.debug(FormOptionsCacheAspect.class.getName(), "start sync cache for " + cacheKey + " with duration " + duration + "s");
+                }
                 updateLastActive(cacheKey, idleStr);
                 
                 ThreadPoolTaskScheduler scheduler = (ThreadPoolTaskScheduler) AppUtil.getApplicationContext().getBean("formOptionsCacheExecutor");
@@ -227,6 +245,9 @@ public class FormOptionsCacheAspect {
                         }
                     }
                 } catch (Exception e) {
+                    if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
+                        LogUtil.error(FormOptionsCacheAspect.class.getName(), e, "syncOptionsCache: " + cacheKey);
+                    }
                 } finally {
                     setInProgress(cacheKey, false);
                 }

@@ -152,17 +152,21 @@ public class DuplicateValueValidator extends FormValidator {
         boolean result = false;
         FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
 
-        if (values != null && values.length > 0 && FormUtil.isElementPropertyValuesChanges(element, formData, values)) {
+        if (values != null && values.length > 0) {
             for (String val : values) {
                 String key = null;
 
                 if (!FormUtil.PROPERTY_ID.equals(fieldId)) {
                     try {
                         key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val.trim());
+                        String primaryKey = element.getPrimaryKeyValue(formData);
+                        if (primaryKey != null && key != null && key.equals(primaryKey)) {
+                            return false;
+                        }
                     } catch (Exception e) {
                         key = null;
                     }
-                } else {
+                } else if (FormUtil.isElementPropertyValuesChanges(element, formData, values)) {
                     if (formDataDao.load(formDefId, tableName, val.trim()) != null) {
                         key = val.trim();
                     }
