@@ -396,13 +396,13 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         }
 
         // normalize the font name
-        if (result.equalsIgnoreCase("serif")) {
+        if (result.equalsIgnoreCase("Times")) {
+            result = "TimesRoman";
+        } else if (result.equalsIgnoreCase("serif")) {
             result = "Serif";
-        }
-        else if (result.equalsIgnoreCase("sans-serif")) {
+        } else if (result.equalsIgnoreCase("sans-serif")) {
             result = "SansSerif";
-        }
-        else if (result.equalsIgnoreCase("monospace")) {
+        } else if (result.equalsIgnoreCase("monospace")) {
             result = "Monospaced";
         }
 
@@ -522,6 +522,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         result.put("DialogInput", courier);
         result.put("Monospaced", courier);
         result.put("Courier", courier);
+        addDefaultFonts("Courier");
     }
 
     private static void addTimes(HashMap result) throws DocumentException, IOException {
@@ -539,6 +540,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
 
         result.put("Serif", times);
         result.put("TimesRoman", times);
+        addDefaultFonts("Times");
     }
 
     private static void addHelvetica(HashMap result) throws DocumentException, IOException {
@@ -557,6 +559,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         result.put("Dialog", helvetica);
         result.put("SansSerif", helvetica);
         result.put("Helvetica", helvetica);
+        addDefaultFonts("Helvetica");
     }
 
     private static void addSymbol(Map result) throws DocumentException, IOException {
@@ -566,6 +569,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.SYMBOL, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
 
         result.put("Symbol", fontFamily);
+        addDefaultFonts("Symbol");
     }
 
     private static void addZapfDingbats(Map result) throws DocumentException, IOException {
@@ -575,6 +579,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.addFontDescription(new FontDescription(createFont(BaseFont.ZAPFDINGBATS, BaseFont.CP1252, false), IdentValue.NORMAL, 400));
 
         result.put("ZapfDingbats", fontFamily);
+        addDefaultFonts("ZapfDingbats");
     }
 
     // fontFamilyName, fontName, encoding
@@ -606,6 +611,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, true), IdentValue.NORMAL, 400));
 
         fontFamilyMap.put(fontFamilyName, fontFamily);
+        addDefaultFonts(fontFamilyName);
     }
     
     private static void addCustomLoadedFonts(Map fontFamilyMap) throws DocumentException, IOException {

@@ -28,6 +28,10 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                             format = date.substring(date.indexOf("|") + 1);
                             date = date.substring(0, date.indexOf("|"));
                         }
+                        if (date.startsWith("{") && date.endsWith("}")) {
+                            LogUtil.debug(DateHashVariable.class.getName(), "variable: " + variableKey + " contains unparsable date.");
+                            return null;
+                        }
 
                         DateFormat df = new SimpleDateFormat(format);
                         Date result =  df.parse(date);  

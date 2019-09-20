@@ -24,6 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import com.lowagie.text.pdf.ITextCustomFontResolver;
 import com.lowagie.text.pdf.ITextCustomOutputDevice;
+import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -237,9 +238,18 @@ public class FormPdfUtil {
             html = cleanFormHtml(html, showAllSelectOptions);
         }
         
+        String englishFont = "\"Times\",";
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        String locale = setupManager.getSettingValue("systemLocale");
+        if (locale != null && (locale.startsWith("zh") || locale.startsWith("hu") 
+                || locale.startsWith("ar") || locale.startsWith("th") 
+                || locale.startsWith("ja") || locale.startsWith("ko"))) {
+            englishFont = "";
+        }
+        
         //append style
         String style = "<style type='text/css'>";
-        style += "*{font-size:12px;font-family:"+DEFAULT_FONTS+";}";
+        style += "*{font-size:12px;font-family:"+englishFont+DEFAULT_FONTS+";}";
         style += formPdfCss();
         style += ".quickEdit{display:none;}";
         style += ".pdf_visible{display:block !important; height: auto !important; width: 100% !important;}";
