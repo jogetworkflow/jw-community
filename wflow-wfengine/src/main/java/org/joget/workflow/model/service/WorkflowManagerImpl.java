@@ -74,6 +74,7 @@ import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
@@ -3288,8 +3289,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             }
 
+            // if parentProcessId is not specified, set to UUID
+            if (parentProcessId == null || parentProcessId.trim().length() == 0) {
+                parentProcessId = UuidGenerator.getInstance().getUuid();
+            }
+
             //process linking
-            if (parentProcessId != null && parentProcessId.trim().length() > 0) {
+            if (getWorkflowProcessLink(processInstanceId) == null) {
                 internalAddWorkflowProcessLink(parentProcessId, processInstanceId);
             }
 
@@ -3301,6 +3307,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             processStarted.setId(processDefId);
             processStarted.setInstanceId(processInstanceId);
             result.setProcess(processStarted);
+            result.setParentProcessId(parentProcessId);
 
             //redirect to assignment view accordingly
             if (wfProcess != null && !startManually) {

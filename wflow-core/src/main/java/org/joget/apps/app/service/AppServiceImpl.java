@@ -660,8 +660,7 @@ public class AppServiceImpl implements AppService {
                     // start process
                     result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
                     String processId = result.getProcess().getInstanceId();
-                    String originId = (originProcessId != null && originProcessId.trim().length() > 0) ? originProcessId : processId;
-                    originId = getOriginProcessId(originId);
+                    String originId = result.getParentProcessId();
 
                     // set primary key
                     formResult.setPrimaryKeyValue(originId);
