@@ -34,6 +34,15 @@ PwaUtil = {
     darkColor : '#2d2d2d',
     
     init: function () {
+        //check if in iframe
+        if(!PwaUtil.isEmbedded){
+            try {
+                PwaUtil.isEmbedded = window.self !== window.top;
+            } catch (e) {
+                PwaUtil.isEmbedded = true;
+            }
+        }
+        
         if (!navigator.serviceWorker || PwaUtil.isEmbedded) {
             return;
         }
