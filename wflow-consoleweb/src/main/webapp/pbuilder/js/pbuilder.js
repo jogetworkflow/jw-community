@@ -1034,7 +1034,7 @@ ProcessBuilder.ApiClient = {
                 $("#packageList").dialog("close");
                 ProcessBuilder.Actions.clearUndo();
                 // set title
-                document.title = document.title.substring(0, document.title.indexOf(":")) + ": " + UI.escapeHTML(ProcessBuilder.Designer.model.packageName);
+                document.title = document.title.substring(0, document.title.indexOf(":")) + ": " + ProcessBuilder.Util.decodeXML(ProcessBuilder.Designer.model.packageName);
                 // callback
                 if (callback) {
                     callback();

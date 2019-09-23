@@ -174,6 +174,9 @@
                                 
                 self.editing    = true;
                 self.revert     = $(self).html();
+                if (!settings.allowHtml) {
+                    self.revert     = $(self).text();
+                }
                 $(self).html('');
 
                 /* create the form object */
@@ -535,6 +538,7 @@
         loadtype   : 'GET',
         loadtext   : 'Loading...',
         placeholder: 'Click to edit',
+        allowHtml  : true,
         loaddata   : {},
         submitdata : {},
         ajaxoptions: {}
