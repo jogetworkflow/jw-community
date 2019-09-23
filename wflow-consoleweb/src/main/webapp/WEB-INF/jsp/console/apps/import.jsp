@@ -67,7 +67,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="doNotImportPlugins" class="upload">
-                                <input id="importPlugins" type="checkbox" name="doNotImportPlugins" value="true"/><i></i>
+                                <input id="doNotImportPlugins" type="checkbox" name="doNotImportPlugins" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.doNotImportPlugins"/>
                             </label>
                         </span>
@@ -75,7 +75,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="doNotImportFormDatas" class="upload">
-                                <input id="importPlugins" type="checkbox" name="doNotImportFormDatas" value="true"/><i></i>
+                                <input id="doNotImportFormDatas" type="checkbox" name="doNotImportFormDatas" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.doNotImportFormDatas"/>
                             </label>
                         </span>
