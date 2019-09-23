@@ -1255,7 +1255,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             columnList = new HashSet<String>();
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
-            Set<String> customTableColumns = CustomFormDataTableUtil.getColumns(appDef, tableName);
+            Set<String> customTableColumns = null;
+            if (appDef != null) {
+                customTableColumns = CustomFormDataTableUtil.getColumns(appDef, tableName);
+            }
             if ((formList != null && !formList.isEmpty()) || (customTableColumns != null && !customTableColumns.isEmpty())) {
                 if (formList != null && !formList.isEmpty()) {
                     for (FormDefinition formDef : formList) {
