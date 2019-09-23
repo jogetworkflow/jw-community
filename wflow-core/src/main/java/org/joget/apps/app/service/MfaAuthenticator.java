@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.workflow.security.WorkflowUserDetails;
+import org.joget.commons.util.LogUtil;
 import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
@@ -20,6 +21,7 @@ import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -155,6 +157,12 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user.getUsername(), "", gaList);
         result.setDetails(details);
         SecurityContextHolder.getContext().setAuthentication(result);
+        
+        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+        String ip = httpRequest.getRemoteAddr();
+        LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : true");
+        WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : true"); 
         
         return "<script>parent.window.location = '"+getRedirectUrl()+"';</script>";
     }
