@@ -3,6 +3,7 @@ package org.joget.commons.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Utility methods to generate an UUID
@@ -50,10 +51,20 @@ public class UuidGenerator {
     }
 
     /**
-     * Generate an UUID
+     * Generate a globally unique identifier based on UUIDv4
      * @return 
      */
-    public synchronized String getUuid() {
+    public String getUuid() {
+        String uuid = UUID.randomUUID().toString();
+        return uuid;
+    }
+    
+    /**
+     * Generate a UUID, old v6 implementation
+     * @return 
+     * @deprecated
+     */
+    public synchronized String getOldUuid() {
         long timeNow = System.currentTimeMillis();
         int timeLow = (int) timeNow & -1;
         int node = seeder.nextInt();

@@ -9,6 +9,7 @@ public class WorkflowProcessResult {
     private WorkflowProcess process;
     private Collection<WorkflowActivity> activities;
     private String status;
+    private String parentProcessId;
 
     /**
      * @return the process
@@ -52,6 +53,18 @@ public class WorkflowProcessResult {
         this.status = status;
     }
 
-    
+    /**
+     * @return the parent process ID
+     */
+    public String getParentProcessId() {
+        return parentProcessId;
+    }
+
+    /**
+     * @param parentProcessId the parent process ID
+     */
+    public void setParentProcessId(String parentProcessId) {
+        this.parentProcessId = parentProcessId;
+    }
 
 }

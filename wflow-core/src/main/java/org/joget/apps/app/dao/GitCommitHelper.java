@@ -65,6 +65,13 @@ public class GitCommitHelper {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.git);
+        return hash;
+    }
+    
     public boolean isSyncPlugins() {
         return syncPlugins;
     }

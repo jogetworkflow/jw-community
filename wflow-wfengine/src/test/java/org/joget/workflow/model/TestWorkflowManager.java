@@ -132,10 +132,11 @@ public class TestWorkflowManager {
         String packageVersion = workflowManager.getCurrentPackageVersion(packageId);
         WorkflowProcessResult result = workflowManager.processStart(packageId+"#"+packageVersion+"#"+processId);
         String process1Id = result.getProcess().getInstanceId();
+        String parentProcess1Id = result.getParentProcessId();
         LogUtil.info(getClass().getName(), "-------------  process one id : " + process1Id + "  -------------");
 
         //start 2nd process with 1st process instant id and get 2nd process instant id
-        WorkflowProcessResult nextResult = workflowManager.processStartWithLinking(packageId+"#"+packageVersion+"#"+processId, null, null, process1Id);
+        WorkflowProcessResult nextResult = workflowManager.processStartWithLinking(packageId+"#"+packageVersion+"#"+processId, null, null, parentProcess1Id);
         String process2Id = nextResult.getProcess().getInstanceId();
         LogUtil.info(getClass().getName(), "-------------  process two id : " + process2Id + "  -------------");
 
@@ -144,7 +145,7 @@ public class TestWorkflowManager {
         LogUtil.info(getClass().getName(), "-------------  origin process id : " + link.getOriginProcessId() + "  -------------");
         workflowManager.internalDeleteWorkflowProcessLink(link);
         Assert.assertNotNull(link);
-        Assert.assertTrue(process1Id.equals(link.getOriginProcessId()) && process1Id.equals(link.getParentProcessId()));
+        Assert.assertTrue(parentProcess1Id.equals(link.getOriginProcessId()) && parentProcess1Id.equals(link.getParentProcessId()));
     }
 
     public void testCopyProcess() {
