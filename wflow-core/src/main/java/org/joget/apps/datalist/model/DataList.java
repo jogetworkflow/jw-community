@@ -49,6 +49,7 @@ public class DataList {
     private DataListAction[] rowActions;
     private DataListColumn[] columns;
     private String[] filterTemplates;
+    private String injectedHTML;
     private DataListBinder binder;
     private DataListCollection rows;
     private DataListActionResult actionResult;
@@ -688,6 +689,52 @@ public class DataList {
             filterTemplates = (String[]) templates.toArray(new String[0]);
         }
         return filterTemplates;
+    }
+    
+    public String getInjectedHTML() {
+        if (injectedHTML == null) {
+            injectedHTML = "";
+
+            // find action
+            for (DataListAction action : getActions()) {
+                if (action instanceof DataListPluginExtend) {
+                    String temp = ((DataListPluginExtend) action).getHTML(this);
+                    if (temp != null) {
+                        injectedHTML += temp;
+                    }
+                }
+            }
+            
+            for (DataListAction action : getRowActions()) {
+                if (action instanceof DataListPluginExtend) {
+                    String temp = ((DataListPluginExtend) action).getHTML(this);
+                    if (temp != null) {
+                        injectedHTML += temp;
+                    }
+                }
+            }
+            
+            for (DataListColumn column : columns) {
+                DataListAction action = column.getAction();
+                if (action != null && action instanceof DataListPluginExtend) {
+                    String temp = ((DataListPluginExtend) action).getHTML(this);
+                    if (temp != null) {
+                        injectedHTML += temp;
+                    }
+                }
+                if (column.getFormats() != null) {
+                    for (DataListColumnFormat f : column.getFormats()) {
+                        if (f != null && f instanceof DataListPluginExtend) {
+                            String temp = ((DataListPluginExtend) f).getHTML(this);
+                            if (temp != null) {
+                                injectedHTML += temp;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return injectedHTML;
     }
 
     public void addBinderProperty(String key, Object value) {

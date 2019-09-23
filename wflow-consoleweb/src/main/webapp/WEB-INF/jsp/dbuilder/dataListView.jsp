@@ -223,6 +223,8 @@
                                 </div>
                             </c:if>    
                         </c:if>
+                        
+                        ${dataList.injectedHTML}
                     </form>
                 </c:if>    
             </c:catch>
