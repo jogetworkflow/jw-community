@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<p><i class="fa fa-edit"></i> <fmt:message key="adminBar.label.designApp"/>: <input id="appNameValue" type="hidden" value="<c:out value="${appDefinition.name}"/>"><span id="appName" class="nav-subtitle"><c:out value="${appDefinition.name}"/></span></p>
+<p><i class="fa fa-edit"></i> <fmt:message key="adminBar.label.designApp"/>: <input id="appNameValue" type="hidden" value="<c:out value="${appDefinition.name}"/>"><span id="appName" class="nav-subtitle"><c:out value="${appDefinition.name}" escapeXml="false"/></span></p>
 <p id="nav-links"><a href="#" onclick="version()" class="smallbutton"><fmt:message key="console.app.common.label.version"/> ${appDefinition.version}</a> <a href="#" onclick="version()" class="smallbutton"><c:choose><c:when test="${appDefinition.published}"><fmt:message key="console.app.common.label.published"/></c:when><c:otherwise><fmt:message key="console.app.common.label.notPublished"/></c:otherwise></c:choose></a></span></p>
 <c:if test="${!empty appInfo}"><p>${appInfo}</p></c:if>
 
@@ -29,7 +29,8 @@
             onblur    : 'submit',
             rows      : 1,
             width     : '80%',
-            minwidth  : 80
+            minwidth  : 80,
+            allowHtml : false
         });
     });
 

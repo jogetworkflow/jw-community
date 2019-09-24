@@ -117,6 +117,12 @@
             $(iframe).attr("_cachedSelection", json);
         }
         
+        function htmlDecode(input){
+            var e = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+        
         function getSelectedData() {
             // get selected checkboxes
             var selected = new Array();
@@ -150,8 +156,11 @@
                             var prop = columns[idx2-1].name;
                             var val = $('<div>'+$(col).html()+'</div>');
                             $(val).find(".footable-toggle").remove();
-                            val = $(val).html();
-                            result[prop] = val;
+                            if ($(val).find("*").length > 0) { //check if html
+                                result[prop] = $(val).html();
+                            } else {
+                                result[prop] = htmlDecode($(val).html());
+                            }
                         }
                     }
                 });

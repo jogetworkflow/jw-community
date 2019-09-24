@@ -625,7 +625,7 @@ public class DataList {
         } else {
             values = request.getParameterValues(param);
         }
-        if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
+        if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTING.equals(paramName) || TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
             String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
             HttpSession session = request.getSession(true);
 

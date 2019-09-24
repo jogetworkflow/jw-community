@@ -24,6 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import com.lowagie.text.pdf.ITextCustomFontResolver;
 import com.lowagie.text.pdf.ITextCustomOutputDevice;
+import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -355,9 +356,18 @@ public class FormPdfUtil {
         //remove br
         html = html.replaceAll("</\\s?br>", "");
         
+        String englishFont = "\"Times\",";
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        String locale = setupManager.getSettingValue("systemLocale");
+        if (locale != null && (locale.startsWith("zh") || locale.startsWith("hu") 
+                || locale.startsWith("ar") || locale.startsWith("th") 
+                || locale.startsWith("ja") || locale.startsWith("ko"))) {
+            englishFont = "";
+        }
+        
         //append style
         String style = "<style type='text/css'>";
-        style += "*{font-size:12px;font-family:"+DEFAULT_FONTS+";}";
+        style += "*{font-size:12px;font-family:"+englishFont+DEFAULT_FONTS+"; word-break:break-all;}";
         style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
         style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
         style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";

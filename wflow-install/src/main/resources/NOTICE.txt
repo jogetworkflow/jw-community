@@ -20,6 +20,9 @@ http://www.apache.org/licenses/LICENSE-2.0.html
 Antlr:
 http://www.antlr2.org/license.html
 
+ACE 1.4.5:
+https://github.com/ajaxorg/ace/blob/master/LICENSE
+
 ASM:
 http://asm.ow2.org/license.html
 

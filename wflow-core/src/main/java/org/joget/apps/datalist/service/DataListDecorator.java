@@ -198,7 +198,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         boolean skipHidden = false;
         String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
         String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
-        if (("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
+        if (("1".equals(export) && exportType != null && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
             skipHidden = true;
         }
         
@@ -301,7 +301,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
             // sanitize output
             String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
             String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
-            if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
+            if (!("1".equals(export) && exportType != null && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
                 if (isRenderHtml(column)) {
                     result = StringUtil.stripHtmlRelaxed(result.toString());
                 } else {

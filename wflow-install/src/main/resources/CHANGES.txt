@@ -2,6 +2,27 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.22
+=================
+1f73d57c Fixed: wflow-core - MfaAuthenticator - Does not log for login event. #6859 @6.0-SNAPSHOT
+d6dd6115 Fixed: wflow-consoleweb - App - App name cannot handle & character correctly. @6.0-SNAPSHOT
+f78c6194 Fixed: wflow-core - Text Field - Thousand separator caused calculation error. #6868 @6.0-SNAPSHOT
+ece4de68 Fixed: wflow-core - Datalist - Exporting parameter value is retrieved from session causing NPE. #6863 @6.0-SNAPSHOT
+b7d68b95 Fixed: wflow-core - Datalist Builder - Hidden action plugin is appear in the builder. @6.0-SNAPSHOT
+8aac2571 Fixed: wflow-consoleweb - Column - Horizontal layout does not work in subform. #6834 @6.0-SNAPSHOT
+7af4042c Fixed: wflow-core - Section - Visibility control checking does not work correctly on empty value during PDF generation. #6837 @6.0-SNAPSHOT
+7a5751b5 Fixed: wflow-core - FormPdfUtil - NPE when system locale is null. #6744 @6.0-SNAPSHOT
+ef1d810e Fixed: wflow-core - FormPdfUtil - English text font is switch from times to STSONG. #6744 @6.0-SNAPSHOT
+75589643 Modified: wflow-core - Form Options Cache - Improve debugging message and adding fallback if error. @6.0-SNAPSHOT
+0f79b425 Fixed: wflow-core - FormPdfUtil - English text font is switch from times to STSONG. #6744 @6.0-SNAPSHOT
+05293787 Fixed: wflow-core - Duplicate Value Validator - Does not work correctly when a form is save as draft before. @6.0-SNAPSHOT
+0d56747c Modified: wflow-core - Date Hash Variable - Using date hash variable to format value in form grid does not work correctly. #6806 @6.0-SNAPSHOT
+f8424145 Fixed: wflow-consoleweb - Embed Datalist - JSON data is HTML encoded. #6785 @6.0-SNAPSHOT
+7f50ffbd Fixed: wflow-core - GridInnerDataStoreBinderWrapper - Incorrectly handle preloaded data during storing. #6777 @6.0-SNAPSHOT
+d889d6fe Fixed: wflow-consoleweb - Update ace editor to 1.4.5 to fix missing sql syntax highlight. @6.0-SNAPSHOT
+f3ab330a Fixed: wflow-enterprise-plugins - Advanced Grid - Prevent possible NPE. @6.0-SNAPSHOT
+cb9060cc Fixed: wflow-core - User Security - Does not log for login event after force password changed. #6859 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.21
 =================
 18f0fd46 Fixed: wflow-consoleweb - Grid - Visibility controlled section did not display grid values after validation error. #6406 @6.0-SNAPSHOT

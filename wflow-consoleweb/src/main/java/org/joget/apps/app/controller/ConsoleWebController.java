@@ -1598,8 +1598,8 @@ public class ConsoleWebController {
                     String xpdl = new String(out.toByteArray(), "UTF-8");
 
                     // replace package ID and name
-                    xpdl = xpdl.replace("${packageId}", appDef.getId());
-                    xpdl = xpdl.replace("${packageName}", appDef.getName());
+                    xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+                    xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
                     writer.write(xpdl);
                 }
             } finally {
