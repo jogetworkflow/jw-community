@@ -184,6 +184,7 @@ CustomBuilder = {
                 $('#builder-content').children().hide();
                 $(div).show();
             }
+            $("body").removeClass("stop-scrolling");
             return false;
         });
         
@@ -201,6 +202,7 @@ CustomBuilder = {
                 saveCallback: CustomBuilder.saveBuilderProperties
             };
             $('#step-properties-container').propertyEditor(options);
+            $("body").addClass("stop-scrolling");
             return true;
         });
         

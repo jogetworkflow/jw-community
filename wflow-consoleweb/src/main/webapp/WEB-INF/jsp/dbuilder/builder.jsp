@@ -60,6 +60,7 @@
                         $(this).prev().addClass("next");
                         $('#tabpanels').children().hide();
                         $(div).show();
+                        $("body").removeClass("stop-scrolling");
                     }
                     return false;
                 });
@@ -69,6 +70,7 @@
                 
                 $('#builder-steps-properties').click( function(){
                     DatalistBuilder.showDatalistProperties();
+                    $("body").addClass("stop-scrolling");
                 })
             });
         </script>

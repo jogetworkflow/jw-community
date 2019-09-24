@@ -784,3 +784,6 @@ body .property-editor-page-button-panel input[type=button]:hover{
     background-color: #00897b;
     color: #fff;
 }
+body.stop-scrolling {
+    overflow: hidden;
+}

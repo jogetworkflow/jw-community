@@ -134,6 +134,7 @@ UserviewBuilder = {
                 $(this).prev().addClass("next");
                 $('#builder-content').children().hide();
                 $(div).show();
+                $("body").removeClass("stop-scrolling");
             }
             return false;
         });
@@ -159,6 +160,7 @@ UserviewBuilder = {
                 saveCallback: UserviewBuilder.saveSettingProperties
             };
             $('#step-setting-container').propertyEditor(options);
+            $("body").addClass("stop-scrolling");
             return true;
         });
 
