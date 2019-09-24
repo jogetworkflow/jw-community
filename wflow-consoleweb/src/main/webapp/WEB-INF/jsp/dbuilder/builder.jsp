@@ -98,7 +98,7 @@
                 </div>
 
                 <div id="tabpanels">
-                    <div id="source">
+                    <div id="source" class="fixed-height">
 
                     </div>
 

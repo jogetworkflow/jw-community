@@ -1227,6 +1227,9 @@ PropertyEditor.Model.Editor.prototype = {
             } else if ($(this.element).parent().attr('id') === "main-body-content") {
                 $(this.editor).css("width", "auto");
                 tempHeight = tempHeight - $(this.element).offset().top;
+            } else if ($(this.element).hasClass("fixed-height")) {
+                $(this.editor).css("width", "auto");
+                tempHeight = $(this.element).height();
             } else {
                 $(this.editor).css("width", "auto");
                 tempHeight = tempHeight * 0.9 - $(this.element).offset().top;
