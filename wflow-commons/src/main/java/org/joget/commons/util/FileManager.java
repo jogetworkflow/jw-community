@@ -247,4 +247,11 @@ public class FileManager {
             }
         }
     }
+    
+    /**
+     * Performs shutdown tasks e.g. stops the ScheduledExecutorService thread
+     */
+    public static void shutdown() {
+        scheduledExecutorService.shutdown();
+    }
 }
