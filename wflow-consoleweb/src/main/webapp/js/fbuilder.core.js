@@ -990,7 +990,7 @@ FormBuilder = {
 
         // show builder div
         $("#builder-content").css("display", "block");
-
+        $("body").removeClass("stop-scrolling");
         return false;
     },
 
@@ -1044,7 +1044,7 @@ FormBuilder = {
             }
         };
         $('#form-properties').propertyEditor(options);
-
+        $("body").addClass("stop-scrolling");
         return false;
     },
     
