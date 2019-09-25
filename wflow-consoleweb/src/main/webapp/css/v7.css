@@ -1892,4 +1892,20 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
     .process-name .ftl_label{
         margin-bottom: 10px;
     }
+    body#webconsole #home-box {
+        position: relative;
+        width: auto;
+        max-width: none;
+        top: initial;
+        left: auto;
+        transform: none;
+        margin: 150px 10px 0;
+    }
+    body#webconsole #home-box .welcome-box {
+        width: auto;
+        display: block;
+    }
+    body#webconsole #home-box .welcome-box + .welcome-box {
+        margin-top: 35px;
+    }
 }
