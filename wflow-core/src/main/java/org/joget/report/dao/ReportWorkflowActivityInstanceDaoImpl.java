@@ -25,11 +25,18 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
         return (ReportWorkflowActivityInstance) super.find(ENTITY_NAME, instanceId);
     }
     
+    @Override
     public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
         return getReportWorkflowActivityInstanceList(appId, appVersion, processDefId, activityDefId, false, sort, desc, start, rows);
     }
-
+    
+    @Override
     public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows) {
+        return getReportWorkflowActivityInstanceList(appId, appVersion, processDefId, null, activityDefId, false, sort, desc, start, rows);
+    }
+
+    @Override
+    public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String processInstanceId, String activityDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows) {
         String condition = " WHERE 1=1";
         Collection params = new ArrayList();
 
@@ -46,6 +53,11 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
         if (processDefId != null && !processDefId.isEmpty()) {
             condition += " AND e.reportWorkflowProcessInstance.reportWorkflowProcess.processDefId = ?";
             params.add(processDefId);
+        }
+        
+        if (processInstanceId != null && !processInstanceId.isEmpty()) {
+            condition += " AND e.reportWorkflowProcessInstance.instanceId = ?";
+            params.add(processInstanceId);
         }
 
         if (activityDefId != null && !activityDefId.isEmpty()) {
@@ -59,8 +71,19 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
 
         return (List<ReportWorkflowActivityInstance>) super.find(ENTITY_NAME, condition, params.toArray(), sort, desc, start, rows);
     }
-
+    
+    @Override
     public long getReportWorkflowActivityInstanceListSize(String appId, String appVersion, String processDefId, String activityDefId) {
+        return getReportWorkflowActivityInstanceListSize(appId, appVersion, processDefId, activityDefId, false);
+    }
+    
+    @Override
+    public long getReportWorkflowActivityInstanceListSize(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly) {
+        return getReportWorkflowActivityInstanceListSize(appId, appVersion, processDefId, null, activityDefId, false);
+    }
+
+    @Override
+    public long getReportWorkflowActivityInstanceListSize(String appId, String appVersion, String processDefId, String processInstanceId, String activityDefId, boolean hasSlaOnly) {
         String condition = " WHERE 1=1";
         Collection params = new ArrayList();
 
@@ -78,10 +101,19 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
             condition += " AND e.reportWorkflowProcessInstance.reportWorkflowProcess.processDefId = ?";
             params.add(processDefId);
         }
+        
+        if (processInstanceId != null && !processInstanceId.isEmpty()) {
+            condition += " AND e.reportWorkflowProcessInstance.instanceId = ?";
+            params.add(processInstanceId);
+        }
 
         if (activityDefId != null && !activityDefId.isEmpty()) {
             condition += " AND e.reportWorkflowActivity.activityDefId = ?";
             params.add(activityDefId);
+        }
+        
+        if (hasSlaOnly) {
+            condition += " AND e.due IS NOT NULL";
         }
 
         return super.count(ENTITY_NAME, condition, params.toArray());

@@ -130,7 +130,9 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 || auditTrail.getMethod().equals("assignmentReassign")
                 || auditTrail.getMethod().equals("executeTool")
                 || auditTrail.getMethod().equals("executeToolCompleted")
-                || auditTrail.getMethod().equals("executeActivity");
+                || auditTrail.getMethod().equals("executeActivity")
+                || auditTrail.getMethod().equals("runSubFlow")
+                || auditTrail.getMethod().equals("finishSubFlow");
     }
     
     protected class ReportTask implements Runnable {

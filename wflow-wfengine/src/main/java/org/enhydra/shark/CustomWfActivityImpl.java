@@ -14,10 +14,12 @@ import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.PersistentManagerInterface;
+import org.enhydra.shark.api.internal.toolagent.ToolAgentGeneralException;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfActivityImpl extends WfActivityImpl {
     private final static String MULTI_APPROVAL_PERFORMERS = "MULTI_APPROVAL_PERFORMERS";
@@ -29,6 +31,25 @@ public class CustomWfActivityImpl extends WfActivityImpl {
     
     protected CustomWfActivityImpl(ActivityPersistenceObject po, WfProcessInternal proc){
         super(po, proc);
+    }
+    
+    @Override
+    protected void runSubFlow(WMSessionHandle shandle) throws Exception, ToolAgentGeneralException {
+        super.runSubFlow(shandle);
+        
+        //write to audit trail
+        WorkflowUtil.addAuditTrail(this.getClass().getName(), "runSubFlow", key);
+    }
+    
+    @Override
+    public void finish(WMSessionHandle shandle) throws Exception, CannotComplete {
+        super.finish(shandle);
+        
+        int type = getActivityDefinition(shandle).getActivityType();
+        if (type == 3) {
+            //write to audit trail
+            WorkflowUtil.addAuditTrail(this.getClass().getName(), "finishSubFlow", key);
+        }
     }
     
     @Override
