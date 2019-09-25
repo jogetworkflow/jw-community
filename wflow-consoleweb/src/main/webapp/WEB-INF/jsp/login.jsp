@@ -8,10 +8,6 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
 }
 %>
-<c:if test="${mobileUserAgent && (empty cookie['desktopSite'].value || cookie['desktopSite'].value != 'true')}">
-    <c:redirect url="/web/mlogin"/>
-</c:if>
-
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!isAnonymous}">
     <c:redirect url="/web/console/home"/>
