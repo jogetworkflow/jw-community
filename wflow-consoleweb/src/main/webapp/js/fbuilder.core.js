@@ -180,6 +180,24 @@ FormBuilder = {
     },
 
     initElementDefinition: function(elementClass, properties, template) {
+        //add in field id validation
+        var found = false;
+        if (properties !== null && properties !== undefined) {
+            for (var i in properties) {
+                if (properties[i].properties != null && properties[i].properties !== undefined) {
+                    for (var j in properties[i].properties) {
+                        if (properties[i].properties[j].name === "id" && properties[i].properties[j].js_validation === undefined) {
+                            properties[i].properties[j].js_validation = 'FormBuilder.validateFieldId';
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found) {
+                    break;
+                }
+            }
+        }
         FormBuilder.elementPropertyDefinitions[elementClass] = properties;
         FormBuilder.elementTemplates[elementClass] = template;
     },
@@ -1491,5 +1509,12 @@ FormBuilder = {
         if (window.opener && window.opener.refreshNavigator) {
             window.opener.location.reload(true);
         }
+    },
+    
+    validateFieldId: function(name, value) {
+        if ($.inArray(value, ["appId","appVersion","version","userviewId","menuId","key","embed"]) >= 0) {
+            return get_fbuilder_msg("fbuilder.reserveIds");
+        }
+        return null;    
     }
 }
