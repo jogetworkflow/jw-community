@@ -269,6 +269,7 @@ PwaUtil = {
     },
     
     handleConnection: function () {
+        
         if (navigator.onLine) {
             if(PwaUtil.isOnline === false){
                 PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');

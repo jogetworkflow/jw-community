@@ -2,15 +2,17 @@
 <h4>@@pwa.offline.desc@@</h4>
 
 <div id="pwaOffline" class="form-data-container dataList">
-    <table class="xrounded_shadowed default footable-loaded footable" style="width: 100%">
+    <table class="table xrounded_shadowed" style="width: 100%">
         <thead>
-            <th>@@pwa.offline.id@@</th>
-            <th>@@pwa.offline.userviewAppId@@</th>
-            <th>@@pwa.offline.formName@@</th>
-            <th>@@pwa.offline.username@@</th>
-            <th>@@pwa.offline.status@@</th>
-            <th>@@pwa.offline.dateSubmitted@@</th>
-            <th></th>
+            <tr>
+                <th data-breakpoints="xs">@@pwa.offline.id@@</th>
+                <th>@@pwa.offline.userviewAppId@@</th>
+                <th data-breakpoints="sm md">@@pwa.offline.formName@@</th>
+                <th data-breakpoints="sm">@@pwa.offline.username@@</th>
+                <th>@@pwa.offline.status@@</th>
+                <th data-breakpoints="xs">@@pwa.offline.dateSubmitted@@</th>
+                <th class="row_action"></th>
+            </tr>
         </thead>
         <tbody>
 
@@ -21,6 +23,10 @@
 <br/>
 <br/>
 <a href="${home_page_link!}">&laquo;@@pwa.offline.goBack@@</a>
+
+<link rel="stylesheet" type="text/css" href="${params.contextPath}/js/footable/footable.core.min.css?build=${build_number}">
+<script type="text/javascript" src="${params.contextPath}/js/footable/footable.min.js?build=${build_number}"></script>
+<script type="text/javascript" src="${params.contextPath}/js/footable/responsiveTable.js?build=${build_number}"></script>
 
 <script>
     $(document).ready(function(){
@@ -125,7 +131,7 @@
                                  + '<td>' + savedRequest.username + '</td>'
                                  + '<td>' + statusString + '</td>'
                                  + '<td>' + dateString + '</td>'
-                                 + '<td><a href="#" onclick="deleteForm(' + savedRequest.id + ')">delete</a></td>'
+                                 + '<td class="row_action"><span class="row_action_inner"><a href="#" onclick="deleteForm(' + savedRequest.id + ')">delete</a></span></td>'
                                  + '</tr>';
                         $('table tbody').prepend($row);
                     }

@@ -387,7 +387,7 @@ function getCurrentUsername(){
                     reject(error);
                 })
         }).catch(function (error) {
-            console.error('get CSRF token failed:', error);
+            console.error('get current username failed:', error);
             reject(error);
         })
     });
