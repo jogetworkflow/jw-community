@@ -235,6 +235,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         urls.add(contextPath + "/wro/common.js");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
         urls.add(contextPath + "/wro/" + pathName + ".min.js");
+        urls.add(contextPath + "/" + pathName +"/lib/responsive-switch.min.js");
         
         return urls;
     }
@@ -315,7 +316,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" async></script>\n";
         
         if (enableResponsiveSwitch()) {
-            jsCssLink += "<script src=\"" + data.get("context_path") + "/js/responsive-switch.min.js\" defer></script>\n";
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/" + getPathName() +"/lib/responsive-switch.min.js\" defer></script>\n";
         } 
         jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
         jsCssLink += getInternalJsCssLib(data);
