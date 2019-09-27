@@ -84,7 +84,10 @@
         <select id="${var}_searchTerm">
             <c:forEach var="termString" items="${searchTerms}">
                 <c:set var="term" value="${fn:split(termString, '|')}"/>
-                <option value="${fn:trim(term[0])}">${fn:trim(term[1])}</option>
+                <c:set var="termlabel"><fmt:message key="${fn:trim(term[1])}"/></c:set>
+                <c:set var="testLabel" value="???${fn:trim(term[1])}???" />
+                <c:if test="${termlabel eq testLabel}"><c:set var="termlabel" value="${fn:trim(term[1])}"/></c:if>
+                <option value="${fn:trim(term[0])}">${termlabel}</option>
             </c:forEach>
         </select>
         <%--

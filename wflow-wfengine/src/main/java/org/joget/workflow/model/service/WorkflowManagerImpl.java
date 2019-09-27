@@ -1094,7 +1094,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
     }
-
+    
     /*--- Process and activity monitoring information methods ---*/
     /**
      * Returns a list of running processes, filtered by optional parameter values.
@@ -1108,97 +1108,27 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param rows
      * @return
      */
+    @Override
     public Collection<WorkflowProcess> getRunningProcessList(String packageId, String processId, String processName, String version, String sort, Boolean desc, Integer start, Integer rows) {
+        return getRunningProcessList(packageId, processId, processName, version, null, null, sort, desc, start, rows);
+    }
 
-        SharkConnection sc = null;
-        Collection<WorkflowProcess> runningProcessList = new ArrayList<WorkflowProcess>();
-        try {
-
-            sc = connect();
-
-            WfProcessIterator pi = sc.get_iterator_process();
-
-            String sharkExpression = "stateequals.(\"open.running\")";
-            String sqlExpression = "State = (SELECT  oid  FROM SHKProcessStates WHERE  Name  = 'open.running')";
-
-            if (packageId != null && packageId.trim().length() > 0) {
-                sharkExpression += " && packageIdequals.(\"" + packageId + "\")";
-                sqlExpression += " AND ProcessDefinition IN (SELECT  oid  FROM SHKProcessDefinitions WHERE  PackageId  = '" + packageId + "')";
-            }
-            if (processId != null && processId.trim().length() > 0) {
-                sharkExpression += " && key.indexOf(\"" + processId + "\") != -1)";
-                sqlExpression += " AND Id LIKE '%" + processId + "%'";
-            }
-            if (processName != null && processName.trim().length() > 0) {
-                sharkExpression += " && name.indexOf(\"" + processName + "\") != -1)";
-                sqlExpression += " AND Name LIKE '%" + processName + "%'";
-            }
-            if (version != null && version.trim().length() > 0) {
-                sharkExpression += " && versionequals.(\"" + version + "\")";
-                sqlExpression += " AND ProcessDefinition IN (SELECT oid FROM SHKProcessDefinitions WHERE ProcessDefinitionVersion = '" + version + "')";
-            }
-
-            if (start == null) {
-                start = 0;
-            }
-            String queryExpression = "/*startAt " + start + " startAt*/";
-            if (rows != null && rows > 0) {
-                queryExpression += "/*limit " + rows + " limit*/";
-            }
-
-            String sortStr = "";
-            if (sort != null && sort.trim().length() > 0) {
-                sortStr += " ORDER BY " + sort;
-                sortStr += (desc != null && desc.booleanValue()) ? " DESC" : "";
-            }
-            String query_expression = "(" + sharkExpression + ")" + " /*sql (" + sqlExpression + ") " + sortStr + " sql*/ " + queryExpression;
-            pi.set_query_expression(query_expression);
-
-            WfProcess[] wfRunningProcessList = pi.get_next_n_sequence(0);
-
-            for (int i = 0; i < wfRunningProcessList.length; ++i) {
-                WfProcess wfProcess = wfRunningProcessList[i];
-                WfProcessMgr manager = wfProcess.manager();
-
-                WorkflowProcess workflowProcess = new WorkflowProcess();
-                workflowProcess.setId(manager.name());
-                workflowProcess.setInstanceId(wfProcess.key());
-                workflowProcess.setName(wfProcess.name());
-                workflowProcess.setState(wfProcess.state());
-                workflowProcess.setPackageId(MiscUtilities.getProcessMgrPkgId(manager.name()));
-                workflowProcess.setVersion(manager.version());
-                workflowProcess.setRequesterId(getUserByProcessIdAndActivityDefId(workflowProcess.getId(), workflowProcess.getInstanceId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
-
-                WorkflowProcess trackWflowProcess = getRunningProcessInfo(wfProcess.key());
-                workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
-                workflowProcess.setDue(trackWflowProcess.getDue());
-
-                // check for hash variable
-                if (WorkflowUtil.containsHashVariable(workflowProcess.getName())) {
-                    WorkflowAssignment ass = new WorkflowAssignment();
-                    ass.setProcessId(workflowProcess.getInstanceId());
-                    ass.setProcessDefId(workflowProcess.getId());
-                    ass.setProcessName(workflowProcess.getName());
-                    ass.setProcessVersion(workflowProcess.getVersion());
-                    ass.setProcessRequesterId(workflowProcess.getRequesterId());
-                    
-                    workflowProcess.setName(WorkflowUtil.processVariable(workflowProcess.getName(), null, ass));
-                }
-                
-                runningProcessList.add(workflowProcess);
-            }
-
-
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return runningProcessList;
+    /**
+     * Returns a list of running processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public Collection<WorkflowProcess> getRunningProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows) {
+        return workflowAssignmentDao.getProcesses(packageId, null, processId, processName, version, recordId, requester, "open", sort, desc, start, rows);
     }
 
     /**
@@ -1210,45 +1140,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getRunningProcessSize(String packageId, String processId, String processName, String version) {
-
-        SharkConnection sc = null;
-        try {
-
-            sc = connect();
-            int size = 0;
-            Map stateMap = getProcessStateMap();
-            ProcessQuery pq = new ProcessQuery();
-            BigDecimal processStateId = ((ProcessStateDO) stateMap.get(SharkConstants.STATE_OPEN_RUNNING)).get_OId().toBigDecimal();
-            pq.setQueryState(ProcessStateDO.createExisting(processStateId), QueryBuilder.EQUAL);
-            if (packageId != null && packageId.trim().length() > 0) {
-                pq.setQueryPDefName(packageId + "#", QueryBuilder.CASE_INSENSITIVE_STARTS_WITH);
-            }
-
-            if (processId != null && processId.trim().length() > 0) {
-                pq.setQueryId(processId, QueryBuilder.CASE_INSENSITIVE_CONTAINS);
-            }
-
-            if (processName != null && processName.trim().length() > 0) {
-                pq.setQueryName(processName, QueryBuilder.CASE_INSENSITIVE_CONTAINS);
-            }
-
-            if (version != null && version.trim().length() > 0) {
-                pq.setQueryPDefName("#" + version + "#", QueryBuilder.CASE_SENSITIVE_CONTAINS);
-            }
-
-            size = pq.getCount();
-            return size;
-        } catch (Exception ex) {
-
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return 0;
+        return getRunningProcessSize(packageId, processId, processName, version, null, null);
+    }
+    
+    /**
+     * Returns the number of running processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @return
+     */
+    public int getRunningProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
+        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, version, "open")).intValue();
     }
 
     /**
@@ -1264,88 +1170,25 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String sort, Boolean desc, Integer start, Integer rows) {
-
-        SharkConnection sc = null;
-        Collection<WorkflowProcess> runningProcessList = new ArrayList<WorkflowProcess>();
-        try {
-
-            sc = connect();
-
-            WfProcessIterator pi = sc.get_iterator_process();
-
-            String sharkExpression = "statenotequals.(\"open.running\")";
-            String sqlExpression = "State IN (SELECT  oid  FROM SHKProcessStates WHERE  Name  <> 'open.running')";
-
-            if (packageId != null && packageId.trim().length() > 0) {
-                sharkExpression += " && packageIdequals.(\"" + packageId + "\")";
-                sqlExpression += " AND ProcessDefinition IN (SELECT  oid  FROM SHKProcessDefinitions WHERE  PackageId  = '" + packageId + "')";
-            }
-
-            if (processId != null && processId.trim().length() > 0) {
-                sharkExpression += " && key.indexOf(\"" + processId + "\") != -1)";
-                sqlExpression += " AND Id LIKE '%" + processId + "%'";
-            }
-
-            if (processName != null && processName.trim().length() > 0) {
-                sharkExpression += " && name.indexOf(\"" + processName + "\") != -1)";
-                sqlExpression += " AND Name LIKE '%" + processName + "%'";
-            }
-
-            if (version != null && version.trim().length() > 0) {
-                sharkExpression += " && versionequals.(\"" + version + "\")";
-                sqlExpression += " AND ProcessDefinition IN (SELECT oid FROM SHKProcessDefinitions WHERE ProcessDefinitionVersion = '" + version + "')";
-            }
-
-            if (start == null) {
-                start = 0;
-            }
-            String queryExpression = "/*startAt " + start + " startAt*/";
-            if (rows != null && rows > 0) {
-                queryExpression += "/*limit " + rows + " limit*/";
-            }
-
-            String sortStr = "";
-            if (sort != null && sort.trim().length() > 0) {
-                sortStr += " ORDER BY " + sort;
-                sortStr += (desc != null && desc.booleanValue()) ? " DESC" : "";
-            }
-
-            String query_expression = "(" + sharkExpression + ")" + " /*sql (" + sqlExpression + ") " + sortStr + " sql*/ " + queryExpression;
-            pi.set_query_expression(query_expression);
-            WfProcess[] wfRunningProcessList = pi.get_next_n_sequence(0);
-
-            for (int i = 0; i < wfRunningProcessList.length; ++i) {
-                WfProcess wfProcess = wfRunningProcessList[i];
-                WfProcessMgr manager = wfProcess.manager();
-
-                WorkflowProcess workflowProcess = new WorkflowProcess();
-                workflowProcess.setId(manager.name());
-                workflowProcess.setInstanceId(wfProcess.key());
-                workflowProcess.setName(wfProcess.name());
-                workflowProcess.setState(wfProcess.state());
-                workflowProcess.setPackageId(MiscUtilities.getProcessMgrPkgId(manager.name()));
-                workflowProcess.setVersion(manager.version());
-                workflowProcess.setRequesterId(getUserByProcessIdAndActivityDefId(workflowProcess.getId(), workflowProcess.getInstanceId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
-
-                WorkflowProcess trackWflowProcess = getRunningProcessInfo(wfProcess.key());
-                workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
-                workflowProcess.setDue(trackWflowProcess.getDue());
-
-                runningProcessList.add(workflowProcess);
-            }
-
-
-        } catch (Exception ex) {
-
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return runningProcessList;
+        return getCompletedProcessList(packageId, processId, processName, version, null, null, sort, desc, start, rows);
+    }
+    
+    /**
+     * Returns a list of completed processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows) {
+        return workflowAssignmentDao.getProcesses(packageId, null, processId, processName, version, recordId, requester, "closed", sort, desc, start, rows);
     }
 
     /**
@@ -1357,44 +1200,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getCompletedProcessSize(String packageId, String processId, String processName, String version) {
-
-        SharkConnection sc = null;
-        try {
-
-            sc = connect();
-            int size = 0;
-            Map stateMap = getProcessStateMap();
-            ProcessQuery pq = new ProcessQuery();
-            pq.setQueryState(ProcessStateDO.createExisting(((ProcessStateDO) stateMap.get(SharkConstants.STATE_OPEN_RUNNING)).get_OId().toBigDecimal()), QueryBuilder.NOT_EQUAL);
-            if (packageId != null && packageId.trim().length() > 0) {
-                pq.setQueryPDefName(packageId + "#", QueryBuilder.CASE_INSENSITIVE_STARTS_WITH);
-            }
-
-            if (processId != null && processId.trim().length() > 0) {
-                pq.setQueryId(processId, QueryBuilder.CASE_INSENSITIVE_CONTAINS);
-            }
-
-            if (processName != null && processName.trim().length() > 0) {
-                pq.setQueryName(processName, QueryBuilder.CASE_INSENSITIVE_CONTAINS);
-            }
-
-            if (version != null && version.trim().length() > 0) {
-                pq.setQueryPDefName("#" + version + "#", QueryBuilder.CASE_SENSITIVE_CONTAINS);
-            }
-
-            size = pq.getCount();
-            return size;
-        } catch (Exception ex) {
-
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return 0;
+        return getCompletedProcessSize(packageId, processId, processName, version, null, null);
+    }
+    
+    /**
+     * Returns the number of completed processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @return
+     */
+    public int getCompletedProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
+        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, version, "closed")).intValue();
     }
 
     /**
