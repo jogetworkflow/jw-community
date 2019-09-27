@@ -101,7 +101,7 @@
         <js>/universal/js/preload.js</js>
     </group>    
     <group name="universal.min">
-        <css>/js/font-awesome4/css/font-awesome.min.css</css>
+        <css>/js/fontawesome5/css/all.min.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
         <js>/js/bootstrap3/js/bootstrap.min.js</js>
@@ -119,7 +119,7 @@
         <js>/progressive/js/preload.js</js>
     </group>    
     <group name="progressive.min">
-        <css>/js/font-awesome4/css/font-awesome.min.css</css>
+        <css>/js/fontawesome5/css/all.min.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
         <js>/js/bootstrap3/js/bootstrap.min.js</js>

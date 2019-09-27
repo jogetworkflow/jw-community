@@ -231,7 +231,6 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.css");
         urls.add(contextPath + "/wro/" + pathName + ".min.css");
-        urls.add(contextPath + "/js/font-awesome4/css/font-awesome.min.css");
         urls.add(contextPath + "/wro/common.js");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
         urls.add(contextPath + "/wro/" + pathName + ".min.js");
