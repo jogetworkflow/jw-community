@@ -1069,7 +1069,7 @@ DependencyTree.Matchers['string'] = {
         'isForm' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj !== "" && refObj !== undefined && (
-                        (refObj['name'] !== undefined && refObj['name'].toLowerCase().indexOf("formid") !== -1) ||
+                        (refObj['name'] !== undefined && refObj['name'].toLowerCase().indexOf("formid") !== -1 && refObj['name'].toLowerCase().indexOf("parentsubformid") === -1 ) ||
                         (refObj['options_ajax'] !== undefined && refObj['options_ajax'].toLowerCase().indexOf("/forms/options") !== -1 ))) {
                     
                     if (viewer.formList[jsonObj] !== undefined) {
@@ -1513,6 +1513,8 @@ DependencyTree.Viewer.prototype = {
     },
     render: function() {
         var viewer = this;
+        $(".treeviewer-alert.warning.alert").remove();
+        viewer['warning'] = {};
         
         if ($(viewer.element).find("#dependencyTreeViewer ul").length === 1) {
             return;
@@ -1549,15 +1551,16 @@ DependencyTree.Viewer.prototype = {
             $("#dependencyTreeViewer").html("");
             
             $('#dependencyTreeViewer').on("refresh.jstree ready.jstree", function(){
-                $(viewer.element).find(".warning.alert").remove();
+                $(".treeviewer-alert.warning.alert").remove();
+                
                 if (viewer['warning']['pwaoffline'] !== undefined && viewer['warning']['pwaoffline'].length > 0) {
-                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("pwa.warning") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['pwaoffline']) + '</span></div>');
+                    $(viewer.element).prepend('<div class="treeviewer-alert warning alert">' + get_advtool_msg("pwa.warning") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['pwaoffline']) + '</span></div>');
                 }
                 if (viewer['warning']['missingplugin'] !== undefined && viewer['warning']['missingplugin'].length > 0) {
-                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("dependency.tree.warning.MissingPlugin") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingplugin']) + '</span></div>');
+                    $(viewer.element).prepend('<div class="treeviewer-alert warning alert">' + get_advtool_msg("dependency.tree.warning.MissingPlugin") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingplugin']) + '</span></div>');
                 }
                 if (viewer['warning']['missingelement'] !== undefined && viewer['warning']['missingelement'].length > 0) {
-                    $(viewer.element).prepend('<div class="warning alert">' + get_advtool_msg("dependency.tree.warning.MissingElement") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingelement']) + '</span></div>');
+                    $(viewer.element).prepend('<div class="treeviewer-alert warning alert">' + get_advtool_msg("dependency.tree.warning.MissingElement") + ' <span class="indicators">' + viewer.buildIndicator(viewer['warning']['missingelement']) + '</span></div>');
                 }
             }).jstree({
                 "types" : {
