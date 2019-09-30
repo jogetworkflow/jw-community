@@ -573,10 +573,20 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                 if (!pluginsToUpload.isEmpty()) {
                     for (File pluginFile: pluginsToUpload) {
                         LogUtil.debug(getClass().getName(), "Uploading plugin " + pluginFile.getName());
+                        FileInputStream in = null;
                         try {
-                            pluginManager.upload(pluginFile.getName(), new FileInputStream(pluginFile));
+                            in = new FileInputStream(pluginFile);
+                            pluginManager.upload(pluginFile.getName(), in);
                         } catch(Exception e) {
                             LogUtil.error(getClass().getName(), e, e.getMessage());
+                        } finally {
+                            try {
+                                if (in != null) {
+                                    in.close();
+                                }
+                            } catch (IOException ex) {
+                                LogUtil.error(AppDefinitionDaoImpl.class.getName(), ex, "");
+                            }
                         }
                     }
                     pluginManager.refresh();

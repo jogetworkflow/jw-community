@@ -41,13 +41,13 @@ import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeansException;
@@ -283,7 +283,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         Set<String> urls = new HashSet<String>();
         
         try {
-            String resourceFilePath = SetupManager.getBaseDirectory() + "/app_pwa/" + appDef.getAppId() + "/resources.json";
+            String resourceFilePath = SecurityUtil.normalizedFileName(SetupManager.getBaseDirectory() + "/app_pwa/" + appDef.getAppId() + "/resources.json");
             Gson gson = new Gson();
             Map<Long, Set<String>> data = null;
             if ((new File(resourceFilePath)).exists()) {
