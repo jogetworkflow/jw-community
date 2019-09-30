@@ -82,9 +82,9 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (recordId != null && !recordId.isEmpty()) {
-                condition += " and (link.originProcessId = ? or e.processId = ?)";
-                params.add(recordId);
-                params.add(recordId);
+                condition += " and (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
             }
             
             if (state != null && !state.isEmpty()) {
@@ -110,10 +110,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
             
             if (recordId != null && !recordId.isEmpty()) {
-                condition += ", WorkflowProcessLink as link  where e.processId = link.processId";
-                where += " and (link.originProcessId = ? or e.processId = ?)";
-                params.add(recordId);
-                params.add(recordId);
+                condition += ", WorkflowProcessLink as link";
+                where += " where e.processId = link.processId and (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
             } else {
                 where += " where 1 = 1";
             }
@@ -668,6 +668,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(shp.getProcessDefId()));
                 workflowProcess.setRequesterId(shp.getResourceRequesterId());
                 
+                WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(shp.getProcessId());
+                workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
+                workflowProcess.setFinishTime(trackWflowProcess.getFinishTime());
+                workflowProcess.setDue(trackWflowProcess.getDue());
                 processes.add(workflowProcess);
             }
         }

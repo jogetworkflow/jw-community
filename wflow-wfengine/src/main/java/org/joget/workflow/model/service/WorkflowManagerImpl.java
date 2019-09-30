@@ -1154,7 +1154,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getRunningProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
-        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, version, "open")).intValue();
+        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, requester, "open")).intValue();
     }
 
     /**
@@ -1214,7 +1214,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getCompletedProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
-        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, version, "closed")).intValue();
+        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, requester, "closed")).intValue();
     }
 
     /**
