@@ -26,8 +26,11 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     public final static String PROCESS_ENTITY_NAME="SharkProcess";
     
     public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        
+        String customField = ", link.originProcessId as recordId";
+        
         //required to disable lazy loading 
-        String condition = "join fetch e.state s join fetch e.link l";
+        String condition = ", WorkflowProcessLink as link join fetch e.state s";
         Collection<String> params = new ArrayList<String>();
         
         if (sort != null && !sort.isEmpty()) {
@@ -44,9 +47,9 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         
+        condition += " where e.processId = link.processId";
+        
         if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
-            condition += " where 1 = 1";
-            
             if (packageId != null && !packageId.isEmpty()) {
                 condition += " and e.processDefId like ?";
                 params.add(packageId + "#%");
@@ -79,7 +82,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (recordId != null && !recordId.isEmpty()) {
-                condition += " and (l.originProcessId = ? or e.processId = ?)";
+                condition += " and (link.originProcessId = ? or e.processId = ?)";
                 params.add(recordId);
                 params.add(recordId);
             }
@@ -94,7 +97,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 }
             }
         }
-        Collection<SharkProcess> shProcess = find(PROCESS_ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        Collection shProcess = find(PROCESS_ENTITY_NAME, customField, condition, params.toArray(new String[0]), sort, desc, start, rows);
         return transformToWorkflowProcess(shProcess);
     }
     
@@ -105,7 +108,15 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         Collection<String> params = new ArrayList<String>();
         
         if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
-            where += " where 1 = 1";
+            
+            if (recordId != null && !recordId.isEmpty()) {
+                condition += ", WorkflowProcessLink as link  where e.processId = link.processId";
+                where += " and (link.originProcessId = ? or e.processId = ?)";
+                params.add(recordId);
+                params.add(recordId);
+            } else {
+                where += " where 1 = 1";
+            }
             
             if (packageId != null && !packageId.isEmpty()) {
                 where += " and e.processDefId like ?";
@@ -136,13 +147,6 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             if (username != null && !username.isEmpty()) {
                 where += " and e.resourceRequesterId = ?";
                 params.add(username);
-            }
-            
-            if (recordId != null && !recordId.isEmpty()) {
-                condition += " join e.link l";
-                where += " and (l.originProcessId = ? or e.processId = ?)";
-                params.add(recordId);
-                params.add(recordId);
             }
             
             if (state != null && !state.isEmpty()) {
@@ -551,6 +555,38 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return q.list();
     }
     
+    protected Collection find(final String entityName, final String customField, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        Session session = findSession();
+        String query = "SELECT e" + customField + " FROM " + entityName + " e " + condition;
+
+        if (sort != null && !sort.equals("")) {
+            String filteredSort = filterSpace(sort);
+            query += " ORDER BY " + filteredSort;
+
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = session.createQuery(query);
+
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
+
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+
+        return q.list();
+    }
+    
     protected Collection<WorkflowAssignment> transformToWorkflowAssignment(Collection<SharkAssignment> shAss) {
         Collection<WorkflowAssignment> ass = new ArrayList<WorkflowAssignment>();
         
@@ -609,14 +645,21 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return ass;
     }
     
-    protected Collection<WorkflowProcess> transformToWorkflowProcess(Collection<SharkProcess> shProcess) {
+    protected Collection<WorkflowProcess> transformToWorkflowProcess(Collection shProcess) {
         Collection<WorkflowProcess> processes = new ArrayList<WorkflowProcess>();
         WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
         
         if (shProcess != null && !shProcess.isEmpty()) {
-            for (SharkProcess shp : shProcess) {
+            for (Object o : shProcess) {
+                Object[] temp = (Object[]) o;
+                SharkProcess shp = (SharkProcess) temp[0];
+                String recordId = (String) temp[1];
+                if (recordId == null) {
+                    recordId = shp.getProcessId();
+                }
+                
                 WorkflowProcess workflowProcess = new WorkflowProcess();
-                workflowProcess.setRecordId(shp.getLink().getOriginProcessId());
+                workflowProcess.setRecordId(recordId);
                 workflowProcess.setId(shp.getProcessDefId());
                 workflowProcess.setInstanceId(shp.getProcessId());
                 workflowProcess.setName(shp.getProcessName());
@@ -624,11 +667,6 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 workflowProcess.setPackageId(WorkflowUtil.getProcessDefPackageId(shp.getProcessDefId()));
                 workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(shp.getProcessDefId()));
                 workflowProcess.setRequesterId(shp.getResourceRequesterId());
-
-                WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(shp.getProcessId());
-                workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
-                workflowProcess.setFinishTime(trackWflowProcess.getFinishTime());
-                workflowProcess.setDue(trackWflowProcess.getDue());
                 
                 processes.add(workflowProcess);
             }

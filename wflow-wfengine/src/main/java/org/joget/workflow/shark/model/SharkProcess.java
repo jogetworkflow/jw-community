@@ -13,7 +13,6 @@ public class SharkProcess {
     private Long created;
     
     private SharkProcessState state;
-    private WorkflowProcessLink link;
 
     public String getProcessId() {
         return processId;
@@ -73,14 +72,6 @@ public class SharkProcess {
 
     public void setState(SharkProcessState state) {
         this.state = state;
-    }
-
-    public WorkflowProcessLink getLink() {
-        return link;
-    }
-
-    public void setLink(WorkflowProcessLink link) {
-        this.link = link;
     }
 
     public Long getStarted() {
