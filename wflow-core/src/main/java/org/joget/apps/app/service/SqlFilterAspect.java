@@ -15,7 +15,9 @@ public class SqlFilterAspect implements MethodInterceptor {
         String methodName = method.getName();
         int length = (args != null)?args.length:0;
         
-        if (methodName.equals("activityVariable") || methodName.equals("processVariable") || methodName.equals("assignmentVariable")) {
+        if (methodName.equals("getCompletedProcessList") || methodName.equals("getRunningProcessList") || methodName.equals("getCompletedProcessSize") || methodName.equals("getRunningProcessSize")) {
+            length = 0;
+        } else if (methodName.equals("activityVariable") || methodName.equals("processVariable") || methodName.equals("assignmentVariable")) {
             length--;
         }
         
