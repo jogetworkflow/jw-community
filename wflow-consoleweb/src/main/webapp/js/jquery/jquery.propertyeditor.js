@@ -1888,7 +1888,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     data = eldata[propertyName]["properties"];
                     deferreds = elementSelect.validate(eldata, errors, true);
                 } else {
-                    page.editorObject.getData();
+                    data = page.editorObject.getData();
                     $.each(panel.options.propertiesDefinition, function(i, page) {
                         var p = page.propertyEditorObject;
                         var deffers = p.validate(data, errors, true);
