@@ -655,11 +655,7 @@ PermissionManager = {
             rule = $("#permission-rule-"+properties['permission_key']);
             $(rule).data("obj", properties);
         } else {
-            if (PermissionManager.options.builder !== "datalist") {
-                ruleObj.properties = $.extend(ruleObj.properties, properties);
-            } else {
-                ruleObj = $.extend(ruleObj, properties);
-            }
+            ruleObj = $.extend(ruleObj, properties);
             rule = $("#permission-rule-default");
         }
         
