@@ -9,6 +9,7 @@ import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.commons.util.LogUtil;
 import org.json.JSONObject;
@@ -42,6 +43,11 @@ public class CustomFormDataTableUtil {
                 def.setJson(defObj.toString());
                 
                 getDao().add(def);
+                
+                // initialize db table by making a dummy load
+                String dummyKey = "xyz123";
+                FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+                formDataDao.loadWithoutTransaction(id, id, dummyKey);
             } catch (Exception e) {
                 LogUtil.error(CustomFormDataTableUtil.class.getName(), e, "fail to create table " + id);
             }

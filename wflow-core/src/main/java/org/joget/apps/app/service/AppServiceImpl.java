@@ -74,6 +74,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
@@ -2314,6 +2315,16 @@ public class AppServiceImpl implements AppService {
             for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 builderDefinitionDao.add(o);
+                
+                if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
+                    try {
+                        String dummyKey = "xyz123";
+                        formDataDao.loadWithoutTransaction(o.getId(), o.getId(), dummyKey);
+                    } catch (Exception e) {
+                        LogUtil.error(getClass().getName(), e, "");
+                    }
+                }
+                
                 LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
             }
         }
