@@ -10,11 +10,20 @@ var urlsToCache = [
     contextPath + '/css/console_custom.css',
     contextPath + '/css/datalistBuilderView.css',
     contextPath + '/js/fontawesome5/css/all.min.css',
+    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.ttf',
+    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.woff2',
+    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.ttf',
+    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.woff2',
+    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.ttf',
+    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.woff2',
+    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.ttf',
     contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
     contextPath + '/home/logo.png',
     contextPath + '/js/footable/footable.core.min.css',
     contextPath + '/js/footable/footable.min.js',
     contextPath + '/js/footable/responsiveTable.js',
+    contextPath + '/js/footable/fonts/footable.ttf',
+    contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
 
