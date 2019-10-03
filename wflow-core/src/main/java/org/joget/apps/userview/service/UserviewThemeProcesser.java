@@ -353,7 +353,7 @@ public class UserviewThemeProcesser {
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (!(us != null && us.getAllowSessionTimeout())) {
             html += "$(document).ready(function(){\n"
-                    + "            $('body').append('<img id=\"image_alive\" style=\"display:none;\" width=\"1\" height=\"1\" src=\"" + cp + "/images/v3/clear.gif?\" alt=\"\">');\n"
+                    + "            $('body').append('<img id=\"image_alive\" style=\"display:none;\" width=\"1\" height=\"1\" src=\"" + cp + "/images/v3/cj.gif?\" alt=\"\">');\n"
                     + "            window.setInterval(\"keepMeAlive('image_alive')\", 200000);\n"
                     + "        });\n"
                     + "        function keepMeAlive(imgName)\n"

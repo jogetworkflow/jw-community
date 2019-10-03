@@ -158,7 +158,7 @@ self.addEventListener('fetch', function (event) {
                 var responseToCache = response.clone();
                 
                 if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1 
-                        && fetchRequest.url.indexOf('/images/v3/clear.gif') === -1
+                        && fetchRequest.url.indexOf('/images/v3/cj.gif') === -1
                         && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
                     caches.open(cache)
                         .then(function (cache) {

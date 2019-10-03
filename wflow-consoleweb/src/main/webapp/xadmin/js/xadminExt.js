@@ -18,7 +18,7 @@
             var id = md5(url);
             element.tabAdd('xbs_tab', {
                 title: title,
-                content: '<iframe tab-id="'+id+'" id="'+id+'" name="'+id+'" frameborder="0" src="'+UI.base+'/images/v3/clear.gif" scrolling="yes" class="x-iframe"></iframe>',
+                content: '<iframe tab-id="'+id+'" id="'+id+'" name="'+id+'" frameborder="0" src="'+UI.base+'/images/v3/cj.gif" scrolling="yes" class="x-iframe"></iframe>',
                 id: id
             })
             element.tabChange('xbs_tab', id);
@@ -158,7 +158,7 @@
         } else {
             url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
             
-            xadmin.openPopup(title, UI.base+"/images/v3/clear.gif", width, height, function(index){
+            xadmin.openPopup(title, UI.base+"/images/v3/cj.gif", width, height, function(index){
                 JPopup.dialogboxes[id] = index;
                 
                 var form = $('<form method="post" data-ajax="false" style="display:none;" target="layui-layer-iframe'+index+'" action="'+url+'"></form>'); 
@@ -230,7 +230,7 @@
 
                         element.tabAdd('xbs_tab', {
                             title: title,
-                            content: '<iframe tab-id="'+id+'" id="'+id+'" name="'+id+'" frameborder="0" src="'+UI.base+'/images/v3/clear.gif" scrolling="yes" class="x-iframe"></iframe>',
+                            content: '<iframe tab-id="'+id+'" id="'+id+'" name="'+id+'" frameborder="0" src="'+UI.base+'/images/v3/cj.gif" scrolling="yes" class="x-iframe"></iframe>',
                             id: id
                         })
                         element.tabChange('xbs_tab', id);
