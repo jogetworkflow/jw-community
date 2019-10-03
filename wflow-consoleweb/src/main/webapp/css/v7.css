@@ -751,7 +751,7 @@ body .flexigrid div.hDiv th.sorted{
 }
 body .flexigrid div.bDiv tr {
     max-height: 100px;
-    display: inline-block;
+    display: block;
     overflow: auto;
 }
 body .flexigrid div.bDiv td {
