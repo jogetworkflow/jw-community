@@ -120,6 +120,7 @@ import org.joget.logs.LogViewerAppender;
 import org.joget.workflow.model.ParticipantPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -4823,21 +4824,22 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/monitor/running/list")
-    public void consoleMonitorRunningListJson(Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleMonitorRunningListJson(Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "recordId", required = false) String recordId, @RequestParam(value = "requester", required = false) String requester, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         if ("startedTime".equals(sort)) {
             sort = "Started";
         } else if ("createdTime".equals(sort)) {
             sort = "Created";
         }
 
-        Collection<WorkflowProcess> processList = workflowManager.getRunningProcessList(appId, processId, processName, version, sort, desc, start, rows);
-        int count = workflowManager.getRunningProcessSize(appId, processId, processName, version);
+        Collection<WorkflowProcess> processList = workflowManager.getRunningProcessList(appId, processId, processName, version, recordId, requester, sort, desc, start, rows);
+        int count = workflowManager.getRunningProcessSize(appId, processId, processName, version, recordId, requester);
 
         JSONObject jsonObject = new JSONObject();
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(workflowProcess.getInstanceId());
 
             Map data = new HashMap();
+            data.put("recordId", workflowProcess.getRecordId());
             data.put("id", workflowProcess.getInstanceId());
             data.put("name", workflowProcess.getName());
             data.put("state", workflowProcess.getState());
@@ -4869,6 +4871,13 @@ public class ConsoleWebController {
         WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
         map.addAttribute("wfProcess", wfProcess);
         map.addAttribute("trackWflowProcess", trackWflowProcess);
+        
+        String recordId = wfProcess.getInstanceId();
+        WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(recordId);
+        if (link != null) {
+            recordId = link.getOriginProcessId();
+        }
+        map.addAttribute("recordId", recordId);
 
         AppDefinition appDef = appService.getAppDefinitionForWorkflowProcess(processId);
         map.addAttribute("appDef", appDef);
@@ -4896,21 +4905,22 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/monitor/completed/list")
-    public void consoleMonitorCompletedListJson(Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleMonitorCompletedListJson(Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "recordId", required = false) String recordId, @RequestParam(value = "requester", required = false) String requester, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         if ("startedTime".equals(sort)) {
             sort = "Started";
         } else if ("createdTime".equals(sort)) {
             sort = "Created";
         }
 
-        Collection<WorkflowProcess> processList = workflowManager.getCompletedProcessList(appId, processId, processName, version, sort, desc, start, rows);
-        int count = workflowManager.getCompletedProcessSize(appId, processId, processName, version);
+        Collection<WorkflowProcess> processList = workflowManager.getCompletedProcessList(appId, processId, processName, version, recordId, requester, sort, desc, start, rows);
+        int count = workflowManager.getCompletedProcessSize(appId, processId, processName, version, recordId, requester);
 
         JSONObject jsonObject = new JSONObject();
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(workflowProcess.getInstanceId());
 
             Map data = new HashMap();
+            data.put("recordId", workflowProcess.getRecordId());
             data.put("id", workflowProcess.getInstanceId());
             data.put("name", workflowProcess.getName());
             data.put("state", workflowProcess.getState());
@@ -4941,6 +4951,13 @@ public class ConsoleWebController {
         WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
         map.addAttribute("wfProcess", wfProcess);
         map.addAttribute("trackWflowProcess", trackWflowProcess);
+        
+        String recordId = wfProcess.getInstanceId();
+        WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(recordId);
+        if (link != null) {
+            recordId = link.getOriginProcessId();
+        }
+        map.addAttribute("recordId", recordId);
 
         AppDefinition appDef = appService.getAppDefinitionForWorkflowProcess(processId);
         if (appDef == null) {

@@ -1,5 +1,7 @@
 package org.joget.workflow.shark.model;
 
+import org.joget.workflow.model.WorkflowProcessLink;
+
 public class SharkProcess {
     private String processId;
     private String processName;
@@ -7,6 +9,8 @@ public class SharkProcess {
     private String resourceRequesterId;
     private String version;
     private String processDefId;
+    private Long started;
+    private Long created;
     
     private SharkProcessState state;
 
@@ -68,5 +72,21 @@ public class SharkProcess {
 
     public void setState(SharkProcessState state) {
         this.state = state;
+    }
+
+    public Long getStarted() {
+        return started;
+    }
+
+    public void setStarted(Long started) {
+        this.started = started;
+    }
+
+    public Long getCreated() {
+        return created;
+    }
+
+    public void setCreated(Long created) {
+        this.created = created;
     }
 }

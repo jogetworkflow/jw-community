@@ -8,6 +8,7 @@ import org.joget.workflow.util.WorkflowUtil;
 
 public class WorkflowProcess implements Serializable {
 
+    private String recordId;
     private String id; // process definition ID
     private String instanceId;
     private String packageId;
@@ -31,6 +32,14 @@ public class WorkflowProcess implements Serializable {
     private String requesterId;
     boolean latest;
 
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
+    }
+    
     public String getEncodedId() {
         if (id == null) {
             return null;

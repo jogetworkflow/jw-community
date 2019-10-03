@@ -48,7 +48,7 @@
                        checkbox="true"
                        checkboxButton1="general.method.label.delete"
                        checkboxCallback1="removeProcessInstances"
-                       searchItems="processId|Process Id, processName|Process Name, version|Version"
+                       searchItems="processId|console.app.process.common.label.id, processName|console.app.process.common.label.name, version|console.app.process.common.label.version,recordId|console.app.process.common.label.recordId,requester|console.app.process.common.label.requester"
                        fields="['id', 'version', 'name', 'state', 'startedTime', 'due', 'serviceLevelMonitor']"
                        column1="{key: 'id', label: 'console.app.process.common.label.id', sortable: true}"
                        column2="{key: 'startedTime', label: 'console.app.process.common.label.startedTime', sortable: true}"
@@ -58,6 +58,7 @@
                        column6="{key: 'state', label: 'console.app.process.common.label.state', sortable: false}"
                        column7="{key: 'due', label: 'console.app.process.common.label.dueDate', sortable: false}"
                        column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
+                       column9="{key: 'recordId', label: 'console.app.process.common.label.recordId', sortable: false}"
                        />
     </div>
 </div>

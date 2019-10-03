@@ -8,6 +8,8 @@
         <property column="ResourceRequesterId" name="resourceRequesterId" type="string"/>
         <property column="version" name="version" type="string"/>
         <property column="PDefName" name="processDefId" type="string"/>
+        <property column="Started" name="started" type="long"/>
+        <property column="Created" name="created" type="long"/>
         
         <many-to-one entity-name="SharkProcessState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" />  
     </class>

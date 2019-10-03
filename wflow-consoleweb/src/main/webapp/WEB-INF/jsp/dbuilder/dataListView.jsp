@@ -142,8 +142,8 @@
                             </c:if>        
                         </c:if>
                         <div class="footable-buttons" data-disableresponsive="${dataList.disableResponsive}" data-searchpopup="${dataList.responsiveSearchPopup}" data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
-                            <button class="expandAll"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
-                            <button class="collapseAll"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
+                            <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
+                            <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
                             <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
                         </div>    
                         <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
@@ -277,7 +277,7 @@
             e.preventDefault();
             DataListUtil.submitForm(this);
         });
-        $("form[name='form_${dataListId}'] button").on("click", function(){
+        $("form[name='form_${dataListId}'] button:not(.footable-button)").on("click", function(){
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
             var href = $(this).data("href");

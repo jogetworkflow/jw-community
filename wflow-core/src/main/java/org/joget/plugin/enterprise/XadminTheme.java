@@ -79,7 +79,7 @@ public class XadminTheme extends UniversalTheme {
         
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";
-        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/js/font-awesome4/css/font-awesome.min.css" + "\")</script>\n";
+        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/js/fontawesome5/css/all.min.css" + "\")</script>\n";
         jsCssLink += "<script type=\"text/javascript\" src=\""+path+"/xadmin/lib/layui/layui.js\"></script>\n";
         jsCssLink += "<script type=\"text/javascript\" src=\""+path+"/wro/xadmin.min.js\"></script>\n";
         jsCssLink += "<!--[if lt IE 9]>\n";
@@ -696,7 +696,7 @@ public class XadminTheme extends UniversalTheme {
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/xadmin.min.css");
         urls.add(contextPath + "/xadmin/css/font.css");
-        urls.add(contextPath + "/js/font-awesome4/css/font-awesome.min.css");
+        urls.add(contextPath + "/js/fontawesome5/css/all.min.css");
         urls.add(contextPath + "/wro/common.js");
         urls.add(contextPath + "/xadmin/lib/layui/layui.js");
         urls.add(contextPath + "/wro/xadmin.min.js");

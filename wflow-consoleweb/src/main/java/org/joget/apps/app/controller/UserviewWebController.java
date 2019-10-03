@@ -163,7 +163,7 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/manifest"})
     public void manifest(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
-        String manifest = UserviewUtil.getManifest(appId, userviewId);
+        String manifest = UserviewUtil.getManifest(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId));
         response.setContentType("application/manifest+json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.println(manifest);
@@ -171,7 +171,7 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/serviceworker"})
     public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
-        String serviceWorker = UserviewUtil.getServiceWorker(appId, userviewId, userviewKey);
+        String serviceWorker = UserviewUtil.getServiceWorker(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId), SecurityUtil.validateStringInput(userviewKey));
         response.setContentType("application/javascript;charset=UTF-8");
         response.setHeader("Service-Worker-Allowed", request.getContextPath());
         PrintWriter writer = response.getWriter();
@@ -180,7 +180,7 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/cacheUrls"})
     public void cacheUrls(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
-        String cacheUrlsJSON = UserviewUtil.getCacheUrls(appId, userviewId, userviewKey, request.getContextPath());
+        String cacheUrlsJSON = UserviewUtil.getCacheUrls(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId), SecurityUtil.validateStringInput(userviewKey), request.getContextPath());
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.println(cacheUrlsJSON);

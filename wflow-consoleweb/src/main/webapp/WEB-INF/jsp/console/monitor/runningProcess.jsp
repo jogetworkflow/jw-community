@@ -31,6 +31,8 @@
             <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${wfProcess.packageId}"/>/<c:out value="${appDef.version}"/>/processes/<c:out value="${wfProcess.idWithoutVersion}"/>"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.id"/></dt>
             <dd><c:out value="${wfProcess.instanceId}"/>&nbsp;</dd>
+            <dt><fmt:message key="console.app.process.common.label.recordId"/></dt>
+            <dd><c:out value="${recordId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
             <dd><c:out value="${wfProcess.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.version"/></dt>

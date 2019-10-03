@@ -611,6 +611,22 @@ public interface WorkflowManager {
     Collection<WorkflowProcess> getRunningProcessList(String packageId, String processId, String processName, String version, String sort, Boolean desc, Integer start, Integer rows);
 
     /**
+     * Returns a list of running processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    Collection<WorkflowProcess> getRunningProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows);
+    
+    /**
      * Returns a list of completed processes, filtered by optional parameter values.
      * @param packageId
      * @param processId
@@ -625,6 +641,22 @@ public interface WorkflowManager {
     Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String sort, Boolean desc, Integer start, Integer rows);
 
     /**
+     * Returns a list of completed processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows);
+    
+    /**
      * Returns the number of running processes, filtered by optional parameter values.
      * @param packageId
      * @param processId
@@ -633,6 +665,18 @@ public interface WorkflowManager {
      * @return 
      */
     int getRunningProcessSize(String packageId, String processId, String processName, String version);
+    
+    /**
+     * Returns the number of running processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @return 
+     */
+    int getRunningProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester);
 
     /**
      * Returns the number of completed processes, filtered by optional parameter values.
@@ -643,6 +687,18 @@ public interface WorkflowManager {
      * @return 
      */
     int getCompletedProcessSize(String packageId, String processId, String processName, String version);
+    
+    /**
+     * Returns the number of completed processes, filtered by optional parameter values.
+     * @param packageId
+     * @param processId
+     * @param processName
+     * @param version
+     * @param recordId
+     * @param requester
+     * @return 
+     */
+    int getCompletedProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester);
 
     /**
      * Method used by system to get WorkflowUserManager implementation

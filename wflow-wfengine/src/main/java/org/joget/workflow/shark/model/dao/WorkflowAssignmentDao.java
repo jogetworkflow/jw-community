@@ -11,6 +11,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -23,6 +24,144 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     private WorkflowProcessLinkDao workflowProcessLinkDao;
     public final static String ENTITY_NAME="SharkAssignment";
     public final static String PROCESS_ENTITY_NAME="SharkProcess";
+    
+    public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        
+        String customField = ", link.originProcessId as recordId";
+        
+        //required to disable lazy loading 
+        String condition = ", WorkflowProcessLink as link join fetch e.state s";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equals("id")) {
+                sort = "e.processId";
+            } else if (sort.equals("Started") || sort.equals("startedTime")) {
+                sort = "e.started";
+            } else if (sort.equals("Created") || sort.equals("createdTime")) {
+                sort = "e.created";
+            } else if (sort.equals("name")) {
+                sort = "e.processName";
+            } else if (sort.equals("requesterId")) {
+                sort = "e.ResourceRequesterId";
+            }
+        }
+        
+        condition += " where e.processId = link.processId";
+        
+        if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                params.add(packageId + "#%");
+            }
+            
+            if (version != null && !version.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                params.add("%#"+version+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and e.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (processName != null && !processName.isEmpty()) {
+                condition += " and e.processName like ?";
+                params.add("%" + processName + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.resourceRequesterId = ?";
+                params.add(username);
+            }
+            
+            if (recordId != null && !recordId.isEmpty()) {
+                condition += " and (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                if (state.contains(".")) {
+                    condition += " and s.name = ?";
+                    params.add(state);
+                } else {
+                    condition += " and s.name like ?";
+                    params.add(state + ".%");
+                }
+            }
+        }
+        Collection shProcess = find(PROCESS_ENTITY_NAME, customField, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        return transformToWorkflowProcess(shProcess);
+    }
+    
+    public long getProcessesSize(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = "";
+        String where = "";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
+            
+            if (recordId != null && !recordId.isEmpty()) {
+                condition += ", WorkflowProcessLink as link";
+                where += " where e.processId = link.processId and (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
+            } else {
+                where += " where 1 = 1";
+            }
+            
+            if (packageId != null && !packageId.isEmpty()) {
+                where += " and e.processDefId like ?";
+                params.add(packageId + "#%");
+            }
+            
+            if (version != null && !version.isEmpty()) {
+                where += " and e.processDefId like ?";
+                params.add("%#"+version+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                where += " and e.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                where += " and e.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (processName != null && !processName.isEmpty()) {
+                where += " and e.processName like ?";
+                params.add("%" + processName + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                where += " and e.resourceRequesterId = ?";
+                params.add(username);
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                condition += " join e.state s";
+                if (state.contains(".")) {
+                    where += " and s.name = ?";
+                    params.add(state);
+                } else {
+                    where += " and s.name like ?";
+                    params.add(state + ".%");
+                }
+            }
+        }
+        return count(PROCESS_ENTITY_NAME, condition+where, params.toArray(new String[0]));
+    }
     
     /**
      * Returns all the id of running process instances by requester
@@ -416,6 +555,38 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return q.list();
     }
     
+    protected Collection find(final String entityName, final String customField, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        Session session = findSession();
+        String query = "SELECT e" + customField + " FROM " + entityName + " e " + condition;
+
+        if (sort != null && !sort.equals("")) {
+            String filteredSort = filterSpace(sort);
+            query += " ORDER BY " + filteredSort;
+
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = session.createQuery(query);
+
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
+
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+
+        return q.list();
+    }
+    
     protected Collection<WorkflowAssignment> transformToWorkflowAssignment(Collection<SharkAssignment> shAss) {
         Collection<WorkflowAssignment> ass = new ArrayList<WorkflowAssignment>();
         
@@ -472,6 +643,40 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         return ass;
+    }
+    
+    protected Collection<WorkflowProcess> transformToWorkflowProcess(Collection shProcess) {
+        Collection<WorkflowProcess> processes = new ArrayList<WorkflowProcess>();
+        WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+        
+        if (shProcess != null && !shProcess.isEmpty()) {
+            for (Object o : shProcess) {
+                Object[] temp = (Object[]) o;
+                SharkProcess shp = (SharkProcess) temp[0];
+                String recordId = (String) temp[1];
+                if (recordId == null) {
+                    recordId = shp.getProcessId();
+                }
+                
+                WorkflowProcess workflowProcess = new WorkflowProcess();
+                workflowProcess.setRecordId(recordId);
+                workflowProcess.setId(shp.getProcessDefId());
+                workflowProcess.setInstanceId(shp.getProcessId());
+                workflowProcess.setName(shp.getProcessName());
+                workflowProcess.setState(shp.getState().getName());
+                workflowProcess.setPackageId(WorkflowUtil.getProcessDefPackageId(shp.getProcessDefId()));
+                workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(shp.getProcessDefId()));
+                workflowProcess.setRequesterId(shp.getResourceRequesterId());
+                
+                WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(shp.getProcessId());
+                workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
+                workflowProcess.setFinishTime(trackWflowProcess.getFinishTime());
+                workflowProcess.setDue(trackWflowProcess.getDue());
+                processes.add(workflowProcess);
+            }
+        }
+        
+        return processes;
     }
     
     private String ignoreVersion(String processDefId) {

@@ -1605,6 +1605,7 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
         position: relative;
         border-right:0;
         box-shadow: none;
+        z-index:100;
     }
     #nav-title {
         padding: 5px 50px 5px 45px;
@@ -1646,7 +1647,7 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
         overflow: hidden;
     }
     #nav-body.show #nav-list {
-        max-height: 200px;
+        max-height: 310px;
     }
     #nav-list li a:focus {
         background: #004d40;
