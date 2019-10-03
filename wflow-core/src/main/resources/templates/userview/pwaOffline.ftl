@@ -213,6 +213,12 @@
             return url + (url.indexOf('?') > 0 ? '&' : '?') + paramName + '=' + paramValue;
         }
 
-        openDatabase();
+        navigator.serviceWorker.addEventListener('message', function(event) {
+            if(event.data.type !== undefined && (event.data.type === 'syncFailed' || event.data.type === 'syncSuccess')){
+                loadFormData();
+            }
+        });
+
+        openDatabase();        
     })
 </script>
