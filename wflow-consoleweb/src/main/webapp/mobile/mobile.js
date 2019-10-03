@@ -178,7 +178,7 @@ var Mobile = {
                 },
                 timeout: 5000,
                 type: "GET",
-                url: Mobile.contextPath + "/images/v3/clear.gif"
+                url: Mobile.contextPath + "/images/v3/cj.gif"
             });
         } else {
             Mobile.showNetworkStatus(false);

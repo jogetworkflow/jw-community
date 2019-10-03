@@ -16,7 +16,7 @@ JPopup = {
                 if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                     isIphone = true;
                 }
-                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
+                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
                 
                 JPopup.dialogboxes[id].options.afterHide = function() {
                     if (parent && parent.UI !== undefined && window.frameElement !== null) {
@@ -44,7 +44,7 @@ JPopup = {
         height = UI.getPopUpHeight(height);
         
         $("#"+id).remove();
-        JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
+        JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
         JPopup.fixIOS(id);

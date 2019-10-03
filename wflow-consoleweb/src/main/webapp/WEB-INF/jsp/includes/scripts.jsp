@@ -14,7 +14,7 @@
     <c:if test="${empty userSecurity || (!empty userSecurity && !userSecurity.allowSessionTimeout)}">
     <script type="text/javascript">
         $(document).ready(function(){
-            $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/clear.gif?" alt="">');
+            $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/cj.gif?" alt="">');
             window.setInterval("keepMeAlive('image_alive')", 200000);
         });
         function keepMeAlive(imgName)

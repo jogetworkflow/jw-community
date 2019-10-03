@@ -310,7 +310,7 @@
                 if (target === undefined || target === null || target === "" || target.toLowerCase() === "post") {
                     $("form[name='form_${dataListId}']").removeAttr("target");
                 } else if (target.toLowerCase() === "popup") {
-                    var url = "${pageContext.request.contextPath}/images/v3/clear.gif";
+                    var url = "${pageContext.request.contextPath}/images/v3/cj.gif";
                     if (popupActionDialog == null) {
                         popupActionDialog = new PopupDialog(url);
                     } else {
