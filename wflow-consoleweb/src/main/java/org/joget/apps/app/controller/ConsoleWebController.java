@@ -225,6 +225,11 @@ public class ConsoleWebController {
     public String consoleHome() {
         return "console/home";
     }
+    
+    @RequestMapping("/offline")
+    public String offline() {
+        return "console/offline";
+    }
 
     @RequestMapping("/help/guide")
     public void consoleHelpGuide(Writer writer, @RequestParam("key") String key, @RequestParam(value = "locale", required = false) String localeCode) throws IOException {

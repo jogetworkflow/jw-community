@@ -31,8 +31,8 @@
 <script>
     $(document).ready(function(){
         var formDb;
-        var DB_NAME = 'joget';
-        var FORM_DB_STORE_NAME = '${userview.properties.id}_post';
+        var DB_NAME = 'joget_${userview.properties.id}';
+        var FORM_DB_STORE_NAME = 'offline_post';
 
         var savedRequestsCache = {};
 
@@ -135,6 +135,8 @@
                                  + '</tr>';
                         $('table tbody').prepend($row);
                     }
+
+                    $(".dataList table").data('footable').redraw();
                 }
             }
         }

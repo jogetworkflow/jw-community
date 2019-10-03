@@ -23,6 +23,7 @@
     <security:http pattern="/web/mlogin" security="none"/>
     <security:http pattern="/web/userview/screenshot/**" security="none"/>
     <security:http pattern="/web/help/guide" security="none"/>
+    <security:http pattern="/web/offline" security="none"/>
 
     <!-- Protected paths -->
     <security:http pattern="/**" use-expressions="false" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">        

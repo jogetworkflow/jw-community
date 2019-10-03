@@ -3,6 +3,7 @@ var cacheName = "jw-cache";
 var contextPath = '%s';
 var userviewId = '%s';
 var userviewKey = '_';
+var homePageLink = '';
 var cache = userviewId + "-" + version;
 var urlsToCache = [
     contextPath + '/css/v7.css',
@@ -11,7 +12,9 @@ var urlsToCache = [
     contextPath + '/js/fontawesome5/css/all.min.css',
     contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
     contextPath + '/home/logo.png',
-    contextPath + '/home/bg.png',
+    contextPath + '/js/footable/footable.core.min.css',
+    contextPath + '/js/footable/footable.min.js',
+    contextPath + '/js/footable/responsiveTable.js',
     %s
 ];
 
@@ -26,11 +29,11 @@ var formUsername = null;
 var formUserviewAppId = null;
 var formPageTitle = null;
 var formData = null;
+
 var formDb = null;
 
-var FORM_DB_NAME         = 'joget';
-var FORM_DB_STORE_NAME   = userviewId + '_post';
-var SYSTEM_DB_STORE_NAME = 'system';
+var FORM_DB_NAME         = 'joget' + '_' + userviewId;
+var FORM_DB_STORE_NAME   = 'offline_post';
 var STATUS_PENDING       = 0;
 var STATUS_SUCCESS       = 1;
 var STATUS_FAILED        = 2;
@@ -54,57 +57,28 @@ function cacheUserview(){
             caches.open(cache)
             .then(function (cache) {
                 var promises = [];
-        
-                /*
-                return Promise.all(
-                    //cache one by one to prevent duplicate url causing DOMexception
-                    data.map(function(url) {
-                        return caches.match(url).then(function(checkCache){
-                            if(checkCache === undefined){
-                                cache.addAll([url]).then(function() {
-                                    //console.log(url + " cached");
-                                }).catch(function(err) {
-                                    //ignore
-                                });
-                            }else{
-                                //console.log(url + ' already exists in cache');
-                            }
-                        })
-                    })
-                ).then(function() {
-                    console.log("URLs retrieved from API cached");
-                });
-                */
-                
-                /*
-                manually fetch "self.registration.scope" 
-                and store the response generated from res.body to cache
-                because of "a redirected response was used for a request whose redirect mode is not "follow"."
-                when navigating back from offline page
-                */
-                promises.push(
-                    fetch(self.registration.scope)
-                        .then(response => cache.put(self.registration.scope, new Response(response.body)))
-                        .catch(function(error){
-                            console.log('error caching userview home', error, error.message);
-                        })
-                );
-                
+
                 data.push(self.registration.scope + '/_/pwaoffline');
                 data.push(self.registration.scope + '/_/offline');
+                data.push(homePageLink);
                
                 promises.push(
                     //cache one by one to prevent duplicate url causing DOMexception
                     data.map(function(url) {
                         return caches.match(url).then(function(checkCache){
-                            if(checkCache === undefined){
+                            //always re-cache pwaoffline and offline in case homePageLink changes (eg. after login)
+                            var addToCache = false;
+
+                            if(checkCache === undefined || url.indexOf('/pwaoffline') > -1 || url.indexOf('/offline') > -1){
+                                addToCache = true;
+                            }
+
+                            if(addToCache){
                                 cache.addAll([url]).then(function() {
                                     //console.log(url + " cached");
                                 }).catch(function(err) {
                                     //ignore
                                 });
-                            }else{
-                                //console.log(url + ' already exists in cache');
                             }
                         })
                     })
@@ -128,45 +102,36 @@ self.addEventListener('install', function (event) {
     console.log('SW install event');
     self.skipWaiting();
     event.waitUntil(
-        caches.open(cache)
-            .then(function (cache) {
-                var promises = [];
+        caches.delete(cache)
+            .then(function(){
+                caches.open(cache)
+                    .then(function (cache) {
+                        var promises = [];
 
-                /*
-                manually fetch "self.registration.scope" 
-                and store the response generated from res.body to cache
-                because of "a redirected response was used for a request whose redirect mode is not "follow"."
-                when navigating back from offline page
-                */
-                promises.push(
-                    fetch(self.registration.scope)
-                        .then(response => cache.put(self.registration.scope, new Response(response.body)))
-                        .catch(function(error){
-                            console.log('error caching userview home', error, error.message);
-                        })
-                );
+                        urlsToCache.push(self.registration.scope + '/_/pwaoffline');
+                        urlsToCache.push(self.registration.scope + '/_/offline');
+                        promises.push(
+                            //cache one by one to prevent duplicate url causing DOMexception
+                            urlsToCache.map(function(url) {
+                                return caches.match(url).then(function(checkCache){
+                                    if(checkCache === undefined){
+                                        cache.addAll([url]).then(function() {
+                                            //console.log(url + " cached");
+                                        }).catch(function(err) {
+                                            //ignore
+                                        });
+                                    }else{
+                                        //console.log(url + ' already exists in cache');
+                                    }
+                                })
+                            })
+                        );
 
-                urlsToCache.push(self.registration.scope + '/_/pwaoffline');
-                urlsToCache.push(self.registration.scope + '/_/offline');
-                promises.push(
-                    //cache one by one to prevent duplicate url causing DOMexception
-                    urlsToCache.map(function(url) {
-                        return caches.match(url).then(function(checkCache){
-                            if(checkCache === undefined){
-                                cache.addAll([url]).then(function() {
-                                    //console.log(url + " cached");
-                                }).catch(function(err) {
-                                    //ignore
-                                });
-                            }else{
-                                //console.log(url + ' already exists in cache');
-                            }
-                        })
+                        return Promise.all(promises);
                     })
-                );
-
-                return Promise.all(promises);
             })
+
+                
     );
 });
 
@@ -181,27 +146,26 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
         fetch(fetchRequest)
         .then(function (response) {
-            if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
+            //redirect links eg. /jw/home, userview root url, are of response.type 'opaqueredirect', and possibly response.status != 200
+            //it is generally not a good idea to cache redirection because the content (target of redirection) might be changed
+            //https://medium.com/@boopathi/service-workers-gotchas-44bec65eab3f
+            //but without this the top-right home button (/jw/home) will never be cached and will always show offline page when being accessed offline
+            //if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
+            if (!response || event.request.method !== 'GET') {
                 return response;
 
             } else {
                 var responseToCache = response.clone();
                 
-                if(fetchRequest.url.indexOf("/web/json/workflow/currentUsername") === -1 
-                        && fetchRequest.url.indexOf('/images/v3/clear.gif') === -1 ){
+                if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1 
+                        && fetchRequest.url.indexOf('/images/v3/clear.gif') === -1
+                        && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
                     caches.open(cache)
                         .then(function (cache) {
                             cache.put(event.request, responseToCache);
                         });
                 }
             }
-            
-            /*
-            const contentType = response.headers.get("content-type");
-            if (fetchRequest.url.indexOf("/web/userview/") !== -1 && contentType && contentType.indexOf("text/html") !== -1) {
-                cacheUserview
-            }
-            */
             
             return response;
         })
@@ -216,6 +180,11 @@ self.addEventListener('fetch', function (event) {
                 return response;
 
             }else{
+
+                if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') > -1){
+                    //var response = new Response(new Blob(), { "status" : 404 });
+                    return null;
+                }
 
                 return new Promise(function(resolve, reject) {
                     caches.match(event.request).then(function(response){
@@ -236,19 +205,6 @@ self.addEventListener('fetch', function (event) {
 self.addEventListener('activate', function (event) {
     console.log('SW activate event');
     self.clients.claim();
-    event.waitUntil(
-            caches.keys()
-            .then(
-                function (keyList) {
-                    Promise.all(
-                            keyList.map(function (key) {
-                                if (cache.indexOf(key) === -1) {
-                                    return caches.delete(key);
-                                }
-                            })
-                        );
-                })
-            );
 });
 
 self.addEventListener('push', function (event) {
@@ -654,6 +610,7 @@ self.addEventListener('message', function(event) {
     if (event.data.hasOwnProperty('userviewKey')) {
         console.log('userviewKey received');
         userviewKey = event.data.userviewKey;
+        homePageLink = event.data.homePageLink;
         cacheUserview();
     }
     

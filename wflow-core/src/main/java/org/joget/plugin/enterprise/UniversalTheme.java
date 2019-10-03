@@ -354,9 +354,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 
                 String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/"+key+"/serviceworker";
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js?build=" + buildNumber + "\"></script>";
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/js/hubspot-offline/offline.min.js?build=" + buildNumber + "\"></script>";
                 jsCssLink += "<script>$(function() {"
                         + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
                         + "PwaUtil.userviewKey = '" + key + "';"
+                        + "PwaUtil.homePageLink = '" + data.get("home_page_link") + "';"
                         + "PwaUtil.serviceWorkerPath = '" + serviceWorkerUrl + "';"
                         + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
                         + "PwaUtil.pushEnabled = " + pushEnabled + ";"

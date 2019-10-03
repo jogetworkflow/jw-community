@@ -5,6 +5,8 @@ PwaUtil = {
     contextPath: "/jw",
     
     userviewKey: "_",
+    
+    homePageLink: "",
 
     serviceWorkerPath: "/jw/sw.js",
 
@@ -34,14 +36,17 @@ PwaUtil = {
     darkColor : '#2d2d2d',
     
     init: function () {
-        //check if in iframe
-        if(!PwaUtil.isEmbedded){
-            try {
-                PwaUtil.isEmbedded = window.self !== window.top;
-            } catch (e) {
-                PwaUtil.isEmbedded = true;
-            }
-        }
+        Offline.options = {
+            checkOnLoad: false,
+            checks: {
+                xhr: {
+                    url: PwaUtil.contextPath + '/images/favicon_uv.ico?m=testconnection&t=' + new Date().getTime(),
+                }
+            },
+            interceptRequests: false,
+            requests: false,
+            reconnect: false
+        };
         
         if (!navigator.serviceWorker || PwaUtil.isEmbedded) {
             return;
@@ -49,14 +54,15 @@ PwaUtil = {
         
         $(document).ready(function(){
 
+            /*
             window.addEventListener('online', PwaUtil.handleConnection);
             window.addEventListener('offline', PwaUtil.handleConnection);
 
             //some browsers doesn't fire 'online' and 'offline' events reliably
             setInterval(PwaUtil.handleConnection, 5000);
-
+            
             PwaUtil.handleConnection();
-            //PwaUtil.showOfflineIndicator();
+            */
 
             $("form").submit(function(e){
                 var formData = $(this).serializeObject();
@@ -110,7 +116,43 @@ PwaUtil = {
 
                 if(event.data.type !== undefined && event.data.type === 'syncSuccess'){
                     PwaUtil.showToast(PwaUtil.syncSuccessMessage, PwaUtil.greenColor, 'white');
+                    PwaUtil.hideOfflineIndicator();
                 }
+            });
+            
+            Offline.options = {
+                checkOnLoad: false,
+                checks: {
+                    xhr: {
+                        url: PwaUtil.contextPath + '/images/favicon_uv.ico?m=testconnection&t=' + new Date().getTime(),
+                    }
+                },
+                interceptRequests: true,
+                requests: false,
+                reconnect: {
+                    initialDelay: 5,
+                    delay: 5
+                }
+            };
+            Offline.check();
+            Offline.on('confirmed-down', function () {
+                if(PwaUtil.isOnline === true){
+                    PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
+                }
+                PwaUtil.showOfflineIndicator();
+                PwaUtil.isOnline = false;
+            });
+
+            Offline.on('confirmed-up', function () {
+                if(PwaUtil.isOnline === false){
+                    PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
+
+                    navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
+                        sync: true
+                    });
+                }
+                PwaUtil.hideOfflineIndicator();
+                PwaUtil.isOnline = true;
             });
         });
     },
@@ -137,6 +179,8 @@ PwaUtil = {
             
             var swScope = PwaUtil.serviceWorkerPath.substring(0, substringIndex);
             
+            PwaUtil.registerBaseServiceWorker();
+
             console.log('registering service worker, scope: ' + swScope);
             
             return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath, { scope: swScope })
@@ -166,7 +210,8 @@ PwaUtil = {
                             console.log('Service worker successfully registered and activated.');
                             
                             navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
-                                userviewKey: PwaUtil.userviewKey
+                                userviewKey: PwaUtil.userviewKey,
+                                homePageLink: PwaUtil.homePageLink
                             });
                             
                             if (PwaUtil.pushEnabled) {
@@ -189,8 +234,42 @@ PwaUtil = {
                         console.error('Unsuccessful registration with ', PwaUtil.serviceWorkerPath, err);
                     });
         }
-        
-        PwaUtil.init();
+    },
+
+    registerBaseServiceWorker: function () {
+        if (navigator.serviceWorker && !PwaUtil.isEmbedded) {
+            console.log('registering base service worker, scope: ' + PwaUtil.contextPath + '/');
+            
+            return navigator.serviceWorker.register(PwaUtil.contextPath + '/basesw.js', { scope: PwaUtil.contextPath + '/' })
+                    .then(function (registration) {
+                        var serviceWorker;
+                        if (registration.installing) {
+                            serviceWorker = registration.installing;
+                        } else if (registration.waiting) {
+                            serviceWorker = registration.waiting;
+                        } else if (registration.active) {
+                            serviceWorker = registration.active;
+                        }
+                        
+                        var afterActivated = function(){
+                            console.log('Base service worker successfully registered and activated.');
+                        }
+                        
+                        if (serviceWorker && serviceWorker.state === "installing") {
+                            serviceWorker.onstatechange = function(e) {
+                                if(e.target.state === 'activated'){
+                                    afterActivated();
+                                }
+                            }
+                        }
+                        
+                        if (serviceWorker && (serviceWorker.state === "installed" || serviceWorker.state === "activated")) {
+                            afterActivated();
+                        }
+                    }, function (err) {
+                        console.error('Unsuccessful registration with ', PwaUtil.contextPath + '/basesw.js', err);
+                    });
+        }
     },
 
     subscribe: function (registration) {
@@ -215,6 +294,10 @@ PwaUtil = {
                         PwaUtil.storeSubscription(pushSubscription);
                     }
                     return pushSubscription;
+                })
+                .catch(function (err) {
+                    console.warn('PushSubscription failed', err);
+                    return false; 
                 });
     },
 
@@ -268,9 +351,55 @@ PwaUtil = {
         $offlineIndicator.show();
     },
     
+    isReachable: function(url) {
+        /**
+         * Note: fetch() still "succeeds" for 404s on subdirectories,
+         * which is ok when only testing for domain reachability.
+         *
+         * Example:
+         *   https://google.com/noexist does not throw
+         *   https://noexist.com/noexist does throw
+         */
+        return fetch(url, {method: 'HEAD', mode: 'no-cors'})
+                .then(function (resp) {
+                    return resp && (resp.ok || resp.type === 'opaque');
+                })
+                .catch(function (err) {
+                    console.warn('isReachable failed ' + url, err);
+                    return false; 
+                });
+    },
+    
     handleConnection: function () {
-        
+        /*
+        //this snippet relies purely on "online" "offline" events to be triggered, then uses the ping method to determine online/offline 
+        PwaUtil.isReachable(PwaUtil.contextPath + '/images/v3/clear.gif').then(function (online) {
+            if (online) {
+                console.log("handleConnection", PwaUtil.isOnline, true);
+                if(PwaUtil.isOnline === false){
+                    PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
+
+                    navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
+                        sync: true
+                    });
+                }
+                PwaUtil.hideOfflineIndicator();
+                PwaUtil.isOnline = true;
+
+            } else {
+                console.log("handleConnection", PwaUtil.isOnline, false);
+                if(PwaUtil.isOnline === true){
+                    PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
+                }
+                PwaUtil.showOfflineIndicator();
+                PwaUtil.isOnline = false;
+            }
+        });
+        */
+        /*
+        //this snippet relies purely on navigator.onLine to determine online/offline
         if (navigator.onLine) {
+            console.log("handleConnection", PwaUtil.isOnline, true);
             if(PwaUtil.isOnline === false){
                 PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
                 
@@ -281,12 +410,14 @@ PwaUtil = {
             PwaUtil.hideOfflineIndicator();
             PwaUtil.isOnline = true;
         } else {
+            console.log("handleConnection", PwaUtil.isOnline, false);
             if(PwaUtil.isOnline === true){
                 PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
             }
             PwaUtil.showOfflineIndicator();
             PwaUtil.isOnline = false;
         }
+        */
     }
 
 }
