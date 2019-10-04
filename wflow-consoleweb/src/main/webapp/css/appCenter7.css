@@ -178,11 +178,15 @@ body #page header.navbar {
 }
 #banner h1 {
     color: #fff;
-    text-align: center;
     font-size: 28px;
-    padding-top: 200px;
     z-index: 500;
-    margin: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65%;
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
 }
 div#banner h1 a {
     color: white;
@@ -286,9 +290,6 @@ body #clock {
     body #page div#brand_logo,
     body #page div#clock {
         display: none;
-    }
-    #page #banner h1 {
-        top: 80px;
     }
     #banner h1 {
         padding-top: 100px;
