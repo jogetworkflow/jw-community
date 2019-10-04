@@ -185,11 +185,53 @@ var AppCenter = {
         $("body#home div#main-action-help").css("left",bannerWidth - 40);
         $("body#home div#main-action-help").css("right","unset");
     },
-    responsiveResizeApp: function(event, ui) {
-        var total_width = $("body").width();
+    responsiveResizeAppEvent: function(event, ui) {
         var width = $(".home_banner").width();
+        AppCenter.responsiveResizeApp(width);
+    },
+    responsiveResizeApp: function(width) {
+        if (width === undefined) {
+            width = localStorage.getItem("appCenterBannerWidth");
+            $(".home_banner").width(width);
+        } else {
+            localStorage.setItem("appCenterBannerWidth", width);
+        }
+        
+        var total_width = $("body").width();
+        var contentWidth = total_width - width;
+        
+        if (contentWidth < 600) {
+            contentWidth = 600;
+            width = total_width - contentWidth;
+            $(".home_banner").width(width);
+        }
+        
+        $('#main, #page > header').css('width', (contentWidth));
+        
+        //fix mac os scrollbar issue
+        if ($('#page > header').offset().left - width > 5) {
+            width = $('#page > header').offset().left;
+            $(".home_banner").width(width);
+        }
+        
+        if(width < 600){
+            $("body #page div#clock").hide();
+        }else{
+            $("body #page div#clock").show();
+        }
 
-        $('#main, #page > header').css('width', (total_width - width));
+        if(width < 300){
+            $("#banner h1").hide();
+        }else{
+            $("#banner h1").show();
+        }
+
+        if(width < 150){
+            $("body#home div#brand_logo img").hide();
+        }else{
+            $("body#home div#brand_logo img").show();
+        }
+        
         AppCenter.responsiveMoveHint();
     },
     responsiveResizeBanner: function(event, ui) {
@@ -210,32 +252,11 @@ var AppCenter = {
             //wide enough for 2 columns mode
             if($(".home_banner").resizable( "instance" ) == undefined){
                 //console.log("big enough, enable");
-                $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeApp);
+                $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
                 //$('#main, #page > header').css('width', 600);
             }
-
-            if(bannerWidth < 600){
-                $("body #page div#clock").hide();
-            }else{
-                $("body #page div#clock").show();
-            }
-
-            if(bannerWidth < 300){
-                $("#banner h1").hide();
-            }else{
-                $("#banner h1").show();
-            }
-
-            if(bannerWidth < 150){
-                $("body#home div#brand_logo img").hide();
-            }else{
-                $("body#home div#brand_logo img").show();
-            }
-            AppCenter.responsiveMoveHint();
-        }
-
-        if(totalWidth > singleColumnMaxWidth){
-            $(".home_banner").css('width', bannerWidth);
+            
+            AppCenter.responsiveResizeApp();
         }
     },
     rotateBackgroundStart : function(backgrounds, interval){
@@ -294,8 +315,9 @@ $(function() {
     }
     
     if($("body").width() > 1400){
-        $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeApp);
+        $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
     }
+    AppCenter.responsiveResizeBanner();
 
     $(window).bind("resize", function(event){
         if(this == event.target){

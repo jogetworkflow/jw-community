@@ -218,24 +218,22 @@ body > #page > footer {
     font-size: 20px;
     line-height: 20px;
 }
-body#home div#brand_logo{
-    display: inline-block;
-    margin-top: 20px;
-    margin-left: 10px;
-}
 body#home div#brand_logo img {
     display: block;
-    position: relative;    
-    max-width: 300px;
-    width: 100%;
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    width: 300px;
 }
 body#home div#clock {
-    display: inline-block;
-    margin-top: 50px;
-    margin-right: 10px;
+    position: absolute;
+    right: 50px;
+    height: 200px;
+    display: block;
+    top: 50px;
+    width: auto;
     color: #fff;
     font-size: 64px;
-    float: right;
 }
 body div#brand_logo img,
 body #clock {
@@ -295,12 +293,6 @@ body #clock {
         padding-top: 100px;
     }
 }
-@media (max-width: 1120px) {
-    body#home div#clock {
-        display: none;
-    }
-}
-
 @media (min-width: 1025px) {
     body#home div.home_banner {
         float: left;
