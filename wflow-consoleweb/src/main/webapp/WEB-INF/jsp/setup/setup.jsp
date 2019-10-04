@@ -141,7 +141,7 @@
                                 <div class="form-row">
                                     <label for="jdbcUrl"><%= ResourceBundleUtil.getMessage("setup.datasource.label.jdbcUrl")%></label>
                                     <span class="form-input">
-                                        <input type="text" size="40" id="jdbcUrl" name="jdbcUrl" value="jdbc:mysql://localhost:3306/jwdb?characterEncoding=UTF-8&amp;useSSL=false"/>
+                                        <input type="text" size="40" id="jdbcUrl" name="jdbcUrl" value="jdbc:mysql://localhost:3306/jwdb?characterEncoding=UTF-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>
                                         <input type="hidden" size="40" id="jdbcFullUrl" name="jdbcFullUrl" value=""/>
                                     </span>
                                 </div>
@@ -292,8 +292,8 @@
                             $("#dbPort").val("3306");
                             dbPort = 3306;
                         }
-                        $("#jdbcUrl").val("jdbc:mysql://" + dbHost + ":" + dbPort + "/?characterEncoding=UTF-8&useSSL=false");
-                        $("#jdbcFullUrl").val("jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?characterEncoding=UTF-8&useSSL=false");
+                        $("#jdbcUrl").val("jdbc:mysql://" + dbHost + ":" + dbPort + "/?characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true");
+                        $("#jdbcFullUrl").val("jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true");
                     } else {
                         $("#jdbcUrl").val($("#jdbcFullUrl").val());
                         $("#jdbcSetup").show();
