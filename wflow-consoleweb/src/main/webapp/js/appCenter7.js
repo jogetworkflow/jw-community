@@ -161,19 +161,111 @@ var AppCenter = {
     updateNotifications: function(banner) {
         $("li a.refresh").click();
         setTimeout(function() {
-            var $messageSpan = $("li.dropdown-menu-title span");
-            if ($messageSpan.length > 0) {
-                var message = $messageSpan.text();
-                var html = $messageSpan.html();
+            var messageSpan = $("li.dropdown-menu-title span");
+            if ($(messageSpan).length > 0) {
+                var message = $(messageSpan).text();
+                var html = $(messageSpan).html();
                 if (message  === "You have 1 assignments.") {
-                    message = "You have 1 assignment.";
-                    html.replace("assignments", "assignment");
-                    $messageSpan.html(html);
+                    html = html.replace("assignments", "assignment");
+                    $(messageSpan).html(html);
                 }
                 var newHtml = '<a href="_ja_inbox">' + html + '</a>';
                 $(banner).html(newHtml);
             }
         }, 3000);
+    },
+    responsiveGetBannerMaxWidth: function() {
+        var max_banner_width = $("body").width() - 600;
+        return max_banner_width;
+    },
+    responsiveMoveHint: function() {
+        var totalWidth = $("body").width();
+        var appWidth = $('#main, #page > header').width();
+        var bannerWidth = (totalWidth - appWidth - 2);
+        $("body#home div#main-action-help").css("left",bannerWidth - 40);
+        $("body#home div#main-action-help").css("right","unset");
+    },
+    responsiveResizeApp: function(event, ui) {
+        var total_width = $("body").width();
+        var width = $(".home_banner").width();
+
+        $('#main, #page > header').css('width', (total_width - width));
+        AppCenter.responsiveMoveHint();
+    },
+    responsiveResizeBanner: function(event, ui) {
+        var singleColumnMaxWidth = 1025;
+        var totalWidth = $("body").width();
+        var appWidth = $('#main, #page > header').width();
+        var bannerWidth = (totalWidth - appWidth - 2);
+
+        if(totalWidth <= singleColumnMaxWidth && $(".home_banner").resizable( "instance" ) != undefined){
+            //single column mode
+            //console.log("too small, disable");
+            $(".home_banner").resizable("destroy");
+            $("#main, #page > header, .home_banner").css('width', "");
+            $("body#home div#main-action-help").css("left", "");
+            $("body#home div#main-action-help").css("right","");
+
+        }else if(totalWidth > singleColumnMaxWidth){
+            //wide enough for 2 columns mode
+            if($(".home_banner").resizable( "instance" ) == undefined){
+                //console.log("big enough, enable");
+                $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeApp);
+                //$('#main, #page > header').css('width', 600);
+            }
+
+            if(bannerWidth < 600){
+                $("body #page div#clock").hide();
+            }else{
+                $("body #page div#clock").show();
+            }
+
+            if(bannerWidth < 300){
+                $("#banner h1").hide();
+            }else{
+                $("#banner h1").show();
+            }
+
+            if(bannerWidth < 150){
+                $("body#home div#brand_logo img").hide();
+            }else{
+                $("body#home div#brand_logo img").show();
+            }
+            AppCenter.responsiveMoveHint();
+        }
+
+        if(totalWidth > singleColumnMaxWidth){
+            $(".home_banner").css('width', bannerWidth);
+        }
+    },
+    rotateBackgroundStart : function(backgrounds, interval){
+        intervalInSeconds = interval * 1000;
+        currentBackground = $.cookie("appCenterBackground");
+        //show the last background saved in user's browser
+        if(currentBackground != null && backgrounds.indexOf(currentBackground) != -1){
+            $("#banner").css("background", 'url("' + currentBackground + '")');
+            $("#banner").css("background-size", "cover");
+        }
+        setTimeout(function(){
+            AppCenter.rotateBackground(backgrounds, intervalInSeconds);
+        }, intervalInSeconds);
+    },
+    rotateBackground : function(backgrounds, interval){
+        max = backgrounds.length;
+        next = Math.floor(Math.random() * max);
+        
+        currentBackground = $.cookie("appCenterBackground");
+        if(backgrounds[next] == currentBackground){
+            AppCenter.rotateBackground(backgrounds, interval);
+        }else{
+            $("#banner").css("background", 'url("' + backgrounds[next] + '")');
+            $("#banner").css("background-size", "cover");
+            $.cookie("appCenterBackground", backgrounds[next]);
+            
+            setTimeout(function(){
+                AppCenter.rotateBackground(backgrounds, interval);
+            }, interval);
+        }
     },
     showNotifications: true
 }
@@ -191,7 +283,7 @@ $(function() {
         AppCenter.updateClock(clock);
         window.setInterval(function() {
             AppCenter.updateClock(clock);
-        }, 1000);        
+        }, 10000);
     }
     var banner = $("#banner h1");
     if (AppCenter.showNotifications && banner.length > 0) {
@@ -200,6 +292,24 @@ $(function() {
             AppCenter.updateNotifications(banner);
         }, 30000);
     }
+    
+    if($("body").width() > 1400){
+        $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeApp);
+    }
+
+    $(window).bind("resize", function(event){
+        if(this == event.target){
+            if($(".home_banner").resizable( "instance" ) != undefined){
+              if($(this).width() <= 1400){
+                    $(".home_banner").resizable("disable");
+                }else{
+                    $(".home_banner").resizable("enable");
+                    $(".home_banner").resizable("option", "maxWidth", AppCenter.responsiveGetBannerMaxWidth());    
+                }
+            }
+            AppCenter.responsiveResizeBanner();
+        }
+    });
 });
 //AppCenter.searchFilter($("#search"), $("#apps")); 
 //AppCenter.loadPublishedApps("#apps");

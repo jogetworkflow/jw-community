@@ -177,15 +177,12 @@ body #page header.navbar {
     width: 100%;
 }
 #banner h1 {
-    background: 0;
     color: #fff;
-    margin: auto;
-    width: max-content;
     text-align: center;
-    font-size: 20px;
-    position: relative;
-    top: -40px;
+    font-size: 28px;
+    padding-top: 200px;
     z-index: 500;
+    margin: unset;
 }
 div#banner h1 a {
     color: white;
@@ -217,22 +214,24 @@ body > #page > footer {
     font-size: 20px;
     line-height: 20px;
 }
+body#home div#brand_logo{
+    display: inline-block;
+    margin-top: 20px;
+    margin-left: 10px;
+}
 body#home div#brand_logo img {
     display: block;
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    width: 300px;
+    position: relative;    
+    max-width: 300px;
+    width: 100%;
 }
 body#home div#clock {
-    position: absolute;
-    right: 580px;
-    height: 200px;
-    display: block;
-    top: 50px;
-    width: auto;
+    display: inline-block;
+    margin-top: 50px;
+    margin-right: 10px;
     color: #fff;
     font-size: 64px;
+    float: right;
 }
 body div#brand_logo img,
 body #clock {
@@ -279,10 +278,11 @@ body #clock {
 }
 @media (max-width: 900px) {
     #page #banner h1 {
-        width: 300px;
+        font-size: 20px;
     }
 }
 @media (max-width: 1024px) {
+    /*horizontal banner mode*/
     body #page div#brand_logo,
     body #page div#clock {
         display: none;
@@ -290,7 +290,16 @@ body #clock {
     #page #banner h1 {
         top: 80px;
     }
+    #banner h1 {
+        padding-top: 100px;
+    }
 }
+@media (max-width: 1120px) {
+    body#home div#clock {
+        display: none;
+    }
+}
+
 @media (min-width: 1025px) {
     body#home div.home_banner {
         float: left;
@@ -331,7 +340,7 @@ body #clock {
         z-index: 200;
     }
     ul#apps {
-        max-width: 92%;
+        max-width: 94%;
     }
     ul#apps li {
         box-shadow: none;
@@ -352,7 +361,7 @@ body #clock {
     div #appcenter_admin a {
         font-size: 12px;
     }
-    body#home div#banner h1 {
+    /*body#home div#banner h1 {
         position: absolute;
         top: 40%;
         height: 200px;
@@ -360,15 +369,14 @@ body #clock {
         left: 15%;
         font-size: 28px;
         color: white;
-    }
-}
-@media (min-width: 1281px) {
-    body#home div#banner h1 {
+    }*/
+}@media (min-width: 1281px) {
+    /*body#home div#banner h1 {
         left: 20%;
-    }
+    }*/
 }
 @media (min-width: 1601px) {
-    body#home div#banner h1 {
+    /*body#home div#banner h1 {
         left: 25%;
-    }
+    }*/
 }
