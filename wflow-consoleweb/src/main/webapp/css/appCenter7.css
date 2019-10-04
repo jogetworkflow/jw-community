@@ -354,22 +354,4 @@ body #clock {
     div #appcenter_admin a {
         font-size: 12px;
     }
-    /*body#home div#banner h1 {
-        position: absolute;
-        top: 40%;
-        height: 200px;
-        max-width: 400px;
-        left: 15%;
-        font-size: 28px;
-        color: white;
-    }*/
-}@media (min-width: 1281px) {
-    /*body#home div#banner h1 {
-        left: 20%;
-    }*/
-}
-@media (min-width: 1601px) {
-    /*body#home div#banner h1 {
-        left: 25%;
-    }*/
 }
