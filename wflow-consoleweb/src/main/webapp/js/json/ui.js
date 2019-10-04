@@ -459,29 +459,10 @@ JsonTable.prototype = {
         var thisObject = this;
 
         var handleRowSelection = function (celDiv, id) {
-            $(celDiv).click (
-                function () {
-                    var row = $(celDiv).parents("tr:first");
-                    var checkbox = row.find('input[type="checkbox"], input[type="radio"]');
-                    var checkboxSelected = (checkbox.length > 0) && $(celDiv).find('input[type="checkbox"], input[type="radio"]').length > 0;
-                    if (thisObject.link && !checkboxSelected) {
-                        thisObject.link.value = id.replace(/__dot__/g, '.');
-                        thisObject.link.init();
-                        return false;
-                    } else {
-                        if (!checkboxSelected) {
-                            var cb = $(checkbox[0]);
-                            if (thisObject.checkboxSelectSingle) {
-                                cb.click();
-                            } else {
-                                cb.prop("checked", !cb.prop("checked"));
-                                toggleCheckbox(cb.attr("id"));
-                            }
-                        }
-                        return true;
-                    }
-                });
-        }
+            if ($(celDiv).find('input[type="checkbox"], input[type="radio"]').length > 0) {
+                $(celDiv).addClass("selectionTd");
+            }
+        };
 
         // define columns
         var gridColumns = this.columns;
@@ -643,6 +624,32 @@ JsonTable.prototype = {
             resizable: false,
             singleSelect: !thisObject.checkbox || thisObject.checkboxSelectSingle,
             preProcess: dataPreProcess
+        });
+        
+        $("#" + thisObject.divToUpdate).on("click", "*", function(){
+            if ($(this).closest(".jsontable tbody tr").length > 0) {
+                var row = $(this).closest("tr");
+                var id = $(row).attr("id").substring(3);
+                var checkboxSelected = $(this).hasClass("selectionTd") || $(this).closest(".selectionTd").length > 0 || $(this).find(".selectionTd").length > 0;
+                if (thisObject.link && !checkboxSelected) {
+                    thisObject.link.value = id.replace(/__dot__/g, '.');
+                    thisObject.link.init();
+                    return false;
+                } else if (!checkboxSelected) {
+                    var checkbox = row.find('input[type="checkbox"], input[type="radio"]');
+                    if (checkbox.length > 0) {
+                        var cb = $(checkbox[0]);
+                        if (thisObject.checkboxSelectSingle) {
+                            cb.click();
+                        } else {
+                            cb.prop("checked", !cb.prop("checked"));
+                            toggleCheckbox(cb.attr("id"));
+                        }
+                    }
+                    return false;
+                }
+            }
+            return true;
         });
     },
 
