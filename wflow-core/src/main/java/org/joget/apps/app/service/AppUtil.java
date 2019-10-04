@@ -485,7 +485,7 @@ public class AppUtil implements ApplicationContextAware {
             
             //parse content
             if (content != null) {
-                Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
+                Pattern pattern = Pattern.compile("\\#([^#\" ])*\\.([^#\"])*\\#");
                 Matcher matcher = pattern.matcher(content);
                 Set<String> varList = new HashSet<String>();
                 while (matcher.find()) {
@@ -530,7 +530,7 @@ public class AppUtil implements ApplicationContextAware {
 
                                     //process nested hash
                                     while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
-                                        Pattern nestedPattern = Pattern.compile("\\{([^\\{^\\}])*\\}");
+                                        Pattern nestedPattern = Pattern.compile("\\{([^\\{\\}])*\\}");
                                         Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
                                         while (nestedMatcher.find()) {
                                             String nestedHash = nestedMatcher.group();
@@ -558,7 +558,7 @@ public class AppUtil implements ApplicationContextAware {
                                         String hashFormat = "";
                                         if (removeFormatVar.contains("?")) {
                                             hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
-                                            if (!hashFormat.contains("}")) {
+                                            if (!hashFormat.contains("}") && isHashEscapeFormat(hashFormat)) {
                                                 removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
                                             }
                                         }
@@ -601,6 +601,28 @@ public class AppUtil implements ApplicationContextAware {
             AppUtil.setCurrentAppDefinition(originalAppDef);
         }
         return content;
+    }
+    
+    protected static boolean isHashEscapeFormat(String hashFormat) {
+        boolean isValid = true;
+        String[] formats = hashFormat.split(";");
+        for (String format : formats) {
+            if (!(format.equals(StringUtil.TYPE_HTML)
+                    || format.equals(StringUtil.TYPE_JAVA)
+                    || format.equals(StringUtil.TYPE_JAVASCIPT)
+                    || format.equals(StringUtil.TYPE_JSON)
+                    || format.equals(StringUtil.TYPE_NL2BR)
+                    || format.equals(StringUtil.TYPE_REGEX)
+                    || format.equals(StringUtil.TYPE_SQL)
+                    || format.equals(StringUtil.TYPE_URL)
+                    || format.equals(StringUtil.TYPE_XML)
+                    || format.startsWith(StringUtil.TYPE_SEPARATOR))) {
+                isValid = false;
+            }
+            //check for 1 enough
+            break;
+        }
+        return isValid;
     }
 
     /**
