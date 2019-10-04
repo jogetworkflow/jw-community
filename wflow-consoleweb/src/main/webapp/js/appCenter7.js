@@ -175,7 +175,7 @@ var AppCenter = {
         }, 3000);
     },
     responsiveGetBannerMaxWidth: function() {
-        var max_banner_width = $("body").width() - 600;
+        var max_banner_width = $("body").width() - 550;
         return max_banner_width;
     },
     responsiveMoveHint: function() {
@@ -192,7 +192,11 @@ var AppCenter = {
     responsiveResizeApp: function(width) {
         if (width === undefined) {
             width = localStorage.getItem("appCenterBannerWidth");
-            $(".home_banner").width(width);
+            if (width === null || width === undefined) {
+                width = $(".home_banner").width();
+            } else {
+                $(".home_banner").width(width);
+            }
         } else {
             localStorage.setItem("appCenterBannerWidth", width);
         }
@@ -200,8 +204,8 @@ var AppCenter = {
         var total_width = $("body").width();
         var contentWidth = total_width - width;
         
-        if (contentWidth < 600) {
-            contentWidth = 600;
+        if (contentWidth < 550) {
+            contentWidth = 550;
             width = total_width - contentWidth;
             $(".home_banner").width(width);
         }
@@ -252,7 +256,7 @@ var AppCenter = {
             //wide enough for 2 columns mode
             if($(".home_banner").resizable( "instance" ) == undefined){
                 //console.log("big enough, enable");
-                $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
+                $(".home_banner").resizable({handles: "e", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
                 //$('#main, #page > header').css('width', 600);
             }
             
@@ -315,7 +319,7 @@ $(function() {
     }
     
     if($("body").width() > 1400){
-        $(".home_banner").resizable({handles: "e, w", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
+        $(".home_banner").resizable({handles: "e", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
     }
     AppCenter.responsiveResizeBanner();
 
