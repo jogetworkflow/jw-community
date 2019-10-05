@@ -190,23 +190,30 @@ var AppCenter = {
         AppCenter.responsiveResizeApp(width);
     },
     responsiveResizeApp: function(width) {
+        var total_width = $("body").width();
+        var contentWidth = null;
+        
         if (width === undefined) {
-            width = localStorage.getItem("appCenterBannerWidth");
-            if (width === null || width === undefined) {
+            contentWidth = localStorage.getItem("appCenterContentWidth");
+            if (contentWidth === null || contentWidth === undefined) {
                 width = $(".home_banner").width();
+                contentWidth = total_width - width;
             } else {
+                width = total_width - contentWidth;
                 $(".home_banner").width(width);
             }
         } else {
-            localStorage.setItem("appCenterBannerWidth", width);
+            contentWidth = total_width - width;
+            localStorage.setItem("appCenterContentWidth", contentWidth);
         }
-        
-        var total_width = $("body").width();
-        var contentWidth = total_width - width;
         
         if (contentWidth < 550) {
             contentWidth = 550;
             width = total_width - contentWidth;
+            $(".home_banner").width(width);
+        } else if (width < 600) {
+            width = 600;
+            contentWidth = total_width - width;
             $(".home_banner").width(width);
         }
         
@@ -241,13 +248,12 @@ var AppCenter = {
     responsiveResizeBanner: function(event, ui) {
         var singleColumnMaxWidth = 1025;
         var totalWidth = $("body").width();
-        var appWidth = $('#main, #page > header').width();
-        var bannerWidth = (totalWidth - appWidth - 2);
 
-        if(totalWidth <= singleColumnMaxWidth && $(".home_banner").resizable( "instance" ) != undefined){
+        if(totalWidth <= singleColumnMaxWidth){
             //single column mode
-            //console.log("too small, disable");
-            $(".home_banner").resizable("destroy");
+            if ($(".home_banner").resizable( "instance" ) != undefined) {
+                $(".home_banner").resizable("destroy");
+            }
             $("#main, #page > header, .home_banner").css('width', "");
             $("body#home div#main-action-help").css("left", "");
             $("body#home div#main-action-help").css("right","");
@@ -255,9 +261,7 @@ var AppCenter = {
         }else if(totalWidth > singleColumnMaxWidth){
             //wide enough for 2 columns mode
             if($(".home_banner").resizable( "instance" ) == undefined){
-                //console.log("big enough, enable");
                 $(".home_banner").resizable({handles: "e", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
-                //$('#main, #page > header').css('width', 600);
             }
             
             AppCenter.responsiveResizeApp();
@@ -318,24 +322,23 @@ $(function() {
         }, 30000);
     }
     
-    if($("body").width() > 1400){
-        $(".home_banner").resizable({handles: "e", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
-    }
-    AppCenter.responsiveResizeBanner();
+    if ($("#clock").length > 0 && $("body#home div#brand_logo").length > 0) {
+        AppCenter.responsiveResizeBanner();
 
-    $(window).bind("resize", function(event){
-        if(this == event.target){
-            if($(".home_banner").resizable( "instance" ) != undefined){
-              if($(this).width() <= 1400){
-                    $(".home_banner").resizable("disable");
-                }else{
-                    $(".home_banner").resizable("enable");
-                    $(".home_banner").resizable("option", "maxWidth", AppCenter.responsiveGetBannerMaxWidth());    
+        $(window).bind("resize", function(event){
+            if(this == event.target){
+                if($(".home_banner").resizable( "instance" ) != undefined){
+                  if($(this).width() <= 1400){
+                        $(".home_banner").resizable("disable");
+                    }else{
+                        $(".home_banner").resizable("enable");
+                        $(".home_banner").resizable("option", "maxWidth", AppCenter.responsiveGetBannerMaxWidth());    
+                    }
                 }
+                AppCenter.responsiveResizeBanner();
             }
-            AppCenter.responsiveResizeBanner();
-        }
-    });
+        });
+    }
 });
 //AppCenter.searchFilter($("#search"), $("#apps")); 
 //AppCenter.loadPublishedApps("#apps");
