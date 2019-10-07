@@ -211,8 +211,8 @@ var AppCenter = {
             contentWidth = 550;
             width = total_width - contentWidth;
             $(".home_banner").width(width);
-        } else if (width < 600) {
-            width = 600;
+        } else if (width < 630) {
+            width = 630;
             contentWidth = total_width - width;
             $(".home_banner").width(width);
         }
@@ -225,7 +225,7 @@ var AppCenter = {
             $(".home_banner").width(width);
         }
         
-        if(width < 600){
+        if(width < 630){
             $("body #page div#clock").hide();
         }else{
             $("body #page div#clock").show();
