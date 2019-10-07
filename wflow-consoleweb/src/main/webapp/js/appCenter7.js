@@ -261,7 +261,7 @@ var AppCenter = {
         }else if(totalWidth > singleColumnMaxWidth){
             //wide enough for 2 columns mode
             if($(".home_banner").resizable( "instance" ) == undefined){
-                $(".home_banner").resizable({handles: "e", minWidth: 600, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
+                $(".home_banner").resizable({handles: "e", minWidth: 630, maxWidth: AppCenter.responsiveGetBannerMaxWidth()}).bind("resize", AppCenter.responsiveResizeAppEvent);
             }
             
             AppCenter.responsiveResizeApp();
