@@ -223,9 +223,12 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 result.setProperty(id, delimitedValue);
                 rowSet = new FormRowSet();
                 rowSet.add(result);
+                
+                String filePathPostfix = "_path";
+                formData.addRequestParameterValues(id + filePathPostfix, new String[]{});
             }
         }
-
+        
         return rowSet;
     }
 
