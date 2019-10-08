@@ -30,7 +30,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String customField = ", link.originProcessId as recordId";
         
         //required to disable lazy loading 
-        String condition = ", WorkflowProcessLink as link join fetch e.state s";
+        String condition = ", WorkflowProcessLink as link join e.state s";
         Collection<String> params = new ArrayList<String>();
         
         if (sort != null && !sort.isEmpty()) {
@@ -557,7 +557,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     
     protected Collection find(final String entityName, final String customField, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         Session session = findSession();
-        String query = "SELECT e" + customField + " FROM " + entityName + " e " + condition;
+        String query = "SELECT e.processId, e.processDefId, e.processName, e.resourceRequesterId, s.name";
+        query += customField + " FROM " + entityName + " e " + condition;
 
         if (sort != null && !sort.equals("")) {
             String filteredSort = filterSpace(sort);
@@ -652,23 +653,27 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         if (shProcess != null && !shProcess.isEmpty()) {
             for (Object o : shProcess) {
                 Object[] temp = (Object[]) o;
-                SharkProcess shp = (SharkProcess) temp[0];
-                String recordId = (String) temp[1];
+                String processId = (String) temp[0];
+                String processDefId = (String) temp[1];
+                String processName = (String) temp[2];
+                String resourceRequesterId = (String) temp[3];
+                String state = (String) temp[4];
+                String recordId = (String) temp[5];
                 if (recordId == null) {
-                    recordId = shp.getProcessId();
+                    recordId = processId;
                 }
                 
                 WorkflowProcess workflowProcess = new WorkflowProcess();
                 workflowProcess.setRecordId(recordId);
-                workflowProcess.setId(shp.getProcessDefId());
-                workflowProcess.setInstanceId(shp.getProcessId());
-                workflowProcess.setName(shp.getProcessName());
-                workflowProcess.setState(shp.getState().getName());
-                workflowProcess.setPackageId(WorkflowUtil.getProcessDefPackageId(shp.getProcessDefId()));
-                workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(shp.getProcessDefId()));
-                workflowProcess.setRequesterId(shp.getResourceRequesterId());
+                workflowProcess.setId(processDefId);
+                workflowProcess.setInstanceId(processId);
+                workflowProcess.setName(processName);
+                workflowProcess.setState(state);
+                workflowProcess.setPackageId(WorkflowUtil.getProcessDefPackageId(processDefId));
+                workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(processDefId));
+                workflowProcess.setRequesterId(resourceRequesterId);
                 
-                WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(shp.getProcessId());
+                WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
                 workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
                 workflowProcess.setFinishTime(trackWflowProcess.getFinishTime());
                 workflowProcess.setDue(trackWflowProcess.getDue());
