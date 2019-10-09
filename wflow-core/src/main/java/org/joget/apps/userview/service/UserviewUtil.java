@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -293,7 +294,14 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 (new File(resourceFilePath)).getParentFile().mkdirs();
             }
             
-            Long lastModified = AppDevUtil.dirLastModified(appDef).getTime();
+            Long lastModified = null;
+            Date appLastModified = AppDevUtil.dirLastModified(appDef);
+            if (appLastModified != null) {
+                lastModified = appLastModified.getTime();
+            } else {
+                // git folder not available yet
+                return urls;
+            }
             if (data != null && !data.isEmpty()) {
                 //check date
                 Long resourceLastModified = data.keySet().iterator().next();
