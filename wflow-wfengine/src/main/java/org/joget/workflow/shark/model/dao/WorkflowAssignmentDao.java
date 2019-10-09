@@ -218,7 +218,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
-        condition += " where e.isValid = 1";
+        condition += " where e.isValid is true";
         
         Collection<WorkflowProcessLink> links = getWorkflowProcessLinkDao().getLinks(id);
         Set<String> ids = new HashSet<String>();
@@ -274,7 +274,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
-        condition += " where e.isValid = 1";
+        condition += " where e.isValid is true";
         
         Collection<WorkflowProcessLink> links = getWorkflowProcessLinkDao().getLinks(id);
         Set<String> ids = new HashSet<String>();
@@ -332,7 +332,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
-        condition += " where e.isValid = 1";
+        condition += " where e.isValid is true";
         
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
             if (packageId != null && !packageId.isEmpty()) {
@@ -461,7 +461,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
         
-        condition += " where e.isValid = 1";
+        condition += " where e.isValid is true";
         
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
             if (packageId != null && !packageId.isEmpty()) {
@@ -504,7 +504,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String condition = "join e.process p join e.activity a join a.state s"; 
         Collection<String> params = new ArrayList<String>();
         
-        condition += " where e.isValid = 1";
+        condition += " where e.isValid is true";
         
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
             if (packageId != null && !packageId.isEmpty()) {
@@ -607,7 +607,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 a.setProcessRequesterId((s.getProcess().getProcessRequesterId() != null)?s.getProcess().getProcessRequesterId():s.getProcess().getResourceRequesterId());
                 a.setProcessVersion(s.getProcess().getProcessVersion());
                 a.setAssigneeName(s.getAssigneeName());
-                a.setAccepted(s.getIsAccepted() == 1);
+                a.setAccepted(s.getIsAccepted());
                 
                 Date dateCreated = new Date(s.getActivity().getActivated());
                 a.setDateCreated(dateCreated);
