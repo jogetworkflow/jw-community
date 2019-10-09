@@ -27,6 +27,9 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                         if (date.contains("|")) {
                             format = date.substring(date.indexOf("|") + 1);
                             date = date.substring(0, date.indexOf("|"));
+                            if (date == null || date.isEmpty()) {
+                                return null;
+                            }
                         }
                         if (date.startsWith("{") && date.endsWith("}")) {
                             LogUtil.debug(DateHashVariable.class.getName(), "variable: " + variableKey + " contains unparsable date.");
@@ -34,7 +37,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                         }
 
                         DateFormat df = new SimpleDateFormat(format);
-                        Date result =  df.parse(date);  
+                        Date result =  df.parse(date);
                         cal.setTime(result);
                     } catch (Exception e) {
                         LogUtil.error(DateHashVariable.class.getName(), e, "");

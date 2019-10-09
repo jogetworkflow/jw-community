@@ -10,6 +10,7 @@
         <js>/js/jquery/jquery-3.4.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
         <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
+        <js>/js/jquery/jquery.ui.touch-punch.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
         <js>/js/json/ui.js</js>
         <js>/js/json/ui_ext.js</js>
