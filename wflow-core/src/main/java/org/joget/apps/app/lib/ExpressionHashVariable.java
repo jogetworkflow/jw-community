@@ -47,7 +47,7 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
                 return "";
             }
         } catch (Exception e) {
-            LogUtil.error(ExpressionHashVariable.class.getName(), e, "");
+            LogUtil.error(ExpressionHashVariable.class.getName(), e, "Invalid expression: " + variableKey);
         }
         return null;
     }
