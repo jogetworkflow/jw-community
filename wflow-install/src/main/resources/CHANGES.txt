@@ -22,6 +22,119 @@ SUMMARY IN 7.0-PREVIEW
   - New Plugin Type for Extending App Builder
   - Latest Upgrades Under The Hood
 
+CHANGES IN 7.0-BETA
+=======================
+804580af Fixed: wflow-core - UserviewUtil - Fixed possible NPE. @7.0-SNAPSHOT
+6cb186e3 Fixed: wflow-console - System Logs - Cannot load logs on JBoss EAP @7.0-SNAPSHOT
+b5de0096 Fixed: wflow-wfengine - Workflow Assignment - Changes on 7a7182e not working on PostgreSQL. @7.0-SNAPSHOT
+d7d33dcc Fixed: wflow-core - File Upload - Value is wrong after the form is submitted and render back the form. #6909 @6.0-SNAPSHOT
+52ee583b Fixed: wflow-core - DateHashVariable - Unparseable date error for empty/invalid nested date @6.0-SNAPSHOT
+a5297858 Fixed: wflow-consoleweb - Date Picker - Time slider not working in touch device. #6908 @6.0-SNAPSHOT
+d757e6f5 Fixed: wflow-wfengine - Monitoring - Can't retrieve data in oracle. @7.0-SNAPSHOT
+c4972f36 Modified: wflow-install - Update sample database script and default database data. @7.0-SNAPSHOT
+1414bf6b Fixed: wflow-commons - Startup - MariaDB dialect cannot resolved by Hibernate. @7.0-SNAPSHOT
+581e2662 Fixed: wflow-core - FormRow - NPE when comparing row IDs #6907 @6.0-SNAPSHOT
+98ea1278 Modified: wflow-consoleweb - App Center - Update CSS & JS. @7.0-SNAPSHOT
+2fed0458 Modified: wflow-jdbc, wflow-commons, wflow-consoleweb - MySQL - Upgraded MariaDB JDBC driver to 2.5.0 to support MySQL 8 default caching_sha2_password authentication @7.0-SNAPSHOT
+4e0ed7e5 Modified: wflow-consoleweb - App Center - Clean Up CSS
+a13b24f5 Added: wflow-core - Expression Hash Variable - Support #exp.EXPRESSION#. @7.0-SNAPSHOT
+fa22fe34 Modified: wflow-consoleweb - App Center - Add Resizable Feature, Rotating Background, Fixed Assignment Text Typo @7.0-SNAPSHOT
+06a5c691 Fixed: wflow-consoleweb - Console - JSON Table need to click on text to open popup editing. @7.0-SNAPSHOT
+5564a46a Fixed: wflow-consoleweb - CustomFormDataTable - Form Data Table does not created after custom form data table definition is create. @7.0-SNAPSHOT
+da5d1ee5 Fixed: wflow-consoleweb - Console - Json table can't display correctly. @7.0-SNAPSHOT
+3ee5e745 Modified: wflow-core - PWA Offline - Refresh offline data list after syncing. @7.0-SNAPSHOT
+49014cee Fixed: wflow-core - PWA Offline - Missing Icons. @7.0-SNAPSHOT
+8b90c8af Fixed: wflow-consoleweb - clear.gif is being blocked by adblocker. @7.0-SNAPSHOT
+4943afd9 Fixed: wflow-core/wflow-consoleweb - PWA Offline - offline detection method. @7.0-SNAPSHOT
+f07e88ff Fixed: wflow-consoleweb - Advanced Tool - Permission - Default permission plugin can't save for form & userview builder. @7.0-SNAPSHOT
+34bd242b Fixed: wflow-consoleweb - Run Apps- App name and its userview name formatting is distorted. @7.0-SNAPSHOT
+df4ee3fb Fixed: wflow-consoleweb - UserviewWebController - Prevent possible XSS. @7.0-SNAPSHOT
+df240de0 Fixed: wflow-consoleweb - Mobile - Datalist action button `Show all details` can't expand the list columns. @7.0-SNAPSHOT
+afd73238 Fixed: wflow-consoleweb - Mobile - APM - Top menu is truncated, and actions button appears over menu. @7.0-SNAPSHOT
+011e9569 Fixed: wflow-wfengine - Monitoring - Process Name filter throw error when contains space. @7.0-SNAPSHOT
+ae26e778 Fixed: wflow-consoleweb - Property Editor - Fields validation for page button is not working correctly. @7.0-SNAPSHOT
+d5bbd47e Modified: wflow-consoleweb - Manage Plugin - changed Uninstallable to Removable
+9dc6ee31 Fixed: wflow-core - UserviewUtil - Fixed possible path manipulation. @7.0-SNAPSHOT Fixed: wflow-core - App - Fixed possible unreleased Resource. @7.0-SNAPSHOT
+a0c30cb8 Fixed: wflow-wfengine - Monitoring - Search & start time does not work correctly for running/completed processes list. @7.0-SNAPSHOT
+f2ff9d09 Modified: wflow-consoleweb - Setup - Remove unused apps. @7.0-SNAPSHOT
+c048d0d5 Modified: wflow-consoleweb -App Center - Updated background. @7.0-SNAPSHOT
+552311a2 Fixed: wflow-consoleweb - App Center - Fixed hardcoded context path. @7.0-SNAPSHOT
+53041f25 Fixed: wflow-wfengine - Monitoring - Regression on f5cbb4f. Displaying record id for processes. @7.0-SNAPSHOT
+face132b Fixed: wflow-consoleweb/wflow-core - Builder - Font awesome 4 icons does not display in the builder. @7.0-SNAPSHOT
+7f9e18b3 Fixed: wflow-consoleweb - Builder Advanced Tool - Tree viewer - Error indicator does not clear after error fixed. @7.0-SNAPSHOT Fixed: wflow-consoleweb - Builder Advanced Tool - Tree viewer - False error indicator shown for subform. @7.0-SNAPSHOT
+f5cbb4f8 Modified: wflow-consoleweb - Monitoring - Displaying record id for processes. @7.0-SNAPSHOT
+78901056 Fixed: wflow-core/wflow-consoleweb - PWA Offline - responsive offline data table. @7.0-SNAPSHOT
+29883fca Fixed: wflow-core - Regression - Vulnerable jackson-databind-2.3.3.jar is repackaged into the WAR. @7.0-SNAPSHOT
+469eb321 Fixed: wflow-consoleweb - Universal/Progressive Theme - 404 error loading responsive-switch.min.js. @7.0-SNAPSHOT
+f986cf45 Fixed: wflow-core - Text Field Datalist Filter Type - Placeholder not working for joined table field. #6877 @6.0-SNAPSHOT
+2e658f1d Fixed: wflow-consoleweb - PWA - Fixed grammatical error in PWA Offline setting description @7.0-SNAPSHOT
+7ba5501b Modified: wflow-consoleweb - File Upload - Update properties label. @7.0-SNAPSHOT
+5214f1b4 Fixed: wflow-consoleweb - Mobile - Login page incorrectly redirects to the old mlogin page when viewed from a mobile device @7.0-SNAPSHOT
+8dd44178 Fixed: wflow-consoleweb - Mobile - Console home is not formatted for mobile @7.0-SNAPSHOT
+2d888715 Modified: wflow-consoleweb - Form Builder - Add validation for reserve ids in field id field. #6804 @7.0-SNAPSHOT
+e56a606d Fixed: wflow-wfengine/wflow-core - Process Data Collector - Subflow activity is not tracked. @7.0-SNAPSHOT Modified: wflow-core - Report Manager - Add method to retrieve activities instance list by process instance id. @7.0-SNAPSHOT
+c81a7aa2 Fixed: wflow-consoleweb - Datalist Builder - CSS issues. @7.0-SNAPSHOT
+0ef74ffc Fixed: wflow-commons, wflow-consoleweb - Tomcat console does not shutdown gracefully on Windows due to running ScheduledExecutorService @7.0-SNAPSHOT
+823ad15b Fixed: wflow-consoleweb - Builders - Properties page scrollable causing the properties editor covering the builder tabs. @7.0-SNAPSHOT
+5a118fb6 Fixed: wflow-core - Cannot import app - regression #6866 @7.0-SNAPSHOT
+f73c21e9 Modified: wflow-core/wflow-consoleweb - Datalist - Adding interface to allow datalist action & formatter plugin to inject extra one time HTML to datalist rendering. @7.0-SNAPSHOT
+6699e459 Fixed: wflow-consoleweb - "Do not import plugins" & "Do not import form data" checkbox cannot be checked @7.0-SNAPSHOT
+1f73d57c Fixed: wflow-core - MfaAuthenticator - Does not log for login event. #6859 @6.0-SNAPSHOT
+d6dd6115 Fixed: wflow-consoleweb - App - App name cannot handle & character correctly. @6.0-SNAPSHOT
+f78c6194 Fixed: wflow-core - Text Field - Thousand separator caused calculation error. #6868 @6.0-SNAPSHOT
+8613362c Fixed: wflow-consoleweb - App - App name cannot handle & character correctly. @7.0-SNAPSHOT
+ece4de68 Fixed: wflow-core - Datalist - Exporting parameter value is retrieved from session causing NPE. #6863 @6.0-SNAPSHOT
+84fbafdc Fixed: wflow-consoleweb - PWA to not initialise when in an iframe
+fe1db73d Fixed: correction to wflow-app - pom.xml @7.0-SNAPSHOT
+b7d68b95 Fixed: wflow-core - Datalist Builder - Hidden action plugin is appear in the builder. @6.0-SNAPSHOT
+323ff784 Fixed: wflow-core - Git - Added missing hashCode method in GitCommitHelper @7.0-SNAPSHOT
+c614c2b7 Modified: wflow-core, wfengine - Form - Use UUID instead of process instance ID for form record ID @7.0-SNAPSHOT
+db46dc83 Modified: wflow-commons - UUID - Modified UuidGenerator to generate a globally unique identifier based on UUIDv4 @7.0-SNAPSHOT
+29607402 Added: wflow-core - GeneratorUtil - Adding more utility methods. @7.0-SNAPSHOT
+812b0d3c Fixed: wflow-core - Datalist Builder - Hidden action plugin is appear in the builder. @7.0-SNAPSHOT
+7a7182eb Added: wflow-wfengine - Workflow Manager - Added new methods. @7.0-SNAPSHOT
+2ef900df Fixed: wflow-consoleweb - Property Editor - Screen blocked by background AJAX loading and never unblock it later. @7.0-SNAPSHOT
+1cdbf6b4 Modified: wflow-consoleweb - JQuery - Upgraded to JQuery 3.4.1 @7.0-SNAPSHOT
+c5e4089d Added: wflow-core - PWA - Added apple-touch-icon for Lighthouse PWA audit requirement @7.0-SNAPSHOT
+e42bb9be Fixed: wflow-consoleweb - Admin Bar - Quick edit buttons are mistakenly displayed in iframes @7.0-SNAPSHOT
+8aac2571 Fixed: wflow-consoleweb - Column - Horizontal layout does not work in subform. #6834 @6.0-SNAPSHOT
+7af4042c Fixed: wflow-core - Section - Visibility control checking does not work correctly on empty value during PDF generation. #6837 @6.0-SNAPSHOT
+1c7e14a0 Fixed: wflow-plugin-base - PropertyUtil - NPE when plugin properties is null. @7.0-SNAPSHOT Modified: wflow-wfengine - WorkflowManager - Allow multiple assignee complete same activity. @7.0-SNAPSHOT Modified: wflow-core - Form Row Datalist Binder - Support for internal form data table. @7.0-SNAPSHOT
+972a7c06 Added: wflow-consoleweb/wflow-core - Added ProcessFormModifier plugin type to extend assignment form feature. @7.0-SNAPSHOT
+f619362b Fixed: wflow-consoleweb - X-admin Theme - Multi Selectbox not working correctly when in single select mode. @7.0-SNAPSHOT
+a9656ba2 Fixed: wflow-core/wflow-consoleweb - Duplicate cache URL exception when installing/initializing Service Worker for PWA Offline support. @7.0-SNAPSHOT
+7a5751b5 Fixed: wflow-core - FormPdfUtil - NPE when system locale is null. #6744 @6.0-SNAPSHOT
+2ba9a8cc Fixed: wflow-plugin-base - Plugin Manager - Not installed when plugin jar override an existing jar with same filename. @7.0-SNAPSHOT
+ef1d810e Fixed: wflow-core - FormPdfUtil - English text font is switch from times to STSONG. #6744 @6.0-SNAPSHOT
+75589643 Modified: wflow-core - Form Options Cache - Improve debugging message and adding fallback if error. @6.0-SNAPSHOT
+0f79b425 Fixed: wflow-core - FormPdfUtil - English text font is switch from times to STSONG. #6744 @6.0-SNAPSHOT
+de68e4e8 Modified: wflow-consoleweb - Admin Bar - Should be hidden by default upon first login @7.0-SNAPSHOT
+05293787 Fixed: wflow-core - Duplicate Value Validator - Does not work correctly when a form is save as draft before. @6.0-SNAPSHOT
+0d56747c Modified: wflow-core - Date Hash Variable - Using date hash variable to format value in form grid does not work correctly. #6806 @6.0-SNAPSHOT
+fb53080c Modified: wflow-consoleweb - Grammatical fixes in messages for PWA Offline support @7.0-SNAPSHOT
+b530e254 Fixed: wflow-consoleweb - Missing online message for PWA Offline support @7.0-SNAPSHOT
+2cf30b1d Modified: wflow-consoleweb/wflow-core - Advanced Tool - Tree viewer - Show warning for missing plugins, missing element & PWA Offline compatible issue. @7.0-SNAPSHOT Modified: wflow-consoleweb/wflow-core - Advanced Tool - Tree viewer - Show indicator for PWA Offline compatible issue. @7.0-SNAPSHOT Modified: wflow-consoleweb - Userview Builder - Show confirmation dialog for userview menu enabled PWA Offline and having compatible issue. @7.0-SNAPSHOT Modified: wflow-core - Plugins - Implement PWA offline compatible checking. @7.0-SNAPSHOT
+df209959 Added: wflow-core/wflow-consoleweb - PWA Offline Support. @7.0-SNAPSHOT
+f8424145 Fixed: wflow-consoleweb - Embed Datalist - JSON data is HTML encoded. #6785 @6.0-SNAPSHOT
+7f50ffbd Fixed: wflow-core - GridInnerDataStoreBinderWrapper - Incorrectly handle preloaded data during storing. #6777 @6.0-SNAPSHOT
+d889d6fe Fixed: wflow-consoleweb - Update ace editor to 1.4.5 to fix missing sql syntax highlight. @6.0-SNAPSHOT
+da4dcb42 Fixed: wflow-consoleweb - Process Tool - Support to configure multiple plugins. @7.0-SNAPSHOT
+318ac1ce Fixed: wflow-consoleweb - Property Editor - Property page position render incorrectly in single page mode when code editor height getting longer. @7.0-SNAPSHOT
+ecd20f83 Fixed: wflow-consoleweb - Builder - Property page can't go back to design page without click on property editor first. @7.0-SNAPSHOT
+9da44d75 Fixed: wflow-consoleweb - Property Editor - Element plugin property pages are not appended in sequence. @7.0-SNAPSHOT
+af19f629 Fixed: wflow-core - Git - Does not handle custom builder definition. @7.0-SNAPSHOT Fixed: wflow-core - Create new app version - Does not handle custom builder definition. @7.0-SNAPSHOT Fixed: wflow-core - Generate Message PO - Does not include message in custom builder definition. @7.0-SNAPSHOT
+73a8facd Modified: wflow-core - PWA Offline - Provided form/userview element static resources in cache URLs API. @7.0-SNAPSHOT
+c02f8358 Fixed: wflow-core - PWA Offline Support - Missing menu id for URL started with "?" character.  @7.0-SNAPSHOT
+18f0fd46 Fixed: wflow-consoleweb - Grid - Visibility controlled section did not display grid values after validation error. #6406 @6.0-SNAPSHOT
+d22fd47c Fixed: wflow-consoleweb - Process Builder - Add checking for invalid format workflow variable. #6717 @6.0-SNAPSHOT
+1e80c009 Fixed: wflow-plugin-base - Plugin Manager - Possible NullPointerException when new plugin uploaded by another instance @6.0-SNAPSHOT
+373645d0 Fixed: wflow-consoleweb - X-Admin Theme - Side bar not able to scroll to view long menus. @7.0-SNAPSHOT
+1d73e378 Fixed: wflow-consoleweb - X-Admin Theme - The time field of datetime picker is blocked by slider. @7.0-SNAPSHOT Fixed: wflow-consoleweb - X-Admin Theme - Spreadsheet dropdown selectbox does not display correctly. @7.0-SNAPSHOT Fixed: wflow-consoleweb - X-Admin Theme - Multi page form aligned element in center. @7.0-SNAPSHOT
+a65be49c Fixed: wflow-consoleweb - Quick Edit - Enabled/disabled does not show/hide the quick edit link in iframe. @7.0-SNAPSHOT
+3140490a Fixed: wflow-core - File Upload - Not working correctly with Advanced Grid. @6.0-SNAPSHOT
+b816c5c6 Fixed: wflow-core/wflow-consoleweb - Fixed typos in a17a403. @7.0-SNAPSHOT
+a17a4036 Modified: wflow-core/wflow-consoleweb - Userview Menu - Support PWA offline based on theme. @7.0-SNAPSHOT
+
 CHANGES IN 7.0-PREVIEW3
 =======================
 d40c5f93 Fixed: wflow-consoleweb - X-Admin Theme - Prevent redirect away from index page. @7.0-SNAPSHOT
