@@ -364,13 +364,6 @@ public class TensorFlowUtil {
      */
     public static Map<String, Tensor> executeTensorFlowModel(InputStream graphInputStream, Map<String, Tensor> inputTensorMap, String[] outputNames) throws IOException {
         byte[] graphDef = IOUtils.toByteArray(graphInputStream);
-        ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-        byte[] buff = new byte[100]; 
-        int len = 0;
-        while ((len = graphInputStream.read(buff, 0, 100)) > 0){
-            swapStream.write(buff, 0, len);
-        }
-        graphDef = swapStream.toByteArray();
         
         try {
             Map<String, Tensor> resultMap = new LinkedHashMap<>();
