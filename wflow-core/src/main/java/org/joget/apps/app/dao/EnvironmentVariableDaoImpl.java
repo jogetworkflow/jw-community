@@ -150,10 +150,10 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
                 env.setId(id);
                 env.setRemarks(remark);
                 env.setValue(Integer.toString(count));
-                add(env);
+                super.add(env);
             } else {
                 env.setValue(Integer.toString(count));
-                update(env);
+                super.update(env);
             }
         } catch (Exception e) {
             LogUtil.error(EnvironmentVariableDaoImpl.class.getName(), e, id);
