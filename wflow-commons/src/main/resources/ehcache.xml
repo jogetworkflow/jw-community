@@ -102,8 +102,8 @@
             maxElementsInMemory="1000"
             eternal="false"
             overflowToDisk="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
+            timeToIdleSeconds="600"
+            timeToLiveSeconds="600"
             diskPersistent="false"/>
     
 </ehcache>
