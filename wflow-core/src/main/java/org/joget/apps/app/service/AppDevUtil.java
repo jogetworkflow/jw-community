@@ -24,6 +24,8 @@ import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.lang.ArrayUtils;
@@ -63,6 +65,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
@@ -1086,16 +1089,30 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
     
     public static Date dirLastModified(AppDefinition appDef) throws URISyntaxException, GitAPIException, IOException {
         Date latestDate = null;
-        File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-        if (dir != null && dir.isDirectory()) {
-            // get latest modified date
-            Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
-            for (File file: files) {
-                BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                Date dateModified = new Date(attr.lastModifiedTime().toMillis());
-                if (latestDate == null || dateModified.after(latestDate)) {
-                    latestDate = dateModified;
+
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        String cacheKey = profile + "_dirLastModified_" + appDef.toString();
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
+        if (cache != null) {
+            Element element = cache.get(cacheKey);
+            if (element != null) {
+                latestDate = (Date)element.getObjectValue();
+            }
+        }
+        if (latestDate == null) {
+            File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+            if (dir != null && dir.isDirectory()) {
+                // get latest modified date
+                Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
+                for (File file: files) {
+                    BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                    Date dateModified = new Date(attr.lastModifiedTime().toMillis());
+                    if (latestDate == null || dateModified.after(latestDate)) {
+                        latestDate = dateModified;
+                    }
                 }
+                Element element = new Element(cacheKey, latestDate);
+                cache.put(element);
             }
         }
         if (latestDate != null) {
