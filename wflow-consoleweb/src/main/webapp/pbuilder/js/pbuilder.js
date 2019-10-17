@@ -4501,7 +4501,7 @@ ProcessBuilder.Mapper = {
             url += "/activity/" + escape(id) + "/form?activityName=" + encodeURIComponent(title);
         } else if (type === "participant" || type === "whitelist") {
             var title = get_pbuilder_msg("pbuilder.label.processStartWhiteList");
-            if (type === "whitelist") {
+            if (type !== "whitelist") {
                 title = $(node).find(".participant_label").text();
             }
             if (mapping !== undefined && mapping !== null && mapping['type'] === "plugin") {
