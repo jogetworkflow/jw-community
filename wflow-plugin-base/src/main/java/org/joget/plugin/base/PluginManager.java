@@ -62,10 +62,10 @@ import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.LocaleResolver;
 
 /**
  * Service methods used to manage plugins
@@ -870,7 +870,7 @@ public class PluginManager implements ApplicationContextAware {
      * @return null if the resource bundle is not found or in the case of an exception
      */
     public ResourceBundle getPluginMessageBundle(String pluginName, String translationPath) {
-        String cacheKey = pluginName + "_" + translationPath;
+        String cacheKey = pluginName + "_" + translationPath + "_" + LocaleContextHolder.getLocale().toString();
         if (!noResourceBundleCache.contains(cacheKey)) {
             ResourceBundle bundle = resourceBundleCache.get(cacheKey);
             if (bundle == null) {
@@ -894,13 +894,11 @@ public class PluginManager implements ApplicationContextAware {
      * @return null if the resource bundle is not found or in the case of an exception
      */
     public static ResourceBundle getMessageBundle(Class clazz, String translationPath) {
-        String cacheKey = clazz.getName() + "_" + translationPath;
+        Locale locale = LocaleContextHolder.getLocale();
+        String cacheKey = clazz.getName() + "_" + translationPath + "_" + locale.toString();
         if (!noResourceBundleCache.contains(cacheKey)) {
             ResourceBundle bundle = resourceBundleCache.get(cacheKey);
             if (bundle == null) {
-                LocaleResolver localeResolver = (LocaleResolver) getBean("localeResolver");
-                Locale locale = localeResolver.resolveLocale(getHttpServletRequest());
-
                 try {
                     bundle = ResourceBundle.getBundle(translationPath, locale, clazz.getClassLoader());
                     if (bundle != null) {
