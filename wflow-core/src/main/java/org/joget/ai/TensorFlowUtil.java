@@ -175,30 +175,46 @@ public class TensorFlowUtil {
         return dictionaryMap.get(theDelimter);
     }
     
-    public static Tensor imageInput(InputStream inputStream, String imageType, int height, int width, float mean, float scale, String type) throws IOException {
+    public static Tensor imageInput(InputStream inputStream, String imageType, Integer height, Integer width, Float mean, Float scale, String type) throws IOException {
         DataType dataType = getDataType(type);
         try (Graph g = new Graph()) {
             byte[] imageBytes = IOUtils.toByteArray(inputStream);
             GraphBuilder b = new GraphBuilder(g);
             final Output input = b.constant("input", imageBytes);
-            LogUtil.debug(TensorFlowUtil.class.getName(), "Normalizing image " + imageType);
             Output imageOutput = b.decodeJpeg(input, 3);
             LogUtil.debug(TensorFlowUtil.class.getName(), "Decoded image " + imageType);
-            final Output output
-                    = b.cast(
+            Output output = null;
+            
+            if (height != null && width != null) {
+                LogUtil.debug(TensorFlowUtil.class.getName(), "Normalizing image " + imageType);
+                if (mean == null) {
+                    mean = 1f;
+                }
+                if (scale == null) {
+                    scale = 1f;
+                }
+                output = b.cast(
                             b.div(
-                                    b.sub(
-                                            b.resizeBilinear(
-                                                    b.expandDims(
-                                                            imageOutput,
-                                                            b.constant("make_batch", 0)),
-                                                    b.constant("size", new int[]{height, width})),
-                                            b.constant("mean", mean)),
-                                    b.constant("scale", scale)),
+                                b.sub(
+                                    b.resizeBilinear(
+                                        b.expandDims(
+                                            imageOutput,
+                                            b.constant("make_batch", 0)),
+                                        b.constant("size", new int[]{height, width})),
+                                    b.constant("mean", mean)),
+                                b.constant("scale", scale)),
                             dataType);
+            } else {
+                output = b.cast(
+                            b.expandDims(
+                                imageOutput, 
+                                b.constant("make_batch", 0)), 
+                            dataType);
+            }
+            
             try (Session s = new Session(g)) {
                 Tensor result = s.runner().fetch(output.op().name()).run().get(0);
-                LogUtil.debug(TensorFlowUtil.class.getName(), "Normalized image " + imageType);
+                LogUtil.debug(TensorFlowUtil.class.getName(), "image " + imageType);
                 return result;
             }
         } finally {
@@ -421,7 +437,7 @@ public class TensorFlowUtil {
         return resultMap;
     }
     
-    public static List<String> getValueToLabelList(InputStream labelInputStream, float[] results, Integer numberOfValues, Boolean unique) throws IOException {
+    public static List<String> getValueToLabelList(InputStream labelInputStream, float[] results, Integer numberOfValues, Boolean unique, Float threshold, float[] scores) throws IOException {
         List<String> resultLabels = new ArrayList<String>();
         try {
             List<String> labels = IOUtils.readLines(labelInputStream);
@@ -430,7 +446,11 @@ public class TensorFlowUtil {
             }
             for (int i=0; i < numberOfValues; i++) {
                 String label = labels.get((int)(results[i] - 1));
-                if (unique == null || !unique || (unique && !resultLabels.contains(label))) {
+                boolean pass = true;
+                if (threshold != null && scores != null) {
+                    pass = scores[i] > threshold;
+                }
+                if (pass && (unique == null || !unique || (unique && !resultLabels.contains(label)))) {
                     resultLabels.add(label);
                 }
             }
@@ -601,6 +621,7 @@ public class TensorFlowUtil {
                         Map postProcessing = (Map) postProcessingObj;
                         String type = postProcessing.get("type").toString();
                         
+                        postProcessing.put("processId", processId);
                         if (postsProcessingClasses.containsKey(type)) {
                             TensorFlowPostProcessing c = postsProcessingClasses.get(type);
                             c.runPostProcessing(postProcessing, tfvariables, variables, tempDataHolder);

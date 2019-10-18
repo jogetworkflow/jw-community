@@ -11,6 +11,7 @@ import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.tensorflow.Tensor;
 
@@ -47,11 +48,25 @@ public class TFImageInput implements TensorFlowInput {
         }
         String type = FilenameUtils.getExtension(filename);
         
+        Integer height = null;
+        Integer width = null;
+        Float mean = null;
+        Float scale = null;
+        
+        try {
+            height = Integer.parseInt(AppPluginUtil.getVariable(params.get("height").toString(), variables));
+            width = Integer.parseInt(AppPluginUtil.getVariable(params.get("width").toString(), variables));
+        } catch (Exception e) {}
+        
+        try {
+            mean = Float.parseFloat(AppPluginUtil.getVariable(params.get("mean").toString(), variables));
+        } catch (Exception e) {}
+        try {
+            scale = Float.parseFloat(AppPluginUtil.getVariable(params.get("scale").toString(), variables));
+        } catch (Exception e) {}
+        
         return TensorFlowUtil.imageInput(TensorFlowUtil.getInputStream(filename, form, recordId), 
-                type, Integer.parseInt(AppPluginUtil.getVariable(params.get("height").toString(), variables)), 
-                Integer.parseInt(AppPluginUtil.getVariable(params.get("width").toString(), variables)), 
-                Float.parseFloat(AppPluginUtil.getVariable(params.get("mean").toString(), variables)), 
-                Float.parseFloat(AppPluginUtil.getVariable(params.get("scale").toString(), variables)), 
+                type, height, width, mean, scale, 
                 params.get("datatype").toString());
     }
 
@@ -62,7 +77,7 @@ public class TFImageInput implements TensorFlowInput {
     
     @Override
     public String getLabel() {
-        return ResourceBundleUtil.getMessage("app.simpletfai.image");
+        return ResourceBundleUtil.getMessage("app.simpletfai.normalizeImage");
     }
     
     @Override
@@ -83,10 +98,10 @@ public class TFImageInput implements TensorFlowInput {
         
         String html = "<select name=\"datatype\" class=\"input_datatype small\"></select><span class=\"label\">"+typeLabel+"</span>";
         html += "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
-        html += "<div><input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span>";
-        html += "<input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span>";
-        html += "<input name=\"mean\" class=\"input_mean small required\" placeholder=\""+meanLabel+"\"/><span class=\"label\">"+meanLabel+"</span>";
-        html += "<input name=\"scale\" class=\"input_scale small required\" placeholder=\""+scaleLabel+"\"/><span class=\"label\">"+scaleLabel+"</span></div>";
+        html += "<div><input name=\"width\" class=\"input_width small\" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span>";
+        html += "<input name=\"height\" class=\"input_height small\" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span>";
+        html += "<input name=\"mean\" class=\"input_mean small\" placeholder=\""+meanLabel+"\"/><span class=\"label\">"+meanLabel+"</span>";
+        html += "<input name=\"scale\" class=\"input_scale small\" placeholder=\""+scaleLabel+"\"/><span class=\"label\">"+scaleLabel+"</span></div>";
         
         return html;
     }
