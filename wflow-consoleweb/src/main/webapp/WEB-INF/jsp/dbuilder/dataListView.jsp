@@ -24,7 +24,8 @@
             <script>
                 loadCSS("${pageContext.request.contextPath}/js/footable/footable.core.min.css?build=<fmt:message key="build.number"/>");
             </script>
-
+            <link rel="preload" href="${pageContext.request.contextPath}/js/footable/fonts/footable.woff" as="font" crossorigin />
+            
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
             <c:if test="${isQuickEditEnabled && !dataList.disableQuickEdit}">
             <div class="quickEdit" style="display: none">

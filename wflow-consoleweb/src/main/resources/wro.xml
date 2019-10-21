@@ -1,27 +1,29 @@
 <groups xmlns="http://www.isdc.ro/wro">
+    <group name="common.preload">
+        <js>/js/jquery/jquery-3.4.1.min.js</js>
+        <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
+        <js>/js/json/ui.js</js>
+        <js>/js/json/ui_ext.js</js>
+        <js>/js/json/util.js</js>
+        <js>/js/loadCSS/loadCSS.js</js>
+    </group>
     <group name="common">
         <css>/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css</css>
         <css>/js/fontawesome5/css/all.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
-        <css>/css/jquery.toast.min.css</css>
         <css>/css/admin_bar.css</css>
-        <js>/js/jquery/jquery-3.4.1.min.js</js>
-        <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
+        <css>/js/tablesaw/tablesaw.stackonly.css</css>
+        <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
         <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
         <js>/js/jquery/jquery.ui.touch-punch.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
-        <js>/js/json/ui.js</js>
-        <js>/js/json/ui_ext.js</js>
-        <js>/js/json/util.js</js>
         <js>/js/jquery/md5/jquery.md5.js</js>
         <js>/js/jquery/jquery.cookie.js</js>
         <js>/js/guiders/guiders-1.1.1.js</js>
         <js>/js/jquery/jquery.blockUI.js</js>
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
-        <js>/js/jquery/toast/jquery.toast.min.js</js>
-        <js>/js/loadCSS/loadCSS.js</js>
     </group>
     <group name="advancedTool">
         <css>/js/jstree/themes/default/style.min.css</css>
@@ -74,9 +76,12 @@
         <js>classpath:resources/js/section.js</js>
     </group>
     <group name="userview.min">
+        <css>/css/form.css</css>
         <css>/css/userview.css</css>
+        <css>/css/admin_bar.css</css>
     </group>
     <group name="userview_v5.min">
+        <css>/css/form.css</css>
         <css>/css/userview_v5.css</css>
     </group>
     <group name="userview_print.min">
@@ -94,40 +99,48 @@
         <css>/js/font-awesome4/css/font-awesome.min.css</css>
     </group>
     <group name="universal.preload.min">
+        <css>/css/form.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/universal/css/form.css</css>
         <css>/universal/css/style.css</css>
-        <js>/universal/js/preload.js</js>
     </group>    
     <group name="universal.min">
-        <css>/js/fontawesome5/css/all.min.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
+        <css>/css/jquery.toast.min.css</css>
+        <js>/universal/js/preload.js</js>
         <js>/js/bootstrap3/js/bootstrap.min.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/universal/js/main.js</js>
+        <js>/js/hubspot-offline/offline.min.js</js>
+        <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/pwa.js</js>
     </group>
     <group name="progressive.preload.min">
+        <css>/css/form.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
-        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/progressive/css/form.css</css>
         <css>/progressive/css/style.css</css>
-        <js>/progressive/js/preload.js</js>
     </group>    
     <group name="progressive.min">
-        <css>/js/fontawesome5/css/all.min.css</css>
+        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
+        <css>/css/jquery.toast.min.css</css>
+        <js>/progressive/js/preload.js</js>
         <js>/js/bootstrap3/js/bootstrap.min.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/progressive/js/main.js</js>
+        <js>/js/hubspot-offline/offline.min.js</js>
+        <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/pwa.js</js>
     </group>
     <group name="xadmin.min">
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
@@ -136,7 +149,11 @@
         <css>/xadmin/css/custom.css</css>
         <css>/xadmin/css/form.css</css>
         <css>/xadmin/css/list.css</css>
+        <css>/css/jquery.toast.min.css</css>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
+        <js>/js/hubspot-offline/offline.min.js</js>
+        <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/pwa.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
     </group>  

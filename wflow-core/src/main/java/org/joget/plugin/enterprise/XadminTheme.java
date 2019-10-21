@@ -79,7 +79,6 @@ public class XadminTheme extends UniversalTheme {
         
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";
-        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/js/fontawesome5/css/all.min.css" + "\")</script>\n";
         jsCssLink += "<script type=\"text/javascript\" src=\""+path+"/xadmin/lib/layui/layui.js\"></script>\n";
         jsCssLink += "<script type=\"text/javascript\" src=\""+path+"/wro/xadmin.min.js\"></script>\n";
         jsCssLink += "<!--[if lt IE 9]>\n";
@@ -272,13 +271,13 @@ public class XadminTheme extends UniversalTheme {
                     .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                     .setStandardDefaultImage(DefaultImage.IDENTICON)
                     .getUrl(email);
-                profileImageTag = "<img class=\"profile-img gravatar\" alt=\"gravatar\" src=\""+url+"\" /> ";
+                profileImageTag = "<img class=\"profile-img gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
                     url = data.get("context_path") + "/" + getPathName() + "/user.png";
                 }
-                profileImageTag = "<img alt=\"profile-img profile\" src=\""+url+"\" /> ";
+                profileImageTag = "<img alt=\"profile-img profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             } else {
                 profileImageTag = "<i class=\"icon iconfont\">&#xe6b8;</i> ";
             }
@@ -693,11 +692,14 @@ public class XadminTheme extends UniversalTheme {
     public Set<String> getOfflineStaticResources() {
         Set<String> urls = new HashSet<String>();
         String contextPath = AppUtil.getRequestContextPath();
+        String bn = ResourceBundleUtil.getMessage("build.number");
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/xadmin.min.css");
         urls.add(contextPath + "/xadmin/css/font.css");
         urls.add(contextPath + "/js/fontawesome5/css/all.min.css");
-        urls.add(contextPath + "/wro/common.js");
+        urls.add(contextPath + "/wro/common.preload.js?build=" + bn);
+        urls.add(contextPath + "/wro/common.js?build=" + bn);
+        urls.add(contextPath + "/wro/form_common.js?build=" + bn);
         urls.add(contextPath + "/xadmin/lib/layui/layui.js");
         urls.add(contextPath + "/wro/xadmin.min.js");
         urls.add(contextPath + "/xadmin/lib/html5.min.js");

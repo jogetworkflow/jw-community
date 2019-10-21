@@ -228,10 +228,13 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         Set<String> urls = new HashSet<String>();
         String contextPath = AppUtil.getRequestContextPath();
         String pathName = getPathName();
+        String bn = ResourceBundleUtil.getMessage("build.number");
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.css");
         urls.add(contextPath + "/wro/" + pathName + ".min.css");
-        urls.add(contextPath + "/wro/common.js");
+        urls.add(contextPath + "/wro/common.preload.js?build=" + bn);
+        urls.add(contextPath + "/wro/common.js?build=" + bn);
+        urls.add(contextPath + "/wro/form_common.js?build=" + bn);
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
         urls.add(contextPath + "/wro/" + pathName + ".min.js");
         urls.add(contextPath + "/" + pathName +"/lib/responsive-switch.min.js");
@@ -307,11 +310,14 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
 
         String jsCssLink = "";
         jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.css" + "\" rel=\"stylesheet\" />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/fonts/fontawesome-webfont.woff2?v=4.6.1\" as=\"font\" crossorigin />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-brands-400.woff2\" as=\"font\" crossorigin />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-solid-900.woff2\" as=\"font\" crossorigin />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/universal/lib/material-design-iconic-font/fonts/Material-Design-Iconic-Font.woff2?v=2.2.0\" as=\"font\" crossorigin />\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.css" + "\")</script>\n";
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
 
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.js\"></script>\n";
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" async></script>\n";
         
         if (enableResponsiveSwitch()) {
@@ -352,8 +358,6 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 String buildNumber = ResourceBundleUtil.getMessage("build.number");
                 
                 String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/"+key+"/serviceworker";
-                jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js?build=" + buildNumber + "\"></script>";
-                jsCssLink += "<script src=\"" + data.get("context_path") + "/js/hubspot-offline/offline.min.js?build=" + buildNumber + "\"></script>";
                 jsCssLink += "<script>$(function() {"
                         + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
                         + "PwaUtil.userviewKey = '" + key + "';"
@@ -606,13 +610,13 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                         .setStandardDefaultImage(DefaultImage.IDENTICON)
                         .getUrl(email);
-                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" /> ";
+                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
                 } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                     String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
                         url = data.get("context_path") + "/" + getPathName() + "/user.png";
                     }
-                    profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
+                    profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
                 }
                 
                 html += "<li class=\"user-link dropdown\">\n"
@@ -686,13 +690,13 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                     .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                     .setStandardDefaultImage(DefaultImage.IDENTICON)
                     .getUrl(email);
-                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" /> ";
+                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
                     url = data.get("context_path") + "/" + getPathName() + "/user.png";
                 }
-                profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
+                profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             }
             
             html += "<li class=\"mm-profile user-link\">\n"
@@ -739,7 +743,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             String profileImageTag = "";
             if (getPropertyString("userImage").isEmpty() || "hashVariable".equals(getPropertyString("userImage"))) {
                 String url = data.get("context_path") + "/" + getPathName() + "/user.png";
-                profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
+                profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             }
             
             html += "<li class=\"mm-profile user-link\">\n"

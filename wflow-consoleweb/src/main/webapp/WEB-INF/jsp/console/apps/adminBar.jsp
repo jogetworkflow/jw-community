@@ -9,7 +9,6 @@
     <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
         <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
         <script>
-            loadCSS("${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css");
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
         <div id="adminBar" class="adminBarInactive">

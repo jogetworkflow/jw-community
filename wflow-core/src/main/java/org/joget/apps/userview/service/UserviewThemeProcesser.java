@@ -346,21 +346,23 @@ public class UserviewThemeProcesser {
     protected String getJogetHeader() {
         String cp = request.getContextPath();
         String bn = ResourceBundleUtil.getMessage("build.number");
-        String html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/common.css?build=" + bn + "\" />\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\"></script>\n"
+        String html = "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.preload.js?build=" + bn + "\"></script>\n"
+                + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\" defer></script>\n"
+                + "<script>loadCSS(\"" + cp + "/wro/common.css" + "\")</script>\n"
                 + "<script type=\"text/javascript\">\n";
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (!(us != null && us.getAllowSessionTimeout())) {
-            html += "$(document).ready(function(){\n"
-                    + "            $('body').append('<img id=\"image_alive\" style=\"display:none;\" width=\"1\" height=\"1\" src=\"" + cp + "/images/v3/cj.gif?\" alt=\"\">');\n"
+            html += "$(document).ready(function() {\n"
                     + "            window.setInterval(\"keepMeAlive('image_alive')\", 200000);\n"
                     + "        });\n"
-                    + "        function keepMeAlive(imgName)\n"
-                    + "        {  \n"
+                    + "        function keepMeAlive(imgName) {  \n"
                     + "             myImg = document.getElementById(imgName);   \n"
-                    + "             if (myImg)\n"
+                    + "             if (myImg) {\n"
                     + "                 myImg.src = myImg.src.replace(/\\?.*$/, '?' + Math.random());   \n"
+                    + "             } else { \n"
+                    + "                 $('body').append('<img id=\"image_alive\" style=\"display:none;\" width=\"1\" height=\"1\" src=\"" + cp + "/images/v3/cj.gif?\" alt=\"\">');\n"
+                    + "             } \n"
                     + "        }  ";
         }
 

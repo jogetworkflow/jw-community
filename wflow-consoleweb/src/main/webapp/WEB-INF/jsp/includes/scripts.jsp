@@ -6,23 +6,25 @@
     
     <c:set var="userSecurity" scope="request" value='<%= DirectoryUtil.getUserSecurity() %>'/>
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key="build.number"/>" />
+    <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
+    <script>loadCSS("${pageContext.request.contextPath}/wro/common.css")</script>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     
     <c:if test="${empty userSecurity || (!empty userSecurity && !userSecurity.allowSessionTimeout)}">
     <script type="text/javascript">
-        $(document).ready(function(){
-            $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/cj.gif?" alt="">');
+        $(document).ready(function() {
             window.setInterval("keepMeAlive('image_alive')", 200000);
         });
-        function keepMeAlive(imgName)
-        {  
+        function keepMeAlive(imgName) {  
              myImg = document.getElementById(imgName);   
-             if (myImg)
+             if (myImg) {
                  myImg.src = myImg.src.replace(/\?.*$/, '?' + Math.random());   
-        }   
+             } else {
+                $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/cj.gif?" alt="">');
+             }
+        }
     </script>
     </c:if>
     
