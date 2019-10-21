@@ -77,7 +77,7 @@ public class TFImageInput implements TensorFlowInput {
     
     @Override
     public String getLabel() {
-        return ResourceBundleUtil.getMessage("app.simpletfai.normalizeImage");
+        return ResourceBundleUtil.getMessage("app.simpletfai.image");
     }
     
     @Override
