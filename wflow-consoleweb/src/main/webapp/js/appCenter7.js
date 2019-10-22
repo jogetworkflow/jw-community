@@ -106,7 +106,9 @@ var AppCenter = {
                     $(container).append('<li class="grid-dummy-fix"></li>');
                 }
 
-                HelpGuide.reposition();     
+                $(function() {                    
+                    HelpGuide.reposition();     
+                })
                 
                 // check if within IFRAME
                 if (window.self === window.top) {
