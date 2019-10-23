@@ -2,6 +2,7 @@
     <group name="common.preload">
         <js>/js/jquery/jquery-3.4.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
+        <js>/js/jquery/ui/jquery-ui-1.12.1.custom.min.js</js>
         <js>/js/json/ui.js</js>
         <js>/js/json/ui_ext.js</js>
         <js>/js/json/util.js</js>
@@ -16,7 +17,6 @@
         <css>/css/admin_bar.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
-        <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
         <js>/js/jquery/jquery.ui.touch-punch.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
         <js>/js/jquery/md5/jquery.md5.js</js>
