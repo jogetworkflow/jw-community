@@ -333,7 +333,9 @@ public class AppDevUtil {
     public static void gitPullAndCommit(AppDefinition appDef, Git git, File workingDir, String commitMessage) throws GitAPIException {
         try {
             AppDevUtil.gitPullLocal(appDef, git, workingDir);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git local repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+        }
         
         gitCommit(appDef, git, workingDir, commitMessage);
     }
@@ -467,16 +469,18 @@ public class AppDevUtil {
     
     public static void gitPushLocal(AppDefinition appDef, Git git, File workingDir) throws GitAPIException {
         // push to remote
-        LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo");
+        LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId());
         Iterable<PushResult> pushResults = git.push()
                 .call();
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
-                LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
-                if ("REJECTED_OTHER_REASON".equals(ref.getStatus())) {
+                LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId() + " result: " + ref.getStatus());
+                if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
                     try {
                         gitPullLocal(appDef, git, workingDir);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git local repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+                    }
                     gitPushLocal(appDef, git, workingDir);
                 }
             }
@@ -486,7 +490,9 @@ public class AppDevUtil {
     public static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException {
         try {
             gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
-        } catch (Exception e){}
+        } catch (Exception e){
+            LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+        }
 
         // push to remote
         LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
@@ -496,10 +502,12 @@ public class AppDevUtil {
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
                 LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
-                if ("REJECTED_OTHER_REASON".equals(ref.getStatus())) {
+                if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
                     try {
                         gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+                    }
                     gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
                 }
             }
@@ -582,7 +590,7 @@ public class AppDevUtil {
                     }
                 }
             } catch(RefNotFoundException | URISyntaxException ne) {
-                // ignore
+                LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + ne.getMessage());
             }
             
             //create temporary git working folder
@@ -702,7 +710,7 @@ public class AppDevUtil {
             try {
                 AppDevUtil.gitCheckout(git, gitBranch);
             } catch(RefNotFoundException ne) {
-                // ignore
+                LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout branch " + gitBranch + ". Reason :" + ne.getMessage());
             }
 
             // delete file
@@ -767,9 +775,8 @@ public class AppDevUtil {
                 }
             }
         } catch(RefNotFoundException | RefNotAdvertisedException re) {
-            // ignore
+            LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDefinition.getAppId() + ". Reason :" + re.getMessage());
         }
-        // ignore
         File file = new File(projectDir, path);
         if (file.exists()) {
             return file;

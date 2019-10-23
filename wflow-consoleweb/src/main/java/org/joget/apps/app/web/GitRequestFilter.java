@@ -105,7 +105,7 @@ public class GitRequestFilter implements Filter {
                     }
                 }
             });
-            pushToRemote.setDaemon(true);
+            pushToRemote.setDaemon(false);
             pushToRemote.start();
         }
     }
