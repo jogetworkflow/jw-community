@@ -20,11 +20,11 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.dao.GitCommitHelper;
 import static org.joget.apps.app.service.AppDevUtil.ATTRIBUTE_GIT_COMMIT_REQUEST;
-import static org.joget.apps.app.service.AppDevUtil.ATTRIBUTE_GIT_PULL_REQUEST;
 import static org.joget.apps.app.service.AppDevUtil.getGitBranchName;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import static org.joget.apps.app.service.AppDevUtil.getAppDevProperties;
+import org.joget.commons.util.PluginThread;
 
 @WebFilter(urlPatterns="/web/*")
 public class GitRequestFilter implements Filter {
@@ -62,9 +62,11 @@ public class GitRequestFilter implements Filter {
                     // perform commit
                     String commitMessage = gitCommitHelper.getCommitMessage();
                     if (commitMessage != null && !commitMessage.trim().isEmpty()) {
-                        AppDevUtil.gitCommit(git, commitMessage);
+                        AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
                         pushAppDefs.add(appDef);
                     }
+                    
+                    gitCommitHelper.clean();
                 }
             } catch (Exception ex) {
                 LogUtil.error(getClass().getName(), ex, ex.getMessage());
@@ -73,36 +75,39 @@ public class GitRequestFilter implements Filter {
         
         // push
         if (pushAppDefs != null && !pushAppDefs.isEmpty()) {
-            for (AppDefinition appDef: pushAppDefs) {
-                String baseDir = AppDevUtil.getAppDevBaseDirectory();
-                String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
-                File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-                String gitBranch = getGitBranchName(appDef);
-                Properties gitProperties = getAppDevProperties(appDef);
-                String gitUri = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_URI);
-                String gitUsername = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME);
-                String gitPassword = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD);
-                try {
-                    Git git = AppDevUtil.gitInit(projectDir);
-                    if (gitUri != null && !gitUri.trim().isEmpty()) {
-                        boolean gitPullRequestDone = "true".equals(WorkflowUtil.getHttpServletRequest().getAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appDef.getAppId()));
-                        if (!gitPullRequestDone) {
-                            try {
-                                AppDevUtil.gitAddRemote(git, gitUri);
-                                AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE);
-                            } catch(RefNotAdvertisedException re) {
-                                // ignore
+            final Collection<AppDefinition> threadPushAppDefs = pushAppDefs;
+            Thread pushToRemote = new PluginThread(new Runnable() {
+                
+                public void run() {
+                    for (AppDefinition appDef: threadPushAppDefs) {
+                        String baseDir = AppDevUtil.getAppDevBaseDirectory();
+                        String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
+                        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                        String gitBranch = getGitBranchName(appDef);
+                        Properties gitProperties = getAppDevProperties(appDef);
+                        String gitUri = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_URI);
+                        String gitUsername = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME);
+                        String gitPassword = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD);
+                        try {
+                            Git git = AppDevUtil.gitInit(projectDir);
+                            if (gitUri != null && !gitUri.trim().isEmpty()) {
+                                
+                                try {
+                                    AppDevUtil.gitAddRemote(git, gitUri);
+                                } catch(RefNotAdvertisedException re) {
+                                    // ignore
+                                }
+                                AppDevUtil.gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
                             }
-                            WorkflowUtil.getHttpServletRequest().setAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appDef.getAppId(), "true");
+                        } catch (Exception ex) {
+                            LogUtil.error(getClass().getName(), ex, ex.getMessage());
                         }
-                        AppDevUtil.gitPush(git, gitUri, gitUsername, gitPassword);
                     }
-                } catch (Exception ex) {
-                    LogUtil.error(getClass().getName(), ex, ex.getMessage());
                 }
-            }
+            });
+            pushToRemote.setDaemon(true);
+            pushToRemote.start();
         }
-
     }
 
     @Override

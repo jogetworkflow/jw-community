@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,6 +175,11 @@ public class TestAppDao {
         // verify package deleted
         PackageDefinition loadedPackageDef = loadPackageDefinition(TEST_PACKAGE_ID);
         assertTrue(loadedPackageDef == null);
+    }
+    
+    @After
+    public void clean() {
+        TestAppService.cleanAppSrc();
     }
 
     protected AppDefinition createAppDefinition(String id, Long version) {

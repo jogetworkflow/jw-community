@@ -1,12 +1,16 @@
 package org.joget.apps.app.dao;
 
+import java.io.File;
 import java.util.Objects;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.joget.apps.app.model.AppDefinition;
 
 public class GitCommitHelper {
 
+    File workingDir;
     AppDefinition appDefinition;
+    Git localGit;
     Git git;
     String commitMessage;
     boolean syncPlugins;
@@ -22,6 +26,22 @@ public class GitCommitHelper {
 
     public void setAppDefinition(AppDefinition appDefinition) {
         this.appDefinition = appDefinition;
+    }
+
+    public File getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(File workingDir) {
+        this.workingDir = workingDir;
+    }
+    
+    public Git getLocalGit() {
+        return localGit;
+    }
+
+    public void setLocalGit(Git localGit) {
+        this.localGit = localGit;
     }
 
     public Git getGit() {
@@ -88,4 +108,13 @@ public class GitCommitHelper {
         this.syncResources = syncResources;
     }
     
+    public void clean() {
+        if (workingDir.exists()) {
+            try {
+                FileUtils.deleteDirectory(workingDir);
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+    }
 }

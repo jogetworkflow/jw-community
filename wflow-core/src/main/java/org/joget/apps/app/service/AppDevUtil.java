@@ -35,6 +35,7 @@ import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RemoteAddCommand;
+import org.eclipse.jgit.api.RemoteListCommand;
 import org.eclipse.jgit.api.RemoteRemoveCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
@@ -47,6 +48,7 @@ import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
@@ -69,6 +71,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -178,18 +181,39 @@ public class AppDevUtil {
     }
 
     public static void gitAddRemote(Git git, String gitUri) throws URISyntaxException, GitAPIException {
-        // remove existing remote repo
-        LogUtil.debug(AppDevUtil.class.getName(), "Remove existing Git remote repo");
-        RemoteRemoveCommand remoteRemoveCommand = git.remoteRemove();
-        remoteRemoveCommand.setName("origin");
-        remoteRemoveCommand.call();
+        RemoteListCommand remoteListCommand = git.remoteList();
+        List<RemoteConfig> call = remoteListCommand.call();
+        boolean isDiff = true;
+        if (call != null) {
+            for (RemoteConfig con : call) {
+                if (con.getName().equals("origin")) {
+                    for (URIish uri : con.getURIs()) {
+                        if (uri.toString().equals(gitUri)) {
+                            isDiff = false;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
         
-        // add remote repo
-        LogUtil.debug(AppDevUtil.class.getName(), "Add Git remote repo: " + gitUri);
-        RemoteAddCommand remoteAddCommand = git.remoteAdd();
-        remoteAddCommand.setName("origin");
-        remoteAddCommand.setUri(new URIish(gitUri));
-        remoteAddCommand.call();
+        if (isDiff) {
+            // remove existing remote repo
+            LogUtil.debug(AppDevUtil.class.getName(), "Remove existing Git remote repo");
+            RemoteRemoveCommand remoteRemoveCommand = git.remoteRemove();
+            remoteRemoveCommand.setName("origin");
+            remoteRemoveCommand.call();
+
+            // add remote repo
+            if (!gitUri.isEmpty()) {
+                LogUtil.debug(AppDevUtil.class.getName(), "Add Git remote repo: " + gitUri);
+                RemoteAddCommand remoteAddCommand = git.remoteAdd();
+                remoteAddCommand.setName("origin");
+                remoteAddCommand.setUri(new URIish(gitUri));
+                remoteAddCommand.call();
+            }
+        }
     }
     
     public static void gitCheckout(Git git, String gitBranch) throws GitAPIException, IOException {
@@ -284,7 +308,7 @@ public class AppDevUtil {
                 .call();
     }
     
-    public static void gitCommit(Git git, String commitMessage) throws GitAPIException {
+    public static void gitCommit(AppDefinition appDef, Git git, File workingDir, String commitMessage) throws GitAPIException {
         // commit to repo
         String username = WorkflowUserManager.ROLE_ANONYMOUS;
         String email = "";
@@ -302,6 +326,16 @@ public class AppDevUtil {
                 .setAuthor(username, email)
                 .setMessage(commitMessage)
                 .call();
+        
+        gitPushLocal(appDef, git, workingDir);
+    }
+    
+    public static void gitPullAndCommit(AppDefinition appDef, Git git, File workingDir, String commitMessage) throws GitAPIException {
+        try {
+            AppDevUtil.gitPullLocal(appDef, git, workingDir);
+        } catch (Exception e) {}
+        
+        gitCommit(appDef, git, workingDir, commitMessage);
     }
 
     public static void gitRenameBranch(Git git, String gitBranch) throws GitAPIException {
@@ -310,7 +344,7 @@ public class AppDevUtil {
                 .call();        
     }
     
-    public static void gitFetchMerge(File projectDir, Git git, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy) throws GitAPIException, IOException {
+    public static void gitFetchMerge(File projectDir, Git git, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException, IOException {
         // pull from repo
         LogUtil.info(AppDevUtil.class.getName(), "Pull from Git remote repo: " + gitUri);
         FetchResult fetchResult = git.fetch()
@@ -329,11 +363,36 @@ public class AppDevUtil {
         }
         
         if (mergeResult != null) {
-            gitMergeCommit(mergeResult, projectDir, git);
+            gitMergeCommit(mergeResult, projectDir, git, appDef);
         }
     }
+    
+    public static void gitPullLocal(AppDefinition appDef, Git git, File workingDir) throws GitAPIException, IOException {
+        String gitBranch = getGitBranchName(appDef);
+        try {
+            // pull from repo
+            LogUtil.info(AppDevUtil.class.getName(), "Pull from Git local repo: " + appDef.getAppId());
 
-    public static void gitPull(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy) throws GitAPIException, IOException {
+            PullResult pullResult = git.pull()
+                    .setRemote("origin")
+                    .setRemoteBranchName(gitBranch)
+                    .call();
+            FetchResult fetchResult = pullResult.getFetchResult();
+            LogUtil.info(AppDevUtil.class.getName(), "Pull successful from Git local repo: " + appDef.getAppId() + " - "+ pullResult.isSuccessful());
+            
+            if (fetchResult != null) {
+                LogUtil.debug(AppDevUtil.class.getName(), "Fetch messages: " + fetchResult.getMessages());
+            }
+            MergeResult mergeResult = pullResult.getMergeResult();
+            if (mergeResult != null) {
+                gitMergeCommit(mergeResult, workingDir, git, appDef);
+            }
+        } catch(Exception ne) {
+            // ignore
+        }
+    } 
+
+    public static void gitPull(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException, IOException {
         // pull from repo
         LogUtil.info(AppDevUtil.class.getName(), "Pull from Git remote repo: " + gitUri);
         
@@ -350,11 +409,11 @@ public class AppDevUtil {
         }
         MergeResult mergeResult = pullResult.getMergeResult();
         if (mergeResult != null) {
-            gitMergeCommit(mergeResult, projectDir, git);
+            gitMergeCommit(mergeResult, projectDir, git, appDef);
         }
     }    
     
-    public static void gitMergeCommit(MergeResult mergeResult, File projectDir, Git git) throws IOException, GitAPIException {
+    public static void gitMergeCommit(MergeResult mergeResult, File projectDir, Git git, AppDefinition appDef) throws IOException, GitAPIException {
         LogUtil.debug(AppDevUtil.class.getName(), "Merge result: " + mergeResult.getMergeStatus());
         if (mergeResult.getMergeStatus().equals(MergeResult.MergeStatus.CONFLICTING)) {
             Map<String, int[][]> allConflicts = mergeResult.getConflicts();
@@ -376,7 +435,7 @@ public class AppDevUtil {
                 fileMergeOurs(projectDir, path);
                 gitAdd(git, path);
             }
-            gitCommit(git, "merged conflicts");
+            gitCommit(appDef, git, projectDir, "merged conflicts");
         }
     }
     
@@ -406,7 +465,29 @@ public class AppDevUtil {
         FileUtils.writeStringToFile(file, fileContents, "UTF-8");
     }
     
-    public static void gitPush(Git git, String gitUri, String gitUsername, String gitPassword) throws GitAPIException {
+    public static void gitPushLocal(AppDefinition appDef, Git git, File workingDir) throws GitAPIException {
+        // push to remote
+        LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo");
+        Iterable<PushResult> pushResults = git.push()
+                .call();
+        for (PushResult pr: pushResults) {
+            for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
+                LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
+                if ("REJECTED_OTHER_REASON".equals(ref.getStatus())) {
+                    try {
+                        gitPullLocal(appDef, git, workingDir);
+                    } catch (Exception e) {}
+                    gitPushLocal(appDef, git, workingDir);
+                }
+            }
+        }
+    }
+    
+    public static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException {
+        try {
+            gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+        } catch (Exception e){}
+
         // push to remote
         LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
         Iterable<PushResult> pushResults = git.push()
@@ -415,9 +496,14 @@ public class AppDevUtil {
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
                 LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
+                if ("REJECTED_OTHER_REASON".equals(ref.getStatus())) {
+                    try {
+                        gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+                    } catch (Exception e) {}
+                    gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+                }
             }
         }
-        
     }
 
     public static void gitLog(Git git, int start, int count) throws GitAPIException {
@@ -455,6 +541,11 @@ public class AppDevUtil {
         String dir = appDef.getAppId() + System.getProperty("file.separator") + getGitBranchName(appDef);
         return dir;
     }
+    
+    public static String getWorkingGitDirectory(AppDefinition appDef) {
+        String dir = appDef.getAppId() + System.getProperty("file.separator") + UuidGenerator.getInstance().getUuid();
+        return dir;
+    }
 
     public static Map<String, GitCommitHelper> fileInitCommit(AppDefinition appDef, String commitMessage) {
         String appId = appDef.getAppId();
@@ -465,12 +556,52 @@ public class AppDevUtil {
         
         try {
             File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-            Git git = AppDevUtil.gitInit(projectDir);
+            Git localGit = AppDevUtil.gitInit(projectDir);
             try {
+                AppDevUtil.gitCheckout(localGit, gitBranch);
+                
+                Properties gitProperties = getAppDevProperties(appDef);
+                if (gitProperties != null) {
+                    boolean alwaysPull = Boolean.parseBoolean(gitProperties.getProperty(PROPERTY_GIT_CONFIG_PULL));
+                    if (alwaysPull) {
+                        // ensure git pull only done once per request
+                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                        boolean gitPullRequestDone = request != null && "true".equals(request.getAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId));
+                        if (!gitPullRequestDone) {
+                            // perform git pull
+                            String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
+                            String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
+                            String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
+                            AppDevUtil.gitAddRemote(localGit, gitUri);
+                            AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                            // set flag to prevent further pulls in the same request
+                            if (request != null) {
+                                request.setAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId, "true");
+                            }
+                        }
+                    }
+                }
+            } catch(RefNotFoundException | URISyntaxException ne) {
+                // ignore
+            }
+            
+            //create temporary git working folder
+            String projectWorkingDirName = getWorkingGitDirectory(appDef);
+            File projectWorkingDir = AppDevUtil.dirSetup(baseDir, projectWorkingDirName);
+            Git git = AppDevUtil.gitInit(projectWorkingDir);
+            RemoteAddCommand remoteAddCommand = git.remoteAdd();
+            remoteAddCommand.setName("origin");
+            remoteAddCommand.setUri(new URIish(projectDir.getAbsolutePath()));
+            remoteAddCommand.call();
+            
+            AppDevUtil.gitPullLocal(appDef, git, projectWorkingDir);
+            try {
+                
                 AppDevUtil.gitCheckout(git, gitBranch);
             } catch(RefNotFoundException ne) {
                 // ignore
             }
+            
             // add git object
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request != null) {
@@ -484,13 +615,15 @@ public class AppDevUtil {
                 gitCommitHelper = new GitCommitHelper();
                 gitCommitMap.put(appId, gitCommitHelper);
             }
+            gitCommitHelper.setWorkingDir(projectWorkingDir);
             gitCommitHelper.setAppDefinition(appDef);
+            gitCommitHelper.setLocalGit(localGit);
             gitCommitHelper.setGit(git);
             gitCommitHelper.setCommitMessage(commitMessage);   
             if (request != null) {
                 request.setAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST, gitCommitMap);        
             }
-        } catch (IOException | IllegalStateException | GitAPIException ex) {
+        } catch (IOException | IllegalStateException | GitAPIException | URISyntaxException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
         return gitCommitMap;
@@ -515,9 +648,6 @@ public class AppDevUtil {
     
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
         String gitBranch = getGitBranchName(appDef);
-        String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = getAppGitDirectory(appDef);
-        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
@@ -529,12 +659,12 @@ public class AppDevUtil {
                 noHead = true;
             }
             if (noHead) {
-                AppDevUtil.gitCommit(git, "Initial commit for " + gitBranch);
+                AppDevUtil.gitCommit(appDef, git, gitCommitHelper.getWorkingDir(), "Initial commit for " + gitBranch);
                 AppDevUtil.gitRenameBranch(git, gitBranch);
             }
     
             // check for content changes
-            File file = new File(projectDir, path);
+            File file = new File(gitCommitHelper.getWorkingDir(), path);
             boolean toSave = true;
             try {
                 String currentContents = FileUtils.readFileToString(file, "UTF-8");
@@ -564,10 +694,6 @@ public class AppDevUtil {
     }    
     
     public static void fileDelete(AppDefinition appDefinition, String path, String commitMessage) {
-        String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = getAppGitDirectory(appDefinition);
-        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-
         try {
             // checkout branch
             String gitBranch = getGitBranchName(appDefinition);
@@ -580,7 +706,7 @@ public class AppDevUtil {
             }
 
             // delete file
-            File file = new File(projectDir, path);
+            File file = new File(gitCommitHelper.getWorkingDir(), path);
             file.delete();
 
             // commit and push
@@ -612,7 +738,7 @@ public class AppDevUtil {
         return json;
     }
 
-public static File fileGetFileObject(AppDefinition appDefinition, String path, boolean pull) throws IOException, GitAPIException, URISyntaxException {
+    public static File fileGetFileObject(AppDefinition appDefinition, String path, boolean pull) throws IOException, GitAPIException, URISyntaxException {
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
         String projectDirName = getAppGitDirectory(appDefinition);
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
@@ -633,7 +759,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
                     String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
                     String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
                     AppDevUtil.gitAddRemote(git, gitUri);
-                    AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE);
+                    AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDefinition);
                     // set flag to prevent further pulls in the same request
                     if (request != null) {
                         request.setAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId, "true");
@@ -832,9 +958,6 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
 
     public static void dirCopy(AppDefinition appDef, String sourcePath, String targetDirName, String commitMessage) {
         String gitBranch = getGitBranchName(appDef);
-        String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = getAppGitDirectory(appDef);
-        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
@@ -844,7 +967,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             if (sourcePath != null && !sourcePath.isEmpty()) {
                 File sourceDir = new File(sourcePath);
                 if (sourceDir.exists()) {
-                    File targetDir = new File(projectDir, targetDirName);
+                    File targetDir = new File(gitCommitHelper.getWorkingDir(), targetDirName);
 
                     // remove existing directory
                     FileUtils.deleteDirectory(targetDir);
@@ -882,9 +1005,6 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
     
     public static void dirDelete(AppDefinition appDef, String commitMessage) {
         String gitBranch = getGitBranchName(appDef);
-        String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = getAppGitDirectory(appDef);
-        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
@@ -894,11 +1014,11 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             final String[] dirs = new String[] { "forms", "lists", "userviews", "plugins", "builder", "resources" };
             for (String dir : dirs) {
                 // delete dir
-                File tempDir = new File(projectDir, dir);
+                File tempDir = new File(gitCommitHelper.getWorkingDir(), dir);
                 FileUtils.deleteDirectory(tempDir);  
             }
             
-            Collection<File> files = FileUtils.listFiles(projectDir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+            Collection<File> files = FileUtils.listFiles(gitCommitHelper.getWorkingDir(), new String[]{"json", "xml", "xpdl", "jar"}, true);
             for (File file : files) {
                 file.delete();
             }
@@ -938,12 +1058,11 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
         
-        String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = getAppGitDirectory(appDef);
         try {
-            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+            
             String targetDirName = "plugins";
-            File targetDir = new File(projectDir, targetDirName);
+            File targetDir = new File(gitCommitHelper.getWorkingDir(), targetDirName);
             
             // remove existing directory
             FileUtils.deleteDirectory(targetDir);
@@ -954,7 +1073,7 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             // find all definition files
             final String[] extensions = new String[] { "json", "xml", "xpdl" };
             final String[] dirs = new String[] { "forms", "lists", "userviews", "builder"};
-            Iterator<File> fileIterator = FileUtils.iterateFiles(projectDir, new AbstractFileFilter() {
+            Iterator<File> fileIterator = FileUtils.iterateFiles(gitCommitHelper.getWorkingDir(), new AbstractFileFilter() {
                 @Override
                 public boolean accept(File file) {
                     String path = file.getName();

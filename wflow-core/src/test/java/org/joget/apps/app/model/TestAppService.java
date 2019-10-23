@@ -7,13 +7,16 @@ import java.io.InputStreamReader;
 import org.joget.apps.form.dao.FormDataDao;
 import org.springframework.transaction.annotation.Propagation;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import junit.framework.Assert;
+import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.joget.apps.app.dao.PackageDefinitionDao;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
@@ -26,6 +29,7 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -512,6 +516,11 @@ public class TestAppService {
             deleteAppDefinition(TEST_APP_ID);
         }
     }
+    
+    @After
+    public void clean() {
+        cleanAppSrc();
+    }
 
     protected String readFile(String filePath) throws IOException {
         // deploy package
@@ -583,5 +592,15 @@ public class TestAppService {
         appService.createFormDefinition(appDef, formDef);
 
         return formDef;
+    }
+    
+    public static void cleanAppSrc() {
+        File src = new File(AppDevUtil.getAppDevBaseDirectory());
+        if (src.exists()) {
+            try {
+                FileUtils.deleteDirectory(src);
+                src.mkdir();
+            } catch (Exception e) {}
+        }
     }
 }
