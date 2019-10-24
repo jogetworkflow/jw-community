@@ -179,7 +179,7 @@ public class TestAppDao {
     
     @After
     public void clean() {
-        TestAppService.cleanAppSrc();
+        TestAppService.cleanAppSrc(TEST_APP_ID);
     }
 
     protected AppDefinition createAppDefinition(String id, Long version) {

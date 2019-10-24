@@ -519,7 +519,8 @@ public class TestAppService {
     
     @After
     public void clean() {
-        cleanAppSrc();
+        cleanAppSrc(TEST_APP_ID);
+        cleanAppSrc(TEST_APP_ID+TEST_APP_ID);
     }
 
     protected String readFile(String filePath) throws IOException {
@@ -594,12 +595,11 @@ public class TestAppService {
         return formDef;
     }
     
-    public static void cleanAppSrc() {
-        File src = new File(AppDevUtil.getAppDevBaseDirectory());
+    public static void cleanAppSrc(String appId) {
+        File src = new File(AppDevUtil.getAppDevBaseDirectory() + File.separator + appId);
         if (src.exists()) {
             try {
                 FileUtils.deleteDirectory(src);
-                src.mkdir();
             } catch (Exception e) {}
         }
     }
