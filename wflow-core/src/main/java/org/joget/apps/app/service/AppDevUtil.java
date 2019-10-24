@@ -373,14 +373,14 @@ public class AppDevUtil {
         String gitBranch = getGitBranchName(appDef);
         try {
             // pull from repo
-            LogUtil.info(AppDevUtil.class.getName(), "Pull from Git local repo: " + appDef.getAppId());
+            LogUtil.debug(AppDevUtil.class.getName(), "Pull from Git local repo: " + appDef.getAppId());
 
             PullResult pullResult = git.pull()
                     .setRemote("origin")
                     .setRemoteBranchName(gitBranch)
                     .call();
             FetchResult fetchResult = pullResult.getFetchResult();
-            LogUtil.info(AppDevUtil.class.getName(), "Pull successful from Git local repo: " + appDef.getAppId() + " - "+ pullResult.isSuccessful());
+            LogUtil.debug(AppDevUtil.class.getName(), "Pull successful from Git local repo: " + appDef.getAppId() + " - "+ pullResult.isSuccessful());
             
             if (fetchResult != null) {
                 LogUtil.debug(AppDevUtil.class.getName(), "Fetch messages: " + fetchResult.getMessages());
@@ -469,12 +469,20 @@ public class AppDevUtil {
     
     public static void gitPushLocal(AppDefinition appDef, Git git, File workingDir) throws GitAPIException {
         // push to remote
-        LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId());
+        LogUtil.debug(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId());
+        GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+        
+        try {
+            AppDevUtil.gitCheckout(gitCommitHelper.getLocalGit(), "master");
+        } catch (Exception e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout local repo " + appDef.getAppId() + " - " + e.getMessage());
+        }
+        
         Iterable<PushResult> pushResults = git.push()
                 .call();
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
-                LogUtil.info(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId() + " result: " + ref.getStatus());
+                LogUtil.debug(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId() + " result: " + ref.getStatus());
                 if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
                     try {
                         gitPullLocal(appDef, git, workingDir);
@@ -484,6 +492,12 @@ public class AppDevUtil {
                     gitPushLocal(appDef, git, workingDir);
                 }
             }
+        }
+        String gitBranch = getGitBranchName(appDef);
+        try {
+            AppDevUtil.gitCheckout(gitCommitHelper.getLocalGit(), gitBranch);
+        } catch (Exception e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout local repo " + appDef.getAppId() + " - " + e.getMessage());
         }
     }
     
