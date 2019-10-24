@@ -268,6 +268,22 @@ PopupDialog.prototype = {
                     newFrame.contentWindow.focus();
                 }, 100);
             }
+            
+            var temWidth = $(window).width();
+            var temHeight = $(window).height();
+            if (temWidth >= 768) {
+                this.width = temWidth * 0.8;
+                this.height = temHeight * 0.9;
+            } else {
+                this.width = temWidth - 20;
+                this.height = temHeight - 20;
+            }
+            if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
+                newFrame.setAttribute("height", this.height-20);
+            } else {
+                newFrame.setAttribute("height", this.height-10);
+            }
+            
             if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                 $(".ui-dialog.ui-widget").css("position", "absolute");
                 $(".ui-dialog.ui-widget").css("top", "5%");
