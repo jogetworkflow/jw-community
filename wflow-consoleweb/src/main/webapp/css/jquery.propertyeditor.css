@@ -280,6 +280,7 @@
 
 .property-input label{
     display:block;
+    padding-top: 8px;
 }
 
 .property-input table{

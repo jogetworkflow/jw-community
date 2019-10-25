@@ -70,7 +70,8 @@
                     properties : [{
                         name : 'filename',
                         label : '<fmt:message key="console.app.resource.common.label.id"/>',
-                        type : 'label'
+                        type : 'label',
+                        url : '${pageContext.request.contextPath}/web/app/${appId}/resources/${appResource.id}'
                     },
                     {
                         name : 'url',

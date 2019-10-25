@@ -2391,7 +2391,11 @@ PropertyEditor.Type.Label.prototype = {
         if (this.value === null) {
             this.value = "";
         }
-        return '<input type="hidden" id="' + this.id + '" name="' + this.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '" /><label>' + PropertyEditor.Util.escapeHtmlTag(this.value) + '</label>';
+        var label = PropertyEditor.Util.escapeHtmlTag(this.value);
+        if (this.properties.url !== undefined && this.properties.url !== null && this.properties.url !== "") {
+            label = '<a href="'+this.properties.url+'" target="_blank">' + label + '</a>';
+        }
+        return '<input type="hidden" id="' + this.id + '" name="' + this.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '" /><label>' + label + '</label>';
     },
     renderDefault: function() {
         return "";
