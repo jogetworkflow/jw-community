@@ -152,6 +152,8 @@ PropertyEditor.Popup = {
             $("#"+id).resizable( "destroy" );
         }
         $("#"+id).resizable({
+            minHeight: 300,
+            minWidth: 300,
             resize : function ( event, ui ) {
                 PropertyEditor.Popup.adjustSize(id, ui.size.width, ui.size.height);
             }
@@ -176,6 +178,13 @@ PropertyEditor.Popup = {
             }
             if (popupProp.height !== undefined) {
                 height = popupProp.height;
+            }
+            
+            //if width & height is larger than window
+            if ((width + popupProp.x + 30 > $(window).width()) || (height + popupProp.y + 55 > $(window).height())) {
+                popupProp = null;
+                width = $(window).width() * 0.8;
+                height = $(window).height() * 0.85 - 25;
             }
         } else if (args !== undefined) {
             if (args.defaultWidth !== undefined && width > args.defaultWidth) {
