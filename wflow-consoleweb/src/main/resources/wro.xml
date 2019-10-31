@@ -143,6 +143,7 @@
         <js>/pwa.js</js>
     </group>
     <group name="xadmin.min">
+        <css>/css/form.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/xadmin/lib/layui/css/layui.css</css>
         <css>/xadmin/css/xadmin.css</css>
