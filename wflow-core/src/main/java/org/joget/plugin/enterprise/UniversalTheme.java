@@ -529,13 +529,21 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         return UserviewUtil.getTemplate(this, data, "/templates/userview/header.ftl");
     }
     
+    protected boolean showHomeBanner() {
+        String menuId = (String)getRequestParameter("menuId");
+        String homeMenuId = getUserview().getPropertyString("homeMenuId");
+        String pwaStartUrl = "index";
+        boolean showHomeBanner = (menuId == null || homeMenuId.equals(menuId) || pwaStartUrl.equals(menuId)) && !getPropertyString("homeAttractBanner").isEmpty();
+        return showHomeBanner;
+    }
+    
     @Override
     public String getContentContainer(Map<String, Object> data) {
         if (!getPropertyString("horizontal_menu").isEmpty()) {
             data.put("hide_nav", true);
         }
         
-        if ((getRequestParameter("menuId") == null || getUserview().getPropertyString("homeMenuId").equals(getRequestParameter("menuId"))) && !getPropertyString("homeAttractBanner").isEmpty()) {
+        if (showHomeBanner()) {
             data.put("main_container_before", "<div class=\"home_banner\"><div class=\"home_banner_inner\">"+getPropertyString("homeAttractBanner")+"</div></div>");
         }
         
@@ -562,7 +570,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             data.put("body_classes", data.get("body_classes").toString() + " horizontal_menu no_menu");
         }
         
-        if ((getRequestParameter("menuId") == null || getUserview().getPropertyString("homeMenuId").equals(getRequestParameter("menuId"))) && !getPropertyString("homeAttractBanner").isEmpty()) {
+        if (showHomeBanner()) {
             data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
         }
         
