@@ -1671,6 +1671,8 @@ public class AppServiceImpl implements AppService {
                 primaryKeyValue = null;
                 results.addAll(rows);
             }
+            
+            Date currentDate = new Date();
 
             // iterate through rows
             for (int i = 0; i < results.size(); i++) {
@@ -1691,7 +1693,6 @@ public class AppServiceImpl implements AppService {
                 }
 
                 // set meta data
-                Date currentDate = new Date();
                 row.setDateModified(currentDate);
                 row.setModifiedBy(workflowUserManager.getCurrentUsername());
                 User user = workflowUserManager.getCurrentUser();
@@ -1714,6 +1715,16 @@ public class AppServiceImpl implements AppService {
                     dateCreated = currentDate;
                     createdBy = workflowUserManager.getCurrentUsername();
                     createdByName = name;
+                    
+                    if (rows.isMultiRow()) {
+                        currentDate = new Date(currentDate.getTime() + 1000);
+                    }
+                } else {
+                    if (rows.isMultiRow()) {
+                        if (dateCreated.after(currentDate)) {
+                            currentDate = new Date(dateCreated.getTime() + 1000);
+                        }
+                    }
                 }
                 row.setDateCreated(dateCreated);
                 row.setCreatedBy(createdBy);
