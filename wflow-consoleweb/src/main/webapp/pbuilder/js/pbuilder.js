@@ -2001,8 +2001,8 @@ ProcessBuilder.Actions = {
         ProcessBuilder.Designer.renderModel(model, processId);
 
         // select process in header
-        $("#subheader_list").removeClass("subheader_selected");
-        $("#subheader_list").find("#" + processId).addClass("subheader_selected");
+        $("#subheader_list").val(processId);
+        $("#subheader_list").trigger("chosen:updated");
 
         // validate
         if (ProcessBuilder.Designer.autoValidate) {
@@ -2635,15 +2635,16 @@ ProcessBuilder.Designer = {
         ProcessBuilder.Designer.currentProcessDefId = process.id;
 
         // display processes in header
-        $("#subheader_list").remove();
-        var $processHeader = $("<ul id='subheader_list'></ul>");
+        $("#subheader_list").off("change");
+        $("#subheader_list_container").remove();
+        var $processHeader = $("<select id='subheader_list'></select>");
         for (var processId in processes) {
             var subprocess = processes[processId];
             var processName = ProcessBuilder.Util.escapeHTML(subprocess.name);
             if (processName === "") {
                 processName = subprocess.id;
             }
-            var $processLi = $("<li id='" + subprocess.id + "' class='header_process'>" + processName + "</li>");
+            var $processLi = $("<option value='" + subprocess.id + "'>" + processName + "</option>");
             $processLi.on("click", function() {
                 if ($(this).hasClass("subheader_selected")) {
                     return;
@@ -2655,8 +2656,17 @@ ProcessBuilder.Designer = {
             });
             $processHeader.append($processLi);
         }
+        $processHeader.on("change", function(){
+            var selectedProcessId = $(this).val();
+            ProcessBuilder.Actions.execute(function() {
+                ProcessBuilder.Actions.viewProcess(selectedProcessId);
+            });
+        });
+        
         $("#header").append($processHeader);
-        $("#subheader_list").find("#" + ProcessBuilder.Designer.currentProcessDefId).addClass("subheader_selected");
+        $processHeader.wrap("<div id='subheader_list_container'></div>");
+        $("#subheader_list").val(ProcessBuilder.Designer.currentProcessDefId);
+        $processHeader.chosen({ width: "250px", placeholder_text: " " });
 
         // display participants
         var participants = model.participants;
@@ -3312,69 +3322,64 @@ ProcessBuilder.Designer = {
         ProcessBuilder.Designer.initNodes($(".node"), true);
         ProcessBuilder.Designer.initNodes($(".start, .end"));
 
-        // append add process button to header
-        $("#process_add").remove();
-        var $addButton = $("<li><span id='process_add'>+</span></li>");
-        $("#header #subheader_list").append($addButton);
-        $("#header").find("#process_add").off("click");
-        $("#header").find("#process_add").on("click", function() {
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.addProcess();
+        var $buttons = $("#subheader_list_container");
+        
+        if ($buttons.find(".edit_process").length === 0) {
+            // append edit button to processes
+            var $editButton = $("<span class='edit_process icnbtn'><i class='fas fa-pencil-alt'></i></span>");
+            $buttons.append($editButton);
+            $editButton.off("click");
+            $editButton.on("click", function(e) {
+                var processId = $("#subheader_list").val();
+                var process = ProcessBuilder.Designer.model.processes[processId];
+                if (ProcessBuilder.Designer.currentProcessDefId !== processId) {
+                    ProcessBuilder.Actions.viewProcess(processId);
+                }
+                ProcessBuilder.Actions.editProperties(process);
+                e.stopPropagation();
             });
-        });
 
-        // append delete button to processes
-        var $deleteButton = $("<div class='node_delete'>x</div>");
-        var $processes = $(".header_process");
-        $processes.find(".node_delete").remove();
-        $processes.prepend($deleteButton);
-        $processes.find(".node_delete").on("click", function(e) {
-            var $process = $(this).closest(".header_process");
-            var processId = $process.attr("id");
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.deleteProcess(processId);
+            // append duplicate button to processes
+            var $copyButton = $("<span class='copy_process icnbtn'><i class=\"far fa-copy\"></i></span>");
+            $buttons.append($copyButton);
+            $copyButton.off("click");
+            $copyButton.on("click", function(e) {
+                var processId = $("#subheader_list").val();
+                ProcessBuilder.Actions.duplicateProcess(processId);
+                e.stopPropagation();
             });
-            e.stopPropagation();
-        });
 
-        var $buttons = $("<div class='node_buttons'></div>");
-        var $processes = $(".header_process");
-        $processes.find(".node_buttons").remove();
-        $processes.prepend($buttons);
-        $buttons = $processes.find(".node_buttons");
-
-        // append duplicate button to processes
-        var $copyButton = $("<div class='node_copy'><i class=\"far fa-copy\"></i></div>");
-        $buttons.prepend($copyButton);
-        $processes.find(".node_copy").on("click", function(e) {
-            var $process = $(this).closest(".header_process");
-            var processId = $process.attr("id");
-            ProcessBuilder.Actions.duplicateProcess(processId);
-            e.stopPropagation();
-        });
-
-        // append edit button to processes
-        var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
-        $buttons.prepend($editButton);
-        $processes.find(".node_edit").on("click", function(e) {
-            var $process = $(this).closest(".header_process");
-            var processId = $process.attr("id");
-            var process = ProcessBuilder.Designer.model.processes[processId];
-            if (ProcessBuilder.Designer.currentProcessDefId !== processId) {
-                ProcessBuilder.Actions.viewProcess(processId);
-            }
-            ProcessBuilder.Actions.editProperties(process);
-            e.stopPropagation();
-        });
+            // append delete button to processes
+            var $deleteButton = $("<span class='delete_process icnbtn'><i class='fas fa-trash-alt'></i></span>");
+            $buttons.append($deleteButton);
+            $deleteButton.off("click");
+            $deleteButton.on("click", function(e) {
+                var processId = $("#subheader_list").val();
+                ProcessBuilder.Actions.execute(function() {
+                    ProcessBuilder.Actions.deleteProcess(processId);
+                });
+                e.stopPropagation();
+            });
+            
+            // append add process button to header
+            var $addButton = $("<span class='add_process icnbtn'><i class='fas fa-plus'></i></span>");
+            $buttons.append($addButton);
+            $addButton.off("click");
+            $addButton.on("click", function() {
+                ProcessBuilder.Actions.execute(function() {
+                    ProcessBuilder.Actions.addProcess();
+                });
+            });
+        }
         
         // show on touch
-        $(".header_process, .node").on("touchend", function(e) {
-            if (!$(this).hasClass("hovered")) {
-                $(".hovered").removeClass("hovered");
-                $(this).addClass("hovered");
-                e.preventDefault();
-            }
-        });
+//        $(".header_process, .node").on("touchend", function(e) {
+//            if (!$(this).hasClass("hovered")) {
+//                $(".hovered").removeClass("hovered");
+//                $(this).addClass("hovered");
+//                e.preventDefault();
+//            }
+//        });
 
         // single click on any endpoint
         ProcessBuilder.Util.jsPlumb.unbind("endpointClick");
@@ -4135,7 +4140,7 @@ ProcessBuilder.Designer = {
 //                }
 //            }
             if (processInvalid) {
-               var $processLink = $("#subheader_list").find("#" + processId);
+               var $processLink = $("#subheader_list").find("[value=" + processId+"]");
                $processLink.addClass("invalidProcess");
             }
         }
@@ -4237,7 +4242,7 @@ ProcessBuilder.Mapper = {
     popupDialog : new PopupDialog("", " "),
     load : function(processDefId) {
         if (processDefId === null) {
-            processDefId = $("#subheader_list li:first").attr("id");
+            processDefId = $("#subheader_list").val();
         }
         if (ProcessBuilder.Mapper.mappingData === null) {
             ProcessBuilder.ApiClient.loadProcessMapping(function(data){
@@ -4249,17 +4254,13 @@ ProcessBuilder.Mapper = {
         }
     },
     init : function(processDefId) {
-        if ($("#subheader_list").find("#"+processDefId + " .edit_mapping").length > 0) {
-            return;
-        } else {
-            $("#subheader_list").find(".edit_mapping").remove();
-        }
+        $("#subheader_list_container").find("span.processWhiteList").remove();
         
         var wlId= "processStartWhiteList";
         var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
         
-        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a>');
-        $("#subheader_list li#"+processDefId).find(".edit_mapping").data("mapping", wlmapping);
+        $("#subheader_list_container").append('<span class="processWhiteList"><a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a></span>');
+        $("#subheader_list_container").find(".edit_mapping").data("mapping", wlmapping);
         
         $(".node").each(function(){
             var actId = $(this).attr("id").substring(5);

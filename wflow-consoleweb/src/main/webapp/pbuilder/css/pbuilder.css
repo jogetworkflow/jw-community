@@ -129,27 +129,38 @@ body {
     padding: 4px 10px;
     color: black;    
 }
-#subheader_list {
-    padding: 0px;
-    margin: 0px;
-    clear: both;
-    width: 80%;
-    padding-top: 16px;
+#subheader_list_container {
+    margin: 10px;
 }
-#subheader_list li {
-    float: left;
-    list-style: none;
-    padding: 0px 20px;
-    border-left: solid 1px silver;
-    font-size: 0.8em;
+#subheader_list_container .chosen-container {
+    margin-right: 5px;
+}
+.icnbtn {
+    background: white;
+    color: black;
+    font-weight: normal;
+    font-size: 11px;
+    border-radius: 14px;
     cursor: pointer;
-    position: relative;
-    line-height: 16px;
-    min-width: 70px;
     text-align: center;
+    padding: 0;
+    display: inline-block;
+    opacity: 0.8;
+    border: solid 1px #999;
+    box-shadow: 0px 0px 1px 1px #ddd;
+    width: 20px;
+    height: 20px;
+    box-sizing: border-box;
+    line-height: 18px;
+    margin: 0 1px;
 }
-.subheader_selected {
-    font-weight: bold;
+.icnbtn.delete_process{
+    background: #ffbca3;
+    border: solid 1px red;
+}
+.icnbtn.add_process{
+    background: lightgreen;
+    border: solid 1px #41ac41;
 }
 tr#header {
     position: inherit;
@@ -826,6 +837,11 @@ body#pviewer {
 }
 .edit_mapping .mapping_detail_div {
     display:none;
+}
+.processWhiteList .edit_mapping{
+    position: relative;
+    bottom: initial;
+    right: initial;
 }
 .mapping_detail {
     color:#000;
