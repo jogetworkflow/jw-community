@@ -9,11 +9,13 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppResourceDao;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
@@ -23,12 +25,14 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FileDownloadSecurity;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
@@ -78,6 +82,10 @@ public class AppWebController {
     private WorkflowUserManager workflowUserManager;
     @Autowired
     UserviewService userviewService;
+    @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
+    @Autowired
+    FormDataDao formDataDao;
     
     protected static String ORIGIN_FROM_PARAM = "_orifrom";
     protected static String ORIGIN_FROM_RUNPROCESS = "runProcess";
@@ -399,6 +407,7 @@ public class AppWebController {
         boolean isAuthorize = false;
         
         Form form = null;
+        String tableName = null;
         AppDefinition appDef;
         
         try {
@@ -415,6 +424,7 @@ public class AppWebController {
                     form = (Form) formService.createElementFromJson(json);
 
                     if (form != null && form.getLoadBinder() != null) {
+                        tableName = form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
                         FormData formData = new FormData();
                         FormRowSet rows = form.getLoadBinder().load(form, primaryKeyValue, formData);
                         if (rows != null && !rows.isEmpty()) {
@@ -445,6 +455,36 @@ public class AppWebController {
                             }
                         }
                     }
+                } else {
+                    Set<String> customFields = CustomFormDataTableUtil.getColumns(appDef, formDefId);
+                    if (customFields != null && !customFields.isEmpty()) {
+                        tableName = formDefId;
+                        FormRow row = formDataDao.load(formDefId, formDefId, primaryKeyValue);
+                        if (row != null) {
+                            for (Object fieldId : row.keySet()) {
+                                String compareValue = fileName;
+                                if (compareValue.endsWith(FileManager.THUMBNAIL_EXT)) {
+                                    compareValue = compareValue.replace(FileManager.THUMBNAIL_EXT, "");
+                                }
+                                
+                                String value = row.getProperty(fieldId.toString());
+                                
+                                if (value.equals(compareValue)
+                                        || (value.contains(";") 
+                                            && (value.startsWith(compareValue + ";") 
+                                                || value.contains(";" + compareValue + ";")
+                                                || value.endsWith(";" + compareValue)))
+                                        || (value.contains(formDefId+"/"+primaryKeyValue+"/"+compareValue))
+                                        || (value.contains(FileUtil.PATH_VARIABLE+compareValue))) {
+                                    
+                                    if (customFields.contains(fieldId.toString())) {
+                                        isAuthorize = !WorkflowUtil.isCurrentUserAnonymous();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } catch (Exception e){}
@@ -463,7 +503,7 @@ public class AppWebController {
         } catch (UnsupportedEncodingException e) {
             // ignore
         }
-        File file = FileUtil.getFile(decodedFileName, form, primaryKeyValue);
+        File file = FileUtil.getFile(decodedFileName, tableName, primaryKeyValue);
         if (file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             response.setDateHeader("Expires", System.currentTimeMillis() + 0);
