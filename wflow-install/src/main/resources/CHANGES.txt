@@ -2,6 +2,19 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.23
+=================
+8930f2bc Fixed: wflow-core - AppServiceImpl - Fixed possible NPE. 6.0-SNAPSHOT
+4bc399d6 Modified: wflow-consoleweb - FormUtil - Added optional element parameter to retrieve fields and values for a specific DOM subtree, required to support repeated elements eg in the subform repeater @6.0-SNAPSHOT
+0bff10c1 Fixed: wflow-core - Run Process - 403 Forbidden error when Run Process menu is the first userview menu element @6.0-SNAPSHOT
+7324e9fc Fixed: wflow-plugin-base - Plugin Manager - Plugin label locale is wrong when switching locale. @6.0-SNAPSHOT
+d7d33dcc Fixed: wflow-core - File Upload - Value is wrong after the form is submitted and render back the form. #6909 @6.0-SNAPSHOT
+52ee583b Fixed: wflow-core - DateHashVariable - Unparseable date error for empty/invalid nested date @6.0-SNAPSHOT
+a5297858 Fixed: wflow-consoleweb - Date Picker - Time slider not working in touch device. #6908 @6.0-SNAPSHOT
+581e2662 Fixed: wflow-core - FormRow - NPE when comparing row IDs #6907 @6.0-SNAPSHOT
+d5bbd47e Modified: wflow-consoleweb - Manage Plugin - changed Uninstallable to Removable
+f986cf45 Fixed: wflow-core - Text Field Datalist Filter Type - Placeholder not working for joined table field. #6877 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.22
 =================
 1f73d57c Fixed: wflow-core - MfaAuthenticator - Does not log for login event. #6859 @6.0-SNAPSHOT
