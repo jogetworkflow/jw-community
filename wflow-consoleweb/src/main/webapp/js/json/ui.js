@@ -244,12 +244,21 @@ PopupDialog.prototype = {
               } else {
                   newFrame.setAttribute("height", this.height-10);
               }
-              if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
-                  newFrame.onload = function() {
-                      $(document).scrollTop(0);
-                      $('#jqueryDialogDiv').height($('#jqueryDialogFrame').height());
-                  };
-              }
+              newFrame.onload = function() {
+                    try {
+                        var url = newFrame.contentWindow.location.href;
+                        if (url.indexOf("/web/userview/") !== -1 || url.indexOf("&__a_=") !== -1) {
+                            newFrame.setAttribute("scrolling", "yes");
+                            newFrame.setAttribute("height", thisObject.height-10);
+                        }
+                    } catch (err) {}
+                    
+                    if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                        $(document).scrollTop(0);
+                        $('#jqueryDialogDiv').height($('#jqueryDialogFrame').height());
+                    }
+              };
+              
               newDiv.appendChild(newFrame);
               document.body.appendChild(newDiv);
           }
