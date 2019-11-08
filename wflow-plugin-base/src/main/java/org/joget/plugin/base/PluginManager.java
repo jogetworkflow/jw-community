@@ -60,10 +60,10 @@ import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.LocaleResolver;
 
 /**
  * Service methods used to manage plugins
@@ -842,17 +842,15 @@ public class PluginManager implements ApplicationContextAware {
      * @return null if the resource bundle is not found or in the case of an exception
      */
     public ResourceBundle getPluginMessageBundle(String pluginName, String translationPath) {
-        String cacheKey = pluginName + "_" + translationPath;
+        Locale locale = LocaleContextHolder.getLocale();
+        String cacheKey = pluginName + "_" + translationPath + "_" + locale.toString();
+
         if (!noResourceBundleCache.contains(cacheKey)) {
             ResourceBundle bundle = resourceBundleCache.get(cacheKey);
             if (bundle == null) {
                 // get plugin
                 Plugin plugin = getPlugin(pluginName);
                 if (plugin != null) {
-
-                    LocaleResolver localeResolver = (LocaleResolver) getBean("localeResolver");
-                    Locale locale = localeResolver.resolveLocale(getHttpServletRequest());
-
                     try {
                         bundle = ResourceBundle.getBundle(translationPath, locale, plugin.getClass().getClassLoader());
                         if (bundle != null) {
@@ -862,12 +860,12 @@ public class PluginManager implements ApplicationContextAware {
                         }
                     } catch (Exception e) {
                         LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
-                        noResourceBundleCache.add(cacheKey);
-                    }
-                } else {
                     noResourceBundleCache.add(cacheKey);
                 }
-            }
+                    } else {
+                        noResourceBundleCache.add(cacheKey);
+                    }
+                }
             return bundle;
         }
         return null;

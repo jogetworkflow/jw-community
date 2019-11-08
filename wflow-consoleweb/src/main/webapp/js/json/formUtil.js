@@ -1,8 +1,8 @@
 FormUtil = {
     controlFields : [],
-    getValue : function(fieldId){
+    getValue : function(fieldId, element){
         var value = "";
-        var field = FormUtil.getField(fieldId);
+        var field = FormUtil.getField(fieldId, element);
         if ($(field).length > 0) {
             if ($(field).attr("type") == "checkbox" || $(field).attr("type") == "radio") {
                 field = $(field).filter(":checked");
@@ -15,13 +15,13 @@ FormUtil = {
         return value;
     },
     
-    getValues : function(fieldId){
+    getValues : function(fieldId, element){
         var values = new Array();
         
         if (fieldId.indexOf(".") > 0) { // grid cell values
-            values = FormUtil.getGridCellValues(fieldId);
+            values = FormUtil.getGridCellValues(fieldId, element);
         } else {
-            var field = FormUtil.getField(fieldId);
+            var field = FormUtil.getField(fieldId, element);
             if ($(field).length > 0) {
                 if ($(field).attr("type") == "checkbox" || $(field).attr("type") == "radio") {
                     field = $(field).filter(":checked");
@@ -37,10 +37,13 @@ FormUtil = {
         return values;
     },
     
-    getField : function(fieldId){
-        var field = $("[name="+fieldId+"]:not(form)");
+    getField : function(fieldId, element){
+        if (element === undefined || $(element).length === 0) {
+            element = $(document.body);
+        }
+        var field = $(element).find("[name="+fieldId+"]:not(form)");
         if ($(field).length == 0) {
-            field = $("[name$=_"+fieldId+"]:not(form)");
+            field = $(element).find("[name$=_"+fieldId+"]:not(form)");
         }
         
         //filter those in hidden section
@@ -63,11 +66,11 @@ FormUtil = {
         return field;
     },
     
-    getGridCells : function(cellFieldId){
+    getGridCells : function(cellFieldId, element){
         var fieldId = cellFieldId.split(".")[0];
         var cells = null;
         
-        var field = FormUtil.getField(fieldId);
+        var field = FormUtil.getField(fieldId, element);
         var gridDataObject = field.data("gridDataObject");
         if (gridDataObject !== null && gridDataObject !== undefined) {
             var cellId = cellFieldId.split(".")[1];
@@ -88,11 +91,11 @@ FormUtil = {
         return cells;
     },
     
-    getGridCellValues : function (cellFieldId) {
+    getGridCellValues : function (cellFieldId, element) {
         var fieldId = cellFieldId.split(".")[0];
         var values = new Array();
         
-        var field = FormUtil.getField(fieldId);
+        var field = FormUtil.getField(fieldId, element);
         
         var gridDataObject = field.data("gridDataObject");
         if (gridDataObject !== null && gridDataObject !== undefined) {
@@ -152,7 +155,7 @@ FormUtil = {
         }
     },
     
-    getFieldsAsUrlQueryString : function(fields) {
+    getFieldsAsUrlQueryString : function(fields, element) {
         var queryString = "";
         
         if (fields !== undefined) {
@@ -160,7 +163,7 @@ FormUtil = {
                 var values = [];
                 
                 if (v['field'] !== "") {
-                    values = FormUtil.getValues(v['field']).join(";");
+                    values = FormUtil.getValues(v['field'], element).join(";");
                 }
             
                 if (values.length === 0 && v['defaultValue'] !== "") {
