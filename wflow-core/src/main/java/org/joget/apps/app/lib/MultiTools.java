@@ -1,6 +1,7 @@
 package org.joget.apps.app.lib;
 
 import java.util.Map;
+import java.util.HashMap;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.service.AppUtil;
@@ -60,7 +61,8 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                         ApplicationPlugin p = (ApplicationPlugin)pluginManager.getPlugin(className);
 
                         if (p != null) {
-                            Map propertiesMap = (Map) toolMap.get("properties");
+                            Map propertiesMap = new HashMap(properties);
+                            propertiesMap.putAll((Map)toolMap.get("properties"));
                             ApplicationPlugin appPlugin = (ApplicationPlugin) p;
 
                             if (appPlugin instanceof PropertyEditable) {
