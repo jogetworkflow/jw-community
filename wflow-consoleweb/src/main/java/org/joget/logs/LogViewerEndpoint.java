@@ -12,7 +12,7 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 
-@ServerEndpoint(value = "/applog/{appId}", configurator = ServletAwareConfigurator.class)
+@ServerEndpoint(value = "/web/applog/{appId}", configurator = ServletAwareConfigurator.class)
 public class LogViewerEndpoint {
     
     protected Session session;

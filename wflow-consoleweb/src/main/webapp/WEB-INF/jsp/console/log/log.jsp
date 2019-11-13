@@ -78,7 +78,7 @@
         }, 1000);
         
         var i = 1;
-        var websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "${pageContext.request.contextPath}/applog/${appId}");
+        var websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "${pageContext.request.contextPath}/web/applog/${appId}");
         let messages = [];
         let timer;
         websocket.onmessage = function(event) {
