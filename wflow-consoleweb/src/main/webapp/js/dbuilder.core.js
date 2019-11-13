@@ -28,6 +28,7 @@ DatalistBuilder = {
     availableColumns : {},      //available columns
     availableColumnNames : [],      //available column name
     availableActions : [],      //available actions
+    availableFormatter : [],      //available formatter
     chosenColumns : [],         //columns chosen in the designer
     chosenActions : [],         //actions chosen in the designer
     chosenRowActions : [],      //row actions chosen in the designer
@@ -56,8 +57,11 @@ DatalistBuilder = {
 
     elementPropertyDefinitions: new Object(),   // map of property dialog definitions for each element class
     
-    init : function(){
-        DatalistBuilder.initActionList();
+    init : function(callback){
+        var deferreds = [];
+        
+        DatalistBuilder.initActionList(deferreds);
+        DatalistBuilder.initFormatterList(deferreds);
         DatalistBuilder.initUndoRedo();
         
         // show popup dialog
@@ -121,6 +125,12 @@ DatalistBuilder = {
                     $(optionDiv).css("visibility", "visible");
                 }
             });
+        });
+        
+        $.when.apply($, deferreds).then(function() {
+            if (callback) {
+                callback();
+            }
         });
     },
     
@@ -356,7 +366,10 @@ DatalistBuilder = {
         DatalistBuilder.adjustCanvas();
     },
 
-    initActionList : function(){
+    initActionList : function(deferreds){
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
         $.getJSON(
             DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/actions',
             function(returnedData){
@@ -369,6 +382,25 @@ DatalistBuilder = {
 
                 DatalistBuilder.availableActions = availableActions;
                 DatalistBuilder.initActions();
+                wait.resolve();
+            }
+        );
+
+    },
+    
+    initFormatterList : function(deferreds){
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            DatalistBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListColumnFormat',
+            function(returnedData){
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        DatalistBuilder.availableFormatter[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
             }
         );
     },
@@ -770,9 +802,9 @@ DatalistBuilder = {
         string += '<ul>';
 
         var count = 0;
-        while(count < 6){
+        while(count < 7){
             var className = '';
-            if(count % 2 == 0){
+            if(count % 2 == 1){
                 className = 'even';
             }
             string += '<li class="' + className + '">' + label + '</li>';
@@ -792,17 +824,22 @@ DatalistBuilder = {
         DatalistBuilder.decorateRowAction(columnId);
         DatalistBuilder.adjustCanvas();
     },
+    
+    getActionLabel : function(classname) {
+        return DatalistBuilder.availableActions[classname].label;
+    },
+    
+    getFormatterLabel : function(classname) {
+        return DatalistBuilder.availableFormatter[classname];
+    },
 
     renderColumn : function(columnId){
         var column = DatalistBuilder.chosenColumns[columnId];
-        var sampleDataArray = ['Sample Data 1', 'Sample Data 2', 'Sample Data 3', 'Sample Data 4', 'Sample Data 5', 'Sample Data 6' ];
         var sortable = '';
         if(column.name == DatalistBuilder.datalistProperties['orderBy']){
             if(DatalistBuilder.datalistProperties['order'] == '2'){
-                sampleDataArray = sampleDataArray.sort();
                 sortable = '(A->Z)';
             }else{
-                sampleDataArray = sampleDataArray.sort().reverse();
                 sortable = '(Z->A)';
             }
         }
@@ -815,15 +852,34 @@ DatalistBuilder = {
         string += '<div class="databuilderItemContent">';
         string += '<ul>';
 
-        var count = 0;
-        for(e in sampleDataArray){
-            var className = '';
-            if(count % 2 == 0){
-                className = 'even';
-            }
-            string += '<li class="' + className + '">' + sampleDataArray[e] + '</li>';
-            count++;
+        string += '<li class=""><i class="fas fa-database"></i> ' + column.name + '</li>';
+        string += '<li class="even"><i class="fas fa-sort"></i> ' + ((column.sortable === "true")?get_dbuilder_msg('dbuilder.sortable'):get_dbuilder_msg('dbuilder.unsortable')) + '</li>';
+        if (column.hidden === "true") {
+            string += '<li class=""><i class="fas fa-eye-slash"></i> ' + get_dbuilder_msg('dbuilder.hidden') + ' </li>';
+        } else {
+            string += '<li class=""><i class="fas fa-eye"></i> ' + get_dbuilder_msg('dbuilder.visible') + ' </li>';
         }
+        var exportable = true;
+        if ((column.hidden === "true" && column.include_export !== "true") ||
+                (column.hidden !== "true" && column.exclude_export === "true")) {
+            exportable = false;
+        }
+        
+        string += '<li class="even"><i class="fas fa-file-export"></i> ' + ((exportable)?get_dbuilder_msg('dbuilder.exportable'):get_dbuilder_msg('dbuilder.unexportable')) + '</li>';
+        string += '<li class=""><i class="fas fa-ruler-horizontal"></i> ' + ((column.width !== "" && column.width !== undefined)?column.width:get_dbuilder_msg('dbuilder.default')) + '</li>';
+        
+        var action = '-';
+        if (column.action !== undefined && column.action.className !== '' && column.action.className !== undefined) {
+            action = DatalistBuilder.getActionLabel(column.action.className);
+        }
+        var formatter = '-';
+        if (column.format !== undefined && column.format.className !== '' && column.format.className !== undefined) {
+            formatter = DatalistBuilder.getFormatterLabel(column.format.className);
+        }
+        
+        string += '<li class="even"><i class="fas fa-link"></i> ' + action + '</li>';
+        string += '<li class=""><i class="fas fa-paint-brush"></i> ' + formatter + '</li>';
+
         string += '</ul></div>';
         string += '</li>';
 

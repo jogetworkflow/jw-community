@@ -347,18 +347,23 @@ ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul{
     margin: 0;
 }
 
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul li i {
+    color: #777;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+}
+
 ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul li{
     background: #ffffff;
-    list-style: circle inside none;
-    padding-left: 10px;
+    list-style: none;
+    padding: 5px 10px;
     margin: 0;
+    
 }
 
 ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul li.even{
     background: #f7f8f5;
-    list-style: circle inside none;
-    padding-left: 10px;
-    margin: 0;
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul{
@@ -369,15 +374,12 @@ ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemConte
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li{
     background: #fff;
     list-style: none;
-    padding-left: 10px;
+    padding: 5px 10px;
     white-space: nowrap;
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li.even{
     background: #f7f8f5;
-    list-style: none;
-    padding-left: 10px;
-    white-space: nowrap;
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle{

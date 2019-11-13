@@ -65,8 +65,9 @@
                     return false;
                 });
 
-                DatalistBuilder.init();
-                DatalistBuilder.setJson(${json}, "<c:out value="${id}"/>");
+                DatalistBuilder.init(function(){
+                    DatalistBuilder.setJson(${json}, "<c:out value="${id}"/>");
+                });
                 
                 $('#builder-steps-properties').click( function(){
                     DatalistBuilder.showDatalistProperties();
