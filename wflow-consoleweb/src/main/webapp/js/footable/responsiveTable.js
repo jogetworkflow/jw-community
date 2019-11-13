@@ -22,18 +22,40 @@ function responsiveTable(table) {
         } catch (err) {}
     }
     var phoneCols = 1;
+    var phoneVisibleCols = [];
     var tabletCols = 4;
+    var tabletVisibleCols = [];
     
     if (responsiveSetting !== null) {
         if (responsiveSetting[0].columns !== "") {
-            try {
-                phoneCols = parseInt(responsiveSetting[0].columns);
-            }catch (err){}
+            if (!isNaN(responsiveSetting[0].columns)) {
+                try {
+                    phoneCols = parseInt(responsiveSetting[0].columns);
+                }catch (err){
+                }
+            } else {
+                var temp = responsiveSetting[0].columns.split(";");
+                for (var i in temp) {
+                    if (table.find("th.column_"+temp[i]).length > 0) {
+                        phoneVisibleCols.push(temp[i]);
+                    }
+                }
+            }
         }
         if (responsiveSetting[1].columns !== "") {
-            try {
-                tabletCols = parseInt(responsiveSetting[1].columns);
-            }catch (err){}
+            if (!isNaN(responsiveSetting[1].columns)) {
+                try {
+                    tabletCols = parseInt(responsiveSetting[1].columns);
+                }catch (err){
+                }
+            } else {
+                var temp = responsiveSetting[1].columns.split(";");
+                for (var i in temp) {
+                    if (table.find("th.column_"+temp[i]).length > 0) {
+                        tabletVisibleCols.push(temp[i]);
+                    }
+                }
+            }
         }
     }
     
@@ -45,10 +67,26 @@ function responsiveTable(table) {
     cols.data("hide", "phone,tablet");
 
     //show 4 column if it is tablet
-    cols.filter(":lt("+tabletCols+")").data("hide", "phone");
+    console.log(tabletVisibleCols);
+    console.log(tabletCols);
+    if (tabletVisibleCols.length === 0) {
+        cols.filter(":lt("+tabletCols+")").data("hide", "phone");
+    } else {
+        for (var i in tabletVisibleCols) {
+            cols.filter(".column_"+tabletVisibleCols[i]).data("hide", "phone");
+        }
+    }
 
     //show 1 column if it is phone
-    cols.filter(":lt("+phoneCols+")").data("hide", "");
+    console.log(phoneVisibleCols);
+    console.log(phoneCols);
+    if (phoneVisibleCols.length === 0) {
+        cols.filter(":lt("+phoneCols+")").data("hide", "");
+    } else {
+        for (var i in phoneVisibleCols) {
+            cols.filter(".column_"+phoneVisibleCols[i]).data("hide", "");
+        }
+    }
 
     //checkbox & radio
     select.data("hide", "phone,tablet");

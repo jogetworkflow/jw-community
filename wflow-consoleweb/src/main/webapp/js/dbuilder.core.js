@@ -1555,7 +1555,7 @@ DatalistBuilder = {
                   columns : [
                       {key : 'view', label : get_dbuilder_msg('dbuilder.view')},
                       {key : 'breakpoint', label : get_dbuilder_msg('dbuilder.breakpoint'), type : 'number'},
-                      {key : 'columns', label : get_dbuilder_msg('dbuilder.columns'), type : 'number'}
+                      {key : 'columns', label : get_dbuilder_msg('dbuilder.columns')}
                   ],
                   rows: [
                       {label : get_dbuilder_msg('dbuilder.mobile')},
