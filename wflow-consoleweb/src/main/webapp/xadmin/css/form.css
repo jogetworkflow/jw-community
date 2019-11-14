@@ -55,16 +55,16 @@ body #form-canvas .form-container .form-section {
 body .form fieldset{
     padding: 15px;
 } 
-body #form-canvas .form-container .form-section + .form-section:not(.no_label), 
-body #form-canvas .subform-container .subform-section + .subform-section:not(.no_label) {
+body #form-canvas .form-container .form-section:not(.form-section-empty) + .form-section:not(.no_label), 
+body #form-canvas .subform-container .subform-section:not(.subform-section-empty) + .subform-section:not(.no_label) {
     margin-top: 15px;
 }
 body #form-canvas .form-container .form-section.no_label, 
 body #form-canvas .subform-container .subform-section.no_label {
     padding-top: 15px;
 }
-body #form-canvas .form-container .form-section + .form-section.no_label, 
-body #form-canvas .subform-container .subform-section + .subform-section.no_label {
+body #form-canvas .form-container .form-section:not(.form-section-empty) + .form-section.no_label, 
+body #form-canvas .subform-container .subform-section:not(.subform-section-empty) + .subform-section.no_label {
     margin-top: -1px;
     border-top: 0px; 
     padding-top: 0px;

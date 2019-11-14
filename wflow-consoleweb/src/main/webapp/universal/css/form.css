@@ -595,7 +595,7 @@ body #form-canvas .form-section, body #form-canvas .subform-section {
     margin-top: 0;
 }
 
-body #form-canvas .form-section + .form-section:not(.no_label), body #form-canvas .subform-section + .subform-section:not(.no_label) {
+body #form-canvas .form-section:not(.form-section-empty) + .form-section:not(.no_label), body #form-canvas .subform-section:not(.subform-section-empty) + .subform-section:not(.no_label) {
     margin-top: 15px ;
 }
 
