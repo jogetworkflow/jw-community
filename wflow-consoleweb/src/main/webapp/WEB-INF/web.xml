@@ -104,6 +104,7 @@
     <filter>
         <filter-name>charsetFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>
@@ -128,6 +129,7 @@
     <filter>
         <filter-name>ExpireFilter</filter-name>
         <filter-class>org.joget.apps.app.web.ExpireFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>ExpireFilter</filter-name>
@@ -136,6 +138,7 @@
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.joget.commons.spring.web.CustomDelegatingFilterProxy</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
@@ -158,6 +161,7 @@
     <filter>
         <filter-name>CSRFGuard</filter-name>
         <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>CSRFGuard</filter-name>
@@ -166,6 +170,7 @@
     <filter>
         <filter-name>ResponseOverrideFilter</filter-name>
         <filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>ResponseOverrideFilter</filter-name>
