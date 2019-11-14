@@ -3753,9 +3753,15 @@ PropertyEditor.Type.GridCombine.prototype = {
                             var temp = field.options.defaultPropertyValues[column.key];
                             if (temp !== undefined) {
                                 data[column.key] = temp;
+                            } else {
+                                data[column.key] = "";
                             }
                         });
                     }
+                } else {
+                    $.each(field.properties.columns, function(i, column) {
+                        data[column.key] = "";
+                    });
                 }
             }
         } else {
@@ -3818,7 +3824,7 @@ PropertyEditor.Type.GridCombine.prototype = {
         $(table).find("td").removeClass("error");
 
         var hasError = false;
-        if (data !== undefined && data !== null) {
+        if (data !== undefined && data !== null && $('#' + this.id + ' tr').length > 2) {
             $.each(thisObj.properties.columns, function(j, column) {
                 if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                     var temp = data[column.key];
