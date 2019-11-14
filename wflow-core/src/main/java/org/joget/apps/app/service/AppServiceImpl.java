@@ -2507,7 +2507,7 @@ public class AppServiceImpl implements AppService {
                     }
                 
                     String json = new String(out.toByteArray(), "UTF-8");
-                    FormRowSet rows = FormUtil.jsonToFormRowSet(json);
+                    FormRowSet rows = FormUtil.jsonToFormRowSet(json, false);
 
                     String tablename = entry.getName().substring(5, entry.getName().indexOf(".json"));
                     formDataDao.saveOrUpdate(tablename+"_import", tablename, rows);

@@ -18,6 +18,7 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -2213,7 +2214,7 @@ public class FormUtil implements ApplicationContextAware {
                         for (String path : r.getTempFilePathMap().get(f.toString())) {
                             arr.put(path);
                         }
-                        obj.put(f.toString(), arr);
+                        filePaths.put(f.toString(), arr);
                     }
                     obj.put(FormUtil.PROPERTY_TEMP_FILE_PATH, filePaths);
                 }
@@ -2229,6 +2230,10 @@ public class FormUtil implements ApplicationContextAware {
     }
     
     public static FormRowSet jsonToFormRowSet (String json) {
+        return jsonToFormRowSet (json, true);
+    }
+    
+    public static FormRowSet jsonToFormRowSet (String json, boolean storeJson) {
         FormRowSet rowSet = new FormRowSet();
         rowSet.setMultiRow(true);
 
@@ -2283,7 +2288,9 @@ public class FormUtil implements ApplicationContextAware {
                         }
                     }
                     
-                    row.setProperty("jsonrow", jsonRow.toString());
+                    if (storeJson) {
+                        row.setProperty("jsonrow", jsonRow.toString());
+                    }
                     rowSet.add(row);
                 }
             } catch (Exception e) {
