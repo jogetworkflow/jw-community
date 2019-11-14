@@ -26,7 +26,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import static org.joget.apps.app.service.AppDevUtil.getAppDevProperties;
 import org.joget.commons.util.PluginThread;
 
-@WebFilter(urlPatterns="/web/*")
+@WebFilter(urlPatterns="/web/*", asyncSupported=true)
 public class GitRequestFilter implements Filter {
 
     @Override
