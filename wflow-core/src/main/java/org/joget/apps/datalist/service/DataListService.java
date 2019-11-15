@@ -154,6 +154,21 @@ public class DataListService {
                 }
                 return value;
             } catch (Exception e) {}
+            
+            if ((row instanceof Map) && propertyName.contains(".")) {
+                Map rowMap = (Map) row;
+                Object value = null;
+                if (rowMap.containsKey(propertyName)) {
+                    value = rowMap.get(propertyName);
+                } else if (rowMap.containsKey(propertyName.toLowerCase())) {
+                    //handle for lowercase propertyName
+                    value = rowMap.get(propertyName.toLowerCase());
+                }
+                if (value != null && value instanceof Date) {
+                    value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
+                }
+                return value;
+            }
         }
         return null;
     }
