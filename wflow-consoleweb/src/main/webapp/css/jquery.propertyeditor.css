@@ -271,7 +271,7 @@
 
 .property-input .multiple_option{
     display:block;
-    padding: 8px 0 0;
+    padding: 7px 0 0;
 }
 
 .property-input .multiple_option input{
@@ -280,6 +280,9 @@
 
 .property-input label{
     display:block;
+}
+
+.property-input label + lable{
     padding-top: 8px;
 }
 
