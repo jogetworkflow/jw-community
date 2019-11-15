@@ -337,7 +337,7 @@ UserviewBuilder = {
             $('#userview-sidebar').append('<div id="'+category.properties.id+'" class="category"></div>');
             var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
             $(categoryObject).html(UserviewBuilder.getCategoryModel());
-            $(categoryObject).find('.category-label span').html(UI.escapeHTML(category.properties.label));
+            $(categoryObject).find('.category-label span').html(category.properties.label);
             this.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
             this.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
 
@@ -351,7 +351,7 @@ UserviewBuilder = {
                 $(categoryObject).find('.menu-container').append('<div id="'+menu.properties.id+'" class="menu"></div>');
                 var menuObject =  $(categoryObject).find('.menu-container #'+menu.properties.id);
                 $(menuObject).html(UserviewBuilder.getMenuModel());
-                $(menuObject).find('.menu-label span').html(UI.escapeHTML(menu.properties.label));
+                $(menuObject).find('.menu-label span').html(menu.properties.label);
                 this.decorateElementOptions(menuObject);
             }
             this.decorateElementOptions(categoryObject);
@@ -395,7 +395,7 @@ UserviewBuilder = {
     
         var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
         $(categoryObject).html(UserviewBuilder.getCategoryModel());
-        $(categoryObject).find('.category-label span').html(UI.escapeHTML(category.properties.label));
+        $(categoryObject).find('.category-label span').html(category.properties.label);
         UserviewBuilder.decorateCategory($(categoryObject));
         
         if (category.menus !== undefined && category.menus !== null && category.menus.length > 0) {
@@ -519,7 +519,7 @@ UserviewBuilder = {
         var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
 
         menu.properties = $.extend(menu.properties, properties);
-        var label = UI.escapeHTML(properties.label);
+        var label = properties.label;
         $('#'+id+' .menu-label span').html(label);
         UserviewBuilder.adjustJson();
     },
@@ -717,7 +717,6 @@ UserviewBuilder = {
                 thisObject.data.categories[thisObject.categoriesPointer[id]].properties.label = value;
                 UserviewBuilder.adjustJson();
             }
-            value = UI.escapeHTML(value);
             return value;
         },{
             type      : 'text',
@@ -730,14 +729,7 @@ UserviewBuilder = {
             width     : '80%',
             minwidth  : 80,
             data: function(value, settings) {
-                if (value !== "") {
-                    var div = document.createElement('div');
-                    div.innerHTML = value;
-                    var decoded = div.firstChild.nodeValue;
-                    return decoded;
-                } else {
-                    return value;
-                }
+                return value;
             }
         });
     },
