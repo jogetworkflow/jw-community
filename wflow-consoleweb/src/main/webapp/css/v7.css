@@ -738,10 +738,10 @@ body .flexigrid div.hDiv {
     background: transparent;
     border-bottom: 1px solid #ccc;
 }
-body .flexigrid div.hDiv th {
+body .flexigrid div.hDiv th > div {
     font-weight: bold;
     text-transform: uppercase;
-    padding: 5px;
+    padding: 10px;
     box-sizing: border-box;
 }
 body .flexigrid div.hDiv th.thOver > div,
@@ -756,8 +756,8 @@ body .flexigrid div.bDiv tr {
     display: block;
     overflow: auto;
 }
-body .flexigrid div.bDiv td {
-    padding: 5px;
+body .flexigrid div.bDiv td > div {
+    padding: 10px;
     box-sizing: border-box;
 }
 body .flexigrid tr td.sorted {
@@ -854,6 +854,12 @@ body .flexigrid tr.trSelected td{
     background: #ecf0f1;
     border-left: 1px solid #ecf0f1 !important;
     border-bottom: 0 !important;
+}
+body .flexigrid div.bDiv table { 
+    display: block; 
+} 
+body .flexigrid div.bDiv table tbody { 
+    display: inline-block; 
 }
 
 /* help guide */
