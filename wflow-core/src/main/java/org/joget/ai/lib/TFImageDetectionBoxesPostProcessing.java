@@ -137,7 +137,10 @@ public class TFImageDetectionBoxesPostProcessing implements TensorFlowPostProces
                     pass = scores[i] > threshold;
                 }
                 if (pass) {
-                    String label = labels.get((int)(values[i] - 1)) + " (" + Math.round(scores[i] * 100) + "%)";
+                    String label = labels.get((int)(values[i] - 1));
+                    if (scores != null) {
+                        label += " (" + Math.round(scores[i] * 100) + "%)";
+                    }
                     int x = 0;
                     int y = 0;
                     int w = 0;
