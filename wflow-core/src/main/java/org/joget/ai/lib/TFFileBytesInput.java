@@ -1,6 +1,7 @@
 package org.joget.ai.lib;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
@@ -46,7 +47,14 @@ public class TFFileBytesInput implements TensorFlowInput {
             }
         }
         
-        return Tensor.create(IOUtils.toByteArray(TensorFlowUtil.getInputStream(filename, form, recordId)));
+        InputStream inputStream = TensorFlowUtil.getInputStream(filename, form, recordId);
+        try {
+            return Tensor.create(IOUtils.toByteArray(inputStream));
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
     }
 
     @Override
