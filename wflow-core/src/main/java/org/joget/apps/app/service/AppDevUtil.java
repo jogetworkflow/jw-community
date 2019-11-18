@@ -443,6 +443,9 @@ public class AppDevUtil {
     
     public static void fileMergeOurs(File projectDir, String path) throws IOException {
         LogUtil.debug(AppDevUtil.class.getName(), "Merge ours: " + path);
+        
+        path = SecurityUtil.normalizedFileName(path);
+        
         File file = new File(projectDir, path);
         String fileContents = FileUtils.readFileToString(file, "UTF-8");
         String ours = "<<<<<<< HEAD\n";
@@ -669,6 +672,8 @@ public class AppDevUtil {
     }
     
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
+        path = SecurityUtil.normalizedFileName(path);
+        
         String gitBranch = getGitBranchName(appDef);
         
         try {
@@ -716,6 +721,8 @@ public class AppDevUtil {
     }    
     
     public static void fileDelete(AppDefinition appDefinition, String path, String commitMessage) {
+        path = SecurityUtil.normalizedFileName(path);
+        
         try {
             // checkout branch
             String gitBranch = getGitBranchName(appDefinition);
@@ -742,6 +749,8 @@ public class AppDevUtil {
     }    
     
     public static String fileReadToString(AppDefinition appDefinition, String path, boolean pull) {
+        path = SecurityUtil.normalizedFileName(path);
+        
         String json = null;
         try {
             File file = fileGetFileObject(appDefinition, path, pull);
@@ -761,6 +770,8 @@ public class AppDevUtil {
     }
 
     public static File fileGetFileObject(AppDefinition appDefinition, String path, boolean pull) throws IOException, GitAPIException, URISyntaxException {
+        path = SecurityUtil.normalizedFileName(path);
+        
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
         String projectDirName = getAppGitDirectory(appDefinition);
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
