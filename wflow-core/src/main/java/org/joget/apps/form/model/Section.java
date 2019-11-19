@@ -72,7 +72,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
             String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
             
-            if (!html.contains("form-cell")) {
+            if (!((Boolean) dataModel.get("includeMetaData") == true) && !html.contains("form-cell")) {
                 html = html.replaceFirst("form-section", "form-section form-section-empty");
             }
             return html;
