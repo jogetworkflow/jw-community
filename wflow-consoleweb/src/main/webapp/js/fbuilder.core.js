@@ -453,6 +453,9 @@ FormBuilder = {
         }
 
         // add options
+        if ($(obj).is("form")) {
+            return;
+        }
         FormBuilder.decorateElementOptions(obj);
 
     },
