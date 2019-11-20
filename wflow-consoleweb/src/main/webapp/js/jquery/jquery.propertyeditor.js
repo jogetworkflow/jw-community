@@ -1192,6 +1192,7 @@ PropertyEditor.Model.Editor.prototype = {
                 }
             });
         } else if (this.options.autoSave) {
+            $(thisObject.editor).addClass("peautosave");
             $(thisObject.editor).css("z-index", "102");
             if ($(thisObject.editor).parent().find(".peautosaveblock").length === 0) {
                 $(thisObject.editor).parent().prepend('<div class="peautosaveblock" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index: 101;display:none;"></div>');
@@ -1679,7 +1680,7 @@ PropertyEditor.Model.Page.prototype = {
                 type.pageShown();
             });
         }
-        if (changeFocus === undefined || changeFocus) {
+        if ((changeFocus === undefined || changeFocus) && !UI.isMobileUserAgent()) {
             var fields = $(page).find('.property-editor-property-container .property-editor-property .property-input').find('input:not(:hidden), select, textarea');
             if (fields.length > 0) {
                 fields[0].focus();
