@@ -234,7 +234,7 @@ PropertyEditor.Util = {
         replaceString = '&quot;';
         return string.replace(regX, replaceString);
     },
-    deepEquals: function(editor, o1, o2) {
+    deepEquals: function(editor, o1, o2, parentId) {
         if (o1 === o2) {
             return true;
         }
@@ -277,7 +277,7 @@ PropertyEditor.Util = {
                 } else if (o1[propName] === "" && o2[propName] === null) {
                     //to handle null original value
                     returnFalse = false;
-                } else if (o1[propName] !== undefined && o2[propName] !== undefined && PropertyEditor.Util.deepEquals(editor, o1[propName], o2[propName])) {
+                } else if (o1[propName] !== undefined && o2[propName] !== undefined && PropertyEditor.Util.deepEquals(editor, o1[propName], o2[propName], propName)) {
                     returnFalse = false;
                 }
                 
@@ -289,14 +289,19 @@ PropertyEditor.Util = {
                 (o2[propName] === undefined && o1[propName] !== "")) {
                 var returnFalse = true;
                 
-                if (editor.fields[propName] !== undefined) {
-                    if (editor.fields[propName].properties['type'].toLowerCase() === "checkbox" && o2[propName] === editor.fields[propName].properties['value'] && (o1[propName] === undefined || o1[propName] === "")) {
+                var fields = editor.fields;
+                if (parentId !== "" && parentId !== undefined && fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+                
+                if (fields[propName] !== undefined) {
+                    if (fields[propName].properties['type'].toLowerCase() === "checkbox" && o2[propName] === fields[propName].properties['value'] && (o1[propName] === undefined || o1[propName] === "")) {
                         //to handle invalid false default value is set for checkbox
                         returnFalse = false;
-                    } else if (editor.fields[propName].properties['type'].toLowerCase() === "password" && o1[propName] === "%%%%%%%%" && (o2[propName] === undefined || o2[propName] === "")) {
+                    } else if (fields[propName].properties['type'].toLowerCase() === "password" && o1[propName] === "%%%%%%%%" && (o2[propName] === undefined || o2[propName] === "")) {
                         //handle for password field empty value
                         returnFalse = false;
-                    } else if (editor.fields[propName].properties['type'].toLowerCase() === "hidden") {
+                    } else if (fields[propName].properties['type'].toLowerCase() === "hidden") {
                         //handle for hidden field
                         returnFalse = false;
                     }
@@ -357,6 +362,14 @@ PropertyEditor.Util = {
     retrieveOptionsFromCallback: function(field, properties, reference) {
         try {
             if (properties.options_callback !== undefined && properties.options_callback !== null && properties.options_callback !== "") {
+                var fields = field.editorObject.fields;
+                if (field.parentId !== "" && field.parentId !== undefined) {
+                    var parentId = field.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
+                }
+
                 var on_change = null;
                 if (properties.options_callback_on_change !== undefined && properties.options_callback_on_change !== null && properties.options_callback_on_change !== "") {
                     on_change = properties.options_callback_on_change;
@@ -380,8 +393,8 @@ PropertyEditor.Util = {
                                 childField = fieldId.substring(fieldId.indexOf(".") + 1);
                                 fieldId = fieldId.substring(0, fieldId.indexOf("."));
                             }
-
-                            var targetField = field.editorObject.fields[fieldId];
+                            
+                            var targetField = fields[fieldId];
                             var targetValue = targetField.value;
                             if (targetField.editor.find("#" + targetField.id).length > 0) {
                                 var data = targetField.getData(true);
@@ -484,7 +497,14 @@ PropertyEditor.Util = {
         
         var field = null;
         if (page.editorObject !== undefined) {
-            field = page.editorObject.fields[control_field];
+            var fields = page.editorObject.fields;
+            if (page.parentId !== "" && page.parentId !== undefined) {
+                var parentId = page.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            field = fields[control_field];
         } else if (page[control_field] !== undefined) {
             field = page[control_field];
         }
@@ -555,7 +575,14 @@ PropertyEditor.Util = {
         
         var field = null;
         if (page.editorObject !== undefined) {
-            field = page.editorObject.fields[control_field];
+            var fields = page.editorObject.fields;
+            if (page.parentId !== "" && page.parentId !== undefined) {
+                var parentId = page.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            field = fields[control_field];
         } else if (page[control_field] !== undefined) {
             field = page[control_field];
         }
@@ -576,6 +603,14 @@ PropertyEditor.Util = {
             field.properties.options_callback_on_change !== undefined && field.properties.options_callback_on_change !== null && field.properties.options_callback_on_change !== "") {
             var onChanges = field.properties.options_callback_on_change.split(";");
             var fieldIds = [];
+            var fields = field.editorObject.fields;
+            if (field.parentId !== "" && field.parentId !== undefined) {
+                var parentId = field.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            
             for (var i in onChanges) {
                 var fieldId = onChanges[i];
                 if (fieldId.indexOf(":") !== -1) {
@@ -590,15 +625,15 @@ PropertyEditor.Util = {
                 var fieldId = fieldIds[i];
                 if (fieldId.indexOf(".") !== -1) {
                     if (fieldId.indexOf(".properties") !== -1) {
-                        selector = ".property-editor-page[elementid=\"" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"] .property-editor-property:not(.hidden) [name]";
+                        selector = ".property-editor-page[elementid=\"" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"] .property-editor-property:not(.hidden) [name]";
                     } else {
-                        selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                        selector = "#" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
                         if ($(field.editor).find(selector).length === 0) {
-                            selector = "[name=\"" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"]";
+                            selector = "[name=\"" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"]";
                         }
                     }
                 } else {
-                    selector = "[name=\"" + field.editorObject.fields[fieldId].id + "\"]";
+                    selector = "[name=\"" + fields[fieldId].id + "\"]";
                 }
                 $(field.editor).on("change", selector, function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
@@ -634,6 +669,13 @@ PropertyEditor.Util = {
         var ajaxUrl = PropertyEditor.Util.replaceContextPath(ajax_url, field.options.contextPath);
         if (on_change !== undefined && on_change !== null) {
             var onChanges = on_change.split(";");
+            var fields = field.editorObject.fields;
+            if (field.parentId !== "" && field.parentId !== undefined) {
+                var parentId = field.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
             for (var i in onChanges) {
                 var fieldId = onChanges[i];
                 var param = fieldId;
@@ -653,7 +695,7 @@ PropertyEditor.Util = {
                     ajaxUrl += "?";
                 }
 
-                var targetField = field.editorObject.fields[fieldId];
+                var targetField = fields[fieldId];
                 var data = targetField.getData(true);
                 var targetValue = data[fieldId];
 
@@ -765,6 +807,13 @@ PropertyEditor.Util = {
     fieldOnChange: function(field, reference, ajax_url, on_change, mapping, method, extra) {
         var onChanges = on_change.split(";");
         var fieldIds = [];
+        var fields = field.editorObject.fields;
+        if (field.parentId !== "" && field.parentId !== undefined) {
+            var parentId = field.parentId.substring(1);
+            if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                fields = fields[parentId].fields;
+            }
+        }
         for (var i in onChanges) {
             var fieldId = onChanges[i];
             if (fieldId.indexOf(":") !== -1) {
@@ -779,15 +828,15 @@ PropertyEditor.Util = {
             var fieldId = fieldIds[i];
             if (fieldId.indexOf(".") !== -1) {
                 if (fieldId.indexOf(".properties") !== -1) {
-                    selector = ".property-editor-page[elementid=\"" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"] .property-editor-property:not(.hidden) [name]";
+                    selector = ".property-editor-page[elementid=\"" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"] .property-editor-property:not(.hidden) [name]";
                 } else {
-                    selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                    selector = "#" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
                     if ($(field.editor).find(selector).length === 0) {
-                        selector = "[name=\"" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"]";
+                        selector = "[name=\"" + fields[fieldId.substring(0, fieldId.indexOf("."))].id + "\"]";
                     }
                 }
             } else {
-                selector = "[name=\"" + field.editorObject.fields[fieldId].id + "\"]";
+                selector = "[name=\"" + fields[fieldId].id + "\"]";
             }
             $(field.editor).on("change", selector, function() {
                 PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
@@ -1638,7 +1687,15 @@ PropertyEditor.Model.Page.prototype = {
             property.propertyEditorObject = type;
 
             if (prefix === "" || prefix === null || prefix === undefined) {
-                this.editorObject.fields[property.name] = type;
+                var fields = this.editorObject.fields;
+                if (this.parentId !== "" && this.parentId !== undefined) {
+                    var parentId = this.parentId.substring(1);
+                    if (fields[parentId].fields === undefined) {
+                        fields[parentId].fields = [];
+                    }
+                    fields = fields[parentId].fields;
+                }
+                fields[property.name] = type;
             }
         }
 
@@ -1894,7 +1951,14 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 var elementId = $(currentPage).attr("elementid");
                 if (elementId !== null && elementId !== undefined) {
                     var propertyName = $(panel.editor).find("#" + elementId).closest(".property-editor-property").attr("property-name");
-                    var elementSelect = page.editorObject.fields[propertyName];
+                    var parentId = $(panel.editor).find("#" + elementId).closest(".property-editor-property").attr("property-parentid");
+                    
+                    var fields = page.editorObject.fields;
+                    if (parentId !== "" && parentId !== undefined && fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
+                    
+                    var elementSelect = fields[propertyName];
                     
                     var eldata = elementSelect.getData(true);
                     data = eldata[propertyName]["properties"];
@@ -2277,8 +2341,13 @@ PropertyEditor.Model.Type.prototype = {
                 showHide += ' data-required_control_use_regex="false"';
             }
         }
+        
+        var parentId = this.parentId;
+        if (parentId !== "" && parentId !== undefined) {
+            parentId = parentId.substring(1);
+        }
 
-        var html = '<div id="property_' + this.number + '" property-name="'+this.properties.name+'" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
+        var html = '<div id="property_' + this.number + '" property-parentid="'+parentId+'" property-name="'+this.properties.name+'" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
 
         html += this.renderLabel();
         html += this.renderFieldWrapper();
