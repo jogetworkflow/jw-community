@@ -1294,12 +1294,25 @@ public class PluginManager implements ApplicationContextAware {
      * @param beanName
      * @return 
      */
-    public static Object getBean(String beanName) {
+    public Object getBean(String beanName) {
         Object bean = null;
         if (applicationContext != null) {
             bean = applicationContext.getBean(beanName);
         }
         return bean;
+    }
+    
+    /**
+     * Gets a class bean from ApplicationContext
+     * @param beanName
+     * @return 
+     */
+    public static PluginManager getInstance() {
+        PluginManager pluginManager = null;
+        if (applicationContext != null) {
+            pluginManager = (PluginManager) applicationContext.getBean("pluginManager");
+        }
+        return pluginManager;
     }
 
     /**
