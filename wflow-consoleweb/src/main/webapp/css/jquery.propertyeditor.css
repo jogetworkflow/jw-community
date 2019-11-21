@@ -286,7 +286,7 @@
     display:block;
 }
 
-.property-input label + lable{
+.property-input label + label{
     padding-top: 8px;
 }
 
