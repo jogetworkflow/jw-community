@@ -105,6 +105,9 @@ public class TFImageDetectionBoxesPostProcessing implements TensorFlowPostProces
         InputStream inputStream = TensorFlowUtil.getInputStream(filename, form, recordId);
         
         String outputFileName = filename.replaceAll(StringUtil.escapeRegex("."+type), StringUtil.escapeRegex("-processed."+type));
+        if(params.containsKey("output_name") && !params.get("output_name").toString().isEmpty()){
+            outputFileName = params.get("output_name").toString();
+        }
         String output_form = AppPluginUtil.getVariable(params.get("output_form").toString(), variables);
         
         try {
@@ -237,10 +240,12 @@ public class TFImageDetectionBoxesPostProcessing implements TensorFlowPostProces
         String boxesTypeLabel = ResourceBundleUtil.getMessage("app.simpletfai.boxesType");
         String fontSizeLabel = ResourceBundleUtil.getMessage("app.simpletfai.fontSize");
         String colorsFileLabel = ResourceBundleUtil.getMessage("app.simpletfai.colors_file");
+        String outputFileNameLabel = ResourceBundleUtil.getMessage("app.simpletfai.outputFileNameLabel");
         
         String html = "<input name=\"fontsize\" class=\"post_fontsize small required\" value=\"20\" placeholder=\""+fontSizeLabel+"\"/><span class=\"label\">"+fontSizeLabel+"</span>";
         html += "<div><select name=\"form\" class=\"post_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"image\" class=\"post_image half required\" placeholder=\""+sourceUploadFieldLabel+"\"/><span class=\"label\">"+sourceUploadFieldLabel+"</span></div>";
         html += "<div><select name=\"output_form\" class=\"post_output_form quarter required\"><option value=\"\"></option></select><span class=\"label\">"+outputLabel+"</span><input name=\"output_image\" class=\"post_output_image half required\" placeholder=\""+soutputUploadFieldLabel+"\"/><span class=\"label\">"+soutputUploadFieldLabel+"</span></div>";
+        html += "<div><input name=\"output_name\" class=\"post_output_name full\" placeholder=\""+outputFileNameLabel+"\"/><span class=\"label\">"+outputFileNameLabel+"</span></div>";
         html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
         html += "<div><input name=\"colors\" class=\"post_colors half\" placeholder=\""+colorsFileLabel+"\"/><span class=\"label\">"+colorsFileLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
         html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span><select name=\"variable2\" class=\"post_variable half\"><option value=\"\">"+numberLabel+"</option></select><span class=\"label\">"+numberLabel+"</span></div>";
