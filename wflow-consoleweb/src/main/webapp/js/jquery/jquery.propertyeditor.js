@@ -136,6 +136,8 @@ PropertyEditor.Popup = {
         $("#"+id + " .property-editor-container").css("width", width + "px");
         $("#"+id + " .property-editor-container").css("height", height + "px");
         $("#"+id + " .property-editor-container").find(".property-editor-property-container").css("height", (height - 114) + "px");
+        $("#"+id + " .property-editor-container").closest(".boxy-content").css("width", "auto");
+        $("#"+id + " .property-editor-container").closest(".boxy-content").css("height", "auto");
         
         if (width <= 680) {
             $("#"+id + " .property-editor-container").addClass("narrow");
