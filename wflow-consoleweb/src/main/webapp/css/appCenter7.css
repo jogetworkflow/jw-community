@@ -295,7 +295,9 @@ body #clock {
 }
 @media (min-width: 1025px) {
     body#home div.home_banner {
-        float: left;
+        position: absolute;
+        top:0;
+        left:0;
         width: calc(100% - 550px);
     }
     body#home div#banner {
@@ -308,11 +310,13 @@ body #clock {
     }
     body#home.horizontal_menu #main {
         width: 550px;
-        float: right;
+        position: absolute;
         display: table-cell;
         height: 88vh;
         overflow: auto;
         padding-bottom: 20px;
+        right: 0;
+        bottom: 0;
     }
     body#home div#header-name img {
         position: fixed;
