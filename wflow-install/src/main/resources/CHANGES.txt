@@ -22,6 +22,68 @@ SUMMARY IN 7.0-PREVIEW
   - New Plugin Type for Extending App Builder
   - Latest Upgrades Under The Hood
 
+CHANGES IN 7.0-BETA2
+====================
+8d0066fb Modified: wflow-consoleweb - UI - Make content links underlined. @7.0-SNAPSHOT
+ddfdbd6c Fixed: wflow-consoleweb - Property Editor - Fail to load cascading options correctly when more than 1 element select pages having the same property name. #7090 @7.0-SNAPSHOT
+ed4760d7 Fixed: wflow-consoleweb - App center - Info button affected display if browser zoom > 100%. #7089 @7.0-SNAPSHOT
+ebe8d142 Modified: wflow-core - Tensorflow - Image detection boxes post processing - support custom output file name. #7081 @7.0-SNAPSHOT
+6b8721d1 Fixed: wflow-plugin-base - Plugin Manager - Backward compatibility issue due to db0d3a2 changes. #7043 @7.0-SNAPSHOT
+f48442a1 Fixed: wflow-consoleweb - Property Editor - correction for 0edb431. @7.0-SNAPSHOT
+7e48a5ec Fixed: wflow-consoleweb - Builders - Property Editor opens exceeding window width. @7.0-SNAPSHOT
+9d69ea7e Fixed: wflow-consoleweb - Builder - Properties tab font size is not display correctly in mobile device. @7.0-SNAPSHOT Modified: wflow-consoleweb - Property Editor - Adjusted style for link and label. @7.0-SNAPSHOT
+46944d30 Fixed: wflow-consoleweb - Form Builder - Extra buttons are added to form tag after form saved. @7.0-SNAPSHOT
+a23a4d28 Fixed: wflow-core - Section - Regression of 027bcd6. @7.0-SNAPSHOT
+2c80cbb2 Modified: wflow-core - Multi Tools - Support run tool in multithread. @7.0-SNAPSHOT
+86b9062b Modified: wflow-consoleweb - App center - Fix script error. 7.0-SNAPSHOT Modified: wflow-install - Update app center and default database. 7.0-SNAPSHOT
+dd6875c4 Modified: wflow-core - AppDevUtil - Prevent path manipulation. @7.0-SNAPSHOT
+d47e99ee Fixed: wflow-core - Tensorflow - Fix non released input stream. @7.0-SNAPSHOT
+95e6c25f Fixed: wflow-core - Tensorflow - Fix possible NPE. @7.0-SNAPSHOT
+7f14070d Fixed: wflow-consoleweb - Console UI - Grid checkbox is covered by column picker. @7.0-SNAPSHOT Fixed: wflow-consoleweb - Console UI - Long text grid cell causing incorrect grid height. @7.0-SNAPSHOT
+0edb4316 Fixed: wflow-consoleweb - Property Editor - Checkbox miss-aligned. @7.0-SNAPSHOT
+345b7e5c Modified: wflow-consoleweb - Userview Builder - Show icon instead of HTML in category & menu label. @7.0-SNAPSHOT
+cb836547 Fixed: wflow-core - DataListService - Can't retrieve join table attribute data eg. "jointable.attr1" when there is another attribute called "jointable". #7055 @7.0-SNAPSHOT
+027bcd67 Fixed: wflow-consoleweb/wflow-core - Form Section - Section with only hidden field having border and padding in some userview theme. #7050 @7.0-SNAPSHOT
+d7c0f71b Fixed: wflow-consoleweb - Form Section - Visibility control rules can't be delete when there is only one rule. #7051 @7.0-SNAPSHOT
+478a92ec Fixed: wflow-core - Import App - Import app with form data storing extra column 'c_jsonrow'. @7.0-SNAPSHOT
+eba68627 Fixed: wflow-consoleweb - System Logs and Presence - Cannot load logs and show presence indicators on JBoss EAP, Websphere and Weblogic @7.0-SNAPSHOT
+ccbd7db7 Fixed: wflow-consoleweb - Security - Logs - System logs accessible via unauthorized websocket @7.0-SNAPSHOT
+35423c0e Modified: wflow-consoleweb - Datalist Builder - Support using column name to choose which column to display in responsive mode. @7.0-SNAPSHOT
+ad40c389 Modified: wflow-consoleweb - Datalist Builder - Show details of columns in canvas. @7.0-SNAPSHOT
+0eb6039c Fixed: wflow-core - Multi Tools - NullPointerException when using Form Data Update Tool @7.0-SNAPSHOT
+c6a71690 Fixed: wflow-consoleweb - Process view - Process image cannot be generated due to JavaScript error $processHeader.chosen is not a function, regression caused by bb7e6bc6 @7.0-SNAPSHOT
+931b80cb Fixed: wflow-consoleweb - JBoss EAP - 500 Error after logout or session timeout @7.0-SNAPSHOT
+7b459448 Modified: wflow-consoleweb - App center - Update button color. 7.0-SNAPSHOT
+e298d77a Fixed: wflow-consoleweb - Console Inbox - Popup dialog can't scroll. 7.0-SNAPSHOT
+245bf0e8 Modified: wflow-core - AppWebController - Support download for internal form data table. 7.0-SNAPSHOT
+de07a325 Fixed: wflow-consoleweb - Fix message typo on datalist builder dbuilder.responsiveView.desc @7.0-SNAPSHOT
+5f3e2293 Fixed: wflow-consoleweb - Web Console - Run Process popup does not load the form CSS @7.0-SNAPSHOT
+8930f2bc Fixed: wflow-core - AppServiceImpl - Fixed possible NPE. 6.0-SNAPSHOT
+d08bdba3 Fixed: wflow-core - Grid - Data not display in sequence due to UUID changes. 7.0-SNAPSHOT
+bb7e6bc6 Modified: wflow-consoleweb - Process Builder - Change process name tab to a selector. #6993 7.0-SNAPSHOT
+ff4f59c1 Fixed: wflow-core - PWA - App Center - Image missing and wrong layout in PWA desktop mode @7.0-SNAPSHOT
+6359e855 Fixed: wflow-consoleweb - X-Admin Theme - X-Admin theme form display problem regression due to 7a0eed9b @7.0-SNAPSHOT
+4bc399d6 Modified: wflow-consoleweb - FormUtil - Added optional element parameter to retrieve fields and values for a specific DOM subtree, required to support repeated elements eg in the subform repeater @6.0-SNAPSHOT
+0bff10c1 Fixed: wflow-core - Run Process - 403 Forbidden error when Run Process menu is the first userview menu element @6.0-SNAPSHOT
+568e70a1 Fixed: wflow-consoleweb - Builder - Cached property editor size caused the editor larger than window size after window resized. @7.0-SNAPSHOT
+35b8580d Fixed: wflow-consoleweb - App Resource - No link to view or download the resource. @7.0-SNAPSHOT
+50bd4ea7 Fixed: wflow-consoleweb - UI - Popup dialog iframe's height is incorrect after window resize. @7.0-SNAPSHOT
+c9b8c001 Fixed: wflow-core - Git - Concurrent edit causing lock exception. #6939 @7.0-SNAPSHOT
+a22bcb01 Fixed: wflow-consoleweb - Performance - Fixed JavaScript regression errors from 7a0eed9b in date and time picker, form grid and advanced grid @7.0-SNAPSHOT Modified: wflow-consoleweb - Performance - Reduced size of JQuery UI library by removing unused components @7.0-SNAPSHOT
+17436be0 Fixed: wflow-consoleweb - App Center - JavaScript error "guiders is not defined" when loading the App Center @7.0-SNAPSHOT
+ec5b8d59 Fixed: wflow-consoleweb - Tensorflow - label fix
+7a0eed9b Modified: wflow-core, wflow-consoleweb - Performance - Merge, defer, preload and remove resources to optimize perceptual speed @7.0-SNAPSHOT - In wro.xml, merge /js/hubspot-offline/offline.min.js into universal.min.js and progressive.min.js - In wro.xml, merge pwa.js into universal.min.js, progressive.min.js and xadmin.min.js - In UniversalTheme.java, use link rel=”preload” for:   /js/fontawesome5/fonts/fontawesome-webfont.woff2?v=4.6.1   /js/fontawesome5/webfonts/fa-brands-400.woff2   /js/fontawesome5/webfonts/fa-solid-900.woff2   /lib/material-design-iconic-font/fonts/Material-Design-Iconic-Font.woff2?v=2.2.0 - In UniversalTheme.java and XadminTheme.java, set fixed image 30x30 for gravatar icons - In adminBar.jsp, remove  loadCSS("${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css"); since the CSS is already in wro/common.css - In scripts.jsp and UserviewThemeProcesser.java, append image_alive img tag only in keepMeAlive function to prevent unnecessary initial loading of image - Split common.js into common.js and common.preload.js and defer common.js - Merge /universal/js/preload.js into universal.min.js and /progressive/js/progressive.js into progressive.min.js, to remove unnecessary preloading - Merge /css/form.css into userview.min.css, userview_v5.min.css, universal.preload.min.css and progressive.preload.min.css to preload - In dataListView.jsp, use link rel=”reload” for /js/footable/fonts/footable.woff
+4016229b Fixed: wflow-core - Tensorflow - Fixed image input label error. @7.0-SNAPSHOT
+80e535f6 Modified: wflow-core - Tensorflow - Support image input with no normalization. @7.0-SNAPSHOT Modified: wflow-core - Tensorflow - Adding image detection boxes post-processing. @7.0-SNAPSHOT Modified: wflow-core - Tensorflow - Support scores and threshold for values to label post processing. @7.0-SNAPSHOT
+7324e9fc Fixed: wflow-plugin-base - Plugin Manager - Plugin label locale is wrong when switching locale. @6.0-SNAPSHOT
+d88c62ce Fixed: wflow-plugin-base - Plugin Manager - Plugin label locale is wrong when switching locale. @7.0-SNAPSHOT
+5cd2e0d4 Modified: wflow-consoleweb - Process Mapper - Participant mapping title is wrong. @7.0-SNAPSHOT
+a71ce7fc Fixed: wflow-install - Setup - Sample SQL DDL table names are not in the correct case @7.0-SNAPSHOT
+3e6cf851 Modified: wflow-core - Performance - Hotspot - Cache slow dirLastModified method in AppDevUtil @7.0-SNAPSHOT
+435bd9a5 Modified: wflow-commons - Performance - Hotspot - Reduce slow LESS compilation calls @7.0-SNAPSHOT
+bc34be66 Modified: wflow-core - Tensorflow AI plugin - Adding "File bytes" as input type. @7.0-SNAPSHOT
+a0f61ced Fixed: wflow-core - Environment Variable - Error committing to Git during concurrent requests under load e.g. updating Env Variables by ID Generator field. @7.0-SNAPSHOT
+
 CHANGES IN 7.0-BETA
 =======================
 804580af Fixed: wflow-core - UserviewUtil - Fixed possible NPE. @7.0-SNAPSHOT
