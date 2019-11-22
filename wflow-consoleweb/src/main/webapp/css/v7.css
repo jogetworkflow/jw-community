@@ -17,9 +17,14 @@ ul, li{
 a {
     color: #535353;
     text-decoration: none;
+    cursor: pointer;
 }
 a:hover {
     color: #009688;
+}
+#main-body-content a,
+#main-body a{
+    text-decoration: underline;
 }
 a:focus{
     outline:none;
@@ -226,6 +231,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
     display: inline-block;
     line-height: 20px;
     margin-bottom: 5px;
+    text-decoration: none !important;
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
     outline:none;
@@ -318,6 +324,7 @@ body .ui-tabs .ui-state-default {
 body .ui-tabs .ui-state-default a{
     color: #535353 !important;
     padding: 5px 25px;
+    text-decoration: none !important;
 }
 body .ui-tabs .ui-tabs-nav li.ui-state-default:not(.ui-tabs-active):hover a {
     color: #009688 !important;
