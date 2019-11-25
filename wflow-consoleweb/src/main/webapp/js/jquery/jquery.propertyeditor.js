@@ -1690,6 +1690,9 @@ PropertyEditor.Model.Page.prototype = {
                 var fields = this.editorObject.fields;
                 if (this.parentId !== "" && this.parentId !== undefined) {
                     var parentId = this.parentId.substring(1);
+                    if (fields[parentId] === undefined) {
+                        fields[parentId] = {};
+                    }
                     if (fields[parentId].fields === undefined) {
                         fields[parentId].fields = [];
                     }

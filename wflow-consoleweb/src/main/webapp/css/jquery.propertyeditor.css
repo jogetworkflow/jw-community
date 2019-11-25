@@ -1117,6 +1117,9 @@ body .property-editor-container select:not([class^="ui-"]):focus{
 .property-editor-container .chosen-container-single .chosen-drop {
     margin-top: 2px;
 }
+.property-editor-container .chosen-container a {
+    text-decoration: none !important;
+}
 .property-editor-property + .property-type-header {
     margin-top: 25px;
 }
