@@ -23,7 +23,9 @@
                 </c:if>
                 <a href="#userGroup"><span><fmt:message key="console.process.config.label.mapParticipants.userGroup"/></span></a></li>
                 <li><a href="#orgChart"><span><fmt:message key="console.process.config.label.mapParticipants.orgChart"/></span></a></li>
-                <li><a href="#workflowVariableDiv"><span><fmt:message key="console.process.config.label.mapParticipants.variable"/></span></a></li>
+                <c:if test="${participantId ne 'processStartWhiteList'}">
+                    <li><a href="#workflowVariableDiv"><span><fmt:message key="console.process.config.label.mapParticipants.variable"/></span></a></li>
+                </c:if>
                 <li><a href="#plugin"><span><fmt:message key="console.process.config.label.mapParticipants.plugin"/></span></a></li>
             </ul>
             <div>
@@ -127,11 +129,14 @@
                 <div id="orgChart">
                     <div id="orgChartTabView">
                         <ul>
-                            <li class="selected"><a href="#requester"><span><fmt:message key="console.process.config.label.mapParticipants.performer"/></span></a></li>
-                            <li><a href="#hod"><span><fmt:message key="console.process.config.label.mapParticipants.hod"/></span></a></li>
+                            <c:if test="${participantId ne 'processStartWhiteList'}">
+                                <li class="selected"><a href="#requester"><span><fmt:message key="console.process.config.label.mapParticipants.performer"/></span></a></li>
+                            </c:if>
+                            <li <c:if test="${participantId eq 'processStartWhiteList'}">class="selected"</c:if>><a href="#hod"><span><fmt:message key="console.process.config.label.mapParticipants.hod"/></span></a></li>
                             <li><a href="#department"><span><fmt:message key="console.process.config.label.mapParticipants.department"/></span></a></li>
                         </ul>
                         <div>
+                            <c:if test="${participantId ne 'processStartWhiteList'}">
                             <div id="requester">
                                 <form name="requesterOrgChart">
                                     <div class="form-row">
@@ -169,6 +174,7 @@
                                     </div>
                                 </form>
                             </div>
+                            </c:if>
                             <div id="hod">
                                 <div class="main-body-content-filter">
                                     <form>
@@ -238,6 +244,7 @@
                         </div>
                     </div>
                 </div>
+                <c:if test="${participantId ne 'processStartWhiteList'}">
                 <div id="workflowVariableDiv">
                     <form name="workflowVariableForm">
                         <div class="form-row">
@@ -273,6 +280,7 @@
                         </div>
                     </form>
                 </div>
+                </c:if>        
                 <div id="plugin">
                     <br/>
                     <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?className=org.joget.workflow.model.ParticipantPlugin&${pageContext.request.queryString}"
