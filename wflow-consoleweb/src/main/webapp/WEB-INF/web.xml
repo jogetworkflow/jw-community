@@ -148,6 +148,12 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/api/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/j_spring_security_check</url-pattern>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>REQUEST</dispatcher>

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.app.service.CustomBuilderUtil;
+import org.joget.commons.util.HostManager;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 public class ApiServlet extends HttpServlet {
@@ -24,6 +25,8 @@ public class ApiServlet extends HttpServlet {
     
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // reset profile and set hostname
+        HostManager.initHost();
         
         CustomBuilder api = CustomBuilderUtil.getBuilder("api");
         
