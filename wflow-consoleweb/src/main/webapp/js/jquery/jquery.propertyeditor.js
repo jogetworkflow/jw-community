@@ -4867,7 +4867,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && (value !== null && value !== "")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== null) {
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
@@ -5256,7 +5256,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && (value !== null && value !== "")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== null) {
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
