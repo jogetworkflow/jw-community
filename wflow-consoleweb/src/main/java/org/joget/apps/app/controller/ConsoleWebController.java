@@ -28,6 +28,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
@@ -60,6 +61,7 @@ import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.AuditTrailManager;
 import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.app.service.TaggingUtil;
@@ -211,6 +213,8 @@ public class ConsoleWebController {
     LocaleResolver localeResolver;
     @Autowired
     UserMetaDataDao userMetaDataDao;
+    @Autowired
+    AuditTrailManager auditTrailManager;
 
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
@@ -4607,7 +4611,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/setting/plugin/upload/submit", method = RequestMethod.POST)
     public String consoleSettingPluginUploadSubmit(ModelMap map, HttpServletRequest request) throws IOException {
         MultipartFile pluginFile;
-        
+        String jarname = "";
         try {
             pluginFile = FileStore.getFile("pluginFile");
         } catch (FileLimitException e) {
@@ -4618,7 +4622,8 @@ public class ConsoleWebController {
         InputStream in = null;
         try {
             in = pluginFile.getInputStream();
-            pluginManager.upload(pluginFile.getOriginalFilename(), in);
+            jarname = pluginFile.getOriginalFilename();
+            pluginManager.upload(jarname, in);
         } catch (Exception e) {
             if (e.getCause().getMessage() != null && e.getCause().getMessage().contains("Invalid jar file")) {
                 map.addAttribute("errorMessage", "Invalid jar file");
@@ -4631,6 +4636,10 @@ public class ConsoleWebController {
                 in.close();
             }
         }
+        
+        auditTrailManager.addAuditTrail(PluginManager.class.getName(), "installPlugin", jarname, null, null, null);
+        LogUtil.info(PluginManager.class.getName(), workflowUserManager.getCurrentUsername() + " installed plugin (" + jarname + ").");
+        
         String url = request.getContextPath() + "/web/console/setting/plugin";
         map.addAttribute("url", url);
         return "console/dialogClose";
@@ -4639,9 +4648,19 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/setting/plugin/uninstall", method = RequestMethod.POST)
     public String consoleSettingPluginUninstall(ModelMap map, @RequestParam("selectedPlugins") String selectedPlugins) {
         StringTokenizer strToken = new StringTokenizer(selectedPlugins, ",");
+        Set<String> uninstalledJars = new HashSet<String>();
         while (strToken.hasMoreTokens()) {
             String pluginClassName = (String) strToken.nextElement();
-            pluginManager.uninstall(pluginClassName);
+            String jar = pluginManager.getJarFileName(pluginClassName);
+            if (jar != null) {
+                uninstalledJars.add(jar);
+                pluginManager.uninstall(pluginClassName);
+            }
+        }
+        if (!uninstalledJars.isEmpty()) {
+            String plugins = StringUtils.join(uninstalledJars, ", ");
+            auditTrailManager.addAuditTrail(PluginManager.class.getName(), "uninstallPlugin", plugins, null, null, null);
+            LogUtil.info(PluginManager.class.getName(), workflowUserManager.getCurrentUsername() + " uninstalled plugin (" + plugins + ").");
         }
         return "redirect:/web/console/setting/plugin";
     }

@@ -108,7 +108,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
         
         if (c != null && m != null) {
             //login info
-            if (m.equals("authenticate") || m.equals("logout") || c.startsWith("org.joget.apps.app.") || c.startsWith("org.joget.directory.dao.") || c.endsWith("WorkflowManagerImpl") || c.endsWith("WorkflowToolActivityHandler") || c.endsWith("WorkflowAssignmentManager")) {
+            if (m.equals("authenticate") || m.equals("logout") || c.startsWith("org.joget.apps.app.") || c.startsWith("org.joget.directory.dao.") || c.endsWith("WorkflowManagerImpl") || c.endsWith("WorkflowToolActivityHandler") || c.endsWith("WorkflowAssignmentManager") || c.endsWith("PluginManager")) {
                 return true;
             }
         }
