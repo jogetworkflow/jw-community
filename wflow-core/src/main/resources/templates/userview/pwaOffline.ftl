@@ -31,7 +31,7 @@
 <script>
     $(document).ready(function(){
         var formDb;
-        var DB_NAME = 'joget_${userview.properties.id}';
+        var DB_NAME = 'joget_${appId}-${userview.properties.id}';
         var FORM_DB_STORE_NAME = 'offline_post';
 
         var savedRequestsCache = {};

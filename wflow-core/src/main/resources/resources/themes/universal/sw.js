@@ -1,10 +1,10 @@
 var version = "7.0.0";
 var cacheName = "jw-cache";
 var contextPath = '%s';
-var userviewId = '%s';
+var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
-var cache = userviewId + "-" + version;
+var cache = appUserviewId + "-" + version;
 var urlsToCache = [
     contextPath + '/css/v7.css',
     contextPath + '/css/console_custom.css',
@@ -41,7 +41,7 @@ var formData = null;
 
 var formDb = null;
 
-var FORM_DB_NAME         = 'joget' + '_' + userviewId;
+var FORM_DB_NAME         = 'joget' + '_' + appUserviewId;
 var FORM_DB_STORE_NAME   = 'offline_post';
 var STATUS_PENDING       = 0;
 var STATUS_SUCCESS       = 1;
@@ -164,11 +164,10 @@ self.addEventListener('fetch', function (event) {
                 return response;
 
             } else {
-                var responseToCache = response.clone();
-                
                 if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1 
                         && fetchRequest.url.indexOf('/images/v3/cj.gif') === -1
                         && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
+                    var responseToCache = response.clone();
                     caches.open(cache)
                         .then(function (cache) {
                             cache.put(event.request, responseToCache);

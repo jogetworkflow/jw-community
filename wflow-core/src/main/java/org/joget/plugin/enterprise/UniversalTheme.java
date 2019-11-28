@@ -280,9 +280,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         
+        String appUserviewId = appId + "-" + userviewId;
         Object[] arguments = new Object[]{
             request.getContextPath(),
-            userviewId,
+            appUserviewId,
             urlsToCache
         };
         
