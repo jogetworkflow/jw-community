@@ -111,10 +111,14 @@ public class PresenceManager {
                 writer.println();
                 writer.flush();
             } catch (Exception e) {
-                // In case of exception remove context from map
-                asyncContexts.values().remove(asyncContext);
-                String sessionId = key.substring(0, key.indexOf(":"));
-                PresenceManager.leave(path, sessionId);
+                try {
+                    // In case of exception remove context from map
+                    asyncContexts.values().remove(asyncContext);
+                    String sessionId = key.substring(0, key.indexOf(":"));
+                    PresenceManager.leave(path, sessionId);
+                } catch(Exception pe) {
+                    LogUtil.error(PresenceManager.class.getName(), pe, pe.getMessage());
+                }
             }
         }
     }
