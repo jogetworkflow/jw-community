@@ -479,7 +479,7 @@ body.quickEditModeActive .analyzer-page {
     min-width: 200px; 
 }
 .analyzer-label:hover .analyzer-info, .analyzer-info:hover { 
-    display: list-item; 
+    display: list-item !important; 
     z-index: 2000 
 }
 .analyzer-label:hover { 
