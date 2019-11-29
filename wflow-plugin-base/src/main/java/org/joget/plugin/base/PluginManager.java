@@ -642,7 +642,7 @@ public class PluginManager implements ApplicationContextAware {
                 String location = bundle.getLocation();
                 
                 if (location != null) {
-                    return location.substring(location.lastIndexOf(File.separator) + 1);
+                    return location.substring(location.lastIndexOf("/") + 1);
                 }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
