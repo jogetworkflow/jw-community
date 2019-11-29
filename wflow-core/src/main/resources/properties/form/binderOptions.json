@@ -1,0 +1,37 @@
+[
+    {
+        "label" : "@@form.binder.otherDataHandling@@",
+        "type" : "header"
+    },
+    {
+        "name" : "autoHandleWorkflowVariable",
+        "label" : "@@form.binder.autoHandleWorkflowVariable@@",
+        "description" : "@@form.binder.autoHandleWorkflowVariable.desc@@",
+        "type" : "checkbox",
+        "value" : "true",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
+    },
+    {
+        "name" : "autoHandleFiles",
+        "label" : "@@form.binder.autoHandleFiles@@",
+        "description" : "@@form.binder.autoHandleFiles.desc@@",
+        "type" : "checkbox",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
+    },
+    {
+        "name" : "autoHandleFilesformDefId",
+        "label" : "@@form.binder.autoHandleFilesformId@@",
+        "description" : "@@form.binder.autoHandleFilesformId.desc@@",
+        "type" : "selectbox",
+        "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options",
+        "control_field" : "autoHandleFiles",
+        "control_value" : "true",
+        "control_use_regex" : "false"
+    }
+]

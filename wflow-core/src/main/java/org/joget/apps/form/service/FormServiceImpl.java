@@ -11,11 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.commons.util.FileLimitException;
@@ -25,10 +28,10 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.json.JSONObject;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -493,12 +496,24 @@ public class FormServiceImpl implements FormService {
      */
     @Override
     public FormData executeFormStoreBinders(Form form, FormData formData) {
-
+        formData.setWorkflowVariables(new HashMap<String, String>());
+        
         // get formatted data from all elements
         formData = FormUtil.executeElementFormatData(form, formData);
 
         //recursively execute FormStoreBinders
         formData = recursiveExecuteFormStoreBinders(form, form, formData);
+        
+        String activityId = formData.getActivityId();
+        String processId = formData.getProcessId();
+        if ((activityId != null || processId != null) && !formData.getWorkflowVariables().isEmpty()) {
+            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            if (activityId != null) {
+                workflowManager.activityVariables(activityId, formData.getWorkflowVariables());
+            } else {
+                workflowManager.processVariables(processId, formData.getWorkflowVariables());
+            }
+        }
 
         return formData;
     }
@@ -527,9 +542,45 @@ public class FormServiceImpl implements FormService {
             if (!(element instanceof AbstractSubForm) && binder != null) {
                 FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
 
+                String tableName = "";
+                if (rowSet != null && "true".equalsIgnoreCase(((FormBinder) binder).getPropertyString("autoHandleFiles"))) {
+                    String formDefId = ((FormBinder) binder).getPropertyString("autoHandleFilesformDefId");
+                    if (formDefId.isEmpty()) {
+                        Form elementForm = null;
+                        if (element instanceof AbstractSubForm) {
+                            Collection<Element> elChildren = element.getChildren();
+                            if (!elChildren.isEmpty()) {
+                                elementForm = (Form) elChildren.iterator().next();
+                            }
+                        } else {
+                            elementForm = FormUtil.findRootForm(element);
+                        }
+                        tableName = elementForm.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
+                    } else {
+                        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                        tableName = appService.getFormTableName(AppUtil.getCurrentAppDefinition(), formDefId);
+                    }
+                    if (!tableName.isEmpty()) {
+                        FileUtil.checkAndUpdateFileName(rowSet, tableName, null);
+                    }
+                }
+                
                 // execute binder
                 FormRowSet binderResult = binder.store(element, rowSet, formData);
                 formData.setStoreBinderData(binder, binderResult);
+                
+                if (rowSet != null) {
+                    if ((formData.getActivityId() != null || formData.getProcessId() != null) 
+                            && !rowSet.isMultiRow() && !rowSet.isEmpty() 
+                            && "true".equalsIgnoreCase(((FormBinder) binder).getPropertyString("autoHandleWorkflowVariable"))) {
+                        FormRow row = rowSet.get(0);
+                        FormUtil.retrieveWorkflowVariables(row, element, formData);
+                    }
+                    
+                    if ("true".equalsIgnoreCase(((FormBinder) binder).getPropertyString("autoHandleFiles")) && !tableName.isEmpty()) {
+                        FileUtil.storeFileFromFormRowSet(rowSet, tableName, null);
+                    }
+                }
             }
         }
 

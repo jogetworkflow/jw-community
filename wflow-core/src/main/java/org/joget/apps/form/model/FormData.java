@@ -26,6 +26,7 @@ public class FormData {
     protected Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
     protected Map<FormStoreBinder, FormRowSet> binderRowSetMap = new ListOrderedMap();
     protected Map<String, String> resultMap = new ListOrderedMap();
+    protected Map<String, String> variableMap;
     protected Boolean stay = false;
     protected String permissionKey = Permission.DEFAULT;
 
@@ -366,5 +367,40 @@ public class FormData {
 
     public void setPermissionKey(String permissionKey) {
         this.permissionKey = permissionKey;
+    }
+    
+    /**
+     * Set a workflow variable
+     * @param name
+     * @param value
+     */
+    public void setWorkflowVariable(String name, String value) {
+        variableMap.put(name, value);
+    }
+
+    /**
+     * Returns the workflow variable for a specific name.
+     * @param name
+     * @return null if there is no result.
+     */
+    public String getWorkflowVariable(String name) {
+        return variableMap.get(name);
+    }
+
+    /**
+     * Retrieves workflow variables for a process form
+     * @return
+     */
+    public Map<String, String> getWorkflowVariables() {
+        return variableMap;
+    }
+    
+    /**
+     * Set workflow variables for a process form
+     * @param variableMap
+     * @return
+     */
+    public void setWorkflowVariables(Map<String, String> variableMap) {
+        this.variableMap = variableMap;
     }
 }

@@ -18,6 +18,10 @@ import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormLoadBinder;
+import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.PwaOfflineReadonly;
 import org.joget.apps.userview.model.PwaOfflineValidation;
@@ -121,8 +125,15 @@ public class PropertyJsonController {
     public void getProperties(Writer writer, @RequestParam("value") String value) throws Exception {
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        if (element != null 
+                && (element instanceof FormLoadBinder || element instanceof FormStoreBinder) 
+                && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
+            json = FormUtil.injectBinderExtraProperties((FormBinder) element);
+        } else if (element != null) {
+            json = element.getPropertyOptions();
+        }
         if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
+            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
         }
 
         writer.write(json);
@@ -136,8 +147,15 @@ public class PropertyJsonController {
 
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        if (element != null 
+                && (element instanceof FormLoadBinder || element instanceof FormStoreBinder) 
+                && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
+            json = FormUtil.injectBinderExtraProperties((FormBinder) element);
+        } else if (element != null) {
+            json = element.getPropertyOptions();
+        }
         if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
+            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
         }
 
         writer.write(json);        
