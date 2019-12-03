@@ -756,6 +756,9 @@ FormBuilder = {
     },
 
     updateElementProperties: function(element, properties) {
+        if ($(element).is("form")) {
+            element = $(".form-container");
+        }
         // update element properties
         var dom = $(element)[0].dom;
         $(element).attr("element-id", properties.id);
