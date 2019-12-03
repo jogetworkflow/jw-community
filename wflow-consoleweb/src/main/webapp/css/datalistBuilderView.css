@@ -265,7 +265,7 @@
 .search_filter_popup form .filters {
     text-align: left;
 }
-.search_filter_popup .filter-cell {
+.search_filter_popup .filter-cell:not(.hidden-filter) {
     display: block;
     padding-right: 10px;
 }
