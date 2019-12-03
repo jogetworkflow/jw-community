@@ -111,7 +111,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return 
      */
     public static ApplicationContext getApplicationContext() {
-        return appContext;
+        return WorkflowUtil.getApplicationContext();
     }
 
     /**
