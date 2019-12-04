@@ -151,8 +151,9 @@
     margin-bottom: 2px;
 }
 
-.dataList .filter-cell.hidden-filter {
-    display:none;
+.dataList .filter-cell.hidden-filter,
+.search_filter_popup .filter-cell.hidden-filter{
+    display:none !important;
 }
 
 .dataList .actions.right{
