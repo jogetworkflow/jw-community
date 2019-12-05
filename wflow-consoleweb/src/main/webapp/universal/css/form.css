@@ -334,7 +334,9 @@ body input:focus:-webkit-autofill, body textarea:focus:-webkit-autofill, body se
 }
 
 /* Textarea */
-body textarea {
+body textarea,
+body .editor-cell textarea{
+  height:auto;
   overflow-y: hidden;
   resize: none;
 }
