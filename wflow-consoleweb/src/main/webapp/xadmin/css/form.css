@@ -14,32 +14,48 @@ body #form-canvas *:focus {
     outline:0;
 }
 body #form-canvas .h1,
-body #form-canvas h1 {
+body #form-canvas h1{
     font-size: 27px
+}
+.x-admin-sm body #form-canvas .h1,
+.x-admin-sm body #form-canvas h1{
+    font-size: 24px
 }
 
 body #form-canvas .h2,
-body #form-canvas h2 {
+body #form-canvas h2{
     font-size: 22px
+}
+.x-admin-sm body #form-canvas .h2,
+.x-admin-sm body #form-canvas h2{
+    font-size: 20px
 }
 
 body #form-canvas .h3,
-body #form-canvas h3 {
+body #form-canvas h3,
+.x-admin-sm body #form-canvas .h3,
+.x-admin-sm body #form-canvas h3{
     font-size: 18px
 }
 
 body #form-canvas .h4,
-body #form-canvas h4 {
+body #form-canvas h4,
+.x-admin-sm body #form-canvas .h4,
+.x-admin-sm body #form-canvas h4{
     font-size: 16px
 }
 
 body #form-canvas .h5,
-body #form-canvas h5 {
+body #form-canvas h5,
+.x-admin-sm body #form-canvas .h5,
+.x-admin-sm body #form-canvas h5{
     font-size: 13px
 }
 
 body #form-canvas .h6,
-body #form-canvas h6 {
+body #form-canvas h6,
+body #form-canvas .h6,
+body #form-canvas h6{
     font-size: 12px
 }
 body #form-canvas .form-container .form-section, 

@@ -4,6 +4,17 @@
     padding: 0px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+#content ol, #content ul {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left:30px;
+}
+#content ol ol,#content ol ul,#content ul ol,#content ul ul {
+    margin-bottom: 0
+}
+#content li {
+    list-style:inherit;
+}
 a{
     text-decoration: none;
 }
@@ -283,6 +294,7 @@ body{
     background: #EFEEF0 ;
     position: relative;
     z-index: 100;
+    margin-left: -1px;
 }
 .page-content .layui-tab-title li.home i{
     padding-right: 5px;

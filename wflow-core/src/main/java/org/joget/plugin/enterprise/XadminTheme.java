@@ -586,7 +586,7 @@ public class XadminTheme extends UniversalTheme {
     public String decorateCategoryLabel(UserviewCategory category) {
         String label = StringUtil.stripHtmlRelaxed(category.getPropertyString("label"));
         String icon = "";
-        if (label.contains("</i>")) {
+        if (label.contains("</i>") && label.trim().startsWith("<i")) {
             icon = label.substring(0, label.indexOf("</i>") + 4);
             label = label.substring(label.indexOf("</i>") + 4);
             icon = icon.replace("<i", "<i lay-tips=\"" + StringUtil.stripAllHtmlTag(label) + "\"");
@@ -626,7 +626,7 @@ public class XadminTheme extends UniversalTheme {
             label = StringUtil.stripHtmlRelaxed(label);
         }
         String icon = "";
-        if (label.contains("</i>")) {
+        if (label.contains("</i>") && label.trim().startsWith("<i")) {
             icon = label.substring(0, label.indexOf("</i>") + 4);
             label = label.substring(label.indexOf("</i>") + 4);
         } else if (category.getMenus().size() == 1) {
@@ -646,7 +646,7 @@ public class XadminTheme extends UniversalTheme {
             icon = icon.replace("class=\"", "class=\"left-nav-li ");
         }
         if (onclick == null) {
-            onclick = "onclick=\"xadmin.add_tab('"+label+"','"+url+"',true)\"";
+            onclick = "onclick=\"xadmin.add_tab('"+StringUtil.stripAllHtmlTag(label)+"','"+url+"',true)\"";
         }
         return "<a class=\"menu-link default\" "+onclick+">" + icon + "<cite>" + label + "</cite>"+extra+"</a>";
     }
