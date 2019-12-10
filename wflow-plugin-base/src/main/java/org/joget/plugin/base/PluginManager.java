@@ -1294,7 +1294,7 @@ public class PluginManager implements ApplicationContextAware {
      * Gets the current Http Request
      * @return 
      */
-    public static HttpServletRequest getHttpServletRequest() {
+    public HttpServletRequest getHttpServletRequest() {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
             return request;
