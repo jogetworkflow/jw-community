@@ -2574,7 +2574,7 @@ PropertyEditor.Type.Color.prototype = {
                     $elm.val('#' + this.color.colors.HEX);
                 }
             }
-        });
+        }).off("focusin.tcp");
         PropertyEditor.Util.supportHashField(this);
     }
 };
