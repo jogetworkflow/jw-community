@@ -1,3 +1,6 @@
+body .dataList {
+    overflow-x: scroll;
+}
 body .dataList .filters {
     text-align: left;
 }
