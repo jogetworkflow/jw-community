@@ -36,7 +36,7 @@ ${menus!}
                     }, 1000); 
                 }
                 initTheme();
-                if (!is_remember) {
+                if (!is_remember && ${is_logged_in?string("true", "false")}) {
                     window.onbeforeunload = function() {
                         return "@@xadmin.tabsLostOnceLeave@@";
                     };

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.lib.HtmlPage;
 import org.joget.apps.userview.lib.Link;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
@@ -680,6 +681,12 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String getCustomHomepage() {
+        if (isIndex() && userview.getCurrent() == null) {
+            UserviewMenu dummy = new HtmlPage();
+            dummy.setProperties(new HashMap<String, Object>());
+            dummy.setProperty("id", "_index");
+            userview.setCurrent(dummy); //set a dummy menu
+        }
         return "_index";
     }
     

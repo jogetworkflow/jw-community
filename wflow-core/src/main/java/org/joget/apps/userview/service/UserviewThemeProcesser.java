@@ -252,8 +252,9 @@ public class UserviewThemeProcesser {
     }
 
     protected String homePageRedirection() {
+        String homePageLink = getHomePageLink();
         if (userview.getParamString("menuId").isEmpty() && !userview.getPropertyString("homeMenuId").isEmpty()) {
-            return "redirect:" + getHomePageLink() + (request.getQueryString() == null ? "" : ("?" + StringUtil.decodeURL(request.getQueryString())));
+            return "redirect:" + homePageLink + (request.getQueryString() == null ? "" : ("?" + StringUtil.decodeURL(request.getQueryString())));
         }
         return null;
     }
