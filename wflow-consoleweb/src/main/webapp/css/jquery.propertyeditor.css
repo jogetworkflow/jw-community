@@ -290,6 +290,10 @@
     padding-top: 8px;
 }
 
+.property-input .multiple_option label{
+    display:inline-block;
+}
+
 .property-input table{
     border-collapse:collapse;
     width: 100%;
