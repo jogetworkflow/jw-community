@@ -27,10 +27,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     
     public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
         
-        String customField = ", link.originProcessId as recordId";
+        String customField = ", (select link.originProcessId from WorkflowProcessLink as link where e.processId = link.processId) as recordId";
         
         //required to disable lazy loading 
-        String condition = ", WorkflowProcessLink as link join e.state s";
+        String condition = "join e.state s";
         Collection<String> params = new ArrayList<String>();
         
         if (sort != null && !sort.isEmpty()) {
@@ -47,7 +47,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         
-        condition += " where e.processId = link.processId";
+        condition += " where 1=1";
         
         if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
             if (packageId != null && !packageId.isEmpty()) {
@@ -82,7 +82,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (recordId != null && !recordId.isEmpty()) {
-                condition += " and (link.originProcessId like ? or e.processId like ?)";
+                condition += " and ((select link.originProcessId from WorkflowProcessLink as link where e.processId = link.processId) like ? or e.processId like ?)";
                 params.add("%" + recordId + "%");
                 params.add("%" + recordId + "%");
             }
@@ -110,8 +110,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null || state != null) {
             
             if (recordId != null && !recordId.isEmpty()) {
-                condition += ", WorkflowProcessLink as link";
-                where += " where e.processId = link.processId and (link.originProcessId like ? or e.processId like ?)";
+                where += " where ((select link.originProcessId from WorkflowProcessLink as link where e.processId = link.processId) like ? or e.processId like ?)";
                 params.add("%" + recordId + "%");
                 params.add("%" + recordId + "%");
             } else {
