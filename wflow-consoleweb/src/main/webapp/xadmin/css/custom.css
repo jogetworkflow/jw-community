@@ -192,6 +192,7 @@ body.popupBody > #form-canvas{
 }
 .x-admin-sm .form-button, .x-admin-sm .btn, .x-admin-sm .button {
     font-size: 12px;
+    line-height: 12px;
 }
 .form-button:hover, .btn:hover, .button:hover {
     opacity: 0.8;

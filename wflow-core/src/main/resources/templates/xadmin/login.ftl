@@ -14,7 +14,7 @@ ${login_before!}
         ${login_error_after!}
     </#if>
     ${login_form_before!}
-    <form id="loginForm" name="loginForm" action="${context_path!}/j_spring_security_check" method="POST">
+    <form id="loginForm" name="loginForm" action="${context_path!}/j_spring_security_check" method="POST" target="_top">
         ${login_form_inner_before!}
         <input id='j_username' name="j_username" placeholder="@@ubuilder.login.username@@"  type="text" class="layui-input" >
         <hr class="hr15">

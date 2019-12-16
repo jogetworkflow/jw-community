@@ -588,6 +588,12 @@ body .chosen-container-single .chosen-single{
     background-image:none !important;
     box-shadow: none !important;
 }
+#content .chosen-container ol, #content .chosen-container ul {
+    padding-left:0px;
+}
+#content .chosen-container li {
+    list-style:none;
+}
 /*sign pad*/
 body .sigPad .pad{
     border-color: #e6e6e6;
