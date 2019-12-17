@@ -12,6 +12,8 @@
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  
     </c:if>    
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/form_common.css?build=<fmt:message key="build.number"/>" />    
+        
         <c:set var="formHtml" scope="request" value="${formHtml}"/>
         <c:set var="errorCount" scope="request" value="${errorCount}"/>
         <c:set var="submitted" scope="request" value="${submitted}"/>
