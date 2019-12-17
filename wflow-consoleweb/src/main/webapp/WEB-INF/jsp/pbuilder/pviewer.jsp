@@ -14,6 +14,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script src="${pageContext.request.contextPath}/js/JSON.js"></script>
@@ -32,6 +33,7 @@
         <script src="${pageContext.request.contextPath}/pbuilder/js/undomanager.js"></script> 
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.format.js"></script> 
         <script src="${pageContext.request.contextPath}/web/console/i18n/pbuilder"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js"></script>
         <script>
             $(function() {
