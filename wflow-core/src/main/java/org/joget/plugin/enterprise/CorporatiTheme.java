@@ -3,6 +3,7 @@ package org.joget.plugin.enterprise;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewTheme;
 
+@Deprecated
 public class CorporatiTheme extends UserviewTheme {
 
     @Override

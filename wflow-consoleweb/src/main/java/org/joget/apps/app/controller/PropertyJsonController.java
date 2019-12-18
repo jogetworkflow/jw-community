@@ -6,7 +6,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Resource;
@@ -94,6 +97,7 @@ public class PropertyJsonController {
             empty.put("label", "");
             jsonArray.put(empty);
 
+            List list = new ArrayList();
             for (Plugin p : elementList) {
                 String pClassName = ClassUtils.getUserClass(p).getName();
                 if (!((!includeHidden && p instanceof HiddenPlugin) || excludeList.contains(pClassName))) {
@@ -111,8 +115,29 @@ public class PropertyJsonController {
                             option.put("pwaValidation", "supported");
                         }
                     }
-                    jsonArray.put(option);
+                    if (p.getClass().isAnnotationPresent(Deprecated.class)) {
+                        option.put("deprecated", "true");
+                        option.put("label", p.getI18nLabel() + " " + ResourceBundleUtil.getMessage("general.method.label.deprecated"));
+                    }
+                    list.add(option);
                 }
+            }
+            Collections.sort(list, new Comparator() {
+                @Override
+                public int compare(Object objA, Object objB) {
+                    Map a = (Map) objA;
+                    Map b = (Map) objB;
+                    if (a.containsKey("deprecated") && !b.containsKey("deprecated")) {
+                        return 1;
+                    } else if (!a.containsKey("deprecated") && b.containsKey("deprecated")) {
+                        return -1;
+                    } else {
+                        return a.get("label").toString().compareTo(b.get("label").toString());
+                    }
+                }
+            });
+            for (int i = 0; i < list.size(); i++) {
+                jsonArray.put(list.get(i));
             }
         } catch (Exception ex) {
             LogUtil.error(this.getClass().getName(), ex, "getElements Error!");

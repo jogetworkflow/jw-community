@@ -4,6 +4,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.UserviewTheme;
 
+@Deprecated
 public class DefaultTheme extends UserviewTheme implements PwaOfflineNotSupported {
 
     @Override
