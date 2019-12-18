@@ -312,7 +312,7 @@ body #clock {
         width: 550px;
         position: absolute;
         display: table-cell;
-        height: 88vh;
+        height: calc(100vh - 65px);
         overflow: auto;
         padding-bottom: 20px;
         right: 0;
