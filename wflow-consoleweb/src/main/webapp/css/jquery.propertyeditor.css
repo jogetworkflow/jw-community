@@ -495,7 +495,10 @@ td.error .chosen-container, td.error input {
 }
 
 .property-editor-container .ace_editor *{
-   font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+   font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+}
+.property-editor-container .ace_editor .ace_content *{
+    padding:0px;
 }
 
 .property-type-sortableselect .sorted_select_control{
