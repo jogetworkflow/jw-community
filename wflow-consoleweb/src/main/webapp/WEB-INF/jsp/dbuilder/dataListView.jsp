@@ -284,7 +284,7 @@
             var href = $(this).data("href");
             var hrefParam = $(this).data("hrefParam");
             
-            if (target.toLowerCase() !== "post" && href !== undefined && href !== "" && (hrefParam === undefined || hrefParam === "")) {
+            if (target !== undefined && target.toLowerCase() !== "post" && href !== undefined && href !== "" && (hrefParam === undefined || hrefParam === "")) {
                 var doAction = function() {
                     if (target.toLowerCase() === "popup") {
                         if (popupActionDialog == null) {

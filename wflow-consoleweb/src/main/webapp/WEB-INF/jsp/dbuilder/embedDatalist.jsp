@@ -162,6 +162,9 @@
                             $(val).find(".footable-toggle").remove();
                             if ($(val).find("*").length > 0) { //check if html
                                 result[prop] = $(val).html();
+                                if ($(val).find("br.nl2br").length > 0) {
+                                    result[prop] = result[prop].replace(/<br class="nl2br"\s*[\/]*>/gi, "\n");
+                                }
                             } else {
                                 result[prop] = htmlDecode($(val).html());
                             }

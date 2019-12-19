@@ -309,7 +309,7 @@ public class StringUtil {
                     inStr = URLEncoder.encode(inStr, "UTF-8");
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
-                inStr = inStr.replaceAll("(\r\n|\n)", "<br />");
+                inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
             } else if (f != null && f.startsWith(TYPE_SEPARATOR) && inStr.contains(";")) {
                 String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
                 String [] temps = inStr.split(";");
