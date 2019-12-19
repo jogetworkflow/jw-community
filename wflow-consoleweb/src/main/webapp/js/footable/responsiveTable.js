@@ -67,8 +67,6 @@ function responsiveTable(table) {
     cols.data("hide", "phone,tablet");
 
     //show 4 column if it is tablet
-    console.log(tabletVisibleCols);
-    console.log(tabletCols);
     if (tabletVisibleCols.length === 0) {
         cols.filter(":lt("+tabletCols+")").data("hide", "phone");
     } else {
@@ -78,8 +76,6 @@ function responsiveTable(table) {
     }
 
     //show 1 column if it is phone
-    console.log(phoneVisibleCols);
-    console.log(phoneCols);
     if (phoneVisibleCols.length === 0) {
         cols.filter(":lt("+phoneCols+")").data("hide", "");
     } else {
