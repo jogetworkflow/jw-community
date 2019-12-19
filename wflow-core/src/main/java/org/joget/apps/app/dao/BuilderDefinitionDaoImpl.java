@@ -9,7 +9,10 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.CustomBuilder;
+import org.joget.apps.app.model.CustomBuilderCallback;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -100,6 +103,11 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     public boolean add(BuilderDefinition object) {
         boolean result = super.add(object);
         
+        CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
+        if (builder instanceof CustomBuilderCallback) {
+            ((CustomBuilderCallback) builder).addDefinition(object);
+        }
+        
         // save json
         String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
         String json = AppDevUtil.formatJson(object.getJson());
@@ -119,6 +127,11 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     public boolean update(BuilderDefinition object) {
         boolean result = super.update(object);
 
+        CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
+        if (builder instanceof CustomBuilderCallback) {
+            ((CustomBuilderCallback) builder).updateDefinition(object);
+        }
+        
         // save json
         String type = SecurityUtil.validateStringInput(object.getType());
         String id = SecurityUtil.validateStringInput(object.getId());
@@ -158,6 +171,11 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
                 // delete obj
                 super.delete(getEntityName(), obj);
                 result = true;
+                
+                CustomBuilder builder = CustomBuilderUtil.getBuilder(obj.getType());
+                if (builder instanceof CustomBuilderCallback) {
+                    ((CustomBuilderCallback) builder).deleteDefinition(obj);
+                }
                 
                 cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
                 
