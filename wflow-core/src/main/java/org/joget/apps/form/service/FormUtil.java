@@ -1725,25 +1725,36 @@ public class FormUtil implements ApplicationContextAware {
                 // load form data
                 FormRowSet rowSet = formData.getLoadBinderData(e);
                 if (rowSet != null && !rowSet.isEmpty()) {
-                    FormRow row = rowSet.get(0);
-                    boolean useSubMap = !flatten && !(e instanceof Form);
-                    if (useSubMap) {
-                        // it's data from a different form, so put data into submap
-                        Map<String, Object> subMap = new HashMap<String, Object>();
-                        for (Iterator i=row.keySet().iterator(); i.hasNext();) {
-                            String key = (String)i.next();
-                            Object value = row.get(key);
-                            subMap.put(key, value.toString());
+                    if (rowSet.isMultiRow()) {
+                        Collection<Map<String, Object>> rowsData = new ArrayList<Map<String, Object>>();
+                        for (FormRow r : rowSet) {
+                            Map<String, Object> rData = new HashMap<String, Object>();
+                            rData.putAll(r.getCustomProperties());
+                            rowsData.add(rData);
                         }
-                        String elementKey = e.getPropertyString(FormUtil.PROPERTY_ID);
-                        data.put(elementKey, subMap);
-                        result = subMap;
+                        
+                        data.put(e.getPropertyString(FormUtil.PROPERTY_ID), rowsData);
                     } else {
-                        // it's the same as the original form, so put data into original map
-                        for (Iterator i=row.keySet().iterator(); i.hasNext();) {
-                            String key = (String)i.next();
-                            Object value = row.get(key);
-                            data.put(key, value.toString());
+                        FormRow row = rowSet.get(0);
+                        boolean useSubMap = !flatten && !(e instanceof Form);
+                        if (useSubMap) {
+                            // it's data from a different form, so put data into submap
+                            Map<String, Object> subMap = new HashMap<String, Object>();
+                            for (Iterator i=row.keySet().iterator(); i.hasNext();) {
+                                String key = (String)i.next();
+                                Object value = row.get(key);
+                                subMap.put(key, value.toString());
+                            }
+                            String elementKey = e.getPropertyString(FormUtil.PROPERTY_ID);
+                            data.put(elementKey, subMap);
+                            result = subMap;
+                        } else {
+                            // it's the same as the original form, so put data into original map
+                            for (Iterator i=row.keySet().iterator(); i.hasNext();) {
+                                String key = (String)i.next();
+                                Object value = row.get(key);
+                                data.put(key, value.toString());
+                            }
                         }
                     }
                 }
