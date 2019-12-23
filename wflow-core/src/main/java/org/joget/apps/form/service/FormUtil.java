@@ -2184,7 +2184,9 @@ public class FormUtil implements ApplicationContextAware {
                         } else {
                             elementForm = FormUtil.findRootForm(element);
                         }
-                        tableName = elementForm.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
+                        if (elementForm != null) {
+                            tableName = elementForm.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
+                        }
                     } else {
                         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
                         tableName = appService.getFormTableName(AppUtil.getCurrentAppDefinition(), formDefId);
