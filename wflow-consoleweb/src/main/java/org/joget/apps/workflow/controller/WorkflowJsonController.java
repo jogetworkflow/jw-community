@@ -542,6 +542,7 @@ public class WorkflowJsonController {
             WorkflowProcessResult result;
             appService.getAppDefinitionWithProcessDefId(processDefId);
             result = workflowManager.processStart(processDefId, processInstanceId, variables, null, recordId, false);
+            recordId = result.getParentProcessId();
 
             if (result != null) {
                 WorkflowProcess processStarted = result.getProcess();
@@ -559,7 +560,7 @@ public class WorkflowJsonController {
                 }
             }
         }
-
+        jsonObject.accumulate("recordId", recordId);
         jsonObject.accumulate("processId", processId);
         jsonObject.accumulate("activityId", activityId);
 
