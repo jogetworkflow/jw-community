@@ -46,7 +46,7 @@ h1, h2, h3, h4, h5 {
     display: inline-block;
 }
 #logo {
-    background: url(../images/v3/console/logo_name.png);
+    background: url(../images/v3/console/logo.png) no-repeat 2px 2px;
     width: 40px;
     height: 36px;
     display: inline-block;

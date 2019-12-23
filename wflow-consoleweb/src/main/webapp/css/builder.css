@@ -33,7 +33,7 @@ div, label, input, button, select, th, td, a, span {
     position: absolute;
     top:0;
     left:0;
-    width: 120px;
+    width: 121px;
     height: 39px;
     z-index: -1;
 }
@@ -78,18 +78,19 @@ div, label, input, button, select, th, td, a, span {
     width: 68px;
     height: 24px;
     float: left;
-    background-position: 10px 3px;
+    background-position: 0px 0px;
     margin-left: 16px;
     position: relative;
 }
 #builder-logo:before {
     content: "";
     border-left: 1px solid #fff;
-    left: 0;
+    left: -2px;
     top: 5px;
     height: 18px;
     display: block;
     position: absolute;
+    margin: -1px;
 }
 #builder-bar { 
     padding: 0px;

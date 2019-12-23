@@ -297,7 +297,7 @@ button:hover, input[type=button]:hover, #menu .dropdown-btn input:hover, .form-b
     font-size: 16px;    
 }
 #logo {
-    background: url(../images/v3/console/logo_name.png);
+    background: url(../images/v3/console/logo.png) no-repeat 2px 2px;
     width: 40px;
     height: 36px;
     display: inline-block;

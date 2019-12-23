@@ -90,7 +90,7 @@ img {
 }
 #header #logo {
     position: fixed;
-    background: url(../images/v3/console/logo_name.png) no-repeat;
+    background: url(../images/v3/console/logo.png) no-repeat 2px 2px;
     widthx: 88px;
     width: 125px;
     height: 32px;

@@ -230,7 +230,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                 for (String v : paramValue) {
                     if (isRegex) {
                         try {
-                            if (v.matches(StringEscapeUtils.unescapeJavaScript(value))) {
+                            if (v.matches(value)) {
                                 return true;
                             }
                         } catch (Exception e){}
