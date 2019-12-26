@@ -1,5 +1,6 @@
 package org.joget.apps.form.lib;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -13,8 +14,8 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 
 public class TextField extends Element implements FormBuilderPaletteElement {
-    protected String submittedValue = null;
-    protected String validationValue = null;
+    protected Map<FormData, String> submittedValueHolder = new HashMap<FormData, String>();
+    protected Map<FormData, String> validationValueHolder = new HashMap<FormData, String>();
 
     @Override
     public String getName() {
@@ -59,8 +60,8 @@ public class TextField extends Element implements FormBuilderPaletteElement {
         if (!getPropertyString("style").isEmpty()) {
             String id = FormUtil.getElementParameterName(this);
             if (id != null) {
-                submittedValue = FormUtil.getElementPropertyValue(this, formData);
-                validationValue = submittedValue;
+                String submittedValue = FormUtil.getElementPropertyValue(this, formData);
+                String validationValue = submittedValue;
                 
                 validationValue = validationValue.replaceAll(" ", "");
                 if ("EURO".equalsIgnoreCase(getPropertyString("style"))) {
@@ -71,6 +72,9 @@ public class TextField extends Element implements FormBuilderPaletteElement {
                 validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("prefix")), "");
                 validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("postfix")), "");
                 formData.addRequestParameterValues(id, new String[]{validationValue});
+                
+                submittedValueHolder.put(formData, submittedValue);
+                validationValueHolder.put(formData, validationValue);
             }
         }
         return formData;
@@ -87,8 +91,13 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             if (value != null) {
                 
                 if (!getPropertyString("style").isEmpty()) {
+                    String submittedValue = submittedValueHolder.get(formData);
+                    String validationValue = validationValueHolder.get(formData);
+                
                     if (validationValue == null) {
                         formatDataForValidation(formData);
+                        submittedValue = submittedValueHolder.get(formData);
+                        validationValue = validationValueHolder.get(formData);
                     }
                     if ("true".equalsIgnoreCase(getPropertyString("storeNumeric"))) {
                         value = validationValue;

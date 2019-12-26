@@ -2,6 +2,13 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.25
+=================
+da82f3e7 Fixed: wflow-core - Section - Visibility control with regex contains "\" character can't store data correctly. #7195 @6.0-SNAPSHOT
+5086948d Fixed: wflow-core - Form - FormUtil.loadFormData not supporting grid data. #7167 @6.0-SNAPSHOT
+70bf1605 Fixed: wflow-core - Text Field - Field with number formatting enabled can't import correctly with import userview menu. #7187 @6.0-SNAPSHOT
+05d8f9cf Fixed: wflow-consoleweb - Universal Theme - Textarea field in Ajax subform does not follow row size property on display. #7121 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.24
 =================
 0e29ca84 Fixed: wflow-core - DataListService - Can't retrieve join table attribute data eg. "jointable.attr1" when there is another attribute called "jointable". #7055 @6.0-SNAPSHOT
