@@ -32,9 +32,9 @@
             _classCallCheck(this, e);
             this.quill = t;
             this.options = i;
-            this.quill.container.parentElement
-                .querySelectorAll(".ql-toolbar")
-                .forEach(toolbarEl => {
+            [].slice.call(this.quill.container.parentElement
+                .querySelectorAll(".ql-toolbar"))
+                .forEach((function(toolbarEl){
                     const buttonContainer = document.createElement("span");
                     buttonContainer.setAttribute("class", "ql-formats");
                     const button = document.createElement("button");
@@ -55,7 +55,7 @@
                     };
                     buttonContainer.appendChild(button);
                     toolbarEl.appendChild(buttonContainer);
-                });
+                }));
         }
         _createClass(e, []);
         return e
