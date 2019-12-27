@@ -266,6 +266,19 @@ body .editor-cell select:not([class^=ui]){
     border-radius: 2px;
     float: left;
 }
+body .ql-container.ql-bubble{
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    transition: all 0.3s;
+    background-color: #fff;
+}
+body .ql-container.ql-bubble .ql-editor{
+    padding: 5px 10px;
+}
+body .ql-container.ql-bubble .ql-editor.ql-blank::before{
+    left:10px;
+    right:10px;
+}
 body textarea {
     padding: 5px 10px; 
     margin-bottom: 8px;
@@ -329,7 +342,8 @@ body .editor-cell input[type=search]:focus:not([readonly]),
 body .editor-cell textarea:focus:not([readonly]),
 body .editor-cell select:focus:not([readonly]):not([class^=ui]),
 body .editor-cell input.focus,
-body .dropzone:active{
+body .dropzone:active, 
+body .ql-container.ql-bubble.focus{
     border-color: #5FB878;
 }
 body .dropzone {

@@ -970,3 +970,11 @@ body .grid-action-header, body td.grid-action-cell {
 .multiPagedForm {
     margin-bottom: 15px;
 }
+.ql-container.ql-bubble{
+    border-bottom: 1px solid #9E9E9E;
+    margin-bottom: 15px;
+}
+.ql-container.ql-bubble.focus{
+    border-bottom: 1px solid #727272;
+    box-shadow: 0 1px 0 0 #727272;
+}

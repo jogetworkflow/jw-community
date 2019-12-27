@@ -1571,6 +1571,9 @@ main input:not([type]), main input[type=text], main input[type=password], main i
     border-bottom: 1px solid #555;
     color: #212121;    
 }
+main .ql-container.ql-bubble{
+  border-bottom: 1px solid #555;
+}
 main #form-canvas .label {
     color: #555;
 }

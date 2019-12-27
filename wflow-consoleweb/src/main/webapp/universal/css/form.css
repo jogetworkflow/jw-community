@@ -221,7 +221,7 @@ body .editor-cell input[type=number]:focus:not([readonly]),
 body .editor-cell input[type=search]:focus:not([readonly]),
 body .editor-cell textarea:focus:not([readonly]),
 body .editor-cell select:focus:not([readonly]):not([class^=ui]),
-body .editor-cell input.focus,{
+body .editor-cell input.focus{
   border-bottom: 1px solid #727272;
   box-shadow: 0 1px 0 0 #727272;
 }
@@ -968,4 +968,12 @@ body .grid-action-header, body td.grid-action-cell {
 }
 .multiPagedForm {
     margin-bottom: 15px;
+}
+.ql-container.ql-bubble {
+    border-bottom: 1px solid #9E9E9E;
+    margin-bottom: 15px;
+}
+.ql-container.ql-bubble.focus{
+    border-bottom: 1px solid #727272;
+    box-shadow: 0 1px 0 0 #727272;
 }

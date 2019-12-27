@@ -1,1 +1,7 @@
-
+.ql-container.ql-bubble .ql-editor {
+    padding: 5px 0px;
+}
+.ql-container.ql-bubble .ql-editor.ql-blank::before{
+    left:0px;
+    right:0px;
+}

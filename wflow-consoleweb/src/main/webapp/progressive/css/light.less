@@ -271,7 +271,8 @@ main input[type=number]:focus:not([readonly]),
 main input[type=search]:focus:not([readonly]),
 main textarea:focus:not([readonly]),
 main select:focus:not([readonly]):not([class^=ui]),
-main input.focus,{
+main input.focus,
+main .ql-container.ql-bubble.focus{
   border-bottom: 1px solid @primary;
   box-shadow: 0 1px 0 0 @primary;
 }

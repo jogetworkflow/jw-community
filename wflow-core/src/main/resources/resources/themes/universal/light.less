@@ -263,6 +263,9 @@ main select:not([class^=ui]){
   border-bottom: 1px solid @darkPrimary;
   color: @fontColor;
 }
+main .ql-container.ql-bubble{
+  border-bottom: 1px solid @darkPrimary;
+}
 main input:not([type]):focus:not([readonly]),
 main input[type=text]:focus:not([readonly]),
 main input[type=password]:focus:not([readonly]),
@@ -277,7 +280,8 @@ main input[type=number]:focus:not([readonly]),
 main input[type=search]:focus:not([readonly]),
 main textarea:focus:not([readonly]),
 main select:focus:not([readonly]):not([class^=ui]),
-main input.focus,{
+main input.focus,
+main .ql-container.ql-bubble.focus{
   border-bottom: 1px solid @primary;
   box-shadow: 0 1px 0 0 @primary;
 }
