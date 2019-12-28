@@ -1172,6 +1172,9 @@ body .boxy-wrapper .autosave input {
 .peautosave .property-editor-property.property-type-header .property-label-container .property-description{
     text-size-adjust: none;
 }
+.tooltipster-base .property-description a {
+    color:white;
+}
 /* mobile styles */
 @media screen and (max-width:680px) {
     .property-label-container {
