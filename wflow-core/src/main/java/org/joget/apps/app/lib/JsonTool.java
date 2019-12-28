@@ -283,7 +283,8 @@ public class JsonTool extends DefaultApplicationPlugin {
 
         if (row.getId() == null || (row.getId() != null && row.getId().trim().length() == 0)) {
             if (multirowBaseObjectName == null) {
-                row.setId(wfAssignment.getProcessId());
+                AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+                row.setId(appService.getOriginProcessId(wfAssignment.getProcessId()));
             } else {
                 row.setId(UuidGenerator.getInstance().getUuid());
             }
