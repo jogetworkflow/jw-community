@@ -543,3 +543,6 @@ table th, table td {
     color: #393D49;
 }
 
+body#welcome:not(#login) #content > main > .ui-html {
+    padding: 20px 20px 100px;
+}
