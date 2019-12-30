@@ -1,5 +1,5 @@
 body .dataList {
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 body .dataList .filters {
     text-align: left;
@@ -87,6 +87,7 @@ body .dataList .actions.bottom {
     margin-bottom: 15px;
     position: relative;
     clear: both;
+    max-width: 98%;
 }
 body .dataList td a.btn-danger{
     background-color: transparent !important;
