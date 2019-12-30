@@ -292,8 +292,8 @@
                             $("#dbPort").val("1433");
                             dbPort = 1433;
                         }
-                        $("#jdbcUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=cursor");
-                        $("#jdbcFullUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=cursor;DatabaseName=" + dbName);
+                        $("#jdbcUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=direct");
+                        $("#jdbcFullUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=direct;DatabaseName=" + dbName);
                     } else if (dbType === "mysql") {
                         $("#jdbcSetup").hide();
                         $("#dbSetup").show();
