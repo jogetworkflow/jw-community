@@ -1324,20 +1324,22 @@ PropertyEditor.Model.Editor.prototype = {
         this.changePage(null, $(this.editor).find('.property-page-show:first').attr("id"));
     },
     initDisplayMode: function() {
-        var $thisObject = this;
+        if (!$(this.editor).hasClass("simple")) {
+            var $thisObject = this;
 
-        //init display mode based on cookies value
-        var single = $.localStorage.getItem("propertyEditor.singlePageDisplay");
-        if (single === "true") {
-            this.toggleSinglePageDisplay(true);
+            //init display mode based on cookies value
+            var single = $.localStorage.getItem("propertyEditor.singlePageDisplay");
+            if (single === "true") {
+                this.toggleSinglePageDisplay(true);
+            }
+
+            $(this.editor).find('.property-editor-display a').click(function() {
+                $thisObject.toggleSinglePageDisplay();
+            });
         }
-
-        $(this.editor).find('.property-editor-display a').click(function() {
-            $thisObject.toggleSinglePageDisplay();
-        });
     },
     toggleSinglePageDisplay: function(single) {
-        if (single || !this.isSinglePageDisplay()) {
+        if ((single || !this.isSinglePageDisplay()) && !$(this.editor).hasClass("simple")) {
             $(this.editor).addClass("single-page");
             single = true;
             if ($(this.editor).find('.property-page-show.current').length > 0) {
