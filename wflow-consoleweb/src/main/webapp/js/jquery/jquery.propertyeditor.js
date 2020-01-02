@@ -2055,7 +2055,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
         if (url !== null && url !== undefined && url !== "") {
             var method = $(button).data("ajax_method");
             $.each(data, function(i, d) {
-                if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%", d.substring(d.length - 4) === "%%%%") {
+                if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%" && d.substring(d.length - 4) === "%%%%") {
                     data[i] = d.replace(/%%%%/g, "");
                 }
             });
