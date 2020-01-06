@@ -536,6 +536,7 @@ body select:not([class^="ui-"]):focus{
     padding: 10px 15px;
     margin-bottom: 20px;
     border-radius: 5px;
+    display: block;
 }
 .systemAlert {
     position: relative;
