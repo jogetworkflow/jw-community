@@ -70,8 +70,8 @@ body .dataList .actions.top:after{
     border-bottom: 1px solid #e6e6e6;
     position: absolute;
     bottom: 0px;
-    left:-15px;
-    right: -15px;
+    left:0px;
+    right:0px;
 }
 body .dataList .actions.bottom:before{
     clear: both;
@@ -79,8 +79,8 @@ body .dataList .actions.bottom:before{
     border-top: 1px solid #e6e6e6;
     position: absolute;
     top: 0px;
-    left:-15px;
-    right: -15px;
+    left: 0px;
+    right: 0px;
 }
 body .dataList .actions.bottom {
     padding-top: 6px; 
