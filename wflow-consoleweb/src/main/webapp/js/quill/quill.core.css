@@ -387,13 +387,13 @@
   font-family: Monaco, Courier New, monospace;
 }
 .ql-editor .ql-size-small {
-  font-size: 0.75em;
+  font-size: 0.75em  !important;
 }
 .ql-editor .ql-size-large {
-  font-size: 1.5em;
+  font-size: 1.5em  !important;
 }
 .ql-editor .ql-size-huge {
-  font-size: 2.5em;
+  font-size: 2.5em  !important;
 }
 .ql-editor .ql-direction-rtl {
   direction: rtl;

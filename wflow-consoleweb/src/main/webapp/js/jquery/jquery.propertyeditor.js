@@ -1674,7 +1674,7 @@ PropertyEditor.Model.Page.prototype = {
             var value = null;
             if (this.options.propertyValues !== null && this.options.propertyValues !== undefined && this.options.propertyValues[property.name] !== undefined) {
                 value = this.options.propertyValues[property.name];
-            } else if (property.value !== undefined && property.value !== null) {
+            } else if ((this.options.propertyValues === null || this.options.propertyValues === undefined) && property.value !== undefined && property.value !== null) {
                 value = property.value;
             }
 
