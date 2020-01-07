@@ -276,6 +276,12 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                 String timezoneString = getPropertyString("icsTimezone");
                 SimpleDateFormat sdFormat =  new SimpleDateFormat(dateFormat);
                 
+                String gmt = WorkflowUtil.getSystemSetupValue("systemTimeZone");
+                if (gmt != null && !gmt.isEmpty()) {
+                    java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone(TimeZoneUtil.getTimeZoneByGMT(gmt));
+                    sdFormat.setTimeZone(timeZone);
+                }
+                
                 TimeZone timezone = null;
                 TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
                 try {
