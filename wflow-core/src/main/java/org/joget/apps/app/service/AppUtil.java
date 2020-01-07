@@ -1176,6 +1176,12 @@ public class AppUtil implements ApplicationContextAware {
                 String timezoneString = AppUtil.processHashVariable((String) properties.get("icsTimezone"), wfAssignment, null, null, appDef);
                 SimpleDateFormat sdFormat =  new SimpleDateFormat(dateFormat);
                 
+                String gmt = WorkflowUtil.getSystemSetupValue("systemTimeZone");
+                if (gmt != null && !gmt.isEmpty()) {
+                    TimeZone timeZone = TimeZone.getTimeZone(TimeZoneUtil.getTimeZoneByGMT(gmt));
+                    sdFormat.setTimeZone(timeZone);
+                }
+                
                 net.fortuna.ical4j.model.TimeZone timezone = null;
                 TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
                 try {
