@@ -282,7 +282,7 @@
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
             var href = $(this).data("href");
-            var hrefParam = $(this).data("hrefParam");
+            var hrefParam = $(this).data("hrefparam");
             
             if (target !== undefined && target.toLowerCase() !== "post" && href !== undefined && href !== "" && (hrefParam === undefined || hrefParam === "")) {
                 var doAction = function() {
