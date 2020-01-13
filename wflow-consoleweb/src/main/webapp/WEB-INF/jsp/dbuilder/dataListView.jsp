@@ -293,8 +293,25 @@
                             popupActionDialog.src = href;
                         }
                         popupActionDialog.init();
-                    } else {
+                    } else if (target.toLowerCase() === "_blank") {
+                        var win = window.open(href, '_blank');
+                        win.focus();
+                    } else if (target.toLowerCase() === "_top") {
+                        window.top.location = href;
+                    } else if (target.toLowerCase() === "_parent") {
+                        if (window.parent) {
+                            window.parent.location = href;
+                        } else {
+                            document.location = href;
+                        }
+                    } else if (target === "" || target.toLowerCase() === "_self") {
                         document.location = href;
+                    } else {
+                        //iframe
+                        var $iframe = $('#' + target);
+                        if ( $iframe.length > 0) {
+                            $iframe.attr('src', href);   
+                        }
                     }
                 };
             
