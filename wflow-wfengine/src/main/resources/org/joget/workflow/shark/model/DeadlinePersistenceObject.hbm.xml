@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="DeadlinePersistenceObject" lazy="false" name="org.joget.workflow.shark.model.CustomDeadlinePersistenceObject" table="SHKDeadlines">
+        <id column="oid" name="oid" type="long"/>
+        <property column="TimeLimit" name="timeLimit" type="long"/>
+        <property column="ExceptionName" name="exceptionName" type="string"/>
+        <property column="IsSynchronous" name="synchronous" type="boolean"/>
+        <property column="IsExecuted" name="executed" type="boolean"/>
+        <property column="CNT" name="cnt" type="long"/>
+        
+        <many-to-one entity-name="ActivityPersistenceObject" insert="false" fetch="join" lazy="false" update="false" name="activity" column="Activity"/>
+    </class>
+</hibernate-mapping>
+

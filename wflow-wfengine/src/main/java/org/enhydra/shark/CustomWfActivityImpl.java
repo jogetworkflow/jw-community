@@ -1,6 +1,10 @@
 package org.enhydra.shark;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,19 +15,24 @@ import org.enhydra.shark.api.client.wfmodel.CannotComplete;
 import org.enhydra.shark.api.client.wfmodel.InvalidData;
 import org.enhydra.shark.api.client.wfmodel.ResultNotAvailable;
 import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
+import org.enhydra.shark.api.common.DeadlineInfo;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
+import org.enhydra.shark.api.internal.instancepersistence.DeadlinePersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.PersistentManagerInterface;
 import org.enhydra.shark.api.internal.toolagent.ToolAgentGeneralException;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
+import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
+import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfActivityImpl extends WfActivityImpl {
     private final static String MULTI_APPROVAL_PERFORMERS = "MULTI_APPROVAL_PERFORMERS";
     private boolean isHandleAllAssignments = false;
+    private Collection<CustomDeadlinePersistenceObject> deadlines;
     
     public CustomWfActivityImpl(WMSessionHandle shandle, WfProcessInternal process, String key, String activityDefId, WfActivityInternal blockActivity) throws Exception {
         super(shandle, process, key, activityDefId, blockActivity);
@@ -180,5 +189,134 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             m.remove(MULTI_APPROVAL_PERFORMERS);
         }
         return m;
-    }    
+    }  
+
+    public Collection<CustomDeadlinePersistenceObject> getDeadlines() {
+        return deadlines;
+    }
+
+    public void setDeadlines(Collection<CustomDeadlinePersistenceObject> deadlines) {
+        this.deadlines = deadlines;
+    }
+    
+    @Override
+    public boolean checkDeadlines(WMSessionHandle shandle, long timeLimitBoundary, Map actsToAsyncExcNames) throws Exception {
+        checkReadOnly();
+        String syncDeadlineExcName = null;
+        List brokenDeadlines = null;
+        List excNames = new ArrayList();
+        if (performDeadlineReevaluation()) {
+            List pDeadlines = new ArrayList();
+            
+            if (deadlines != null && !deadlines.isEmpty()) {
+                for (CustomDeadlinePersistenceObject d : deadlines) {
+                    pDeadlines.add(d.getDeadlinePersistenceObject());
+                }
+            }
+            
+            Collections.sort(pDeadlines, new DeadlineComparator());
+            brokenDeadlines = new ArrayList();
+            reevaluateDeadlines(shandle, timeLimitBoundary, pDeadlines, brokenDeadlines);
+        } else {
+            brokenDeadlines = SharkEngineManager.getInstance()
+                    .getInstancePersistenceManager()
+                    .getAllDeadlinesForActivity(shandle,
+                            this.processId,
+                            this.key,
+                            timeLimitBoundary);
+        }
+
+        if ((brokenDeadlines != null) && (brokenDeadlines.size() > 0)) {
+            boolean raiseAsyncDeadlineOnce = new Boolean(
+                    SharkEngineManager.getInstance().getCallbackUtilities()
+                            .getProperty("Deadlines.raiseAsyncDeadlineOnlyOnce", "true")).booleanValue();
+
+            for (int i = 0; i < brokenDeadlines.size(); i++) {
+                DeadlinePersistenceObject dpi = (DeadlinePersistenceObject) brokenDeadlines.get(i);
+                if ((!dpi.isExecuted()) || (!raiseAsyncDeadlineOnce)) {
+                    persistExecutedDeadline(shandle, dpi.getUniqueId());
+                    String excName = dpi.getExceptionName();
+                    if (dpi.isSynchronous()) {
+                        syncDeadlineExcName = excName;
+                        break;
+                    }
+                    if (!excNames.contains(excName)) {
+                        excNames.add(excName);
+                    }
+                }
+            }
+        }
+        if (syncDeadlineExcName != null) {
+            finishImproperlyAndNotifyProcess(shandle, syncDeadlineExcName);
+        } else {
+            if (excNames.size() > 0) {
+                actsToAsyncExcNames.put(this, excNames);
+            }
+            int type = getActivityDefinition(shandle).getActivityType();
+
+            if (type == 4) {
+                List actActs = this.process.getAllActiveActivitiesForBlockActivity(shandle, this.key);
+                Iterator it = actActs.iterator();
+                while (it.hasNext()) {
+                    Map ataens = new HashMap();
+                    WfActivityInternal act = (WfActivityInternal) it.next();
+                    boolean syncDeadlineHappened = act.checkDeadlines(shandle,
+                            timeLimitBoundary,
+                            ataens);
+                    if (!syncDeadlineHappened) {
+                        if (ataens.size() > 0) {
+                            actsToAsyncExcNames.putAll(ataens);
+                        }
+                    }
+                }
+            }
+        }
+        return syncDeadlineExcName != null;
+    }
+    
+    protected void reevaluateDeadlines(WMSessionHandle shandle, long timeLimitBoundary, List pDeadlines, List brokenDeadlines) throws Exception {
+        Iterator dls = getActivityDefinition(shandle).getDeadlines()
+            .toElements()
+            .iterator();
+
+        int i = 0;
+        while (dls.hasNext()) {
+            DeadlinePersistenceObject dpo = (DeadlinePersistenceObject) pDeadlines.get(i);
+            Deadline dl = (Deadline) dls.next();
+            
+            if (dpo.getTimeLimit() <= timeLimitBoundary) {
+                String dc = dl.getDeadlineCondition();
+                String en = dl.getExceptionName();
+                
+                Map context = null;
+                String useProcessContextStr = SharkEngineManager.getInstance()
+                        .getCallbackUtilities()
+                        .getProperty("Deadlines.useProcessContext", "false");
+
+                if (Boolean.valueOf(useProcessContextStr).booleanValue()) {
+                    context = this.process.process_context(shandle);
+                } else {
+                    context = process_context(shandle);
+                }
+
+                context.put("PROCESS_STARTED_TIME",
+                        new Date(this.process.getStartTime(shandle)));
+                context.put("ACTIVITY_ACCEPTED_TIME",
+                        new Date(this.acceptedTime));
+                context.put("ACTIVITY_ACTIVATED_TIME",
+                        new Date(this.activatedTime));
+                long timeLimit = ((Date) evaluator(shandle).evaluateExpression(shandle,
+                        this.processId,
+                        this.key,
+                        dc,
+                        context,
+                        Date.class)).getTime();
+                
+                if (timeLimit <= timeLimitBoundary) {
+                    dpo.setTimeLimit(timeLimit);
+                    brokenDeadlines.add(dpo);
+                }
+            }
+        }
+    }
 }

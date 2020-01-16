@@ -46,6 +46,8 @@
                 <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkProcessState.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/ActivityPersistenceObject.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/DeadlinePersistenceObject.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -67,6 +69,10 @@
     <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.WorkflowAssignmentDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+    </bean>
+    
+    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
     </bean>
 
     <bean id="xpdlImageExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

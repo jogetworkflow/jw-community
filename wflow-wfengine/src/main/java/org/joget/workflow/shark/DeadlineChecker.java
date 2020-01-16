@@ -11,6 +11,7 @@ import org.enhydra.shark.client.utilities.LimitStruct;
 import org.enhydra.shark.utilities.MiscUtilities;
 import org.joget.commons.util.HostManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.shark.model.dao.DeadlineDao;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.LocaleContextResolver;
@@ -144,7 +145,8 @@ public class DeadlineChecker extends Thread {
 
             HostManager.setCurrentProfile(profile);
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            
+            DeadlineDao deadlineDao = (DeadlineDao) WorkflowUtil.getApplicationContext().getBean("deadlineDao");
+                    
             LocaleContextResolver localeResolver = (LocaleContextResolver) WorkflowUtil.getApplicationContext().getBean("localeResolver");
             if (localeResolver != null) {
                 LocaleContext localeContext = localeResolver.resolveLocaleContext(null);
@@ -153,7 +155,7 @@ public class DeadlineChecker extends Thread {
             
             int sizeToCheck = 0;
             List<String> instancesFailed2check = new ArrayList<String>();
-            Collection<String> instancesToCheck = workflowManager.getRunningProcessIds();
+            Collection<String> instancesToCheck = deadlineDao.getProcessIdsWithDeadlines(System.currentTimeMillis());
             
             if (instancesToCheck != null && !instancesToCheck.isEmpty()) {
                 sizeToCheck = instancesToCheck.size();

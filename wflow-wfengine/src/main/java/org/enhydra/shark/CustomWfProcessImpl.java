@@ -1,6 +1,8 @@
 package org.enhydra.shark;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +21,9 @@ import org.enhydra.shark.xpdl.elements.Transition;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.DecisionResult;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.shark.model.CustomActivityPersistenceObject;
+import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
+import org.joget.workflow.shark.model.dao.DeadlineDao;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfProcessImpl extends WfProcessImpl {
@@ -79,7 +84,59 @@ public class CustomWfProcessImpl extends WfProcessImpl {
     public WfActivityInternal[] checkDeadlines(WMSessionHandle shandle) throws Exception {
         WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
         workflowMapper.updateAppDefinitionForDeadline(key, MiscUtilities.getProcessMgrPkgId(managerName), mgrVer);
-        return super.checkDeadlines(shandle);
+        
+        checkReadOnly();
+        if (!state(shandle).equals("open.running")) {
+          throw new Exception("Process " + toString() + " - can't check deadlines for the closed process instance");
+        }
+
+        List deadlineActs = new ArrayList();
+
+        List<WfActivityInternal> activeActs = getDeadlineActivities();
+        long timeLimitBoundary = System.currentTimeMillis();
+        Map actToExcNames = new HashMap();
+        for (int i = 0; i < activeActs.size(); i++) {
+            WfActivityInternal act = (WfActivityInternal) activeActs.get(i);
+            if (act.block_activity_id(shandle) == null) {
+                Map ataens = new HashMap();
+                boolean syncDeadlineHappened = act.checkDeadlines(shandle, timeLimitBoundary, ataens);
+
+                if (syncDeadlineHappened) {
+                    deadlineActs.add(act);
+                } else if ((ataens != null) && (ataens.size() > 0)) {
+                    deadlineActs.add(act);
+                    actToExcNames.putAll(ataens);
+                }
+            }
+        }
+        if (actToExcNames.size() > 0) {
+            handleBrokenAsyncDeadlines(shandle, actToExcNames);
+        }
+
+        WfActivityInternal[] daArr = new WfActivityInternal[deadlineActs.size()];
+        deadlineActs.toArray(daArr);
+        
+        return daArr;
+    }
+    
+    protected List<WfActivityInternal> getDeadlineActivities() {
+        DeadlineDao dlDao = (DeadlineDao) WorkflowUtil.getApplicationContext().getBean("deadlineDao");
+        Map<CustomActivityPersistenceObject, Collection<CustomDeadlinePersistenceObject>> deadlineMap = dlDao.getDeadlines(key, null);
+        
+        List<WfActivityInternal> acts = new ArrayList<WfActivityInternal>();
+        for (CustomActivityPersistenceObject apo : deadlineMap.keySet()) {
+            try {
+                WfActivityInternal wai = SharkEngineManager.getInstance().getObjectFactory().createActivity(apo.getActivityPersistenceObject(), this);
+                if (wai instanceof CustomWfActivityImpl) {
+                    ((CustomWfActivityImpl) wai).setDeadlines(deadlineMap.get(apo));
+                }
+                acts.add(wai);
+            } catch (Exception e) {
+                LogUtil.error(CustomWfProcessImpl.class.getName(), e, "");
+            }
+        }
+        
+        return acts;
     }
     
     @Override

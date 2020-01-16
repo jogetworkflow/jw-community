@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="ActivityPersistenceObject" lazy="false" name="org.joget.workflow.shark.model.CustomActivityPersistenceObject" table="SHKActivities">
+        <id column="oid" name="oid" type="long"/>
+        <property column="Id" name="id" type="string"/>
+        <property column="ActivitySetDefinitionId" name="activitySetDefinitionId" type="string"/>
+        <property column="ActivityDefinitionId" name="activityDefinitionId" type="string"/>
+        <property column="PDefName" name="managerName" type="string"/>
+        <property column="ProcessId" name="processId" type="string"/>
+        <property column="ResourceId" name="resourceUsername" type="string"/>
+        <property column="BlockActivityId" name="blockActivityId" type="string"/>
+        <property column="Performer" name="subflowProcessId" type="string"/>
+        <property column="IsPerformerAsynchronous" name="subflowAsynchronous" type="boolean"/>
+        <property column="Priority" name="priority" type="short"/>
+        <property column="Name" name="name" type="string"/>
+        <property column="Activated" name="activatedTime" type="long"/>
+        <property column="Accepted" name="acceptedTime" type="long"/>
+        <property column="LastStateTime" name="lastStateTime" type="long"/>
+        <property column="LimitTime" name="limitTime" type="long"/>
+        <property column="Description" name="description" type="string"/>
+        
+        <many-to-one entity-name="SharkActivityState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" />        
+    </class>
+</hibernate-mapping>
+
