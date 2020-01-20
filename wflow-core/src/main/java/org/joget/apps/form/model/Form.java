@@ -189,32 +189,39 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
         
         Boolean isAuthorize = isAuthorizeSet.get(formData);
         if (isAuthorize == null) {
-            formData.setPermissionKey(Permission.DEFAULT);
-            isAuthorize = false;
-            Object[] rules = (Object[]) getProperty("permission_rules");
-            if (rules != null && rules.length > 0) {
-                for (Object rule : rules) {
-                    Map ruleMap = (Map) rule;
-                    String key = ruleMap.get("permission_key").toString();
-                    isAuthorize = FormUtil.getPermissionResult((Map) ruleMap.get("permission"), formData);
-                    if (isAuthorize) {
-                        formData.setPermissionKey(key);
-                        break;
-                    }
-                }
-            }
-            
-            if (!isAuthorize) {
+            if (Permission.DEFAULT.equals(getPermissionKey(formData))) {
                 Map permissionMap = (Map) getProperty("permission");
                 if (permissionMap != null) {
                     isAuthorize = FormUtil.getPermissionResult(permissionMap, formData);
                 } else {
                     isAuthorize = true;
                 }
+            } else {
+                isAuthorize = true;
             }
             isAuthorizeSet.put(formData, isAuthorize);
         }
         
         return isAuthorize;
+    }
+    
+    @Override
+    public String getPermissionKey(FormData formData) {
+        if (!permissionKeys.containsKey(formData)) {
+            permissionKeys.put(formData, Permission.DEFAULT);
+            Object[] rules = (Object[]) getProperty("permission_rules");
+            if (rules != null && rules.length > 0) {
+                for (Object rule : rules) {
+                    Map ruleMap = (Map) rule;
+                    String key = ruleMap.get("permission_key").toString();
+                    boolean isAuthorize = FormUtil.getPermissionResult((Map) ruleMap.get("permission"), formData);
+                    if (isAuthorize) {
+                        permissionKeys.put(formData, key);
+                        break;
+                    }
+                }
+            }
+        }
+        return permissionKeys.get(formData);
     }
 }

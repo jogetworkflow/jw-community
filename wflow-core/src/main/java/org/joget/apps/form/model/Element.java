@@ -27,6 +27,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private Validator validator;
     private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
     protected Map<FormData, Boolean> isAuthorizeSet = new HashMap<FormData, Boolean>();
+    protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
 
     /**
      * Get load binder
@@ -391,7 +392,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         Boolean isAuthorize = isAuthorizeSet.get(formData);
         if (isAuthorize == null) {
             isAuthorize = true;
-            if (Permission.DEFAULT.equals(formData.getPermissionKey())) {
+            if (Permission.DEFAULT.equals(getPermissionKey(formData))) {
                 Map permission = (Map) getProperty("permission");
                 if (permission != null) {
                     isAuthorize = FormUtil.getPermissionResult(permission, formData);
@@ -401,8 +402,8 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             } else {
                 if (this instanceof Section) {
                     Map rules = (Map) getProperty("permission_rules");
-                    if (rules != null && rules.containsKey(formData.getPermissionKey())) {
-                        Map rule = (Map) rules.get(formData.getPermissionKey());
+                    if (rules != null && rules.containsKey(getPermissionKey(formData))) {
+                        Map rule = (Map) rules.get(getPermissionKey(formData));
                         isAuthorize = FormUtil.getPermissionResult((Map) rule.get("permission"), formData);
                     }
                 } else if (getParent() != null) {
@@ -412,5 +413,16 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             isAuthorizeSet.put(formData, isAuthorize);
         }
         return isAuthorize;
+    }
+    
+    public String getPermissionKey(FormData formData) {
+        if (!permissionKeys.containsKey(formData)) {
+            if (getParent() != null) {
+                permissionKeys.put(formData, getParent().getPermissionKey(formData));
+            } else {
+                permissionKeys.put(formData, Permission.DEFAULT);
+            }
+        }
+        return permissionKeys.get(formData);
     }
 }

@@ -1468,10 +1468,10 @@ public class FormUtil implements ApplicationContextAware {
         if (element.isAuthorize(formData)) {
             String readonlyProp = element.getPropertyString(FormUtil.PROPERTY_READONLY);
             String hiddenProp = element.getPropertyString(FormUtil.PROPERTY_HIDDEN);
-            if (!Permission.DEFAULT.equals(formData.getPermissionKey()) && !(element instanceof Form)) {
+            if (!Permission.DEFAULT.equals(element.getPermissionKey(formData)) && !(element instanceof Form)) {
                 Map rules = (Map) element.getProperty("permission_rules");
-                if (rules != null && rules.containsKey(formData.getPermissionKey())) {
-                    Map rule = (Map)rules.get(formData.getPermissionKey());
+                if (rules != null && rules.containsKey(element.getPermissionKey(formData))) {
+                    Map rule = (Map)rules.get(element.getPermissionKey(formData));
                     readonlyProp = (String) rule.get(FormUtil.PROPERTY_READONLY);
                     if (readonlyProp == null) {
                         readonlyProp = "";
@@ -1503,10 +1503,10 @@ public class FormUtil implements ApplicationContextAware {
         }
         
         Map props = element.getProperties();
-        if (!Permission.DEFAULT.equals(formData.getPermissionKey())) {
+        if (!Permission.DEFAULT.equals(element.getPermissionKey(formData))) {
             Map rules = (Map) element.getProperty("permission_rules");
-            if (rules != null && rules.containsKey(formData.getPermissionKey())) {
-                props = (Map)rules.get(formData.getPermissionKey());
+            if (rules != null && rules.containsKey(element.getPermissionKey(formData))) {
+                props = (Map)rules.get(element.getPermissionKey(formData));
             }
         }
         
