@@ -60,6 +60,18 @@ UserviewBuilder = {
     initMenuType : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, pwaValidation){
         this.menuTypes[className] = new Object();
         this.menuTypes[className]['label'] = label;
+        
+        if (propertyOptions !== null && propertyOptions !== undefined 
+                && propertyOptions.length > 0 && propertyOptions[0].properties !== undefined) {
+            for (var i = 0; i < propertyOptions[0].properties.length; i++) {
+                var name = propertyOptions[0].properties[i].name;
+                if (name === "id") {
+                    propertyOptions[0].properties[i].type = "label";
+                    break;
+                }
+            }
+        }
+        
         this.menuTypes[className]['propertyOptions'] = propertyOptions;
         this.menuTypes[className]['properties'] = defaultPropertiesValues;
         this.menuTypes[className]['pwaValidation'] = pwaValidation;
