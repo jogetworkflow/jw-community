@@ -763,10 +763,19 @@ FormBuilder = {
         var dom = $(element)[0].dom;
         $(element).attr("element-id", properties.id);
         if (dom) {
+            if (dom.properties.permission_rules !== null && dom.properties.permission_rules !== undefined) {
+                properties.permission_rules = dom.properties.permission_rules;
+            }
+            if (dom.properties.permissionHidden !== null && dom.properties.permissionHidden !== undefined) {
+                properties.permissionHidden = dom.properties.permissionHidden;
+            }
+            if (dom.properties.permissionReadonlyHidden !== null && dom.properties.permissionReadonlyHidden !== undefined) {
+                properties.permissionReadonlyHidden = dom.properties.permissionReadonlyHidden;
+            }
             if (properties['readonly'] === "true") {
                 properties['permissionHidden'] = "";
             }
-            dom.properties = $.extend(dom.properties, properties);
+            dom.properties = properties;
         }
 
         FormBuilder.generateJSON(true);

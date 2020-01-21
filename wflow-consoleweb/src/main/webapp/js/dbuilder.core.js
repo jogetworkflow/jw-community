@@ -1422,7 +1422,15 @@ DatalistBuilder = {
     updateActionCallback : function (columnId, actions, properties) {
         DatalistBuilder.addToUndo();
         var action = actions[columnId];
-        action.properties = $.extend(action.properties, properties);
+        
+        if (action.properties.permission_rules !== null && action.properties.permission_rules !== undefined) {
+            properties.permission_rules = action.properties.permission_rules;
+        }
+        if (action.properties.hidden !== null && action.properties.hidden !== undefined) {
+            properties.hidden = action.properties.hidden;
+        }
+        
+        action.properties = properties;
         if( columnId.indexOf('rowAction') != -1 ){
             DatalistBuilder.renderRowAction(columnId);
         }else{

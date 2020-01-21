@@ -530,7 +530,20 @@ UserviewBuilder = {
         var id = $(container).attr('data-id');
         var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
 
-        menu.properties = $.extend(menu.properties, properties);
+        if (menu.properties.permission_rules !== null && menu.properties.permission_rules !== undefined) {
+            properties.permission_rules = menu.properties.permission_rules;
+        }
+        if (menu.properties.hide !== null && menu.properties.hide !== undefined) {
+            properties.hide = menu.properties.hide;
+        }
+        if (menu.properties.permissionDeny !== null && menu.properties.permissionDeny !== undefined) {
+            properties.permissionDeny = menu.properties.permissionDeny;
+        }
+        if (menu.properties.permissionHidden !== null && menu.properties.permissionHidden !== undefined) {
+            properties.permissionHidden = menu.properties.permissionHidden;
+        }
+
+        menu.properties = properties;
         var label = properties.label;
         $('#'+id+' .menu-label span').html(label);
         UserviewBuilder.adjustJson();
