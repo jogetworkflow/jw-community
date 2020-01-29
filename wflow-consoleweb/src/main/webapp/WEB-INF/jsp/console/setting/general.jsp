@@ -386,6 +386,19 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="startProcessId"><fmt:message key="console.setting.general.label.startProcessId"/></label>
+                        <span class="form-input">
+                            <select id="startProcessId" name="startProcessId">
+                                <option value=""><fmt:message key="console.setting.general.label.startProcessId.UUID"/></option>
+                                <option value="processId" <c:if test="${'processId' == settingMap['startProcessId']}"> selected</c:if>><fmt:message key="console.setting.general.label.startProcessId.processId"/></option>
+                            </select>
+                        </span>
+                    </div>
+                </span>
+            </div>               
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
             </div>

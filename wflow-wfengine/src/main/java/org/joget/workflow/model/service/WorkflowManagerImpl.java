@@ -3111,11 +3111,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             // if parentProcessId is not specified, set to UUID
             if (parentProcessId == null || parentProcessId.trim().length() == 0) {
-                parentProcessId = UuidGenerator.getInstance().getUuid();
+                if (!"processId".equals(WorkflowUtil.getSystemSetupValue("startProcessId"))) {
+                    parentProcessId = UuidGenerator.getInstance().getUuid();
+                } else {
+                    parentProcessId = processInstanceId;
+                }
             }
 
             //process linking
-            if (getWorkflowProcessLink(processInstanceId) == null) {
+            if (!parentProcessId.equals(processInstanceId) && getWorkflowProcessLink(processInstanceId) == null) {
                 internalAddWorkflowProcessLink(parentProcessId, processInstanceId);
             }
 
