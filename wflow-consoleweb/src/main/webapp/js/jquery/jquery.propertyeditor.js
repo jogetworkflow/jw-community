@@ -4564,7 +4564,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         var data = new Object();
         var value = "";
         if ($('[name=' + this.id + ']:not(.hidden)').length > 0) {
-            value = this.editor.root.innerHTML;
+            value = tinyMCE.editors[$('[name=' + this.id + ']:not(.hidden)').attr('id')].getContent();
         }
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
@@ -4576,10 +4576,19 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         return data;
     },
     renderField: function() {
+        var rows = ' rows="15"';
+        if (this.properties.rows !== undefined && this.properties.rows !== null) {
+            rows = ' rows="' + this.properties.rows + '"';
+        }
+        var cols = ' cols="60"';
+        if (this.properties.cols !== undefined && this.properties.cols !== null) {
+            cols = ' cols="' + this.properties.cols + '"';
+        }
+
         if (this.value === null) {
             this.value = "";
         }
-        return '<div id="' + this.id + '" name="' + this.id + '" class="tinymce"' + '>' + this.value + '</div>';
+        return '<textarea id="' + this.id + '" name="' + this.id + '" class="tinymce"' + rows + cols + '>' + PropertyEditor.Util.escapeHtmlTag(this.value) + '</textarea>';
     },
     initScripting: function() {
         var thisObj = this;
@@ -4590,48 +4599,29 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             } catch (err) {}
         }
 
-        var toolbarOptions = [
-            [{ 'font': [] }, { 'size': [] }, { 'header': [] }],
-            [{ 'color': [] }, { 'background': [] }],
-            ['bold', 'italic', 'underline', 'strike'],        
-            [{ 'script': 'sub'}, { 'script': 'super' }],
-            ['blockquote', 'code-block'],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' },{ 'indent': '-1'}, { 'indent': '+1' }, {'align': []}],
-            ['link', 'image', 'video', 'formula'],
-            [{ 'direction': 'rtl' }, 'clean']                                        
-        ];
-            
-        var iniEditor = function(o, height) {
-            $('#'+thisObj.id).css("min-height", height + "px");
-
-            var options = {
-                placeholder: '',
-                theme: 'snow',
-                placeholder: o.placeholder,
-                modules: {
-                    toolbar : toolbarOptions,
-                    imageUpload: {
-                        url: thisObj.options.contextPath + "/web/property/json" + thisObj.options.appPath + "/appResourceUpload?isPublic=true", 
-                        method: 'POST', 
-                        name: 'app_resource', 
-                        withCredentials: false,
-                        callbackOK: (json, next) => {
-                            next(json.url);
-                        },
-                        callbackKO: serverError => {
-                            alert(serverError);
-                        }
-                    },
-                    imageResize: {},
-                    htmlEditButton: {}
-                }
-            };
-
-            var editor = new Quill('#'+thisObj.id, options);
-            thisObj.editor = editor;
-        };
-        
-        iniEditor(this.properties, height);
+        tinymce.init({
+            selector: '#' + this.id,
+            height: height,
+            plugins: [
+                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking table contextmenu directionality',
+                'emoticons paste textcolor colorpicker textpattern imagetools codesample toc'
+            ],
+            toolbar1: 'undo redo | insert | styleselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | forecolor backcolor emoticons | print preview',
+            menubar: 'edit insert view format table tools',
+            image_advtab: true,
+            relative_urls: false,
+            convert_urls: false,
+            valid_elements: '*[*]',
+            setup: function(editor) {
+                editor.on('focus', function(e) {
+                    $(thisObj.editor).find(".property-description").hide();
+                    var property = $("#" + e.target.id).parentsUntil(".property-editor-property-container", ".property-editor-property");
+                    $(property).find(".property-description").show();
+                });
+            }
+        });
     }
 };
 PropertyEditor.Type.HtmlEditor = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.HtmlEditor.prototype);
