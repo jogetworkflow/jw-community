@@ -43,33 +43,41 @@ public class GitRequestFilter implements Filter {
         Collection<AppDefinition> pushAppDefs = new LinkedHashSet<>();
         Map<String, GitCommitHelper> gitCommitMap = (Map<String, GitCommitHelper>)WorkflowUtil.getHttpServletRequest().getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
         if (gitCommitMap != null && !gitCommitMap.isEmpty()) {
-            try {
-                for (String appId: gitCommitMap.keySet()) {
-                    GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
-                    Git git = gitCommitHelper.getGit();
-                    AppDefinition appDef = gitCommitHelper.getAppDefinition();
-                    
-                    // sync plugins
-                    if (gitCommitHelper.isSyncPlugins()) {
-                        AppDevUtil.syncAppPlugins(appDef);
-                    }
+            
+            for (String appId: gitCommitMap.keySet()) {
+                GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
+                
+                if (gitCommitHelper != null) {
+                    try {
+                        Git git = gitCommitHelper.getGit();
+                        AppDefinition appDef = gitCommitHelper.getAppDefinition();
 
-                    // sync resources
-                    if (gitCommitHelper.isSyncResources()) {
-                        AppDevUtil.syncAppResources(appDef);
+                        // sync plugins
+                        if (gitCommitHelper.isSyncPlugins()) {
+                            AppDevUtil.syncAppPlugins(appDef);
+                        }
+
+                        // sync resources
+                        if (gitCommitHelper.isSyncResources()) {
+                            AppDevUtil.syncAppResources(appDef);
+                        }
+
+                        // perform commit
+                        String commitMessage = gitCommitHelper.getCommitMessage();
+                        if (commitMessage != null && !commitMessage.trim().isEmpty()) {
+                            AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
+                            pushAppDefs.add(appDef);
+                        }
+                    } catch (Exception ex) {
+                        LogUtil.error(getClass().getName(), ex, ex.getMessage());
+                    } finally {  
+                        try {
+                            gitCommitHelper.clean();
+                        } catch (Exception e) {
+                            LogUtil.debug(GitRequestFilter.class.getName(), appId + " - " + e.getMessage());
+                        }
                     }
-                    
-                    // perform commit
-                    String commitMessage = gitCommitHelper.getCommitMessage();
-                    if (commitMessage != null && !commitMessage.trim().isEmpty()) {
-                        AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
-                        pushAppDefs.add(appDef);
-                    }
-                    
-                    gitCommitHelper.clean();
                 }
-            } catch (Exception ex) {
-                LogUtil.error(getClass().getName(), ex, ex.getMessage());
             }
         }
         

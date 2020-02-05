@@ -37,6 +37,7 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.RemoteListCommand;
 import org.eclipse.jgit.api.RemoteRemoveCommand;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
@@ -228,10 +229,33 @@ public class AppDevUtil {
                     createBranch = false;
                 }
             }
-            git.checkout()
-                    .setCreateBranch(createBranch)
-                    .setName(gitBranch)
-                    .call();            
+            try {
+                git.checkout()
+                        .setCreateBranch(createBranch)
+                        .setName(gitBranch)
+                        .call();    
+            } catch (CheckoutConflictException e) {
+                // commit to repo
+                String username = WorkflowUserManager.ROLE_ANONYMOUS;
+                String email = "";
+                WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+                User user = wum.getCurrentUser();
+                if (user != null) {
+                    username = user.getUsername();
+                    email = user.getEmail();
+                    if (email == null) {
+                        email = "";
+                    }
+                }
+                String commitMessage = "Fixing checkout conflict";
+                LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
+                git.commit()
+                        .setAuthor(username, email)
+                        .setMessage(commitMessage)
+                        .call();
+                
+                gitCheckout(git, gitBranch);
+            }
         }
     }    
     
@@ -1161,13 +1185,19 @@ public class AppDevUtil {
         if (appDef == null) {
             appDef = AppDevUtil.createDummyAppDefinition(appId, appVersion);
         }
-        File projectDir = AppDevUtil.fileGetFileObject(appDef, "appDefinition.xml", false);
+        
+        File projectDir = null;
+        if (appDef.getVersion() != null) {
+            projectDir = AppDevUtil.fileGetFileObject(appDef, "appDefinition.xml", false);
+        }
+        
         if (projectDir == null || !projectDir.exists()) {
             // first time init project files
             LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef);
             appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), true);
             LogUtil.info(AppDevUtil.class.getName(), "Git project init complete for app " + appDef);
         }
+        
         // compare from app last modified date
         Date latestDate = AppDevUtil.dirLastModified(appDef);
         Properties appProps = AppDevUtil.getAppDevProperties(appDef);

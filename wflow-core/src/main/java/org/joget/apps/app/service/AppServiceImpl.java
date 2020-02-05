@@ -1771,6 +1771,25 @@ public class AppServiceImpl implements AppService {
     public AppDefinition getPublishedAppDefinition(String appId) {
         try {
             AppDefinition appDef = appDefinitionDao.getPublishedAppDefinition(appId);
+            
+            try {
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
+                if (!gitSyncAppDone) {
+                    AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, appDef.getVersion());
+                    if (newAppDef != null) {
+                        appDef = newAppDef;
+                    }
+                    if (request != null) {
+                        request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+                    }
+                }
+            } catch (IOException | GitAPIException | URISyntaxException e) {
+                if (appDef != null) {
+                    LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
+                }
+            }
+
             AppUtil.setCurrentAppDefinition(appDef);
             return appDef;
         } catch (Exception e) {
