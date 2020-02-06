@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 5.6.28, for osx10.8 (x86_64)
+-- MariaDB dump 10.17  Distrib 10.4.11-MariaDB, for osx10.14 (x86_64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.6.28
+-- Server version	10.4.11-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -76,8 +76,8 @@ CREATE TABLE `SHKActivityData` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE `SHKActivityData` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityDataBLOBs` (
   `ActivityDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE `SHKActivityDataWOB` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -625,8 +625,8 @@ CREATE TABLE `SHKNewEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -658,7 +658,7 @@ CREATE TABLE `SHKNewEventAuditData` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -685,7 +685,7 @@ CREATE TABLE `SHKNewEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -764,8 +764,8 @@ CREATE TABLE `SHKOldEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -797,7 +797,7 @@ CREATE TABLE `SHKOldEventAuditData` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -824,7 +824,7 @@ CREATE TABLE `SHKOldEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1166,8 +1166,8 @@ CREATE TABLE `SHKProcessData` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1199,7 +1199,7 @@ CREATE TABLE `SHKProcessData` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDataBLOBs` (
   `ProcessDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1226,7 +1226,7 @@ CREATE TABLE `SHKProcessDataWOB` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1757,8 +1757,8 @@ CREATE TABLE `SHKXPDLApplicationProcess` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLData` (
-  `XPDLContent` longblob,
-  `XPDLClassContent` longblob,
+  `XPDLContent` longblob DEFAULT NULL,
+  `XPDLClassContent` longblob DEFAULT NULL,
   `XPDL` decimal(19,0) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -1941,9 +1941,9 @@ CREATE TABLE `app_app` (
   `published` bit(1) DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `license` text COLLATE utf8_unicode_ci,
-  `description` longtext COLLATE utf8_unicode_ci,
-  `meta` longtext COLLATE utf8_unicode_ci,
+  `license` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `meta` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1957,6 +1957,36 @@ CREATE TABLE `app_app` (
 /*!40000 ALTER TABLE `app_app` ENABLE KEYS */;
 
 --
+-- Table structure for table `app_builder`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_builder` (
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appVersion` bigint(20) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_type` (`type`),
+  CONSTRAINT `FK_idup4nrrc79iy4kc46wf5919j` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_builder`
+--
+
+/*!40000 ALTER TABLE `app_builder` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_builder` ENABLE KEYS */;
+
+--
 -- Table structure for table `app_datalist`
 --
 
@@ -1967,8 +1997,8 @@ CREATE TABLE `app_datalist` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8_unicode_ci,
-  `json` longtext COLLATE utf8_unicode_ci,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
@@ -1995,8 +2025,8 @@ CREATE TABLE `app_env_variable` (
   `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `value` text COLLATE utf8_unicode_ci,
-  `remarks` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `remarks` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2045,8 +2075,8 @@ CREATE TABLE `app_form` (
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `json` longtext COLLATE utf8_unicode_ci,
-  `description` longtext COLLATE utf8_unicode_ci,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
@@ -2075,7 +2105,7 @@ CREATE TABLE `app_form_data_audit_trail` (
   `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `action` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `data` longtext COLLATE utf8_unicode_ci,
+  `data` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2100,7 +2130,7 @@ CREATE TABLE `app_message` (
   `ouid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2185,7 +2215,7 @@ CREATE TABLE `app_package_activity_plugin` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2212,8 +2242,8 @@ CREATE TABLE `app_package_participant` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8_unicode_ci,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2238,8 +2268,8 @@ CREATE TABLE `app_plugin_default` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pluginDescription` text COLLATE utf8_unicode_ci,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `pluginDescription` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2289,7 +2319,7 @@ CREATE TABLE `app_report_activity_instance` (
   `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
@@ -2426,7 +2456,7 @@ CREATE TABLE `app_resource` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `filesize` bigint(20) DEFAULT NULL,
   `permissionClass` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `permissionProperties` longtext COLLATE utf8_unicode_ci,
+  `permissionProperties` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2450,8 +2480,8 @@ CREATE TABLE `app_userview` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8_unicode_ci,
-  `json` longtext COLLATE utf8_unicode_ci,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
@@ -2740,7 +2770,7 @@ CREATE TABLE `dir_user_group` (
 CREATE TABLE `dir_user_meta` (
   `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `meta_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `meta_value` longtext COLLATE utf8_unicode_ci,
+  `meta_value` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`username`,`meta_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2856,7 +2886,7 @@ CREATE TABLE `wf_audit_trail` (
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `clazz` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `method` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -2917,7 +2947,7 @@ CREATE TABLE `wf_report` (
   `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`activityInstanceId`),
@@ -3010,7 +3040,7 @@ CREATE TABLE `wf_resource_bundle_message` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3031,7 +3061,7 @@ CREATE TABLE `wf_resource_bundle_message` (
 CREATE TABLE `wf_setup` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `property` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `ordering` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -3053,4 +3083,4 @@ CREATE TABLE `wf_setup` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-22 16:03:40
+-- Dump completed on 2020-02-06 13:36:05

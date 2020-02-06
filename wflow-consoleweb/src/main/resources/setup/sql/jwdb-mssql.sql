@@ -20,6 +20,29 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ;
+/****** Object:  Table [app_builder]     ******/
+SET ANSI_NULLS ON
+;
+SET QUOTED_IDENTIFIER ON
+;
+CREATE TABLE [app_builder](
+	[appId] [nvarchar](255) NOT NULL,
+	[appVersion] [numeric](19, 0) NOT NULL,
+	[id] [nvarchar](255) NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[type] [nvarchar](255) NULL,
+	[description] [ntext] NULL,
+	[json] [ntext] NULL,
+	[dateCreated] [datetime] NULL,
+	[dateModified] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[appId] ASC,
+	[appVersion] ASC,
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+;
 /****** Object:  Table [app_datalist]    Script Date: 05/29/2019 10:16:22 ******/
 SET ANSI_NULLS ON
 ;
@@ -2052,6 +2075,22 @@ CREATE NONCLUSTERED INDEX [idx_name] ON [app_app]
 SET ANSI_PADDING ON
 ;
 /****** Object:  Index [idx_name]    Script Date: 05/29/2019 10:16:23 ******/
+CREATE NONCLUSTERED INDEX [idx_name] ON [app_builder]
+(
+	[name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+;
+SET ANSI_PADDING ON
+;
+/****** Object:  Index [idx_type]    Script Date: 05/29/2019 10:16:23 ******/
+CREATE NONCLUSTERED INDEX [idx_type] ON [app_builder]
+(
+	[type] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+;
+SET ANSI_PADDING ON
+;
+/****** Object:  Index [idx_name]    Script Date: 05/29/2019 10:16:23 ******/
 CREATE NONCLUSTERED INDEX [idx_name] ON [app_datalist]
 (
 	[name] ASC
@@ -2821,6 +2860,11 @@ CREATE UNIQUE NONCLUSTERED INDEX [I1_SHKXPDLS] ON [SHKXPDLS]
 	[XPDLId] ASC,
 	[XPDLVersion] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+;
+ALTER TABLE [app_builder]  WITH CHECK ADD  CONSTRAINT [FK5F9347A6462EF4C7] FOREIGN KEY([appId], [appVersion])
+REFERENCES [app_app] ([appId], [appVersion])
+;
+ALTER TABLE [app_builder] CHECK CONSTRAINT [FK5F9347A6462EF4C7]
 ;
 ALTER TABLE [app_datalist]  WITH CHECK ADD  CONSTRAINT [FK5E9247A6462EF4C7] FOREIGN KEY([appId], [appVersion])
 REFERENCES [app_app] ([appId], [appVersion])

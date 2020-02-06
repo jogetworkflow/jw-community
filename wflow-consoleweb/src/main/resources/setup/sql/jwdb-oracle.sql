@@ -13,6 +13,23 @@
 	"DESCRIPTION" VARCHAR2(4000), 
 	"META" VARCHAR2(4000)
    ) ;
+
+--------------------------------------------------------
+--  DDL for Table APP_BUILDER
+--------------------------------------------------------
+
+    CREATE TABLE `APP_BUILDER` (
+      "APPID" VARCHAR2(255 CHAR), 
+      "APPVERSION" NUMBER(19,0), 
+      "ID" VARCHAR2(255 CHAR), 
+      "NAME" VARCHAR2(255 CHAR),
+      "TYPE" VARCHAR2(255 CHAR),
+      "DESCRIPTION" CLOB, 
+      "JSON" CLOB, 
+      "DATECREATED" TIMESTAMP (6), 
+      "DATEMODIFIED" TIMESTAMP (6)
+    ) ;
+
 --------------------------------------------------------
 --  DDL for Table APP_DATALIST
 --------------------------------------------------------
@@ -2287,6 +2304,17 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
  
   ALTER TABLE "APP_APP" ADD PRIMARY KEY ("APPID", "APPVERSION") ENABLE;
 --------------------------------------------------------
+--  Constraints for Table APP_BUILDER
+--------------------------------------------------------
+
+  ALTER TABLE "APP_BUILDER" MODIFY ("APPID" NOT NULL ENABLE);
+ 
+  ALTER TABLE "APP_BUILDER" MODIFY ("APPVERSION" NOT NULL ENABLE);
+ 
+  ALTER TABLE "APP_BUILDER" MODIFY ("ID" NOT NULL ENABLE);
+ 
+  ALTER TABLE "APP_BUILDER" ADD PRIMARY KEY ("APPID", "APPVERSION", "ID") ENABLE;
+--------------------------------------------------------
 --  Constraints for Table APP_DATALIST
 --------------------------------------------------------
 
@@ -4276,6 +4304,12 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
   CREATE INDEX "I5_SHKPROCESSES" ON "SHKPROCESSES" ("RESOURCEREQUESTERID") 
   ;
 
+--------------------------------------------------------
+--  Ref Constraints for Table APP_BUILDER
+--------------------------------------------------------
+
+  ALTER TABLE "APP_BUILDER" ADD CONSTRAINT "FK5F9347A6462EF4C7" FOREIGN KEY ("APPID", "APPVERSION")
+	  REFERENCES "APP_APP" ("APPID", "APPVERSION") ENABLE;
 --------------------------------------------------------
 --  Ref Constraints for Table APP_DATALIST
 --------------------------------------------------------

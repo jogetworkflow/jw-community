@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 5.6.24, for osx10.8 (x86_64)
+-- MariaDB dump 10.17  Distrib 10.4.11-MariaDB, for osx10.14 (x86_64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.6.24
+-- Server version	10.4.11-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -78,8 +78,8 @@ CREATE TABLE `SHKActivityData` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -114,7 +114,7 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityDataBLOBs` (
   `ActivityDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `SHKActivityDataWOB` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -663,8 +663,8 @@ CREATE TABLE `SHKNewEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -698,7 +698,7 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -727,7 +727,7 @@ CREATE TABLE `SHKNewEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -812,8 +812,8 @@ CREATE TABLE `SHKOldEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -847,7 +847,7 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -876,7 +876,7 @@ CREATE TABLE `SHKOldEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1244,8 +1244,8 @@ CREATE TABLE `SHKProcessData` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1279,7 +1279,7 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDataBLOBs` (
   `ProcessDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
+  `VariableValue` mediumblob DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1308,7 +1308,7 @@ CREATE TABLE `SHKProcessDataWOB` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
@@ -1877,8 +1877,8 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLData` (
-  `XPDLContent` longblob,
-  `XPDLClassContent` longblob,
+  `XPDLContent` longblob DEFAULT NULL,
+  `XPDLClassContent` longblob DEFAULT NULL,
   `XPDL` decimal(19,0) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -2075,9 +2075,9 @@ CREATE TABLE `app_app` (
   `published` bit(1) DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `license` text COLLATE utf8_unicode_ci,
-  `description` longtext COLLATE utf8_unicode_ci,
-  `meta` longtext COLLATE utf8_unicode_ci,
+  `license` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `meta` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2089,7 +2089,40 @@ CREATE TABLE `app_app` (
 
 LOCK TABLES `app_app` WRITE;
 /*!40000 ALTER TABLE `app_app` DISABLE KEYS */;
+INSERT INTO `app_app` VALUES ('appcenter',1,'App Center','','2020-02-06 15:44:55','2020-02-06 15:45:04','oRIgWuw8ed5OmS98TSZFxocskOFXU0v3VPneM0k80NqSBK2r6RhNzTNTryZkuj4W',NULL,NULL);
 /*!40000 ALTER TABLE `app_app` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_builder`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_builder` (
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appVersion` bigint(20) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_type` (`type`),
+  CONSTRAINT `FK_idup4nrrc79iy4kc46wf5919j` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_builder`
+--
+
+LOCK TABLES `app_builder` WRITE;
+/*!40000 ALTER TABLE `app_builder` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_builder` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2103,8 +2136,8 @@ CREATE TABLE `app_datalist` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8_unicode_ci,
-  `json` longtext COLLATE utf8_unicode_ci,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
@@ -2133,8 +2166,8 @@ CREATE TABLE `app_env_variable` (
   `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `value` text COLLATE utf8_unicode_ci,
-  `remarks` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `remarks` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2174,6 +2207,33 @@ LOCK TABLES `app_fd` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `app_fd_appcenter`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_fd_appcenter` (
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `createdBy` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `createdByName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `modifiedBy` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `modifiedByName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_fd_appcenter`
+--
+
+LOCK TABLES `app_fd_appcenter` WRITE;
+/*!40000 ALTER TABLE `app_fd_appcenter` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_fd_appcenter` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `app_form`
 --
 
@@ -2187,8 +2247,8 @@ CREATE TABLE `app_form` (
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `json` longtext COLLATE utf8_unicode_ci,
-  `description` longtext COLLATE utf8_unicode_ci,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
@@ -2202,6 +2262,7 @@ CREATE TABLE `app_form` (
 
 LOCK TABLES `app_form` WRITE;
 /*!40000 ALTER TABLE `app_form` DISABLE KEYS */;
+INSERT INTO `app_form` VALUES ('appcenter',1,'landing','Published Apps','2020-02-06 07:44:59','2020-02-06 07:44:59','appcenter','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"noPermissionMessage\":\"\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"name\":\"Published Apps\",\"description\":\"\",\"postProcessorRunOn\":\"both\",\"permission\":{\"className\":\"\",\"properties\":{}},\"id\":\"landing\",\"postProcessor\":{\"className\":\"\",\"properties\":{}},\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"tableName\":\"appcenter\"},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"autoPopulate\":\"\",\"id\":\"admin_div\",\"label\":\"\",\"value\":\"<style>\\n#appcenter_admin {\\n    position: absolute;\\n    top: -40px;\\n    text-align: center;\\n    display: block;\\n    margin: auto;\\n    width: 100%;\\n}\\n#appcenter_admin a {\\n    background: white;\\n    border: solid 1px #ddd;\\n    cursor: pointer;\\n    text-decoration: none;\\n    color: #555;\\n    margin-right: 5px;\\n    padding: 10px;\\n    box-shadow: 0 1px 1.5px 1px rgba(0,0,0,.12);\\n    border-radius: 4px;\\n    font-size: 14px;\\n    font-weight: 400;\\n    line-height: 1.42857143;\\n    display: inline-block;\\n}\\n@media (max-width:540px) {\\n    #appcenter_admin {\\n        display: none;\\n    }\\n}\\n<\\/style>\\n<div id=\\\"appcenter_admin\\\">\\n    <a href=\\\"#\\\" onclick=\\\"appCreate();return false\\\">#i18n.Design New App#<\\/a>\\n    <a href=\\\"#\\\" onclick=\\\"appImport();return false\\\">#i18n.Import App#<\\/a>\\n    <a href=\\\"#\\\" onclick=\'AdminBar.showQuickOverlay(\\\"\\/jw\\/web\\/desktop\\/marketplace\\/app?url=\\\" + encodeURIComponent(\\\"https:\\/\\/marketplace.joget.org\\\"));return false\'>#i18n.Download from Marketplace#<\\/a>\\n<\\/div>\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"readonly\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"permissionReadonly\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.BeanShellPermission\",\"properties\":{\"script\":\"import org.joget.workflow.util.WorkflowUtil;\\nreturn !WorkflowUtil.isCurrentUserAnonymous() && WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);\\n\"}},\"comment\":\"Display admin buttons\",\"id\":\"admin_section\",\"label\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"readonlyLabel\":\"\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"published_apps\",\"value\":\"<div id=\\\"main-action-help\\\"><i class=\\\"fa fa-info-circle\\\"><\\/i><\\/div>\\n<div id=\\\"search\\\"><\\/div>\\n<ul id=\\\"apps\\\"><\\/ul>\\n<p>\\n<script src=\\\"\\/jw\\/js\\/appCenter7.js\\\"><\\/script>\\n<script>\\nAppCenter.searchFilter($(\\\"#search\\\"), $(\\\"#apps\\\")); \\nAppCenter.loadPublishedApps(\\\"#apps\\\");\\n<\\/script>\\n<\\/p>\",\"label\":\"\",\"autoPopulate\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"readonly\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"permissionReadonly\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"comment\":\"Load and display published app userviews\",\"id\":\"apps_section\",\"label\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"readonlyLabel\":\"\"}}]}',NULL);
 /*!40000 ALTER TABLE `app_form` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2219,7 +2280,7 @@ CREATE TABLE `app_form_data_audit_trail` (
   `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `action` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `data` longtext COLLATE utf8_unicode_ci,
+  `data` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2246,7 +2307,7 @@ CREATE TABLE `app_message` (
   `ouid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2259,6 +2320,7 @@ CREATE TABLE `app_message` (
 
 LOCK TABLES `app_message` WRITE;
 /*!40000 ALTER TABLE `app_message` DISABLE KEYS */;
+INSERT INTO `app_message` VALUES ('appcenter',1,'<i class=\'fa fa-home\'></i> Home_zh_CN','<i class=\'fa fa-home\'></i> Home','zh_CN','<i class=\'fa fa-home\'></i> 首页'),('appcenter',1,'<i class=\'fa fa-home\'></i> Home_zh_TW','<i class=\'fa fa-home\'></i> Home','zh_TW','<i class=\'fa fa-home\'></i> 首頁'),('appcenter',1,'App Center_zh_CN','App Center','zh_CN','应用中心'),('appcenter',1,'App Center_zh_TW','App Center','zh_TW','應用中心'),('appcenter',1,'Design New App_zh_CN','Design New App','zh_CN','设计新应用程序'),('appcenter',1,'Design New App_zh_TW','Design New App','zh_TW','設計新應用程序'),('appcenter',1,'Download from Marketplace_zh_CN','Download from Marketplace','zh_CN','应用市场'),('appcenter',1,'Download from Marketplace_zh_TW','Download from Marketplace','zh_TW','應用市場'),('appcenter',1,'Faster, Simpler Digital Transformation_zh_CN','Faster, Simpler Digital Transformation','zh_CN','更快, 更简单地实现 企业数字化转型'),('appcenter',1,'Faster, Simpler Digital Transformation_zh_TW','Faster, Simpler Digital Transformation','zh_TW','更快, 更簡單地實現 企業數字化轉型'),('appcenter',1,'Import App_zh_CN','Import App','zh_CN','导入应用'),('appcenter',1,'Import App_zh_TW','Import App','zh_TW','導入應用'),('appcenter',1,'Powered by Joget_zh_CN','Powered by Joget','zh_CN','由Joget技术支持'),('appcenter',1,'Powered by Joget_zh_TW','Powered by Joget','zh_TW','由Joget技術支持'),('appcenter',1,'Published Apps_zh_CN','Published Apps','zh_CN','本地已发布'),('appcenter',1,'Published Apps_zh_TW','Published Apps','zh_TW','本地已發布');
 /*!40000 ALTER TABLE `app_message` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2337,7 +2399,7 @@ CREATE TABLE `app_package_activity_plugin` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2366,8 +2428,8 @@ CREATE TABLE `app_package_participant` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8_unicode_ci,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2394,8 +2456,8 @@ CREATE TABLE `app_plugin_default` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pluginDescription` text COLLATE utf8_unicode_ci,
-  `pluginProperties` text COLLATE utf8_unicode_ci,
+  `pluginDescription` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2449,7 +2511,7 @@ CREATE TABLE `app_report_activity_instance` (
   `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
@@ -2596,7 +2658,7 @@ CREATE TABLE `app_resource` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `filesize` bigint(20) DEFAULT NULL,
   `permissionClass` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `permissionProperties` longtext COLLATE utf8_unicode_ci,
+  `permissionProperties` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2608,6 +2670,7 @@ CREATE TABLE `app_resource` (
 
 LOCK TABLES `app_resource` WRITE;
 /*!40000 ALTER TABLE `app_resource` DISABLE KEYS */;
+INSERT INTO `app_resource` VALUES ('appcenter',1,'background-beach.jpg',190718,NULL,'{\"hashvariable\":\"#appResource.background-beach.jpg#\",\"permission\":{\"className\":\"\",\"properties\":{}}}'),('appcenter',1,'background-city.jpg',195420,NULL,'{\"hashvariable\":\"#appResource.background-city.jpg#\",\"permission\":{\"className\":\"\",\"properties\":{}}}'),('appcenter',1,'background-industrial.jpg',208549,NULL,'{\"hashvariable\":\"#appResource.background-industrial.jpg#\",\"permission\":{\"className\":\"\",\"properties\":{}}}'),('appcenter',1,'banner.png',396721,NULL,'{\"hashvariable\":\"#appResource.banner.png#\",\"permission\":{\"className\":\"\",\"properties\":{}}}'),('appcenter',1,'logo.png',7205,NULL,'{\"hashvariable\":\"#appResource.logo.png#\",\"permission\":{\"className\":\"\",\"properties\":{}}}');
 /*!40000 ALTER TABLE `app_resource` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2622,8 +2685,8 @@ CREATE TABLE `app_userview` (
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8_unicode_ci,
-  `json` longtext COLLATE utf8_unicode_ci,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
@@ -2639,6 +2702,7 @@ CREATE TABLE `app_userview` (
 
 LOCK TABLES `app_userview` WRITE;
 /*!40000 ALTER TABLE `app_userview` DISABLE KEYS */;
+INSERT INTO `app_userview` VALUES ('appcenter',1,'v','Joget DX',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"v\",\"name\":\"Joget DX\",\"description\":\"\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"#i18n.Powered by Joget#\"},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"horizontal_inline\",\"themeScheme\":\"light\",\"primaryColor\":\"custom\",\"customPrimary\":\"#0084F0\",\"customPrimaryDark\":\"#555555\",\"customPrimaryLight\":\"#FFFFFF\",\"accentColor\":\"BLUE\",\"buttonColor\":\"STEELBLUE\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\\/jw\\/images\\/v3\\/logo.png\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"all\",\"homeUrl\":\"\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"\",\"homeAttractBanner\":\"<div id=\\\"banner\\\">\\n    <h1>#i18n.Faster, Simpler Digital Transformation#<\\/h1>\\n<\\/div>\\n<div id=\\\"brand_logo\\\">\\n    <img src=\\\"#appResource.logo.png#\\\">\\n<\\/div>\\n<div id=\\\"clock\\\"><\\/div>\",\"css\":\"@import url(\\/jw\\/css\\/appCenter7.css);\\n#banner {\\n    background: url(#appResource.background-beach.jpg#);\\n    background-size: cover;\\n}\\n\",\"js\":\"$(function(){\\n    if (typeof AppCenter !== \\\"undefined\\\") {\\n        var backgrounds = [\\\"#appResource.background-city.jpg#\\\",\\\"#appResource.background-beach.jpg#\\\", \\\"#appResource.background-industrial.jpg#\\\"];\\n        AppCenter.rotateBackgroundStart(backgrounds, 300);\\n    }\\n});\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"disablePwa\":\"\",\"disablePush\":\"\",\"urlsToCache\":\"\\/web\\/json\\/apps\\/published\\/userviews?appCenter=true\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"userviewDescription\":\"\",\"userview_thumbnail\":\"\",\"hideThisUserviewInAppCenter\":\"true\",\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\",\"__\":\"\"}},\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-EE74E4F4426241BD9BC3BC73B1D24AC7\",\"label\":\"<i class=\'fa fa-home\'><\\/i> Home\"},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"28F7ADF73F204C8BBAAD32CF26587AE2\",\"customId\":\"home\",\"label\":\"App Center\",\"formId\":\"landing\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"\",\"redirectUrlOnCancel\":\"\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]}]}','2020-02-06 07:45:00','2020-02-06 07:45:00'),('appcenter',1,'v2','Joget DX Platform',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"formId\":\"landing\",\"customHeader\":\"\",\"loadDataWithKey\":\"\",\"redirectUrlOnCancel\":\"\",\"fieldPassoverMethod\":\"append\",\"redirectTargetOnCancel\":\"top\",\"keyName\":\"\",\"customFooter\":\"\",\"label\":\"App Center\",\"paramName\":\"\",\"customId\":\"home\",\"messageShowAfterComplete\":\"\",\"userviewCacheDuration\":\"20\",\"showInPopupDialog\":\"\",\"submitButtonLabel\":\"\",\"readonly\":\"\",\"cancelButtonLabel\":\"\",\"userviewCacheScope\":\"\",\"id\":\"28F7ADF73F204C8BBAAD32CF26587AE2\",\"redirectUrlAfterComplete\":\"\",\"fieldPassover\":\"\",\"readonlyLabel\":\"\"}}],\"properties\":{\"id\":\"category-EE74E4F4426241BD9BC3BC73B1D24AC7\",\"label\":\"<i class=\'fa fa-home\'><\\/i> Home\"}}],\"properties\":{\"logoutText\":\"Logout\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"name\":\"Joget DX Platform\",\"description\":\"\",\"footerMessage\":\"#i18n.Powered by Joget#\",\"id\":\"v2\"},\"setting\":{\"properties\":{\"__\":\"\",\"userviewDescription\":\"\",\"hideThisUserviewInAppCenter\":\"true\",\"userview_thumbnail\":\"\",\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"horizontal_inline\",\"themeScheme\":\"light\",\"primaryColor\":\"custom\",\"customPrimary\":\"#FF7BAC\",\"customPrimaryDark\":\"#FF7BAC\",\"customPrimaryLight\":\"#FFFFFF\",\"accentColor\":\"BLUE\",\"buttonColor\":\"PLUM\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\\/jw\\/images\\/v3\\/logo.png\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"all\",\"homeUrl\":\"\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"\",\"homeAttractBanner\":\"<div id=\\\"banner\\\">\\n    <h1>#i18n.Faster, Simpler Digital Transformation#<\\/h1>\\n<\\/div>\\n\",\"css\":\"@import url(\\/jw\\/css\\/appCenter7_banner.css);\\n#banner {\\n    background: url(#appResource.banner.png#) no-repeat center;\\n    background-size: cover;\\n}\\n\",\"js\":\"$(function() {\\n    if (typeof AppCenter !== \\\"undefined\\\") {\\n        AppCenter.showNotifications = false;\\n    }\\n});\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"disablePwa\":\"\",\"disablePush\":\"\",\"urlsToCache\":\"\\/web\\/json\\/apps\\/published\\/userviews?appCenter=true\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\"}}}','2020-02-06 07:45:00','2020-02-06 07:45:00');
 /*!40000 ALTER TABLE `app_userview` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2934,7 +2998,7 @@ UNLOCK TABLES;
 CREATE TABLE `dir_user_meta` (
   `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `meta_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `meta_value` longtext COLLATE utf8_unicode_ci,
+  `meta_value` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`username`,`meta_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3060,7 +3124,7 @@ CREATE TABLE `wf_audit_trail` (
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `clazz` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `method` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -3074,6 +3138,7 @@ CREATE TABLE `wf_audit_trail` (
 
 LOCK TABLES `wf_audit_trail` WRITE;
 /*!40000 ALTER TABLE `wf_audit_trail` DISABLE KEYS */;
+INSERT INTO `wf_audit_trail` VALUES ('4028803f7019748b017019756a6f0000','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','appcenter','2020-02-06 07:44:50',NULL,NULL),('4028803f7019748b017019758eae0001','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=false}','2020-02-06 07:44:59',NULL,NULL),('4028803f7019748b017019758eca0002','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id:\"landing\", appId:\"appcenter\", appVersion:\"1\", name:\"Published Apps\", dateCreated:\"Thu Feb 06 07:44:59 GMT 2020\", dateModified:\"Thu Feb 06 07:44:59 GMT 2020\"}','2020-02-06 07:44:59',NULL,NULL),('4028803f7019748b0170197591ad0003','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id:\"v\", appId:\"appcenter\", appVersion:\"1\", name:\"Joget DX\", dateCreated:\"Thu Feb 06 07:45:00 GMT 2020\", dateModified:\"Thu Feb 06 07:45:00 GMT 2020\"}','2020-02-06 07:45:00',NULL,NULL),('4028803f7019748b0170197591f40004','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id:\"v2\", appId:\"appcenter\", appVersion:\"1\", name:\"Joget DX Platform\", dateCreated:\"Thu Feb 06 07:45:00 GMT 2020\", dateModified:\"Thu Feb 06 07:45:00 GMT 2020\"}','2020-02-06 07:45:00',NULL,NULL),('4028803f7019748b0170197593540005','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"<i class=\'fa fa-home\'></i> Home_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:00','appcenter','1'),('4028803f7019748b0170197597950006','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"<i class=\'fa fa-home\'></i> Home_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:01','appcenter','1'),('4028803f7019748b0170197598270007','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"App Center_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:01','appcenter','1'),('4028803f7019748b0170197598ca0008','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"App Center_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b0170197599480009','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Design New App_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b0170197599b5000a','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Design New App_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759a04000b','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Download from Marketplace_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759a66000c','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Download from Marketplace_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759aea000d','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Faster, Simpler Digital Transformation_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759b75000e','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Faster, Simpler Digital Transformation_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759bd1000f','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Import App_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:02','appcenter','1'),('4028803f7019748b017019759c510010','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Import App_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759cbe0011','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Powered by Joget_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759d310012','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Powered by Joget_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759db10013','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Published Apps_zh_CN\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759e4f0014','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id:\"Published Apps_zh_TW\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759e760015','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id:\"background-beach.jpg\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759e830016','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id:\"background-city.jpg\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759e8d0017','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id:\"background-industrial.jpg\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759e9d0018','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id:\"banner.png\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b017019759ec00019','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id:\"logo.png\", appId:\"appcenter\", appVersion:\"1\", name:\"null\", dateCreated:\"null\", dateModified:\"null\"}','2020-02-06 07:45:03','appcenter','1'),('4028803f7019748b01701975a316001a','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=true}','2020-02-06 15:45:04','appcenter','1');
 /*!40000 ALTER TABLE `wf_audit_trail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3125,7 +3190,7 @@ CREATE TABLE `wf_report` (
   `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`activityInstanceId`),
@@ -3226,7 +3291,7 @@ CREATE TABLE `wf_resource_bundle_message` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8_unicode_ci,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3249,7 +3314,7 @@ UNLOCK TABLES;
 CREATE TABLE `wf_setup` (
   `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `property` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8_unicode_ci,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `ordering` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -3261,6 +3326,7 @@ CREATE TABLE `wf_setup` (
 
 LOCK TABLES `wf_setup` WRITE;
 /*!40000 ALTER TABLE `wf_setup` DISABLE KEYS */;
+INSERT INTO `wf_setup` VALUES ('4028803f7019748b01701975a358001b','defaultUserview','appcenter/v',NULL);
 /*!40000 ALTER TABLE `wf_setup` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -3273,4 +3339,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-16 16:52:11
+-- Dump completed on 2020-02-06 15:47:07
