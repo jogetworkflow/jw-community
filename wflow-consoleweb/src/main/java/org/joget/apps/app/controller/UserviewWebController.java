@@ -173,7 +173,7 @@ public class UserviewWebController {
     public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
         String serviceWorker = UserviewUtil.getServiceWorker(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId), SecurityUtil.validateStringInput(userviewKey));
         response.setContentType("application/javascript;charset=UTF-8");
-        response.setHeader("Service-Worker-Allowed", request.getContextPath());
+        response.setHeader("Service-Worker-Allowed", (request.getContextPath().isEmpty())?"/":request.getContextPath());
         PrintWriter writer = response.getWriter();
         writer.println(serviceWorker);
     }
