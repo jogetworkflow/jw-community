@@ -140,7 +140,7 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
                 + "<iframe id=\"welcomeFrame\" style=\"height:100vh; width:100%; box-sizing: border-box; overflow:hidden;\" frameborder=\"0\"></iframe>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
-                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"//www.joget.org/updates/DX7/welcome?src=community\"); });</script>";
+                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"https://www.joget.org/updates/DX7/welcome/?src=community\"); });</script>";
         return content;
     }
     
