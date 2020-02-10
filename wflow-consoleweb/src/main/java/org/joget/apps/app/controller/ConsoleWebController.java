@@ -4383,10 +4383,7 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/profile/change", method = RequestMethod.POST)
     public void consoleProfileChange(Writer writer, @RequestParam("profileName") String profileName) {
-        if (!HostManager.isVirtualHostEnabled()) {
-            SecurityUtil.validateStringInput(profileName);
-            DynamicDataSourceManager.changeProfile(profileName);
-        }
+        WorkflowUtil.switchProfile(profileName);
     }
 
     @RequestMapping(value = "/console/setting/profile/create", method = RequestMethod.POST)
@@ -4397,7 +4394,7 @@ public class ConsoleWebController {
             String secureValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
             
             DynamicDataSourceManager.createProfile(profileName);
-            DynamicDataSourceManager.changeProfile(profileName);
+            WorkflowUtil.switchProfile(profileName);
 
             //request params
             Enumeration e = request.getParameterNames();
