@@ -1294,4 +1294,13 @@ public class AppUtil implements ApplicationContextAware {
         }
         return appDef;
     }
+    
+    public static boolean isEnterprise() {
+        try {
+            Class.forName("org.joget.apps.license.LicenseManager");
+            return true;
+        } catch (Exception e) {}
+        
+        return false;
+    }
 }
