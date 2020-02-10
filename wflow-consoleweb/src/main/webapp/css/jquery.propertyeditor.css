@@ -1175,6 +1175,9 @@ body .boxy-wrapper .autosave input {
 .tooltipster-base .property-description a {
     color:white;
 }
+body .ui-dialog .button_form.ui-dialog-content{
+    padding:10px !important;
+}
 /* mobile styles */
 @media screen and (max-width:680px) {
     .property-label-container {

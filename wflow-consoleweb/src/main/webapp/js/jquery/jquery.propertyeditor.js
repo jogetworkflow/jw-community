@@ -1989,6 +1989,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                             $(object).dialog({
                                 modal: true,
                                 width: "70%",
+                                closeText: '',
                                 buttons: [{
                                     text: $(button).val(),
                                     click: function() {
@@ -2027,6 +2028,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         $(object).dialog({
                             modal: true,
                             width: "70%",
+                            closeText: '',
                             buttons: [{
                                 text: $(button).val(),
                                 click: function() {
@@ -5672,6 +5674,7 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
                     autoOpen: false,
                     modal: true,
                     height: 85,
+                    closeText: '',
                     close: function(event, ui) {
                         $(object).dialog("destroy");
                         $(object).remove();

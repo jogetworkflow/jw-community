@@ -596,7 +596,7 @@ body .ui-dialog {
     z-index: 10001;
 }
 body .ui-dialog .ui-dialog-content {
-    padding: 10px !important;
+    padding: 0px !important;
     overflow: hidden !important;
 }
 body .ui-dialog .ui-dialog-buttonpane button {
