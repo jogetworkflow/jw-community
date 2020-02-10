@@ -4063,7 +4063,7 @@ public class ConsoleWebController {
     public void consoleProfileChange(Writer writer, @RequestParam("profileName") String profileName) {
         if (!HostManager.isVirtualHostEnabled()) {
             SecurityUtil.validateStringInput(profileName);
-            DynamicDataSourceManager.changeProfile(profileName);
+            WorkflowUtil.switchProfile(profileName);
         }
     }
 
