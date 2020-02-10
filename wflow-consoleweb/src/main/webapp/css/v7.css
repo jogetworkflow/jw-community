@@ -596,8 +596,11 @@ body .ui-dialog {
     z-index: 10001;
 }
 body .ui-dialog .ui-dialog-content {
-    padding: 0 !important;
+    padding: 10px !important;
     overflow: hidden !important;
+}
+body .ui-dialog .ui-dialog-buttonpane button {
+    padding: 5px 10px;
 }
 body .ui-dialog-titlebar{
     position: absolute !important;
@@ -640,10 +643,10 @@ body .ui-icon-closethick{
     font-size: 20px;
     width: 20px !important;
     height: 20px !important;
-    color:#fff !important;
+    color:#ccc !important;
 }
 body .ui-icon-closethick:hover {
-    color: #ccc !important;
+    color: #aaa !important;
 }
 body .ui-icon-closethick:before{
     content: '\f00d';
