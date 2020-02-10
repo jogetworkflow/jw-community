@@ -56,7 +56,9 @@
                     <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
                     <dd><c:out value="${process.id}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.process.config.label.linkToRunProcess"/></dt>
-                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/process/<c:out value="${processIdWithoutVersion}"/>?start=true</dd>
+                    <c:set var="serverPort" value=":${pageContext.request.serverPort}"/>
+                    <c:if test="${serverPort == ':80' || serverPort == ':443'}"><c:set var="serverPort" value=""/></c:if>
+                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}${serverPort}${pageContext.request.contextPath}/web/client/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/process/<c:out value="${processIdWithoutVersion}"/>?start=true</dd>
                 </dl>
             </div>
             <div class="form-buttons">
