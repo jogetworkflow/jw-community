@@ -42,7 +42,7 @@
                     return true;
                 });
                 if (!UI.isMobileUserAgent()) {
-                    $('form').find("input:visible, select:visible, textarea:visible, label[tabindex]:visible").first().focus();
+                    $('form').find("input:visible, select:visible, textarea:visible, label[tabindex]:visible, .focusable").first().focus().trigger("focusable");
                 }
                 $('form').on('keyup', "label[tabindex]", function(e) {
                     var keyCode = e.keyCode || e.which;
