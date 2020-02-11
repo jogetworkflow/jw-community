@@ -4863,6 +4863,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
             } else {
                 this.pageOptions.propertyValues = (this.value) ? this.value.properties : null;
             }
+        } else {
+            this.pageOptions.propertyValues = (this.value && this.value.className === value) ? this.value.properties : null;
         }
         //check if value is different, remove all the related properties page
         if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']:first').attr('elementvalue') !== value) {

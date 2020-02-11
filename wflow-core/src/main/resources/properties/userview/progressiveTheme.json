@@ -39,6 +39,9 @@
         options_label_processor : 'color',
         value: 'INDIGO',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
@@ -204,6 +207,9 @@
         options_label_processor : 'color',
         value: 'BLUE',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
@@ -361,6 +367,9 @@
         options_label_processor : 'color',
         value: 'GREY',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
@@ -510,6 +519,9 @@
         options_label_processor : 'color',
         value: 'WHITE',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
@@ -659,6 +671,9 @@
         options_label_processor : 'color',
         value: 'BLACK',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
@@ -812,6 +827,9 @@
         options_label_processor : 'color',
         value: 'WHITE',
         options : [{
+            value : '',
+            label : ''
+        },{
             value : 'RED',
             label : '@@theme.progressive.colorScheme.red@@'
         },{
