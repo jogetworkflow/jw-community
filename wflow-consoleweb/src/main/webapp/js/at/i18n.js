@@ -180,7 +180,7 @@ I18nEditor = {
             $(container).find("tbody tr").each(function(i, tr){
                 var key = $(tr).find("td.label textarea").val() + "_" + locale;
                 $(tr).find("td."+id).html('<textarea></textarea>');
-                $(tr).find("td."+id+" textarea").attr("rel", key);
+                $(tr).find("td."+id+" textarea").attr("rel", key.toLowerCase());
             });
             $.ajax({
                 url: options.contextPath + '/web/json/console/app/'+options.appId+'/'+options.appVersion+'/message/list',
@@ -192,9 +192,9 @@ I18nEditor = {
                     if (response.total > 0) {
                         for (var i in response.data) {
                             var message = response.data[i];
-                            var mid = message.id.replace(new RegExp('"', 'g'), "\\\"");
+                            var mid = message.id.replace(new RegExp('"', 'g'), "\\\"").toLowerCase();
                             var field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
-                            if ($(field).attr("rel") === message.id) {
+                            if ($(field).attr("rel") === message.id.toLowerCase()) {
                                 $(field).val(message.message);
                             }
                         }

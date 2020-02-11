@@ -989,7 +989,7 @@ public class AppUtil implements ApplicationContextAware {
                     key = StringUtil.escapeString(key, escapeType, null);
                     translated = StringUtil.escapeString(translated, escapeType, null);
                 }
-                content = content.replaceAll("(['\"]label['\"]\\s*:\\s*['\"])" + StringUtil.escapeRegex(key) + "(['\"])" , "$1" + StringUtil.escapeRegex(translated) + "$2");
+                content = content.replaceAll("(?i)(['\"]label['\"]\\s*:\\s*['\"])" + StringUtil.escapeRegex(key) + "(['\"])" , "$1" + StringUtil.escapeRegex(translated) + "$2");
             }
         }
         return content;
