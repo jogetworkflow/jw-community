@@ -71,6 +71,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             }
             if (localeResolver != null) {
                 LocaleContext localeContext = localeResolver.resolveLocaleContext(request);
+                localeResolver.resolveLocale(request);
                 LocaleContextHolder.setLocaleContext(localeContext, true);
             }
             
