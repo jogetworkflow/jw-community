@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/employment/noHaveOrganization/list?&${pageContext.request.queryString}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/employment/notInOrganization/list?orgId=${id}&${pageContext.request.queryString}"
                    var="JsonDataTable"
                    divToUpdate="employmentList"
                    jsonData="data"

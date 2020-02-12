@@ -3,7 +3,10 @@ package org.joget.directory.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.Department;
@@ -201,10 +204,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 condition += " and e.grade.id = ?";
                 param.add(gradeId);
             }
-            
-            condition += " group by e.userId";
 
-            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+            return findDistinct("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Employments Error!");
         }
@@ -237,10 +238,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 condition += " and e.grade.id = ?";
                 param.add(gradeId);
             }
-            
-            condition += " group by e.userId";
 
-            return count("Employment", condition, param.toArray());
+            return countDistinct("Employment", condition, param.toArray());
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments Error!");
         }
@@ -610,9 +609,9 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) ";
 
-            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+            return findDistinct("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Users No Have Organization Error!");
         }
@@ -632,9 +631,9 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId is not null) ";
 
-            return count("Employment", condition, param.toArray());
+            return countDistinct("Employment", condition, param.toArray());
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments No Have Organization Error!");
         }
@@ -654,11 +653,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) and e.organizationId = ?";
             param.add(organizationId);
             param.add(departmentId);
+            param.add(organizationId);
 
-            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+            return findDistinct("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Employments Not In Department Error!");
         }
@@ -678,11 +678,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.departmentId = ?) and e.organizationId = ?";
             param.add(organizationId);
             param.add(departmentId);
+            param.add(organizationId);
 
-            return count("Employment", condition, param.toArray());
+            return countDistinct("Employment", condition, param.toArray());
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments Not In Department Error!");
         }
@@ -702,11 +703,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) and e.organizationId = ?";
             param.add(organizationId);
             param.add(gradeId);
+            param.add(organizationId);
 
-            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+            return findDistinct("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Employments Not In Grade Error!");
         }
@@ -726,11 +728,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ? and sub.gradeId = ?) and e.organizationId = ?";
             param.add(organizationId);
             param.add(gradeId);
+            param.add(organizationId);
 
-            return count("Employment", condition, param.toArray());
+            return countDistinct("Employment", condition, param.toArray());
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments Not In Grade Error!");
         }
@@ -750,10 +753,10 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) ";
             param.add(organizationId);
 
-            return find("Employment", condition, param.toArray(), sort, desc, start, rows);
+            return findDistinct("Employment", condition, param.toArray(), sort, desc, start, rows);
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Users No Have Organization Error!");
         }
@@ -773,10 +776,10 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             param.add("%" + filterString + "%");
             param.add("%" + filterString + "%");
 
-            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) group by e.userId";
+            condition += " and e.userId not in (select sub.userId from Employment as sub where sub.organizationId = ?) ";
             param.add(organizationId);
 
-            return count("Employment", condition, param.toArray());
+            return countDistinct("Employment", condition, param.toArray());
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Get Total Employments No Have Organization Error!");
         }
@@ -812,5 +815,54 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         }
         
         super.delete(entityName, obj);
+    }
+    
+    protected Collection<Employment> findDistinct(final String entityName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        Session session = findSession();
+        String query = "SELECT e1 FROM " + entityName + " e1 where (e1.userId, e1.id) IN ";
+        query += "(SELECT distinct e.userId, e.id FROM " + entityName + " e " + condition + ")";
+                
+        if (sort != null && !sort.equals("")) {
+            String filteredSort = filterSpace(sort);
+            query += " ORDER BY " + filteredSort;
+
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = session.createQuery(query);
+
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
+
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+
+        return (Collection<Employment>) q.list();
+    }
+
+    protected Long countDistinct(final String entityName, final String condition, final Object[] params) {
+        Session session = findSession();
+        Query q = session.createQuery("SELECT COUNT(e.userId) FROM " + entityName + " e " + condition + " group by e.userId");
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+        
+        List result = q.list();
+        return new Long(result.size());
     }
 }
