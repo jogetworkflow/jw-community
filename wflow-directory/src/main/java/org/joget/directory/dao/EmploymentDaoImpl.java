@@ -841,30 +841,34 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     ids.put(temp[0].toString(), temp[1].toString());
                 }
             }
-        }
-        
-        query = "SELECT e FROM " + entityName + " e where e.id IN (:ids)";
-                
-        if (sort != null && !sort.equals("")) {
-            String filteredSort = filterSpace(sort);
-            query += " ORDER BY " + filteredSort;
+            
+            if (!ids.isEmpty()) {
+                query = "SELECT e FROM " + entityName + " e where e.id IN (:ids)";
 
-            if (desc) {
-                query += " DESC";
+                if (sort != null && !sort.equals("")) {
+                    String filteredSort = filterSpace(sort);
+                    query += " ORDER BY " + filteredSort;
+
+                    if (desc) {
+                        query += " DESC";
+                    }
+                }
+                q = session.createQuery(query);
+
+                int s = (start == null) ? 0 : start;
+                q.setFirstResult(s);
+
+                if (rows != null && rows > 0) {
+                    q.setMaxResults(rows);
+                }
+
+                q.setParameterList("ids", ids.values().toArray(new String[0]));
+
+                return (Collection<Employment>) q.list();
             }
         }
-        q = session.createQuery(query);
-
-        int s = (start == null) ? 0 : start;
-        q.setFirstResult(s);
-
-        if (rows != null && rows > 0) {
-            q.setMaxResults(rows);
-        }
         
-        q.setParameterList("ids", ids.values().toArray(new String[0]));
-
-        return (Collection<Employment>) q.list();
+        return new ArrayList<Employment>();
     }
 
     protected Long countDistinct(final String entityName, final String condition, final Object[] params) {
