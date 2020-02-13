@@ -2,8 +2,10 @@ package org.joget.directory.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -819,8 +821,29 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
     
     protected Collection<Employment> findDistinct(final String entityName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         Session session = findSession();
-        String query = "SELECT e1 FROM " + entityName + " e1 where (e1.userId, e1.id) IN ";
-        query += "(SELECT distinct e.userId, e.id FROM " + entityName + " e " + condition + ")";
+        
+        String query = "SELECT e.userId, e.id FROM " + entityName + " e " + condition;
+        Query q = session.createQuery(query);
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+        
+        Map<String, String> ids = new HashMap<String, String>();
+        Collection results = q.list();
+        if (results != null) {
+            for (Object o : results) {
+                Object[] temp = (Object[]) o;
+                if (!ids.containsKey(temp[0].toString())) {
+                    ids.put(temp[0].toString(), temp[1].toString());
+                }
+            }
+        }
+        
+        query = "SELECT e FROM " + entityName + " e where e.id IN (:ids)";
                 
         if (sort != null && !sort.equals("")) {
             String filteredSort = filterSpace(sort);
@@ -830,7 +853,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 query += " DESC";
             }
         }
-        Query q = session.createQuery(query);
+        q = session.createQuery(query);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -838,14 +861,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         if (rows != null && rows > 0) {
             q.setMaxResults(rows);
         }
-
-        if (params != null) {
-            int i = 0;
-            for (Object param : params) {
-                q.setParameter(i, param);
-                i++;
-            }
-        }
+        
+        q.setParameterList("ids", ids.values().toArray(new String[0]));
 
         return (Collection<Employment>) q.list();
     }
