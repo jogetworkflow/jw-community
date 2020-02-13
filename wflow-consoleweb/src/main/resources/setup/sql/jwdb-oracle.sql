@@ -18,7 +18,7 @@
 --  DDL for Table APP_BUILDER
 --------------------------------------------------------
 
-    CREATE TABLE `APP_BUILDER` (
+    CREATE TABLE "APP_BUILDER" (
       "APPID" VARCHAR2(255 CHAR), 
       "APPVERSION" NUMBER(19,0), 
       "ID" VARCHAR2(255 CHAR), 
