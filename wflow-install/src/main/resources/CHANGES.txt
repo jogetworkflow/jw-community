@@ -22,6 +22,48 @@ SUMMARY IN 7.0-PREVIEW
   - New Plugin Type for Extending App Builder
   - Latest Upgrades Under The Hood
 
+CHANGES IN 7.0-RC
+=================
+86b722c1 Fixed: wflow-consoleweb/wflow-directory - Organization - Improper handle for empty result on f1421c7. @7.0-SNAPSHOT
+f1421c78 Fixed: wflow-consoleweb/wflow-directory - Organization - Changes on 27f14ba6 does not support MSSQL. @7.0-SNAPSHOT
+c38b83f7 Fixed: wflow-consoleweb - Setup - Oracle script is incorrect. @7.0-SNAPSHOT
+27f14ba6 Fixed: wflow-consoleweb/wflow-directory - Organization - Multi organization support does not work in MySQL8. @7.0-SNAPSHOT
+0f137975 Modified: wflow-consoleweb - Update default app. @7.0-SNAPSHOT
+af100d63 Modified: wflow-install - Update default database and script. @7.0-SNAPSHOT
+f0d31429 Fixed: wflow-consoleweb - Locale - "_lang" parameter to switch language does not work correctly. @7.0-SNAPSHOT
+d4d03598 Fixed: wflow-consoleweb - Quill Editor - Not able to focus when click on bottom part of content area. #7346 @7.0-SNAPSHOT
+7b73a6b8 Fixed: wflow-consoleweb - Progressive Theme - Section columns miss aligned. #7359 @7.0-SNAPSHOT
+bd8bba2e Fixed: wflow-consoleweb - Form - Can't focus on custom field during load. #7346 @7.0-SNAPSHOT Fixed: wflow-consoleweb - Quill Editor - Not able to focus when click on bottom part of content area. #7346 @7.0-SNAPSHOT
+b51fd6f0 Fixed: wflow-consoleweb - Builder Advanced Tool - I18n - Can't populate the translation value if there is inconsistent label. #7352 @7.0-SNAPSHOT
+2a353235 Fixed: wflow-consoleweb - Progressive Theme - Change to other themes then change back to DX Progressive theme causes the color for menus all in red. #7345 @7.0-SNAPSHOT
+4e7421c5 Fixed: wflow-consoleweb - Property Editor - Button popup dialog missing padding. @7.0-SNAPSHOT
+11c309c4 Fixed: wflow-consoleweb/wflow-wfengine - Switch Profile - Deadline checker did not stop for previous profile and start with new profile. @7.0-SNAPSHOT
+9fe0bd9a Fixed: wflow-consoleweb - Process View - Link to Run Process URL showing redundant port number @7.0-SNAPSHOT
+0bc53c21 Fixed: wflow-consoleweb - Progressive/Universal Theme - Style affected input field when field id equals to `content`. @7.0-SNAPSHOT
+1634e288 Fixed: wflow-consoleweb - PWA - Serviceworker can't register when host as ROOT. @7.0-SNAPSHOT
+37db42c8 Fixed: wflow-consoleweb - Web Console - JavaScript Mixed Content error: This request has been blocked; the content must be served over HTTPS @7.0-SNAPSHOT
+9c7824d2 Fixed: wflow-consoleweb - General Setting - Enterprise only setting is appeared in community version. @7.0-SNAPSHOT
+07b76b50 Fixed: wflow-consoleweb - Embed Datalist - Popup select box has system error if row id in list is an email value. @6.0-SNAPSHOT
+6ff6b90d Fixed: wflow-consoleweb - Property Editor - Missing padding in Sync LDAP Directory Manager and Email Tool popup dialogs @7.0-SNAPSHOT
+59750960 Modified: wflow-install - Update default database and script. @7.0-SNAPSHOT
+a3e9f547 Modified: wflow-consoleweb - Update plugin help links. @7.0-SNAPSHOT
+d10947e8 Fixed: wflow-core - Property Editor - Revert change 93eec5a. HTML menu can't support complex HTML and js anymore. @7.0-SNAPSHOT
+57499800 Fixed: wflow-core - AppDevUtil - Git can't checkout correctly when there is uncommitted files. @7.0-SNAPSHOT
+bb1aae22 Modified: wflow-core/wflow-consoleweb - Update KB links. @7.0-SNAPSHOT
+819502a5 Modified: wflow-core/wflow-consoleweb - Update KB links. @7.0-SNAPSHOT
+5ea59941 Fixed: wflow-consoleweb - Settings - Change label for Run Process Primary Key to title case @7.0-SNAPSHOT
+a88318f5 Modified: wflow-jdbc, wflow-commons, wflow-consoleweb - MySQL - Upgraded MariaDB JDBC driver to 2.5.0 to support MySQL 8 default caching_sha2_password authentication @6.0-SNAPSHOT
+0e1800e3 Fixed: wflow-commons - Startup - MariaDB dialect cannot resolved by Hibernate. @6.0-SNAPSHOT
+aa6fab69 Modified: wflow-core - Id Generator Field - Environment variable name should validate to only allow alpha-numeric & underscore character. @7.0-SNAPSHOT
+5f3b8797 Modified: wflow-consoleweb - Update plugin help links. @7.0-SNAPSHOT
+244adc7f Fixed: wflow-wfengine/wflow-consoleweb - Settings - Option to select either UUID (default) or Process ID as Run Process Data Record. @7.0-SNAPSHOT
+9d24ecfe Fixed: wflow-consoleweb - Userview Builder - Edit menu properties does not remove unused property from previous values. @7.0-SNAPSHOT Fixed: wflow-consoleweb - Form Builder - Edit field properties does not remove unused property from previous values. @7.0-SNAPSHOT Fixed: wflow-consoleweb - Datalist Builder - Edit action/row action properties does not remove unused property from previous values. @7.0-SNAPSHOT
+684e9ca5 Modified: wflow-consoleweb - Userview Builder - Not able to check menu generated id. @7.0-SNAPSHOT
+bfe465e5 Fixed: wflow-core - Form - Advance Permission Rule - Subform without permission rule reset the parent form permission rule to `default` causing fields after the subform is not work according to rule. @7.0-SNAPSHOT
+c0f3ee0c Modified: wflow-wfengine - Deadline - Reduce DB calls to retrieve process and activity data to improve performance. @7.0-SNAPSHOT
+26c74e63 Fixed: wflow-consoleweb - Hyperlink Action - Target is not working when use as list action. @7.0-SNAPSHOT
+11b6f221 Fixed: wflow-consoleweb - Hyperlink Datalist Action - Not able to pass parameter when use as list action. #7246 @7.0-SNAPSHOT
+
 CHANGES IN 7.0-BETA3
 ====================
 c0b9be06 Fixed: wflow-core - Email Tool - ICAL timezone is wrongly set. #7239 @7.0-SNAPSHOT
