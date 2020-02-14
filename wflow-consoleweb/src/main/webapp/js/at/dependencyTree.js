@@ -912,7 +912,11 @@ DependencyTree.Matchers['datalist'] = {
 DependencyTree.Matchers['hasPermission'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['permission'] !== undefined && jsonObj['properties']['permission']['className'] !== "") {
-            DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']].label + ')');
+            if ((typeof viewer.pluginList[jsonObj['properties']['permission']['className']]) !== "undefined") {
+                DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']].label + ')');
+            } else {
+                DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + jsonObj['properties']['permission']['className'] + ')', "red");
+            }
         }
         return false;
     }
