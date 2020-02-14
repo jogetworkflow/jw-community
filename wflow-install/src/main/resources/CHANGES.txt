@@ -24,6 +24,7 @@ SUMMARY IN 7.0-PREVIEW
 
 CHANGES IN 7.0-RC
 =================
+9829bf37 Fixed: wflow-consoleweb - Advanced Tool - Tree viewer - Missing plugin in permission is not handled. @7.0-SNAPSHOT
 86b722c1 Fixed: wflow-consoleweb/wflow-directory - Organization - Improper handle for empty result on f1421c7. @7.0-SNAPSHOT
 f1421c78 Fixed: wflow-consoleweb/wflow-directory - Organization - Changes on 27f14ba6 does not support MSSQL. @7.0-SNAPSHOT
 c38b83f7 Fixed: wflow-consoleweb - Setup - Oracle script is incorrect. @7.0-SNAPSHOT
