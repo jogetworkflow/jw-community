@@ -1465,3 +1465,14 @@ main .grid-stack-item-header-refresh {
     }
 }
 #jqueryDialogDiv {overflow: hidden;}
+
+.btn-danger {
+    color: #d9534f !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+.btn.btn-danger {
+    color: #fff !important;
+    background-color: #d9534f !important;
+    border-color: #d43f3a !important;
+}
