@@ -1309,6 +1309,9 @@ DatalistBuilder = {
         var propertiesDefinition = DatalistBuilder.getColumnPropertiesDefinition();
 
         var propertyValues = DatalistBuilder.chosenColumns[columnId];
+        if (propertyValues !== null && propertyValues !== undefined) {
+            propertyValues['datalist_type'] = 'column';
+        }
 
         var options = {
             appPath: DatalistBuilder.appPath,
@@ -1394,6 +1397,7 @@ DatalistBuilder = {
 
         var propertyValues = DatalistBuilder.chosenFilters[columnId];
         propertyValues['filterParamName'] = DatalistBuilder.filterParam + propertyValues['name'];
+        propertyValues['datalist_type'] = 'filter';
         
         var options = {
             appPath: DatalistBuilder.appPath,
@@ -1689,6 +1693,9 @@ DatalistBuilder = {
         var propertiesDefinition = DatalistBuilder.getActionPropertiesDefinition(action.className);
         
         var propertyValues = action.properties;
+        if (propertyValues !== null && propertyValues !== undefined) {
+            propertyValues['datalist_type'] = 'action';
+        }
 
         var options = {
             appPath: DatalistBuilder.appPath,
@@ -1838,6 +1845,9 @@ DatalistBuilder = {
         var propertiesDefinition = DatalistBuilder.getRowActionPropertiesDefinition(action.className);
         
         var propertyValues = action.properties;
+        if (propertyValues !== null && propertyValues !== undefined) {
+            propertyValues['datalist_type'] = 'row_action';
+        }
 
         var options = {
             appPath: DatalistBuilder.appPath,
