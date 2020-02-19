@@ -1665,7 +1665,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public FormRowSet storeFormData(String formDefId, String tableName, FormRowSet rows, String primaryKeyValue) {
         FormRowSet results = null;
-        if (formDefId != null && tableName != null && rows != null && !rows.isEmpty()) {
+        if (formDefId != null && !formDefId.isEmpty() && tableName != null && !tableName.isEmpty() && rows != null && !rows.isEmpty()) {
 
             // determine rows to store
             results = new FormRowSet();
