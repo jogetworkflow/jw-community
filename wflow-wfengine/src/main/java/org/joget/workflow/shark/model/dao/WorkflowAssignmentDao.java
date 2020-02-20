@@ -10,11 +10,17 @@ import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.joget.commons.util.LogUtil;
+import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.shark.migrate.model.MigrateActivity;
+import org.joget.workflow.shark.migrate.model.MigrateAssignment;
+import org.joget.workflow.shark.migrate.model.MigrateProcess;
+import org.joget.workflow.shark.migrate.model.MigrateProcessDefinition;
 import org.joget.workflow.shark.model.SharkAssignment;
 import org.joget.workflow.shark.model.SharkProcess;
 import org.joget.workflow.util.WorkflowUtil;
@@ -24,6 +30,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     private WorkflowProcessLinkDao workflowProcessLinkDao;
     public final static String ENTITY_NAME="SharkAssignment";
     public final static String PROCESS_ENTITY_NAME="SharkProcess";
+    public final static String ACTIVITY_ENTITY_NAME="SharkActivity";
     
     public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
         
@@ -741,5 +748,117 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         }
         
         return condition;  
+    }
+    
+    /**
+     * Migrate the process instance from one version to another version
+     * @param packageId 
+     * @return  
+     */
+    public Collection<String> getMigrateProcessInstances(String packageId){
+        Session session = findSession();
+        String query = "SELECT e.id" + " FROM MigrateProcess e WHERE e.name like ? and e.state in (1000000, 1000002, 1000004) ORDER BY e.oid";
+
+        Query q = session.createQuery(query);
+        q.setFirstResult(0);
+
+        q.setParameter(0, packageId + "#%");
+
+        return q.list();
+    }
+    
+    public MigrateActivity getActivityProcessDefId(String actId) {
+        return (MigrateActivity) find("MigrateActivity", actId);
+    }
+    
+    /**
+     * Migrate the process instance from one version to another version
+     * @param processId 
+     * @param newVersion 
+     * @return  
+     */
+    public boolean migrateProcessInstance(String processId, String newVersion){
+        try {
+            //get running process for migration
+            ArrayList<MigrateProcess> processes = (ArrayList<MigrateProcess>) find("MigrateProcess", "where e.id = ? and e.state in (1000000, 1000002, 1000004)", new String[]{processId}, null, null, null, null);
+
+            if (!processes.isEmpty()) {
+                MigrateProcess process = processes.get(0);
+
+                String processDefId = process.getName().replaceAll("#[0-9]+#", "#" + newVersion + "#");
+
+                if (process.getName().equalsIgnoreCase(processDefId)) {
+                    return true;
+                }
+
+                ArrayList<MigrateProcessDefinition> definitions = (ArrayList<MigrateProcessDefinition>) find("MigrateProcessDefinition", "where e.name = ?", new String[]{processDefId}, null, null, null, null);
+
+                if (!definitions.isEmpty()) {
+                    MigrateProcessDefinition definition = definitions.get(0);
+
+                    //get running activity for migration
+                    Collection<MigrateActivity> acts = find("MigrateActivity", "where e.processId = ? and e.state in (1000001, 1000003, 1000005)", new String[]{processId}, null, null, null, null);
+
+                    if (!acts.isEmpty()) {
+                        boolean hasMissingActivity = false;
+
+                        WorkflowManager wm = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+
+                        Map<String, WorkflowActivity> currentActivities = new HashMap<String, WorkflowActivity>();
+                        Collection<WorkflowActivity> currentActivityList = wm.getProcessActivityDefinitionList(process.getName());
+                        for (WorkflowActivity act : currentActivityList) {
+                            currentActivities.put(act.getId(), act);
+                        }
+                        Map<String, WorkflowActivity> activities = new HashMap<String, WorkflowActivity>();
+                        Collection<WorkflowActivity> activityList = wm.getProcessActivityDefinitionList(processDefId);
+                        for (WorkflowActivity act : activityList) {
+                            activities.put(act.getId(), act);
+                        }
+
+                        for (MigrateActivity a : acts) {
+                            WorkflowActivity cAct = currentActivities.get(a.getDefId());
+                            WorkflowActivity nAct = activities.get(a.getDefId());
+
+                            if (cAct != null && nAct != null && cAct.getType().equals(nAct.getType())) {
+                                if (a.getPerformer() != null && nAct.getType().equals(WorkflowActivity.TYPE_SUBFLOW)) {
+                                    if (!migrateProcessInstance(a.getPerformer(), newVersion)) {
+                                        hasMissingActivity = true;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                hasMissingActivity = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasMissingActivity) {
+                            process.setName(processDefId);
+                            process.setProcessDefinition(definition.getOid());
+                            saveOrUpdate("MigrateProcess", process);
+
+                            for (MigrateActivity a : acts) {
+                                a.setProcessDefId(processDefId);
+                                saveOrUpdate("MigrateActivity", a);
+                            }
+
+                            //get running activity for migration
+                            Collection<MigrateAssignment> assignments = find("MigrateAssignment", "where e.processId = ?", new String[]{processId}, null, null, null, null);
+                            if (!assignments.isEmpty()) {
+                                for (MigrateAssignment a : assignments) {
+                                    a.setProcessDefId(processDefId);
+                                    saveOrUpdate("MigrateAssignment", a);
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(WorkflowAssignmentDao.class.getName(), e, processId);
+        }
+        
+        return false;
     }
 }

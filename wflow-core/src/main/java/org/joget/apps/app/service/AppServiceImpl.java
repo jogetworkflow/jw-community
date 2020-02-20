@@ -105,6 +105,7 @@ import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.shark.WorkflowAssignmentManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.simpleframework.xml.Serializer;
@@ -2156,7 +2157,8 @@ public class AppServiceImpl implements AppService {
                 processMigration.put(profile + "::" + packageId + "::" + fromVersion, toVersion.toString());
                 
                 LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                Collection<WorkflowProcess> runningProcessList = workflowManager.getRunningProcessList(packageId, null, null, fromVersion.toString(), null, null, 0, null);
+                
+                Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
 
                 migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
                 
@@ -2169,46 +2171,28 @@ public class AppServiceImpl implements AppService {
         backgroundThread.start();
     }
     
-    protected void migrateProcessInstance(Collection<WorkflowProcess> runningProcesses, String profile, String packageId, String fromVersion, String toVersion) {
+    protected void migrateProcessInstance(Collection<String> runningProcesses, String profile, String packageId, String fromVersion, String toVersion) {
         if (runningProcesses.isEmpty() || toVersion == null) {
             return;
         }
         
         String newVersion = toVersion;
         
-        Collection<String> newProcessDefIds = null;
-        Collection<WorkflowProcess> processInstanceNeedReview = new ArrayList<WorkflowProcess>();
-        WorkflowProcess lastMigratedProcessInstance = null;
+        Collection<String> processInstanceNeedReview = new ArrayList<String>();
+        String lastMigratedProcessInstance = null;
         
-        for (WorkflowProcess process : runningProcesses) {
-            if (newProcessDefIds == null) {
-                newProcessDefIds = new ArrayList<String>();
-                Collection<WorkflowProcess> processes = workflowManager.getProcessList(packageId, newVersion);
-                for (WorkflowProcess processDef : processes) {
-                    newProcessDefIds.add(processDef.getId());
-                }
-            }
-            String processId = null;
+        for (String processId : runningProcesses) {
             try {
-                processId = process.getInstanceId();
-                String processDefId = process.getId();
-                processDefId = processDefId.replaceAll("#[0-9]+#", "#" + newVersion + "#");
-
-                if (newProcessDefIds.contains(processDefId)) {
-                    WorkflowProcessResult result = workflowManager.processCopyFromInstanceId(processId, processDefId, true);
-                    if (result != null && result.getProcess() != null) {
-                        lastMigratedProcessInstance = result.getProcess();
-                    }
+                if (workflowAssignmentDao.migrateProcessInstance(processId, newVersion)) {
+                    lastMigratedProcessInstance = processId;
                 } else {
-                    workflowManager.processAbort(processId);
-                    LogUtil.info(getClass().getName(), "Process Def ID " + processDefId + " does not exist. Aborted process " + processId + ".");
+                    LogUtil.info(getClass().getName(), "Process Instance ID " + processId + " having missing running activities in new process version" + newVersion + ". Skipped to migrate.");
                 }
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
             }
 
             if (processMigration.containsKey(profile + "::" + packageId + "::" + newVersion)) {
-                newProcessDefIds = null;
                 String tempVersion = processMigration.get(profile + "::" + packageId + "::" + newVersion);
                 if (fromVersion != null) {
                     processMigration.put(profile + "::" + packageId + "::" + fromVersion, tempVersion);

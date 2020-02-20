@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="MigrateActivity" lazy="false" name="org.joget.workflow.shark.migrate.model.MigrateActivity" table="SHKActivities">
+        <id column="Id" name="id" type="string"/>
+        <property column="ProcessId" name="processId" type="string"/>
+        <property column="PDefName" name="processDefId" type="string"/>
+        <property column="ActivityDefinitionId" name="defId" type="string"/>
+        <property column="Performer" name="performer" type="string"/>
+        <property column="State" name="state" type="long"/>      
+    </class>
+</hibernate-mapping>
+
+

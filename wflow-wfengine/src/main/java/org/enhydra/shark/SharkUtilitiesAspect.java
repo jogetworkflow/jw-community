@@ -13,12 +13,15 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfservice.SharkConnection;
+import org.enhydra.shark.xpdl.XMLComplexElement;
 import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLInterfaceForJDK13;
 import org.enhydra.shark.xpdl.elements.Package;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.shark.migrate.model.MigrateActivity;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
 
@@ -31,6 +34,34 @@ public class SharkUtilitiesAspect {
 
     protected static Map<String, Map<String, String>> currentPkgVersions = new HashMap<String, Map<String, String>>();
 
+    @Pointcut("execution(* org.enhydra.shark.SharkUtilities.getEntity(..))")
+    private void getEntityMethod() {
+    }
+
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.getEntityMethod()")
+    public Object getEntity(ProceedingJoinPoint pjp) throws Throwable {
+        try {
+            return pjp.proceed();
+        } catch (Exception e) {
+            Object[] args = pjp.getArgs();
+            String actId = (String) args[3];
+            WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+            MigrateActivity act = dao.getActivityProcessDefId(actId);
+            
+            String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());
+            String pkgVer = WorkflowUtil.getProcessDefVersion(act.getProcessDefId());
+            String wpId = WorkflowUtil.getProcessDefIdWithoutVersion(act.getProcessDefId());
+            
+            XMLComplexElement cel = SharkUtilities.getActivityDefinition((WMSessionHandle) args[0], pkgId, pkgVer, wpId, act.getDefId());
+            
+            if (cel == null) {
+                throw new Exception("Can't find entity for parameters: mgrName=" + args[1] + ", procId=" + args[2] + ", actId=" + actId);
+            }
+            
+            return SharkUtilities.createBasicEntity(cel);
+        }
+    }
+    
     @Pointcut("execution(* org.enhydra.shark.SharkUtilities.synchronizeXPDLCache(..))")
     private void synchronizeXPDLCacheMethod() {
     }

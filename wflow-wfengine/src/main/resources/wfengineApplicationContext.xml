@@ -48,6 +48,10 @@
                 <value>/org/joget/workflow/shark/model/SharkProcessState.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/ActivityPersistenceObject.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/DeadlinePersistenceObject.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateActivity.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateAssignment.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateProcess.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateProcessDefinition.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
