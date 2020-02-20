@@ -197,15 +197,21 @@ PwaUtil = {
                             // console.log('Service worker active');
                         }
                         
-                        var afterActivated = function(){
-                            registration.sync.register('sendFormData')
-                                .then(function () {
-                                    console.log('sync event registered');
-                                }).catch(function () {
-                                    // system was unable to register for a sync,
-                                    // this could be an OS-level restriction
-                                    console.log('sync registration failed');
-                                });
+                        var afterActivated = function(){                            
+                            if (PwaUtil.pushEnabled) {
+                                PwaUtil.subscribe(registration);
+                            }
+                            
+                            if (registration.sync) {
+                                registration.sync.register('sendFormData')
+                                    .then(function () {
+                                        console.log('sync event registered');
+                                    }).catch(function () {
+                                        // system was unable to register for a sync,
+                                        // this could be an OS-level restriction
+                                        console.log('sync registration failed');
+                                    });
+                            }
                             
                             console.log('Service worker successfully registered and activated.');
                             
@@ -213,10 +219,6 @@ PwaUtil = {
                                 userviewKey: PwaUtil.userviewKey,
                                 homePageLink: PwaUtil.homePageLink
                             });
-                            
-                            if (PwaUtil.pushEnabled) {
-                                PwaUtil.subscribe(registration);
-                            }
                         }
                         
                         if (serviceWorker && serviceWorker.state === "installing") {
