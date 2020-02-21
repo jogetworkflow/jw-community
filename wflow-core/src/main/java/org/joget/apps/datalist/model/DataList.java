@@ -276,9 +276,11 @@ public class DataList {
         if (getBinder() != null) {
             String key = getBinder().getPrimaryKeyColumnName();
             String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
-            String queryString = WorkflowUtil.getHttpServletRequest().getQueryString();
-            if (queryString == null) {
-                queryString = "";
+            
+            String queryString = "";
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request !=null) {
+                queryString = request.getQueryString();
             }
             for (int i = 0; i <  rowActions.length; i++) {
                 DataListAction r = rowActions[i];
@@ -623,7 +625,9 @@ public class DataList {
         if (requestParamMap != null) {
             values = requestParamMap.get(param);
         } else {
-            values = request.getParameterValues(param);
+            if(request!=null){
+                values = request.getParameterValues(param);                
+            }
         }
         if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTING.equals(paramName) || TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
             String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
