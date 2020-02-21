@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 
 public class DynamicDataSourceManager {
 
@@ -24,6 +26,11 @@ public class DynamicDataSourceManager {
     public static final String SECURE_FIELD = "workflowPassword";
 
     private static DatasourceProfilePropertyManager profilePropertyManager;
+    private static Cache cache;
+
+    public void setCache(Cache cache) {
+        DynamicDataSourceManager.cache = cache;
+    }
     
     /**
      * The property manager is initialized via spring injection.
@@ -50,25 +57,40 @@ public class DynamicDataSourceManager {
             }
         }
     }
+    
+    public static String getCacheKey(String profile) {
+        return "DATASOURCE-CACHE-" + profile;
+    }
 
     public static Properties getProperties() {
-        Properties properties = profilePropertyManager.newInstance();
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new File(determineFilePath(getCurrentProfile())));
-            properties.load(fis);
-        } catch (FileNotFoundException e) {
-        } catch (Exception e) {
-            LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
-        } finally {
+        String profile = getCurrentProfile();
+        Element element = cache.get(getCacheKey(profile));
+        Properties properties = null;
+        if (element == null) {
+            properties = profilePropertyManager.newInstance();
+            FileInputStream fis = null;
             try {
-                if (fis != null) {
-                    fis.close();
-                }
+                fis = new FileInputStream(new File(determineFilePath(profile)));
+                properties.load(fis);
+                
+                element = new Element(getCacheKey(profile), properties);
+                cache.put(element);
+            } catch (FileNotFoundException e) {
             } catch (Exception e) {
                 LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (Exception e) {
+                    LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+                }
             }
+        } else {
+            properties = (Properties) element.getObjectValue();
         }
+        
         return properties;
     }
 
@@ -142,17 +164,47 @@ public class DynamicDataSourceManager {
     }
 
     public static String getCurrentProfile() {
-        Properties properties = new Properties();
-        FileInputStream fis = null;
-        String defaultDataSourceFilename = determineDefaultDataSourceFilename();
-        try {
-            // look for profile or hostname set by HostManager in thread
-            String currentProfile = HostManager.getCurrentProfile();
-            if (currentProfile == null || currentProfile.trim().length() == 0) {
+        Properties properties = null;
+        Element element = cache.get("PROFILE_LIST_CACHE");
+        if (element == null) {
+            properties = new Properties();
+            
+            FileInputStream fis = null;
+            String defaultDataSourceFilename = determineDefaultDataSourceFilename();
+            try {
                 // load from properties file
                 fis = new FileInputStream(new File(defaultDataSourceFilename));
                 properties.load(fis);
-
+                
+                element = new Element("PROFILE_LIST_CACHE", properties);
+                cache.put(element);
+            } catch (FileNotFoundException e) {
+                if (!(e.getMessage() != null && e.getMessage().contains("Too many open files"))) {
+                    // As of v5, don't automatically create default profile, to allow setup on first startup
+                    // createDefaultProfile();
+                    LogUtil.debug(DynamicDataSourceManager.class.getName(), defaultDataSourceFilename + " not found, using default datasource");
+                }
+                properties = null;
+            } catch (Exception e) {
+                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+                properties = null;
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (Exception e) {
+                    LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+                }
+            }
+        } else {
+            properties = (Properties) element.getObjectValue();
+        }
+        
+        if (properties != null) {
+            // look for profile or hostname set by HostManager in thread
+            String currentProfile = HostManager.getCurrentProfile();
+            if (currentProfile == null || currentProfile.trim().length() == 0) {
                 String hostname = HostManager.getCurrentHost();
                 if (hostname != null && hostname.trim().length() > 0) {
                     currentProfile = properties.getProperty(hostname);
@@ -174,22 +226,6 @@ public class DynamicDataSourceManager {
             // set profile in thread
             HostManager.setCurrentProfile(currentProfile);
             return currentProfile;
-        } catch (FileNotFoundException e) {
-            if (!(e.getMessage() != null && e.getMessage().contains("Too many open files"))) {
-                // As of v5, don't automatically create default profile, to allow setup on first startup
-                // createDefaultProfile();
-                LogUtil.debug(DynamicDataSourceManager.class.getName(), defaultDataSourceFilename + " not found, using default datasource");
-            }
-        } catch (Exception e) {
-            LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (Exception e) {
-                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
-            }
         }
         return null;
     }
@@ -363,5 +399,5 @@ public class DynamicDataSourceManager {
                 LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
             }
         }
-    }
+    }    
 }

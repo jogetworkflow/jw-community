@@ -15,10 +15,16 @@
     <bean id="profilePropertyManager" class="org.joget.commons.util.DatasourceProfilePropertyManager">
     	<property name="propertyClass" value="java.util.Properties"/>
     </bean>
+    
+    <bean id="dynamicDataSourceManagerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.DATASOURCE_CACHE"/>
+    </bean>
 
     <!-- DynamicDataSourceManager will have its property set via @Autowired -->
     <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="btmConfig">
     	<constructor-arg ref="profilePropertyManager"/>
+        <property name="cache" ref="dynamicDataSourceManagerCache"/>
     </bean>
     
     <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
