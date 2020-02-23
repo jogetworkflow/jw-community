@@ -210,6 +210,8 @@ public class AppServiceImpl implements AppService {
                 PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
                 if (packageDef != null) {
                     appDef = packageDef.getAppDefinition();
+                } else {
+                    appDef = getPublishedAppDefinition(packageId);
                 }
             }
         }
@@ -2220,8 +2222,8 @@ public class AppServiceImpl implements AppService {
         }
         
         //removed version of package used by all existing assignment
-        Collection<String> allAssignmentPackageDefIds = workflowAssignmentDao.getPackageDefIds(packageId);
-        for (String id : allAssignmentPackageDefIds) {
+        Set<String> usedVersion = workflowAssignmentDao.getUsedVersion(packageId);
+        for (String id : usedVersion) {
             String[] part = id.split("#");
             versions.remove(part[1]);
         }

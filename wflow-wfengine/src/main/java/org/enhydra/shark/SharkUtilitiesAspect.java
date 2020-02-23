@@ -43,17 +43,19 @@ public class SharkUtilitiesAspect {
         try {
             return pjp.proceed();
         } catch (Exception e) {
+            XMLComplexElement cel = null;
             Object[] args = pjp.getArgs();
             String actId = (String) args[3];
-            WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
-            MigrateActivity act = dao.getActivityProcessDefId(actId);
+            if (actId != null) {
+                WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+                MigrateActivity act = dao.getActivityProcessDefId(actId);
+
+                String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());
+                String pkgVer = WorkflowUtil.getProcessDefVersion(act.getProcessDefId());
+                String wpId = WorkflowUtil.getProcessDefIdWithoutVersion(act.getProcessDefId());
             
-            String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());
-            String pkgVer = WorkflowUtil.getProcessDefVersion(act.getProcessDefId());
-            String wpId = WorkflowUtil.getProcessDefIdWithoutVersion(act.getProcessDefId());
-            
-            XMLComplexElement cel = SharkUtilities.getActivityDefinition((WMSessionHandle) args[0], pkgId, pkgVer, wpId, act.getDefId());
-            
+                cel = SharkUtilities.getActivityDefinition((WMSessionHandle) args[0], pkgId, pkgVer, wpId, act.getDefId());
+            }
             if (cel == null) {
                 throw new Exception("Can't find entity for parameters: mgrName=" + args[1] + ", procId=" + args[2] + ", actId=" + actId);
             }

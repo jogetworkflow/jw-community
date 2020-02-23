@@ -15,7 +15,6 @@ import org.enhydra.shark.api.client.wfmodel.CannotComplete;
 import org.enhydra.shark.api.client.wfmodel.InvalidData;
 import org.enhydra.shark.api.client.wfmodel.ResultNotAvailable;
 import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
-import org.enhydra.shark.api.common.DeadlineInfo;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.DeadlinePersistenceObject;
@@ -24,9 +23,12 @@ import org.enhydra.shark.api.internal.toolagent.ToolAgentGeneralException;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
+import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
+import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfActivityImpl extends WfActivityImpl {
@@ -69,6 +71,24 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             this.activitiesProcessContext = this.process.process_context(shandle);
         }
         this.contextInitialized = true;
+    }
+    
+    @Override
+    protected Activity getActivityDefinition(WMSessionHandle shandle) throws Exception {
+        if (this.activityDefinition == null) {
+            this.activityDefinition = SharkUtilities.getActivityDefinition(shandle, this,  getProcessDefinition(shandle));
+        }
+        if (this.activityDefinition == null) {
+            WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+            MigrateActivity act = dao.getActivityProcessDefId(this.key);
+            
+            String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());
+            String pkgVer = WorkflowUtil.getProcessDefVersion(act.getProcessDefId());
+            String wpId = WorkflowUtil.getProcessDefIdWithoutVersion(act.getProcessDefId());
+            
+            this.activityDefinition = SharkUtilities.getActivityDefinition(shandle, pkgId, pkgVer, wpId, act.getDefId());
+        }
+        return this.activityDefinition;
     }
     
     @Override

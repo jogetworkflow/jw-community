@@ -771,6 +771,18 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return (MigrateActivity) find("MigrateActivity", actId);
     }
     
+    public Set<String> getUsedVersion(String packageId) {
+        Session session = findSession();
+        String query = "SELECT e.processDefId" + " FROM MigrateActivity e WHERE e.processDefId like ?";
+
+        Query q = session.createQuery(query);
+        q.setFirstResult(0);
+
+        q.setParameter(0, packageId + "#%");
+
+        return new HashSet<String>(q.list());
+    }
+    
     /**
      * Migrate the process instance from one version to another version
      * @param processId 
@@ -837,9 +849,13 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                             process.setProcessDefinition(definition.getOid());
                             saveOrUpdate("MigrateProcess", process);
 
-                            for (MigrateActivity a : acts) {
-                                a.setProcessDefId(processDefId);
-                                saveOrUpdate("MigrateActivity", a);
+                            //get running activity for migration
+                            Collection<MigrateActivity> allActs = find("MigrateActivity", "where e.processId = ?", new String[]{processId}, null, null, null, null);
+                            for (MigrateActivity a : allActs) {
+                                if (activities.containsKey(a.getDefId())) {
+                                    a.setProcessDefId(processDefId);
+                                    saveOrUpdate("MigrateActivity", a);
+                                }
                             }
 
                             //get running activity for migration
