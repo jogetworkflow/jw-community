@@ -1,10 +1,12 @@
 package org.joget.apps.userview.lib;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +32,10 @@ public class OrganizationPermission extends UserviewPermission implements Plugin
         User user = getCurrentUser();
 
         if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
-            Employment e = (Employment) user.getEmployments().iterator().next();
-
-            StringTokenizer strToken = new StringTokenizer(getPropertyString("allowedOrgIds"), ";");
-            while (strToken.hasMoreTokens()) {
-                String orgId = (String) strToken.nextElement();
-                if (orgId.equals(e.getOrganizationId())) {
+            Set<String> allowedOrgIds = new HashSet<String>(Arrays.asList(getPropertyString("allowedOrgIds").split(";")));
+            
+            for (Employment e : (Set<Employment>) user.getEmployments()) {
+                if (e.getOrganizationId() != null && allowedOrgIds.contains(e.getOrganizationId())) {
                     return true;
                 }
             }

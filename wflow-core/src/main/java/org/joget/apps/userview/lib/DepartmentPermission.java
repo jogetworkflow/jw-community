@@ -1,10 +1,12 @@
 package org.joget.apps.userview.lib;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,12 +34,10 @@ public class DepartmentPermission extends UserviewPermission implements PluginWe
         User user = getCurrentUser();
 
         if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
-            Employment e = (Employment) user.getEmployments().iterator().next();
-
-            StringTokenizer strToken = new StringTokenizer(getPropertyString("allowedDeptIds"), ";");
-            while (strToken.hasMoreTokens()) {
-                String deptId = (String) strToken.nextElement();
-                if (deptId.equals(e.getDepartmentId())) {
+            Set<String> allowedDeptIds = new HashSet<String>(Arrays.asList(getPropertyString("allowedDeptIds").split(";")));
+            
+            for (Employment e : (Set<Employment>) user.getEmployments()) {
+                if (e.getDepartmentId() != null && allowedDeptIds.contains(e.getDepartmentId())) {
                     return true;
                 }
             }
