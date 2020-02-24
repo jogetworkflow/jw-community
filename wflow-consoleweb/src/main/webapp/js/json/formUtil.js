@@ -269,11 +269,15 @@ FormUtil = {
                 var label = null;
                 var key = key.substring(8);
                 var selector = key.replace(".", "_");
-                if ($("[name$=_" + selector + "]:not(form)").length > 0) {
+                var subselector = key.substring(key.indexOf(".") + 1);
+                if ($("label[field-tooltip$=" + selector + "]").length > 0) {
+                    label = $("label[field-tooltip$=" + selector + "]");
+                } else if ($("form#"+ key.substring(0, key.indexOf(".")) +" .form-cell label[field-tooltip$=" + subselector + "]").length > 0) {
+                    label = $("form#"+ key.substring(0, key.indexOf(".")) +" .form-cell label[field-tooltip$=" + subselector + "]");
+                } else if ($("[name$=_" + selector + "]:not(form)").length > 0) {
                     label = $("[name$=_" + selector + "]:not(form)").closest(".subform-cell").find("label.label");
                 } else {
-                    selector = key.substring(key.indexOf(".") + 1);
-                    label = $("[name=" + selector + "]:not(form)").closest(".form-cell").find("label.label");
+                    label = $("[name=" + subselector + "]:not(form)").closest(".form-cell").find("label.label");
                 }
                 if (label !== null && label.find("i.tooltipstered").length === 0) {
                     $(label).append(" <i class=\"fieldtooltip fa fas fa-info-circle\"></i>");
