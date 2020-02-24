@@ -67,7 +67,7 @@ PropertyEditor.Popup = {
         if (hide !== undefined && hide === true) {
             PropertyEditor.Popup.hideDialog(id);
         }
-        return true;
+        return false;
     },
     showDialog : function(id, options, args) {
         if (!PropertyEditor.Popup.hasDialog(id)) {
@@ -121,6 +121,7 @@ PropertyEditor.Popup = {
         
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").off("click");
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").on("click", function(e){
+            e.stopImmediatePropagation();
             return PropertyEditor.Popup.checkChangeAndHide(id, true, true);
         });
         
