@@ -255,6 +255,15 @@ public class AppDevUtil {
                         .call();
                 
                 gitCheckout(git, gitBranch);
+            } catch (JGitInternalException e) {
+                //git may lock, try again
+                if (e.getMessage().contains("Cannot lock")) {
+                    LogUtil.info(AppDevUtil.class.getName(), "Git is locked. Wait 100ms...");
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {}
+                    gitCheckout(git, gitBranch);
+                }
             }
         }
     }    
