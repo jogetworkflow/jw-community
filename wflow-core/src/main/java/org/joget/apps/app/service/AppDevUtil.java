@@ -219,6 +219,10 @@ public class AppDevUtil {
     }
     
     public static void gitCheckout(Git git, String gitBranch) throws GitAPIException, IOException {
+        gitCheckout(git, gitBranch, 0);
+    }
+    
+    public static void gitCheckout(Git git, String gitBranch, int lockedCount) throws GitAPIException, IOException {
         String currentBranch = git.getRepository().getBranch();
         if (currentBranch == null || !currentBranch.equals(gitBranch)) {
             LogUtil.debug(AppDevUtil.class.getName(), "Checkout branch: " + gitBranch);
@@ -255,6 +259,17 @@ public class AppDevUtil {
                         .call();
                 
                 gitCheckout(git, gitBranch);
+            } catch (JGitInternalException e) {
+                //git may lock, try again
+                if (e.getMessage().contains("Cannot lock") && lockedCount <= 10) {
+                    LogUtil.info(AppDevUtil.class.getName(), "Git is locked. Wait 100ms...");
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {}
+                    gitCheckout(git, gitBranch, lockedCount + 1);
+                } else {
+                    throw e;
+                }
             }
         }
     }    
