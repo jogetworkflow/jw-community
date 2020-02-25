@@ -268,6 +268,10 @@ header.navbar .header-nav .nav>li.user-link {
     display:none;
 }
 
+header.navbar .header-nav .nav>li.user-link a.btn.dropdown-toggle.waves-effect.btn.waves-button.waves-float {
+    line-height: 36px;
+}
+
 header.navbar .dropdown-menu .dropdown-menu-sub-footer {
     text-align: center;
     margin: 10px auto 5px;
