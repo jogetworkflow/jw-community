@@ -2183,12 +2183,13 @@ public class AppServiceImpl implements AppService {
         Collection<String> processInstanceNeedReview = new ArrayList<String>();
         String lastMigratedProcessInstance = null;
         
+        LogUtil.info(getClass().getName(), "Migrating Process Instance ID " + runningProcesses.toString() + " to new process version " + newVersion + ".");
         for (String processId : runningProcesses) {
             try {
                 if (workflowAssignmentDao.migrateProcessInstance(processId, newVersion)) {
                     lastMigratedProcessInstance = processId;
                 } else {
-                    LogUtil.info(getClass().getName(), "Process Instance ID " + processId + " having missing running activities in new process version" + newVersion + ". Skipped to migrate.");
+                    LogUtil.info(getClass().getName(), "Process Instance ID " + processId + " having missing running activities in new process version " + newVersion + ". Skipped to migrate.");
                 }
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
