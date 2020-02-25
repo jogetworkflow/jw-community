@@ -252,7 +252,7 @@ var AdminBar = {
             $(this).addClass("current");
         });
         if (window === parent) {
-            $("#adminControl").fadeIn();
+            $("#adminControl").css("display", "block");
         }
     },
     showAdminBar: function() {
