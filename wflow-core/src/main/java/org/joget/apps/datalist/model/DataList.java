@@ -630,26 +630,28 @@ public class DataList {
             }
         }
         if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTING.equals(paramName) || TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
-            String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
-            HttpSession session = request.getSession(true);
+            if(request!=null){
+                String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
+                HttpSession session = request.getSession(true);
 
-            if (values != null) {
-                if (isAllowUpdateSession()) {
-                    String[] sessionValues = (String[]) session.getAttribute(sessionKey);
-                    if (!Arrays.equals(values, sessionValues) && (paramName.startsWith(PARAMETER_FILTER_PREFIX) || PARAMETER_PAGE_SIZE.equals(paramName))) {
-                        setResetSessionPageValue(true);
+                if (values != null) {
+                    if (isAllowUpdateSession()) {
+                        String[] sessionValues = (String[]) session.getAttribute(sessionKey);
+                        if (!Arrays.equals(values, sessionValues) && (paramName.startsWith(PARAMETER_FILTER_PREFIX) || PARAMETER_PAGE_SIZE.equals(paramName))) {
+                            setResetSessionPageValue(true);
+                        }
+
+                        if (isResetSessionPageValue() && TableTagParameters.PARAMETER_PAGE.equals(paramName)) {
+                            values[0] = "1";
+                        }
+
+                        session.setAttribute(sessionKey, values);
                     }
-
-                    if (isResetSessionPageValue() && TableTagParameters.PARAMETER_PAGE.equals(paramName)) {
-                        values[0] = "1";
+                } else {
+                    values = (String[]) session.getAttribute(sessionKey);
+                    if ((values != null && values.length > 0) && isAllowUpdateSession() && (TableTagParameters.PARAMETER_SORT.equals(paramName) || TableTagParameters.PARAMETER_ORDER.equals(paramName) || TableTagParameters.PARAMETER_PAGE.equals(paramName) || PARAMETER_PAGE_SIZE.equals(paramName))) {
+                        setReloadRequired(true);
                     }
-
-                    session.setAttribute(sessionKey, values);
-                }
-            } else {
-                values = (String[]) session.getAttribute(sessionKey);
-                if ((values != null && values.length > 0) && isAllowUpdateSession() && (TableTagParameters.PARAMETER_SORT.equals(paramName) || TableTagParameters.PARAMETER_ORDER.equals(paramName) || TableTagParameters.PARAMETER_PAGE.equals(paramName) || PARAMETER_PAGE_SIZE.equals(paramName))) {
-                    setReloadRequired(true);
                 }
             }
         }
