@@ -78,8 +78,10 @@ UI = {
        
        if (width > maxWidth) {
            width = maxWidth;
-       } else if (width < minWidth) {
+       } else if (width < minWidth && minWidth < maxWidth) {
            width = minWidth;
+       } else if (windowWidth < 668) {
+           width = maxWidth;
        }
        
        return width;
