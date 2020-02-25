@@ -19,10 +19,12 @@ JPopup = {
                 JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
                 
                 JPopup.dialogboxes[id].options.afterHide = function() {
-                    if (parent && parent.UI !== undefined && window.frameElement !== null) {
-                        parent.UI.restoreIframe(window.frameElement.id);
-                        $("html").css("background", "transparent");
-                    }
+                    try {
+                        if (parent && parent.UI !== undefined && window.frameElement !== null) {
+                            parent.UI.restoreIframe(window.frameElement.id);
+                            $("html").css("background", "transparent");
+                        }
+                    } catch (err) {}    
                 }
             } else {
                 JPopup.dialogboxes[id] = Boxy.get($("#"+id));
@@ -31,10 +33,12 @@ JPopup = {
     },
     
     show : function (id, url, params, title, width, height, action) {
-        if (parent && parent.UI !== undefined && window.frameElement !== null) {
-            $("html").css("background", "#fff");
-            parent.UI.maxIframe(window.frameElement.id);
-        }
+        try {
+            if (parent && parent.UI !== undefined && window.frameElement !== null) {
+                $("html").css("background", "#fff");
+                parent.UI.maxIframe(window.frameElement.id);
+            }
+        } catch (err) {}
         
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
             JPopup.create(id, title, width, height);

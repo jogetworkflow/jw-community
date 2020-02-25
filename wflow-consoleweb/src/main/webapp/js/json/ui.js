@@ -213,10 +213,12 @@ PopupDialog.prototype = {
           return;
       }
       
+      try {
         if (parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
             $("html").css("background", "#fff");
             parent.UI.maxIframe(window.frameElement.id);
         }
+      } catch (err) {}
       
       var temWidth = $(window).width();
       var temHeight = $(window).height();
@@ -324,10 +326,12 @@ PopupDialog.prototype = {
               newFrame.setAttribute("src", "");
           }
           
-          if (parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
-                parent.UI.restoreIframe(window.frameElement.id);
-                $("html").css("background", "transparent");
-          }
+          try {
+            if (parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
+                  parent.UI.restoreIframe(window.frameElement.id);
+                  $("html").css("background", "transparent");
+            }
+          } catch (err) {}
       }
       
       this.popupDialog = $(newDiv).dialog({
