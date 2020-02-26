@@ -1,5 +1,7 @@
 package org.joget.commons.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -23,8 +25,27 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.util.ReflectionUtils;
 import javax.mail.internet.MimeUtility;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Document.OutputSettings;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Utility methods for String processing
@@ -42,6 +63,7 @@ public class StringUtil {
     public static final String TYPE_URL = "url";
     public static final String TYPE_NL2BR = "nl2br";
     public static final String TYPE_SEPARATOR = "separator";
+    public static final String TYPE_IMG2BASE64 = "img2base64";
 
     static final Whitelist whitelistRelaxed;
     static {
@@ -310,6 +332,8 @@ public class StringUtil {
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
+            } else if (TYPE_IMG2BASE64.equals(f)) {
+                inStr = imageToBase64(inStr);
             } else if (f != null && f.startsWith(TYPE_SEPARATOR) && inStr.contains(";")) {
                 String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
                 String [] temps = inStr.split(";");
@@ -318,6 +342,101 @@ public class StringUtil {
         }
         
         return inStr;
+    }
+    
+    public static String imageToBase64(String content) {
+        HttpServletRequest request = null;
+        try {
+            request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        } catch (Exception e) {}
+        
+        if (request != null) {
+            Pattern pattern = Pattern.compile("<img[^>]*>");
+            Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                String imgString = matcher.group(0);
+
+                //get the src
+                Pattern patternSrc = Pattern.compile("src=\"([^\\\"]*)\"");
+                Matcher matcherSrc = patternSrc.matcher(imgString);
+                String orgSrc = "";
+                String src = "";
+                if (matcherSrc.find()) {
+                    orgSrc = matcherSrc.group(1);
+                    src = orgSrc;
+                }
+
+                if (!src.isEmpty() && src.startsWith(request.getContextPath())) {
+                    src = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + src;
+                    
+                    CloseableHttpClient httpClient = null;
+                    ByteArrayOutputStream bos = null;
+                    InputStream is = null;
+                    try {
+                        HttpClientBuilder httpClientBuilder = HttpClients.custom();
+                        HttpGet get = new HttpGet(src);
+
+                        CookieStore cookieStore = new BasicCookieStore(); 
+                        Cookie[] cookies = request.getCookies();
+                        for (Cookie c : cookies) {
+                            if (c.getName().equalsIgnoreCase("JSESSIONID")) {
+                                BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", c.getValue());
+                                cookie.setPath(request.getContextPath());
+                                cookie.setDomain(request.getServerName());
+                                cookieStore.addCookie(cookie); 
+                            }
+                        }
+
+                        httpClientBuilder.setDefaultCookieStore(cookieStore);
+
+                        if ("https".equals(request.getScheme())) {
+                            SSLContextBuilder builder = new SSLContextBuilder();
+                            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+                            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
+                            httpClientBuilder.setSSLSocketFactory(sslsf);
+                        }
+
+                        // execute request
+                        httpClient = httpClientBuilder.build();
+
+                        HttpResponse response = httpClient.execute(get);
+                        HttpEntity entity = response.getEntity();
+                        if (entity != null && entity.getContentType() != null) {
+                            is = entity.getContent();
+                            byte[] bytes = IOUtils.toByteArray(is);
+                            String imageStr = "data:"+entity.getContentType().getValue()+";base64," + Base64.encodeBase64String(bytes);
+                            content = content.replaceAll(StringUtil.escapeRegex(orgSrc), StringUtil.escapeRegex(imageStr));
+                        }
+                    } catch (Exception e) {
+                        LogUtil.error(StringUtil.class.getName(), e, "");
+                    } finally {
+                        try {
+                            if (bos != null) {
+                                bos.close();
+                            }
+                        } catch (Exception ex) {
+                            LogUtil.error(StringUtil.class.getName(), ex, "");
+                        }
+                        try {
+                            if (is != null) {
+                                is.close();
+                            }
+                        } catch (Exception ex) {
+                            LogUtil.error(StringUtil.class.getName(), ex, "");
+                        }
+                        try {
+                            if (httpClient != null) {
+                                httpClient.close();
+                            }
+                        } catch (Exception ex) {
+                            LogUtil.error(StringUtil.class.getName(), ex, "");
+                        }
+                    }
+                }
+            }
+        }
+        
+        return content;
     }
 
     /**

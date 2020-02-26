@@ -613,6 +613,7 @@ public class AppUtil implements ApplicationContextAware {
                     || format.equals(StringUtil.TYPE_JAVASCIPT)
                     || format.equals(StringUtil.TYPE_JSON)
                     || format.equals(StringUtil.TYPE_NL2BR)
+                    || format.equals(StringUtil.TYPE_IMG2BASE64)
                     || format.equals(StringUtil.TYPE_REGEX)
                     || format.equals(StringUtil.TYPE_SQL)
                     || format.equals(StringUtil.TYPE_URL)
