@@ -2189,10 +2189,11 @@ public class AppServiceImpl implements AppService {
                 if (workflowAssignmentDao.migrateProcessInstance(processId, newVersion)) {
                     lastMigratedProcessInstance = processId;
                 } else {
-                    LogUtil.info(getClass().getName(), "Process Instance ID " + processId + " having missing running activities in new process version " + newVersion + ". Skipped to migrate.");
+                    workflowManager.processAbort(processId);
+                    LogUtil.info(getClass().getName(), "Aborted Process Instance ID " + processId + " due to having missing running activities in new process version " + newVersion + ".");
                 }
             } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
+                LogUtil.error(getClass().getName(), e, "Error updating Process Instance ID " + processId);
             }
 
             if (processMigration.containsKey(profile + "::" + packageId + "::" + newVersion)) {
