@@ -1,26 +1,38 @@
-Joget DX 7.0 COMMUNITY
-======================
-For more information, please refer to our blog at https://blog.joget.org
+Joget DX 7 COMMUNITY
+====================
+For more information, please refer to 
+https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
-SUMMARY IN 7.0-PREVIEW
-======================
-- User Experience (UX) & Progressive Web Apps (PWA)
-  - Enhanced App User Experience for Desktop and Mobile
-  - Progressive Web Apps (PWA) supported Userview Theme 
-- DevOps & Application Performance Management (APM)
-  - Embedded Git Integration
-  - Web App Log Viewer
-  - JSON API for Deployment Automation
-  - Online Presence Indicator
-- Artificial Intelligence (AI) & Smart Decisions 
-  - New Plugin Type for Process Decision
-  - Plugins Out of the Box for Tensorflow Integration and Decision Rules 
-- App Maintainability and Performance
-  - Enhanced Permission Management in Builder Advanced Tools
-  - Form Builder Tooltip Management in Builder Advanced Tools
-  - Additional Plugins Out of the Box for Greater Flexibility
-  - New Plugin Type for Extending App Builder
-  - Latest Upgrades Under The Hood
+CHANGES IN 7.0.0
+================
+5635d5ef Fixed: wflow-commons/wflow-core - Hash Variable - Support new escape type `?img2base64` to convert image tag src pointed to platform image resource to base64 string. #7394 @7.0-SNAPSHOT
+c93dcc57 Added: wflow-consoleweb/wflow-core - Duplicate Value Validator - Support custom error message for duplicate value found @7.0-SNAPSHOT
+64f1b6f6 Fixed: wflow-consoleweb - Progressive Theme - 2 columns subform section without section label is not display correctly. #7426 @7.0-SNAPSHOT
+e82e13a4 Fixed: wflow-consoleweb - Property Editor - Multi Select - Default properties are not loaded. #7405 @7.0-SNAPSHOT Fixed: wflow-core -Multi Tools - Default properties are not loaded. #7405 @7.0-SNAPSHOT
+6853b9ca Fixed: wflow-consoleweb - Rich Text Field - Quill editor - Paste image in FF will becomes double images. #7407 @7.0-SNAPSHOT
+f9050d39 Fixed: wflow-core - Process Migration - Abort process instances which missing running activities in new process version. @7.0-SNAPSHOT
+7ec3f9ef Modified: wflow-core - App Service - Migrate process - print list of PIDs in process design update migration for better clarity @7.0-SNAPSHOT
+d89fba5d Fixed: wflow-consoleweb - UI - Popup dialog can't show up in Mobile app. #7420 @7.0-SNAPSHOT
+f60783d6 Fixed: wflow-core - datalist - enable datalist hash var to be display when "Use session to store list state?" is turned on in datalist builder
+5b8bd326 Fixed: wflow-consoleweb - Form - popup dialog width in mobile is over the window width. @7.0-SNAPSHOT
+103f8a61 Fixed: wflow-commons - Setup - Message label is missing. @7.0-SNAPSHOT
+212a29bb Fixed: wflow-consoleweb - Universal/Progressive Theme - Header button showing user name has insufficient padding @7.0-SNAPSHOT
+ad3ac5a2 Fixed: wflow-consoleweb - UI - Admin bar button is not showing in FF sometime. #7412 @7.0-SNAPSHOT
+c25746d8 Added: wflow-core - Current User Hash Variable - Support #currentUser.roles#, #currentUser.locale#, #user.USERNAME.roles# and #user.USERNAME.locale#. #7410 @7.0-SNAPSHOT
+28cffe5b Fixed: wflow-consoleweb - Form Builder - Section comment displayed in limited width. #7411 @7.0-SNAPSHOT
+8542fe9c Fixed: wflow-core - Department/Organization Permission - Users with multiple department/organization permissions works intermittently. #7419 @7.0-SNAPSHOT
+b379414e Fixed: wflow-core - Property Editor - Closing property editor via ESC or X button scrolls to top of form or page. @7.0-SNAPSHOT
+f231c785 Fixed: wflow-core - Git - May locked when checkout concurrently. @7.0-SNAPSHOT
+8718ed61 Fixed: wflow-consoleweb/wflow-core - Form - Tooltip for some readonly element is not display. @7.0-SNAPSHOT
+07541dcd Modified: wflow-commons - Datasource - Reduce reading datasource properties from file. @7.0-SNAPSHOT
+9fef0468 Fixed: wflow-core - datalist - enable datalist hash var to be displayed in email when using scheduler
+05b6f6dd Fixed: wflow-wfengine - Process - Improve process version migration. #7373 @7.0-SNAPSHOT
+32837d81 Fixed: wflow-core - datalist - enable datalist hash var to be displayed in email when using scheduler
+84c09b27 Modified: wflow-consoleweb - Push Notifications - Web push notifications not working on Firefox @7.0-SNAPSHOT
+e6138964 Fixed: wflow-consoleweb - Userview - new created userview has missing property value in theme configuration. @7.0-SNAPSHOT
+e2c37b24 Fixed: wflow-consoleweb - Assignment - Not able to complete assignment without a form. @7.0-SNAPSHOT
+7aa1ed2c Fixed: wflow-consoleweb - Progressive/Universal Theme - Delete button style is wrong. #7345 @7.0-SNAPSHOT
+e3fb4c0c Fixed: wflow-consoleweb - Datalist Builder - Hyperlink Action - "Visible when no record or checkbox?" option is missing. #7387 @7.0-SNAPSHOT
 
 CHANGES IN 7.0-RC
 =================
