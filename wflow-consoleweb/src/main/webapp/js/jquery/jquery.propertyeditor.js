@@ -5354,7 +5354,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
 
         if (this.properties.default_property_values_url !== null && !((typeof this.properties.default_property_values_url) === "undefined") &&
             this.properties.default_property_values_url !== "") {
-            if (!((typeof thisObj.properties.defaultPropertyValues[value]) === "undefined")) {
+            if (((typeof thisObj.properties.defaultPropertyValues[value]) === "undefined")) {
                 $.ajax({
                     url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
                     data: "value=" + encodeURIComponent(value),

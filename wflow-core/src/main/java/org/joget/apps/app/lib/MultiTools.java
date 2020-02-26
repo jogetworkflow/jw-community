@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.ProcessMappingInfo;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
@@ -14,6 +15,7 @@ import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.workflow.model.WorkflowAssignment;
 
 public class MultiTools extends DefaultApplicationPlugin implements ProcessMappingInfo {
 
@@ -72,7 +74,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
 
                         if (p != null) {
                             final Map propertiesMap = new HashMap(properties);
-                            propertiesMap.putAll((Map) toolMap.get("properties"));
+                            propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) toolMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
                             final ApplicationPlugin appPlugin = (ApplicationPlugin) p;
 
                             if (appPlugin instanceof PropertyEditable) {
@@ -134,6 +136,10 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                     }
                 }
             }
+            if (!info.isEmpty() && !getPropertyString("comment").isEmpty()) {
+                info += "<br/>";
+            }
+            info += getPropertyString("comment");
         }
         return info;
     }

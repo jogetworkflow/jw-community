@@ -30,6 +30,10 @@
                 "control_field": "runInMultiThread",
                 "control_value": "true",
                 "control_use_regex": "false"
+            },{
+                "name" : "comment",
+                "label" : "@@ubuilder.comment@@",
+                "type" : "codeeditor"
             }
         ]
     }
