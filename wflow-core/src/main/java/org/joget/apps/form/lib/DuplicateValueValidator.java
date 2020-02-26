@@ -69,12 +69,12 @@ public class DuplicateValueValidator extends FormValidator {
     public boolean validate(Element element, FormData data, String[] values) {
         boolean result = true;
         String id = FormUtil.getElementParameterName(element);
-        String label = element.getPropertyString("label");
         String formDefId = (String) getProperty("formDefId");
         String fieldId = (String) getProperty("fieldId");
         String mandatory = (String) getProperty("mandatory");
         String regex = (String) getProperty("regex");
-        String errorMsg = (String) getProperty("errorMsg");
+        String errorFormatMsg = (String) getProperty("errorFormatMsg");
+        String errorDuplicateMsg = (String) getProperty("errorDuplicateMsg");
         
         PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
 
@@ -88,10 +88,10 @@ public class DuplicateValueValidator extends FormValidator {
             //check value format with regex
             if (!isFormatCorrect(regex, values)) {
                 result = false;
-                if (errorMsg != null && errorMsg.trim().length() == 0) {
-                    errorMsg = pm.getMessage("form.duplicatevaluevalidator.e.formatInvalid", this.getClassName(), null); 
+                if (errorFormatMsg == null || errorFormatMsg.isEmpty() || errorFormatMsg.trim().length() == 0) {
+                    errorFormatMsg = pm.getMessage("form.duplicatevaluevalidator.e.formatInvalid", this.getClassName(), null); 
                 }
-                data.addFormError(id, errorMsg);
+                data.addFormError(id, errorFormatMsg);
             } else {
                 //check for duplicate value
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
@@ -104,7 +104,10 @@ public class DuplicateValueValidator extends FormValidator {
                 if (tableName != null) {
                     if (isDuplicate(formDefId, tableName, element, data, fieldId, values)) {
                         result = false;
-                        data.addFormError(id, pm.getMessage("form.duplicatevaluevalidator.e.valueAlreadyExist", this.getClassName(), null));
+                        if (errorDuplicateMsg == null || errorDuplicateMsg.isEmpty() || errorDuplicateMsg.trim().length() == 0) {
+                            errorDuplicateMsg = pm.getMessage("form.duplicatevaluevalidator.e.valueAlreadyExist", this.getClassName(), null);
+                        }
+                        data.addFormError(id, errorDuplicateMsg);
                     }
                 } else {
                     result = false;

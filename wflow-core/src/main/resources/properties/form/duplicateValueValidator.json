@@ -11,6 +11,11 @@
         required : 'True'
     },
     {
+        name : 'errorDuplicateMsg',
+        label : '@@form.duplicatevaluevalidator.errorDuplicateMsg@@',
+        type : 'textfield'
+    },
+    {
         name : 'mandatory',
         label : '@@form.duplicatevaluevalidator.mandatory@@',
         type : 'checkbox',
@@ -26,8 +31,8 @@
         type : 'textfield'
     },
     {
-        name : 'errorMsg',
-        label : '@@form.duplicatevaluevalidator.errorMsg@@',
+        name : 'errorFormatMsg',
+        label : '@@form.duplicatevaluevalidator.errorFormatMsg@@',
         type : 'textfield'
     }]
 }]
