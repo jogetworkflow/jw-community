@@ -891,6 +891,10 @@ body#login #page > footer {
         font-size:13px;
         box-shadow:none;
     }
+    body.horizontal_menu #sidebar .nav > li ul{
+        max-height: 75vh;
+        overflow: auto;
+    }
     body.horizontal_menu.inline_menu .quickEditModeActive #sidebar{
         margin-top: -1px;
     }
