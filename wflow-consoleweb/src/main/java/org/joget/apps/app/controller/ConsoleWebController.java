@@ -5195,7 +5195,7 @@ public class ConsoleWebController {
         if (files != null && files.length > 0) {
             for (File file : files) {
                 if (file.isFile()) {
-                    String lowercaseFN = file.getName().toLowerCase();
+                    String lowercaseFN = file.getName().toLowerCase(Locale.ENGLISH);
                     Date lastModified = new Date(file.lastModified());
                     Date current = new Date();
 
