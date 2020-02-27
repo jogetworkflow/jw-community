@@ -1024,8 +1024,10 @@ public class AppServiceImpl implements AppService {
                     if (packageDef != null) {
                         xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
                         Map<String, String> replace = new HashMap<String, String>();
-                        replace.put(copy.getAppId(), appId);
-                        replace.put(copy.getName(), appDefinition.getName());
+                        replace.put("Id=\""+copy.getAppId()+"\"", "Id=\""+appId+"\"");
+                        replace.put("id=\""+copy.getAppId()+"\"", "id=\""+appId+"\"");
+                        replace.put("Name=\""+copy.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
+                        replace.put("name=\""+copy.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
                         xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
                     }
                     
