@@ -2,6 +2,18 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.26
+=================
+b71657df Fixed: wflow-consoleweb - Universal Theme - Horizontal long sub menu does not has scrollbar to view bottom sub menu. #7422 @6.0-SNAPSHOT
+f60783d6 Fixed: wflow-core - datalist - enable datalist hash var to be display when "Use session to store list state?" is turned on in datalist builder
+9fef0468 Fixed: wflow-core - datalist - enable datalist hash var to be displayed in email when using scheduler
+07b76b50 Fixed: wflow-consoleweb - Embed Datalist - Popup select box has system error if row id in list is an email value. @6.0-SNAPSHOT
+a88318f5 Modified: wflow-jdbc, wflow-commons, wflow-consoleweb - MySQL - Upgraded MariaDB JDBC driver to 2.5.0 to support MySQL 8 default caching_sha2_password authentication @6.0-SNAPSHOT
+0e1800e3 Fixed: wflow-commons - Startup - MariaDB dialect cannot resolved by Hibernate. @6.0-SNAPSHOT
+5e444a3e Fixed: wflow-core - Email Tool - ICAL timezone is wrongly set. #7239 @6.0-SNAPSHOT
+381aae58 Fixed: wflow-core - App Service - Create app definition by copy app is not working when the app id is very short. @6.0-SNAPSHOT
+b117eadc Fixed: wflow-consoleweb - Form Builder - Custom HTML with field id "hidden" is missing from the builder. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.25
 =================
 da82f3e7 Fixed: wflow-core - Section - Visibility control with regex contains "\" character can't store data correctly. #7195 @6.0-SNAPSHOT
