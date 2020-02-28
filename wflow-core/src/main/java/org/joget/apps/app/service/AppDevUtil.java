@@ -219,10 +219,10 @@ public class AppDevUtil {
     }
     
     public static void gitCheckout(Git git, String gitBranch) throws GitAPIException, IOException {
-        gitCheckout(git, gitBranch, 0);
+        gitCheckout(git, gitBranch, 0, 0);
     }
     
-    public static void gitCheckout(Git git, String gitBranch, int lockedCount) throws GitAPIException, IOException {
+    public static void gitCheckout(Git git, String gitBranch, int lockedCount, int conflictCount) throws GitAPIException, IOException {
         String currentBranch = git.getRepository().getBranch();
         if (currentBranch == null || !currentBranch.equals(gitBranch)) {
             LogUtil.debug(AppDevUtil.class.getName(), "Checkout branch: " + gitBranch);
@@ -239,26 +239,30 @@ public class AppDevUtil {
                         .setName(gitBranch)
                         .call();    
             } catch (CheckoutConflictException e) {
-                // commit to repo
-                String username = WorkflowUserManager.ROLE_ANONYMOUS;
-                String email = "";
-                WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
-                User user = wum.getCurrentUser();
-                if (user != null) {
-                    username = user.getUsername();
-                    email = user.getEmail();
-                    if (email == null) {
-                        email = "";
+                if (conflictCount < 5) {
+                    // commit to repo
+                    String username = WorkflowUserManager.ROLE_ANONYMOUS;
+                    String email = "";
+                    WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+                    User user = wum.getCurrentUser();
+                    if (user != null) {
+                        username = user.getUsername();
+                        email = user.getEmail();
+                        if (email == null) {
+                            email = "";
+                        }
                     }
+                    String commitMessage = "Fixing checkout conflict";
+                    LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
+                    git.commit()
+                            .setAuthor(username, email)
+                            .setMessage(commitMessage)
+                            .call();
+
+                    gitCheckout(git, gitBranch, lockedCount, conflictCount + 1);
+                } else {
+                    throw e;
                 }
-                String commitMessage = "Fixing checkout conflict";
-                LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
-                git.commit()
-                        .setAuthor(username, email)
-                        .setMessage(commitMessage)
-                        .call();
-                
-                gitCheckout(git, gitBranch);
             } catch (JGitInternalException e) {
                 //git may lock, try again
                 if (e.getMessage().contains("Cannot lock") && lockedCount <= 10) {
@@ -266,7 +270,7 @@ public class AppDevUtil {
                     try {
                         Thread.sleep(100);
                     } catch (Exception ex) {}
-                    gitCheckout(git, gitBranch, lockedCount + 1);
+                    gitCheckout(git, gitBranch, lockedCount + 1, conflictCount);
                 } else {
                     throw e;
                 }
