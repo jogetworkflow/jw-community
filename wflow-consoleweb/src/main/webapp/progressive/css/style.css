@@ -1019,8 +1019,8 @@ body#login #page > footer {
     }
 }
 
-.datalist-body-content {
-    overflow: auto;
+.dataList {
+    overflow-x: auto;
 }
 
 .dataList table a {
