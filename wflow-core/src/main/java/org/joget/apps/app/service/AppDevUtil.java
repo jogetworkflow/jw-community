@@ -253,11 +253,27 @@ public class AppDevUtil {
                         }
                     }
                     String commitMessage = "Fixing checkout conflict";
-                    LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
-                    git.commit()
-                            .setAuthor(username, email)
-                            .setMessage(commitMessage)
-                            .call();
+                    try {
+                        if (e.getConflictingPaths() != null && !e.getConflictingPaths().isEmpty()) {
+                            commitMessage += ": ";
+                            for (String p : e.getConflictingPaths()) {
+                                commitMessage += "\n" + p;
+                                git.add().addFilepattern(p).call();
+                            }
+                        }
+                    } catch (Exception ce) {
+                        LogUtil.error(AppDevUtil.class.getName(), ce, "");
+                    }
+                    
+                    try {
+                        LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
+                        git.commit()
+                                .setAuthor(username, email)
+                                .setMessage(commitMessage)
+                                .call();
+                    } catch (Exception ce) {
+                        LogUtil.error(AppDevUtil.class.getName(), ce, commitMessage);
+                    }
 
                     gitCheckout(git, gitBranch, lockedCount, conflictCount + 1);
                 } else {
