@@ -256,11 +256,24 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         activityForm.setProcessDefId(processDefId);
         String activityDefId = activityForm.getActivityDefId();
+        boolean isUpdated = false;
         if (processDefId != null && activityDefId != null) {
-            packageDef.removePackageActivityForm(processDefId, activityDefId);
-            saveOrUpdate(packageDef);
+            PackageActivityForm paf = packageDef.getPackageActivityForm(processDefId, activityDefId);
+            if (paf != null) {
+                paf.setAutoContinue(activityForm.isAutoContinue());
+                paf.setDisableSaveAsDraft(activityForm.getDisableSaveAsDraft());
+                paf.setForm(activityForm.getForm());
+                paf.setFormIFrameStyle(activityForm.getFormIFrameStyle());
+                paf.setFormId(activityForm.getFormId());
+                paf.setFormUrl(activityForm.getFormUrl());
+                paf.setType(activityForm.getType());
+                isUpdated = true;
+            }
         }
-        packageDef.addPackageActivityForm(activityForm);
+        
+        if (!isUpdated) {
+            packageDef.addPackageActivityForm(activityForm);
+        }
         saveOrUpdate(packageDef);
     }
 
