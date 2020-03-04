@@ -5,6 +5,14 @@ https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
 CHANGES IN 7.0.0
 ================
+276c7c29 Fixed: wflow-consoleweb - Rich Text Field - Quill - Not able to copy and paste text. @7.0-SNAPSHOT
+7500e4cf Fixed: wflow-consoleweb - Console - Update help links. @7.0-SNAPSHOT
+a802d416 Fixed: wflow-core - Git - Adding conflict handling for uncommitted local changes during checkout. @7.0-SNAPSHOT
+4eafa3db Fixed: wflow-core - Process - Map Activities to Forms - StaleStateException when update "Remove Save as Draft Button" and "Show The Next Assignment When Completed" too frequently and quickly. @7.0-SNAPSHOT
+edcbaf77 Fixed: wflow-consoleweb - Progressive/Universal Theme - Datalist overflow horizontal scrollbar is in wrong position. @7.0-SNAPSHOT
+330afbf9 Fixed: wflow-core - Git - Prevent infinity resolve git checkout conflict. @7.0-SNAPSHOT
+1b32fac9 Fixed: wflow-consoleweb - Universal/Progressive Theme - Horizontal long sub menu does not has scrollbar to view bottom sub menu. #7422 @7.0-SNAPSHOT
+81428639 Modified: wflow-consoleweb - Console - Fix possible "Portability Flaw: Locale Dependent Comparison" issue. @7.0-SNAPSHOT
 5635d5ef Fixed: wflow-commons/wflow-core - Hash Variable - Support new escape type `?img2base64` to convert image tag src pointed to platform image resource to base64 string. #7394 @7.0-SNAPSHOT
 c93dcc57 Added: wflow-consoleweb/wflow-core - Duplicate Value Validator - Support custom error message for duplicate value found @7.0-SNAPSHOT
 64f1b6f6 Fixed: wflow-consoleweb - Progressive Theme - 2 columns subform section without section label is not display correctly. #7426 @7.0-SNAPSHOT
