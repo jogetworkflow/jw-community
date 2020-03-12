@@ -163,7 +163,6 @@
         <css>/js/quill/quill.snow.css</css>
         <css>/js/quill/quill.custom.css</css>
         <js>/js/quill/quill.min.js</js>
-        <js>/js/quill/quill.htmlEditButton.min.js</js>
         <js>/js/quill/registerModules.js</js>
         <js>/js/quill/image-upload.min.js</js>
         <js>/js/quill/image-resize.min.js</js>
