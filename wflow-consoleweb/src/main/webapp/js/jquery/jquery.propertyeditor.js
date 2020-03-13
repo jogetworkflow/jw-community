@@ -57,7 +57,7 @@ PropertyEditor.Popup = {
         var editor = $("#"+id).data("editor");
         if (!editor.saved && editor.isChange()) {
             if (checkSave === true && $("#"+id).closest(".boxy-wrapper").find(".autosave input").is(":checked")) {
-                $("#"+id + " .property-editor-container").data("disable-hide", (hide !== true));
+                $("#"+id).data("disable-hide", !hide);
                 editor.save();
             } else if (!confirm(get_peditor_msg('peditor.confirmClose'))) {
                 return false;
@@ -67,7 +67,7 @@ PropertyEditor.Popup = {
         if (hide !== undefined && hide === true) {
             PropertyEditor.Popup.hideDialog(id);
         }
-        return false;
+        return true;
     },
     showDialog : function(id, options, args) {
         if (!PropertyEditor.Popup.hasDialog(id)) {
@@ -98,11 +98,12 @@ PropertyEditor.Popup = {
             var orgSaveCallback = options.saveCallback;
             options.saveCallback = function(container, properties) {
                 orgSaveCallback(container, properties);
-                if ($("#"+id + " .property-editor-container").data("disable-hide") !== true) {
+                if ($("#"+id).data("disable-hide") !== true) {
                     PropertyEditor.Popup.hideDialog(id);
                 } else {
                     PropertyEditor.Popup.cleanDialog(id);
                 }
+                $("#"+id).data("disable-hide", false);
             };
         }
         
@@ -122,7 +123,8 @@ PropertyEditor.Popup = {
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").off("click");
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").on("click", function(e){
             e.stopImmediatePropagation();
-            return PropertyEditor.Popup.checkChangeAndHide(id, true, true);
+            PropertyEditor.Popup.checkChangeAndHide(id, true, true);
+            return false;
         });
         
         PropertyEditor.Popup.positionDialog(id, args);
