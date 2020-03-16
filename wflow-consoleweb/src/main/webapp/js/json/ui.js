@@ -215,8 +215,8 @@ PopupDialog.prototype = {
       var openDialog = function() {
             var newFrame = document.getElementById("jqueryDialogFrame");
             if (newFrame != null) {
+                newFrame.setAttribute("src", newSrc); 
                 setTimeout(function() { 
-                    newFrame.setAttribute("src", newSrc); 
                     newFrame.contentWindow.focus();
                 }, 100);
             }
