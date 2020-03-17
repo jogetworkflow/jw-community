@@ -856,8 +856,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                             while (i.hasNext()) {
                                 Property property = (Property) i.next();
                                 String propertyName = property.getName();
+                                if (propertyName.startsWith("t__")) {
+                                    propertyName = propertyName.substring(3);
+                                }
                                 found = formFields.contains(propertyName);
-                                if (!found || Character.isDigit(propertyName.charAt(0))) {
+                                if (!found) {
                                     // property not found, fields changed
                                     changes = true;
                                     break;
