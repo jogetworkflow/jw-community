@@ -149,7 +149,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                 ${reloadTarget}window.location.reload(true);    
             </c:when>
             <c:otherwise>   
-                parent.popupActionDialog.close();
+                parent.PopupDialog.closeDialog();
             </c:otherwise>   
         </c:choose>        
     </script>

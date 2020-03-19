@@ -8,7 +8,7 @@
             <#if redirectUrl == "SCRIPT_RELOAD_PARENT" >
                 <#if redirectParent == "top" >top.<#else>parent.</#if>window.location.reload(true);
             <#elseif redirectUrl == "SCRIPT_CLOSE_POPUP" >
-                parent.popupActionDialog.close();
+                parent.PopupDialog.closeDialog();
             <#else>
                 <#if redirectParent == "true" >parent.<#elseif redirectParent == "top" >top.</#if>location.href = "${redirectUrl}";
             </#if>
