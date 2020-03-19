@@ -5,7 +5,13 @@
             <#if alertMessage != "" >
                 alert("${alertMessage?js_string}");
             </#if>
-            <#if redirectParent == "true" >parent.<#elseif redirectParent == "top" >top.</#if>location.href = "${redirectUrl}";
+            <#if redirectUrl == "SCRIPT_RELOAD_PARENT" >
+                <#if redirectParent == "top" >top.<#else>parent.</#if>window.location.reload(true);
+            <#elseif redirectUrl == "SCRIPT_CLOSE_POPUP" >
+                parent.popupActionDialog.close();
+            <#else>
+                <#if redirectParent == "true" >parent.<#elseif redirectParent == "top" >top.</#if>location.href = "${redirectUrl}";
+            </#if>
         </script>
     </head>
     <body>

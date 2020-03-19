@@ -671,8 +671,14 @@ public class UserviewThemeProcesser {
             } catch (Exception e) {}
         }
 
-        if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && !redirectParent.isEmpty() && !redirectParent.equalsIgnoreCase("false"))) {
+        if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && !redirectParent.isEmpty() && !redirectParent.equalsIgnoreCase("false"))
+                || (menuRedirectUrl != null && (menuRedirectUrl.contains("SCRIPT_RELOAD_PARENT") || menuRedirectUrl.contains("SCRIPT_CLOSE_POPUP")))) {
             if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
+                if (menuRedirectUrl.contains("SCRIPT_RELOAD_PARENT")) {
+                    menuRedirectUrl = "SCRIPT_RELOAD_PARENT";
+                } else if (menuRedirectUrl.contains("SCRIPT_CLOSE_POPUP")) {
+                    menuRedirectUrl = "SCRIPT_CLOSE_POPUP";
+                }
                 Map<String, String> data = new HashMap<String, String>();
                 data.put("alertMessage", menuAlertMessage);
                 data.put("redirectUrl", menuRedirectUrl);

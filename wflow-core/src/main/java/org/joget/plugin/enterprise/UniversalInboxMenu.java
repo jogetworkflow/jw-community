@@ -99,7 +99,11 @@ public class UniversalInboxMenu extends InboxMenu implements PluginWebSupport {
             // get datalist
             ApplicationContext ac = AppUtil.getApplicationContext();
             DataListService dataListService = (DataListService) ac.getBean("dataListService");
-            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/universalInboxMenuListJson.json", null, true, "message/userview/universalInboxMenu");
+            String target = "_self";
+            if ("true".equalsIgnoreCase(getPropertyString("showPopup"))) {
+                target = "popup";
+            }
+            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/universalInboxMenuListJson.json", new String[]{target}, true, "message/userview/universalInboxMenu");
             cacheDataList = dataListService.fromJson(json);
         }
         return cacheDataList;

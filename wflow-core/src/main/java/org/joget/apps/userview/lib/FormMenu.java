@@ -273,13 +273,17 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
                 formHtml = formService.generateElementHtml(form, formData);
                 setAlertMessage(getPropertyString("messageShowAfterComplete"));
                 
-                String redirectTarget = "";
-                if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-                    redirectTarget = "parent";
+                if ("reload".equalsIgnoreCase(getPropertyString("actionAfterSaved"))) {
+                    setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
                 } else {
-                    redirectTarget = getPropertyString("redirectTargetOnComplete");
+                    String redirectTarget = "";
+                    if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
+                        redirectTarget = "parent";
+                    } else {
+                        redirectTarget = getPropertyString("redirectTargetOnComplete");
+                    }
+                    setRedirectUrlToWindow(redirectUrl, redirectTarget);
                 }
-                setRedirectUrlToWindow(redirectUrl, redirectTarget);
             } else {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
@@ -306,7 +310,9 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
             setProperty("errorCount", 0);
             setProperty("submitted", Boolean.TRUE);
             setAlertMessage(getPropertyString("messageShowAfterComplete"));
-            if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
+            if ("reload".equalsIgnoreCase(getPropertyString("actionAfterSaved"))) {
+                setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
+            } else if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
                 setProperty("redirectUrlAfterComplete", redirectUrl);
                 String redirectTarget = "";
                 if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
@@ -394,11 +400,14 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
 
         String cancelUrl = getPropertyString("redirectUrlOnCancel");
         String cancelLabel = null;
-        if (cancelUrl != null && !cancelUrl.isEmpty()) {
+        if ((cancelUrl != null && !cancelUrl.isEmpty()) || "closepopup".equalsIgnoreCase(getPropertyString("actionOnCancel"))) {
             if (getPropertyString("cancelButtonLabel") != null && getPropertyString("cancelButtonLabel").trim().length() > 0) {
                 cancelLabel = getPropertyString("cancelButtonLabel");
             } else {
                 cancelLabel = ResourceBundleUtil.getMessage("general.method.label.cancel");
+            }
+            if ("closepopup".equalsIgnoreCase(getPropertyString("actionOnCancel"))) {
+                cancelUrl = "SCRIPT_CLOSE_POPUP";
             }
         }
         
@@ -475,6 +484,8 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
                     setProperty("redirectUrlAfterComplete", redirectUrl);
                     setAlertMessage("");
                     setRedirectUrl(redirectUrl);
+                } else if ("reload".equalsIgnoreCase(getPropertyString("actionAfterSaved"))) {
+                    setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
                 }
             }
         }

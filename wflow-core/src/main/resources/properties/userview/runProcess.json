@@ -53,16 +53,32 @@
     }]
 },
 {
-    title : 'Redirection',
+    title : '@@userview.formmenu.redirection@@',
     properties : [{
         name : 'messageShowAfterComplete',
         label : '@@userview.runprocess.messageAfterStarted@@',
         type : 'textarea'
     },
     {
+        name : 'actionAfterSaved',
+        label : '@@userview.formmenu.actionAfterSaved@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.formmenu.redirection@@'
+        },
+        {
+            value : 'reload',
+            label : '@@userview.formmenu.reload@@'
+        }]
+    },
+    {
         name : 'redirectUrlAfterComplete',
         label : '@@userview.runprocess.redirectAfterStarted@@',
-        type : 'textfield'
+        type : 'textfield',
+        control_field: 'actionAfterSaved',
+        control_value: '',
+        control_use_regex: 'false'
     },
     {
         name : 'redirectTarget',
@@ -80,12 +96,18 @@
         {
             value : '',
             label : '@@userview.formmenu.target.window@@'
-        }]
+        }],
+        control_field: 'actionAfterSaved',
+        control_value: '',
+        control_use_regex: 'false'
     },
     {
         name : 'fieldPassover',
         label : '@@userview.formmenu.fieldNamePassover@@',
-        type : 'textfield'
+        type : 'textfield',
+        control_field: 'actionAfterSaved',
+        control_value: '',
+        control_use_regex: 'false'
     },
     {
         name : 'fieldPassoverMethod',
@@ -99,12 +121,35 @@
         {
             value : 'param',
             label : '@@userview.formmenu.asParam@@'
-        }]
+        }],
+        control_field: 'actionAfterSaved',
+        control_value: '',
+        control_use_regex: 'false'
     },
     {
         name : 'paramName',
         label : '@@userview.formmenu.paramName@@',
-        type : 'textfield'
+        type : 'textfield',
+        control_field: 'actionAfterSaved',
+        control_value: '',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'afterSavedReloadTarget',
+        label : '@@userview.formmenu.aftersaved.reload.target@@',
+        type : 'selectbox',
+        options : [
+        {
+            value : 'true',
+            label : '@@datalist.hyperlinkdatalistaction.parent@@'
+        },
+        {
+            value : 'top',
+            label : '@@datalist.hyperlinkdatalistaction.top@@'
+        }],
+        control_field: 'actionAfterSaved',
+        control_value: 'reload',
+        control_use_regex: 'false'
     }]
 },
 {

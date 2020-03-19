@@ -192,7 +192,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
             ApplicationContext ac = AppUtil.getApplicationContext();
             AppService appService = (AppService) ac.getBean("appService");
             DataListService dataListService = (DataListService) ac.getBean("dataListService");
-            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", null, true, "message/userview/inboxMenu");
+            String target = "_self";
+            if ("true".equalsIgnoreCase(getPropertyString("showPopup"))) {
+                target = "popup";
+            }
+            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", new String[]{target}, true, "message/userview/inboxMenu");
             cacheDataList = dataListService.fromJson(json);
         }
         return cacheDataList;
@@ -360,6 +364,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
         formUrl = addParamToUrl(formUrl, "activityId", activityId);
         
         String cancelUrl = getUrl();
+        if ("true".equalsIgnoreCase(getPropertyString("showPopup"))) {
+            cancelUrl = "SCRIPT_CLOSE_POPUP";
+        }
 
         AppService appService;
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -460,6 +467,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
         setProperty("submitted", Boolean.TRUE);
         setProperty("redirectUrlAfterComplete", getUrl());
         setRedirectUrl(getUrl());
+        if ("true".equalsIgnoreCase(getPropertyString("showPopup"))) {
+            setRedirectUrl("SCRIPT_RELOAD_PARENT");
+        }
 
         // check for validation errors
         if (formData.getFormResult(AssignmentWithdrawButton.DEFAULT_ID) != null) {

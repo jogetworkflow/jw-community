@@ -74,7 +74,18 @@
             value : 'bothRight',
             label : '@@userview.inboxmenu.buttonPosition.bothRight@@'
         }]
-    },{
+    },
+    {
+        name : 'showPopup',
+        label : '@@userview.inboxmenu.showInPopup@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'list-customHeader',
         label : '@@userview.inboxmenu.customHeader.list@@',
         type : 'codeeditor',

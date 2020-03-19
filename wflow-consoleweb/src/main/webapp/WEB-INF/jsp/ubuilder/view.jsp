@@ -135,6 +135,25 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 <c:set var="redirectParentProperty" value="<%= UserviewMenu.REDIRECT_PARENT_PROPERTY %>"/>
 <c:set var="redirectParentValue" value="${userview.current.properties[redirectParentProperty]}"/>
 <c:choose>
+<c:when test="${fn:contains(redirectUrlValue, 'SCRIPT_RELOAD_PARENT') || fn:contains(redirectUrlValue, 'SCRIPT_CLOSE_POPUP')}">
+    <script>
+        <c:if test="${!empty alertMessageValue}">
+            alert("<ui:escape value="${alertMessageValue}" format="javascript"/>");
+        </c:if>
+        <c:choose>
+            <c:when test="${fn:contains(redirectUrlValue, 'SCRIPT_RELOAD_PARENT')}">    
+                <c:set var="reloadTarget" value="parent."/>    
+                <c:if test="${redirectParentValue eq 'top'}">
+                    <c:set var="reloadTarget" value="top."/>
+                </c:if>
+                ${reloadTarget}window.location.reload(true);    
+            </c:when>
+            <c:otherwise>   
+                parent.popupActionDialog.close();
+            </c:otherwise>   
+        </c:choose>        
+    </script>
+</c:when>    
 <c:when test="${!empty alertMessageValue}">
     <script>
         alert("<ui:escape value="${alertMessageValue}" format="javascript"/>");

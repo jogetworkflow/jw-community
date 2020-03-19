@@ -511,7 +511,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                 // show form
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
                 if (!formResult.getStay() &&errorCount == 0) {
-                    if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
+                    if ("reload".equals(getPropertyString("actionAfterSaved"))) {
+                        setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
+                    } else if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
                         setProperty("view", "redirect");
                         String redirectTarget = "";
                         if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
@@ -567,7 +569,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
 
     private void processStarted(Form form, FormData formData) {
         setAlertMessage(getPropertyString("messageShowAfterComplete"));
-        if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
+        if ("reload".equals(getPropertyString("actionAfterSaved"))) {
+            setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
+        } else if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
             setProperty("view", "redirect");
             String redirectTarget = "";
             if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
