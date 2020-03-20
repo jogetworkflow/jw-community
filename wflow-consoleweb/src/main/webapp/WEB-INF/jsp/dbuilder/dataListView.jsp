@@ -347,7 +347,7 @@
                             $("form[name='form_${dataListId}']").append('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
                             $("form[name='form_${dataListId}']").submit();
                             $("form[name='form_${dataListId}'] .temp_button_input").remove();
-                        }, 200);
+                        }, 1);
                     }
                     return false;
                 } else {
