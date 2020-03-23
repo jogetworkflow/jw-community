@@ -1347,14 +1347,6 @@ public class AppServiceImpl implements AppService {
             String packageIdToUpload = (versionStr != null && !versionStr.isEmpty()) ? packageId : null;
             workflowManager.processUpload(packageIdToUpload, packageXpdl);
 
-            // save to xpdl file for git commit
-            if (appDef != null) {
-                String xpdl = new String(packageXpdl, "UTF-8");
-                String filename = "package.xpdl";
-                String commitMessage = "Update xpdl " + appDef.getId();
-                AppDevUtil.fileSave(appDef, filename, xpdl, commitMessage);
-            }
-        
             // load package
             versionStr = workflowManager.getCurrentPackageVersion(packageId);
             WorkflowPackage workflowPackage = workflowManager.getPackage(packageId, versionStr);
@@ -1390,6 +1382,14 @@ public class AppServiceImpl implements AppService {
             } else {
                 originalVersion = packageDef.getVersion();
                 packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
+            }
+            
+            // save to xpdl file for git commit
+            if (appDef != null) {
+                String xpdl = AppDevUtil.getPackageXpdl(appDef);
+                String filename = "package.xpdl";
+                String commitMessage = "Update xpdl " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xpdl, commitMessage);
             }
 
             if (originalVersion != null) {

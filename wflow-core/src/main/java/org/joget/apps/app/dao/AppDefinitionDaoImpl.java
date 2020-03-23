@@ -323,6 +323,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         getHibernateTemplate().clear();
         appDef.setName(newAppDef.getName());
         appDef.setLicense(newAppDef.getLicense());
+        appDef.setDescription(newAppDef.getDescription());
         saveOrUpdate(appDef);        
 
         // update processes

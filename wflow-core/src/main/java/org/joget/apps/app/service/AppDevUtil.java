@@ -908,6 +908,7 @@ public class AppDevUtil {
         }        
         Date packageDateCreated = (packageDef != null) ? packageDef.getDateCreated() : null;
         Date packageDateModiDate = (packageDef != null) ? packageDef.getDateModified() : null;
+        Long packageVersion =  (packageDef != null) ? packageDef.getVersion() : null;
         
         try {
             // remove unneeded elements
@@ -918,6 +919,7 @@ public class AppDevUtil {
             appDef.setDateCreated(null);
             appDef.setDateModified(null);
             if (packageDef != null) {
+                packageDef.setVersion(null);
                 packageDef.setDateCreated(null);
                 packageDef.setDateModified(null);
             }
@@ -954,6 +956,7 @@ public class AppDevUtil {
             if (packageDef != null) {
                 packageDef.setDateCreated(packageDateCreated);
                 packageDef.setDateModified(packageDateModiDate);
+                packageDef.setVersion(packageVersion);
             }
             appDef.setPackageDefinitionList(packageDefinitionList);
         }
