@@ -111,7 +111,7 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String decrypt(String protectedContent) {
-        if (protectedContent.startsWith(ENVELOPE) && protectedContent.endsWith(ENVELOPE) && getDataEncryption() != null) {
+        if (protectedContent != null && protectedContent.startsWith(ENVELOPE) && protectedContent.endsWith(ENVELOPE) && getDataEncryption() != null) {
             try {
                 String tempProtectedContent = cleanPrefixPostfix(protectedContent);
                 return getDataEncryption().decrypt(tempProtectedContent);
