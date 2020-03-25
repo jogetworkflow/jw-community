@@ -67,6 +67,8 @@
                     }
                 }
                 
+                options.timeout = 0;
+                
                 var myDropzone = new Dropzone("#"+$(target).attr("id"), options);
                 myDropzone.on("success", function(file, resp) {
                     if (o.multiple !== "true") {

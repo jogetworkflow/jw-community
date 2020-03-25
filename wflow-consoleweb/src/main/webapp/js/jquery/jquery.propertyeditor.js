@@ -1090,6 +1090,8 @@ PropertyEditor.Util = {
                     $(object).find(".app_resources li").show();
                 }
             });
+            
+            options.timeout = 0;
 
             var myDropzone = new Dropzone("#app_resource_dropzone", options);
             myDropzone.on("success", function(file, resp) {
