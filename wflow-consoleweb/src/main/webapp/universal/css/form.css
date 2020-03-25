@@ -97,7 +97,7 @@ body ::-moz-placeholder{
 body :-ms-input-placeholder{
     color: #B6B6B6;
 }
-body .filter-cell select.emptyValue {
+body .filter-cell select:not([multiple]).emptyValue {
     color: #B6B6B6 !important;
 }
 
@@ -411,8 +411,8 @@ body label > input[type=checkbox]:disabled + i:after {
 
 /* Select Field
    ========================================================================== */
-body select:not([class^="ui-"]),
-body .editor-cell select:not([class^="ui-"]) {
+body select:not([class^="ui-"]):not([multiple]),
+body .editor-cell select:not([class^="ui-"]):not([multiple]) {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9E9E' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
   background-position: 100% 50%;
   background-repeat: no-repeat;
@@ -426,27 +426,31 @@ body select:not([class^="ui-"])::-ms-expand,
 body .editor-cell select:not([class^="ui-"])::-ms-expand {
     display: none;
 }
-body.rtl select:not([class^="ui-"]),
-body.rtl .editor-cell select:not([class^="ui-"]) {
+body.rtl select:not([class^="ui-"]):not([multiple]),
+body.rtl .editor-cell select:not([class^="ui-"]):not([multiple]) {
   background-position: 0% 50%;
 }
 
-body select:not([class^="ui-"]) option,
-body .editor-cell select:not([class^="ui-"]) option {
+body select:not([class^="ui-"]):not([multiple]) option,
+body .editor-cell select:not([class^="ui-"]):not([multiple]) option {
     color: #000;
     background: #fff;
 }
 
-body .filter-cell select:not([class^="ui-"]){
+body .filter-cell select:not([class^="ui-"]):not([multiple]){
   padding-right: 30px;
 }
-body.rtl .filter-cell select:not([class^="ui-"]){
+body.rtl .filter-cell select:not([class^="ui-"]):not([multiple]){
   padding-left: 30px;
   padding-right: 0;
 }
   
-body select:not([class^="ui-"]):disabled {
+body select:not([class^="ui-"]):not([multiple]):disabled {
   background-image: none;
+}
+
+body .filter-cell select[multiple]{
+    margin-bottom: 13px !important;
 }
 
 body select:not([class^="ui-"]):focus,
@@ -484,6 +488,14 @@ body .filter-cell input.hasDatepicker {
 body.rtl .filter-cell input.hasDatepicker {
     padding-left: 25px;
     padding-right: auto;
+}
+
+body .filter-cell .form-button{
+    margin-bottom: 15px;
+}
+
+body .filter-cell {
+    padding-top: 10px;
 }
 
 body .form-container [class*=form-cell-value] > span,

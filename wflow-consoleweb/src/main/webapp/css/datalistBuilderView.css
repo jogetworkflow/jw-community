@@ -150,7 +150,9 @@
 .dataList .filters {
     margin-bottom: 2px;
 }
-
+.dataList .filter-cell{
+    vertical-align: bottom;
+}
 .dataList .filter-cell.hidden-filter,
 .search_filter_popup .filter-cell.hidden-filter{
     display:none !important;
@@ -269,4 +271,5 @@
 .search_filter_popup .filter-cell:not(.hidden-filter) {
     display: block;
     padding-right: 10px;
+    vertical-align: baseline;
 }
