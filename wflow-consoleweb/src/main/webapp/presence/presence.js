@@ -189,14 +189,15 @@ global.EventSource = EventSource;
 
 PresenceUtil = {
     url: UI.base + "/web/presence",
-    init: function() {
+    source : null,
+    createEventSource : function() {
         // Check that browser supports EventSource 
         if (!!window.EventSource) {
             // Subscribe to url to listen
-            var source = new EventSource(PresenceUtil.url);
+            PresenceUtil.source = new EventSource(PresenceUtil.url);
 
             // Define what to do when server sent new event
-            source.addEventListener(window.location.pathname, function(e) {
+            PresenceUtil.source.addEventListener(window.location.pathname, function(e) {
                 $("#presence").html(e.data);
             }, false);
         } else {
@@ -211,6 +212,32 @@ PresenceUtil = {
                 PresenceUtil.message("join");
             }, 500);
         });
+    },
+    init: function() {
+        PresenceUtil.createEventSource();
+        if (!(typeof document.addEventListener === "undefined")) {
+            
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            } else if (typeof document.msHidden !== "undefined") {
+                hidden = "msHidden";
+                visibilityChange = "msvisibilitychange";
+            } else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
+            
+            document.addEventListener(visibilityChange, function(){
+                if (document[hidden]) {
+                    PresenceUtil.source.close();
+                    PresenceUtil.source = null;
+                } else {
+                    PresenceUtil.createEventSource();
+                }
+            }, false);
+        }
         $(window).on("beforeunload", function() {
             PresenceUtil.message("leave");
         });        
