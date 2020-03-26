@@ -27,6 +27,7 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.ProcessMappingInfo;
+import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -167,6 +168,12 @@ public class ProcessBuilderWebController {
             jsonObject.put("modifierPluginCount", modifierPluginMap.size());
             if (modifierPluginMap.size() == 1) {
                 jsonObject.put("modifierPlugin", modifierPluginMap.keySet().iterator().next());
+            }
+            
+            Map<String, Plugin> spModifierPluginMap = pluginManager.loadPluginMap(StartProcessFormModifier.class);
+            jsonObject.put("spModifierPluginCount", spModifierPluginMap.size());
+            if (spModifierPluginMap.size() == 1) {
+                jsonObject.put("spModifierPlugin", spModifierPluginMap.keySet().iterator().next());
             }
         }
         AppUtil.writeJson(writer, jsonObject, callback);

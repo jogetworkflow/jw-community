@@ -4452,25 +4452,46 @@ ProcessBuilder.Mapper = {
         }
         $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
         if (mapping !== null && mapping !== undefined && mapping['type'] !== "EXTERNAL" 
-                && mapping['formId'] !== undefined && $(node).find(".edit_mapping").attr("type") !== "start"
+                && mapping['formId'] !== undefined) {
+            if ($(node).find(".edit_mapping").attr("type") !== "start"
                 && ProcessBuilder.Mapper.mappingData["modifierPluginCount"] > 0) {
-            var id = $(node).find(".edit_mapping").attr("nodeid");
-            var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
-            var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
-            url += "/activityForm/" + escape(id) + "/plugin";
-            var title = $(node).find(".node_label").text();
-            
-            if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
-                if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
-                    $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
+                var id = $(node).find(".edit_mapping").attr("nodeid");
+                var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
+                var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
+                url += "/activityForm/" + escape(id) + "/plugin";
+                var title = $(node).find(".node_label").text();
+
+                if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
+                    if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
+                        $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
+                    }
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
+                } else if ((typeof ProcessBuilder.Mapper.mappingData["modifierPlugin"]) !== "undefined") {
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["modifierPlugin"]);
+                } else {
+                    url += "?activityName=" + encodeURIComponent(title);
                 }
-                url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
-            } else if ((typeof ProcessBuilder.Mapper.mappingData["modifierPlugin"]) !== "undefined") {
-                url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["modifierPlugin"]);
-            } else {
-                url += "?activityName=" + encodeURIComponent(title);
+                $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
+            } else if ($(node).find(".edit_mapping").attr("type") === "start"
+                && ProcessBuilder.Mapper.mappingData["spModifierPluginCount"] > 0) {
+                var id = $(node).find(".edit_mapping").attr("nodeid");
+                var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
+                var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
+                url += "/activityForm/" + escape(id) + "/plugin";
+                var title = $(node).find(".node_label").text();
+
+                if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
+                    if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
+                        $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
+                    }
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
+                } else if ((typeof ProcessBuilder.Mapper.mappingData["spModifierPlugin"]) !== "undefined") {
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["spModifierPlugin"]);
+                } else {
+                    url += "?activityName=" + encodeURIComponent(title);
+                }
+                $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
             }
-            $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
         }
     },
     attachPluginDetail : function(node, mapping) {

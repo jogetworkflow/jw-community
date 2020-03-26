@@ -56,6 +56,7 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.model.ProcessFormModifier;
+import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppResourceUtil;
@@ -1970,6 +1971,7 @@ public class ConsoleWebController {
         
         // get process form modifier plugin map
         Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
+        Map<String, Plugin> spModifierPluginMap = pluginManager.loadPluginMap(StartProcessFormModifier.class);
 
         String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         map.addAttribute("processList", processList);
@@ -1982,6 +1984,10 @@ public class ConsoleWebController {
         map.addAttribute("modifierPluginMap", modifierPluginMap);
         if (modifierPluginMap.size() == 1) {
             map.addAttribute("modifierPlugin", modifierPluginMap.keySet().iterator().next());
+        }
+        map.addAttribute("spModifierPluginMap", spModifierPluginMap);
+        if (spModifierPluginMap.size() == 1) {
+            map.addAttribute("spModifierPlugin", spModifierPluginMap.keySet().iterator().next());
         }
         map.addAttribute("activityFormMap", activityFormMap);
         map.addAttribute("formMap", formMap);
@@ -2228,6 +2234,13 @@ public class ConsoleWebController {
         map.addAttribute("activity", activity);
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        
+        if (WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS.equals(activityDefId)) {
+            map.addAttribute("pluginClass", "org.joget.apps.app.model.StartProcessFormModifier");
+        } else {
+            map.addAttribute("pluginClass", "org.joget.apps.app.model.ProcessFormModifier");
+        }
+        
         return "console/apps/activityFormPluginAdd";
     }
 
@@ -2332,9 +2345,16 @@ public class ConsoleWebController {
             boolean showCancel = true;
             
             if ("activityForm".equalsIgnoreCase(activityType)) {
-                Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
-                if (modifierPluginMap.size() == 1) {
-                    showCancel = false;
+                if(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS.equals(activityDefId)) {
+                    Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(StartProcessFormModifier.class);
+                    if (modifierPluginMap.size() == 1) {
+                        showCancel = false;
+                    }
+                } else {
+                    Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
+                    if (modifierPluginMap.size() == 1) {
+                        showCancel = false;
+                    }
                 }
             }
             

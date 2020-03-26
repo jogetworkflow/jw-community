@@ -18,7 +18,7 @@
     <c:set var="title"><ui:escape value="${title}" format="url;url;javascript" /></c:set>
 
     <div id="main-body-content" style="text-align: left">
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?className=org.joget.apps.app.model.ProcessFormModifier&${pageContext.request.queryString}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?className=${pluginClass}&${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="pluginList"
                        jsonData="data"

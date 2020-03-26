@@ -301,28 +301,52 @@
                                                 </c:if>
                                                 <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('<c:out value="${processIdWithoutVersion}"/>','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
                                             </dl>
-                                            <c:if test="${activity.id ne 'runProcess' && !(!empty activityForm && activityForm.type == 'EXTERNAL') && fn:length(modifierPluginMap) > 0}">
-                                                <dl>
-                                                    <c:set var="plugin" value="${pluginMap[activityUid]}"/>
-                                                    <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
-                                                    <c:if test="${plugin ne null && !empty pluginInfo}">
+                                             <c:choose>
+                                                <c:when test="${activity.id ne 'runProcess' && !(!empty activityForm && activityForm.type == 'EXTERNAL') && fn:length(modifierPluginMap) > 0}">
+                                                    <dl>
+                                                        <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                                        <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
+                                                        <c:if test="${plugin ne null && !empty pluginInfo}">
+                                                            <dt>&nbsp;</dt>
+                                                            <dd>${pluginInfo}&nbsp;</dd>
+                                                        </c:if>
                                                         <dt>&nbsp;</dt>
-                                                        <dd>${pluginInfo}&nbsp;</dd>
-                                                    </c:if>
-                                                    <dt>&nbsp;</dt>
-                                                    <c:choose>
-                                                        <c:when test="${plugin ne null}">
-                                                            <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
-                                                        </c:when>
-                                                        <c:when test="${!empty modifierPlugin}">
-                                                            <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>', '<ui:escape value="${modifierPlugin}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <dd><a onclick="addActivityFormPlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </dl>
-                                            </c:if>
+                                                        <c:choose>
+                                                            <c:when test="${plugin ne null}">
+                                                                <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:when>
+                                                            <c:when test="${!empty modifierPlugin}">
+                                                                <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>', '<ui:escape value="${modifierPlugin}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <dd><a onclick="addActivityFormPlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </dl>
+                                                </c:when>
+                                                <c:when test="${activity.id eq 'runProcess' && !(!empty activityForm && activityForm.type == 'EXTERNAL') && fn:length(spModifierPluginMap) > 0}">
+                                                    <dl>
+                                                        <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                                        <c:set var="pluginInfo" value="${pluginInfoMap[activityUid]}"/>
+                                                        <c:if test="${plugin ne null && !empty pluginInfo}">
+                                                            <dt>&nbsp;</dt>
+                                                            <dd>${pluginInfo}&nbsp;</dd>
+                                                        </c:if>
+                                                        <dt>&nbsp;</dt>
+                                                        <c:choose>
+                                                            <c:when test="${plugin ne null}">
+                                                                <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:when>
+                                                            <c:when test="${!empty spModifierPlugin}">
+                                                                <dd><a onclick="activityFormConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>', '<ui:escape value="${spModifierPlugin}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <dd><a onclick="addActivityFormPlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"><fmt:message key="pbuilder.label.moreSettings"/></a></dd>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </dl>
+                                                </c:when>
+                                             </c:choose>   
                                         </div>
                                     </div>
                                 </div>
