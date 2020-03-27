@@ -13,11 +13,19 @@
             },
             {
                 "name" : "runInMultiThread",
-                "label" : "@@app.multitools.runInMultiThread@@",
-                "type" : "checkbox",
+                "label" : "@@app.multitools.runMode@@",
+                "type" : "selectbox",
                 "options" : [{
+                    "value" : "",
+                    "label" : "@@app.multitools.sameThread@@"
+                },
+                {
                     "value" : "true",
-                    "label" : ""
+                    "label" : "@@app.multitools.runInMultiThread@@"
+                },
+                {
+                    "value" : "single",
+                    "label" : "@@app.multitools.runInSingleThread@@"
                 }]
             },{
                 "name" : "waitAllFinish",
