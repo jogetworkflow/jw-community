@@ -1432,7 +1432,7 @@ public class AppServiceImpl implements AppService {
             
             // save to xpdl file for git commit
             if (appDef != null) {
-                String xpdl = AppDevUtil.getPackageXpdl(appDef);
+                String xpdl = AppDevUtil.getPackageXpdl(packageDef);
                 String filename = "package.xpdl";
                 String commitMessage = "Update xpdl " + appDef.getId();
                 AppDevUtil.fileSave(appDef, filename, xpdl, commitMessage);

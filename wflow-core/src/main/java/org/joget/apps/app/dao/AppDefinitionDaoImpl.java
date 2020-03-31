@@ -280,6 +280,10 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
         String filename = "appDefinition.xml";
         String appDefXml = AppDevUtil.fileReadToString(appDef, filename, false);
+        if (appDefXml == null) {
+            return appDef;
+        }
+        
         byte[] appDefData;
         try {
             appDefData = appDefXml.getBytes("UTF-8");
@@ -454,7 +458,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         String newXpdl = AppDevUtil.fileReadToString(appDef, filename, false);
         if (newXpdl != null) {
             String currentXpdl = AppDevUtil.getPackageXpdl(appDef);
-            if (!newXpdl.equals(currentXpdl)) {
+            if (!cleanXPDLForCompare(newXpdl).equals(cleanXPDLForCompare(currentXpdl))) {
                 try {
                     LogUtil.debug(getClass().getName(), "Deploy package XPDL for " + appDef);
                     AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
@@ -466,7 +470,15 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                 LogUtil.debug(getClass().getName(), "No change in package XPDL for " + appDef);
             }
         }
-    }      
+    }  
+
+    protected String cleanXPDLForCompare(String xpdl) {
+        xpdl = xpdl.replaceAll("\n", "");
+        xpdl = xpdl.replaceAll("\r", "");
+        xpdl = xpdl.trim();
+        
+        return xpdl;
+    } 
 
     protected void syncAppConfig(AppDefinition appDef) {
         LogUtil.debug(getClass().getName(), "Sync app config for " + appDef);

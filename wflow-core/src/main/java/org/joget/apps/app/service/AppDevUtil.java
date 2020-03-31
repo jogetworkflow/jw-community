@@ -387,7 +387,12 @@ public class AppDevUtil {
                 .setMessage(commitMessage)
                 .call();
         
-        gitPushLocal(appDef, git, workingDir);
+        String baseDir = AppDevUtil.getAppDevBaseDirectory();
+        String projectDirName = getAppGitDirectory(appDef);
+        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+        if (!projectDir.equals(workingDir)) {
+            gitPushLocal(appDef, git, workingDir); //push if it is a temporary working dir
+        }
     }
     
     public static void gitPullAndCommit(AppDefinition appDef, Git git, File workingDir, String commitMessage) throws GitAPIException {
@@ -436,7 +441,7 @@ public class AppDevUtil {
             LogUtil.debug(AppDevUtil.class.getName(), "Pull from Git local repo: " + appDef.getAppId());
 
             PullResult pullResult = git.pull()
-                    .setRemote("origin")
+                    .setRemote("local")
                     .setRemoteBranchName(gitBranch)
                     .call();
             FetchResult fetchResult = pullResult.getFetchResult();
@@ -542,6 +547,7 @@ public class AppDevUtil {
         }
         
         Iterable<PushResult> pushResults = git.push()
+                .setRemote("local")
                 .call();
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
@@ -666,7 +672,7 @@ public class AppDevUtil {
                         }
                     }
                 }
-            } catch(RefNotFoundException | URISyntaxException ne) {
+            } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException ne) {
                 LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + ne.getMessage());
             }
             
@@ -675,7 +681,7 @@ public class AppDevUtil {
             File projectWorkingDir = AppDevUtil.dirSetup(baseDir, projectWorkingDirName);
             Git git = AppDevUtil.gitInit(projectWorkingDir);
             RemoteAddCommand remoteAddCommand = git.remoteAdd();
-            remoteAddCommand.setName("origin");
+            remoteAddCommand.setName("local");
             remoteAddCommand.setUri(new URIish(projectDir.getAbsolutePath()));
             remoteAddCommand.call();
             
@@ -859,7 +865,7 @@ public class AppDevUtil {
                     }
                 }
             }
-        } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException re) {
+        } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException re) {
             LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDefinition.getAppId() + ". Reason :" + re.getMessage());
         }
         File file = new File(projectDir, path);
@@ -1031,9 +1037,16 @@ public class AppDevUtil {
     }     
     
     public static String getPackageXpdl(AppDefinition appDef) {
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            return getPackageXpdl(packageDef);
+        }
+        return null;
+    }
+    
+    public static String getPackageXpdl(PackageDefinition packageDef) {
         String xpdl = null;
         try {
-            PackageDefinition packageDef = appDef.getPackageDefinition();
             if (packageDef != null) {
                 WorkflowManager workflowManager = (WorkflowManager)AppUtil.getApplicationContext().getBean("workflowManager");
                 try {
