@@ -667,10 +667,12 @@ public class AppDevUtil {
     }
     
     protected static void waitForConcurrentPullCompleted(String projectDirName, String uniqueKey) {
-        while (workingPulls.get(projectDirName).contains(uniqueKey)) {
+        int count = 0;
+        while (workingPulls.get(projectDirName).contains(uniqueKey) && count < 30) { //should not wait longer than 0.5s
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {}
+            count++;
         }
     }
 
@@ -699,14 +701,16 @@ public class AppDevUtil {
                             if (isConcurrentPull(projectDirName, pullKeys)) {
                                 waitForConcurrentPullCompleted(projectDirName, pullKeys);
                             } else {
-                                // perform git pull
-                                String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
-                                String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
-                                String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                                AppDevUtil.gitAddRemote(localGit, gitUri);
-                                AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
-                                
-                                clearConcurrentPull(projectDirName);
+                                try {
+                                    // perform git pull
+                                    String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
+                                    String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
+                                    String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
+                                    AppDevUtil.gitAddRemote(localGit, gitUri);
+                                    AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                } finally {
+                                    clearConcurrentPull(projectDirName);
+                                }
                             }
                             
                             // set flag to prevent further pulls in the same request
