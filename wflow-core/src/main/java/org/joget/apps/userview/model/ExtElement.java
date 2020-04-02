@@ -12,7 +12,12 @@ import org.joget.plugin.property.model.PropertyEditable;
 public abstract class ExtElement extends ExtDefaultPlugin implements PropertyEditable {
 
     private Map requestParameters;
-
+    
+    @Override
+    public void setProperties(Map<String, Object> properties) {
+        super.setProperties(new HashVariableSupportedMap(properties));
+    }
+    
     /**
      * Gets request parameters
      * @return 

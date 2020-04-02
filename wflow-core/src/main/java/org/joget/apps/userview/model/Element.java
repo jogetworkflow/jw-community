@@ -13,7 +13,7 @@ public abstract class Element implements PropertyEditable {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = new HashVariableSupportedMap(properties);
     }
 
     /**

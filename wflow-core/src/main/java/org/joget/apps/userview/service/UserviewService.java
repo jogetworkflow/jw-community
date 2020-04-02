@@ -77,8 +77,7 @@ public class UserviewService {
         UserviewSetting setting = null;
         
         //process json with hash variable
-        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
-
+        
         User currentUser = workflowUserManager.getCurrentUser();
         
         Map<String, Object> requestParameters = new HashMap<String, Object>();
@@ -158,7 +157,6 @@ public class UserviewService {
         }
 
         //process json with hash variable
-        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
         json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
 
         User currentUser = workflowUserManager.getCurrentUser();
@@ -434,8 +432,7 @@ public class UserviewService {
             if (userviewDef != null) {
                 String json = userviewDef.getJson();
                 //process json with hash variable
-                json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
-
+                
                 Map requestParameters = convertRequestParamMap(request.getParameterMap());
                 requestParameters.put("contextPath", request.getContextPath());
                 requestParameters.put("appId", appDef.getAppId());
@@ -511,7 +508,7 @@ public class UserviewService {
                         String id = props.getString("id");
                         String customId = (props.has("customId"))?props.getString("customId"):null;
                         if (customId != null && !customId.isEmpty()) {
-                            ids.add(customId);
+                            ids.add(AppUtil.processHashVariable(customId, null, null, null, appDef));
                         } else {
                             ids.add(id);
                         }
