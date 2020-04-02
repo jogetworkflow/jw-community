@@ -1,5 +1,5 @@
 Joget DX
-Copyright 2018 www.joget.org
+Copyright 2020 www.joget.org
 
 This product includes software developed by
 The Apache Software Foundation (http://www.apache.org/).
