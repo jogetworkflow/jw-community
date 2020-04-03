@@ -108,6 +108,9 @@ public class FormOptionsCacheAspect {
                 cacheOption2.put("description", ResourceBundleUtil.getMessage("formOptionsCache.cacheIdlePause.desc"));
                 cacheOption2.put("regex_validation", "^[0-9]+$");
                 cacheOption2.put("validation_message", ResourceBundleUtil.getMessage("formOptionsCache.interval.error"));
+                cacheOption2.put("control_field", "cacheInterval");
+                cacheOption2.put("control_value", "^[0-9]+$");
+                cacheOption2.put("control_use_regex", "true");
                 if (jarr.length() > 0) {
                     jarr.getJSONObject(0).accumulate("properties", cacheOption);
                     jarr.getJSONObject(0).accumulate("properties", cacheOption1);
