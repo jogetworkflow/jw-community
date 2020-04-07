@@ -77,6 +77,7 @@ public class UserviewService {
         UserviewSetting setting = null;
         
         //process json with hash variable
+        json = StringUtil.decryptContent(json);
         
         User currentUser = workflowUserManager.getCurrentUser();
         
@@ -157,6 +158,7 @@ public class UserviewService {
         }
 
         //process json with hash variable
+        json = StringUtil.decryptContent(json);
         json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
 
         User currentUser = workflowUserManager.getCurrentUser();
@@ -432,6 +434,7 @@ public class UserviewService {
             if (userviewDef != null) {
                 String json = userviewDef.getJson();
                 //process json with hash variable
+                json = StringUtil.decryptContent(json);
                 
                 Map requestParameters = convertRequestParamMap(request.getParameterMap());
                 requestParameters.put("contextPath", request.getContextPath());

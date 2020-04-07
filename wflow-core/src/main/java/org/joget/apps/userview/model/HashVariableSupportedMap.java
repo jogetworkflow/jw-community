@@ -27,7 +27,7 @@ public class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     
     protected Object parseHashVariable(Object object) {
         if (object instanceof String) { 
-            return (V) AppUtil.processHashVariable(object.toString(), null, null, null);
+            return (V) AppUtil.processHashVariable(object.toString(), null, null, null, null, false);
         } else if (Map.class.isAssignableFrom(object.getClass())) {
             return (V) (new HashVariableSupportedMap((Map) object));
         } else if (object.getClass().isArray()) {

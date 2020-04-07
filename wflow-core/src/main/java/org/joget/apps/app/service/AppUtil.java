@@ -450,7 +450,7 @@ public class AppUtil implements ApplicationContextAware {
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
     }
-
+    
     /**
      * Used to parses Hash Variables found in the content and replace it to the Hash
      * Variable value
@@ -462,11 +462,28 @@ public class AppUtil implements ApplicationContextAware {
      * @return 
      */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
+        return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null, true);
+    }
+
+    /**
+     * Used to parses Hash Variables found in the content and replace it to the Hash
+     * Variable value
+     * @param content
+     * @param wfAssignment
+     * @param escapeFormat
+     * @param replaceMap
+     * @param appDef
+     * @param decryptContent
+     * @return 
+     */
+    public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef, boolean decryptContent) {
         if (content == null || content.isEmpty()) {
             return content;
         }
         
-        content = StringUtil.decryptContent(content);
+        if (decryptContent) {
+            content = StringUtil.decryptContent(content);
+        }
         AppDefinition originalAppDef = AppUtil.getCurrentAppDefinition();
         
         try {
