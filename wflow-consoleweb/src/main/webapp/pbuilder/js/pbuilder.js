@@ -4246,6 +4246,9 @@ ProcessBuilder.Mapper = {
         }
         if (ProcessBuilder.Mapper.mappingData === null) {
             ProcessBuilder.ApiClient.loadProcessMapping(function(data){
+                if (processDefId !== $("#subheader_list").val()) {
+                    return;
+                }
                 ProcessBuilder.Mapper.mappingData = eval("["+data+"]")[0];
                 ProcessBuilder.Mapper.init(processDefId);
             });
