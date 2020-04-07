@@ -592,7 +592,6 @@ public class AppUtil implements ApplicationContextAware {
                                         var = cachedPlugin.escapeHashVariable(var);
 
                                         content = content.replaceAll(var, value);
-                                        break;
                                     }
                                 } catch (Exception e) {}
                             }
