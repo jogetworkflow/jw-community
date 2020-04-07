@@ -30,6 +30,7 @@ import org.joget.apps.form.lib.FormOptionsBinder;
 import org.joget.apps.datalist.lib.FormRowDataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.lib.Grid;
 import org.joget.apps.form.lib.SelectBox;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
@@ -49,6 +50,7 @@ import org.joget.apps.form.model.FormReferenceDataRetriever;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.apps.form.model.GridInnerDataRetriever;
 import org.joget.apps.form.model.GridInnerDataStoreBinderWrapper;
 import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Section;
@@ -1725,7 +1727,7 @@ public class FormUtil implements ApplicationContextAware {
                 // load form data
                 FormRowSet rowSet = formData.getLoadBinderData(e);
                 if (rowSet != null && !rowSet.isEmpty()) {
-                    if (rowSet.isMultiRow()) {
+                    if (rowSet.isMultiRow() && (e instanceof Grid || e instanceof GridInnerDataRetriever)) {
                         Collection<Map<String, Object>> rowsData = new ArrayList<Map<String, Object>>();
                         for (FormRow r : rowSet) {
                             Map<String, Object> rData = new HashMap<String, Object>();
