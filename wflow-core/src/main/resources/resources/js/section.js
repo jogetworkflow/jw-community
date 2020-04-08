@@ -70,11 +70,11 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
         match = eval(rule);
     } catch (err) {}
     
-    if (match && targetEl.hasClass("section-visibility-hidden")) {
+    if (match && (targetEl.hasClass("section-visibility-hidden") || !targetEl.is(":visible"))) {
         targetEl.css("display", "block");
         targetEl.removeClass("section-visibility-hidden");
         thisObject.enableInputField(targetEl);
-    } else if (!match && !targetEl.hasClass("section-visibility-hidden")) {
+    } else if (!match && (!targetEl.hasClass("section-visibility-hidden") || targetEl.is(":visible"))) {
         targetEl.css("display", "none");
         targetEl.addClass("section-visibility-hidden");
         thisObject.disableInputField(targetEl);
