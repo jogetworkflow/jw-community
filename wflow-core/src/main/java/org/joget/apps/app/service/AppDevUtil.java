@@ -73,6 +73,8 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.form.dao.FormDataDaoImpl;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -1335,6 +1337,7 @@ public class AppDevUtil {
         appDef.setFormDefinitionList(new ArrayList());
         appDef.setDatalistDefinitionList(new ArrayList());
         appDef.setUserviewDefinitionList(new ArrayList());
+        appDef.setBuilderDefinitionList(new ArrayList());
         appDef.setEnvironmentVariableList(new ArrayList());
         appDef.setPluginDefaultPropertiesList(new ArrayList());
         appDef.setMessageList(new ArrayList());
@@ -1356,6 +1359,9 @@ public class AppDevUtil {
             }
             if (newAppDef.getUserviewDefinitionList()== null) {
                 newAppDef.setUserviewDefinitionList(new ArrayList());
+            }
+            if (newAppDef.getBuilderDefinitionList()== null) {
+                newAppDef.setBuilderDefinitionList(new ArrayList());
             }
             if (newAppDef.getEnvironmentVariableList()== null) {
                 newAppDef.setEnvironmentVariableList(new ArrayList());
@@ -1477,7 +1483,23 @@ public class AppDevUtil {
                 } else if (newObj instanceof UserviewDefinition) {
                     ((UserviewDefinition) newObj).setThumbnail((String)propMap.get("thumbnail"));
                 } else if (newObj instanceof BuilderDefinition) {
-                    ((BuilderDefinition) newObj).setType((String)propMap.get("type"));
+                    String type = file.getParentFile().getName();
+                    if (id == null) {
+                        id = file.getName().substring(0, file.getName().indexOf("."));
+                        newObj.setId(id);
+                    }
+                    if (name == null) {
+                        if (id.equalsIgnoreCase(TaggingUtil.ID)) {
+                            name = "Tagging";
+                        } else if (type.equals(CustomFormDataTableUtil.TYPE)) {
+                            name = id.replaceAll(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME, "");
+                        } else {
+                            name = id;
+                        }
+                        newObj.setName(name);
+                    }
+                    
+                    ((BuilderDefinition) newObj).setType(type);
                 }
             }
         }

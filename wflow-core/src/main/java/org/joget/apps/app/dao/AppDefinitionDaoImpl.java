@@ -458,7 +458,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         String newXpdl = AppDevUtil.fileReadToString(appDef, filename, false);
         if (newXpdl != null) {
             String currentXpdl = AppDevUtil.getPackageXpdl(appDef);
-            if (!cleanXPDLForCompare(newXpdl).equals(cleanXPDLForCompare(currentXpdl))) {
+            if (currentXpdl == null || !cleanXPDLForCompare(newXpdl).equals(cleanXPDLForCompare(currentXpdl))) {
                 try {
                     LogUtil.debug(getClass().getName(), "Deploy package XPDL for " + appDef);
                     AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
