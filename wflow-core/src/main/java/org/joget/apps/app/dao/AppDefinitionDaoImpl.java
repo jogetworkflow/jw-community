@@ -256,10 +256,12 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             saveOrUpdate(appDef);
             
             // save xpdl
-            String packageXpdl = AppDevUtil.getPackageXpdl(appDef);                
-            String filename = "package.xpdl";
-            String commitMessage = "Update xpdl " + appDef.getId();
-            AppDevUtil.fileSave(appDef, filename, packageXpdl, commitMessage);            
+            String packageXpdl = AppDevUtil.getPackageXpdl(appDef);      
+            if (packageXpdl != null && !packageXpdl.isEmpty()) {
+                String filename = "package.xpdl";
+                String commitMessage = "Update xpdl " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, packageXpdl, commitMessage);  
+            }
         }
     }    
     
