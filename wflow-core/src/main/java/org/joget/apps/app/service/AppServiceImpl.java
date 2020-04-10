@@ -1362,6 +1362,23 @@ public class AppServiceImpl implements AppService {
     @Override
     @Transactional
     public PackageDefinition deployWorkflowPackage(String appId, String version, byte[] packageXpdl, boolean createNewApp) throws Exception {
+        return deployWorkflowPackage(appId, version, packageXpdl, createNewApp, false);
+    }
+    
+    //----- Console workflow management use cases ------
+    /**
+     * Deploy an XPDL package for an app.
+     * @param appId
+     * @param version
+     * @param packageXpdl
+     * @param createNewApp
+     * @param isGitSync
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @Transactional
+    public PackageDefinition deployWorkflowPackage(String appId, String version, byte[] packageXpdl, boolean createNewApp, boolean isGitSync) throws Exception {
 
         PackageDefinition packageDef = null;
         AppDefinition appDef = null;
@@ -1413,7 +1430,7 @@ public class AppServiceImpl implements AppService {
                 packageDef = packageDefinitionDao.createPackageDefinition(appDef, packageVersion);
                 
                 //if app version is the only version for the app and no package is found, set process start white list to admin user
-                if (appDefinitionDao.countVersions(appId) == 1) {
+                if (!isGitSync && appDefinitionDao.countVersions(appId) == 1) {
                     Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageVersion.toString());
                     for (WorkflowProcess wp : processList) {
                         String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
@@ -1431,7 +1448,7 @@ public class AppServiceImpl implements AppService {
             }
             
             // save to xpdl file for git commit
-            if (appDef != null) {
+            if (!isGitSync && appDef != null) {
                 String xpdl = AppDevUtil.getPackageXpdl(packageDef);
                 String filename = "package.xpdl";
                 String commitMessage = "Update xpdl " + appDef.getId();

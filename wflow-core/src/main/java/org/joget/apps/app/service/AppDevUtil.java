@@ -789,6 +789,7 @@ public class AppDevUtil {
     
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
         path = SecurityUtil.normalizedFileName(path);
+        fileContents = compatibleNewline(fileContents);
         
         String gitBranch = getGitBranchName(appDef);
         
@@ -811,7 +812,7 @@ public class AppDevUtil {
             boolean toSave = true;
             try {
                 String currentContents = FileUtils.readFileToString(file, "UTF-8");
-                toSave = (currentContents == null || !currentContents.equals(fileContents));
+                toSave = (currentContents == null || !cleanForCompare(currentContents).equals(cleanForCompare(fileContents)));
             } catch(FileNotFoundException e) {
                 // ignore
             }
@@ -1568,5 +1569,25 @@ public class AppDevUtil {
             LogUtil.error(AppDevUtil.class.getName(), e, "");
         }
         return plugins;
+    }
+    
+    public static String cleanForCompare(String xpdl) {
+        xpdl = xpdl.replaceAll("\n", "");
+        xpdl = xpdl.replaceAll("\r", "");
+        xpdl = xpdl.trim();
+        
+        return xpdl;
+    } 
+    
+    public static String compatibleNewline(String content) {
+        if (content == null) {
+            return content;
+        }
+        
+        content = content.replaceAll("\r", "");
+        content = content.replaceAll("\n", "\r\n");
+        content = content.trim();
+        
+        return content;
     }
 }

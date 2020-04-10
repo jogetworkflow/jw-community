@@ -120,6 +120,18 @@ public interface AppService {
     PackageDefinition deployWorkflowPackage(String appId, String version, byte[] packageXpdl, boolean createNewApp) throws Exception;
 
     /**
+     * Deploy an XPDL package for an app.
+     * @param appId
+     * @param version
+     * @param packageXpdl
+     * @param createNewApp
+     * @param isGitSync
+     * @return
+     * @throws Exception
+     */
+    PackageDefinition deployWorkflowPackage(String appId, String version, byte[] packageXpdl, boolean createNewApp, boolean isGitSync) throws Exception;
+
+    /**
      * Finds the app definition based on the appId and version, cached where possible
      * @param appId
      * @param version If null, empty or equals to AppDefinition.VERSION_LATEST, the latest version is returned.
