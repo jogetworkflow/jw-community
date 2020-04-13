@@ -351,8 +351,10 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         //create nonce
         String paramName = FormUtil.getElementParameterName(this);
         String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName}, 1);
+        String fileTypes = SecurityUtil.encrypt(getPropertyString("fileType"));
+        
         try {
-            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
+            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_ft="+URLEncoder.encode(fileTypes, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
         } catch (Exception e) {}
         return url;
     }
@@ -366,6 +368,10 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
         if (SecurityUtil.verifyNonce(nonce, new String[]{"FileUpload", appId, appVersion, paramName})) {
             if ("POST".equalsIgnoreCase(request.getMethod())) {
+                String fileType = request.getParameter("_ft");
+                if (fileType != null) {
+                    fileType = SecurityUtil.decrypt(fileType).toLowerCase();
+                }
                 try {
                     JSONObject obj = new JSONObject();
                     try {
@@ -373,9 +379,14 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                         String validatedParamName = SecurityUtil.validateStringInput(paramName);
                         MultipartFile file = FileStore.getFile(validatedParamName);
                         if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
-                            String path = FileManager.storeFile(file);
-                            obj.put("path", path);
-                            obj.put("filename", file.getOriginalFilename());
+                            String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")).toLowerCase();
+                            if (fileType != null && (fileType.isEmpty() || fileType.contains(ext+";") || fileType.endsWith(ext))) {
+                                String path = FileManager.storeFile(file);
+                                obj.put("path", path);
+                                obj.put("filename", file.getOriginalFilename());
+                            } else {
+                                obj.put("error", ResourceBundleUtil.getMessage("form.fileupload.fileType.msg.invalidFileType"));
+                            }
                         }
 
                         Collection<String> errorList = FileStore.getFileErrorList();

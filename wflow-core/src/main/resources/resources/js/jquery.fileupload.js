@@ -71,24 +71,33 @@
                 
                 var myDropzone = new Dropzone("#"+$(target).attr("id"), options);
                 myDropzone.on("success", function(file, resp) {
-                    if (o.multiple !== "true") {
-                        $(target).find("li").each(function() {
-                            if (!$(this).is($(file.previewElement))) {
-                                $(this).remove();
-                            }
-                        });
+                    if (resp.error === undefined) {
+                        if (o.multiple !== "true") {
+                            $(target).find("li").each(function() {
+                                if (!$(this).is($(file.previewElement))) {
+                                    $(this).remove();
+                                }
+                            });
+                        }
+                        if (o.removeFile === "true") {
+                            $(target).find("li").each(function() {
+                                if (!$(this).is($(file.previewElement)) && $(this).find("input[name$='_path']").val() === resp.filename) {
+                                    $(this).remove();
+                                }
+                            });
+                        }
+                        $(file.previewElement).find(".progress").remove();
+                        $(file.previewElement).find(".remove").show();
+                        $(file.previewElement).find("input").val(resp.path);
+                        $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + encodeURIComponent(resp.path));
+                    } else {
+                        $(file.previewElement).find(".progress").remove();
+                        $(file.previewElement).find(".remove").show();
+                        $(file.previewElement).find("input").remove();
+                        $(file.previewElement).find(".name").css("color" , "red");
+                        $(file.previewElement).find("img").remove();
+                        $(file.previewElement).find(".error").text(resp.error);
                     }
-                    if (o.removeFile === "true") {
-                        $(target).find("li").each(function() {
-                            if (!$(this).is($(file.previewElement)) && $(this).find("input[name$='_path']").val() === resp.filename) {
-                                $(this).remove();
-                            }
-                        });
-                    }
-                    $(file.previewElement).find(".progress").remove();
-                    $(file.previewElement).find(".remove").show();
-                    $(file.previewElement).find("input").val(resp.path);
-                    $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + encodeURIComponent(resp.path));
                 });
                 myDropzone.on("error", function(file, error) {
                     $(file.previewElement).find(".progress").remove();
