@@ -13,11 +13,6 @@ public abstract class ExtElement extends ExtDefaultPlugin implements PropertyEdi
 
     private Map requestParameters;
     
-    @Override
-    public void setProperties(Map<String, Object> properties) {
-        super.setProperties(new HashVariableSupportedMap(properties));
-    }
-    
     /**
      * Gets request parameters
      * @return 
