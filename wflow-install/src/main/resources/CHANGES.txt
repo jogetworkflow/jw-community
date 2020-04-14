@@ -3,6 +3,41 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.1
+================
+1fa72993 Fixed: wflow-core - Git - Correction for c5173bf5. @7.0-SNAPSHOT
+499ee2d7 Fixed: wflow-core - File Upload - Security - File type restriction can be bypassed by direct web service URL invocation. #7578 @6.0-SNAPSHOT
+37fbd072 Fixed: wflow-core - Git - Empty package.xpdl is created when init git folder for a project. @7.0-SNAPSHOT
+0952a315 Fixed: wflow-core - Git - NPE not handle when process mapping is not available. @7.0-SNAPSHOT Fixed: wflow-core - Git - Window/Unix newline character not compatible. @7.0-SNAPSHOT Fixed: wflow-core - Git - Create extra commit when change process whitelist to admin only. @7.0-SNAPSHOT
+f915945f Fixed: wflow-core - Git - Does not handle tagging data & custom table data correctly. @7.0-SNAPSHOT Fixed: wflow-core - Git - NPE when pull from remote and local does not having package.xpdl. @7.0-SNAPSHOT
+f3dd6106 Fixed: wflow-core - Section Visibility - Correction for 8fad8435. #7546 @6.0-SNAPSHOT
+609d7534 Fixed: wflow-core - FormUtil - Regression of 5086948d. Causing FORMDATA spreadsheet function not working when form using JDBC load binder. #7549 @6.0-SNAPSHOT
+4423c897 Fixed: wflow-consoleweb - Process Mapper - Route displays wrong transitions when configure Simple Rules Decision. #7556 @7.0-SNAPSHOT
+8fad8435 Fixed: wflow-core - Section - Section visibility control - Recursive field change event causing slow response. #7546 @7.0-SNAPSHOT
+adf0edcc Fixed: wflow-commons - ParameterizedUrlHandlerMapping - Prevent `String parameter 'appId' is not present` error. @7.0-SNAPSHOT
+c022f73c Fixed: wflow-core - Options Binder Cache - Handle empty value in "Pause sync after idle" property due to import app from v6.0.6. @7.0-SNAPSHOT
+de520c7a Modified: wflow-core - Upgrade Jackson Databind library due to possible security vulnerabilities @7.0-SNAPSHOT
+c5173bf5 Fixed: wflow-core - Git - Concurrent pull throw exception in Window. @7.0-SNAPSHOT
+4817868c Fixed: wflow-core - Git - package.xpdl is empty after import app. @7.0-SNAPSHOT Fixed: wflow-core - Git - pull and merge conflict is not handle correctly. @7.0-SNAPSHOT Fixed: wflow-core - Git - NPE when source folder in app_src is deleted manually. @7.0-SNAPSHOT Fixed: wflow-core - Git - sync package is not handle correctly when compare package.xpdl committed by Window and Linux environment. @7.0-SNAPSHOT Fixed: wflow-core - Git - RefNotAdvertisedException is not handled. @7.0-SNAPSHOT
+1e2a852e Modified: wflow-core - Multi tools - Labels correction. @7.0-SNAPSHOT
+345c5308 Modified: wflow-core - Multi tools - support tools run in thread in correct sequence. @7.0-SNAPSHOT
+8e5a035d Modified: wflow-consoleweb/wflow-core - Process - Support plugin type to customize run process form behavior. @7.0-SNAPSHOT
+d76ded09 Fixed: wflow-consoleweb - Presence Indicator - Utilized all TCP connection in Chrome when more than 5 tabs are opened. #7056 @7.0-SNAPSHOT
+6fa3d2e7 Fixed: wflow-core - File Upload - Cannot upload large file due to timeout. @7.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - Cannot upload large app resource file due to timeout. @7.0-SNAPSHOT
+39fe5a9e Fixed: wflow-core/wflow-consoleweb - Progressive/Universal Theme - Multiple selectbox in datalist filter is not styled. @7.0-SNAPSHOT
+ab6cbe64 Fixed: wflow-commons - SecurityUtil - Fixed possible NPE in decrypt method. @7.0-SNAPSHOT
+907bb066 Fixed: wflow-core - Git - Process changes in remote git will create infinity commit on every load when "always pull" and "auto sync" is enabled. #7439 @7.0-SNAPSHOT
+4793acf2 Fixed: wflow-wfengine - JBoss EAP 7.2 on OpenShift - Logs are not streaming @7.0-SNAPSHOT
+ac74b5fe Fixed: wflow-core - Text Field/Textarea/Date Picker - Placeholder with double quote character not display correctly. #7500 @7.0-SNAPSHOT
+93b87f48 Modified: wflow-core - Userview - support reload parent window. @7.0-SNAPSHOT Modified: wflow-core - Link Button - support close popup dialog. @7.0-SNAPSHOT Modified: wflow-core - Inbox/Universal Inbox Menu - support open assignment in popup dialog. @7.0-SNAPSHOT Modified: wflow-core - Run Process Menu - support reload window after submission. @7.0-SNAPSHOT Modified: wflow-core - Form Menu - support reload window after submission and close popup dialog on cancel button clicked. @7.0-SNAPSHOT
+06ef09ff Fixed: wflow-core - Form Data Dao - Field Id started with digit causing intermittent UnknownServiceException. @7.0-SNAPSHOT
+9165e08d Fixed: wflow-consoleweb - UI - Popup Dialog - Unnecessary wait for 100ms before load URL in IFrame. @6.0-SNAPSHOT
+5e0f3bc7 Fixed: wflow-consoleweb - Datalist Action - Popup Dialog - Unnecessary waiting for 200ms before showing content. @6.0-SNAPSHOT
+3ab2a7a1 Fixed: wflow-consoleweb - Property Editor - Regression on b379414 causing the property editor can't edit other fields directly without closing the dialog. #7485 @7.0-SNAPSHOT
+09de07cd Modified: wflow-consoleweb - Quill - Switch to use inline style. #7471 @7.0-SNAPSHOT
+918b1d32 Fixed: wflow-core - Id Generator Field - Environment Variable no more support Hash Variable. #7475 @7.0-SNAPSHOT
+da882aa5 Fixed: wflow-consoleweb - Git - Added code to release file system locks after performing git-related operations in order to delete uuid folders
+
 CHANGES IN 7.0.0
 ================
 276c7c29 Fixed: wflow-consoleweb - Rich Text Field - Quill - Not able to copy and paste text. @7.0-SNAPSHOT
