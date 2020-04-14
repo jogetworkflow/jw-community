@@ -657,24 +657,35 @@ public class AppDevUtil {
         Set<String> keys = workingPulls.get(projectDirName);
         if (keys == null) {
             keys = new HashSet<String>();
+            workingPulls.put(projectDirName, keys);
         }
-        keys.add(uniqueKey);
-        workingPulls.put(projectDirName, keys);
+        synchronized (workingPulls.get(projectDirName)) {
+            keys.add(uniqueKey);
+        }
         
         return isConcurrent;
     }
     
     protected static void clearConcurrentPull(String projectDirName) {
-        workingPulls.put(projectDirName, new HashSet<String>());
+        if (workingPulls.containsKey(projectDirName)) {
+            synchronized (workingPulls.get(projectDirName)) {
+                workingPulls.get(projectDirName).clear();
+            }
+        }
     }
     
     protected static void waitForConcurrentPullCompleted(String projectDirName, String uniqueKey) {
         int count = 0;
-        while (workingPulls.get(projectDirName).contains(uniqueKey) && count < 30) { //should not wait longer than 0.5s
+        while (workingPulls.get(projectDirName).contains(uniqueKey) && count < 20) { //should not wait longer than 2s
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100); 
             } catch (Exception e) {}
             count++;
+        }
+        if (workingPulls.get(projectDirName).contains(uniqueKey)) {
+            synchronized (workingPulls.get(projectDirName)) {
+                workingPulls.get(projectDirName).remove(uniqueKey);
+            }
         }
     }
 
@@ -908,14 +919,16 @@ public class AppDevUtil {
                     if (isConcurrentPull(projectDirName, pullKeys)) {
                         waitForConcurrentPullCompleted(projectDirName, pullKeys);
                     } else {
-                        // perform git pull
-                        String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
-                        String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
-                        String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                        AppDevUtil.gitAddRemote(git, gitUri);
-                        AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDefinition);
-                        
-                        clearConcurrentPull(projectDirName);
+                        try {
+                            // perform git pull
+                            String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
+                            String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
+                            String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
+                            AppDevUtil.gitAddRemote(git, gitUri);
+                            AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDefinition);
+                        } finally {
+                            clearConcurrentPull(projectDirName);
+                        }
                     }
                     // set flag to prevent further pulls in the same request
                     if (request != null) {
