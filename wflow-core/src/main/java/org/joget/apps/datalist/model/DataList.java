@@ -286,6 +286,9 @@ public class DataList {
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request !=null) {
                 queryString = request.getQueryString();
+                if (queryString == null) {
+                    queryString = "";
+                }
             }
             for (int i = 0; i <  rowActions.length; i++) {
                 DataListAction r = rowActions[i];
