@@ -1063,6 +1063,7 @@ PropertyEditor.Util = {
                 modal: true,
                 height: height,
                 width: width,
+                closeText: '',
                 close: function(event, ui) {
                     $(object).dialog("destroy");
                     $(object).remove();

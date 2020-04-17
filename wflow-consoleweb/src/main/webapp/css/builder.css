@@ -682,10 +682,10 @@ body .ui-icon-closethick{
     font-size: 20px;
     width: 20px !important;
     height: 20px !important;
-    color:#fff !important;
+    color:#ccc !important;
 }
 body .ui-icon-closethick:hover {
-    color: #ccc !important;
+    color: #aaa !important;
 }
 body .ui-icon-closethick:before{
     content: '\f00d';
