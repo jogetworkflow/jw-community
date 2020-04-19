@@ -58,6 +58,7 @@ import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.aspectj.lang.NoAspectBoundException;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -76,20 +77,13 @@ public class PluginManager implements ApplicationContextAware {
     private Felix felix = null;
     private String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + "app_plugins";
     private static ApplicationContext applicationContext;
-    private Map<Class, Map<String, Plugin>> pluginCache = new HashMap<Class, Map<String, Plugin>>();
+    private static ProfilePluginCache pluginCache = new ProfilePluginCache();
     private Set<String> blackList;
     private Set<String> scanPackageList;
-    private Map<String, Class> osgiPluginClassCache = new HashMap<String, Class>();
-    private List<String> noOsgiPluginClassCache = new ArrayList<String>();
-    private Map<String, Template> templateCache = new HashMap<String, Template>();
-    private static List<String> noResourceBundleCache = new ArrayList<String>();
-    private static Map<String, ResourceBundle> resourceBundleCache = new HashMap<String, ResourceBundle>();
-    private static Map<String, CustomPluginInterface> customPluginInterfaces = new HashMap<String, CustomPluginInterface>();
     
     public final static String ESCAPE_JAVASCRIPT = "javascript";
     
     private FileAlterationMonitor monitor = null;
-    private Date lastCleared = null;
     
     /**
      * Used by system to initialize Plugin manager
@@ -155,7 +149,7 @@ public class PluginManager implements ApplicationContextAware {
             return baseDirectory;
         }
     }
-
+    
     /**
      * Initializes the plugin manager
      */
@@ -247,12 +241,20 @@ public class PluginManager implements ApplicationContextAware {
         }
     }
     
+    protected static PluginManagerCache getCache() {
+        return pluginCache.getCache();
+    }
+    
+    protected Felix getOsgiContainer() {
+        return felix;
+    }
+    
     protected void handleFileChange(File file) {
         Date lastModified = new Date();
         if (file.lastModified() > 0) {
             lastModified = new Date(file.lastModified());
         }
-        if (lastCleared == null || lastCleared.before(lastModified)) {
+        if (getCache().getLastCleared() == null || getCache().getLastCleared().before(lastModified)) {
             refresh();
         }
     }
@@ -310,7 +312,7 @@ public class PluginManager implements ApplicationContextAware {
 
     protected Bundle installBundle(String location) {
         try {
-            BundleContext context = felix.getBundleContext();
+            BundleContext context = getOsgiContainer().getBundleContext();
             Bundle newBundle = context.installBundle(location);
             if (newBundle.getSymbolicName() == null) {
                 newBundle.uninstall();
@@ -328,13 +330,7 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     protected void clearCache() {
-        pluginCache.clear();
-        osgiPluginClassCache.clear();
-        noOsgiPluginClassCache.clear();
-        templateCache.clear();
-        resourceBundleCache.clear();
-        noResourceBundleCache.clear();
-        lastCleared = new Date();    
+        getCache().clearCache();
     }
 
     protected boolean startBundle(Bundle bundle) {
@@ -366,13 +362,13 @@ public class PluginManager implements ApplicationContextAware {
     public Collection<Plugin> list(Class clazz) {
         // lookup in cache
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
-        Map<String, Plugin> pluginMap = pluginCache.get(classFilter);
+        Map<String, Plugin> pluginMap = getCache().getPluginCache().get(classFilter);
         if (pluginMap == null) {
             // load plugins
             pluginMap = internalLoadPluginMap(clazz);
 
             // store in cache
-            pluginCache.put(classFilter, pluginMap);
+            getCache().getPluginCache().put(classFilter, pluginMap);
         }
         Collection<Plugin> pluginList = new ArrayList<Plugin>();
         pluginList.addAll(pluginMap.values());
@@ -474,7 +470,7 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected Collection<Plugin> loadOsgiPlugins() {
         Collection<Plugin> list = new ArrayList<Plugin>();
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         Bundle[] bundles = context.getBundles();
         for (Bundle b : bundles) {
             ServiceReference[] refs = b.getRegisteredServices();
@@ -483,7 +479,7 @@ public class PluginManager implements ApplicationContextAware {
                     LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
                     Object obj = context.getService(sr);
                     if (obj instanceof Plugin) {
-                        list.add((Plugin) obj);
+                        list.add(weavePluginAspect((Plugin) obj));
                     }
                     context.ungetService(sr);
                 }
@@ -498,7 +494,7 @@ public class PluginManager implements ApplicationContextAware {
      */
     public boolean disable(String name) {
         boolean result = false;
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         ServiceReference sr = context.getServiceReference(name);
         if (sr != null) {
             try {
@@ -510,6 +506,10 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
         return result;
+    }
+    
+    protected String getUploadDir() {
+        return getBaseDirectory();
     }
 
     /**
@@ -543,7 +543,7 @@ public class PluginManager implements ApplicationContextAware {
             // write file
             FileOutputStream out = null;
             try {
-                outputFile = new File(getBaseDirectory(), filename);
+                outputFile = new File(getUploadDir(), filename);
                 if (outputFile.exists()) {
                     isOverrideExisting = true;
                 }
@@ -623,6 +623,14 @@ public class PluginManager implements ApplicationContextAware {
                 Bundle newBundle = installBundle(location);
                 if (newBundle != null) {
                     startBundle(newBundle);
+                } else {
+                    //delete invalid file
+                    try {
+                        outputFile.delete();
+                    } catch (Exception e) {
+                        LogUtil.error(PluginManager.class.getName(), e, "");
+                    }
+                    throw new PluginException("Plugin could not be installed, please contact administrator");
                 }
             }
 
@@ -634,15 +642,17 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public String getJarFileName(String pluginName) {
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         ServiceReference sr = context.getServiceReference(pluginName);
         if (sr != null) {
             try {
                 Bundle bundle = sr.getBundle();
-                String location = bundle.getLocation();
-                
-                if (location != null) {
-                    return location.substring(location.lastIndexOf("/") + 1);
+                if (uninstallable(bundle.getSymbolicName())) {
+                    String location = bundle.getLocation();
+
+                    if (location != null) {
+                        return location.substring(location.lastIndexOf("/") + 1);
+                    }
                 }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
@@ -679,30 +689,36 @@ public class PluginManager implements ApplicationContextAware {
      */
     public boolean uninstall(String name, boolean deleteFile) {
         boolean result = false;
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         ServiceReference sr = context.getServiceReference(name);
         if (sr != null) {
             try {
                 Bundle bundle = sr.getBundle();
-                bundle.stop();
-                bundle.uninstall();
-                String location = bundle.getLocation();
-                context.ungetService(sr);
+                if (uninstallable(bundle.getSymbolicName())) {
+                    bundle.stop();
+                    bundle.uninstall();
+                    String location = bundle.getLocation();
+                    context.ungetService(sr);
 
-                // delete location
-                if (deleteFile) {
-                    File file = new File(new URI(location));
-                    boolean deleted = file.delete();
+                    // delete location
+                    if (deleteFile) {
+                        File file = new File(new URI(location));
+                        boolean deleted = file.delete();
+                    }
+                    result = true;
+
+                    // clear cache
+                    clearCache();
                 }
-                result = true;
-
-                // clear cache
-                clearCache();
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
             }
         }
         return result;
+    }
+    
+    protected boolean uninstallable(String bundleName) {
+        return true;
     }
 
     /**
@@ -734,16 +750,16 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected Plugin loadOsgiPlugin(String name) {
         Plugin plugin = null;
-        if (!noOsgiPluginClassCache.contains(name)) {
+        if (!getCache().getNoOsgiPluginClassCache().contains(name)) {
             try {
-                Class clazz = osgiPluginClassCache.get(name);
+                Class clazz = getCache().getOsgiPluginClassCache().get(name);
                 if (clazz == null) {
-                    BundleContext context = felix.getBundleContext();
+                    BundleContext context = getOsgiContainer().getBundleContext();
 
                     ServiceReference sr = context.getServiceReference(name);
                     if (sr != null) {
                         clazz = sr.getBundle().loadClass(name);
-                        osgiPluginClassCache.put(name, clazz);
+                        getCache().getOsgiPluginClassCache().put(name, clazz);
                         context.ungetService(sr);
                     }
                 }
@@ -756,15 +772,20 @@ public class PluginManager implements ApplicationContextAware {
                     LogUtil.debug(PluginManager.class.getName(), " current classloader: " + Plugin.class.getClassLoader());
                     if (isPlugin) {
                         plugin = (Plugin) obj;
+                        plugin = weavePluginAspect(plugin);
                     }
                 } else {
-                    noOsgiPluginClassCache.add(name);
+                    getCache().getNoOsgiPluginClassCache().add(name);
                 }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
                 throw new PluginException("Plugin " + name + " could not be retrieved", ex);
             }
         }
+        return plugin;
+    }
+    
+    protected Plugin weavePluginAspect(Plugin plugin) throws NoAspectBoundException {
         return plugin;
     }
 
@@ -889,15 +910,15 @@ public class PluginManager implements ApplicationContextAware {
      */
     public ResourceBundle getPluginMessageBundle(String pluginName, String translationPath) {
         String cacheKey = pluginName + "_" + translationPath + "_" + LocaleContextHolder.getLocale().toString();
-        if (!noResourceBundleCache.contains(cacheKey)) {
-            ResourceBundle bundle = resourceBundleCache.get(cacheKey);
+        if (!getCache().getNoResourceBundleCache().contains(cacheKey)) {
+            ResourceBundle bundle = getCache().getResourceBundleCache().get(cacheKey);
             if (bundle == null) {
                 // get plugin
                 Plugin plugin = getPlugin(pluginName);
                 if (plugin != null) {
                     bundle = getMessageBundle(plugin.getClass(), translationPath);
                 } else {
-                    noResourceBundleCache.add(cacheKey);
+                    getCache().getNoResourceBundleCache().add(cacheKey);
                 }
             }
             return bundle;
@@ -914,19 +935,19 @@ public class PluginManager implements ApplicationContextAware {
     public static ResourceBundle getMessageBundle(Class clazz, String translationPath) {
         Locale locale = LocaleContextHolder.getLocale();
         String cacheKey = clazz.getName() + "_" + translationPath + "_" + locale.toString();
-        if (!noResourceBundleCache.contains(cacheKey)) {
-            ResourceBundle bundle = resourceBundleCache.get(cacheKey);
+        if (!getCache().getNoResourceBundleCache().contains(cacheKey)) {
+            ResourceBundle bundle = getCache().getResourceBundleCache().get(cacheKey);
             if (bundle == null) {
                 try {
                     bundle = ResourceBundle.getBundle(translationPath, locale, clazz.getClassLoader());
                     if (bundle != null) {
-                        resourceBundleCache.put(cacheKey, bundle);
+                        getCache().getResourceBundleCache().put(cacheKey, bundle);
                     } else {
-                        noResourceBundleCache.add(cacheKey);
+                        getCache().getNoResourceBundleCache().add(cacheKey);
                     }
                 } catch (Exception e) {
                     LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
-                    noResourceBundleCache.add(cacheKey);
+                    getCache().getNoResourceBundleCache().add(cacheKey);
                 }
             }
             return bundle;
@@ -1047,7 +1068,7 @@ public class PluginManager implements ApplicationContextAware {
         String result = "";
         try {
             String cacheKey = pluginName + "_" + templatePath;
-            Template temp = templateCache.get(cacheKey);
+            Template temp = getCache().getTemplateCache().get(cacheKey);
             if (temp == null) {
 
                 // init configuration
@@ -1084,7 +1105,7 @@ public class PluginManager implements ApplicationContextAware {
 
                 // Get or create a template
                 temp = configuration.getTemplate(templatePath);
-                templateCache.put(cacheKey, temp);
+                getCache().getTemplateCache().put(cacheKey, temp);
             }
 
             // Merge data-model with template
@@ -1156,10 +1177,10 @@ public class PluginManager implements ApplicationContextAware {
      * Method used by Felix Framework to Stop the plugin manager
      */
     public synchronized void shutdown() {
-        if (felix != null) {
+        if (getOsgiContainer() != null) {
             try {
                 uninstallAll(false);
-                felix.stop();
+                getOsgiContainer().stop();
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "Could not stop Felix");
             }
@@ -1372,9 +1393,9 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.ai.TensorFlowPlugin", ResourceBundleUtil.getMessage("setting.plugin.TensorFlowPlugin"));
         pluginTypeMap.put("org.joget.workflow.model.DecisionPlugin", ResourceBundleUtil.getMessage("setting.plugin.DecisionPlugin"));
         
-        if (!customPluginInterfaces.isEmpty()) {
-            for (String className : customPluginInterfaces.keySet()) {
-                CustomPluginInterface i = customPluginInterfaces.get(className);
+        if (!getCache().getCustomPluginInterfaces().isEmpty()) {
+            for (String className : getCache().getCustomPluginInterfaces().keySet()) {
+                CustomPluginInterface i = getCache().getCustomPluginInterfaces().get(className);
                 
                 String label = processPluginTranslation("@@"+i.getLabelKey()+"@@", getMessageBundle(i.getClassObj(), i.getResourceBundlePath()), null);
                 
@@ -1386,7 +1407,7 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public boolean isOsgi(String classname) {
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         ServiceReference sr = context.getServiceReference(classname);
         if (sr != null) {
             context.ungetService(sr);
@@ -1397,7 +1418,7 @@ public class PluginManager implements ApplicationContextAware {
     
     public String getOsgiPluginPath(String className) {
         String path = null;
-        BundleContext context = felix.getBundleContext();
+        BundleContext context = getOsgiContainer().getBundleContext();
         ServiceReference sr = context.getServiceReference(className);
         if (sr != null) {
             try {
@@ -1413,14 +1434,14 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public static void registerCustomPluginInterface(CustomPluginInterface interfaceClass) {
-        customPluginInterfaces.put(interfaceClass.getClassname(), interfaceClass);
+        getCache().getCustomPluginInterfaces().put(interfaceClass.getClassname(), interfaceClass);
     }
     
     public static void unregisterCustomPluginInterface(String className) {
-        customPluginInterfaces.remove(className);
+        getCache().getCustomPluginInterfaces().remove(className);
     }
     
     public static CustomPluginInterface getCustomPluginInterface(String className) {
-        return customPluginInterfaces.get(className);
+        return getCache().getCustomPluginInterfaces().get(className);
     }
 }

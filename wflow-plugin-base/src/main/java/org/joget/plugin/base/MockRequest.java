@@ -5,7 +5,7 @@ import java.util.Map;
 public class MockRequest {
     
     public String getContextPath() {
-        return "";
+        return "/jw";
     }
     
     public Object getAttribute(String name) {
