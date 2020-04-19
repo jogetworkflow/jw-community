@@ -33,17 +33,17 @@ import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
 public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implements PluginWebSupport {
-
+    
     public String getName() {
         return "User Notification";
     }
 
     public String getVersion() {
-        return "5.0.0";
+        return "7.0.0";
     }
 
     public String getDescription() {
-        return "";
+        return "Sends notifcation email and push notification (PWA) to assignee on new assignment creation";
     }
 
     public String getLabel() {
@@ -230,7 +230,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                     AppUtil.emailAttachment(props, wfAssignment, auditTrail.getAppDef(), email);
 
                                     try {
-                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
+                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=" + email.getSubject());
                                         email.send();
                                         LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
                                     } catch (EmailException ex) {
