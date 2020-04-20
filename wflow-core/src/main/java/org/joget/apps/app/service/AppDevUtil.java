@@ -580,27 +580,35 @@ public class AppDevUtil {
     }
     
     public static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException {
-        try {
-            gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
-        } catch (Exception e){
-            LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+        String pullKeys = getPullUniqueKey();
+        String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
+        if (isConcurrentPull(projectDirName, pullKeys)) {
+            waitForConcurrentPullCompleted(projectDirName, pullKeys);
+        } else {
+            try {
+                gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+            } catch (Exception e){
+                LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+            } finally {
+                clearConcurrentPull(projectDirName);
+            }
         }
 
-        // push to remote
-        LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
-        Iterable<PushResult> pushResults = git.push()
-                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUsername, gitPassword))
-                .call();
-        for (PushResult pr: pushResults) {
-            for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
-                LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
-                if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
-                    try {
-                        gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
-                    } catch (Exception e) {
-                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+        Iterable<PushResult> pushResults =  null;
+        synchronized (workingPulls.get(projectDirName)) {
+            // push to remote
+            LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
+            pushResults = git.push()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUsername, gitPassword))
+                    .call();
+        }
+        if (pushResults != null) {
+            for (PushResult pr: pushResults) {
+                for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
+                    LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
+                    if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
+                        gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
                     }
-                    gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
                 }
             }
         }
