@@ -141,7 +141,10 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             alert("<ui:escape value="${alertMessageValue}" format="javascript"/>");
         </c:if>
         <c:choose>
-            <c:when test="${fn:contains(redirectUrlValue, 'SCRIPT_RELOAD_PARENT')}">    
+            <c:when test="${fn:contains(redirectUrlValue, 'SCRIPT_RELOAD_PARENT')}">
+                if (parent.PopupDialog) {
+                    parent.PopupDialog.closeDialog();
+                }
                 <c:set var="reloadTarget" value="parent."/>    
                 <c:if test="${redirectParentValue eq 'top'}">
                     <c:set var="reloadTarget" value="top."/>
