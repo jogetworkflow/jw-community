@@ -41,6 +41,12 @@
                                 }
                             });
                             first.focus();
+                            
+                            var orizindex = inst.dpDiv.css("z-index");
+                            try {
+                                orizindex = parseInt(orizindex);
+                            } catch (err) {}
+                            inst.dpDiv.css({"z-index":(orizindex + 200)});
                         }, 100);
                     };
                     o.onClose = function(selectedDate) {

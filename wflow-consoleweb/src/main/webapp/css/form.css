@@ -188,7 +188,6 @@
 }
 #ui-datepicker-div {
     font-size: 13px;
-    z-index: 105 !important;
 }
 .form-cell-value label.readonly_label, .subform-cell-value label.readonly_label {
     width: 100%;
