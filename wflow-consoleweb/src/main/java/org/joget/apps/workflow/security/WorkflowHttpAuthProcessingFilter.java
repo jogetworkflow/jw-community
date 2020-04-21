@@ -176,7 +176,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
         String loginAs = request.getParameter("loginAs");
         String loginHash = request.getParameter("hash");
         
-        String ip = request.getRemoteAddr();
+        String ip = AppUtil.getClientIp(request);
         
         // Place the last username attempted into HttpSession for views
         HttpSession session = request.getSession(false);

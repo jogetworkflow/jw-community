@@ -680,7 +680,7 @@ public class DirectoryJsonController {
         }
         
         if (username != null && !username.isEmpty() && !loginWithFilter) {
-            String ip = httpRequest.getRemoteAddr();
+            String ip = AppUtil.getClientIp(httpRequest);
             
             try {
                 if (password == null) {

@@ -35,7 +35,7 @@ public class SessionListener implements HttpSessionListener {
         String ip = "";
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            ip = request.getRemoteAddr();
+            ip = AppUtil.getClientIp(request);
         }
         workflowHelper.addAuditTrail(this.getClass().getName(), "logout", "Logout for user " + username + " ("+ip+")", new Class[]{String.class}, new Object[]{username}, false);
     }

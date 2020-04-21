@@ -105,7 +105,7 @@ public class JsonResponseFilter implements Filter {
             String jsonpIPWhitelist = setupManager.getSettingValue("jsonpIPWhitelist");
             if (!("*".equals(jsonpWhitelist) || "*".equals(jsonpIPWhitelist))) {
                 String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
-                String ip = httpRequest.getRemoteAddr();
+                String ip = AppUtil.getClientIp(httpRequest);
                 List<String> whitelist = new ArrayList<String>();
                 whitelist.add(httpRequest.getServerName());
                 if (jsonpWhitelist != null) {

@@ -56,7 +56,7 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         String ip = "";
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            ip = request.getRemoteAddr();
+            ip = AppUtil.getClientIp(request);
         }
 
         // check credentials

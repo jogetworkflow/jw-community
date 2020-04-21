@@ -159,7 +159,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         SecurityContextHolder.getContext().setAuthentication(result);
         
         HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-        String ip = httpRequest.getRemoteAddr();
+        String ip = AppUtil.getClientIp(httpRequest);
         LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : true");
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
         workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : true"); 
