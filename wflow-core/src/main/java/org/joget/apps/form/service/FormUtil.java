@@ -2064,7 +2064,9 @@ public class FormUtil implements ApplicationContextAware {
                     if (p != null) {
                         WorkflowAssignment ass = null;
                         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                        if (formData.getActivityId() != null && !formData.getActivityId().isEmpty()) {
+                        if (formData.getAssignment() != null) {
+                            ass = formData.getAssignment();
+                        } else if (formData.getActivityId() != null && !formData.getActivityId().isEmpty()) {
                             WorkflowManager workflowManager = (WorkflowManager) FormUtil.getApplicationContext().getBean("workflowManager");
                             ass = workflowManager.getAssignment(formData.getActivityId());
                         } else if (formData.getProcessId() != null && !formData.getProcessId().isEmpty()) {

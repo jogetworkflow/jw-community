@@ -335,6 +335,7 @@ public class AppServiceImpl implements AppService {
         if (formData == null) {
             formData = new FormData();
         }
+        formData.setAssignment(assignment);
         formData.setActivityId(activityId);
         formData.setProcessId(processId);
         formData.setPrimaryKeyValue(originProcessId);
@@ -515,6 +516,7 @@ public class AppServiceImpl implements AppService {
             if (formDefId != null && !formDefId.isEmpty()) {
                 String originProcessId = getOriginProcessId(processId);
                 formData.setPrimaryKeyValue(originProcessId);
+                formData.setAssignment(assignment);
                 formData.setProcessId(processId);
                 
                 appDef = getAppDefinition(appId, version);
@@ -714,6 +716,13 @@ public class AppServiceImpl implements AppService {
                     // set primary key
                     formResult.setPrimaryKeyValue(originId);
                     formResult.setProcessId(processId);
+                    
+                    //create an mock workflow assignment for run process form
+                    WorkflowAssignment ass = new WorkflowAssignment();
+                    ass.setProcessId(result.getProcess().getInstanceId());
+                    ass.setProcessDefId(result.getProcess().getId());
+                    ass.setProcessVersion(packageDef.getVersion().toString());
+                    formResult.setAssignment(ass);
 
                     // submit form
                     formResult = submitForm(startForm, formResult, true);

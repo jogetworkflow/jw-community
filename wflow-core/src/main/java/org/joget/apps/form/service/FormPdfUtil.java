@@ -163,6 +163,7 @@ public class FormPdfUtil {
             formData.setPrimaryKeyValue(appService.getOriginProcessId(assignment.getProcessId()));
         }
         if (assignment != null) {
+            formData.setAssignment(assignment);
             formData.setProcessId(assignment.getProcessId());
         } else if (primaryKey != null && !primaryKey.isEmpty()) {
             //create an mock assignment for hash variable 

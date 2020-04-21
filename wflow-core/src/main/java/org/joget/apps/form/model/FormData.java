@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.apps.userview.model.Permission;
+import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowProcess;
 
 /**
  * Represents data related to a form e.g. from request, binders, errors, etc.
@@ -18,6 +19,8 @@ public class FormData {
     private String primaryKeyValue;
     private String processId;
     private String activityId;
+    private WorkflowAssignment assignment;
+    private WorkflowProcess process;
     protected Map<FormLoadBinder, FormRowSet> loadBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<FormLoadBinder, FormRowSet> optionsBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<String, String> previousErrorMap = new ListOrderedMap();
@@ -393,5 +396,13 @@ public class FormData {
      */
     public void setWorkflowVariables(Map<String, String> variableMap) {
         this.variableMap = variableMap;
+    }
+
+    public WorkflowAssignment getAssignment() {
+        return assignment;
+    }
+
+    public void setAssignment(WorkflowAssignment assignment) {
+        this.assignment = assignment;
     }
 }
