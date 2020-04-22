@@ -257,7 +257,17 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static boolean isAllowedDomain(String domain, List<String> whitelist) {
-        return whitelist != null && domain != null && whitelist.contains(domain);
+        if (whitelist != null && domain != null && domain.contains(", ")) {
+            String[] domains = domain.split(", ");
+            for (String d : domains) {
+                if (whitelist.contains(d)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return whitelist != null && domain != null && whitelist.contains(domain);
+        }
     }
 
     /**
