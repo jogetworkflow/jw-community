@@ -3,6 +3,20 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.2
+================
+d73a9f65 Fixed: wflow-consoleweb/wflow-core - Log - logged the proxy server IP instead of real client IP. @7.0-SNAPSHOT
+e6b3a498 Fixed: wflow-core - Run Process - unable to execute email tool on post processing form using participant ID. @7.0-SNAPSHOT Fixed: wflow-core - Subform - optimized assignment object retrieving in assignment form. @7.0-SNAPSHOT
+35a69c53 Fixed: wflow-core - Datalist Filter- Unable to view date calendar in "Search Display in Popup" mode. #7610 @7.0-SNAPSHOT
+83e3b19a Fixed: wflow-core - Git - Prevent concurrent pull and push. @7.0-SNAPSHOT
+ae1c6863 Fixed: wflow-core - Userview - Reload parent script should close popup dialog first if any before reload the parent window. @7.0-SNAPSHOT
+261c91d5 Fixed: wflow-consoleweb - User Notification - added label description
+209c829f Modified: wflow-consoleweb - Improve User Notification Audit Trail labels @7.0-SNAPSHOT
+d5e8d427 Modified: wflow-plugin-base - Plugin Manager - Refactored implementation for code reuse in LEE project. @7.0-SNAPSHOT
+14b1a43e Fixed: wflow-consoleweb - Property Editor - Image resources dialog close button is not styled. @7.0-SNAPSHOT
+afe15563 Fixed: wflow-core - Import App - Retain env variable value of a published version in stead of previous version. #7580 @7.0-SNAPSHOT
+817ff5fd Fixed: wflow-core - Datalist - Regression of 32837d8. Row action is not working. #7587 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.1
 ================
 1fa72993 Fixed: wflow-core - Git - Correction for c5173bf5. @7.0-SNAPSHOT
