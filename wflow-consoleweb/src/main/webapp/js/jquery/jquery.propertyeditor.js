@@ -803,6 +803,14 @@ PropertyEditor.Util = {
                         }
                         delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
                     }
+                },
+                error: function(xhr,status,error){
+                    var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
+                    for (var i in calls) {
+                        calls[i].field.handleAjaxOptions([], calls[i].reference);
+                        PropertyEditor.Util.removeAjaxLoading(calls[i].field.editor, calls[i].field, calls[i].reference);
+                    }
+                    delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
                 }
             });
         }
