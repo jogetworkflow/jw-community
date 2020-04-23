@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -23,6 +24,8 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 public class DatePicker extends Element implements FormBuilderPaletteElement, PwaOfflineResources {
+    
+    public static final String UTC_DATEFORMAT = "yyyy-MM-dd HH:mm";
     
     @Override
     public String getName() {
@@ -47,7 +50,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         String timeformat = getTimeFormat();
         if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             displayFormat = timeformat;
-        } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+        } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) 
+                || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             displayFormat = displayFormat + " " + timeformat;
         }
         
@@ -61,8 +65,13 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         }
         
         dataModel.put("displayFormat", displayFormat.toUpperCase());
-        
+        if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            dataModel.put("userTimeZone", getUserTZ().getDisplayName());
+        }
         dataModel.put("value", value);
+        if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            setProperty("datePickerType", "dateTime");
+        }
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
@@ -75,20 +84,29 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            if (!FormUtil.isReadonly(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty() 
-                    && ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) || getPropertyString("datePickerType").isEmpty())) {
+            if (!FormUtil.isReadonly(this, formData) && ((getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty() 
+                    && ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) || getPropertyString("datePickerType").isEmpty()))
+                    || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType")))) {
                 String binderValue = formData.getLoadBinderDataProperty(this, id);
                 if (value != null && !value.equals(binderValue)) {
                     try {
                         String displayFormat = getJavaDateFormat(getPropertyString("format"));
                         if (!displayFormat.equals(getPropertyString("dataFormat"))) {
                             String timeformat = "";
-                            if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                            if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))
+                                    || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                                 timeformat = " " + getTimeFormat();
                             }
                             
-                            SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
+                            SimpleDateFormat data = null;
                             SimpleDateFormat display = new SimpleDateFormat(displayFormat + timeformat);
+                            if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                                data = new SimpleDateFormat(UTC_DATEFORMAT);
+                                data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                display.setTimeZone(getUserTZ());
+                            } else {
+                                data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
+                            }
                             Date date = display.parse(value);
                             value = data.format(date);
                         }
@@ -142,8 +160,14 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         return "<i class=\"fas fa-calendar-alt\"></i>";
     }
     
+    
+    protected TimeZone getUserTZ() {
+        return LocaleContextHolder.getTimeZone();
+    }
+    
     protected String getTimeFormat() {
-        if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType")) || "dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+        if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType")) || "dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) 
+                || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             if ("true".equalsIgnoreCase(getPropertyString("format24hr"))) {
                 return "HH:mm";
             } else {
@@ -310,6 +334,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             dataFormat = dataFormat + " " + timeformat;
         }
+        if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            dataFormat = UTC_DATEFORMAT;
+        }
         
         String tempValue = value.replaceAll("[0-9]", "x");
         String tempFormat = dataFormat.replaceAll("[a-zA-Z]", "x");
@@ -318,6 +345,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             try {
                 SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                 SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                    data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    display.setTimeZone(getUserTZ());
+                }
                 Date date = data.parse(value);
                 value = display.format(date);
             } catch (Exception e) {}
@@ -326,7 +357,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
     }
     
     private String formattedDisplayValue(String value, String displayFormat, FormData formData) {
-        if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+        if ((getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty())
+                || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             try {
                 String dataFormat = getPropertyString("dataFormat");
                 String timeformat = getTimeFormat();
@@ -335,10 +367,17 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                 } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                     dataFormat = dataFormat + " " + timeformat;
                 }
+                if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                    dataFormat = UTC_DATEFORMAT;
+                }
                     
                 if (!displayFormat.equals(dataFormat)) {
                     SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                     SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                        data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        display.setTimeZone(getUserTZ());
+                    }
                     Date date = data.parse(value);
                     value = display.format(date);
                 }

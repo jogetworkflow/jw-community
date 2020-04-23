@@ -41,6 +41,10 @@
             label : '@@form.datepicker.datePickerType.dateTime@@'
         },
         {
+            value : 'utcdateTime',
+            label : '@@form.datepicker.datePickerType.UTCdateTime@@'
+        },
+        {
             value : 'timeOnly',
             label : '@@form.datepicker.datePickerType.timeOnly@@'
         }]
@@ -73,11 +77,23 @@
         type : 'checkbox',
         value : 'true',
         control_field: 'datePickerType',
-        control_value: 'dateTime|timeOnly',
+        control_value: 'dateTime|timeOnly|utcdateTime',
         control_use_regex: 'true',
         options : [{
             value : 'true',
             label : ''
+        }]
+    },
+    {
+        'name' : 'showUserTimeZone',
+        'label' : '@@form.datepicker.showUserTimeZone@@',
+        'type' : 'checkbox',
+        'value' : 'true',
+        'control_field': 'datePickerType',
+        'control_value': 'utcdateTime',
+        'options' : [{
+            'value' : 'true',
+            'label' : ''
         }]
     },
     {
