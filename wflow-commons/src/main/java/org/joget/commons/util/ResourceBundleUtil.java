@@ -126,7 +126,7 @@ public class ResourceBundleUtil implements ApplicationContextAware {
                         }
                     } else if (line.length() > 8 && locale != null && !keys.isEmpty() && original != null && line.substring(0, 8).equalsIgnoreCase("msgstr \"")) {
                         //this is the translated string
-                        translated = line.substring(7, line.length() - 1);
+                        translated = line.substring(8, line.length() - 1);
                         while (nextLine.startsWith("\"")) {
                             translated += nextLine.substring(1, nextLine.length() - 1);
                             nextLine = bufferedReader.readLine();
