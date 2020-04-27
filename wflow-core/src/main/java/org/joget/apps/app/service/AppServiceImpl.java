@@ -2019,7 +2019,10 @@ public class AppServiceImpl implements AppService {
         }
         
         //fix app id letter case issue during import
-        AppDefinition orgAppDef = loadAppDefinition(appDef.getAppId(), null);
+        AppDefinition orgAppDef = getPublishedAppDefinition(appDef.getAppId());
+        if (orgAppDef == null) {
+            orgAppDef = loadAppDefinition(appDef.getAppId(), null);
+        }
         String appId = appDef.getAppId();
         if (orgAppDef != null) {
             appId = orgAppDef.getAppId();
