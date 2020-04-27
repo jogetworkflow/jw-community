@@ -2,6 +2,15 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.27
+=================
+4603372e Fixed: wflow-commons - Manage message - not able to handle multiline string correctly. #7625 @6.0-SNAPSHOT
+737b3245 Fixed: wflow-core - Import App - Retain env variable value of a published version in stead of previous version. #7580 @6.0-SNAPSHOT
+499ee2d7 Fixed: wflow-core - File Upload - Security - File type restriction can be bypassed by direct web service URL invocation. #7578 @6.0-SNAPSHOT
+609d7534 Fixed: wflow-core - FormUtil - Regression of 5086948d. Causing FORMDATA spreadsheet function not working when form using JDBC load binder. #7549 @6.0-SNAPSHOT
+9165e08d Fixed: wflow-consoleweb - UI - Popup Dialog - Unnecessary wait for 100ms before load URL in IFrame. @6.0-SNAPSHOT
+5e0f3bc7 Fixed: wflow-consoleweb - Datalist Action - Popup Dialog - Unnecessary waiting for 200ms before showing content. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.26
 =================
 b71657df Fixed: wflow-consoleweb - Universal Theme - Horizontal long sub menu does not has scrollbar to view bottom sub menu. #7422 @6.0-SNAPSHOT
