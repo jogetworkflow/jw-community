@@ -34,6 +34,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
@@ -1938,6 +1939,15 @@ public class AppServiceImpl implements AppService {
             baos = new ByteArrayOutputStream();
 
             AppDefinition appDef = getAppDefinition(appId, Long.toString(version));
+            if (appDef instanceof HibernateProxy) {
+                appDef = (AppDefinition)((HibernateProxy)appDef).getHibernateLazyInitializer().getImplementation();
+            }
+            if (appDef != null && appDef.getPackageDefinition() != null && appDef.getPackageDefinition() instanceof HibernateProxy) {
+                PackageDefinition packageDef = (PackageDefinition)((HibernateProxy)appDef.getPackageDefinition()).getHibernateLazyInitializer().getImplementation();
+                Collection<PackageDefinition> tempPackageDefinitionList = new ArrayList<>();
+                tempPackageDefinitionList.add(packageDef);
+                appDef.setPackageDefinitionList(tempPackageDefinitionList);
+            }
 
             Serializer serializer = new Persister();
             serializer.write(appDef, baos);
