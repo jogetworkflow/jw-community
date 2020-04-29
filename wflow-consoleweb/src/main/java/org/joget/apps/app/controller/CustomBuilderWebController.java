@@ -141,7 +141,11 @@ public class CustomBuilderWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        builderDefinitionList = builderDefinitionDao.getBuilderDefinitionList(type, null, appDef, sort, desc, start, rows);
+        if (appDef != null) {
+            builderDefinitionList = builderDefinitionDao.getBuilderDefinitionList(type, null, appDef, sort, desc, start, rows);
+        } else {
+            builderDefinitionList = new ArrayList<BuilderDefinition>();
+        }
 
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
