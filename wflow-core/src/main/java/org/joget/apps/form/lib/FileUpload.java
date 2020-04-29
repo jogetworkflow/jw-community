@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.ehcache.Cache;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -37,6 +38,7 @@ import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
@@ -300,6 +302,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                         if (!found) {
                             valid = false;
                             error += getPropertyString("fileTypeMsg");
+                            FileManager.deleteFile(file);
                         }
                     }
                 }
@@ -351,10 +354,24 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         //create nonce
         String paramName = FormUtil.getElementParameterName(this);
         String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName}, 1);
-        String fileTypes = SecurityUtil.encrypt(getPropertyString("fileType"));
+        
+        int lifepanHour = 1;
+        SetupManager sm = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        String extendNonceCacheTime = sm.getSettingValue("extendNonceCacheTime");
+        if (extendNonceCacheTime != null && !extendNonceCacheTime.isEmpty()) {
+            try {
+                lifepanHour += Integer.parseInt(extendNonceCacheTime);
+            } catch (Exception e) {}
+        }
+        net.sf.ehcache.Element element = new net.sf.ehcache.Element(nonce + "_fileType", getPropertyString("fileType"));
+        element.setEternal(false);
+        element.setTimeToLive(lifepanHour * 60 * 60);
+        
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("nonceCache");
+        cache.put(element);
         
         try {
-            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_ft="+URLEncoder.encode(fileTypes, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
+            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
         } catch (Exception e) {}
         return url;
     }
@@ -368,10 +385,14 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
         if (SecurityUtil.verifyNonce(nonce, new String[]{"FileUpload", appId, appVersion, paramName})) {
             if ("POST".equalsIgnoreCase(request.getMethod())) {
-                String fileType = request.getParameter("_ft");
-                if (fileType != null) {
-                    fileType = SecurityUtil.decrypt(fileType).toLowerCase();
+                
+                Cache cache = (Cache) AppUtil.getApplicationContext().getBean("nonceCache");
+                net.sf.ehcache.Element element = cache.get(nonce + "_fileType");
+                String fileType = null;
+                if (element != null) {
+                    fileType = (String) element.getObjectValue();
                 }
+                
                 try {
                     JSONObject obj = new JSONObject();
                     try {

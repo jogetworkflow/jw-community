@@ -69,6 +69,7 @@ public class FileManager {
                 } catch (Exception e) {
                     filename += customFileName.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
                 }
+                filename = SecurityUtil.normalizedFileName(filename);
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
@@ -101,6 +102,7 @@ public class FileManager {
      */
     public static File getFileByPath(String path) {
         if (path != null) {
+            path = SecurityUtil.normalizedFileName(path);
             try {
                 try {
                     path = URLDecoder.decode(path, "UTF-8");
@@ -172,6 +174,7 @@ public class FileManager {
             } catch (Exception e) {
                 path = path.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
             }
+            path = SecurityUtil.normalizedFileName(path);
             File imageFile = new File(getBaseDirectory(), path);
             Image image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
             MediaTracker mediaTracker = new MediaTracker(new Container());
