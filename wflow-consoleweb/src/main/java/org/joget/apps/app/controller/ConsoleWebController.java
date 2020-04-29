@@ -2840,7 +2840,11 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
+        if (appDef != null) {
+            datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
+        } else {
+            datalistDefinitionList = new ArrayList<DatalistDefinition>();
+        }
 
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
@@ -2992,7 +2996,11 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, sort, desc, start, rows);
+        if (appDef != null) {
+            userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, sort, desc, start, rows);
+        } else {
+            userviewDefinitionList = new ArrayList<UserviewDefinition>();
+        }
 
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
@@ -3781,7 +3789,11 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
+        if (appDef != null) {
+            formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
+        } else {
+            formDefinitionList = new ArrayList<FormDefinition>();
+        }
 
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
@@ -3836,7 +3848,12 @@ public class ConsoleWebController {
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/tableName/options")
     public void consoleFormTableNameOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
+        Collection<String> tableNameList = null;
+        if (appDef != null) {
+            tableNameList = formDefinitionDao.getTableNameList(appDef);
+        } else {
+            tableNameList = new ArrayList<String>();
+        }
 
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
@@ -3986,22 +4003,24 @@ public class ConsoleWebController {
         try {
             Map<String, String> options = new HashMap<String, String>();
             Collection<WorkflowProcess> processList = null;
-            PackageDefinition packageDefinition = appDef.getPackageDefinition();
-            if (packageDefinition != null) {
-                Long packageVersion = packageDefinition.getVersion();
-                processList = workflowManager.getProcessList(appId, packageVersion.toString());
-                for (WorkflowProcess wp : processList) {
-                    String processDefId = wp.getId();
-                    Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processDefId);
-                    
-                    for (WorkflowVariable v : variableList) {
-                        String processname = options.get(v.getId());
-                        if (processname != null) {
-                            processname += ", " + wp.getName();
-                        } else {
-                            processname = wp.getName();
+            if (appDef != null) {
+                PackageDefinition packageDefinition = appDef.getPackageDefinition();
+                if (packageDefinition != null) {
+                    Long packageVersion = packageDefinition.getVersion();
+                    processList = workflowManager.getProcessList(appId, packageVersion.toString());
+                    for (WorkflowProcess wp : processList) {
+                        String processDefId = wp.getId();
+                        Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processDefId);
+
+                        for (WorkflowVariable v : variableList) {
+                            String processname = options.get(v.getId());
+                            if (processname != null) {
+                                processname += ", " + wp.getName();
+                            } else {
+                                processname = wp.getName();
+                            }
+                            options.put(v.getId(), processname);
                         }
-                        options.put(v.getId(), processname);
                     }
                 }
             }
@@ -4032,13 +4051,15 @@ public class ConsoleWebController {
         jsonArray.put(blank);
         
         try {
-            Collection<EnvironmentVariable> envList = appDef.getEnvironmentVariableList();
-            if (envList != null) {
-                for (EnvironmentVariable e : envList) {
-                    Map op = new HashMap();
-                    op.put("value", e.getId());
-                    op.put("label", e.getId());
-                    jsonArray.put(op);
+            if (appDef != null) {
+                Collection<EnvironmentVariable> envList = appDef.getEnvironmentVariableList();
+                if (envList != null) {
+                    for (EnvironmentVariable e : envList) {
+                        Map op = new HashMap();
+                        op.put("value", e.getId());
+                        op.put("label", e.getId());
+                        jsonArray.put(op);
+                    }
                 }
             }
         } catch (Exception e) {
