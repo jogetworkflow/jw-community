@@ -2,6 +2,11 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.28
+=================
+8abf677f Fixed: wflow-core - Builder - For cloning element in protected app, all app elements from all versions will be displayed as selection. @6.0-SNAPSHOT
+721e6cff Fixed: wflow-commons/wflow-core - File Upload - Security vulnerability - Directory traversal. #7578 @6.0-SNAPSHOT Fixed: wflow-commons/wflow-core - File Upload - Security vulnerability - File type restriction not handle correctly. #7578 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.27
 =================
 4603372e Fixed: wflow-commons - Manage message - not able to handle multiline string correctly. #7625 @6.0-SNAPSHOT
