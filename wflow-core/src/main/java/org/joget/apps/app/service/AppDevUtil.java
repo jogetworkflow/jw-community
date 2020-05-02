@@ -59,6 +59,7 @@ import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.util.FS;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -76,6 +77,7 @@ import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
@@ -185,7 +187,16 @@ public class AppDevUtil {
     public static Git gitInit(File projectDir) throws GitAPIException, IllegalStateException {
         // init git directory
 //        LogUtil.debug(GitUtil.class.getName(), "Init Git repository");
+        FS fs = null;
+        if (HostManager.isVirtualHostEnabled()) {
+            fs = FS.DETECTED;
+            File config = new File(projectDir.getAbsolutePath() + File.separator + "gitconfig");
+            fs.setGitSystemConfig(config);
+            fs.setUserHome(projectDir);
+        }
+
         Git git = Git.init()
+                .setFs(fs)
                 .setDirectory(projectDir)
                 .call();
         return git;
