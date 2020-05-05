@@ -541,14 +541,28 @@ public class AppDevUtil {
             int theirsIndex = fileContents.indexOf(theirs);
             int endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
             String diffStr = fileContents.substring(start, endTheirsIndex);
-            LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict: " + diffStr);            
-            // remove HEAD
-            fileContents = StringUtils.replaceOnce(fileContents, ours, "");
-            // remove separator and theirs content
+            LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict: " + diffStr);
+            
+            String replaceStr = "";
             int separatorIndex = fileContents.indexOf(separator);
-            theirsIndex = fileContents.indexOf(theirs);
-            endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
-            String replaceStr = fileContents.substring(separatorIndex, endTheirsIndex+1);
+            if (path.endsWith("appDefinition.xml") && fileContents.substring(start + ours.length(), fileContents.indexOf(separator)).contains("<packageDefinitionList/>")) {
+                // remove separator and our content
+                endTheirsIndex = fileContents.indexOf("\n", separatorIndex);
+                replaceStr = fileContents.substring(start, endTheirsIndex+1);
+                
+                // remove End
+                String endtheirs = fileContents.substring(fileContents.indexOf(theirs), fileContents.indexOf("\n", theirsIndex)+1);
+                fileContents = StringUtils.replaceOnce(fileContents, endtheirs, "");
+            } else {
+                // remove HEAD
+                fileContents = StringUtils.replaceOnce(fileContents, ours, "");
+                
+                // remove separator and theirs content
+                theirsIndex = fileContents.indexOf(theirs);
+                endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
+                replaceStr = fileContents.substring(separatorIndex, endTheirsIndex+1);
+            }
+            
             fileContents = StringUtils.replaceOnce(fileContents, replaceStr, "");
             start = fileContents.indexOf(ours);
         }
