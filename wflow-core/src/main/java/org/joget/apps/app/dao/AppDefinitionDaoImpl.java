@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -349,7 +350,17 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         if (newPackageDef != null) {
             LogUtil.debug(getClass().getName(), "Sync package for " + appDef);
             if (packageDef == null) {
-                packageDef = newPackageDef;
+                packageDef = new PackageDefinition();
+                packageDef.setAppId(newPackageDef.getAppId());
+                packageDef.setDateCreated(newPackageDef.getDateCreated());
+                packageDef.setDateModified(newPackageDef.getDateModified());
+                packageDef.setName(newPackageDef.getName());
+                packageDef.setId(newPackageDef.getId());
+                packageDef.setVersion(newPackageDef.getVersion());
+                packageDef.setPackageActivityFormMap(new HashMap<String, PackageActivityForm>());
+                packageDef.setPackageActivityPluginMap(new HashMap<String, PackageActivityPlugin>());
+                packageDef.setPackageParticipantMap(new HashMap<String, PackageParticipant>());
+                appDef.getPackageDefinitionList().add(packageDef);
             }
             Map<String, PackageActivityForm> activityFormMap = new LinkedHashMap<>();
             if (newPackageDef.getPackageActivityFormMap() != null) {
