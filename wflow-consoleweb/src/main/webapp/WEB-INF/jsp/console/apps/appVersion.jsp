@@ -117,6 +117,7 @@
 
                     function viewVersion(version){
                         if (version != '') {
+                            showLoading();
                             parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/forms';
                         }
                     }
