@@ -938,8 +938,14 @@ public class AppDevUtil {
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         Git git = AppDevUtil.gitInit(projectDir);
         String gitBranch = getGitBranchName(appDefinition);
+        boolean checkedOut = true;
         try {
             AppDevUtil.gitCheckout(git, gitBranch);
+        } catch(RefNotFoundException rnfe) {
+            // set flag to checkout after pull for newly initialized repos "Ref HEAD cannot be resolved" error 
+            checkedOut = false;
+        }
+        try {
             Properties gitProperties = getAppDevProperties(appDefinition);
             boolean alwaysPull = Boolean.parseBoolean(gitProperties.getProperty(PROPERTY_GIT_CONFIG_PULL));
             if (pull || alwaysPull) {
@@ -966,6 +972,10 @@ public class AppDevUtil {
                     // set flag to prevent further pulls in the same request
                     if (request != null) {
                         request.setAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId, "true");
+                    }
+                    // if checkout not successful earlier before pull, checkout now
+                    if (!checkedOut) {
+                        AppDevUtil.gitCheckout(git, gitBranch);
                     }
                 }
             }
