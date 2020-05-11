@@ -33,6 +33,7 @@ body .dataList .filters .filter-cell:last-child:after{
     -webkit-text-stroke-width: 0.2px;
     -moz-osx-font-smoothing: grayscale;
     cursor: pointer;
+    pointer-events: none;
 }
 .x-admin-sm body .dataList table {
     font-size: 12px;
