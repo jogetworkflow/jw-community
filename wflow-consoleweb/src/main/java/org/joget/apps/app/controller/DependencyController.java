@@ -5,13 +5,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
+import org.apache.xml.dtm.ref.DTMNodeList;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -143,6 +149,30 @@ public class DependencyController {
         }
     }
     
+    private void findHashVariableKeywords(JSONArray keywords, String text, String keyword) {
+        int found = text.indexOf(keyword);
+        String regex = ".*#[^#]+\\."+keyword+"([\\}?\\.\\[]+[^#]*)*#.*";
+                        
+        while (found > 0) {
+            int start = (found - 40 < 0) ? 0 : found - 40;
+            int end = ((found + keyword.length() + 40) >= text.length())? text.length() : (found + keyword.length() + 40);
+            
+            String words = text.substring(start, end);
+            if (words.matches(regex)) {
+                if (start != 0) {
+                    words = "..." + words;
+                }
+                if (end != text.length()) {
+                    words = words + "...";
+                }
+                keywords.put(words);
+            }
+
+            text = text.substring(found + keyword.length());
+            found = text.indexOf(keyword);
+        }
+    }
+    
     private JSONArray getDependencies(String appId, String version, String type, String keyword, HttpServletRequest request) {
         keyword = SecurityUtil.validateStringInput(keyword);
         
@@ -162,8 +192,40 @@ public class DependencyController {
             Document xml = builder.parse(input);
             XPath xPath =  XPathFactory.newInstance().newXPath();
             
+            xPath.setXPathFunctionResolver(new XPathFunctionResolver() {
+                @Override
+                public XPathFunction resolveFunction(QName functionName, int arity) {
+                    String localName = functionName.getLocalPart();
+                    if ("regexmatches".equals(localName)) {
+                        return new RegexMatchesFunction();
+                    } else {
+                        return null;
+                    }
+                }
+                
+                class RegexMatchesFunction implements XPathFunction {
+
+                    @Override
+                    public Object evaluate(List args) throws XPathFunctionException {
+                        if (args.size() == 2) {
+                            String text = ((DTMNodeList) args.get(0)).item(0).getTextContent();
+                            String regex = (String) args.get(1);
+                            if (text != null && regex != null) {
+                                return text.matches(regex);
+                            }
+                        }
+                        return false;
+                    }
+                }
+            });
+            
             String expression = "//json[contains(text(),'\""+keyword+"\"')]";
             expression += " | //pluginProperties[contains(text(),'\""+keyword+"\"')] ";
+            
+            //Hash variable
+            String regex = ".*#[^#]+\\."+keyword+"([\\}?\\.\\[]+[^#]*)*#.*";
+            expression += " | //json[jfn:regexmatches(text(),'"+regex+"')]";
+            expression += " | //pluginProperties[jfn:regexmatches(text(),'"+regex+"')] ";
             
             if ("form".equals(type)) {
                 //handle for beanshell
@@ -260,6 +322,7 @@ public class DependencyController {
                         
                         JSONArray foundArr = new JSONArray();
                         findKeywords(foundArr, text, "\""+keyword+"\"");
+                        findHashVariableKeywords(foundArr, text, keyword);
                         
                         if ("form".equals(type)) {
                             findKeywords(foundArr, text, "\\\""+keyword+"\\\"");

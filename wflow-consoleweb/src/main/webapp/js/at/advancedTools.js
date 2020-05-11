@@ -48,6 +48,9 @@ var AdvancedTools = {
             }
         });
         
+        if ($(".builder_tool_tabs_container .builder_tool_tabs li:eq(0)").attr("aria-controls") !== "tab-treeViewer") {
+            $(".builder_tool_tabs_container .builder_tool_tabs li:eq(0) a").trigger("click");
+        }
     },
     initProcess: function (options) {
         AdvancedTools.options = options;
