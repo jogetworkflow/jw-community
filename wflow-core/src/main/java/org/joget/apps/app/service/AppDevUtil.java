@@ -544,8 +544,9 @@ public class AppDevUtil {
             LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict: " + diffStr);
             
             String replaceStr = "";
-            int separatorIndex = fileContents.indexOf(separator);
             if (path.endsWith("appDefinition.xml") && fileContents.substring(start + ours.length(), fileContents.indexOf(separator)).contains("<packageDefinitionList/>")) {
+                int separatorIndex = fileContents.indexOf(separator);
+                
                 // remove separator and our content
                 endTheirsIndex = fileContents.indexOf("\n", separatorIndex);
                 replaceStr = fileContents.substring(start, endTheirsIndex+1);
@@ -556,6 +557,8 @@ public class AppDevUtil {
             } else {
                 // remove HEAD
                 fileContents = StringUtils.replaceOnce(fileContents, ours, "");
+                
+                int separatorIndex = fileContents.indexOf(separator);
                 
                 // remove separator and theirs content
                 theirsIndex = fileContents.indexOf(theirs);
