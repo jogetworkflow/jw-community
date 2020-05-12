@@ -313,7 +313,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         } catch (Exception ex) {
 
-            LogUtil.error(getClass().getName(), ex, "");
+            LogUtil.debug(getClass().getName(), ex.getLocalizedMessage());
         } finally {
             try {
                 disconnect(sc);
