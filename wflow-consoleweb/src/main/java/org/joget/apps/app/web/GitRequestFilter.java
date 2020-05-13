@@ -64,10 +64,9 @@ public class GitRequestFilter implements Filter {
 
                         // perform commit
                         String commitMessage = gitCommitHelper.getCommitMessage();
-                        if (commitMessage != null && !commitMessage.trim().isEmpty()) {
+                        if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
                             AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
                             pushAppDefs.add(appDef);
-                            git.getRepository().close();
                         }
                     } catch (Exception ex) {
                         LogUtil.error(getClass().getName(), ex, ex.getMessage());

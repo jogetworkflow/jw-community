@@ -2,9 +2,12 @@ package org.joget.apps.app.dao;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.commons.util.LogUtil;
 
 public class GitCommitHelper {
 
@@ -67,6 +70,20 @@ public class GitCommitHelper {
         }
     }
     
+    public boolean hasChanges() {
+        try {
+            Status status = git.status().call();
+            Set uncommittedChanges = status.getUncommittedChanges();
+            if (uncommittedChanges != null && !uncommittedChanges.isEmpty()) {
+                LogUtil.debug(GitCommitHelper.class.getName(), workingDir.getAbsolutePath() + " detected " + uncommittedChanges.size() + " changes.");
+                return true;
+            }
+        } catch (Exception e) {
+            LogUtil.debug(GitCommitHelper.class.getName(), e.getMessage());
+        }
+        return false;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -109,6 +126,7 @@ public class GitCommitHelper {
     }
     
     public void clean() {
+        git.getRepository().close();
         if (workingDir.exists()) {
             try {
                 FileUtils.deleteDirectory(workingDir);
