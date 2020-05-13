@@ -162,7 +162,7 @@ DatalistBuilder = {
         
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_dbuilder_msg('dbuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_dbuilder_msg('dbuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_dbuilder_msg('dbuilder.undo.disabled.tip')+"'><i class='fas fa-undo'></i> "+get_dbuilder_msg('dbuilder.undo')+"</a>&nbsp;|&nbsp;");
         $(".controls").append("<a class='action-redo disabled' title='"+get_dbuilder_msg('dbuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_dbuilder_msg('dbuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){

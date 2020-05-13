@@ -148,7 +148,7 @@ FormBuilder = {
         
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_fbuilder_msg('fbuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_fbuilder_msg('fbuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_fbuilder_msg('fbuilder.undo.disabled.tip')+"'><i class='fas fa-undo'></i> "+get_fbuilder_msg('fbuilder.undo')+"</a>&nbsp;|&nbsp;");
         $(".controls").append("<a class='action-redo disabled' title='"+get_fbuilder_msg('fbuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_fbuilder_msg('fbuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){

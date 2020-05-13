@@ -127,7 +127,7 @@ CustomBuilder = {
     initBuilder : function (callback) {
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_cbuilder_msg('ubuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_cbuilder_msg('ubuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_cbuilder_msg('ubuilder.undo.disabled.tip')+"'><i class='fas fa-undo'></i> "+get_cbuilder_msg('ubuilder.undo')+"</a>&nbsp;|&nbsp;");
         $(".controls").append("<a class='action-redo disabled' title='"+get_cbuilder_msg('ubuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_cbuilder_msg('ubuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){
