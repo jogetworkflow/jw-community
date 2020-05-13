@@ -1,5 +1,6 @@
 package org.joget.apps.app.controller;
 
+import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +18,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
-import org.apache.xml.dtm.ref.DTMNodeList;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
