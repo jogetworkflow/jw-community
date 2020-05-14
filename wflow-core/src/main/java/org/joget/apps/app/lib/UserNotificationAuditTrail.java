@@ -141,8 +141,13 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     try {
                         for (String username : users) {
                             Collection<String> addresses = AppUtil.getEmailList(null, username, null, null);
-
-                            if (addresses != null && addresses.size() > 0) {
+                            if (addresses == null) {
+                                addresses = new ArrayList<String>();
+                            }
+                            Collection<String> pushUsername = new ArrayList<String>();
+                            pushUsername.add(username);
+                            
+                            if (!addresses.isEmpty() || !"true".equals(props.get("disablePush"))) {
                                 workflowUserManager.setCurrentThreadUser(username);
                                 WorkflowAssignment wfAssignment = null;
                                 
@@ -178,6 +183,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                     Collection<UserReplacement> replaces = urDao.getUserTodayReplacedBy(username, args[0], args[2]);
                                     if (replaces != null && !replaces.isEmpty()) {
                                         for (UserReplacement ur : replaces) {
+                                            pushUsername.add(ur.getReplacementUser());
                                             Collection<String> emails = AppUtil.getEmailList(null, ur.getReplacementUser(), null, null);
                                             if (emails != null && !emails.isEmpty()) {
                                                 addresses.addAll(emails);
@@ -227,18 +233,22 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                     }
                                     email.setCharset("UTF-8");
                                     
-                                    AppUtil.emailAttachment(props, wfAssignment, auditTrail.getAppDef(), email);
+                                    if (!addresses.isEmpty()) {
+                                        AppUtil.emailAttachment(props, wfAssignment, auditTrail.getAppDef(), email);
 
-                                    try {
-                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=" + email.getSubject());
-                                        email.send();
-                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
-                                    } catch (EmailException ex) {
-                                        LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
+                                        try {
+                                            LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=" + email.getSubject());
+                                            email.send();
+                                            LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
+                                        } catch (EmailException ex) {
+                                            LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
+                                        }
                                     }
                                     
                                     if (!"true".equals(props.get("disablePush"))) {
-                                        PushServiceUtil.sendUserPushNotification(username, formattedSubject, formattedMessage, link, "", "", true);
+                                        for (String u : pushUsername) {
+                                            PushServiceUtil.sendUserPushNotification(u, formattedSubject, formattedMessage, link, "", "", true);
+                                        }
                                     }
                                 } else {
                                     LogUtil.debug(UserNotificationAuditTrail.class.getName(), "Fail to retrieve assignment for " + username);
