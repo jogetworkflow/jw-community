@@ -185,7 +185,7 @@
                                     media="${columnMedia}"
                                     />
                             </c:forEach>
-                            <c:if test="${!empty dataList.rowActions[0]}">
+                            <c:if test="${!empty dataListRows[0] && !empty dataList.rowActions[0]}">
                                 <c:set var="actionTitle" value="" />
                                 <c:forEach items="${dataList.rowActions}" var="rowAction" begin="1">
                                     <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action\">" />
