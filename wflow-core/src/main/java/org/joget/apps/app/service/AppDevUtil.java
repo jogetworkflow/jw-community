@@ -1383,7 +1383,8 @@ public class AppDevUtil {
             lastModifiedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
             appLastModifiedDate = lastModifiedCal.getTime();            
         }
-        if ("true".equals(appAutoSync) && (appLastModifiedDate == null || (latestDate != null && latestDate.after(appLastModifiedDate)))) {
+        //latestDate is null when git folder is empty, should not sync in that case.
+        if ("true".equals(appAutoSync) && latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate))) {
             LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
             // sync app
             updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
