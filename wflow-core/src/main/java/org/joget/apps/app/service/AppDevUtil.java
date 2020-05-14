@@ -994,6 +994,9 @@ public class AppDevUtil {
     }
     
     public static List<String> getAppGitBranches(AppDefinition appDef) throws GitAPIException, IOException {
+        if (appDef == null || appDef.getVersion() == null) {
+            return new ArrayList<String>();
+        }
         LogUtil.debug(AppDevUtil.class.getName(), "List branches:");
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
         String projectDirName = getAppGitDirectory(appDef);
@@ -1346,6 +1349,9 @@ public class AppDevUtil {
     
     public static AppDefinition dirSyncApp(String appId, Long appVersion) throws IOException, GitAPIException, URISyntaxException {
         AppDefinition updatedAppDef = null;
+        if (appVersion == null) {
+            return null;
+        }
         
         // check if project dir exists
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
