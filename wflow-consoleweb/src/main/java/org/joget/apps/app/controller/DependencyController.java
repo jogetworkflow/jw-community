@@ -29,6 +29,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,7 +152,7 @@ public class DependencyController {
     
     private void findHashVariableKeywords(JSONArray keywords, String text, String keyword) {
         int found = text.indexOf(keyword);
-        String regex = ".*#[^#]+\\."+keyword+"([\\}?\\.\\[]+[^#]*)*#.*";
+        String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
                         
         while (found > 0) {
             int start = (found - 40 < 0) ? 0 : found - 40;
@@ -223,7 +224,7 @@ public class DependencyController {
             expression += " | //pluginProperties[contains(text(),'\""+keyword+"\"')] ";
             
             //Hash variable
-            String regex = ".*#[^#]+\\."+keyword+"([\\}?\\.\\[]+[^#]*)*#.*";
+            String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
             expression += " | //json[jfn:regexmatches(text(),'"+regex+"')]";
             expression += " | //pluginProperties[jfn:regexmatches(text(),'"+regex+"')] ";
             
