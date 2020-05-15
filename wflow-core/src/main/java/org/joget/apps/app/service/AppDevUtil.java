@@ -533,18 +533,22 @@ public class AppDevUtil {
         
         File file = new File(projectDir, path);
         String fileContents = FileUtils.readFileToString(file, "UTF-8");
-        String ours = "<<<<<<< HEAD\n";
+        String ours = "<<<<<<< HEAD";
         String separator = "=======";
         String theirs = ">>>>>>>";
         int start = fileContents.indexOf(ours);
+        
         while (start >= 0) {
+            //find ours full line with carriage return
+            String fullLineOurs = fileContents.substring(start, fileContents.indexOf("\n", start)+1);
+            
             int theirsIndex = fileContents.indexOf(theirs);
             int endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
             String diffStr = fileContents.substring(start, endTheirsIndex);
             LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict: " + diffStr);
             
             String replaceStr = "";
-            if (path.endsWith("appDefinition.xml") && fileContents.substring(start + ours.length(), fileContents.indexOf(separator)).contains("<packageDefinitionList/>")) {
+            if (path.endsWith("appDefinition.xml") && fileContents.substring(start + fullLineOurs.length(), fileContents.indexOf(separator)).contains("<packageDefinitionList/>")) {
                 int separatorIndex = fileContents.indexOf(separator);
                 
                 // remove separator and our content
@@ -556,7 +560,7 @@ public class AppDevUtil {
                 fileContents = StringUtils.replaceOnce(fileContents, endtheirs, "");
             } else {
                 // remove HEAD
-                fileContents = StringUtils.replaceOnce(fileContents, ours, "");
+                fileContents = StringUtils.replaceOnce(fileContents, fullLineOurs, "");
                 
                 int separatorIndex = fileContents.indexOf(separator);
                 
@@ -866,7 +870,7 @@ public class AppDevUtil {
              
             if (toSave) {
                 // save file contents
-                FileUtils.writeStringToFile(file, fileContents, "UTF-8");
+                FileUtils.writeStringToFile(file, compatibleNewline(fileContents), "UTF-8");
                 if (commitMessage != null) {
                     // git add to commit
                     String[] extensions = new String[] { "json", "xml", "xpdl" };
