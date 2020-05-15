@@ -215,8 +215,8 @@ VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
 };
 VisibilityMonitor.prototype.handleRadio = function(targetEl, names) {
     $.each(names, function(i) {
-        $("[name=" + names[i] + "][checked].section-visibility-disabled").removeAttr("checked").attr("data-checked", "checked");
-        $("[name=" + names[i] + "][checked]:not(.section-visibility-disabled)").attr("checked", "checked");
-        $("[name=" + names[i] + "][data-checked]:not(.section-visibility-disabled)").removeAttr("data-checked").attr("checked", "checked");
+        $("[name=" + names[i] + "][checked].section-visibility-disabled").removeProp("checked").prop("data-checked", "checked");
+        $("[name=" + names[i] + "][checked]:not(.section-visibility-disabled)").prop("checked", "checked");
+        $("[name=" + names[i] + "][data-checked]:not(.section-visibility-disabled)").removeProp("data-checked").prop("checked", "checked");
     });
 };
