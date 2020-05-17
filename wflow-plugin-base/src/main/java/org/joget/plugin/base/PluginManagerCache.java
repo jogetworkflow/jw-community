@@ -62,7 +62,6 @@ public class PluginManagerCache {
         templateCache.clear();
         resourceBundleCache.clear();
         noResourceBundleCache.clear();
-        customPluginInterfaces.clear();
         lastCleared = new Date();    
     }
     
