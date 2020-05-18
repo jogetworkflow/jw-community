@@ -1,5 +1,6 @@
 package org.joget.apps.form.lib;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,6 +28,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 public class DatePicker extends Element implements FormBuilderPaletteElement, PwaOfflineResources {
     
     public static final String UTC_DATEFORMAT = "yyyy-MM-dd HH:mm";
+    private String format = null;
     
     @Override
     public String getName() {
@@ -46,7 +49,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "datePicker.ftl";
         
-        String displayFormat = getJavaDateFormat(getPropertyString("format"));
+        String format = getFormat();
+        
+        String displayFormat = getJavaDateFormat(format);
         String timeformat = getTimeFormat();
         if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             displayFormat = timeformat;
@@ -90,7 +95,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                 String binderValue = formData.getLoadBinderDataProperty(this, id);
                 if (value != null && !value.equals(binderValue)) {
                     try {
-                        String displayFormat = getJavaDateFormat(getPropertyString("format"));
+                        String displayFormat = getJavaDateFormat(getFormat());
                         if (!displayFormat.equals(getPropertyString("dataFormat"))) {
                             String timeformat = "";
                             if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))
@@ -160,6 +165,37 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         return "<i class=\"fas fa-calendar-alt\"></i>";
     }
     
+    protected String getFormat() {
+        if (format == null) {
+            format = getPropertyString("format");
+            if (format.isEmpty()) {
+                Locale locale = LocaleContextHolder.getLocale();
+                if (locale != null && locale.toString().startsWith("zh")) {
+                    WorkflowUtil.getHttpServletRequest().setAttribute("currentLocale", locale);
+                    format = "yy-mm-dd";
+                } else {
+                    SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+                    if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
+                        DateFormat dateInstance = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+                        if (dateInstance instanceof SimpleDateFormat) {
+                            format = ((SimpleDateFormat) dateInstance).toPattern();
+                            format = format.replaceAll("MM", "M");
+                            format = format.replaceAll("M", "mm");
+                            format = format.replaceAll("dd", "d");
+                            format = format.replaceAll("d", "dd");
+                            format = format.replaceAll("YYYY", "yy");
+                        }
+                    }
+                }
+                
+                if (format == null || format.isEmpty()) {
+                    format = "mm/dd/yy";
+                }
+                setProperty("format", format);
+            }
+        }
+        return format;
+    }
     
     protected TimeZone getUserTZ() {
         return LocaleContextHolder.getTimeZone();
@@ -178,16 +214,6 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
     }
     
     protected String getJavaDateFormat(String format) {
-        if (format == null || format.isEmpty()) {
-            Locale locale = LocaleContextHolder.getLocale();
-            if (locale != null && locale.toString().startsWith("zh")) {
-                WorkflowUtil.getHttpServletRequest().setAttribute("currentLocale", locale);
-                return "yyyy-MM-dd";
-            } else {
-                return "MM/dd/yyyy";
-            }
-        }
-        
         if (format.contains("DD")) {
             format = format.replaceAll("DD", "EEEE");
         } else {
@@ -227,7 +253,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         String value = FormUtil.getElementPropertyValue(this, formData);
                
         if (value != null && !value.isEmpty()) {
-            String displayFormat = getJavaDateFormat(getPropertyString("format"));
+            String displayFormat = getJavaDateFormat(getFormat());
             
             String timeformat = getTimeFormat();
             if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
