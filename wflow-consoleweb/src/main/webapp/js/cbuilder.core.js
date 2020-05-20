@@ -236,10 +236,24 @@ CustomBuilder = {
     
     initPaletteElement : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData){
         if ((typeof propertyOptions) === "string") {
-            propertyOptions = eval(propertyOptions);
+            try {
+                propertyOptions = eval(propertyOptions);
+            } catch (err) {
+                if (console.log) {
+                    console.log("error retrieving properties options of " + label + " : " + err);
+                }
+                return;
+            }
         }
         if ((typeof defaultPropertiesValues) === "string") {
-            defaultPropertiesValues = eval("["+defaultPropertiesValues+"]")[0];
+            try {
+                defaultPropertiesValues = eval("["+defaultPropertiesValues+"]")[0];
+            } catch (err) {
+                if (console.log) {
+                    console.log("error retrieving default property values of " + label + " : " + err);
+                }
+                return;
+            }
         }
         
         if (css === undefined || css === null) {

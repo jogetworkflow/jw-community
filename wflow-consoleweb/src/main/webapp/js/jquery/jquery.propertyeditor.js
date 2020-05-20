@@ -4949,8 +4949,15 @@ PropertyEditor.Type.ElementSelect.prototype = {
             dataType: "text",
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
-                    var data = eval(response);
-                    thisObj.pageOptions.propertiesDefinition = data;
+                    try {
+                        var data = eval(response);
+                        thisObj.pageOptions.propertiesDefinition = data;
+                    } catch (err) {
+                        if (console && console.log) {
+                            console.log("error retrieving properties options of " + value + " : " + err);
+                        }
+                        thisObj.pageOptions.propertiesDefinition = null;
+                    }
                 } else {
                     thisObj.pageOptions.propertiesDefinition = null;
                 }
@@ -5350,8 +5357,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             dataType: "text",
             success: function(response) {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {
-                    var data = eval(response);
-                    $(row).data("propertiesDefinition", data);
+                    try {
+                        var data = eval(response);
+                        $(row).data("propertiesDefinition", data);
+                    } catch (err) {
+                        if (console && console.log) {
+                            console.log("error retrieving properties options of " + value + " : " + err);
+                        }
+                        $(row).data("propertiesDefinition", null);
+                    }
                 } else {
                     $(row).data("propertiesDefinition", null);
                 }

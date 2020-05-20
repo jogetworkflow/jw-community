@@ -60,7 +60,17 @@
                         <c:if test="${empty propertyOptions}">
                             <c:set var="propertyOptions" value="''"/>
                         </c:if>
-                        UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.i18nLabel}', '${element.icon}', ${propertyOptions}, '${element.defaultPropertyValues}', '${element.pwaValidationType}');
+                        try {
+                            <c:set var="initScript">                    
+                                UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.i18nLabel}', '${element.icon}', ${propertyOptions}, '${element.defaultPropertyValues}', '${element.pwaValidationType}');
+                            </c:set>
+                            <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
+                            eval("${initScript}");    
+                        } catch (err) {
+                            if (console && console.log) {
+                                console.log("Error initializing ${element.i18nLabel} : " + err);
+                            }
+                        }
                     </c:forEach>
                 </c:forEach>
 

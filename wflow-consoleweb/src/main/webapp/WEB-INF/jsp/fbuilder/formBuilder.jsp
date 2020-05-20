@@ -112,11 +112,17 @@
             <c:forEach items="${palette.editableElementList}" var="element">
                 <c:if test="${!empty element.propertyOptions}">
                 try {
-                    var elementProps = ${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)};
-                    var elementTemplate = "${element.formBuilderTemplate}";
-                    FormBuilder.initElementDefinition("${element.className}", elementProps, elementTemplate);
+                    <c:set var="initScript">                    
+                        var elementProps = ${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)};
+                        var elementTemplate = "${element.formBuilderTemplate}";
+                        FormBuilder.initElementDefinition("${element.className}", elementProps, elementTemplate);
+                    </c:set>
+                    <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
+                    eval("${initScript}");
                 } catch (e) {
-                    alert("Error initializing ${element.name}:" + e);
+                    if (console && console.log) {
+                        console.log("Error initializing ${element.name} : " + e);
+                    }
                 }
                 </c:if>
             </c:forEach>
