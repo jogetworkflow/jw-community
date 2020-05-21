@@ -21,8 +21,8 @@
         <module>../wflow-wfengine</module>
         <module>../wflow-core</module>
         <module>../wflow-consoleweb</module>
-        <module>../wflow-designer</module>
-        <module>../wflow-designerweb</module>
+        <!--module>../wflow-designer</module>
+        <module>../wflow-designerweb</module-->
     </modules>
 </project>
 
