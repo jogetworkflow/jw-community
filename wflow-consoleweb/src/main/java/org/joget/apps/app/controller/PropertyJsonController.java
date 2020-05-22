@@ -147,11 +147,16 @@ public class PropertyJsonController {
     }
 
     @RequestMapping("/property/json/getPropertyOptions")
-    public void getProperties(Writer writer, @RequestParam("value") String value) throws Exception {
+    public void getProperties(HttpServletRequest request, Writer writer, @RequestParam("value") String value) throws Exception {
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        String callReference = request.getHeader("call_reference");
         if (element != null 
-                && (element instanceof FormLoadBinder || element instanceof FormStoreBinder) 
+                && callReference != null
+                && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder")) 
                 && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
             json = FormUtil.injectBinderExtraProperties((FormBinder) element);
         } else if (element != null) {
@@ -165,15 +170,20 @@ public class PropertyJsonController {
     }
     
     @RequestMapping("/property/json/(*:appId)/(~:version)/getPropertyOptions")
-    public void getProperties(Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
+    public void getProperties(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
         if (appId != null && !appId.trim().isEmpty()) {
             appService.getAppDefinition(appId, version);
         }
 
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        String callReference = request.getHeader("call_reference");
         if (element != null 
-                && (element instanceof FormLoadBinder || element instanceof FormStoreBinder) 
+                && callReference != null
+                && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder")
+                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder")) 
                 && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
             json = FormUtil.injectBinderExtraProperties((FormBinder) element);
         } else if (element != null) {
