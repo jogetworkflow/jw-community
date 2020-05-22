@@ -4947,6 +4947,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
+            headers: {
+                call_reference : thisObj.properties.options_ajax
+            },
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
                     try {
@@ -5355,6 +5358,9 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
+            headers: {
+                call_reference : thisObj.properties.options_ajax
+            },
             success: function(response) {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {
                     try {
