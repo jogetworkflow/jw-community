@@ -146,7 +146,7 @@ public class ResourceBundleUtil implements ApplicationContextAware {
                                         resourceBundleMessage.setKey(key);
                                         resourceBundleMessage.setLocale(locale);
                                     }   
-                                    resourceBundleMessage.setMessage(translated.replaceAll("\\\"", "\""));
+                                    resourceBundleMessage.setMessage(translated.replaceAll(StringUtil.escapeRegex("\\\""), "\""));
                                     resourceBundleMessageList.add(resourceBundleMessage);
                                 }
                             }
