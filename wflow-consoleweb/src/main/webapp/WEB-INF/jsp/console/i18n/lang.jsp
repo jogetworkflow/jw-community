@@ -3,14 +3,16 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 var <c:out value="${name}"/>_lang = {
     <c:forEach var="key" items="${keys}">
-        '${key}' : '<fmt:message key="${key}"/>',
+        <fmt:message key="${key}" var="keyValue"/>
+        '${key}' : '<c:out value='${fn:replace(keyValue, "\'", "\\\\\'")}' escapeXml="false"/>',
     </c:forEach>
 <c:if test="${!empty bundle}">
     <c:forEach var="key" items="${bundle.keySet()}">
-        '${key}' : '<c:out value="${bundle.getString(key)}"/>',
+        '${key}' : '<c:out value='${fn:replace(bundle.getString(key), "\'", "\\\\\'")}' escapeXml="false"/>',
     </c:forEach>
 </c:if>    
     lang_file_name : '<c:out value="${name}"/>.properties'

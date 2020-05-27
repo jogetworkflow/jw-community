@@ -168,7 +168,7 @@
             }
 
             function savePluginFailed(container, returnedErrors){
-                var errorMsg = '<fmt:message key="console.plugin.label.youHaveFollowingErrors"/>:\n';
+                var errorMsg = '<ui:msgEscJS key="console.plugin.label.youHaveFollowingErrors"/>:\n';
                 for(key in returnedErrors){
                     if (returnedErrors[key].fieldName === undefined || returnedErrors[key].fieldName === "") {
                         errorMsg += returnedErrors[key].message + '\n';
@@ -218,8 +218,8 @@
                         </c:otherwise>    
                     </c:choose>        
                     saveCallback: savePlugin,
-                    saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
-                    cancelButtonLabel: '<c:choose><c:when test="${!empty cancelLabel}"><fmt:message key="${cancelLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.cancel"/></c:otherwise></c:choose>',
+                    saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><ui:msgEscJS key="${submitLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.submit"/></c:otherwise></c:choose>',
+                    cancelButtonLabel: '<c:choose><c:when test="${!empty cancelLabel}"><ui:msgEscJS key="${cancelLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.cancel"/></c:otherwise></c:choose>',
                     closeAfterSaved: false,
                     validationFailedCallback: savePluginFailed
                 }

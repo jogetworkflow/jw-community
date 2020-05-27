@@ -31,7 +31,7 @@
                 </span>
             </div>
             <div class="form-buttons">
-                <input class="form-button" type="submit" value="<fmt:message key="console.app.message.import.po.label.upload"/>" />
+                <input class="form-button" type="submit" value="<ui:msgEscHTML key="console.app.message.import.po.label.upload"/>" />
             </div>
         </form>
     </div>

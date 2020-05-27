@@ -65,7 +65,7 @@
 
             window.onbeforeunload = function() {
                 if(CustomBuilder.saveChecker != 0){
-                    return "<fmt:message key="ubuilder.saveBeforeClose" />";
+                    return '<ui:msgEscJS key="ubuilder.saveBeforeClose" />';
                 }
             };
         </script>
@@ -85,8 +85,8 @@
                         <ul id="builder-steps">
                         <li id="step-design" class="first-active active"><a href="#step-design-container"><span class="steps-bg"><span class="title"><fmt:message key="dbuilder.design"/></span><span class="subtitle"><fmt:message key="ubuilder.designUserview.description"/></span></span></a></li>
                         <li id="step-properties"><a href="#step-properties-container"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.properties"/></span><span class="subtitle"><fmt:message key="ubuilder.setting.description"/></span></span></a></li>
-                        <li id="step-preview"><a onclick="CustomBuilder.preview();" title="<fmt:message key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
-                        <li id="step-save" class="last-inactive save-disabled"><a onclick="CustomBuilder.mergeAndSave();" title="<fmt:message key="ubuilder.save.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
+                        <li id="step-preview"><a onclick="CustomBuilder.preview();" title="<ui:msgEscHTML key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
+                        <li id="step-save" class="last-inactive save-disabled"><a onclick="CustomBuilder.mergeAndSave();" title="<ui:msgEscHTML key="ubuilder.save.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
                     </ul>
                     <div id="builder-bg"></div>
                 </div>
@@ -96,8 +96,8 @@
                     <div id="step-design-container">
                         <div id="toolbar">
                             <ul>
-                                <li id="tool-undo"><a class="undo-disabled" onclick="UserviewBuilder.undo();" title="<fmt:message key="ubuilder.undo.disabled.tip"/>"><span><fmt:message key="ubuilder.undo.disabled"/></span></a></li>
-                                <li id="tool-redo"><a class="redo-disabled" onclick="UserviewBuilder.redo();" title="<fmt:message key="ubuilder.redo.disabled.tip"/>"><span><fmt:message key="ubuilder.redo.disabled"/></span></a></li>
+                                <li id="tool-undo"><a class="undo-disabled" onclick="UserviewBuilder.undo();" title="<ui:msgEscHTML key="ubuilder.undo.disabled.tip"/>"><span><fmt:message key="ubuilder.undo.disabled"/></span></a></li>
+                                <li id="tool-redo"><a class="redo-disabled" onclick="UserviewBuilder.redo();" title="<ui:msgEscHTML key="ubuilder.redo.disabled.tip"/>"><span><fmt:message key="ubuilder.redo.disabled"/></span></a></li>
                             </ul>
                             <div class="clear"></div>
                         </div>

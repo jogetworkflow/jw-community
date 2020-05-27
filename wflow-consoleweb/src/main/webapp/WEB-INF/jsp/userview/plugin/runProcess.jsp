@@ -59,7 +59,7 @@
         </form>
         <script>
             function startProcess(){
-                if(confirm('<fmt:message key="client.app.run.process.label.start.confirm"/>')){
+                if(confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>')){
                     return true;
                 }
                 else {

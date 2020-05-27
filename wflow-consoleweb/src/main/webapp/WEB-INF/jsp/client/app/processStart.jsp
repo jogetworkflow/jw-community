@@ -51,7 +51,7 @@
         }
 
         function startProcess(){
-            if(confirm('<fmt:message key="client.app.run.process.label.start.confirm"/>')){
+            if(confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>')){
                 setTimeout(function() { $('#start').attr('disabled', 'disabled') }, 0);
                 return true;
             }

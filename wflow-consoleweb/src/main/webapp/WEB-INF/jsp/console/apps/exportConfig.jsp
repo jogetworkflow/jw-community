@@ -45,7 +45,7 @@
                 </div>
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button" type="submit" value="<fmt:message key="console.app.export.label"/>" />
+                <input class="form-button" type="submit" value="<ui:msgEscHTML key="console.app.export.label"/>" />
             </div>   
         </form>
     </div>

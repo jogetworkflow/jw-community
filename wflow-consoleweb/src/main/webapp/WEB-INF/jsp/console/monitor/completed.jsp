@@ -74,7 +74,7 @@
     };
 
     function removeProcessInstances(selectedList){
-         if (confirm('<fmt:message key="console.monitoring.common.label.removeProcess.confirm"/>')) {
+         if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

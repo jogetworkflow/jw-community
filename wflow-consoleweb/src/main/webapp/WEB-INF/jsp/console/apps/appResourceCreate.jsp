@@ -24,8 +24,8 @@
                     </span>
                 </div>
                 <div class="form-buttons">
-                    <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
-                    <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                    <input class="form-button" type="submit" value="<ui:msgEscHTML key="general.method.label.upload"/>" />
+                    <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
                 </div>
             </fieldset>
         </form>

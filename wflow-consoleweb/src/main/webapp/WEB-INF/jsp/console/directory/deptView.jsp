@@ -183,7 +183,7 @@
     }
 
     function onRemoveHOD(){
-        if (confirm('<fmt:message key="console.directory.department.hod.remove.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.directory.department.hod.remove.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -195,7 +195,7 @@
     }
 
     function onDelete(){
-        if (confirm('<fmt:message key="console.directory.department.delete.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -207,7 +207,7 @@
     }
 
     function deleteDepartment(selectedList){
-        if (confirm('<fmt:message key="console.directory.department.delete.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -219,7 +219,7 @@
     }
 
     function unassignUsers(selectedList){
-         if (confirm('<fmt:message key="console.directory.department.user.unassign.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.department.user.unassign.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

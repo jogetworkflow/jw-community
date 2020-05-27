@@ -71,7 +71,7 @@
     function submitUser(username){
         if(username.length > 0){
             username = decodeURIComponent(username);
-            if (confirm("<fmt:message key="console.monitoring.running.label.reassign.confirm"/>")) {
+            if (confirm('<ui:msgEscJS key="console.monitoring.running.label.reassign.confirm"/>')) {
                 var callback = {
                     success : function() {
                        UI.unblockUI(); 
@@ -80,7 +80,7 @@
                 }
                 var replaceUser = $('#replaceUser').val();
                 if($('#replaceUser option[value="'+username+'"]').length > 0){
-                    alert('<fmt:message key="console.monitoring.running.label.reassign.error"/>');
+                    alert('<ui:msgEscJS key="console.monitoring.running.label.reassign.error"/>');
                 }else{
                     UI.blockUI();
                     var params = "username=" + encodeURIComponent(username) + "&state=<c:out value="${state}"/>&processDefId=<c:out value="${processDefId}"/>&activityId=<c:out value="${activityId}"/>&processId=<c:out value="${processId}"/>&replaceUser=" + encodeURIComponent(replaceUser);

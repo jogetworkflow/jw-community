@@ -113,7 +113,7 @@
                                     ${template}
                                 </c:forEach>
                                  <span class="filter-cell">
-                                     <input type="submit" class="form-button btn button" value="<fmt:message key="general.method.label.show"/>"/>
+                                     <input type="submit" class="form-button btn button" value="<ui:msgEscHTML key="general.method.label.show"/>"/>
                                  </span>
                             </div>
                         </form>
@@ -408,7 +408,7 @@
         if ($(table).find("input[type=checkbox][name|=d]:checked, input[type=radio][name|=d]:checked").length > 0) {
             return confirm(message);
         } else {
-            alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
+            alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
             return false;
         }
     }

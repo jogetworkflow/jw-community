@@ -84,7 +84,7 @@
     }
 
     function deleteGroup(selectedList){
-         if (confirm('<fmt:message key="console.directory.group.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.group.delete.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

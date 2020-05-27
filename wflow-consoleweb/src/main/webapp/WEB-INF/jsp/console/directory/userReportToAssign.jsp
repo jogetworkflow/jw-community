@@ -68,7 +68,7 @@
         });
 
         function assignReportTo(selectedId){
-             if (confirm('<fmt:message key="console.directory.user.reportTo.assign.label.confirmation"/>')) {
+             if (confirm('<ui:msgEscJS key="console.directory.user.reportTo.assign.label.confirmation"/>')) {
                 UI.blockUI(); 
                 var callback = {
                     success : function() {

@@ -218,7 +218,7 @@
     }
 
     function onDelete(){
-         if (confirm('<fmt:message key="console.directory.user.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {
@@ -238,7 +238,7 @@
     }
     
     function unassignReportTo(){
-         if (confirm('<fmt:message key="console.directory.user.reportTo.unassign.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.user.reportTo.unassign.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {
@@ -250,7 +250,7 @@
     }
 
     function unassignGroups(selectedIds){
-         if (confirm('<fmt:message key="console.directory.user.group.unassign.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.user.group.unassign.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

@@ -75,7 +75,7 @@
                 </c:choose>
                 $(window).bind('beforeunload', function() {
                     if (ProcessBuilder.Designer.isModified()) {
-                        return '<fmt:message key="pbuilder.label.modifiedPrompt"/>';
+                        return '<ui:msgEscJS key="pbuilder.label.modifiedPrompt"/>';
                     }
                 });
                 // check for web designer
@@ -154,7 +154,7 @@
                                         <input type="checkbox" name="autoValidate" value="false" <c:if test="${param.autoValidate == 'false'}">checked</c:if> /> <fmt:message key="pbuilder.label.disableAutoValidate"/>
                                         <br />
                                         -->
-                                        <input type="submit" value="<fmt:message key="pbuilder.label.update"/>" />
+                                        <input type="submit" value="<ui:msgEscHTML key="pbuilder.label.update"/>" />
                                     </form>
                                 </div>
                             </div>

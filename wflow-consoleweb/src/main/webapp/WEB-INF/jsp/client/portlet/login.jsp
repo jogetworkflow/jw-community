@@ -91,6 +91,6 @@
     </table>
 
     <div id="main-body-actions">
-        <input name="submit" type="submit" value="<fmt:message key="console.login.label.login" />" />
+        <input name="submit" type="submit" value="<ui:msgEscHTML key="console.login.label.login" />" />
     </div>
 </form>

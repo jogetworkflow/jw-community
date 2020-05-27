@@ -127,7 +127,7 @@
     }
     
     function removeDirectoryManagerImpl(){
-        if(confirm("<fmt:message key="console.setting.directory.label.removePluginConfirm"/>")) {
+        if(confirm('<ui:msgEscJS key="console.setting.directory.label.removePluginConfirm"/>')) {
             ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/remove", callback, null);
         }
     }

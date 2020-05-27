@@ -42,7 +42,7 @@
         if ($("#main-action-buttons li").length > 1) {
             $("#main-action-buttons").parent().addClass("buttongroupdiv");
             $("#main-action-buttons").addClass("buttongroup");
-            $("#main-action-buttons").prepend('<li class="moreaction"><a class="btn"><fmt:message key="general.method.label.actions"/> <i class="fas fa-chevron-down"></i></a></li>');
+            $("#main-action-buttons").prepend('<li class="moreaction"><a class="btn"><ui:msgEscJS key="general.method.label.actions"/> <i class="fas fa-chevron-down"></i></a></li>');
             
             $(".buttongroup").on("click", ".moreaction", function(){
                 var bgroup = $(this).closest(".buttongroup");

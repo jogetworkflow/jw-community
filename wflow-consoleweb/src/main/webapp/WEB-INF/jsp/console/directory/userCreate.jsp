@@ -254,7 +254,7 @@
             var idMatch = /^[\.@0-9a-zA-Z_-]+$/.test($("#username").val());
             if(!idMatch){
                 if(!idMatch){
-                    alertString += '<fmt:message key="console.directory.user.error.label.usernameInvalid"/>';
+                    alertString += '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>';
                     $("#username").focus();
                     valid = false;
                 }
@@ -263,13 +263,13 @@
                 if(alertString != ""){
                     alertString += '\n';
                 }
-                alertString += '<fmt:message key="console.directory.user.error.label.passwordNotEmpty"/>';
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotEmpty"/>';
                 valid = false;
             }else if($("[name=password]").val() != $("[name=confirmPassword]").val()){
                 if(alertString != ""){
                     alertString += '\n';
                 }
-                alertString += '<fmt:message key="console.directory.user.error.label.passwordNotMatch"/>';
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
 

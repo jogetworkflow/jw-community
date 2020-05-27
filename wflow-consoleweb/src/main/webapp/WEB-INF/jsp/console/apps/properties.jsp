@@ -43,7 +43,7 @@
                             <textarea id="description" name="description" style="display:none"><c:out value="${appDefinition.description}" escapeXml="true"/></textarea>
                             <pre id="description_editor" name="description_editor" class="ace_editor"></pre>
                             <br />
-                            <input type="submit" value="<fmt:message key="general.method.label.submit"/>" class="form-button"/>
+                            <input type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>" class="form-button"/>
                         </form>
                     </div>    
                     <div id="variable">
@@ -226,7 +226,7 @@
     }
 
     function messageDelete(selectedList){
-         if (confirm('<fmt:message key="console.app.message.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.app.message.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -248,7 +248,7 @@
     }
 
     function envVariableDelete(selectedList){
-         if (confirm('<fmt:message key="console.app.envVariable.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.app.envVariable.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -262,7 +262,7 @@
     }
 
     function pluginDefaultDelete(selectedList){
-         if (confirm('<fmt:message key="console.app.pluginDefault.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.app.pluginDefault.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
@@ -280,7 +280,7 @@
     }
     
     function appResourceDelete(selectedList){
-        if (confirm('<fmt:message key="console.app.resource.delete.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.app.resource.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {

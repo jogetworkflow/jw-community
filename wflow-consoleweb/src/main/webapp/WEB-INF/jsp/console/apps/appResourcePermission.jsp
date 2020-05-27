@@ -38,7 +38,7 @@
         }
 
         function savePropertiesFailed(container, returnedErrors){
-            var errorMsg = '<fmt:message key="console.plugin.label.youHaveFollowingErrors"/>:\n';
+            var errorMsg = '<ui:msgEscJS key="console.plugin.label.youHaveFollowingErrors"/>:\n';
             for(key in returnedErrors){
                 if (returnedErrors[key].fieldName === undefined || returnedErrors[key].fieldName === "") {
                     errorMsg += returnedErrors[key].message + '\n';
@@ -66,31 +66,31 @@
             var options = {
                 contextPath: '${pageContext.request.contextPath}',
                 propertiesDefinition : [{
-                    title : '<fmt:message key="console.app.resources.detail.label"/>',
+                    title : '<ui:msgEscJS key="console.app.resources.detail.label"/>',
                     properties : [{
                         name : 'filename',
-                        label : '<fmt:message key="console.app.resource.common.label.id"/>',
+                        label : '<ui:msgEscJS key="console.app.resource.common.label.id"/>',
                         type : 'label',
                         url : '${pageContext.request.contextPath}/web/app/${appId}/resources/${appResource.id}'
                     },
                     {
                         name : 'url',
-                        label : '<fmt:message key="console.app.resource.common.label.url"/>',
+                        label : '<ui:msgEscJS key="console.app.resource.common.label.url"/>',
                         type : 'readonly'
                     },
                     {
                         name : 'hashvariable',
-                        label : '<fmt:message key="setting.plugin.hashVariable"/>',
+                        label : '<ui:msgEscJS key="setting.plugin.hashVariable"/>',
                         type : 'readonly'
                     },
                     {
                         name : 'filesize',
-                        label : '<fmt:message key="console.app.resource.common.label.filesize"/>',
+                        label : '<ui:msgEscJS key="console.app.resource.common.label.filesize"/>',
                         type : 'label'
                     },
                     { 
                         name : 'permission',
-                        label : '<fmt:message key="console.app.resource.common.label.permission"/>',
+                        label : '<ui:msgEscJS key="console.app.resource.common.label.permission"/>',
                         type : 'elementselect',
                         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',
                         url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
@@ -100,8 +100,8 @@
                 cancelCallback: cancel,
                 showCancelButton: true,          
                 saveCallback: saveProperties,
-                saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
-                cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
+                saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><ui:msgEscJS key="${submitLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.submit"/></c:otherwise></c:choose>',
+                cancelButtonLabel: '<ui:msgEscJS key="general.method.label.cancel"/>',
                 closeAfterSaved: false,
                 validationFailedCallback: savePropertiesFailed
             }

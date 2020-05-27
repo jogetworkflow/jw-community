@@ -68,7 +68,7 @@
 <c:set var="mobileDisabled" value="<%= MobileUtil.isMobileDisabled() %>"/>
 <script>
     <c:if test="${!mobileDisabled}">
-    var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
+    var mobileLinkTitle = '<ui:msgEscJS key="appCenter.label.mobileEdition"/>';
     var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' id='header-mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")'><i class='icon-mobile-phone fas fa-mobile-alt'>&nbsp;</i>" + mobileLinkTitle + "</a>";
     $("#header-links").prepend(mobileLink + " ");
     var url = "${pageContext.request.contextPath}/web/mobile";
@@ -94,7 +94,7 @@
 
         // show loading icon
         $(container).empty();
-        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x"></i> <fmt:message key="appCenter.label.loadingApps"/></div>');
+        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x"></i> <ui:msgEscJS key="appCenter.label.loadingApps"/></div>');
         $(container).append(loading);
 
         // load JSON
@@ -133,7 +133,7 @@
                 }
                 if (apps.length === 0) {
                     <c:if test="${!isAdmin}">
-                    content += '<div class="apps-notice"><fmt:message key="mobile.apps.allApps"/>: <fmt:message key="console.run.apps.none"/></div>';
+                    content += '<div class="apps-notice"><ui:msgEscJS key="mobile.apps.allApps"/>: <ui:msgEscJS key="console.run.apps.none"/></div>';
                     </c:if>
                     <c:if test="${isAnonymous}">
                         location.href = "${pageContext.request.contextPath}/web/login";
@@ -159,8 +159,8 @@
                 <c:if test="${isAdmin}">
                     if (!isMarketplace) {
                         var extraContent = '<li class="menu-link-admin">';
-                        extraContent += '<a href="#" onclick="appImport();return false" class="app-import app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.import.label'/></div>';
-                        extraContent += '<a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.create.label'/></div>';
+                        extraContent += '<a href="#" onclick="appImport();return false" class="app-import app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <ui:msgEscJS key='console.app.import.label'/></div>';
+                        extraContent += '<a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <ui:msgEscJS key='console.app.create.label'/></div>';
                         extraContent += '<a class="app-link app-new" href="#" onclick="appCreate();return false">\
                                         <span class="app-icon"><i class="icon-plus fas fa-plus"></i></span>\
                                         <div class="app-name"></div>\

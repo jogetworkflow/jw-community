@@ -62,7 +62,7 @@
         datalistCreateDialog.init();
     }
     function datalistDelete(selectedList){
-        if (confirm('<fmt:message key="console.datalist.delete.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.datalist.delete.label.confirmation"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {

@@ -34,10 +34,10 @@
         $(".followbtn").on("click", function(){
             if ($(this).hasClass("unfollow")) {
                 $(this).removeClass("unfollow");
-                $(this).text("<fmt:message key="console.log.follow"/>");
+                $(this).text('<ui:msgEscJS key="console.log.follow"/>');
             } else {
                 $(this).addClass("unfollow");
-                $(this).text("<fmt:message key="console.log.unfollow"/>");
+                $(this).text('<ui:msgEscJS key="console.log.unfollow"/>');
             }
         });
         

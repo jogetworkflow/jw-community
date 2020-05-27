@@ -18,7 +18,7 @@
             </span>
         </div>
         <div class="form-buttons">
-            <input type="button" id="generate" value="<fmt:message key="console.app.message.generate.po.label.generate"/>" class="form-button" />
+            <input type="button" id="generate" value="<ui:msgEscHTML key="console.app.message.generate.po.label.generate"/>" class="form-button" />
         </div>
     </div>
 

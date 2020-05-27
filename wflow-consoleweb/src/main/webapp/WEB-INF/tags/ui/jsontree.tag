@@ -52,7 +52,7 @@ ${var}.nodeDescription = "${nodeDescription}";
 ${var}.nodeCount = "${nodeCount}";
 ${var}.xss = ${xss};
 
-${var}.link = new Link("${href}", "${hrefParam}", ${hrefQuery}, new PopupDialog("${href}"<c:if test="${xss}">, '<fmt:message key="wflowClient.assignment.view.label.title"/>', '_blank'</c:if>));
+${var}.link = new Link("${href}", "${hrefParam}", ${hrefQuery}, new PopupDialog("${href}"<c:if test="${xss}">, '<ui:msgEscJS key="wflowClient.assignment.view.label.title"/>', '_blank'</c:if>));
 ${var}.init();
 </script>
 

@@ -91,8 +91,8 @@
             </fieldset>       
             ${userProfileFooter}    
             <div class="form-buttons">
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
@@ -103,14 +103,14 @@
             var valid = true;
             var alertString = "";
             if($("#firstName").val() == ""){
-                alertString += '<fmt:message key="User.firstName[not.blank]"/>';
+                alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
             }
             if($("#password").val() != $("#confirmPassword").val()){
                 if(alertString != ""){
                     alertString += '\n';
                 }
-                alertString += '<fmt:message key="console.directory.user.error.label.passwordNotMatch"/>';
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
 
