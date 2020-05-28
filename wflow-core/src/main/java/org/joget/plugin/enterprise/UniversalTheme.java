@@ -360,6 +360,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 
                 String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/"+key+"/serviceworker";
                 jsCssLink += "<script>$(function() {"
+                        + "var initPwaUtil = function(){"
                         + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
                         + "PwaUtil.userviewKey = '" + key + "';"
                         + "PwaUtil.homePageLink = '" + data.get("home_page_link") + "';"
@@ -376,6 +377,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         + "PwaUtil.isEmbedded = " + isEmbedded + ";"
                         + "PwaUtil.register();"
                         + "PwaUtil.init();"
+                        + "};"
+                        + "if (typeof PwaUtil !== \"undefined\") {initPwaUtil();} else { $(document).on(\"PwaUtil.ready\", function(){ initPwaUtil(); });}"
                         + "});</script>";
             }
         }
