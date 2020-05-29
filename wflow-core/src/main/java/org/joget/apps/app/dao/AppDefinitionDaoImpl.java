@@ -297,6 +297,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         if (newVersion) {
             appDef = newAppDef;
         }
+        appDef.setVersion(version);
         LogUtil.debug(getClass().getName(), "Sync app " + appDef);
 
         // update plugins

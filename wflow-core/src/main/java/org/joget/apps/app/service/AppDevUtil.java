@@ -1082,6 +1082,7 @@ public class AppDevUtil {
             Serializer serializer = new Persister();
             serializer.write(appDef, baos);
             appDefinitionXml = baos.toString("UTF-8");
+            appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
         } catch (Exception ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         } finally {
@@ -1152,6 +1153,7 @@ public class AppDevUtil {
             Serializer serializer = new Persister();
             serializer.write(appDef, baos);
             appDefinitionXml = baos.toString("UTF-8");
+            appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
         } catch (Exception ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         } finally {
