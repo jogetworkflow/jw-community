@@ -64,6 +64,7 @@ public class StringUtil {
     public static final String TYPE_NL2BR = "nl2br";
     public static final String TYPE_SEPARATOR = "separator";
     public static final String TYPE_IMG2BASE64 = "img2base64";
+    public static final String TYPE_EXP = "expression";
 
     static final Whitelist whitelistRelaxed;
     static {
@@ -326,6 +327,8 @@ public class StringUtil {
                 inStr = StringEscapeUtils.escapeJava(inStr);
             } else if (TYPE_SQL.equals(f)) {
                 inStr = StringEscapeUtils.escapeSql(inStr);
+            } else if (TYPE_EXP.equals(f)) {
+                inStr = StringEscapeUtils.unescapeHtml(inStr).replaceAll("'", "''");
             } else if (TYPE_URL.equals(f)) {
                 try {
                     inStr = URLEncoder.encode(inStr, "UTF-8");

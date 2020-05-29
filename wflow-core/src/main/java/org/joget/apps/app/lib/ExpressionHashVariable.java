@@ -97,6 +97,6 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
     }
     
     public static Boolean isParsed(String input) {
-        return !(input.startsWith("#") && input.endsWith("#"));
+        return !((input.startsWith("#") && input.endsWith("#")) || (input.startsWith("{") && input.endsWith("}")));
     }
 }

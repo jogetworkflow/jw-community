@@ -553,9 +553,12 @@ public class AppUtil implements ApplicationContextAware {
 
                                 //process nested hash
                                 while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
+                                    boolean hasMatch = false;
                                     Pattern nestedPattern = Pattern.compile("\\{([^\\{\\}])*\\}");
                                     Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
                                     while (nestedMatcher.find()) {
+                                        hasMatch = true;
+                                        
                                         String nestedHash = nestedMatcher.group();
                                         String nestedHashString = nestedHash.replace("{", "#");
                                         nestedHashString = nestedHashString.replace("}", "#");
@@ -565,10 +568,14 @@ public class AppUtil implements ApplicationContextAware {
                                         //if being process
                                         if (!nestedHashString.equals(processedNestedHashValue)) {
                                             tempVar = tempVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
-                                        } 
+                                        }
 
                                         //remove nested hash 
                                         nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
+                                    }
+                                    if (!hasMatch) {
+                                        //no nested hash syntax found
+                                        break;
                                     }
                                 }
 
@@ -638,7 +645,8 @@ public class AppUtil implements ApplicationContextAware {
                     || format.equals(StringUtil.TYPE_SQL)
                     || format.equals(StringUtil.TYPE_URL)
                     || format.equals(StringUtil.TYPE_XML)
-                    || format.startsWith(StringUtil.TYPE_SEPARATOR))) {
+                    || format.startsWith(StringUtil.TYPE_SEPARATOR)
+                    || format.startsWith(StringUtil.escapeRegex(format)))) {
                 isValid = false;
             }
             //check for 1 enough
