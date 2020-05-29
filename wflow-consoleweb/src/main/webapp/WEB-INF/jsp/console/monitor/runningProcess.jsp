@@ -87,7 +87,7 @@
 
 <script>
     function removeProcessInstance(){
-         if (confirm('<fmt:message key="console.monitoring.common.label.removeProcess.confirm"/>')) {
+         if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
@@ -103,10 +103,10 @@
     }
 
     function abortProcessInstance(){
-        if (confirm('<fmt:message key="console.monitoring.running.label.abortProcess.confirm"/>')) {
+        if (confirm('<ui:msgEscJS key="console.monitoring.running.label.abortProcess.confirm"/>')) {
             var callback = {
                 success : function() {
-                    alert("<fmt:message key='console.monitoring.running.label.abortProcess.success'/>");
+                    alert('<ui:msgEscJS key='console.monitoring.running.label.abortProcess.success'/>');
                     document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
                 }
             }
@@ -115,12 +115,12 @@
     }
 
     function reevaluateProcessInstance(){
-        if (confirm('<fmt:message key="console.monitoring.running.label.reevaluate.confirm"/>')) {
+        if (confirm('<ui:msgEscJS key="console.monitoring.running.label.reevaluate.confirm"/>')) {
             UI.blockUI();
             var callback = {
                 success : function() {
                     UI.unblockUI();
-                    alert("<fmt:message key='console.monitoring.running.label.reevaluate.success'/>");
+                    alert('<ui:msgEscJS key='console.monitoring.running.label.reevaluate.success'/>');
                     document.location.reload(true);
                 }
             }

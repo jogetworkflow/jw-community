@@ -109,7 +109,7 @@
                         <fmt:message key="wflowAuditTrail.filter.by.date.to"/>
                         <input type="text" id="dateToId" name="dateTo"/>
 
-                        <input type="button" value="<fmt:message key="general.method.label.search"/>" onclick="filterByDate(JsonDataTable, $('#dateFromId').val(), $('#dateToId').val())"/>
+                        <input type="button" value="<ui:msgEscHTML key="general.method.label.search"/>" onclick="filterByDate(JsonDataTable, $('#dateFromId').val(), $('#dateToId').val())"/>
                     </div>
                 </form>
             </div>
@@ -122,7 +122,7 @@
                     var validateDateFrom = dateFrom.split("-")[2];
                     var validateDateTo = dateTo.split("-")[2];
 
-                    if(validateDateTo<validateDateFrom) alert('<fmt:message key="general.date.from.greater.than.to.exception"/>');
+                    if(validateDateTo<validateDateFrom) alert('<ui:msgEscJS key="general.date.from.greater.than.to.exception"/>');
                     else jsonTable.load(jsonTable.url + '&dateFrom='+dateFrom+'&dateTo='+dateTo);
                 }
             </script>
@@ -148,7 +148,7 @@
                     var selectedRows = ${var}.getSelectedRows();
                     <c:if test="${attributeMap[optional] != 'true'}">
                     if (!selectedRows || selectedRows.length === 0 || (selectedRows.length === 1 && selectedRows[0] === "")) {
-                        alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
+                        alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
                         return;
                     }
                     </c:if>
@@ -207,7 +207,7 @@
                        } catch(Exception e) {}
                     %>
                     <c:set var="labelMessageKey" value="<%= labelMessageKey %>"/>
-                    <c:set var="message"><fmt:message key="${labelMessageKey}"/></c:set>
+                    <c:set var="message"><ui:msgEscJS key="${labelMessageKey}"/></c:set>
                     <c:set var="finalMessage" value="${fn:replace(attributeMap[attrName], labelMessageKey, message)}"/>
                     ${finalMessage}
                     <c:set var="first" value="false"/>

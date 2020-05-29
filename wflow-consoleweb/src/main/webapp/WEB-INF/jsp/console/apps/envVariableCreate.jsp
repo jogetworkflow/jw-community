@@ -35,8 +35,8 @@
                 </div>
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
@@ -62,7 +62,7 @@
             if(!idMatch){
                 var alertString = '';
                 if(!idMatch){
-                    alertString = '<fmt:message key="console.app.envVariable.error.label.idInvalid"/>';
+                    alertString = '<ui:msgEscJS key="console.app.envVariable.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
                 alert(alertString);

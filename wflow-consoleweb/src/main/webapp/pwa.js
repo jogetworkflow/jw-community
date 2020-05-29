@@ -439,3 +439,7 @@ $.fn.serializeObject = function() {
     });
     return o;
 };
+
+$(function(){
+    $(document).trigger("PwaUtil.ready");
+});

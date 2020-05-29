@@ -372,7 +372,7 @@
             function submitRole(){
                 var role = $('input[name=role]:checked').val();
                 if (role === "everyone") {
-                    if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
+                    if (confirm('<ui:msgEscJS key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                         UI.blockUI();
                         var callback = {
                             success : function(response) {
@@ -398,7 +398,7 @@
         }
 
         function post(type, params){
-            if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
+            if (confirm('<ui:msgEscJS key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                 UI.blockUI();
                 var callback = {
                     success : function(response) {

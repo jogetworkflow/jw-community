@@ -85,7 +85,7 @@
     }
 
     function deleteUser(selectedList){
-         if (confirm('<fmt:message key="console.directory.user.delete.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

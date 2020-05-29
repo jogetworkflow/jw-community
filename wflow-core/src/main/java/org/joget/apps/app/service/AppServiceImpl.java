@@ -1143,7 +1143,7 @@ public class AppServiceImpl implements AppService {
         try {
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
-            if (!gitSyncAppDone) {
+            if (request != null && !gitSyncAppDone) {
                 AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
                 if (newAppDef != null) {
                     appDef = newAppDef;
@@ -1855,7 +1855,7 @@ public class AppServiceImpl implements AppService {
             try {
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
-                if (!gitSyncAppDone) {
+                if (request != null && !gitSyncAppDone) {
                     AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, appDef.getVersion());
                     if (newAppDef != null) {
                         appDef = newAppDef;

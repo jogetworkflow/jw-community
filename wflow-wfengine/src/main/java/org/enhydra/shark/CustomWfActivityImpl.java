@@ -337,6 +337,7 @@ public class CustomWfActivityImpl extends WfActivityImpl {
                     brokenDeadlines.add(dpo);
                 }
             }
+            i++;
         }
     }
 }

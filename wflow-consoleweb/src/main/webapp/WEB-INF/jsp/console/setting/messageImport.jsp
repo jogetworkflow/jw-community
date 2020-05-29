@@ -33,7 +33,7 @@
                 </div>
             </fieldset>    
             <div class="form-buttons">
-                <input class="form-button" type="submit" value="<fmt:message key="console.setting.message.import.label.upload"/>" />
+                <input class="form-button" type="submit" value="<ui:msgEscHTML key="console.setting.message.import.label.upload"/>" />
             </div>
         </form>
     </div>

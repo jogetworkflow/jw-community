@@ -66,7 +66,7 @@
                     }
                     
                     function newVersion(version){
-                        if (confirm('<fmt:message key="console.app.version.label.newVersion.confirm"/>')) {
+                        if (confirm('<ui:msgEscJS key="console.app.version.label.newVersion.confirm"/>')) {
                             showLoading();
                             var callback = {
                                 success : function() {
@@ -78,7 +78,7 @@
                     }
 
                     function deleteVersion(version){
-                        if (version != '' && confirm('<fmt:message key="console.app.delete.label.confirm"/>')) {
+                        if (version != '' && confirm('<ui:msgEscJS key="console.app.delete.label.confirm"/>')) {
                             showLoading();
                             var callback = {
                                 success : function() {
@@ -90,7 +90,7 @@
                     }
 
                     function publishVersion(version){
-                        if (version != '' && confirm('<fmt:message key="console.app.publish.label.confirm"/>')) {
+                        if (version != '' && confirm('<ui:msgEscJS key="console.app.publish.label.confirm"/>')) {
                             showLoading();
                             var callback = {
                                 success : function() {
@@ -103,7 +103,7 @@
                     }
 
                     function unpublishVersion(version){
-                        if (version != '' && confirm('<fmt:message key="console.app.unpublish.label.confirm"/>')) {
+                        if (version != '' && confirm('<ui:msgEscJS key="console.app.unpublish.label.confirm"/>')) {
                             showLoading();
                             var callback = {
                                 success : function() {
@@ -154,7 +154,7 @@
                     }
 
                     function savePropertiesFailed(container, returnedErrors) {
-                        var errorMsg = '<fmt:message key="console.plugin.label.youHaveFollowingErrors"/>:\n';
+                        var errorMsg = '<ui:msgEscJS key="console.plugin.label.youHaveFollowingErrors"/>:\n';
                         for (key in returnedErrors) {
                             if (returnedErrors[key].fieldName === undefined || returnedErrors[key].fieldName === "") {
                                 errorMsg += returnedErrors[key].message + '\n';
@@ -178,16 +178,16 @@
                         var options = {
                             contextPath: '${pageContext.request.contextPath}',
                             propertiesDefinition: [{
-                                    title: '<fmt:message key="console.app.dev.admin.settings"/>',
+                                    title: '<ui:msgEscJS key="console.app.dev.admin.settings"/>',
                                     properties: [{
                                             name: 'orgId',
-                                            label: '<fmt:message key="userview.userpermission.selectOrg"/>',
+                                            label: '<ui:msgEscJS key="userview.userpermission.selectOrg"/>',
                                             type: 'selectbox',
                                             options_ajax: '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getOrgs'
                                         },
                                         {
                                             name: 'ROLE_ADMIN',
-                                            label: '<fmt:message key="userview.userpermission.selectUsers"/>',
+                                            label: '<ui:msgEscJS key="userview.userpermission.selectUsers"/>',
                                             type: 'multiselect',
                                             size: '10',
                                             options_ajax_on_change: 'orgId',
@@ -195,7 +195,7 @@
                                         },
                                         {
                                             name: 'ROLE_ADMIN_GROUP',
-                                            label: '<fmt:message key="userview.grouppermission.selectGroups"/>',
+                                            label: '<ui:msgEscJS key="userview.grouppermission.selectGroups"/>',
                                             type: 'multiselect',
                                             size: '10',
                                             options_ajax_on_change: 'orgId',
@@ -206,8 +206,8 @@
                             cancelCallback: cancel,
                             showCancelButton: true,
                             saveCallback: saveProperties,
-                            saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
-                            cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
+                            saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><ui:msgEscJS key="${submitLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.submit"/></c:otherwise></c:choose>',
+                            cancelButtonLabel: '<ui:msgEscJS key="general.method.label.cancel"/>',
                             closeAfterSaved: false,
                             validationFailedCallback: savePropertiesFailed,
                             adjustSize : adjustPropertySize
@@ -249,29 +249,29 @@
                         var options = {
                             contextPath: '${pageContext.request.contextPath}',
                             propertiesDefinition: [{
-                                    title: '<fmt:message key="console.app.dev.git.configuration"/>',
+                                    title: '<ui:msgEscJS key="console.app.dev.git.configuration"/>',
                                     properties: [{
                                             name: 'gitUri',
-                                            label: '<fmt:message key="console.app.dev.git.uri"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.uri"/>',
                                             type: 'textfield'
                                         },
                                         {
                                             name: 'gitUsername',
-                                            label: '<fmt:message key="console.app.dev.git.username"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.username"/>',
                                             type: 'textfield'
                                         },
                                         {
                                             name: 'gitPassword',
-                                            label: '<fmt:message key="console.app.dev.git.password"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.password"/>',
                                             type: 'password'
                                         },
                                         {
-                                            label: '<fmt:message key="console.app.dev.git.deployment"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.deployment"/>',
                                             type: 'header'
                                         },
                                         {
                                             name: 'gitConfigExcludeCommit',
-                                            label: '<fmt:message key="console.app.dev.git.configExcludeCommit"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.configExcludeCommit"/>',
                                             type: 'checkbox',
                                             options: [{
                                                     value: 'true',
@@ -280,7 +280,7 @@
                                         },
                                         {
                                             name: 'gitConfigPull',
-                                            label: '<fmt:message key="console.app.dev.git.configPull"/>',
+                                            label: '<ui:msgEscJS key="console.app.dev.git.configPull"/>',
                                             type: 'checkbox',
                                             options: [{
                                                     value: 'true',
@@ -289,7 +289,7 @@
                                         },
                                         {
                                             name : 'gitConfigAutoSync',
-                                            label : '<fmt:message key="console.app.dev.git.configAutoSync"/>',
+                                            label : '<ui:msgEscJS key="console.app.dev.git.configAutoSync"/>',
                                             type : 'checkbox',
                                             options : [{
                                                 value : 'true',
@@ -301,8 +301,8 @@
                             cancelCallback: cancel,
                             showCancelButton: true,
                             saveCallback: savePropertiesGit,
-                            saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
-                            cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
+                            saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><ui:msgEscJS key="${submitLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.submit"/></c:otherwise></c:choose>',
+                            cancelButtonLabel: '<ui:msgEscJS key="general.method.label.cancel"/>',
                             closeAfterSaved: false,
                             validationFailedCallback: savePropertiesFailed,
                             adjustSize : adjustPropertySize

@@ -25,7 +25,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/apmviewer.js?build=<fmt:message key="build.number"/>"></script>
 <script>
     $(document).ready(function(){
-        APMViewer.init('${pageContext.request.contextPath}', ${totalMemory}, ${maxHeap}, '<fmt:message key="console.header.browser.title"/>', ${isVirtualHostEnabled}, '${appId}');
+        APMViewer.init('${pageContext.request.contextPath}', ${totalMemory}, ${maxHeap}, '<ui:msgEscJS key="console.header.browser.title"/>', ${isVirtualHostEnabled}, '${appId}');
     });
 </script>
 

@@ -37,7 +37,7 @@
                         '-moz-border-radius': '10px', 
                         opacity: .3, 
                         color: '#fff' 
-                    }, message : "<h1><fmt:message key="form.form.message.wait"/></h1>" }); 
+                    }, message : '<h1><ui:msgEscJS key="form.form.message.wait"/></h1>' }); 
                 
                     var action = $(this).attr('href');
                     $('#preview').attr('action', action);
@@ -55,7 +55,7 @@
                         '-moz-border-radius': '10px', 
                         opacity: .3, 
                         color: '#fff' 
-                    }, message : "<h1><fmt:message key="form.form.message.wait"/></h1>" }); 
+                    }, message : '<h1><ui:msgEscJS key="form.form.message.wait"/></h1>' }); 
                 
                     var action = $(this).attr('href');
                     $('#preview').attr('action', action);

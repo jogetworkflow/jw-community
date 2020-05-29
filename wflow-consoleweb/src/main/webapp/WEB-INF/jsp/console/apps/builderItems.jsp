@@ -22,7 +22,7 @@
                                     <c:otherwise>
                                         <li>
                                             <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}"><c:out value="${formDef.name}"/></a>
-                                            <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
+                                            <a title="<ui:msgEscHTML key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>
                                     </c:otherwise> 
@@ -56,7 +56,7 @@
                                     <c:otherwise>
                                         <li>
                                             <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}"><c:out value="${listDef.name}"/></a>
-                                            <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
+                                            <a title="<ui:msgEscHTML key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>
                                     </c:otherwise> 
@@ -90,7 +90,7 @@
                                     <c:otherwise>
                                         <li>
                                             <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}"><c:out value="${userviewDef.name}"/></a>
-                                            <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
+                                            <a title="<ui:msgEscHTML key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>
                                     </c:otherwise> 

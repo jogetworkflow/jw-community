@@ -53,33 +53,33 @@
             $("#installApp").off("click");
             $("#installApp").on("click", function() {
                 var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
-                if (confirm("<fmt:message key="appCenter.label.confirmInstallation"/>")) {
+                if (confirm('<ui:msgEscJS key="appCenter.label.confirmInstallation"/>')) {
                     var installCallback = {
                         success: function(data) {
-                            $("#installApp").html('<fmt:message key="appCenter.label.installApp"/>');
+                            $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
                             $("#installApp").removeAttr("disabled");
                             var app = JSON.parse(data);
                             var appId = app.appId;
                             if (appId && appId !== "") {
-                                alert("<fmt:message key="appCenter.label.appInstalled"/>");
+                                alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
                                 PopupDialog.closeDialog();                                
                                 parent.AppCenter.loadPublishedApps();
                                 parent.AdminBar.hideQuickOverlay();
                             } if (app.pluginName) {
-                                alert("<fmt:message key="appCenter.label.appInstalled"/>");
+                                alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
                             } else {
-                                alert("<fmt:message key="appCenter.label.appNotInstalled"/>");
+                                alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
                             }
                         },
                         error: function(data) {
-                            $("#installApp").html('<fmt:message key="appCenter.label.installApp"/>');
+                            $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
                             $("#installApp").removeAttr("disabled");
-                            alert("<fmt:message key="appCenter.label.appNotInstalled"/>");
+                            alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
                         }
                     };
                     // show loading icon
                     HelpGuide.hide();
-                    $("#installApp").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i> <fmt:message key="appCenter.label.installingApp"/>');
+                    $("#installApp").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i> <ui:msgEscJS key="appCenter.label.installingApp"/>');
                     $("#installApp").attr("disabled", "disabled");
         
                     // invoke installation
@@ -89,8 +89,8 @@
             });
         };
         window.addEventListener('message', function(event) {
-            var marketplaceUrl = "<fmt:message key="appCenter.link.marketplace.url"/>";
-            var marketplaceTrustedUrls = "<fmt:message key="appCenter.link.marketplace.trusted"/>";
+            var marketplaceUrl = '<ui:msgEscJS key="appCenter.link.marketplace.url"/>';
+            var marketplaceTrustedUrls = '<ui:msgEscJS key="appCenter.link.marketplace.trusted"/>';
             if (marketplaceUrl.indexOf(event.origin) === 0 || marketplaceTrustedUrls.indexOf(event.origin) >= 0) {
                 var downloadUrl = event.data;
                 verifyApp(downloadUrl);

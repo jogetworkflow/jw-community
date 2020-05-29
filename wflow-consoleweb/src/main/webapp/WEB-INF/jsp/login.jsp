@@ -30,7 +30,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                 <table align="center">
                     <tr><td><fmt:message key="console.login.label.username" /> </td><td><input class="input" type='text' id='j_username' name='j_username' value='<c:if test="${!empty param.login_error && empty param.login_openid}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
                     <tr><td><fmt:message key="console.login.label.password" /> </td><td><input class="input" type='password' id='j_password' name='j_password'></td></tr>
-                    <tr><td></td><td class="buttons"><input name="submit" class="form-button" type="submit" value="<fmt:message key="console.login.label.login" />" /></td></tr>
+                    <tr><td></td><td class="buttons"><input name="submit" class="form-button" type="submit" value="<ui:msgEscHTML key="console.login.label.login" />" /></td></tr>
                     <tr><td colspan="2">
                         <%= DirectoryUtil.getLoginFormFooter() %>
                     </td></tr>

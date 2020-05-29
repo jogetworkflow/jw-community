@@ -15,14 +15,14 @@
         </div>
         <li>
             <div class="dropdown-btn">
-                <input value="<fmt:message key="console.app.create.label"/>" type="button" onclick="appCreate()"/>
+                <input value="<ui:msgEscHTML key="console.app.create.label"/>" type="button" onclick="appCreate()"/>
                 <script>
                     <ui:popupdialog var="appCreateDialog" src="${pageContext.request.contextPath}/web/console/app/create"/>
                         function appCreate(){
                             appCreateDialog.init();
                         }
                 </script>
-                <input value="<fmt:message key="console.app.import.label"/>" type="button" onclick="appImport()"/>
+                <input value="<ui:msgEscHTML key="console.app.import.label"/>" type="button" onclick="appImport()"/>
                 <script>
                     <ui:popupdialog var="appCreateDialog2" src="${pageContext.request.contextPath}/web/console/app/import"/>
                         function appImport(){

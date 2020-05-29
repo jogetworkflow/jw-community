@@ -150,7 +150,7 @@
     }
 
     function uninstall(selectedList){
-         if (confirm('<fmt:message key="console.setting.plugin.unintall.label.confirmation"/>')) {
+         if (confirm('<ui:msgEscJS key="console.setting.plugin.unintall.label.confirmation"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {

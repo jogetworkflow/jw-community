@@ -91,8 +91,8 @@
                 <div id="workflowTestConnection"><fmt:message key="console.setting.datasource.label.testing"/> <fmt:message key="console.setting.datasource.label.datasource"/>...<span class="connectionStatus"></span></div>
             </div>
             <div class="form-buttons">
-                <input class="form-button" id="saveDatasource" type="button" value="<fmt:message key="general.method.label.save"/>" onclick="submitDatasource()" />
-                <input class="form-button" id="saveDatasourceAsNew" type="button" value="<fmt:message key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
+                <input class="form-button" id="saveDatasource" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>" onclick="submitDatasource()" />
+                <input class="form-button" id="saveDatasourceAsNew" type="button" value="<ui:msgEscHTML key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
                 <span class="newprofile"><fmt:message key="console.setting.datasource.label.newProfileName"/>
                 <input id="newProfileName" type="text" name="profileName" /></span>
             </div>
@@ -151,7 +151,7 @@
                                 $('#datasourceForm').submit();
                         }
                     }else{
-                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-fail"><fmt:message key="console.setting.datasource.label.connectionFail"/></span>');
+                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-fail"><ui:msgEscJS key="console.setting.datasource.label.connectionFail"/></span>');
                         $('#saveDatasource').removeAttr('disabled');
                         $('#saveDatasourceAsNew').removeAttr('disabled');
                     }
@@ -185,7 +185,7 @@
     }
 
     function changeProfile(){
-        if(confirm("<fmt:message key="console.setting.datasource.label.switchProfileConfirm"/>")) {
+        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.switchProfileConfirm"/>')) {
             UI.blockUI();
             var param = "profileName=" + $('#profileList').val();
             ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/change", callback, param);
@@ -193,10 +193,10 @@
     }
 
     function deleteProfile(){
-        if(confirm("<fmt:message key="console.setting.datasource.label.deleteProfileConfirm"/>")) {
+        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileConfirm"/>')) {
             var currentProfile = '<c:out value="${currentProfile}"/>';
             if($('#profileList').val() == currentProfile)
-                alert("<fmt:message key="console.setting.datasource.label.deleteProfileInvalid"/>")
+                alert('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileInvalid"/>')
             else{
                 UI.blockUI();
                 var param = "profileName=" + $('#profileList').val();
@@ -206,13 +206,13 @@
     }
 
     function saveAsNewProfile(){
-        if(confirm("<fmt:message key="console.setting.datasource.label.saveAsProfileConfirm"/>")) {
+        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileConfirm"/>')) {
             var newProfileName = $('#newProfileName').val();
             if(!/^[a-zA-Z0-9]+[a-zA-Z0-9 ]*$/.test(newProfileName)){
-                alert('<fmt:message key="console.setting.datasource.label.saveAsProfileInvalid"/>');
+                alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileInvalid"/>');
                 $('#newProfileName').focus();
             }else if(newProfileName in arrayToObject(profileList)){
-                alert('<fmt:message key="console.setting.datasource.label.saveAsProfileExist"/>');
+                alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileExist"/>');
                 $('#newProfileName').focus();
             }else{
                 UI.blockUI();

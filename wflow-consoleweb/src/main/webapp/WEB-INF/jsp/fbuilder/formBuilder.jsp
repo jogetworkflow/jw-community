@@ -74,18 +74,18 @@
                     },
                     success: function(response) {
                         FormBuilder.originalJson = FormBuilder.generateJSON();
-                        FormBuilder.showMessage("<fmt:message key="fbuilder.saved"/>");
+                        FormBuilder.showMessage('<ui:msgEscJS key="fbuilder.saved"/>');
                         setTimeout(function(){ FormBuilder.showMessage(""); }, 2000);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        alert("<fmt:message key="fbuilder.errorSaving"/> (" + textStatus + "): " + errorThrown);
+                        alert('<ui:msgEscJS key="fbuilder.errorSaving"/> (' + textStatus + '): ' + errorThrown);
                     }
                 });
             }
 
             window.onbeforeunload = function() {
                 if(!FormBuilder.isSaved()){
-                    return "<fmt:message key="fbuilder.saveBeforeClose"/>";
+                    return '<ui:msgEscJS key="fbuilder.saveBeforeClose"/>';
                 }
             };
 
@@ -114,14 +114,14 @@
                 try {
                     <c:set var="initScript">                    
                         var elementProps = ${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)};
-                        var elementTemplate = "${element.formBuilderTemplate}";
+                        var elementTemplate = "<c:out value="${fn:replace(element.formBuilderTemplate, '\"', '\\\\\"')}" escapeXml="false"/>";
                         FormBuilder.initElementDefinition("${element.className}", elementProps, elementTemplate);
                     </c:set>
                     <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                     eval("${initScript}");
                 } catch (e) {
                     if (console && console.log) {
-                        console.log("Error initializing ${element.name} : " + e);
+                        console.log("Error initializing ${element.className} : " + e);
                     }
                 }
                 </c:if>

@@ -107,7 +107,7 @@
                             </div>
                         </fieldset>
                         <div class="form-buttons">
-                            <input id="reevaluateForUserSubmit" class="form-button" type="button" value="<fmt:message key="console.monitoring.running.label.reevaluateForUser.submit"/>" onclick="reevaluateForUser()"/>
+                            <input id="reevaluateForUserSubmit" class="form-button" type="button" value="<ui:msgEscHTML key="console.monitoring.running.label.reevaluateForUser.submit"/>" onclick="reevaluateForUser()"/>
                         </div>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                     <c:choose>
                         <c:when test="${activity.state != 'closed.completed' && activity.state != 'closed.terminated' && activity.state != 'closed.aborted'}">
                             <input name="<c:out value="${variable.name}"/>" type="text" id="<c:out value="${variable.name}"/>" value="<c:out value="${variable.val}"/>"/>
-                            <input type="button" value="<fmt:message key="general.method.label.set"/>" onclick="setVariable('<c:out value="${variable.name}"/>')"/>
+                            <input type="button" value="<ui:msgEscHTML key="general.method.label.set"/>" onclick="setVariable('<c:out value="${variable.name}"/>')"/>
                         </c:when>
                         <c:otherwise>
                             <input name="<c:out value="${variable.name}"/>" type="text" id="<c:out value="${variable.name}"/>" value="<c:out value="${variable.val}"/>" disabled="true"/>
@@ -199,7 +199,7 @@
 
     function reevaluateForUser(){
         $('#reevaluateForUserSubmit').attr('disabled', 'disabled');
-        $('#reevaluateForUserSubmit').val('<fmt:message key="console.monitoring.running.label.reevaluateForUser.loading"/>')
+        $('#reevaluateForUserSubmit').val('<ui:msgEscJS key="console.monitoring.running.label.reevaluateForUser.loading"/>')
 
         var url = "${pageContext.request.contextPath}/web/json/monitoring/user/reevaluate";
         var value = $('#reevaluateUser').val();

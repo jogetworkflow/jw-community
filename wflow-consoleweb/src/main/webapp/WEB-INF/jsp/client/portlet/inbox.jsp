@@ -249,7 +249,7 @@
                 </select>
             </span>
             <span>
-                <input class="button" type="button" id="inboxRefresh_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.refresh'/>" onclick="doInboxRefresh_${fn:escapeXml(id)}();">
+                <input class="button" type="button" id="inboxRefresh_${fn:escapeXml(id)}" value="<ui:msgEscHTML key='general.method.label.refresh'/>" onclick="doInboxRefresh_${fn:escapeXml(id)}();">
             </span>
         </div>
 
@@ -258,8 +258,8 @@
             <span class="portlet_input">
                 <select id="inboxPageTo_${fn:escapeXml(id)}" name="pageTo" onchange="doInboxPage_${fn:escapeXml(id)}()"></select>
             </span>
-            <span><input class="button" type="button" id="inboxPrevious_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.previous'/>" onclick="doInboxPrevious_${fn:escapeXml(id)}();" disabled></span>
-            <span><input class="button" type="button" id="inboxNext_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.next'/>" onclick="doInboxNext_${fn:escapeXml(id)}();"></span>
+            <span><input class="button" type="button" id="inboxPrevious_${fn:escapeXml(id)}" value="<ui:msgEscHTML key='general.method.label.previous'/>" onclick="doInboxPrevious_${fn:escapeXml(id)}();" disabled></span>
+            <span><input class="button" type="button" id="inboxNext_${fn:escapeXml(id)}" value="<ui:msgEscHTML key='general.method.label.next'/>" onclick="doInboxNext_${fn:escapeXml(id)}();"></span>
         </div>
     </div>
 

@@ -64,8 +64,8 @@
                 </div>
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
@@ -120,7 +120,7 @@
             if(!idMatch || !tableNameMatch || tableName.length > 20){
                 var alertString = '';
                 if(!idMatch){
-                    alertString = '<fmt:message key="console.form.error.label.idInvalid"/>';
+                    alertString = '<ui:msgEscJS key="console.form.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
                 if(!tableNameMatch){
@@ -129,7 +129,7 @@
                     }else{
                         alertString += "\n";
                     }
-                    alertString += '<fmt:message key="console.form.error.label.tableNameInvalid"/>';
+                    alertString += '<ui:msgEscJS key="console.form.error.label.tableNameInvalid"/>';
                 }
                 if(tableName.length > 20){
                     if(alertString == ''){
@@ -137,7 +137,7 @@
                     }else{
                         alertString += "\n";
                     }
-                    alertString += '<fmt:message key="form.form.invalidId"/>';
+                    alertString += '<ui:msgEscJS key="form.form.invalidId"/>';
                 }
                 alert(alertString);
             }else{

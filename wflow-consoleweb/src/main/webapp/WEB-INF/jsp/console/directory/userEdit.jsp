@@ -209,8 +209,8 @@
             </fieldset>
             ${userFormFooter} 
             <div class="form-buttons">
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
-                <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
@@ -252,7 +252,7 @@
             var valid = true;
             var alertString = "";
             if($("[name=password]").val() != $("[name=confirmPassword]").val()){
-                alertString += '<fmt:message key="console.directory.user.error.label.passwordNotMatch"/>';
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
 

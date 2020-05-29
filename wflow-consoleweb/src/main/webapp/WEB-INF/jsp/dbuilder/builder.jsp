@@ -37,7 +37,7 @@
         <script type="text/javascript">
             window.onbeforeunload = function() {
                 if(!DatalistBuilder.isSaved()){
-                    return "<fmt:message key="dbuilder.saveBeforeClose"/>";
+                    return '<ui:msgEscJS key="dbuilder.saveBeforeClose"/>';
                 }
             };
 

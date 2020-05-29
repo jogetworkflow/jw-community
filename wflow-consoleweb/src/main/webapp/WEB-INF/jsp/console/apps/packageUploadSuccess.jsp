@@ -12,7 +12,7 @@
     if (parent && parent.AdminBar.showQuickOverlay) {
         parent.PopupDialog.closeDialog();
     }
-    alert("<fmt:message key="appCenter.label.appInstalled"/>");
+    alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
     top.location = '${pageContext.request.contextPath}/web/desktop';
 </c:if>
 </script>

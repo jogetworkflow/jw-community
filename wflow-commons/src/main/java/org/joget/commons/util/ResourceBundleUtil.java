@@ -120,31 +120,35 @@ public class ResourceBundleUtil implements ApplicationContextAware {
                     } else if (line.length() > 7 && locale != null && !keys.isEmpty() && line.substring(0, 7).equalsIgnoreCase("msgid \"")) {
                         //this is the original string
                         original = line.substring(7, line.length() - 1);
-                        while (nextLine.startsWith("\"")) {
+                        while (nextLine != null && nextLine.startsWith("\"")) {
                             original += nextLine.substring(1, nextLine.length() - 1);
                             nextLine = bufferedReader.readLine();
                         }
                     } else if (line.length() > 8 && locale != null && !keys.isEmpty() && original != null && line.substring(0, 8).equalsIgnoreCase("msgstr \"")) {
                         //this is the translated string
                         translated = line.substring(8, line.length() - 1);
-                        while (nextLine.startsWith("\"")) {
+                        while (nextLine != null && nextLine.startsWith("\"")) {
                             translated += nextLine.substring(1, nextLine.length() - 1);
                             nextLine = bufferedReader.readLine();
                         }
                     }
 
                     if (!keys.isEmpty() && original != null && translated != null) {
-                        if (!translated.isEmpty()) {
+                        if (!translated.isEmpty() && !translated.startsWith("_: ")) {
                             for (String key : keys.toArray(new String[0])) {
-                                //if this is a entry, insert into the list
-                                resourceBundleMessage = getResourceBundleMessageDao().getMessage(key, locale);
-                                if (resourceBundleMessage == null) {
-                                    resourceBundleMessage = new ResourceBundleMessage();
-                                    resourceBundleMessage.setKey(key);
-                                    resourceBundleMessage.setLocale(locale);
-                                }   
-                                resourceBundleMessage.setMessage(translated);
-                                resourceBundleMessageList.add(resourceBundleMessage);
+                                if (!key.equals("console.footer.label.revision") &&
+                                        !key.equals("build.number") &&
+                                        !key.equals("build.version")) {
+                                    //if this is a entry, insert into the list
+                                    resourceBundleMessage = getResourceBundleMessageDao().getMessage(key, locale);
+                                    if (resourceBundleMessage == null) {
+                                        resourceBundleMessage = new ResourceBundleMessage();
+                                        resourceBundleMessage.setKey(key);
+                                        resourceBundleMessage.setLocale(locale);
+                                    }   
+                                    resourceBundleMessage.setMessage(translated.replaceAll(StringUtil.escapeRegex("\\\""), "\""));
+                                    resourceBundleMessageList.add(resourceBundleMessage);
+                                }
                             }
                         }
 

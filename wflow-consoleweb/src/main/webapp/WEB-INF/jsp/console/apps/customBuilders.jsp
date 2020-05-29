@@ -16,7 +16,7 @@
                 <c:forEach items="${builderDefinitionList}" var="builderDef">
                     <c:if test="${builderDef.type eq builderType}">
                         <li data-id="${builderDef.id}">
-                            <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/cbuilder/${builderType}/design/${builderDef.id}" target="_blank" title='<fmt:message key="console.userview.common.label.id"/>: ${builderDef.id};&#13;<fmt:message key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${builderDef.dateCreated}"/>;&#13;<fmt:message key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${builderDef.dateModified}"/>;&#13;<fmt:message key="console.userview.common.label.description"/>: <c:out value="${builderDef.description}"/>'><button href="#" onclick="return checkBuilderUsageDelete('${builderDef.id}', '${builderType}', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fas fa-times"></i></button><span class="nv-link-name"><i class="${builder.icon}" style="color:${builder.color};"></i> <c:out value="${builderDef.name}"/></span>
+                            <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/cbuilder/${builderType}/design/${builderDef.id}" target="_blank" title="<ui:msgEscHTML key="console.userview.common.label.id"/>: ${builderDef.id};&#13;<ui:msgEscHTML key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${builderDef.dateCreated}"/>;&#13;<ui:msgEscHTML key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${builderDef.dateModified}"/>;&#13;<ui:msgEscHTML key="console.userview.common.label.description"/>: <c:out value="${fn:replace(builderDef.description, '\"', '&quot;' )}" escapeXml="true"/>"><button href="#" onclick="return checkBuilderUsageDelete('${builderDef.id}', '${builderType}', event)" class="nv-delete" title="<ui:msgEscHTML key="general.method.label.delete"/>"><i class="fas fa-times"></i></button><span class="nv-link-name"><i class="${builder.icon}" style="color:${builder.color};"></i> <c:out value="${builderDef.name}"/></span>
                                 <div class="nv-extra" style="display:none"><div class="nv-subinfo"><c:out value="${builderDef.description}"/></div></div>
                             </a>
                         </li>
@@ -38,16 +38,16 @@
         builderwCreateDialog.init();
     }
     function checkBuilderUsageDelete(id, type, event) {
-        if (confirm('<fmt:message key="console.builder.delete.label.confirmation"/>')) {
+        if (confirm('<ui:msgEscJS key="console.builder.delete.label.confirmation"/>')) {
             Usages.delete(id, type, {
                 contextPath: '${pageContext.request.contextPath}',
                 appId: '${appDef.id}',
                 appVersion: '${appDef.version}',
                 id: id,
                 builder: type,
-                confirmMessage: '<fmt:message key="dependency.usage.confirmDelete"/>',
-                confirmLabel: '<fmt:message key="dependency.usage.confirmLabel"/>',
-                cancelLabel: '<fmt:message key="dependency.usage.cencelLabel"/>'
+                confirmMessage: '<ui:msgEscJS key="dependency.usage.confirmDelete"/>',
+                confirmLabel: '<ui:msgEscJS key="dependency.usage.confirmLabel"/>',
+                cancelLabel: '<ui:msgEscJS key="dependency.usage.cencelLabel"/>'
             }, function () {
                 builderDelete(id, type, event);
             });
@@ -78,27 +78,27 @@
             url : '${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/customBuilders?hidden=true',
             tagUrl : '${pageContext.request.contextPath}/web/json/console/app/${appDef.id}/${appDef.version}/tagging',
             message : {
-                'tags' : '<fmt:message key="console.tag.tags"/>',
-                'createNew' : '<fmt:message key="console.tag.create"/>',
-                'edit' : '<fmt:message key="console.tag.edit"/>',
-                'save' : '<fmt:message key="general.method.label.save"/>',
-                'create' : '<fmt:message key="general.method.label.create"/>',
-                'delete' : '<fmt:message key="general.method.label.delete"/>',
-                'name' : '<fmt:message key="console.tag.name"/>',
-                'color' : '<fmt:message key="console.tag.color"/>',
-                'search' : '<fmt:message key="console.tag.search"/>',
-                'show' : '<fmt:message key="console.tag.show"/>',
-                'hide' : '<fmt:message key="console.tag.hide"/>',
-                'red' : '<fmt:message key="console.tag.red"/>',
-                'pink' : '<fmt:message key="console.tag.pink"/>',
-                'orange' : '<fmt:message key="console.tag.orange"/>',
-                'yellow' : '<fmt:message key="console.tag.yellow"/>',
-                'green' : '<fmt:message key="console.tag.green"/>',
-                'lime' : '<fmt:message key="console.tag.lime"/>',
-                'blue' : '<fmt:message key="console.tag.blue"/>',
-                'sky' : '<fmt:message key="console.tag.sky"/>',
-                'purple' : '<fmt:message key="console.tag.purple"/>',
-                'black' : '<fmt:message key="console.tag.black"/>'
+                'tags' : '<ui:msgEscJS key="console.tag.tags"/>',
+                'createNew' : '<ui:msgEscJS key="console.tag.create"/>',
+                'edit' : '<ui:msgEscJS key="console.tag.edit"/>',
+                'save' : '<ui:msgEscJS key="general.method.label.save"/>',
+                'create' : '<ui:msgEscJS key="general.method.label.create"/>',
+                'delete' : '<ui:msgEscJS key="general.method.label.delete"/>',
+                'name' : '<ui:msgEscJS key="console.tag.name"/>',
+                'color' : '<ui:msgEscJS key="console.tag.color"/>',
+                'search' : '<ui:msgEscJS key="console.tag.search"/>',
+                'show' : '<ui:msgEscJS key="console.tag.show"/>',
+                'hide' : '<ui:msgEscJS key="console.tag.hide"/>',
+                'red' : '<ui:msgEscJS key="console.tag.red"/>',
+                'pink' : '<ui:msgEscJS key="console.tag.pink"/>',
+                'orange' : '<ui:msgEscJS key="console.tag.orange"/>',
+                'yellow' : '<ui:msgEscJS key="console.tag.yellow"/>',
+                'green' : '<ui:msgEscJS key="console.tag.green"/>',
+                'lime' : '<ui:msgEscJS key="console.tag.lime"/>',
+                'blue' : '<ui:msgEscJS key="console.tag.blue"/>',
+                'sky' : '<ui:msgEscJS key="console.tag.sky"/>',
+                'purple' : '<ui:msgEscJS key="console.tag.purple"/>',
+                'black' : '<ui:msgEscJS key="console.tag.black"/>'
             }
         });
     });
