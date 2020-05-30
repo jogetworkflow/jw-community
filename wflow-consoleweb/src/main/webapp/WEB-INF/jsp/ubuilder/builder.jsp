@@ -62,7 +62,7 @@
                         </c:if>
                         try {
                             <c:set var="initScript">                    
-                                UserviewBuilder.initMenuType('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<c:out value='${fn:replace(element.icon, "\'", "\\\\\'")}' escapeXml='false'/>', ${propertyOptions}, '<c:out value='${fn:replace(element.defaultPropertyValues, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.pwaValidationType}');
+                                UserviewBuilder.initMenuType('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', '${element.pwaValidationType}');
                             </c:set>
                             <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                             eval("${initScript}");    

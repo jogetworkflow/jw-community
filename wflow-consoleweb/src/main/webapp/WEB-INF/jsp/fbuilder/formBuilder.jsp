@@ -164,7 +164,7 @@
                                         <ul>
                                         <c:forEach items="${elementList}" var="element">
                                             <li>
-                                                <div class="form-palette-element builder-palette-element" element-class="${element.className}" element-property='${element.defaultPropertyValues}' data-icon='<c:out escapeXml="true" value="${element.formBuilderIcon}" />'>
+                                                <div class="form-palette-element builder-palette-element" element-class="${element.className}" element-property='<c:out escapeXml="true" value="${element.defaultPropertyValues}" />' data-icon='<c:out escapeXml="true" value="${element.formBuilderIcon}" />'>
                                                     <label>${element.i18nLabel}</label>
                                                 </div>
                                             </li>
