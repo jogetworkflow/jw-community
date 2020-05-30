@@ -34,9 +34,11 @@ body.rtl #adminControl .fa-angle-double-right:before{
 }
 #adminControl i {
     font-size: 20px;
-}        
-#adminBar {
+} 
+body #adminBar {
     display: block;
+}
+#adminBar {
     position: fixed;
     right: 0px;
     bottom: 0;
