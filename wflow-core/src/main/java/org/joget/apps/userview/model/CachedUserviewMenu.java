@@ -430,10 +430,10 @@ public class CachedUserviewMenu extends UserviewMenu {
     }
     
     public String getDefaultPropertyValues(){
-        if (!CachedUserviewMenu.defaultPropertyValues.containsKey(getClassName())) {
-            CachedUserviewMenu.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
+        if (!CachedUserviewMenu.defaultPropertyValues.containsKey(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale())) {
+            CachedUserviewMenu.defaultPropertyValues.put(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
         }
-        return CachedUserviewMenu.defaultPropertyValues.get(getClassName());
+        return CachedUserviewMenu.defaultPropertyValues.get(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale());
     }
     
     @Override

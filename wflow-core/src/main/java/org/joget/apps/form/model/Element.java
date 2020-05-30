@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
@@ -333,10 +334,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return 
      */
     public String getDefaultPropertyValues(){
-        if (!Element.defaultPropertyValues.containsKey(getClassName())) {
-            Element.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
+        if (!Element.defaultPropertyValues.containsKey(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale())) {
+            Element.defaultPropertyValues.put(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
         }
-        return Element.defaultPropertyValues.get(getClassName());
+        return Element.defaultPropertyValues.get(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale());
     }
     
     /**
