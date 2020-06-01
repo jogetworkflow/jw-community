@@ -290,6 +290,115 @@ public class StringUtil {
     public static String escapeRegex(String inStr) {
         return (inStr != null) ?  inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1") : null;
     }
+    
+    /**
+     * Unescape a string based on format and replaced string based on the replace keyword map
+     * @param inStr input String
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @param replaceMap A map of keyword and new keyword pair to be replaced before escaping
+     * @return 
+     */
+    public static String unescapeString(String inStr, String format, Map<String, String> replaceMap) {
+        if (inStr != null && replaceMap != null) {
+            Iterator it = replaceMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
+                inStr = inStr.replaceAll(escapeRegex(pairs.getKey()), escapeRegex(pairs.getValue()));
+            }
+        }
+        
+        if (format == null || inStr == null) {
+            return inStr;
+        }
+        
+        String[] formats = format.split(";");
+        for (String f : formats) {
+            if (TYPE_REGEX.equals(f)) {
+                inStr = inStr.replaceAll("\\\\([\\\\*+\\[\\](){}\\$.?\\^|])", "$1");
+            } else if (TYPE_JSON.equals(f)) {
+                inStr = unescapeJSON(inStr);
+            } else if (TYPE_JAVASCIPT.equals(f)) {
+                inStr = StringEscapeUtils.unescapeJavaScript(inStr);
+            } else if (TYPE_HTML.equals(f)) {
+                inStr = StringEscapeUtils.unescapeHtml(inStr);
+            } else if (TYPE_XML.equals(f)) {
+                inStr = StringEscapeUtils.unescapeXml(inStr);
+            } else if (TYPE_JAVA.equals(f)) {
+                inStr = StringEscapeUtils.unescapeJava(inStr);
+            } else if (TYPE_SQL.equals(f)) {
+                inStr = inStr.replaceAll("''", "'");
+            } else if (TYPE_EXP.equals(f)) {
+                inStr = StringEscapeUtils.escapeHtml(inStr.replaceAll("''", "'"));
+            } else if (TYPE_URL.equals(f)) {
+                try {
+                    inStr = URLDecoder.decode(inStr, "UTF-8");
+                } catch (Exception e) {/* ignored */}
+            } else if (TYPE_NL2BR.equals(f)) {
+                inStr = inStr.replaceAll("<br class=\"nl2br\" />", "\r\n");
+            } else if (f != null && f.startsWith(TYPE_SEPARATOR)) {
+                String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
+                String [] temps = inStr.split(newSeparator);
+                inStr = StringUtils.join(temps, ";");
+            }
+        }
+        
+        return inStr;
+    }
+    
+    public static String unescapeJSON(String input) {
+        StringBuilder builder = new StringBuilder();
+
+        int i = 0;
+        while (i < input.length()) {
+            char delimiter = input.charAt(i);
+            i++; // consume letter or backslash
+
+            if (delimiter == '\\' && i < input.length()) {
+
+                // consume first after backslash
+                char ch = input.charAt(i);
+                i++;
+
+                if (ch == '\\' || ch == '/' || ch == '"' || ch == '\'') {
+                    builder.append(ch);
+                } else if (ch == 'n') {
+                    builder.append('\n');
+                } else if (ch == 'r') {
+                    builder.append('\r');
+                } else if (ch == 't') {
+                    builder.append('\t');
+                } else if (ch == 'b') {
+                    builder.append('\b');
+                } else if (ch == 'f') {
+                    builder.append('\f');
+                } else if (ch == 'u') {
+
+                    StringBuilder hex = new StringBuilder();
+
+                    // expect 4 digits
+                    if (i + 4 > input.length()) {
+                        throw new RuntimeException("Not enough unicode digits! ");
+                    }
+                    for (char x : input.substring(i, i + 4).toCharArray()) {
+                        if (!Character.isLetterOrDigit(x)) {
+                            throw new RuntimeException("Bad character in unicode escape.");
+                        }
+                        hex.append(Character.toLowerCase(x));
+                    }
+                    i += 4; // consume those four digits.
+
+                    int code = Integer.parseInt(hex.toString(), 16);
+                    builder.append((char) code);
+                } else {
+                    throw new RuntimeException("Illegal escape sequence: \\" + ch);
+                }
+            } else { // it's not a backslash, or it's the last character.
+                builder.append(delimiter);
+            }
+        }
+
+        return builder.toString();
+    }
 
     /**
      * Escape a string based on format and replaced string based on the replace keyword map
@@ -299,7 +408,7 @@ public class StringUtil {
      * @return 
      */
     public static String escapeString(String inStr, String format, Map<String, String> replaceMap) {
-        if (replaceMap != null) {
+        if (inStr != null && replaceMap != null) {
             Iterator it = replaceMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();

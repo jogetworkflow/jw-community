@@ -853,7 +853,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 appDef = AppUtil.getAppDefinitionByProcess(processDefId);
                 AppUtil.setCurrentAppDefinition(appDef);
             }
-            Map<String, String> labels = AppUtil.getAppMessages(appDef);
+            Map<String, String> labels = AppUtil.getAppMessageFromStore();
             if (labels != null && !labels.isEmpty() && labels.containsKey(key)) {
                 WorkflowAssignment ass = new WorkflowAssignment();
                 ass.setProcessId(processId);
