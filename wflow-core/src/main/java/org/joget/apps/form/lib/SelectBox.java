@@ -1,10 +1,13 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -22,7 +25,6 @@ import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
-import org.joget.plugin.property.service.PropertyUtil;
 
 public class SelectBox extends Element implements FormBuilderPaletteElement, FormAjaxOptionsElement, PwaOfflineValidation {
     private Element controlElement;
@@ -55,9 +57,43 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
     @Override
     public FormData formatDataForValidation(FormData formData) {
         String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
+        String paramName = FormUtil.getElementParameterName(this);
+        
         if ((paramValues == null || paramValues.length == 0) && FormUtil.isFormSubmitted(this, formData)) {
-            String paramName = FormUtil.getElementParameterName(this);
             formData.addRequestParameterValues(paramName, new String[]{""});
+        } else if (paramValues != null && FormUtil.isFormSubmitted(this, formData)) {
+            //check & remove invalid data from values
+            Collection<String> newValues = new ArrayList<String>();
+            Set<String> allValues = new HashSet<String>();
+            Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+            if (FormUtil.isAjaxOptionsSupported(this, formData)) {
+                FormAjaxOptionsBinder ab = (FormAjaxOptionsBinder) getOptionsBinder();
+                String[] controlValues = FormUtil.getRequestParameterValues(getControlElement(formData), formData);
+                FormRowSet rowSet = ab.loadAjaxOptions(controlValues);
+                if (rowSet != null) {
+                    formData.setOptionsBinderData(getOptionsBinder(), rowSet);
+                    for (FormRow r : rowSet) {
+                        allValues.add(r.getProperty(FormUtil.PROPERTY_VALUE));
+                    }
+                }
+            } else {
+                for (Map option : optionMap) {
+                    if (option.containsKey(FormUtil.PROPERTY_VALUE)) {
+                        allValues.add(option.get(FormUtil.PROPERTY_VALUE).toString());
+                    }
+                }
+            }
+            for (String pv : paramValues) {
+                if (allValues.contains(pv)) {
+                    newValues.add(pv);
+                }
+            }
+            
+            if (newValues.isEmpty()) {
+                newValues.add("");
+            }
+            
+            formData.addRequestParameterValues(paramName, newValues.toArray(new String[0]));
         }
         return formData;
     }
