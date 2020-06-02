@@ -3,6 +3,24 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.4
+================
+913ccc5f Fixed: wflow-core - Options field - prevent manually alter the DOM value and successfully submit it. @6.0-SNAPSHOT
+96b7bef3 Fixed: wflow-core - App i18n - improve performance. #7791 @7.0-SNAPSHOT
+c9a296ec Fixed: wflow-consoleweb - Userview - Not styled admin bar appear and than disappear quickly when userview page loading. @7.0-SNAPSHOT
+cd8e0b0a Fixed: wflow-core - Form/Userview Builder - Element default property values does not follow locale. @7.0-SNAPSHOT
+e55dbd92 Fixed: wflow-consoleweb - Form/Userview Builder - Element default property values does not escape correctly. #7771 @7.0-SNAPSHOT
+a713d8b5 Fixed: wflow-core - Hash Variable - Infinity loop while processing nested hash variable. #7793 @7.0-SNAPSHOT Fixed: wflow-core - Expression Hash Variable - no way to escape single quote in nested hash variable. Added `?expression` to escape syntax for expression #7793 @7.0-SNAPSHOT
+86f58e0f Modified: wflow-core - Git - Remove app version from appConfig.xml & appDefinition.xml for ease merging between versions. #7643 @7.0-SNAPSHOT
+6615fc14 Fixed: wflow-wfengine - Deadline - Deadlines in position 2 onward are not execute. #7779 @7.0-SNAPSHOT
+7a010f4d Fixed: wflow-core - Git - prevent UUID temp folder created when there is no http request. #7776 @7.0-SNAPSHOT
+c458a0f1 Fixed: wflow-consoleweb - Universal Theme - PwaUtil is not defined happened intermittently. @7.0-SNAPSHOT
+f61ac19b Fixed: wflow-consoleweb - I18N - Update zh_CN & zh_TW. @7.0-SNAPSHOT
+d2938657 Fixed: wflow-consoleweb - I18N - Handle single/double quote in label. @7.0-SNAPSHOT
+27b3b062 Fixed: wflow-commons - ResourceBundleUtil - Import PO can't handle double quote character correctly. #7759 @7.0-SNAPSHOT
+a8c08e67 Fixed: wflow-consoleweb - Form Builder - Other Data Handling property incorrectly displayed for options binder. #7752 @7.0-SNAPSHOT
+9f3c5a0d Fixed: wflow-consoleweb - Builders - Handling plugin property options with incorrect syntax. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.3
 ================
 ecfb8d4f Modified: wflow-core - Date Picker - Support follow locale format when display format is empty and "Using Locale Date Format" in System Setting is enabled. #7705 @7.0-SNAPSHOT
