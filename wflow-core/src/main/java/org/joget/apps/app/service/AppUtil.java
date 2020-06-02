@@ -1027,7 +1027,7 @@ public class AppUtil implements ApplicationContextAware {
                         translated = StringUtil.escapeString(translated, escapeType, null);
                     }
                     if (!match.startsWith("#i18n.")) {
-                        content = content.replaceAll(StringUtil.escapeRegex(match) , matcher.group(3) + StringUtil.escapeRegex(translated) + matcher.group(4));
+                        content = content.replaceAll(StringUtil.escapeRegex(match) , StringUtil.escapeRegex(matcher.group(3) + translated + matcher.group(4)));
                     } else {
                         content = content.replaceAll(StringUtil.escapeRegex(match) , StringUtil.escapeRegex(translated));
                     }
