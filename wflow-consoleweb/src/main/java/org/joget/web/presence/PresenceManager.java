@@ -175,8 +175,10 @@ public class PresenceManager {
             Gson gson = new Gson();
             Map<String, Map<String, UserEntry>> pathMapFromJson = gson.fromJson(presenceJson, new TypeToken<Map<String, Map<String, UserEntry>>>(){}.getType());
 //            LogUtil.debug(PresenceManager.class.getName(), "pathMapFromJson: " + pathMapFromJson);
-            pathMap = pathMapFromJson;
-            profilePathMap.put(profile, pathMapFromJson);
+            if (pathMapFromJson != null) {
+                pathMap = pathMapFromJson;
+                profilePathMap.put(profile, pathMapFromJson);
+            }
         } catch (Exception e) {
             LogUtil.debug(PresenceManager.class.getName(), "Error reading presence file: " + e.getMessage());
         }
