@@ -59,7 +59,6 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             //check & remove invalid data from values
             Collection<String> newValues = new ArrayList<String>();
             Set<String> allValues = new HashSet<String>();
-            Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
             if (isAjaxOptionsSupported(this, formData)) {
                 FormAjaxOptionsBinder ab = (FormAjaxOptionsBinder) getOptionsBinder();
                 String[] controlValues = FormUtil.getRequestParameterValues(getControlElement(formData), formData);
@@ -71,6 +70,12 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                     }
                 }
             } else {
+                Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+                
+                //for other child implementation which does not using options binder & option grid, do nothing
+                if (optionMap == null || optionMap.isEmpty()) {
+                    return formData;
+                }
                 for (Map option : optionMap) {
                     if (option.containsKey(FormUtil.PROPERTY_VALUE)) {
                         allValues.add(option.get(FormUtil.PROPERTY_VALUE).toString());
