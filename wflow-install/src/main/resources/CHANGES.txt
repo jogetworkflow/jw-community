@@ -3,6 +3,11 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.5
+================
+f725b490 Fixed: wflow-consoleweb - PresenceManager - Prevent NPE. #7816 @7.0-SNAPSHOT
+6c5998ce Fixed: wflow-core - Select - Regression of 913ccc5f causing Popup Selectbox not working. @6.0-SNAPSHOT
+
 CHANGES IN 7.0.4
 ================
 913ccc5f Fixed: wflow-core - Options field - prevent manually alter the DOM value and successfully submit it. @6.0-SNAPSHOT
