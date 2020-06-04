@@ -38,6 +38,7 @@ import org.joget.commons.util.FileStore;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
@@ -353,6 +354,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         //create nonce
         String paramName = FormUtil.getElementParameterName(this);
         String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName}, 1);
+        if (nonce == null || nonce.isEmpty()) {
+            nonce = UuidGenerator.getInstance().getUuid();
+        }
         
         int lifepanHour = 1;
         SetupManager sm = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");

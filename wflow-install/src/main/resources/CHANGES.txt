@@ -2,6 +2,14 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.29
+=================
+9976d337 Fixed: wflow-core - App i18n - improve performance. #7791 @6.0-SNAPSHOT
+913ccc5f Fixed: wflow-core - Options field - prevent manually alter the DOM value and successfully submit it. @6.0-SNAPSHOT
+7e1dadfa Fixed: wflow-core - Datalist - Regression of 9fef046. Row action is not working. #7729 @6.0-SNAPSHOT
+e96e634d Fixed: wflow-commons - Security - Update dom4j to 2.1.3 for XML Injection Vulnerability : CVE-2018-1000632. @6.0-SNAPSHOT
+8a6d7d91 Fixed: wflow-core - File Upload - Regression bug of 721e6cff. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.28
 =================
 8abf677f Fixed: wflow-core - Builder - For cloning element in protected app, all app elements from all versions will be displayed as selection. @6.0-SNAPSHOT
