@@ -534,69 +534,71 @@ public class FormUtil implements ApplicationContextAware {
                 formData.setStoreBinderData(binder, rowSet);
             }
 
-            // get element formatted data
-            FormRowSet elementResult = element.formatData(formData);
-            if (elementResult != null) {
-                if (!elementResult.isMultiRow()) {
-                    // get single row
-                    FormRow elementRow = elementResult.get(0);
+            if (!FormUtil.isHidden(element, formData)) {
+                // get element formatted data
+                FormRowSet elementResult = element.formatData(formData);
+                if (elementResult != null) {
+                    if (!elementResult.isMultiRow()) {
+                        // get single row
+                        FormRow elementRow = elementResult.get(0);
 
-                    // append to consolidated row set
-                    if (rowSet.isEmpty()) {
-                        rowSet.add(elementRow);
+                        // append to consolidated row set
+                        if (rowSet.isEmpty()) {
+                            rowSet.add(elementRow);
+                        } else {
+                            FormRow currentRow = rowSet.get(0);
+                            currentRow.putAll(elementRow);
+                        }
                     } else {
-                        FormRow currentRow = rowSet.get(0);
-                        currentRow.putAll(elementRow);
-                    }
-                } else {
-                    Map storeBinderProp = (Map) element.getProperty(FormBinder.FORM_STORE_BINDER);
-                    
-                    //if the store binder of this element is null, store as single row in json format
-                    if (element.getStoreBinder() == null && (storeBinderProp == null 
-                            || "".equals(storeBinderProp.get(FormUtil.PROPERTY_CLASS_NAME)))) {
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            // create json object
-                            JSONArray jsonArray = new JSONArray();
-                            for (FormRow row : elementResult) {
-                                JSONObject jsonObject = new JSONObject();
-                                for (Map.Entry entry : row.entrySet()) {
-                                    String key = (String) entry.getKey();
-                                    String value = "";
-                                    if (entry.getValue() instanceof Date) {
-                                        value = sdf.format((Date) entry.getValue());
-                                    } else {
-                                        value = (String) entry.getValue();
+                        Map storeBinderProp = (Map) element.getProperty(FormBinder.FORM_STORE_BINDER);
+
+                        //if the store binder of this element is null, store as single row in json format
+                        if (element.getStoreBinder() == null && (storeBinderProp == null 
+                                || "".equals(storeBinderProp.get(FormUtil.PROPERTY_CLASS_NAME)))) {
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                // create json object
+                                JSONArray jsonArray = new JSONArray();
+                                for (FormRow row : elementResult) {
+                                    JSONObject jsonObject = new JSONObject();
+                                    for (Map.Entry entry : row.entrySet()) {
+                                        String key = (String) entry.getKey();
+                                        String value = "";
+                                        if (entry.getValue() instanceof Date) {
+                                            value = sdf.format((Date) entry.getValue());
+                                        } else {
+                                            value = (String) entry.getValue();
+                                        }
+                                        jsonObject.put(key, value);
                                     }
-                                    jsonObject.put(key, value);
+
+                                    //File upload is not support when no binder is set.
+                                    jsonArray.put(jsonObject);
                                 }
 
-                                //File upload is not support when no binder is set.
-                                jsonArray.put(jsonObject);
+                                // convert into json string
+                                String json = jsonArray.toString();
+
+                                // store in single row FormRowSet
+                                String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                                FormRow elementRow = new FormRow();
+                                elementRow.put(id, json);
+
+                                // append to consolidated row set
+                                if (rowSet.isEmpty()) {
+                                    rowSet.add(elementRow);
+                                } else {
+                                    FormRow currentRow = rowSet.get(0);
+                                    currentRow.putAll(elementRow);
+                                }
+                            } catch (JSONException ex) {
+                                LogUtil.error(FormUtil.class.getName(), ex, "");
                             }
-
-                            // convert into json string
-                            String json = jsonArray.toString();
-
-                            // store in single row FormRowSet
-                            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-                            FormRow elementRow = new FormRow();
-                            elementRow.put(id, json);
-
-                            // append to consolidated row set
-                            if (rowSet.isEmpty()) {
-                                rowSet.add(elementRow);
-                            } else {
-                                FormRow currentRow = rowSet.get(0);
-                                currentRow.putAll(elementRow);
-                            }
-                        } catch (JSONException ex) {
-                            LogUtil.error(FormUtil.class.getName(), ex, "");
+                        } else if (element.getStoreBinder() != null) {
+                            // multiple row result, append all to rowset
+                            rowSet.addAll(elementResult);
+                            rowSet.setMultiRow(true);
                         }
-                    } else if (element.getStoreBinder() != null) {
-                        // multiple row result, append all to rowset
-                        rowSet.addAll(elementResult);
-                        rowSet.setMultiRow(true);
                     }
                 }
             }
@@ -1467,32 +1469,7 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      */
     public static boolean isReadonly(Element element, FormData formData) {
-        if (element.isAuthorize(formData)) {
-            String readonlyProp = element.getPropertyString(FormUtil.PROPERTY_READONLY);
-            String hiddenProp = element.getPropertyString(FormUtil.PROPERTY_HIDDEN);
-            if (!Permission.DEFAULT.equals(element.getPermissionKey(formData)) && !(element instanceof Form)) {
-                Map rules = (Map) element.getProperty("permission_rules");
-                if (rules != null && rules.containsKey(element.getPermissionKey(formData))) {
-                    Map rule = (Map)rules.get(element.getPermissionKey(formData));
-                    readonlyProp = (String) rule.get(FormUtil.PROPERTY_READONLY);
-                    if (readonlyProp == null) {
-                        readonlyProp = "";
-                    }
-                    hiddenProp = (String) rule.get(FormUtil.PROPERTY_HIDDEN);
-                    if (hiddenProp == null) {
-                        hiddenProp = "";
-                    }
-                } else {
-                    readonlyProp = "";
-                    hiddenProp = "";
-                }
-            }
-            
-            return "true".equalsIgnoreCase(readonlyProp) || 
-                "true".equalsIgnoreCase(hiddenProp);
-        } else {
-            return true;
-        }
+        return element.isReadonly(formData);
     }
     
     /**
@@ -1500,31 +1477,7 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      */
     public static boolean isHidden(Element element, FormData formData) {
-        if (element instanceof Form) {
-            return false;
-        }
-        
-        Map props = element.getProperties();
-        if (!Permission.DEFAULT.equals(element.getPermissionKey(formData))) {
-            Map rules = (Map) element.getProperty("permission_rules");
-            if (rules != null && rules.containsKey(element.getPermissionKey(formData))) {
-                props = (Map)rules.get(element.getPermissionKey(formData));
-            }
-        }
-        
-        if (props == null) {
-            props = new HashMap();
-        }
-        
-        if (element.isAuthorize(formData)) {
-            return "true".equalsIgnoreCase((String) props.get(FormUtil.PROPERTY_HIDDEN));
-        } else {
-            if (props.containsKey("permissionReadonly")) {
-                return !"true".equalsIgnoreCase((String) props.get("permissionReadonly"));
-            } else {
-                return "true".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
-            }
-        }
+        return element.isHidden(formData);
     }
     
     /**

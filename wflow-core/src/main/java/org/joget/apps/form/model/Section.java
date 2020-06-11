@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
@@ -30,26 +29,13 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     public String getDescription() {
         return "Section Element";
     }
-    
-    @Override
-    public void setChildren(Collection<Element> children) {
-        super.setChildren(children);
-        
-        if ("true".equalsIgnoreCase(getPropertyString("readonly"))) {
-            FormUtil.setReadOnlyProperty(this, true, "true".equalsIgnoreCase(getPropertyString("readonlyLabel")));
-        }
-    }
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
-        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData) || (!isAuthorize(formData) && "true".equalsIgnoreCase(getPropertyString("permissionReadonly")))) {
+        if (((Boolean) dataModel.get("includeMetaData") == true) || !isHidden(formData)) {
             String template = "section.ftl";
             
-            boolean readonly = "true".equalsIgnoreCase(getPropertyString("readonly"));
-            if (!isAuthorize(formData) && "true".equalsIgnoreCase(getPropertyString("permissionReadonly"))) {
-                readonly = true;
-            }
-            if (readonly) {
+            if (isReadonly(formData)) {
                 FormUtil.setReadOnlyProperty(this, true, "true".equalsIgnoreCase(getPropertyString("readonlyLabel")));
             }
             
@@ -85,7 +71,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     public boolean continueValidation(FormData formData) {
         Boolean continueValidation = continueValidations.get(formData);
         if (continueValidation == null) {
-            if (isAuthorize(formData)) {
+            if (!isHidden(formData)) {
                 // get the control element (where value changes the target)
                 String visibilityControl = getPropertyString("visibilityControl");
 

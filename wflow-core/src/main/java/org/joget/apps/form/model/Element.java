@@ -28,6 +28,8 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private Validator validator;
     private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
     protected Map<FormData, Boolean> isAuthorizeSet = new HashMap<FormData, Boolean>();
+    protected Map<FormData, Boolean> isReadonlySet = new HashMap<FormData, Boolean>();
+    protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
 
     /**
@@ -325,7 +327,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return
      */
     public boolean continueValidation(FormData formData) {
-        return true;
+        return !isHidden(formData);
     }
     
     /**
@@ -414,6 +416,109 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             isAuthorizeSet.put(formData, isAuthorize);
         }
         return isAuthorize;
+    }
+    
+    /**
+     * Flag to indicate whether or not the current logged in user is able to edit this field in the form.
+     * 
+     * @param formData
+     * @return 
+     */
+    public Boolean isReadonly(FormData formData) {
+        Boolean isReadonly = isReadonlySet.get(formData);
+        if (isReadonly == null) {
+            boolean isParentReadonly = false;
+            if (getParent() != null) {
+                isParentReadonly = getParent().isReadonly(formData);
+            }
+            if (!isParentReadonly) {
+                Map props = getProperties();
+                if (!Permission.DEFAULT.equals(getPermissionKey(formData)) && !(this instanceof Form)) {
+                    Map rules = (Map) getProperty("permission_rules");
+                    if (rules != null && rules.containsKey(getPermissionKey(formData))) {
+                        props = (Map)rules.get(getPermissionKey(formData));
+                    }
+                }
+
+                if (props == null) {
+                    props = new HashMap();
+                }
+
+                if (isAuthorize(formData)) {
+                    String readonlyProp = "";
+                    String hiddenProp = "";
+                    if (props.containsKey(FormUtil.PROPERTY_READONLY)) {
+                        readonlyProp = (String) props.get(FormUtil.PROPERTY_READONLY);
+                    }
+                    if (props.containsKey(FormUtil.PROPERTY_HIDDEN)) {
+                        hiddenProp = (String) props.get(FormUtil.PROPERTY_HIDDEN);
+                    }
+
+                    isReadonly = "true".equalsIgnoreCase(readonlyProp) || "true".equalsIgnoreCase(hiddenProp);
+                } else {
+                    if (props.containsKey("permissionReadonly")) {
+                        isReadonly = "true".equalsIgnoreCase((String) props.get("permissionReadonly"));
+                    } else if (props.containsKey("permissionReadonlyHidden")) {
+                        isReadonly = "true".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
+                    } else {
+                        isReadonly = true;
+                    }
+                }
+            } else {
+                isReadonly = true;
+            }
+            isReadonlySet.put(formData, isReadonly);
+        }
+        return isReadonly;
+    }
+    
+    /**
+     * Flag to indicate whether or not the current logged in user is able to view this field in the form.
+     * 
+     * @param formData
+     * @return 
+     */
+    public Boolean isHidden(FormData formData) {
+        Boolean isHidden = isHiddenSet.get(formData);
+        if (isHidden == null) {
+            if (this instanceof Form) {
+                isHidden = false;
+            } else {
+                boolean isParentHidden = false;
+                if (getParent() != null) {
+                    isParentHidden = getParent().isHidden(formData);
+                }
+                if (!isParentHidden) {
+                    Map props = getProperties();
+                    if (!Permission.DEFAULT.equals(getPermissionKey(formData))) {
+                        Map rules = (Map) getProperty("permission_rules");
+                        if (rules != null && rules.containsKey(getPermissionKey(formData))) {
+                            props = (Map)rules.get(getPermissionKey(formData));
+                        }
+                    }
+
+                    if (props == null) {
+                        props = new HashMap();
+                    }
+
+                    if (isAuthorize(formData)) {
+                        isHidden = "true".equalsIgnoreCase((String) props.get(FormUtil.PROPERTY_HIDDEN));
+                    } else {
+                        if (props.containsKey("permissionReadonly")) {
+                            isHidden = !"true".equalsIgnoreCase((String) props.get("permissionReadonly"));
+                        } else if (this instanceof Section) {
+                            isHidden = true;
+                        } else {
+                            isHidden = "true".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
+                        }
+                    }
+                } else {
+                    isHidden = true;
+                }
+            }
+            isHiddenSet.put(formData, isHidden);
+        }
+        return isHidden;
     }
     
     public String getPermissionKey(FormData formData) {

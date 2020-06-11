@@ -167,6 +167,9 @@ public class FormBuilderWebController {
     @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/element/preview")
     public String previewElement(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId, @RequestParam("json") String json) {
         try {
+            // set flag in request
+            FormUtil.setFormBuilderActive(true);
+        
             FormUtil.setProcessedFormJson(json);
 
             model.addAttribute("appId", appId);
