@@ -9,7 +9,7 @@
                 if (parent.PopupDialog) {
                     parent.PopupDialog.closeDialog();
                 }
-                <#if redirectParent == "top" >top.<#else>parent.</#if>window.location.reload(true);
+                <#if redirectParent == "top" >top.<#else>parent.</#if>window.location.href = <#if redirectParent == "top" >top.<#else>parent.</#if>window.location.href;
             <#elseif redirectUrl == "SCRIPT_CLOSE_POPUP" >
                 parent.PopupDialog.closeDialog();
             <#else>

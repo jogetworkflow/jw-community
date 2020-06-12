@@ -149,7 +149,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                 <c:if test="${redirectParentValue eq 'top'}">
                     <c:set var="reloadTarget" value="top."/>
                 </c:if>
-                ${reloadTarget}window.location.reload(true);    
+                ${reloadTarget}window.location.href = ${reloadTarget}window.location.href;    
             </c:when>
             <c:otherwise>   
                 parent.PopupDialog.closeDialog();
