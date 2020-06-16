@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.Git;
@@ -858,6 +856,7 @@ public class AppDevUtil {
             gitCommitMap = fileInitCommit(appDef, "");
             gitCommitHelper = gitCommitMap.get(appDef.getAppId());
         }
+        gitCommitHelper.setAppDefinition(appDef);
         return gitCommitHelper;  
     }
     
@@ -906,7 +905,6 @@ public class AppDevUtil {
                     // git add to commit
                     if (isNew || AppDevUtil.gitFileDiff(git, path)) {
                         AppDevUtil.gitAdd(git, path);
-                        gitCommitHelper.addChangesContent(path, fileContents);
                         gitCommitHelper.addCommitMessage(commitMessage);
                     }
                 }
@@ -1127,7 +1125,7 @@ public class AppDevUtil {
             appDef.setPackageDefinitionList(packageDefinitionList);
         }
         return appDefinitionXml; 
-    }   
+    }  
     
     public static String getAppConfigXml(AppDefinition appDefinition) {
         String appDefinitionXml = null;
@@ -1369,34 +1367,23 @@ public class AppDevUtil {
             // copy plugins
             targetDir.mkdirs();
 
-            // find all definition files
-            final String[] extensions = new String[] { "json", "xml", "xpdl" };
-            final String[] dirs = new String[] { "forms", "lists", "userviews", "builder"};
-            Iterator<File> fileIterator = FileUtils.iterateFiles(gitCommitHelper.getWorkingDir(), new AbstractFileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    String path = file.getName();
-                    int dotIndex = path.lastIndexOf(".");
-                    String ext = (dotIndex >= 0) ? path.substring(dotIndex + 1) : path;
-                    return ArrayUtils.contains(extensions, ext);
-                }
-            }, new AbstractFileFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return ArrayUtils.contains(dirs, name) || "builder".equals(dir.getName());
-                }
-                
-            });
             // combine all definitions into a string for matching
             String concatAppDef = "";
-            while(fileIterator.hasNext()) {
-                File file = fileIterator.next();
-                String fileContents = gitCommitHelper.getChangesContent(file.getPath());
-                if (fileContents == null) {
-                    fileContents = FileUtils.readFileToString(file, "UTF-8");
-                }        
-                concatAppDef += fileContents + "~~~";
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
             }
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+            concatAppDef += AppDevUtil.fileReadToString(appDef, "appDefinition.xml", false) + "~~~";
+            concatAppDef += AppDevUtil.fileReadToString(appDef, "appConfig.xml", false) + "~~~";
+            
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
                 String pluginClassName = ClassUtils.getUserClass(plugin).getName();

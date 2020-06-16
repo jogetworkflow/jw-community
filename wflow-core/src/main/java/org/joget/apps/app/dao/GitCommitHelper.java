@@ -20,7 +20,6 @@ public class GitCommitHelper {
     String commitMessage;
     boolean syncPlugins;
     boolean syncResources;
-    Map<String, String> changesContents = new HashMap<String, String>();
 
     public GitCommitHelper() {
         commitMessage = "";
@@ -127,28 +126,8 @@ public class GitCommitHelper {
     public void setSyncResources(boolean syncResources) {
         this.syncResources = syncResources;
     }
-
-    public String getChangesContent(String path) {
-        if (path.contains("forms" + File.separator)) {
-            path = path.substring(path.indexOf("forms" + File.separator));
-        } else if (path.contains("lists" + File.separator)) {
-            path = path.substring(path.indexOf("lists" + File.separator));
-        } else if (path.contains("userviews" + File.separator)) {
-            path = path.substring(path.indexOf("userviews" + File.separator));
-        } else if (path.contains("builder" + File.separator)) {
-            path = path.substring(path.indexOf("builder" + File.separator));
-        } else {
-            path = path.substring(path.lastIndexOf(File.separator)+1);
-        }
-        return changesContents.get(path);
-    }
-    
-    public void addChangesContent(String path, String content) {
-        this.changesContents.put(path, content);
-    }
     
     public void clean() {
-        changesContents.clear();
         git.getRepository().close();
         if (workingDir.exists()) {
             try {
