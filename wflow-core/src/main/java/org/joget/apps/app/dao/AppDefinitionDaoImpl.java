@@ -166,33 +166,35 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     public void saveOrUpdate(AppDefinition appDef) {
         super.saveOrUpdate(appDef);
         
-        // save and commit app definition
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update app definition " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-
-        // save or delete app config
-        filename = "appConfig.xml";
-        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
-        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        if (commitConfig) {
-            xml = AppDevUtil.getAppConfigXml(appDef);
-            commitMessage =  "Update app config " + appDef.getId();
+        if (!AppDevUtil.isImportApp()) {
+            // save and commit app definition
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        } else {
-            AppDevUtil.fileDelete(appDef, filename, null);
-        }
-        
-        // sync app resources
-        AppDevUtil.dirSyncAppResources(appDef);
-        
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(appDef);
+
+            // save or delete app config
+            filename = "appConfig.xml";
+            Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            if (commitConfig) {
+                xml = AppDevUtil.getAppConfigXml(appDef);
+                commitMessage =  "Update app config " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+            } else {
+                AppDevUtil.fileDelete(appDef, filename, null);
+            }
+
+            // sync app resources
+            AppDevUtil.dirSyncAppResources(appDef);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(appDef);
+        }    
         
         // update date modified
         appDef.setDateModified(new Date());
-        saveOrUpdate(getEntityName(), appDef);        
+        saveOrUpdate(getEntityName(), appDef); 
     }    
 
     @Override

@@ -47,14 +47,16 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     public void saveOrUpdate(PackageDefinition packageDef) {        
         super.saveOrUpdate(packageDef);
 
-        AppDefinition appDef = packageDef.getAppDefinition();
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update package " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(appDef);
+        if (!AppDevUtil.isImportApp()) {
+            AppDefinition appDef = packageDef.getAppDefinition();
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update package " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(appDef);
+        }
         
         WorkflowHelper appWorkflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
         appWorkflowHelper.cleanDeadlineAppDefinitionCache(packageDef.getId(), packageDef.getVersion().toString());

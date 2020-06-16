@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppResourceUtil;
+import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +17,9 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
 
     @Autowired
     AppDefinitionDao appDefinitionDao;
+    
+    @Autowired
+    AppService appService;
     
     @Override
     public String getEntityName() {
@@ -71,6 +76,15 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
                 // update app def
                 appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), false);
                 
+                // save and commit app definition
+                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                String appDefFilename = "appDefinition.xml";
+                String xml = AppDevUtil.getAppDefinitionXml(appDef);
+                String commitMessage = "Update app definition " + appDef.getId();
+                AppDevUtil.fileSave(appDef, appDefFilename, xml, commitMessage);
+                
+                AppDevUtil.dirSyncAppResources(appDef);
+                
                 result = true;
             }
         } catch (Exception e) {
@@ -78,4 +92,38 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
         }
         return result;
     }
+    
+    @Override
+    public boolean update(AppResource object) {
+        boolean result = super.update(object);
+        
+        // save and commit app definition
+        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+        String filename = "appDefinition.xml";
+        String xml = AppDevUtil.getAppDefinitionXml(appDef);
+        String commitMessage = "Update app definition " + appDef.getId();
+        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        
+        AppDevUtil.dirSyncAppResources(appDef);
+        
+        return result;
+    }
+    
+    @Override
+    public boolean add(AppResource object) {
+        boolean result = super.add(object);
+        
+        if (!AppDevUtil.isImportApp()) {
+            // save and commit app definition
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+            AppDevUtil.dirSyncAppResources(appDef);
+        }
+        return result;
+    }    
+    
 }

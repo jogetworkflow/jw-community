@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -2366,7 +2367,9 @@ public class AppServiceImpl implements AppService {
         if (orgAppDef != null) {
             appId = orgAppDef.getAppId();
         }
-
+        
+        AppDevUtil.setImportApp(true);
+        
         LogUtil.debug(getClass().getName(), "Importing app " + appDef.getId());        
         AppDefinition newAppDef = new AppDefinition();
         newAppDef.setAppId(appId);
@@ -2382,21 +2385,23 @@ public class AppServiceImpl implements AppService {
         appDefinitionDao.saveOrUpdate(newAppDef);
 
         if (appDef.getFormDefinitionList() != null) {
+            Set<String> tables = new HashSet<String>();
+            Collection<String> importedForms = new ArrayList<String>();
             for (FormDefinition o : appDef.getFormDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 formDefinitionDao.add(o);
+                tables.add(o.getTableName());
+                importedForms.add(o.getId());
             }
             
             String currentTable = "";
-            Collection<String> importedForms = new ArrayList<String>();
             try {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    currentTable = o.getTableName();
+                for (String table : tables) {
+                    currentTable = table;
                     // initialize db table by making a dummy load
                     String dummyKey = "xyz123";
-                    formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
-                    importedForms.add(o.getId());
-                    LogUtil.debug(getClass().getName(), "Initialized form " + o.getId() + " with table " + o.getTableName());
+                    formDataDao.loadWithoutTransaction(table, table, dummyKey);
+                    LogUtil.debug(getClass().getName(), "Initialized form table " + table);
                 }
             } catch (Exception e) {
                 //error creating form data table, rollback
@@ -2419,7 +2424,7 @@ public class AppServiceImpl implements AppService {
                 LogUtil.debug(getClass().getName(), "Added list " + o.getId());
             }
         }
-
+        
         if (appDef.getUserviewDefinitionList() != null) {
             for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
                 o.setAppDefinition(newAppDef);
@@ -2451,7 +2456,7 @@ public class AppServiceImpl implements AppService {
                 LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
             }
         }
-
+        
         if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
             for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
                 EnvironmentVariable temp = new EnvironmentVariable();
@@ -2480,7 +2485,7 @@ public class AppServiceImpl implements AppService {
                 messageDao.add(o);
             }
         }
-
+        
         if (appDef.getPluginDefaultPropertiesList() != null) {
             for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
                 if (!overridePluginDefault && orgAppDef != null && orgAppDef.getPluginDefaultPropertiesList() != null) {
@@ -2501,7 +2506,7 @@ public class AppServiceImpl implements AppService {
                 appResourceDao.add(o);
             }
         }
-
+        
         try {
             if (xpdl != null) {
                 PackageDefinition orgPackageDef = null;
@@ -2562,11 +2567,32 @@ public class AppServiceImpl implements AppService {
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "Error deploying package for " + appDef.getAppId());
         }
-
+        
         // reload app from DB
         newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
         LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
         
+        Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
+        String filename = "appConfig.xml";
+        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+        if (commitConfig) {
+            String xml = AppDevUtil.getAppConfigXml(newAppDef);
+            String commitMessage =  "Update app config " + newAppDef.getId();
+            AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+        } else {
+            AppDevUtil.fileDelete(newAppDef, filename, null);
+        }
+        
+        filename = "appDefinition.xml";
+        String xml = AppDevUtil.getAppDefinitionXml(newAppDef);
+        String commitMessage = "Update app definition " + newAppDef.getId();
+        AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+        
+        AppDevUtil.dirSyncAppPlugins(newAppDef);
+        AppDevUtil.dirSyncAppResources(newAppDef);
+        
+        AppDevUtil.setImportApp(null);
+
         return newAppDef;
     }
 

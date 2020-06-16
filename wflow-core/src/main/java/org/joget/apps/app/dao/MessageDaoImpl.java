@@ -173,12 +173,14 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public boolean add(Message object) {
         boolean result = super.add(object);
         
-        // save and commit app definition
-        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update app definition " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        if (!AppDevUtil.isImportApp()) {
+            // save and commit app definition
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        }
 
         return result;
     }    

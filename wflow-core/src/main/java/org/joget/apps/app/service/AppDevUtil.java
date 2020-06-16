@@ -81,7 +81,6 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -112,6 +111,8 @@ public class AppDevUtil {
     
     public static Map<String, Set<String>> workingPulls = new HashMap<String, Set<String>>();
     protected static Random random = new Random();
+    
+    static ThreadLocal importApp = new ThreadLocal();
     
     public static String getAppDevBaseDirectory() {
         String dir = SetupManager.getBaseDirectory() + File.separator + "app_src";
@@ -352,6 +353,22 @@ public class AppDevUtil {
         }
         return paths;
     }
+    
+    public static boolean gitFileDiff(Git git, String filepath) throws GitAPIException {
+        // get diff paths
+        List<DiffEntry> diffEntries = git.diff()
+                .call();
+        for (DiffEntry entry: diffEntries) {
+            String path = entry.getPath(DiffEntry.Side.NEW);
+            if ("/dev/null".equals(path)) {
+                continue;
+            }
+            if (filepath.equals(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static List<String> gitDeletedDiff(Git git, String[] extensions) throws GitAPIException {
         // get diff paths
@@ -428,7 +445,7 @@ public class AppDevUtil {
     public static void gitRenameBranch(Git git, String gitBranch) throws GitAPIException {
         git.branchRename()
                 .setNewName(gitBranch)
-                .call();        
+                .call();      
     }
     
     public static void gitFetchMerge(File projectDir, Git git, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException, IOException {
@@ -675,7 +692,7 @@ public class AppDevUtil {
         } catch (JSONException e) {
             // ignore
         }
-        return formattedJson;        
+        return formattedJson;
     }
 
     public static String getGitBranchName(AppDefinition appDef) {
@@ -689,7 +706,7 @@ public class AppDevUtil {
     }
     
     public static String getWorkingGitDirectory(AppDefinition appDef) {
-        String dir = appDef.getAppId() + System.getProperty("file.separator") + UuidGenerator.getInstance().getUuid();
+        String dir = appDef.getAppId() + System.getProperty("file.separator") + appDef.getAppId() + System.nanoTime();
         return dir;
     }
     
@@ -841,7 +858,7 @@ public class AppDevUtil {
             gitCommitMap = fileInitCommit(appDef, "");
             gitCommitHelper = gitCommitMap.get(appDef.getAppId());
         }
-        return gitCommitHelper;      
+        return gitCommitHelper;  
     }
     
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
@@ -873,23 +890,23 @@ public class AppDevUtil {
             // check for content changes
             File file = new File(gitCommitHelper.getWorkingDir(), path);
             boolean toSave = true;
+            boolean isNew = false;
             try {
                 String currentContents = FileUtils.readFileToString(file, "UTF-8");
-                toSave = (currentContents == null || !cleanForCompare(currentContents).equals(cleanForCompare(fileContents)));
+                isNew = currentContents == null;
+                toSave = (isNew || !cleanForCompare(currentContents).equals(cleanForCompare(fileContents)));
             } catch(FileNotFoundException e) {
                 // ignore
             }
              
             if (toSave) {
                 // save file contents
-                FileUtils.writeStringToFile(file, compatibleNewline(fileContents), "UTF-8");
+                FileUtils.writeStringToFile(file, fileContents, "UTF-8");
                 if (commitMessage != null) {
                     // git add to commit
-                    String[] extensions = new String[] { "json", "xml", "xpdl" };
-                    List<String> paths = AppDevUtil.gitDiff(git, extensions);
-                    boolean modified = !paths.isEmpty() && paths.contains(path);
-                    if (modified) {
+                    if (isNew || AppDevUtil.gitFileDiff(git, path)) {
                         AppDevUtil.gitAdd(git, path);
+                        gitCommitHelper.addChangesContent(path, fileContents);
                         gitCommitHelper.addCommitMessage(commitMessage);
                     }
                 }
@@ -1109,7 +1126,7 @@ public class AppDevUtil {
             }
             appDef.setPackageDefinitionList(packageDefinitionList);
         }
-        return appDefinitionXml;        
+        return appDefinitionXml; 
     }   
     
     public static String getAppConfigXml(AppDefinition appDefinition) {
@@ -1177,7 +1194,7 @@ public class AppDevUtil {
             appDef.setMessageList(messageList);
             appDef.setResourceList(resourceList);
         }
-        return appDefinitionXml;        
+        return appDefinitionXml; 
     }     
     
     public static String getPackageXpdl(AppDefinition appDef) {
@@ -1374,7 +1391,10 @@ public class AppDevUtil {
             String concatAppDef = "";
             while(fileIterator.hasNext()) {
                 File file = fileIterator.next();
-                String fileContents = FileUtils.readFileToString(file, "UTF-8");
+                String fileContents = gitCommitHelper.getChangesContent(file.getPath());
+                if (fileContents == null) {
+                    fileContents = FileUtils.readFileToString(file, "UTF-8");
+                }        
                 concatAppDef += fileContents + "~~~";
             }
             // look for plugins used in any definition file
@@ -1397,7 +1417,7 @@ public class AppDevUtil {
             
         } catch (IOException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
-        }        
+        }
         
     }    
     
@@ -1692,15 +1712,14 @@ public class AppDevUtil {
     }
     
     public static String cleanForCompare(String xpdl) {
-        xpdl = xpdl.replaceAll("\n", "");
-        xpdl = xpdl.replaceAll("\r", "");
+        xpdl = xpdl.replaceAll("[\r\n]", "");
         xpdl = xpdl.trim();
         
         return xpdl;
     } 
     
     public static String compatibleNewline(String content) {
-        if (content == null) {
+        if (content == null || content.contains("\r\n")) {
             return content;
         }
         
@@ -1709,5 +1728,13 @@ public class AppDevUtil {
         content = content.trim();
         
         return content;
+    }
+    
+    public static void setImportApp(Boolean isImportApp) throws BeansException {
+        importApp.set(isImportApp);
+    }
+
+    public static boolean isImportApp() throws BeansException {
+        return importApp.get() != null;
     }
 }

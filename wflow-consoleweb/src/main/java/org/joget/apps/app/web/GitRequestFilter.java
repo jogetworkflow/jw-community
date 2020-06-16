@@ -52,19 +52,19 @@ public class GitRequestFilter implements Filter {
                         Git git = gitCommitHelper.getGit();
                         AppDefinition appDef = gitCommitHelper.getAppDefinition();
 
-                        // sync plugins
-                        if (gitCommitHelper.isSyncPlugins()) {
-                            AppDevUtil.syncAppPlugins(appDef);
-                        }
-
-                        // sync resources
-                        if (gitCommitHelper.isSyncResources()) {
-                            AppDevUtil.syncAppResources(appDef);
-                        }
-
                         // perform commit
                         String commitMessage = gitCommitHelper.getCommitMessage();
                         if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
+                            // sync plugins
+                            if (gitCommitHelper.isSyncPlugins()) {
+                                AppDevUtil.syncAppPlugins(appDef);
+                            }
+
+                            // sync resources
+                            if (gitCommitHelper.isSyncResources()) {
+                                AppDevUtil.syncAppResources(appDef);
+                            }
+                            
                             AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
                             pushAppDefs.add(appDef);
                         }

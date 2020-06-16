@@ -57,20 +57,22 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     public boolean add(PluginDefaultProperties object) {
         boolean result = super.add(object);
         
-        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
-        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
-        String filename = "appConfig.xml";
-        String xml = AppDevUtil.getAppConfigXml(appDef);
-        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        if (commitConfig) {
-            String commitMessage =  "Update app config " + appDef.getId();
-            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        } else {
-            AppDevUtil.fileDelete(appDef, filename, null);
-        }
+        if (!AppDevUtil.isImportApp()) {
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+            String filename = "appConfig.xml";
+            String xml = AppDevUtil.getAppConfigXml(appDef);
+            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            if (commitConfig) {
+                String commitMessage =  "Update app config " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+            } else {
+                AppDevUtil.fileDelete(appDef, filename, null);
+            }
 
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(appDef);
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(appDef);
+        }
         
         return result;
     }
