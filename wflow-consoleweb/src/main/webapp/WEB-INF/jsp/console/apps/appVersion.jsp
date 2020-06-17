@@ -13,7 +13,7 @@
         <ul>
             <li class="selected"><a href="#appVersionDiv"><span><fmt:message key="console.app.version.label.title"/></span></a></li>
             <li><a href="#appDevSettings"><span><fmt:message key="console.app.dev.admin.settings"/></span></a></li>
-            <li><a href="#appGitSettings"><span><fmt:message key="console.app.dev.git.configuration"/></span></a></li>
+            <c:if test="${!isGitDisabled}"><li><a href="#appGitSettings"><span><fmt:message key="console.app.dev.git.configuration"/></span></a></li></c:if>
         </ul>
         <div>
             <div id="appVersionDiv">   
@@ -217,6 +217,7 @@
                 </script>
 
             </div>
+            <c:if test="${!isGitDisabled}">
             <div id="appGitSettings" >        
 
                 <c:if test="${upload}">
@@ -311,6 +312,7 @@
                     });
                 </script>
             </div>
+            </c:if>                
         </div>                    
     </div>
 

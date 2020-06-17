@@ -1141,21 +1141,23 @@ public class AppServiceImpl implements AppService {
                 // TODO: handle exception
             }
         }
-        try {
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-            boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
-            if (request != null && !gitSyncAppDone) {
-                AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
-                if (newAppDef != null) {
-                    appDef = newAppDef;
+        if (!AppDevUtil.isGitDisabled()) {
+            try {
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
+                if (request != null && !gitSyncAppDone) {
+                    AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
+                    if (newAppDef != null) {
+                        appDef = newAppDef;
+                    }
+                    if (request != null) {
+                        request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+                    }
                 }
-                if (request != null) {
-                    request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+            } catch (IOException | GitAPIException | URISyntaxException e) {
+                if (appDef != null) {
+                    LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
                 }
-            }
-        } catch (IOException | GitAPIException | URISyntaxException e) {
-            if (appDef != null) {
-                LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
             }
         }
 
@@ -1463,7 +1465,7 @@ public class AppServiceImpl implements AppService {
             }
             
             // save to xpdl file for git commit
-            if (!isGitSync && appDef != null) {
+            if (!AppDevUtil.isGitDisabled() && !isGitSync && appDef != null) {
                 String xpdl = AppDevUtil.getPackageXpdl(packageDef);
                 String filename = "package.xpdl";
                 String commitMessage = "Update xpdl " + appDef.getId();
@@ -1853,21 +1855,23 @@ public class AppServiceImpl implements AppService {
         try {
             AppDefinition appDef = appDefinitionDao.getPublishedAppDefinition(appId);
             
-            try {
-                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
-                if (request != null && !gitSyncAppDone) {
-                    AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, appDef.getVersion());
-                    if (newAppDef != null) {
-                        appDef = newAppDef;
+            if (!AppDevUtil.isGitDisabled()) {
+                try {
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
+                    if (request != null && !gitSyncAppDone) {
+                        AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, appDef.getVersion());
+                        if (newAppDef != null) {
+                            appDef = newAppDef;
+                        }
+                        if (request != null) {
+                            request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+                        }
                     }
-                    if (request != null) {
-                        request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+                } catch (IOException | GitAPIException | URISyntaxException e) {
+                    if (appDef != null) {
+                        LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
                     }
-                }
-            } catch (IOException | GitAPIException | URISyntaxException e) {
-                if (appDef != null) {
-                    LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
                 }
             }
 

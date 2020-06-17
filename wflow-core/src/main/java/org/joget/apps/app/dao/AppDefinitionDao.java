@@ -16,4 +16,6 @@ public interface AppDefinitionDao extends VersionedObjectDao<AppDefinition> {
     public void saveOrUpdate(String appId, Long version, boolean includeDependencies);
  
     public void merge(AppDefinition appDef);    
+    
+    public void updateDateModified(AppDefinition appDef);
 }

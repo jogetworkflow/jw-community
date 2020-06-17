@@ -271,7 +271,7 @@
     </bean>
    
     <aop:config>
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.report.dao.*Dao.*(..))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.form.dao.*Dao.*(..))" order="1" />
         <aop:advisor advice-ref="sqlFilterAspect" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />

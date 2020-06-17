@@ -1490,6 +1490,8 @@ public class ConsoleWebController {
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
+        
+        map.addAttribute("isGitDisabled", AppDevUtil.isGitDisabled());
 
         Properties props = AppDevUtil.getAppDevProperties(appDef);
         String properties = "{}";

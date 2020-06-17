@@ -14,6 +14,7 @@ import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.form.model.FormColumnCache;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * DAO to load/store FormDefinition objects
@@ -24,6 +25,9 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     
     private FormColumnCache formColumnCache;
     private Cache cache;
+    
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
     
     public Cache getCache() {
         return cache;
@@ -120,15 +124,18 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     @Override
     public boolean add(FormDefinition object) {
         boolean result = super.add(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
 
-        // save json
-        String filename = "forms/" + object.getId() + ".json";
-        String json = AppDevUtil.formatJson(object.getJson());
-        String commitMessage = "Add form " + object.getId();
-        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "forms/" + object.getId() + ".json";
+            String json = AppDevUtil.formatJson(object.getJson());
+            String commitMessage = "Add form " + object.getId();
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        }
         
         // clear cache
         formColumnCache.remove(object.getTableName());
@@ -142,16 +149,19 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     @Override
     public boolean update(FormDefinition object) {
         boolean result = super.update(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
 
-        // save json
-        String filename = "forms/" + object.getId() + ".json";
-        String json = AppDevUtil.formatJson(object.getJson());
-        String commitMessage = "Update form " + object.getId();
-        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "forms/" + object.getId() + ".json";
+            String json = AppDevUtil.formatJson(object.getJson());
+            String commitMessage = "Update form " + object.getId();
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        }
         
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
-
         // clear from cache
         formColumnCache.remove(object.getTableName());
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
@@ -182,19 +192,22 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
                 // clear from cache
                 formColumnCache.remove(obj.getTableName());
                 cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
                 
-                // delete json
-                String filename = "forms/" + id + ".json";
-                String commitMessage = "Delete form " + id;
-                AppDevUtil.fileDelete(appDef, filename, commitMessage);
+                if (!AppDevUtil.isGitDisabled()) {
+                    // delete json
+                    String filename = "forms/" + id + ".json";
+                    String commitMessage = "Delete form " + id;
+                    AppDevUtil.fileDelete(appDef, filename, commitMessage);
 
-                // sync app plugins
-                AppDevUtil.dirSyncAppPlugins(appDef);                
+                    // sync app plugins
+                    AppDevUtil.dirSyncAppPlugins(appDef);  
+                }
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

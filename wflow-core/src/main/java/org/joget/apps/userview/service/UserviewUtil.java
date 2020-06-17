@@ -23,9 +23,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.DatalistDefinition;
+import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.model.PackageActivityPlugin;
+import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
-import org.joget.apps.app.service.AppDevUtil;
-import static org.joget.apps.app.service.AppDevUtil.getAppGitDirectory;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
@@ -295,7 +298,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             }
             
             Long lastModified = null;
-            Date appLastModified = AppDevUtil.dirLastModified(appDef);
+            Date appLastModified = appDef.getDateModified();
             if (appLastModified != null) {
                 lastModified = appLastModified.getTime();
             } else {
@@ -319,16 +322,37 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 Collection<Plugin> pluginList = pluginManager.list(PwaOfflineResources.class);
                 
                 if (pluginList != null && !pluginList.isEmpty()) {
-                    String baseDir = AppDevUtil.getAppDevBaseDirectory();
-                    String projectDirName = getAppGitDirectory(appDef);
-                    File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-                    // find all definition files
-                    Collection<File> files = FileUtils.listFiles(projectDir, new String[]{ "json"}, true);
                     String concatAppDef = "";
-                    for (File file: files) {
-                        String fileContents = FileUtils.readFileToString(file, "UTF-8");
-                        concatAppDef += fileContents + "~~~";
+                    if (appDef.getFormDefinitionList() != null) {
+                        for (FormDefinition o : appDef.getFormDefinitionList()) {
+                            concatAppDef += o.getJson() + "~~~";
+                        }
                     }
+                    if (appDef.getDatalistDefinitionList() != null) {
+                        for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                            concatAppDef += o.getJson() + "~~~";
+                        }
+                    }
+                    if (appDef.getUserviewDefinitionList() != null) {
+                        for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                            concatAppDef += o.getJson() + "~~~";
+                        }
+                    }
+                    if (appDef.getBuilderDefinitionList() != null) {
+                        for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                            concatAppDef += o.getJson() + "~~~";
+                        }
+                    }
+                    PackageDefinition packageDef = appDef.getPackageDefinition();
+                    if (packageDef != null) {
+                        if (packageDef.getPackageActivityPluginMap() != null) {
+                            for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                                concatAppDef += o.getPluginName() + "~~~";
+                                concatAppDef += o.getPluginProperties() + "~~~";
+                            }
+                        }
+                    }
+                    
                     // look for plugins used in any definition file
                     Set<String> temp = null;
                     for (Plugin plugin: pluginList) {

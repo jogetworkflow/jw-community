@@ -3,6 +3,7 @@ package org.joget.apps.app.dao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -22,6 +23,9 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
     @Autowired
     AppService appService;
+    
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
     
     @Override
     public String getEntityName() {
@@ -138,14 +142,17 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
-                // save and commit app definition
-                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
-                String filename = "appDefinition.xml";
-                String xml = AppDevUtil.getAppDefinitionXml(appDef);
-                String commitMessage = "Update app definition " + appDef.getId();
-                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                if (!AppDevUtil.isGitDisabled()) {
+                    // save and commit app definition
+                    appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                    String filename = "appDefinition.xml";
+                    String xml = AppDevUtil.getAppDefinitionXml(appDef);
+                    String commitMessage = "Update app definition " + appDef.getId();
+                    AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                }
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -158,13 +165,16 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
         cache.remove(key);
         boolean result = super.update(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         
-        // save and commit app definition
-        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update app definition " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save and commit app definition
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        }
         
         return result;
     }
@@ -172,8 +182,9 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     @Override
     public boolean add(Message object) {
         boolean result = super.add(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         
-        if (!AppDevUtil.isImportApp()) {
+        if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
             String filename = "appDefinition.xml";

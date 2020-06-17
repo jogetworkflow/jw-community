@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
@@ -72,18 +73,21 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                appDefinitionDao.updateDateModified(appDef);
                 
                 // update app def
                 appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), false);
                 
-                // save and commit app definition
-                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
-                String appDefFilename = "appDefinition.xml";
-                String xml = AppDevUtil.getAppDefinitionXml(appDef);
-                String commitMessage = "Update app definition " + appDef.getId();
-                AppDevUtil.fileSave(appDef, appDefFilename, xml, commitMessage);
-                
-                AppDevUtil.dirSyncAppResources(appDef);
+                if (!AppDevUtil.isGitDisabled()) {
+                    // save and commit app definition
+                    appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                    String appDefFilename = "appDefinition.xml";
+                    String xml = AppDevUtil.getAppDefinitionXml(appDef);
+                    String commitMessage = "Update app definition " + appDef.getId();
+                    AppDevUtil.fileSave(appDef, appDefFilename, xml, commitMessage);
+
+                    AppDevUtil.dirSyncAppResources(appDef);
+                }
                 
                 result = true;
             }
@@ -95,25 +99,29 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean update(AppResource object) {
+        object.getAppDefinition().setDateModified(new Date());
         boolean result = super.update(object);
         
-        // save and commit app definition
-        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update app definition " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        
-        AppDevUtil.dirSyncAppResources(appDef);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save and commit app definition
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+            AppDevUtil.dirSyncAppResources(appDef);
+        }
         
         return result;
     }
     
     @Override
     public boolean add(AppResource object) {
+        object.getAppDefinition().setDateModified(new Date());
         boolean result = super.add(object);
         
-        if (!AppDevUtil.isImportApp()) {
+        if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
             String filename = "appDefinition.xml";

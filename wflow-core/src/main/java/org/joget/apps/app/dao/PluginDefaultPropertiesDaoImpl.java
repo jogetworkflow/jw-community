@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import org.joget.apps.app.model.AppDefinition;
@@ -17,6 +18,9 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
     @Autowired
     AppService appService;     
+    
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
         
     @Override
     public String getEntityName() {
@@ -56,8 +60,9 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     @Override
     public boolean add(PluginDefaultProperties object) {
         boolean result = super.add(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         
-        if (!AppDevUtil.isImportApp()) {
+        if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
             Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
             String filename = "appConfig.xml";
@@ -80,21 +85,24 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     @Override
     public boolean update(PluginDefaultProperties object) {
         boolean result = super.update(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         
-        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
-        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
-        String filename = "appConfig.xml";
-        String xml = AppDevUtil.getAppConfigXml(appDef);
-        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        if (commitConfig) {
-            String commitMessage =  "Update app config " + appDef.getId();
-            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        } else {
-            AppDevUtil.fileDelete(appDef, filename, null);
-        }
+        if (!AppDevUtil.isGitDisabled()) {
+            AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+            Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+            String filename = "appConfig.xml";
+            String xml = AppDevUtil.getAppConfigXml(appDef);
+            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            if (commitConfig) {
+                String commitMessage =  "Update app config " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+            } else {
+                AppDevUtil.fileDelete(appDef, filename, null);
+            }
 
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(appDef);
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(appDef);
+        }
         
         return result;
     }
@@ -118,22 +126,25 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
-                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
-                Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
-                String filename = "appConfig.xml";
-                String xml = AppDevUtil.getAppConfigXml(appDef);
-                boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-                if (commitConfig) {
-                    String commitMessage =  "Update app config " + appDef.getId();
-                    AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-                } else {
-                    AppDevUtil.fileDelete(appDef, filename, null);
-                }        
+                if (!AppDevUtil.isGitDisabled()) {
+                    appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                    Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+                    String filename = "appConfig.xml";
+                    String xml = AppDevUtil.getAppConfigXml(appDef);
+                    boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+                    if (commitConfig) {
+                        String commitMessage =  "Update app config " + appDef.getId();
+                        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                    } else {
+                        AppDevUtil.fileDelete(appDef, filename, null);
+                    }        
 
-                // sync app plugins
-                AppDevUtil.dirSyncAppPlugins(appDef);                
+                    // sync app plugins
+                    AppDevUtil.dirSyncAppPlugins(appDef);
+                }                
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

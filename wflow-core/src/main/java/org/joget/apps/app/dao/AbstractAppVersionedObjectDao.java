@@ -19,7 +19,7 @@ import org.joget.workflow.util.WorkflowUtil;
  * DAO to load/store AppVersionedObjects objects
  */
 public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersionedObject> extends AbstractSpringDao implements AppVersionedObjectDao<T> {
-
+    
     public T loadById(String id, AppDefinition appDefinition) {
         T result = null;
         Collection<T> results = find("and id=?", new Object[]{id}, appDefinition, null, null, 0, 1);

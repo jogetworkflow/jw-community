@@ -112,8 +112,10 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             super.delete(obj);
 
             // delete directory
-            String commitMessage = "Delete app version " + obj.getId() + " " + obj.getVersion();
-            AppDevUtil.dirDelete(obj, commitMessage);
+            if (!AppDevUtil.isGitDisabled()) {
+                String commitMessage = "Delete app version " + obj.getId() + " " + obj.getVersion();
+                AppDevUtil.dirDelete(obj, commitMessage);
+            }
         }
     }
 
@@ -166,7 +168,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     public void saveOrUpdate(AppDefinition appDef) {
         super.saveOrUpdate(appDef);
         
-        if (!AppDevUtil.isImportApp()) {
+        if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             String filename = "appDefinition.xml";
             String xml = AppDevUtil.getAppDefinitionXml(appDef);
@@ -204,29 +206,31 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         session.merge(getEntityName(), appDef);
         session.flush();
         
-        // save and commit app definition
-        String filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(appDef);
-        String commitMessage = "Update app definition " + appDef.getId();
-        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-
-        // save or delete app config
-        filename = "appConfig.xml";
-        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
-        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        if (commitConfig) {
-            xml = AppDevUtil.getAppConfigXml(appDef);
-            commitMessage =  "Update app config " + appDef.getId();
+        if (!AppDevUtil.isGitDisabled()) {
+            // save and commit app definition
+            String filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(appDef);
+            String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-        } else {
-            AppDevUtil.fileDelete(appDef, filename, null);
+
+            // save or delete app config
+            filename = "appConfig.xml";
+            Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            if (commitConfig) {
+                xml = AppDevUtil.getAppConfigXml(appDef);
+                commitMessage =  "Update app config " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+            } else {
+                AppDevUtil.fileDelete(appDef, filename, null);
+            }
+
+            // sync app resources
+            AppDevUtil.dirSyncAppResources(appDef);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(appDef);  
         }
-        
-        // sync app resources
-        AppDevUtil.dirSyncAppResources(appDef);
-        
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(appDef);      
         
         // update date modified
         appDef.setDateModified(new Date());
@@ -258,15 +262,27 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
             saveOrUpdate(appDef);
             
-            // save xpdl
-            String packageXpdl = AppDevUtil.getPackageXpdl(appDef);      
-            if (packageXpdl != null && !packageXpdl.isEmpty()) {
-                String filename = "package.xpdl";
-                String commitMessage = "Update xpdl " + appDef.getId();
-                AppDevUtil.fileSave(appDef, filename, packageXpdl, commitMessage);  
+            if (!AppDevUtil.isGitDisabled()) {
+                // save xpdl
+                String packageXpdl = AppDevUtil.getPackageXpdl(appDef);      
+                if (packageXpdl != null && !packageXpdl.isEmpty()) {
+                    String filename = "package.xpdl";
+                    String commitMessage = "Update xpdl " + appDef.getId();
+                    AppDevUtil.fileSave(appDef, filename, packageXpdl, commitMessage);  
+                }
             }
         }
-    }    
+    }
+
+    @Override
+    public void updateDateModified(AppDefinition appDef) {
+        Session session = findSession();
+        Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appID and e.version = :appVersion");
+        query.setParameter("dateModified", new Date());
+        query.setParameter("appID", appDef.getAppId());
+        query.setParameter("appVersion", appDef.getVersion());
+        query.executeUpdate();
+    }
     
     @Override
     @Transactional

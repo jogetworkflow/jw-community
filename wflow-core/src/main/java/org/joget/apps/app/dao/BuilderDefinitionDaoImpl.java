@@ -16,10 +16,14 @@ import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<BuilderDefinition> implements BuilderDefinitionDao  {
     public static final String ENTITY_NAME = "BuilderDefinition";
 
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
+    
     private Cache cache;
 
     public Cache getCache() {
@@ -102,20 +106,23 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public boolean add(BuilderDefinition object) {
         boolean result = super.add(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         
         CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
         if (builder instanceof CustomBuilderCallback) {
             ((CustomBuilderCallback) builder).addDefinition(object);
         }
         
-        // save json
-        String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
-        String json = AppDevUtil.formatJson(object.getJson());
-        String commitMessage = "Add " + object.getType() + " " + object.getId();
-        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
+            String json = AppDevUtil.formatJson(object.getJson());
+            String commitMessage = "Add " + object.getType() + " " + object.getId();
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        }
         
         // save in db
         object.setDateCreated(new Date());
@@ -126,6 +133,7 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public boolean update(BuilderDefinition object) {
         boolean result = super.update(object);
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
 
         CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
         if (builder instanceof CustomBuilderCallback) {
@@ -170,6 +178,7 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
                 CustomBuilder builder = CustomBuilderUtil.getBuilder(obj.getType());
