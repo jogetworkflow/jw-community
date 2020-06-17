@@ -418,6 +418,14 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return isAuthorize;
     }
     
+    @Override
+    public void setProperty(String property, Object value) {
+        if (FormUtil.PROPERTY_READONLY.equals(property)) {
+            isReadonlySet.clear();
+        }
+        super.setProperty(property, value);
+    }
+    
     /**
      * Flag to indicate whether or not the current logged in user is able to edit this field in the form.
      * 
