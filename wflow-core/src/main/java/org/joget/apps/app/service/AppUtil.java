@@ -641,7 +641,7 @@ public class AppUtil implements ApplicationContextAware {
                     || format.equals(StringUtil.TYPE_URL)
                     || format.equals(StringUtil.TYPE_XML)
                     || format.startsWith(StringUtil.TYPE_SEPARATOR)
-                    || format.startsWith(StringUtil.escapeRegex(format)))) {
+                    || format.equals(StringUtil.TYPE_EXP))) {
                 isValid = false;
             }
             //check for 1 enough
