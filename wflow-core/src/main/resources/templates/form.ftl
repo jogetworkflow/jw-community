@@ -28,6 +28,22 @@
         <#if !element.parent??>
         </form>
         <script>
+            //put it outside the jquery ready function is because the csrf token will be populate correctly when jquery ready.
+            $("form#${element.properties.id!}").on("submit", function(){
+                //make sure csrf token is set correctly
+                var form = this;
+                if ($(form).find("[name='"+ ConnectionManager.tokenName +"']").length === 0) {
+                    $(form).append('<input type="hidden" name="'+ConnectionManager.tokenName+'" value="'+ConnectionManager.tokenValue+'"/>');
+                }
+                if ($(form).attr("action").indexOf(ConnectionManager.tokenName) === -1) {
+                    var url = $(form).attr("action");
+                    url += ((url.indexOf("?") === -1)?"?":"&");
+                    url += url + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
+                    $(form).attr("action", url);
+                }
+                return true;
+            });
+
             $(function(){
                 $("#section-actions button, #section-actions input").click(function(){
                     $.blockUI({ css: { 
