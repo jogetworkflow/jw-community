@@ -110,6 +110,38 @@ public class TestFormPermission {
         Element field18 = FormUtil.findElement("field18", form, formData);
         Assert.assertTrue(isSelectFieldHidden(field18, formData));
         
+        //normal section with store binder - field 19 & 20
+        Element section10 = FormUtil.findElement("section10", form, formData);
+        Assert.assertTrue(!isSectionHidden(section10, formData));
+        Element field19 = FormUtil.findElement("field19", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field19, formData));
+        Element field20 = FormUtil.findElement("field20", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field20, formData));
+        
+        //readonly section with store binder - field 21 & 22
+        Element section11 = FormUtil.findElement("section11", form, formData);
+        Assert.assertTrue(!isSectionHidden(section11, formData));
+        Element field21 = FormUtil.findElement("field21", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field21, formData));
+        Element field22 = FormUtil.findElement("field22", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field22, formData));
+        
+        //permission hidden section with store binder - field 23 & 24 (cat has permission)
+        Element section12 = FormUtil.findElement("section12", form, formData);
+        Assert.assertTrue(!isSectionHidden(section12, formData));
+        Element field23 = FormUtil.findElement("field23", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field23, formData));
+        Element field24 = FormUtil.findElement("field24", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field24, formData));
+        
+        //permission readonly section with store binder - field 25 & 26 (cat has permission)
+        Element section13 = FormUtil.findElement("section13", form, formData);
+        Assert.assertTrue(!isSectionHidden(section13, formData));
+        Element field25 = FormUtil.findElement("field25", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field25, formData));
+        Element field26 = FormUtil.findElement("field26", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field26, formData));
+        
         //VALIDATION
         populateSubmittedData(formData, "");
         formData = FormUtil.executeElementFormatDataForValidation(form, formData);
@@ -151,6 +183,22 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertTrue(!errors.containsKey("field17"));
         Assert.assertTrue(!errors.containsKey("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        Assert.assertTrue(errors.containsKey("field19"));
+        Assert.assertTrue(errors.containsKey("field20"));
+        
+        //readonly section with store binder - field 21 & 22
+        Assert.assertTrue(!errors.containsKey("field21"));
+        Assert.assertTrue(!errors.containsKey("field22"));
+        
+        //permission hidden section with store binder - field 23 & 24 (cat has permission)
+        Assert.assertTrue(errors.containsKey("field23"));
+        Assert.assertTrue(errors.containsKey("field24"));
+        
+        //permission readonly section with store binder - field 25 & 26 (cat has permission)
+        Assert.assertTrue(errors.containsKey("field25"));
+        Assert.assertTrue(errors.containsKey("field26"));
         
         //STORE
         populateSubmittedData(formData, "value1");
@@ -194,6 +242,34 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertNull(row.getProperty("field17"));
         Assert.assertNull(row.getProperty("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        rows = formData.getStoreBinderData(section10.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field19")));
+        Assert.assertTrue("value1".equals(row.getProperty("field20")));
+        
+        //readonly section with store binder - field 21 & 22
+        rows = formData.getStoreBinderData(section11.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field21")));
+        Assert.assertTrue("value".equals(row.getProperty("field22")));
+        
+        //permission hidden section with store binder - field 23 & 24 (cat has permission)
+        rows = formData.getStoreBinderData(section12.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field23")));
+        Assert.assertTrue("value1".equals(row.getProperty("field24")));
+        
+        //permission readonly section with store binder - field 25 & 26 (cat has permission)
+        rows = formData.getStoreBinderData(section13.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field25")));
+        Assert.assertTrue("value1".equals(row.getProperty("field26")));
     }
     
     @Test
@@ -280,6 +356,38 @@ public class TestFormPermission {
         Element field18 = FormUtil.findElement("field18", form, formData);
         Assert.assertTrue(isSelectFieldHidden(field18, formData));
         
+        //normal section with store binder - field 19 & 20
+        Element section10 = FormUtil.findElement("section10", form, formData);
+        Assert.assertTrue(!isSectionHidden(section10, formData));
+        Element field19 = FormUtil.findElement("field19", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field19, formData));
+        Element field20 = FormUtil.findElement("field20", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field20, formData));
+        
+        //readonly section with store binder - field 21 & 22
+        Element section11 = FormUtil.findElement("section11", form, formData);
+        Assert.assertTrue(!isSectionHidden(section11, formData));
+        Element field21 = FormUtil.findElement("field21", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field21, formData));
+        Element field22 = FormUtil.findElement("field22", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field22, formData));
+        
+        //permission hidden section with store binder - field 23 & 24 (admin no permission)
+        Element section12 = FormUtil.findElement("section12", form, formData);
+        Assert.assertTrue(isSectionHidden(section12, formData));
+        Element field23 = FormUtil.findElement("field23", form, formData);
+        Assert.assertTrue(isTextFieldHidden(field23, formData));
+        Element field24 = FormUtil.findElement("field24", form, formData);
+        Assert.assertTrue(isSelectFieldHidden(field24, formData));
+        
+        //permission readonly section with store binder - field 25 & 26 (admin no permission)
+        Element section13 = FormUtil.findElement("section13", form, formData);
+        Assert.assertTrue(!isSectionHidden(section13, formData));
+        Element field25 = FormUtil.findElement("field25", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field25, formData));
+        Element field26 = FormUtil.findElement("field26", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field26, formData));
+        
         //VALIDATION
         populateSubmittedData(formData, "");
         formData = FormUtil.executeElementFormatDataForValidation(form, formData);
@@ -321,6 +429,23 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertTrue(!errors.containsKey("field17"));
         Assert.assertTrue(!errors.containsKey("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        Assert.assertTrue(errors.containsKey("field19"));
+        Assert.assertTrue(errors.containsKey("field20"));
+        
+        //readonly section with store binder - field 21 & 22
+        Assert.assertTrue(!errors.containsKey("field21"));
+        Assert.assertTrue(!errors.containsKey("field22"));
+        
+        //permission hidden section with store binder - field 23 & 24 (admin no permission)
+        Assert.assertTrue(!errors.containsKey("field23"));
+        Assert.assertTrue(!errors.containsKey("field24"));
+        
+        //permission readonly section with store binder - field 25 & 26 (admin no permission)
+        Assert.assertTrue(!errors.containsKey("field25"));
+        Assert.assertTrue(!errors.containsKey("field26"));
+        
         
         //STORE
         populateSubmittedData(formData, "value1");
@@ -364,6 +489,31 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertNull(row.getProperty("field17"));
         Assert.assertNull(row.getProperty("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        rows = formData.getStoreBinderData(section10.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field19")));
+        Assert.assertTrue("value1".equals(row.getProperty("field20")));
+        
+        //readonly section with store binder - field 21 & 22
+        rows = formData.getStoreBinderData(section11.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field21")));
+        Assert.assertTrue("value".equals(row.getProperty("field22")));
+        
+        //permission hidden section with store binder - field 23 & 24 (admin no permission)
+        rows = formData.getStoreBinderData(section12.getStoreBinder());
+        Assert.assertTrue(rows.isEmpty());
+        
+        //permission readonly section with store binder - field 25 & 26 (admin no permission)
+        rows = formData.getStoreBinderData(section13.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field25")));
+        Assert.assertTrue("value".equals(row.getProperty("field26")));
     }
     
     @Test
@@ -450,6 +600,38 @@ public class TestFormPermission {
         Element field18 = FormUtil.findElement("field18", form, formData);
         Assert.assertTrue(isSelectFieldHidden(field18, formData));
         
+        //normal section with store binder - field 19 & 20
+        Element section10 = FormUtil.findElement("section10", form, formData);
+        Assert.assertTrue(!isSectionHidden(section10, formData));
+        Element field19 = FormUtil.findElement("field19", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field19, formData));
+        Element field20 = FormUtil.findElement("field20", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field20, formData));
+        
+        //readonly section with store binder - field 21 & 22
+        Element section11 = FormUtil.findElement("section11", form, formData);
+        Assert.assertTrue(!isSectionHidden(section11, formData));
+        Element field21 = FormUtil.findElement("field21", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field21, formData));
+        Element field22 = FormUtil.findElement("field22", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field22, formData));
+        
+        //permission hidden section with store binder - field 23 & 24 (clark no permission)
+        Element section12 = FormUtil.findElement("section12", form, formData);
+        Assert.assertTrue(isSectionHidden(section12, formData));
+        Element field23 = FormUtil.findElement("field23", form, formData);
+        Assert.assertTrue(isTextFieldHidden(field23, formData));
+        Element field24 = FormUtil.findElement("field24", form, formData);
+        Assert.assertTrue(isSelectFieldHidden(field24, formData));
+        
+        //permission readonly section with store binder - field 25 & 26 (clark no permission)
+        Element section13 = FormUtil.findElement("section13", form, formData);
+        Assert.assertTrue(!isSectionHidden(section13, formData));
+        Element field25 = FormUtil.findElement("field25", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field25, formData));
+        Element field26 = FormUtil.findElement("field26", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field26, formData));
+        
         //VALIDATION
         populateSubmittedData(formData, "");
         formData = FormUtil.executeElementFormatDataForValidation(form, formData);
@@ -491,6 +673,22 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertTrue(!errors.containsKey("field17"));
         Assert.assertTrue(!errors.containsKey("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        Assert.assertTrue(errors.containsKey("field19"));
+        Assert.assertTrue(errors.containsKey("field20"));
+        
+        //readonly section with store binder - field 21 & 22
+        Assert.assertTrue(!errors.containsKey("field21"));
+        Assert.assertTrue(!errors.containsKey("field22"));
+        
+        //permission hidden section with store binder - field 23 & 24 (clark no permission)
+        Assert.assertTrue(!errors.containsKey("field23"));
+        Assert.assertTrue(!errors.containsKey("field24"));
+        
+        //permission readonly section with store binder - field 25 & 26 (clark no permission)
+        Assert.assertTrue(!errors.containsKey("field25"));
+        Assert.assertTrue(!errors.containsKey("field26"));
         
         //STORE
         populateSubmittedData(formData, "value1");
@@ -534,6 +732,31 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertNull(row.getProperty("field17"));
         Assert.assertNull(row.getProperty("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        rows = formData.getStoreBinderData(section10.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field19")));
+        Assert.assertTrue("value1".equals(row.getProperty("field20")));
+        
+        //readonly section with store binder - field 21 & 22
+        rows = formData.getStoreBinderData(section11.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field21")));
+        Assert.assertTrue("value".equals(row.getProperty("field22")));
+        
+        //permission hidden section with store binder - field 23 & 24 (clark no permission)
+        rows = formData.getStoreBinderData(section12.getStoreBinder());
+        Assert.assertTrue(rows.isEmpty());
+        
+        //permission readonly section with store binder - field 25 & 26 (clark no permission)
+        rows = formData.getStoreBinderData(section13.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field25")));
+        Assert.assertTrue("value".equals(row.getProperty("field26")));
     }
     
     @Test
@@ -620,6 +843,38 @@ public class TestFormPermission {
         Element field18 = FormUtil.findElement("field18", form, formData);
         Assert.assertTrue(isSelectFieldHidden(field18, formData));
         
+        //normal section with store binder - field 19 & 20
+        Element section10 = FormUtil.findElement("section10", form, formData);
+        Assert.assertTrue(!isSectionHidden(section10, formData));
+        Element field19 = FormUtil.findElement("field19", form, formData);
+        Assert.assertTrue(isTextFieldEditable(field19, formData));
+        Element field20 = FormUtil.findElement("field20", form, formData);
+        Assert.assertTrue(isSelectFieldEditable(field20, formData));
+        
+        //readonly section with store binder - field 21 & 22
+        Element section11 = FormUtil.findElement("section11", form, formData);
+        Assert.assertTrue(!isSectionHidden(section11, formData));
+        Element field21 = FormUtil.findElement("field21", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field21, formData));
+        Element field22 = FormUtil.findElement("field22", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field22, formData));
+        
+        //permission hidden section with store binder - field 23 & 24 (david has permission)
+        Element section12 = FormUtil.findElement("section12", form, formData);
+        Assert.assertTrue(isSectionHidden(section12, formData));
+        Element field23 = FormUtil.findElement("field23", form, formData);
+        Assert.assertTrue(isTextFieldHidden(field23, formData));
+        Element field24 = FormUtil.findElement("field24", form, formData);
+        Assert.assertTrue(isSelectFieldHidden(field24, formData));
+        
+        //permission readonly section with store binder - field 25 & 26 (david has permission)
+        Element section13 = FormUtil.findElement("section13", form, formData);
+        Assert.assertTrue(!isSectionHidden(section13, formData));
+        Element field25 = FormUtil.findElement("field25", form, formData);
+        Assert.assertTrue(isTextFieldReadonly(field25, formData));
+        Element field26 = FormUtil.findElement("field26", form, formData);
+        Assert.assertTrue(isSelectFieldReadonly(field26, formData));
+        
         //VALIDATION
         populateSubmittedData(formData, "");
         formData = FormUtil.executeElementFormatDataForValidation(form, formData);
@@ -661,6 +916,23 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertTrue(!errors.containsKey("field17"));
         Assert.assertTrue(!errors.containsKey("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        Assert.assertTrue(errors.containsKey("field19"));
+        Assert.assertTrue(errors.containsKey("field20"));
+        
+        //readonly section with store binder - field 21 & 22
+        Assert.assertTrue(!errors.containsKey("field21"));
+        Assert.assertTrue(!errors.containsKey("field22"));
+        
+        //permission hidden section with store binder - field 23 & 24 (david has permission)
+        Assert.assertTrue(!errors.containsKey("field23"));
+        Assert.assertTrue(!errors.containsKey("field24"));
+        
+        //permission readonly section with store binder - field 25 & 26 (david has permission)
+        Assert.assertTrue(!errors.containsKey("field25"));
+        Assert.assertTrue(!errors.containsKey("field26"));
+        
         
         //STORE
         populateSubmittedData(formData, "value1");
@@ -704,27 +976,37 @@ public class TestFormPermission {
         //hidden fields - field 17 & 18
         Assert.assertNull(row.getProperty("field17"));
         Assert.assertNull(row.getProperty("field18"));
+        
+        //normal section with store binder - field 19 & 20
+        rows = formData.getStoreBinderData(section10.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertTrue("true".equals(row.getProperty("isExecuted")));
+        Assert.assertTrue("value1".equals(row.getProperty("field19")));
+        Assert.assertTrue("value1".equals(row.getProperty("field20")));
+        
+        //readonly section with store binder - field 21 & 22
+        rows = formData.getStoreBinderData(section11.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field21")));
+        Assert.assertTrue("value".equals(row.getProperty("field22")));
+        
+        //permission hidden section with store binder - field 23 & 24 (david has permission)
+        rows = formData.getStoreBinderData(section12.getStoreBinder());
+        Assert.assertTrue(rows.isEmpty());
+        
+        //permission readonly section with store binder - field 25 & 26 (david has permission)
+        rows = formData.getStoreBinderData(section13.getStoreBinder());
+        row = rows.get(0);
+        Assert.assertNull(row.getProperty("isExecuted"));
+        Assert.assertTrue("value".equals(row.getProperty("field25")));
+        Assert.assertTrue("value".equals(row.getProperty("field26")));
     }
     
     protected void populateSubmittedData(FormData formData, String value){
-        formData.addRequestParameterValues("field1", new String[]{value});
-        formData.addRequestParameterValues("field2", new String[]{value});
-        formData.addRequestParameterValues("field3", new String[]{value});
-        formData.addRequestParameterValues("field4", new String[]{value});
-        formData.addRequestParameterValues("field5", new String[]{value});
-        formData.addRequestParameterValues("field6", new String[]{value});
-        formData.addRequestParameterValues("field7", new String[]{value});
-        formData.addRequestParameterValues("field8", new String[]{value});
-        formData.addRequestParameterValues("field9", new String[]{value});
-        formData.addRequestParameterValues("field10", new String[]{value});
-        formData.addRequestParameterValues("field11", new String[]{value});
-        formData.addRequestParameterValues("field12", new String[]{value});
-        formData.addRequestParameterValues("field13", new String[]{value});
-        formData.addRequestParameterValues("field14", new String[]{value});
-        formData.addRequestParameterValues("field15", new String[]{value});
-        formData.addRequestParameterValues("field16", new String[]{value});
-        formData.addRequestParameterValues("field17", new String[]{value});
-        formData.addRequestParameterValues("field18", new String[]{value});
+        for (int i = 1; i <= 26; i++) {
+            formData.addRequestParameterValues("field"+i, new String[]{value});
+        }
     }
     
     protected boolean isSectionHidden(Element e, FormData formData) {
