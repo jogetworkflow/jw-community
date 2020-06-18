@@ -33,6 +33,8 @@
                 });
             }
 
+            Nav.renderTags();
+            
             var showInfoActive = $.cookie("showInfoActive");
             if (showInfoActive === "true") {
                 Nav.showInfo();
