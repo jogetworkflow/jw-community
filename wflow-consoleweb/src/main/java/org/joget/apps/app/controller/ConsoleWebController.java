@@ -1520,21 +1520,23 @@ public class ConsoleWebController {
                 appDefMap.put(appDef.getVersion(), appDef);
             }            
             
-            // get app versions from Git
-            try {
-                AppDefinition appDef = appDefList.iterator().next();
-                List<String> branches = AppDevUtil.getAppGitBranches(appDef);
-                for (String branch: branches) {
-                    StringTokenizer st = new StringTokenizer(branch, "_");
-                    String version = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
-                    if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
-                        AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
-                        tempAppDef.setDescription("Git: " + branch);
-                        appDefMap.put(tempAppDef.getVersion(), tempAppDef);
-                    }
-                }            
-            } catch(Exception e) {
-                LogUtil.error(getClass().getName(), e, e.getMessage());
+            if (!AppDevUtil.isGitDisabled()) {
+                // get app versions from Git
+                try {
+                    AppDefinition appDef = appDefList.iterator().next();
+                    List<String> branches = AppDevUtil.getAppGitBranches(appDef);
+                    for (String branch: branches) {
+                        StringTokenizer st = new StringTokenizer(branch, "_");
+                        String version = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                        if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
+                            AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
+                            tempAppDef.setDescription("Git: " + branch);
+                            appDefMap.put(tempAppDef.getVersion(), tempAppDef);
+                        }
+                    }            
+                } catch(Exception e) {
+                    LogUtil.error(getClass().getName(), e, e.getMessage());
+                }
             }
         }
         // reverse sort versions

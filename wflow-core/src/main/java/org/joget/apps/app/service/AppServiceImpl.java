@@ -2576,24 +2576,26 @@ public class AppServiceImpl implements AppService {
         newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
         LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
         
-        Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
-        String filename = "appConfig.xml";
-        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        if (commitConfig) {
-            String xml = AppDevUtil.getAppConfigXml(newAppDef);
-            String commitMessage =  "Update app config " + newAppDef.getId();
+        if (!AppDevUtil.isGitDisabled()) {
+            Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
+            String filename = "appConfig.xml";
+            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            if (commitConfig) {
+                String xml = AppDevUtil.getAppConfigXml(newAppDef);
+                String commitMessage =  "Update app config " + newAppDef.getId();
+                AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+            } else {
+                AppDevUtil.fileDelete(newAppDef, filename, null);
+            }
+
+            filename = "appDefinition.xml";
+            String xml = AppDevUtil.getAppDefinitionXml(newAppDef);
+            String commitMessage = "Update app definition " + newAppDef.getId();
             AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
-        } else {
-            AppDevUtil.fileDelete(newAppDef, filename, null);
+
+            AppDevUtil.dirSyncAppPlugins(newAppDef);
+            AppDevUtil.dirSyncAppResources(newAppDef);
         }
-        
-        filename = "appDefinition.xml";
-        String xml = AppDevUtil.getAppDefinitionXml(newAppDef);
-        String commitMessage = "Update app definition " + newAppDef.getId();
-        AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
-        
-        AppDevUtil.dirSyncAppPlugins(newAppDef);
-        AppDevUtil.dirSyncAppResources(newAppDef);
         
         AppDevUtil.setImportApp(null);
 
