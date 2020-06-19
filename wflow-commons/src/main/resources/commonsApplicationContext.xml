@@ -33,7 +33,7 @@
      <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices"> 
          <property name="serverId" value="btm-joget" /> 
          <property name="journal" value="null" /> 
-         <property name="DefaultTransactionTimeout" value="300" /> 
+         <property name="DefaultTransactionTimeout" value="900" /> 
      </bean> 
 
      <bean id="bitronixTransactionManager" factory-method="getTransactionManager" 
