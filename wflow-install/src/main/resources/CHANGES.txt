@@ -3,6 +3,23 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.6
+================
+6b44e1d5 Fixed: wflow-core - Builder - Advanced Tool - Usages not working when virtualhost mode is enabled. @7.0-SNAPSHOT
+31cf772a Fixed: wflow-commons - Increase default transaction timeout to 900. @7.0-SNAPSHOT
+060f4db6 Fixed: wflow-consoleweb - Design App - Search by tag is not working until "Show Tags" button clicked once. #7926 @7.0-SNAPSHOT
+96fe65e4 Fixed: wflow-core - Form - CSRF error when submit form during page still loading. #7920 @7.0-SNAPSHOT
+78e7ecf2 Fixed: wflow-core - Form Builder - Permission readonly section still execute store binder. @7.0-SNAPSHOT
+e7b2075d Fixed: wflow-core - Form Builder - Regression of 597658b. Programmatically set element to readonly is not handled correctly. @7.0-SNAPSHOT
+7810960e Fixed: wflow-core - Hash Variable - Regression of a713d8b. Expression Hash Variable with "?" character can't work correctly. #7914 @7.0-SNAPSHOT
+f87b4ffa Fixed: wflow-core - Git - Support disable Git feature by adding "-Dgit.disabled=true" to JAVA_OPTS. @7.0-SNAPSHOT
+ccbdb86a Fixed: jw-community - Security - Upgrade xercesImpl to 2.12.0 for CVE-2012-0881.  @6.0-SNAPSHOT
+79d5734e Fixed: wflow-core - Run Process/Form Menu - Redirection after form submitted is not handle correctly. #7883 @6.0-SNAPSHOT
+f11aecd6 Fixed: wflow-core - Import app - Improve processing time. #7888 @7.0-SNAPSHOT
+42328225 Fixed: wflow-core - Run Process Menu - when action after form saved is set to reload window, new process instance is keep started indefinitely. #7886 @7.0-SNAPSHOT
+aee9d2f7 Fixed: wflow-commons - I18N - Message with arguments are not able to pick up custom message added in Manage Messages. #7878 @7.0-SNAPSHOT
+597658b9 Fixed: wflow-core - Form Builder - Advanced Tool - Permission - Elements in section does not follow readonly set in section. #7858 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.5
 ================
 f725b490 Fixed: wflow-consoleweb - PresenceManager - Prevent NPE. #7816 @7.0-SNAPSHOT
