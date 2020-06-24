@@ -46,6 +46,10 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
     @Override
     public void saveOrUpdate(PackageDefinition packageDef) {   
+        if (packageDef.getDateCreated() == null) {
+            packageDef.setDateCreated(new Date());
+        }
+        packageDef.setDateModified(new Date());
         super.saveOrUpdate(packageDef);
         appDefinitionDao.updateDateModified(packageDef.getAppDefinition());
         

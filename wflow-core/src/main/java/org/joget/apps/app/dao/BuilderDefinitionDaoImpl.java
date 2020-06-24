@@ -105,6 +105,8 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
 
     @Override
     public boolean add(BuilderDefinition object) {
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         
@@ -123,15 +125,12 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
-        
-        // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         return result;
     }
 
     @Override
     public boolean update(BuilderDefinition object) {
+        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -154,8 +153,6 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         // remove from cache
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
-        // save in db
-        object.setDateModified(new Date());
         return result;
     }
 

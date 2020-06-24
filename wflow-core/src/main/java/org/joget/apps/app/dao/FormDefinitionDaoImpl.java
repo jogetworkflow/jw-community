@@ -8,6 +8,8 @@ import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.transform.ResultTransformer;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -61,11 +63,45 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
      */
     @Override
     public Collection<FormDefinition> loadFormDefinitionByTableName(String tableName) {
-        // load the form definitions
-        String condition = " WHERE e.tableName=?";
+        Session session = findSession();
+        String query = "SELECT e.id, e.appId, e.appVersion, e.dateModified, e.json, e.appDefinition.license FROM " + ENTITY_NAME + " e " + " WHERE e.tableName=? ORDER BY e.dateModified";
         Object[] params = {tableName};
-        Collection<FormDefinition> results = find(getEntityName(), condition, params, null, null, 0, -1);
-        return results;
+        Query q = session.createQuery(query);
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+        
+        q.setResultTransformer(
+            new ResultTransformer() {
+                @Override
+                public Object transformTuple(Object[] tuple, String[] aliases) {
+                    FormDefinition def = new FormDefinition();
+                    def.setId((String) tuple[0]);
+                    def.setAppId((String) tuple[1]);
+                    def.setAppVersion(((Number) tuple[2]).longValue());
+                    def.setDateModified((Date) tuple[3]);
+                    def.setJson((String) tuple[4]);
+                    AppDefinition appDef = new AppDefinition();
+                    appDef.setAppId(def.getAppId());
+                    appDef.setVersion(def.getAppVersion());
+                    appDef.setLicense((String) tuple[5]);
+                    def.setAppDefinition(appDef);
+                    return def;
+                }
+
+                @Override
+                public List transformList(List tuples) {
+                    return tuples;
+                }
+            }
+        );
+
+        return (Collection<FormDefinition>) q.list();
     }
 
     public Collection<FormDefinition> getFormDefinitionList(String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
@@ -123,6 +159,8 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     
     @Override
     public boolean add(FormDefinition object) {
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -140,14 +178,13 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         // clear cache
         formColumnCache.remove(object.getTableName());
         
-        // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         return result;
     }
 
     @Override
     public boolean update(FormDefinition object) {
+        // update object
+        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -166,8 +203,6 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         formColumnCache.remove(object.getTableName());
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
-        // update object
-        object.setDateModified(new Date());
         return result;
     }
 

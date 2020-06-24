@@ -99,6 +99,7 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean update(AppResource object) {
+        object.setDateModified(new Date());
         object.getAppDefinition().setDateModified(new Date());
         boolean result = super.update(object);
         
@@ -118,6 +119,8 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean add(AppResource object) {
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
         object.getAppDefinition().setDateModified(new Date());
         boolean result = super.add(object);
         
