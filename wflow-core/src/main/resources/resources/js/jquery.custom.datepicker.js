@@ -55,6 +55,21 @@
                     };
                 }
                 
+                if ($(element).val() === "" && o.yearRange !== undefined && o.datePickerType !== "timeOnly") {
+                    var yearRange = o.yearRange;
+                    if (yearRange.indexOf("-", 1) > 0) {
+                        yearRange = yearRange.substring(yearRange.indexOf("-", 1));
+                        o.defaultDate = yearRange + "y";
+                    } else if (yearRange.substring(yearRange.indexOf(":") + 1).length === 4) {
+                        yearRange = yearRange.substring(yearRange.indexOf(":") + 1);
+                        var d = new Date();
+                        if (yearRange < d.getFullYear()) {
+                            d.setFullYear(yearRange);
+                            o.defaultDate = d;
+                        }
+                    }
+                }
+                
                 if (o.datePickerType === "dateTime") {
                     $(element).datetimepicker(o);
                 } else if (o.datePickerType === "timeOnly") {
