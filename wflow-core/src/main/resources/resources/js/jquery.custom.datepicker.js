@@ -57,10 +57,13 @@
                 
                 if ($(element).val() === "" && o.yearRange !== undefined && o.datePickerType !== "timeOnly") {
                     var yearRange = o.yearRange;
-                    if (yearRange.indexOf("-", 1) > 0) {
-                        yearRange = yearRange.substring(yearRange.indexOf("-", 1));
+                    if (yearRange.indexOf("-", 2) > 0) {
+                        yearRange = yearRange.substring(yearRange.indexOf("-", 2));
                         o.defaultDate = yearRange + "y";
-                    } else if (yearRange.substring(yearRange.indexOf(":") + 1).length === 4) {
+                    } else if (yearRange.indexOf(":c") < 0 
+                            && yearRange.indexOf(":+") < 0 
+                            && yearRange.indexOf(":-") < 0 
+                            && yearRange.substring(yearRange.indexOf(":") + 1).length === 4) {
                         yearRange = yearRange.substring(yearRange.indexOf(":") + 1);
                         var d = new Date();
                         if (yearRange < d.getFullYear()) {
