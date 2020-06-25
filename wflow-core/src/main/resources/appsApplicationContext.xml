@@ -69,6 +69,7 @@
     <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" >
         <property name="sessionFactory" ref="formDataSessionFactory" />
         <property name="formDefinitionDao" ref="formDefinitionDao" />
+        <property name="builderDefinitionDao" ref="builderDefinitionDao" />
         <property name="formService" ref="formService" />
         <property name="formColumnCache" ref="formColumnCache" />
         <property name="formSessionFactoryCache" ref="formSessionFactoryCache" />

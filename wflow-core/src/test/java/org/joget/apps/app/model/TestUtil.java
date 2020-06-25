@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
@@ -36,5 +37,42 @@ public class TestUtil {
             }
         }
         return fileContents;
+    }
+    
+    public static AppDefinition createAppDefinition(String id, Long version) {
+        // create test app
+        AppDefinition appDef = new AppDefinition();
+        appDef.setId(id);
+        appDef.setVersion(version);
+        appDef.setName(id);
+
+        // save test app
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        appService.createAppDefinition(appDef);
+
+        return appDef;
+    }
+    
+    public static FormDefinition createFormDefinition(AppDefinition appDef, String formId, String tableName, String fileName) throws IOException {
+        // create test form
+        FormDefinition formDef = new FormDefinition();
+        formDef.setId(formId);
+        formDef.setAppId(appDef.getAppId());
+        formDef.setAppVersion(appDef.getVersion());
+        formDef.setAppDefinition(appDef);
+        formDef.setName(formId);
+        formDef.setTableName(tableName);
+        String jsonFileName = "/forms/" + fileName + ".json";
+        String formJson = readFile(jsonFileName);
+        if (formJson == null || formJson.trim().isEmpty()) {
+            formJson = "{ \"className\":\"org.joget.apps.form.model.Form\" }";
+        }
+        formDef.setJson(formJson);
+
+        // save test form
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        appService.createFormDefinition(appDef, formDef);
+
+        return formDef;
     }
 }
