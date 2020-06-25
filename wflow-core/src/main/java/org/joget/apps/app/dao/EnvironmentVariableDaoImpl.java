@@ -59,8 +59,6 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
 
     @Override
     public boolean add(EnvironmentVariable object) {
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         
@@ -83,7 +81,6 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     
     @Override
     public boolean update(EnvironmentVariable object) {
-        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         

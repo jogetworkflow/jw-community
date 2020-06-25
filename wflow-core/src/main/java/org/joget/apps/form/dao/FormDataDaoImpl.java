@@ -48,7 +48,9 @@ import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.FormColumnCache;
+import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
@@ -1255,15 +1257,39 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             LogUtil.debug("", "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            
-            Set<String> formTableColumns = FormColumnsData.getFormColumnNames(tableName, checkDuplicateMap);
+            Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
             Set<String> customTableColumns = null;
             if (appDef != null) {
                 customTableColumns = CustomFormDataTableUtil.getColumns(appDef, tableName);
             }
-            if ((formTableColumns != null && !formTableColumns.isEmpty()) || (customTableColumns != null && !customTableColumns.isEmpty())) {
-                if (formTableColumns != null && !formTableColumns.isEmpty()) {
-                    columnList.addAll(formTableColumns);
+            if ((formList != null && !formList.isEmpty()) || (customTableColumns != null && !customTableColumns.isEmpty())) {
+                if (formList != null && !formList.isEmpty()) {
+                    for (FormDefinition formDef : formList) {
+                        // get JSON
+                        String json = formDef.getJson();
+                        if (json != null) {
+                            try {
+                                Form form = (Form) getFormService().createElementFromJson(json, false);
+                                Collection<String> tempColumnList = new HashSet<String>();
+                                findAllElementIds(form, tempColumnList);
+
+                                LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                                for (String c : tempColumnList) {
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
+                                        columnList.add(c);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
+                            }
+                        }
+                    }
                 }
                 if (customTableColumns != null && !customTableColumns.isEmpty()) {
                     for (String c : customTableColumns) {
@@ -1295,7 +1321,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
         return columnList;
     }
-
+    
     /**
      * Returns EntityName of form mapped to a table & column
      * @param tableName
@@ -1323,6 +1349,32 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
         }
         return null;
+    }
+
+    /**
+     * Recurse into child elements to find add all element property ID to columnList.
+     * @param element
+     * @param columnList
+     */
+    protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
+        Collection<String> fieldNames = element.getDynamicFieldNames();
+        if (fieldNames != null && !fieldNames.isEmpty()) {
+            columnList.addAll(fieldNames);
+        }
+        if (!(element instanceof FormContainer) && element.getProperties() != null) {
+            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+            if (id != null && !id.isEmpty()) {
+                columnList.add(id);
+            }
+        }
+        if (!(element instanceof AbstractSubForm)) { // do not recurse into subforms
+            Collection<org.joget.apps.form.model.Element> children = element.getChildren();
+            if (children != null) {
+                for (org.joget.apps.form.model.Element child : children) {
+                    findAllElementIds(child, columnList);
+                }
+            }
+        }
     }
 
     protected void closeSession(Session session) {

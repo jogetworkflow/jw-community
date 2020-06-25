@@ -164,7 +164,6 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public boolean update(Message object) {
         String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
         cache.remove(key);
-        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         
@@ -182,8 +181,6 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     
     @Override
     public boolean add(Message object) {
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         

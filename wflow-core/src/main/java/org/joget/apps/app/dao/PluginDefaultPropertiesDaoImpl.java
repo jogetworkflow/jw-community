@@ -59,8 +59,6 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
     @Override
     public boolean add(PluginDefaultProperties object) {
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         
@@ -86,7 +84,6 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     
     @Override
     public boolean update(PluginDefaultProperties object) {
-        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         

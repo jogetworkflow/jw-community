@@ -90,8 +90,6 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
 
     @Override
     public boolean add(UserviewDefinition object) {
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -105,12 +103,15 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
+        
+        // save in db
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
         return result;
     }
 
     @Override
     public boolean update(UserviewDefinition object) {
-        object.setDateModified(new Date());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -128,6 +129,7 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
         // remove from cache and save in db
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
+        object.setDateModified(new Date());
         return result;
     }
 
