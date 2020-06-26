@@ -22,6 +22,7 @@ import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -116,7 +117,12 @@ public class UserviewBuilderWebController {
 
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
-        userview.setName(userviewService.getUserviewName(json));
+        
+        String name = StringUtil.stripAllHtmlTag(userviewService.getUserviewName(json));
+        if (name.length() > 255) {
+            name = name.substring(0, 255);
+        }
+        userview.setName(name);
         userview.setDescription(userviewService.getUserviewDescription(json));
         userview.setJson(PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), json));
 
