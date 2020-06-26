@@ -311,10 +311,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 if (!FormUtil.PROPERTY_ID.equals(sortProperty) && !FormUtil.PROPERTY_DATE_CREATED.equals(sortProperty) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(sortProperty)
                          && !FormUtil.PROPERTY_CREATED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(sortProperty)
                          && !FormUtil.PROPERTY_MODIFIED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(sortProperty)) {
-                    Collection<String> columnNames = getFormDefinitionColumnNames(tableName);
-                    if (columnNames.contains(sort)) {
-                        sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sort;
-                    }
+                    sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sort;
                 }
                 query += " ORDER BY cast(e." + sortProperty + " as string)";
 
@@ -814,6 +811,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
             
         if (actionType == ACTION_TYPE_LOAD) {
+            boolean mappingFileExist = true;
             // find existing persistent class for comparison
             if (sf != null) {
                 net.sf.ehcache.Element pcElement = formPersistentClassCache.get(getPersistentClassCacheKey(entityName));
@@ -842,6 +840,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     }
                     // save into cache
                     formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
+                } else {
+                    mappingFileExist = false;
                 }
             }
             if (pc != null) {
@@ -855,7 +855,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
                 if (!changes) {
                     // get form fields
-                    Collection<String> formFields = getFormDefinitionColumnNames(tableName);
+                    Collection<String> formFields = null;
+                    if (mappingFileExist) {
+                        formFields = syncFormDefinitionColumnNamesCache(tableName);
+                    } else {
+                        formFields = getFormDefinitionColumnNames(tableName);
+                    }
 
                     //formFields is null when cache is refreshing
                     if (formFields != null && !formFields.isEmpty()) {
@@ -974,21 +979,6 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         } else {
             // column names from all forms mapped to this table
             formFields = getFormDefinitionColumnNames(tableName);
-            
-            //mapping file not exist & cache not ready, wait for it
-            try {
-                int count = 0;
-                while (formFields == null && count < 100) { //try for 10sec
-                    if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
-                        LogUtil.debug(FormDataDaoImpl.class.getName(), "cache " + tableName + " is not ready! waiting...");
-                    }
-                    Thread.sleep(100);
-                    formFields = getFormDefinitionColumnNames(tableName);
-                    count++;
-                }
-            } catch (Exception e) {
-                LogUtil.error(FormDataDaoImpl.class.getName(), e, tableName);
-            }
         }
 
         // load default FormRow hbm xml
@@ -1274,15 +1264,102 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public Collection<String> getFormDefinitionColumnNames(String tableName) {
         Collection<String> columnList;
+        Map<String, String> checkDuplicateMap = new HashMap<String, String>();
 
         // strip table prefix
         if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
             tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
         }
 
+        // get forms mapped to the table name
+        columnList = formColumnCache.get(tableName);
+        if (columnList == null) {
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
+            columnList = new HashSet<String>();
+
+            Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
+            Collection<BuilderDefinition> builderDefs = getBuilderDefinitionDao().find(" and type = ? and id = ?", new String[]{CustomFormDataTableUtil.TYPE, FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName}, null, null, null, null, null);
+
+            if ((formList != null && !formList.isEmpty()) || (builderDefs != null && !builderDefs.isEmpty())) {
+                if (formList != null && !formList.isEmpty()) {
+                    for (FormDefinition formDef : formList) {
+                        // get JSON
+                        String json = formDef.getJson();
+                        if (json != null) {
+                            try {
+                                Form form = (Form) getFormService().createElementFromJson(json, false);
+                                Collection<String> tempColumnList = new HashSet<String>();
+                                findAllElementIds(form, tempColumnList);
+
+                                LogUtil.debug(FormDataDaoImpl.class.getName(), "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                                for (String c : tempColumnList) {
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
+                                        columnList.add(c);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
+                            }
+                        }
+                    }
+                }
+                if (builderDefs != null && !builderDefs.isEmpty()) {
+                    for (BuilderDefinition def : builderDefs) {
+                        try {
+                            JSONObject defObj = new JSONObject(def.getJson());
+                            JSONObject columnsObj = defObj.getJSONObject("columns");
+                            Iterator keys = columnsObj.keys();
+                            while (keys.hasNext()) {
+                                String c = (String) keys.next();
+                                if (!c.isEmpty()) {
+                                    String exist = checkDuplicateMap.get(c.toLowerCase());
+                                    if (exist != null && !exist.equals(c)) {
+                                        LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                        columnList.remove(exist);
+                                    }
+                                    checkDuplicateMap.put(c.toLowerCase(), c);
+                                    columnList.add(c);
+                                }
+                            }
+                        } catch (Exception e) {
+                            LogUtil.error(FormDataDaoImpl.class.getName(), e, "fail to retrieve columns for custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]");
+                        }
+                    }
+                }
+
+                //remove predefined column
+                columnList.remove(FormUtil.PROPERTY_ID);
+                columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
+                columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
+                columnList.remove(FormUtil.PROPERTY_CREATED_BY);
+                columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
+                columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
+                columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
+                formColumnCache.put(tableName, columnList);
+            }
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
+        }
+        return columnList;
+    }
+    
+    public Collection<String> syncFormDefinitionColumnNamesCache(String tableName) {
+        Collection<String> columnList;
+        // strip table prefix
+        if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
+            tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
+        }
+        
         final String fTableName = tableName;
         final String profile = HostManager.getCurrentProfile();
-        // get forms mapped to the table name
+        
         columnList = formColumnCache.get(tableName);
         if (columnList == null) {
             if (!cacheInProgress.contains(profile + ":" + fTableName)) {
@@ -1290,7 +1367,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 Thread startThread = new PluginThread(new Runnable() {
                     @Override
                     public void run() {
-                        syncFormDefinitionColumnNamesCache(fTableName);
+                        getFormDefinitionColumnNames(fTableName);
                         cacheInProgress.remove(profile + ":" + fTableName);
                     }
                 });
@@ -1299,84 +1376,6 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
         }
         return columnList;
-    }
-    
-    public void syncFormDefinitionColumnNamesCache(String tableName) {
-        Collection<String> columnList;
-        Map<String, String> checkDuplicateMap = new HashMap<String, String>();
-        
-        LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
-        columnList = new HashSet<String>();
-
-        Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
-        Collection<BuilderDefinition> builderDefs = getBuilderDefinitionDao().find(" and type = ? and id = ?", new String[]{CustomFormDataTableUtil.TYPE, FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName}, null, null, null, null, null);
-        
-        if ((formList != null && !formList.isEmpty()) || (builderDefs != null && !builderDefs.isEmpty())) {
-            if (formList != null && !formList.isEmpty()) {
-                for (FormDefinition formDef : formList) {
-                    // get JSON
-                    String json = formDef.getJson();
-                    if (json != null) {
-                        try {
-                            Form form = (Form) getFormService().createElementFromJson(json, false);
-                            Collection<String> tempColumnList = new HashSet<String>();
-                            findAllElementIds(form, tempColumnList);
-
-                            LogUtil.debug(FormDataDaoImpl.class.getName(), "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
-                            for (String c : tempColumnList) {
-                                if (!c.isEmpty()) {
-                                    String exist = checkDuplicateMap.get(c.toLowerCase());
-                                    if (exist != null && !exist.equals(c)) {
-                                        LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                        columnList.remove(exist);
-                                    }
-                                    checkDuplicateMap.put(c.toLowerCase(), c);
-                                    columnList.add(c);
-                                }
-                            }
-                        } catch (Exception e) {
-                            LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
-                        }
-                    }
-                }
-            }
-            if (builderDefs != null && !builderDefs.isEmpty()) {
-                for (BuilderDefinition def : builderDefs) {
-                    try {
-                        JSONObject defObj = new JSONObject(def.getJson());
-                        JSONObject columnsObj = defObj.getJSONObject("columns");
-                        Iterator keys = columnsObj.keys();
-                        while (keys.hasNext()) {
-                            String c = (String) keys.next();
-                            if (!c.isEmpty()) {
-                                String exist = checkDuplicateMap.get(c.toLowerCase());
-                                if (exist != null && !exist.equals(c)) {
-                                    LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                    columnList.remove(exist);
-                                }
-                                checkDuplicateMap.put(c.toLowerCase(), c);
-                                columnList.add(c);
-                            }
-                        }
-                    } catch (Exception e) {
-                        LogUtil.error(FormDataDaoImpl.class.getName(), e, "fail to retrieve columns for custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]");
-                    }
-                }
-            }
-
-            //remove predefined column
-            columnList.remove(FormUtil.PROPERTY_ID);
-            columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
-            columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
-            columnList.remove(FormUtil.PROPERTY_CREATED_BY);
-            columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
-            columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
-            columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
-
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
-            formColumnCache.put(tableName, columnList);
-        }
-        LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
     }
     
     /**
