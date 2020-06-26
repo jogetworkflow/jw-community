@@ -3,6 +3,7 @@ package org.joget.apps.app.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.activation.FileDataSource;
+import javax.activation.URLDataSource;
 import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
@@ -1142,28 +1144,52 @@ public class AppUtil implements ApplicationContextAware {
             formData.setPrimaryKeyValue(primaryKey);
             Form loadForm = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, formData, null, null);
 
+            Set<String> inlineImages = new HashSet<String>();
             for (Object o : fields) {
                 Map mapping = (HashMap) o;
                 String fieldId = mapping.get("field").toString();
+                String embed = (String) mapping.get("embed");
 
                 try {
                     Element el = FormUtil.findElement(fieldId, loadForm, formData);
-
                     String value = FormUtil.getElementPropertyValue(el, formData);
+                    if (value.contains("/web/client/app/") && value.contains("/form/download/")) {
+                        value = retrieveFileNames(value, appDef.getAppId(), formDefId, primaryKey);
+                    }
                     if (value != null && !value.isEmpty()) {
                         String values[] = value.split(";");
                         for (String v : values) {
                             if (!v.isEmpty()) {
                                 File file = FileUtil.getFile(v, loadForm, primaryKey);
-                                if (file != null) {
+                                if (file != null && file.exists()) {
                                     FileDataSource fds = new FileDataSource(file);
-                                    email.attach(fds, MimeUtility.encodeText(file.getName()), "");
+                                    String name = MimeUtility.encodeText(file.getName());
+                                    if (embed != null && "true".equalsIgnoreCase(embed)) {
+                                        email.embed(fds, name, name);
+                                        inlineImages.add(file.getName());
+                                    } else {
+                                        email.attach(fds, name, "");
+                                    }
                                 }
                             }
                         }
                     }
                 } catch(Exception e){
                     LogUtil.info(EmailTool.class.getName(), "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
+                }
+            }
+            
+            if (!inlineImages.isEmpty()) {
+                try {
+                    Field htmlField = HtmlEmail.class.getDeclaredField("html");
+                    htmlField.setAccessible(true);
+                    String html = (String) htmlField.get(email);
+                    if (html != null && !html.isEmpty()) {
+                        html = replaceInlineFormImageToCid(html, appDef.getAppId(), formDefId, primaryKey, inlineImages);
+                        email.setHtmlMsg(html);
+                    }
+                } catch (Exception e) {
+                    LogUtil.warn(AppUtil.class.getName(), "Not able to replace image in HTML to embed attachment content id.");
                 }
             }
         }
@@ -1178,19 +1204,32 @@ public class AppUtil implements ApplicationContextAware {
                 String path = mapping.get("path").toString();
                 String fileName = mapping.get("fileName").toString();
                 String type = mapping.get("type").toString();
+                String embed = (String) mapping.get("embed");
 
                 try {
-
-                    if ("system".equals(type)) {
-                        EmailAttachment attachment = new EmailAttachment();
-                        attachment.setPath(path);
-                        attachment.setName(MimeUtility.encodeText(fileName));
-                        email.attach(attachment);
+                    String name = MimeUtility.encodeText(fileName);
+                    if (embed != null && "true".equalsIgnoreCase(embed)) {
+                        if ("system".equals(type)) {
+                            File file = new File(fileName);
+                            if (file.exists()) {
+                                FileDataSource fds = new FileDataSource(file);
+                                email.embed(fds, name, name);
+                            }
+                        } else {
+                            URL u = new URL(path);
+                            email.embed(new URLDataSource(u), name, name);
+                        }
                     } else {
-                        URL u = new URL(path);
-                        email.attach(u, MimeUtility.encodeText(fileName), "");
+                        if ("system".equals(type)) {
+                            EmailAttachment attachment = new EmailAttachment();
+                            attachment.setPath(path);
+                            attachment.setName(name);
+                            email.attach(attachment);
+                        } else {
+                            URL u = new URL(path);
+                            email.attach(u, name, "");
+                        }
                     }
-
                 } catch(Exception e){
                     LogUtil.info(EmailTool.class.getName(), "Attached file fail from path \"" + path + "\"");
                     e.printStackTrace();
@@ -1198,6 +1237,29 @@ public class AppUtil implements ApplicationContextAware {
             }
         }
         attachIcal(email, properties, wfAssignment, appDef);
+    }
+    
+    protected static String retrieveFileNames(String content, String appId, String formId, String primaryKey) {
+        Set<String> values = new HashSet<String>();
+        
+        Pattern pattern = Pattern.compile("<img[^>]*src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/([^\"]*)\\.\"[^>]*>");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            String fileName = matcher.group(1);
+            values.add(fileName);
+        }
+        
+        return String.join(";", values);
+    }
+    
+    protected static String replaceInlineFormImageToCid(String html, String appId, String formId, String primaryKey, Set<String> inlineImages) {
+        for (String name : inlineImages) {
+            if (!(html.contains("/web/client/app/") && html.contains("/form/download/"))) {
+                break;
+            }
+            html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+StringUtil.escapeString(name, StringUtil.TYPE_URL, null)+"\""));
+        }
+        return html;
     }
     
     protected static void attachIcal(final HtmlEmail email, Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef) {

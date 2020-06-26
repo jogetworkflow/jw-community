@@ -129,6 +129,11 @@
             label:'@@app.emailtool.fieldId@@',
             options_ajax_on_change : 'formDefId',
             options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
+        },
+        {
+            key:'embed',
+            label:'@@app.emailtool.embed@@',
+            type:'truefalse'
         }]
     },
     {
@@ -154,6 +159,11 @@
         {
             key:'fileName',
             label:'@@app.emailtool.fileName@@'
+        },
+        {
+            key:'embed',
+            label:'@@app.emailtool.embed@@',
+            type:'truefalse'
         }]
     },
     {
