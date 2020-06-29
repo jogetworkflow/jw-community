@@ -38,7 +38,7 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            if (value == null || value.trim().isEmpty()) {
+            if ((value == null || value.trim().isEmpty()) && !FormUtil.isReadonly(this, formData)) {
                 // generate new value
                 value = getGeneratedValue(formData);
                 
