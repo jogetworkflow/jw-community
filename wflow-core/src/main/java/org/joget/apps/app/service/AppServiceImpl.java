@@ -2374,7 +2374,7 @@ public class AppServiceImpl implements AppService {
         
         AppDevUtil.setImportApp(true);
         
-        LogUtil.debug(getClass().getName(), "Importing app " + appDef.getId());        
+        LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");        
         AppDefinition newAppDef = new AppDefinition();
         newAppDef.setAppId(appId);
         newAppDef.setVersion(appVersion);
@@ -2419,6 +2419,7 @@ public class AppServiceImpl implements AppService {
                 }
                 throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
             }
+            LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
         }
         
         if (appDef.getDatalistDefinitionList() != null) {
@@ -2427,6 +2428,7 @@ public class AppServiceImpl implements AppService {
                 datalistDefinitionDao.add(o);
                 LogUtil.debug(getClass().getName(), "Added list " + o.getId());
             }
+            LogUtil.info(getClass().getName(), "Imported datalist definitions : " + appDef.getDatalistDefinitionList().size());
         }
         
         if (appDef.getUserviewDefinitionList() != null) {
@@ -2441,6 +2443,7 @@ public class AppServiceImpl implements AppService {
                 userviewDefinitionDao.add(o);
                 LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
             }
+            LogUtil.info(getClass().getName(), "Imported userview definitions : " + appDef.getUserviewDefinitionList().size());
         }
         
         if (appDef.getBuilderDefinitionList() != null) {
@@ -2459,6 +2462,7 @@ public class AppServiceImpl implements AppService {
                 
                 LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
             }
+            LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
         }
         
         if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
@@ -2481,6 +2485,7 @@ public class AppServiceImpl implements AppService {
                     environmentVariableDao.add(o);
                 }
             }
+            LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
         }
         
         if (appDef.getMessageList() != null) {
@@ -2488,6 +2493,7 @@ public class AppServiceImpl implements AppService {
                 o.setAppDefinition(newAppDef);
                 messageDao.add(o);
             }
+            LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
         }
         
         if (appDef.getPluginDefaultPropertiesList() != null) {
@@ -2502,6 +2508,7 @@ public class AppServiceImpl implements AppService {
                 o.setAppDefinition(newAppDef);
                 pluginDefaultPropertiesDao.add(o);
             }
+            LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
         }
         
         if (appDef.getResourceList() != null) {
@@ -2509,6 +2516,7 @@ public class AppServiceImpl implements AppService {
                 o.setAppDefinition(newAppDef);
                 appResourceDao.add(o);
             }
+            LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
         }
         
         try {
@@ -2521,6 +2529,7 @@ public class AppServiceImpl implements AppService {
 
                 //deploy package
                 PackageDefinition packageDef = deployWorkflowPackage(newAppDef.getAppId(), newAppDef.getVersion().toString(), xpdl, false);
+                LogUtil.info(getClass().getName(), "Imported xpdl");
 
                 if (packageDef != null) {
                     if (oldPackageDef != null) {
@@ -2530,6 +2539,7 @@ public class AppServiceImpl implements AppService {
                                 form.setPackageDefinition(packageDef);
                                 packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
                             }
+                            LogUtil.info(getClass().getName(), "Imported process form mappings : " + oldPackageDef.getPackageActivityFormMap().size());
                         }
 
                         if (oldPackageDef.getPackageActivityPluginMap() != null) {
@@ -2545,6 +2555,7 @@ public class AppServiceImpl implements AppService {
                                 plugin.setPackageDefinition(packageDef);
                                 packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
                             }
+                            LogUtil.info(getClass().getName(), "Imported process tool mappings : " + oldPackageDef.getPackageActivityPluginMap().size());
                         }
 
                         if (oldPackageDef.getPackageParticipantMap() != null) {
@@ -2561,6 +2572,7 @@ public class AppServiceImpl implements AppService {
                                 participant.setPackageDefinition(packageDef);
                                 packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
                             }
+                            LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
                         }
                         
                         // update app definition
@@ -2613,7 +2625,7 @@ public class AppServiceImpl implements AppService {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         ZipEntry entry = null;
-
+        int size = 0;
         while ((entry = in.getNextEntry()) != null) {
             if (entry.getName().endsWith(".jar")) {
                 int length;
@@ -2623,11 +2635,13 @@ public class AppServiceImpl implements AppService {
                 }
 
                 pluginManager.upload(entry.getName(), new ByteArrayInputStream(out.toByteArray()));
+                size++;
             }
             out.flush();
             out.close();
         }
         in.close();
+        LogUtil.info(AppServiceImpl.class.getName(), "Imported plugins : " + size);
     }
     
     /**
@@ -2658,6 +2672,8 @@ public class AppServiceImpl implements AppService {
                     
                     out.flush();
                     out.close();
+                    
+                    LogUtil.info(AppServiceImpl.class.getName(), "Imported form datas - " + tablename +" : " + rows.size());
                 } else if (entry.getName().startsWith("app_formuploads/")) {
                     FileOutputStream out = null;
                     String filename = entry.getName();

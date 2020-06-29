@@ -190,6 +190,7 @@ public class AppResourceUtil {
     public static void importFromZip(String appId, String appVersion, byte[] zip) {
         ZipInputStream in = null;
         String path = appId + File.separator + appVersion;
+        int size = 0;
         try {
             in = new ZipInputStream(new ByteArrayInputStream(zip));
 
@@ -215,6 +216,7 @@ public class AppResourceUtil {
                         while ((length = in.read(temp, 0, 1024)) != -1) {
                             out.write(temp, 0, length);
                         }
+                        size++;
                     } catch (Exception ex) {
                     } finally {
                         if (out != null) {
@@ -235,6 +237,7 @@ public class AppResourceUtil {
                 } catch (IOException ex) {}
             }
         }
+        LogUtil.info(AppServiceImpl.class.getName(), "Imported app resources files : " + size);
     }
     
     public static void copyAppResources(String appIdFrom, String appVersionFrom, String appIdTo, String appVersionTo) {
