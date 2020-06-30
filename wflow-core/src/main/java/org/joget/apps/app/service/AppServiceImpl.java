@@ -2484,8 +2484,8 @@ public class AppServiceImpl implements AppService {
 
                     environmentVariableDao.add(o);
                 }
+                LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
             }
-            LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
         }
         
         if (appDef.getMessageList() != null) {
