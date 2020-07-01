@@ -2373,245 +2373,245 @@ public class AppServiceImpl implements AppService {
         }
         
         AppDevUtil.setImportApp(true);
-        
-        LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");        
-        AppDefinition newAppDef = new AppDefinition();
-        newAppDef.setAppId(appId);
-        newAppDef.setVersion(appVersion);
-        newAppDef.setId(appId);
-        newAppDef.setName(appDef.getName());
-        newAppDef.setPublished(Boolean.FALSE);
-        newAppDef.setDateCreated(new Date());
-        newAppDef.setDateModified(new Date());
-        newAppDef.setLicense(appDef.getLicense());
-        newAppDef.setDescription(appDef.getDescription());
-        newAppDef.setMeta(appDef.getMeta());
-        appDefinitionDao.saveOrUpdate(newAppDef);
+        try {
+            LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");        
+            AppDefinition newAppDef = new AppDefinition();
+            newAppDef.setAppId(appId);
+            newAppDef.setVersion(appVersion);
+            newAppDef.setId(appId);
+            newAppDef.setName(appDef.getName());
+            newAppDef.setPublished(Boolean.FALSE);
+            newAppDef.setDateCreated(new Date());
+            newAppDef.setDateModified(new Date());
+            newAppDef.setLicense(appDef.getLicense());
+            newAppDef.setDescription(appDef.getDescription());
+            newAppDef.setMeta(appDef.getMeta());
+            appDefinitionDao.saveOrUpdate(newAppDef);
 
-        if (appDef.getFormDefinitionList() != null) {
-            Set<String> tables = new HashSet<String>();
-            Collection<String> importedForms = new ArrayList<String>();
-            for (FormDefinition o : appDef.getFormDefinitionList()) {
-                o.setAppDefinition(newAppDef);
-                formDefinitionDao.add(o);
-                tables.add(o.getTableName());
-                importedForms.add(o.getId());
-            }
-            
-            String currentTable = "";
-            try {
-                for (String table : tables) {
-                    currentTable = table;
-                    // initialize db table by making a dummy load
-                    String dummyKey = "xyz123";
-                    formDataDao.loadWithoutTransaction(table, table, dummyKey);
-                    LogUtil.debug(getClass().getName(), "Initialized form table " + table);
+            if (appDef.getFormDefinitionList() != null) {
+                Set<String> tables = new HashSet<String>();
+                Collection<String> importedForms = new ArrayList<String>();
+                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                    o.setAppDefinition(newAppDef);
+                    formDefinitionDao.add(o);
+                    tables.add(o.getTableName());
+                    importedForms.add(o.getId());
                 }
-            } catch (Exception e) {
-                //error creating form data table, rollback
-                for (String formId : importedForms) {
-                    formDefinitionDao.delete(formId, newAppDef);
-                }
-                appDefinitionDao.delete(newAppDef);
-                String errorMessage = "";
-                if (currentTable.length() > 20) {
-                    errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
-                }
-                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
-            }
-            LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
-        }
-        
-        if (appDef.getDatalistDefinitionList() != null) {
-            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                o.setAppDefinition(newAppDef);
-                datalistDefinitionDao.add(o);
-                LogUtil.debug(getClass().getName(), "Added list " + o.getId());
-            }
-            LogUtil.info(getClass().getName(), "Imported datalist definitions : " + appDef.getDatalistDefinitionList().size());
-        }
-        
-        if (appDef.getUserviewDefinitionList() != null) {
-            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                o.setAppDefinition(newAppDef);
-                
-                //remove tempDisablePermissionChecking setting
-                if (o.getJson().contains("\"tempDisablePermissionChecking\"")) {
-                    o.setJson(o.getJson().replace("\"tempDisablePermissionChecking\"", "\"__\""));
-                }
-                
-                userviewDefinitionDao.add(o);
-                LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
-            }
-            LogUtil.info(getClass().getName(), "Imported userview definitions : " + appDef.getUserviewDefinitionList().size());
-        }
-        
-        if (appDef.getBuilderDefinitionList() != null) {
-            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                o.setAppDefinition(newAppDef);
-                builderDefinitionDao.add(o);
-                
-                if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
-                    try {
+
+                String currentTable = "";
+                try {
+                    for (String table : tables) {
+                        currentTable = table;
+                        // initialize db table by making a dummy load
                         String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(o.getId(), o.getId(), dummyKey);
-                    } catch (Exception e) {
-                        LogUtil.error(getClass().getName(), e, "");
+                        formDataDao.loadWithoutTransaction(table, table, dummyKey);
+                        LogUtil.debug(getClass().getName(), "Initialized form table " + table);
                     }
+                } catch (Exception e) {
+                    //error creating form data table, rollback
+                    for (String formId : importedForms) {
+                        formDefinitionDao.delete(formId, newAppDef);
+                    }
+                    appDefinitionDao.delete(newAppDef);
+                    String errorMessage = "";
+                    if (currentTable.length() > 20) {
+                        errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                    }
+                    throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
                 }
-                
-                LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
+                LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
             }
-            LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
-        }
-        
-        if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
-            for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
-                EnvironmentVariable temp = new EnvironmentVariable();
-                temp.setAppDefinition(newAppDef);
-                temp.setId(o.getId());
-                temp.setValue(o.getValue());
-                temp.setRemarks(o.getRemarks());
-                environmentVariableDao.add(temp);
+
+            if (appDef.getDatalistDefinitionList() != null) {
+                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                    o.setAppDefinition(newAppDef);
+                    datalistDefinitionDao.add(o);
+                    LogUtil.debug(getClass().getName(), "Added list " + o.getId());
+                }
+                LogUtil.info(getClass().getName(), "Imported datalist definitions : " + appDef.getDatalistDefinitionList().size());
             }
-        } else {
-            if (appDef.getEnvironmentVariableList() != null) {
-                for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                    if (o.getValue() == null) {
-                        o.setValue("");
-                    }
+
+            if (appDef.getUserviewDefinitionList() != null) {
+                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
                     o.setAppDefinition(newAppDef);
 
-                    environmentVariableDao.add(o);
-                }
-                LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
-            }
-        }
-        
-        if (appDef.getMessageList() != null) {
-            for (Message o : appDef.getMessageList()) {
-                o.setAppDefinition(newAppDef);
-                messageDao.add(o);
-            }
-            LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
-        }
-        
-        if (appDef.getPluginDefaultPropertiesList() != null) {
-            for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
-                if (!overridePluginDefault && orgAppDef != null && orgAppDef.getPluginDefaultPropertiesList() != null) {
-                    PluginDefaultProperties temp = pluginDefaultPropertiesDao.loadById(o.getId(), orgAppDef);
-                    if (temp != null) {
-                        o.setPluginProperties(temp.getPluginProperties());
+                    //remove tempDisablePermissionChecking setting
+                    if (o.getJson().contains("\"tempDisablePermissionChecking\"")) {
+                        o.setJson(o.getJson().replace("\"tempDisablePermissionChecking\"", "\"__\""));
                     }
+
+                    userviewDefinitionDao.add(o);
+                    LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
                 }
-                
-                o.setAppDefinition(newAppDef);
-                pluginDefaultPropertiesDao.add(o);
+                LogUtil.info(getClass().getName(), "Imported userview definitions : " + appDef.getUserviewDefinitionList().size());
             }
-            LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
-        }
-        
-        if (appDef.getResourceList() != null) {
-            for (AppResource o : appDef.getResourceList()) {
-                o.setAppDefinition(newAppDef);
-                appResourceDao.add(o);
-            }
-            LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
-        }
-        
-        try {
-            if (xpdl != null) {
-                PackageDefinition orgPackageDef = null;
-                if ((doNotImportParticipant || doNotImportTool) && orgAppDef != null) {
-                    orgPackageDef = orgAppDef.getPackageDefinition();
-                }
-                PackageDefinition oldPackageDef = appDef.getPackageDefinition();
 
-                //deploy package
-                PackageDefinition packageDef = deployWorkflowPackage(newAppDef.getAppId(), newAppDef.getVersion().toString(), xpdl, false);
-                LogUtil.info(getClass().getName(), "Imported xpdl");
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    o.setAppDefinition(newAppDef);
+                    builderDefinitionDao.add(o);
 
-                if (packageDef != null) {
-                    if (oldPackageDef != null) {
-                        if (oldPackageDef.getPackageActivityFormMap() != null) {
-                            for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
-                                PackageActivityForm form = (PackageActivityForm) e.getValue();
-                                form.setPackageDefinition(packageDef);
-                                packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
-                            }
-                            LogUtil.info(getClass().getName(), "Imported process form mappings : " + oldPackageDef.getPackageActivityFormMap().size());
+                    if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
+                        try {
+                            String dummyKey = "xyz123";
+                            formDataDao.loadWithoutTransaction(o.getId(), o.getId(), dummyKey);
+                        } catch (Exception e) {
+                            LogUtil.error(getClass().getName(), e, "");
                         }
-
-                        if (oldPackageDef.getPackageActivityPluginMap() != null) {
-                            for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
-                                PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
-                                if (orgPackageDef != null && doNotImportTool) {
-                                    PackageActivityPlugin tempPlugin = orgPackageDef.getPackageActivityPlugin(plugin.getProcessDefId(), plugin.getActivityDefId());
-                                    if (tempPlugin != null) {
-                                        plugin.setPluginName(tempPlugin.getPluginName());
-                                        plugin.setPluginProperties(tempPlugin.getPluginProperties());
-                                    }
-                                }
-                                plugin.setPackageDefinition(packageDef);
-                                packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
-                            }
-                            LogUtil.info(getClass().getName(), "Imported process tool mappings : " + oldPackageDef.getPackageActivityPluginMap().size());
-                        }
-
-                        if (oldPackageDef.getPackageParticipantMap() != null) {
-                            for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
-                                PackageParticipant participant = (PackageParticipant) e.getValue();
-                                if (orgPackageDef != null && doNotImportParticipant) {
-                                    PackageParticipant tempParticipant = orgPackageDef.getPackageParticipant(participant.getProcessDefId(), participant.getParticipantId());
-                                    if (tempParticipant != null) {
-                                        participant.setType(tempParticipant.getType());
-                                        participant.setValue(tempParticipant.getValue());
-                                        participant.setPluginProperties(tempParticipant.getPluginProperties());
-                                    }
-                                }
-                                participant.setPackageDefinition(packageDef);
-                                packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
-                            }
-                            LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
-                        }
-                        
-                        // update app definition
-                        appDefinitionDao.saveOrUpdate(newAppDef);
                     }
+
+                    LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
                 }
+                LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
             }
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error deploying package for " + appDef.getAppId());
-        }
-        
-        // reload app from DB
-        newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
-        LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
-        
-        if (!AppDevUtil.isGitDisabled()) {
-            Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
-            String filename = "appConfig.xml";
-            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-            if (commitConfig) {
-                String xml = AppDevUtil.getAppConfigXml(newAppDef);
-                String commitMessage =  "Update app config " + newAppDef.getId();
-                AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+
+            if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
+                for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
+                    EnvironmentVariable temp = new EnvironmentVariable();
+                    temp.setAppDefinition(newAppDef);
+                    temp.setId(o.getId());
+                    temp.setValue(o.getValue());
+                    temp.setRemarks(o.getRemarks());
+                    environmentVariableDao.add(temp);
+                }
             } else {
-                AppDevUtil.fileDelete(newAppDef, filename, null);
+                if (appDef.getEnvironmentVariableList() != null) {
+                    for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                        if (o.getValue() == null) {
+                            o.setValue("");
+                        }
+                        o.setAppDefinition(newAppDef);
+
+                        environmentVariableDao.add(o);
+                    }
+                    LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
+                }
             }
 
-            filename = "appDefinition.xml";
-            String xml = AppDevUtil.getAppDefinitionXml(newAppDef);
-            String commitMessage = "Update app definition " + newAppDef.getId();
-            AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+            if (appDef.getMessageList() != null) {
+                for (Message o : appDef.getMessageList()) {
+                    o.setAppDefinition(newAppDef);
+                    messageDao.add(o);
+                }
+                LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
+            }
 
-            AppDevUtil.dirSyncAppPlugins(newAppDef);
-            AppDevUtil.dirSyncAppResources(newAppDef);
+            if (appDef.getPluginDefaultPropertiesList() != null) {
+                for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
+                    if (!overridePluginDefault && orgAppDef != null && orgAppDef.getPluginDefaultPropertiesList() != null) {
+                        PluginDefaultProperties temp = pluginDefaultPropertiesDao.loadById(o.getId(), orgAppDef);
+                        if (temp != null) {
+                            o.setPluginProperties(temp.getPluginProperties());
+                        }
+                    }
+
+                    o.setAppDefinition(newAppDef);
+                    pluginDefaultPropertiesDao.add(o);
+                }
+                LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
+            }
+
+            if (appDef.getResourceList() != null) {
+                for (AppResource o : appDef.getResourceList()) {
+                    o.setAppDefinition(newAppDef);
+                    appResourceDao.add(o);
+                }
+                LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
+            }
+
+            try {
+                if (xpdl != null) {
+                    PackageDefinition orgPackageDef = null;
+                    if ((doNotImportParticipant || doNotImportTool) && orgAppDef != null) {
+                        orgPackageDef = orgAppDef.getPackageDefinition();
+                    }
+                    PackageDefinition oldPackageDef = appDef.getPackageDefinition();
+
+                    //deploy package
+                    PackageDefinition packageDef = deployWorkflowPackage(newAppDef.getAppId(), newAppDef.getVersion().toString(), xpdl, false);
+                    LogUtil.info(getClass().getName(), "Imported xpdl");
+
+                    if (packageDef != null) {
+                        if (oldPackageDef != null) {
+                            if (oldPackageDef.getPackageActivityFormMap() != null) {
+                                for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
+                                    PackageActivityForm form = (PackageActivityForm) e.getValue();
+                                    form.setPackageDefinition(packageDef);
+                                    packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
+                                }
+                                LogUtil.info(getClass().getName(), "Imported process form mappings : " + oldPackageDef.getPackageActivityFormMap().size());
+                            }
+
+                            if (oldPackageDef.getPackageActivityPluginMap() != null) {
+                                for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
+                                    PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
+                                    if (orgPackageDef != null && doNotImportTool) {
+                                        PackageActivityPlugin tempPlugin = orgPackageDef.getPackageActivityPlugin(plugin.getProcessDefId(), plugin.getActivityDefId());
+                                        if (tempPlugin != null) {
+                                            plugin.setPluginName(tempPlugin.getPluginName());
+                                            plugin.setPluginProperties(tempPlugin.getPluginProperties());
+                                        }
+                                    }
+                                    plugin.setPackageDefinition(packageDef);
+                                    packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
+                                }
+                                LogUtil.info(getClass().getName(), "Imported process tool mappings : " + oldPackageDef.getPackageActivityPluginMap().size());
+                            }
+
+                            if (oldPackageDef.getPackageParticipantMap() != null) {
+                                for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
+                                    PackageParticipant participant = (PackageParticipant) e.getValue();
+                                    if (orgPackageDef != null && doNotImportParticipant) {
+                                        PackageParticipant tempParticipant = orgPackageDef.getPackageParticipant(participant.getProcessDefId(), participant.getParticipantId());
+                                        if (tempParticipant != null) {
+                                            participant.setType(tempParticipant.getType());
+                                            participant.setValue(tempParticipant.getValue());
+                                            participant.setPluginProperties(tempParticipant.getPluginProperties());
+                                        }
+                                    }
+                                    participant.setPackageDefinition(packageDef);
+                                    packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
+                                }
+                                LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
+                            }
+
+                            // update app definition
+                            appDefinitionDao.saveOrUpdate(newAppDef);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error deploying package for " + appDef.getAppId());
+            }
+
+            // reload app from DB
+            newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
+            LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
+
+            if (!AppDevUtil.isGitDisabled()) {
+                Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
+                String filename = "appConfig.xml";
+                boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+                if (commitConfig) {
+                    String xml = AppDevUtil.getAppConfigXml(newAppDef);
+                    String commitMessage =  "Update app config " + newAppDef.getId();
+                    AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+                } else {
+                    AppDevUtil.fileDelete(newAppDef, filename, null);
+                }
+
+                filename = "appDefinition.xml";
+                String xml = AppDevUtil.getAppDefinitionXml(newAppDef);
+                String commitMessage = "Update app definition " + newAppDef.getId();
+                AppDevUtil.fileSave(newAppDef, filename, xml, commitMessage);
+
+                AppDevUtil.dirSyncAppPlugins(newAppDef);
+                AppDevUtil.dirSyncAppResources(newAppDef);
+            }
+            return newAppDef;
+        } finally {
+            AppDevUtil.setImportApp(null);
         }
-        
-        AppDevUtil.setImportApp(null);
-
-        return newAppDef;
     }
 
     /**
