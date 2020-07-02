@@ -178,22 +178,22 @@ public class FormPdfUtil {
         String formJson = formDef.getJson();
 
         if (formJson != null) {
-            formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null);
+            formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null, appDef);
             form = (Form) formService.loadFormFromJson(formJson, formData);
-        }
-        
-        //set form to readonly
-        FormUtil.setReadOnlyProperty(form, true, true);
-        
-        if (hideEmpty != null && hideEmpty) {
-            form = (Form) removeEmptyValueChild(form, form, formData);
-        }
-        
-        if (form != null) {
-            html = formService.retrieveFormHtml(form, formData);
-        }
+            
+            if (form != null) {
+                //set form to readonly
+                FormUtil.setReadOnlyProperty(form, true, true);
 
-        html = AppUtil.processHashVariable(html, assignment, null, null, appDef);
+                if (hideEmpty != null && hideEmpty) {
+                    form = (Form) removeEmptyValueChild(form, form, formData);
+                }
+
+                if (form != null) {
+                    html = formService.retrieveFormHtml(form, formData);
+                }
+            }
+        }
         
         return html;
     }
