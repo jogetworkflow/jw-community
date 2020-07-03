@@ -93,6 +93,8 @@ public class AppUtil implements ApplicationContextAware {
     public static final String PREFIX_WORKFLOW_VARIABLE = "var_";
     public static final String PROPERTY_WORKFLOW_VARIABLE = "workflowVariable";
     private static final String UI_SESSION_KEY = "UI_SESSION_KEY";
+    private static final String HASH_NO_ESCAPE = "noescape";
+    
     static ApplicationContext appContext;
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
@@ -576,9 +578,6 @@ public class AppUtil implements ApplicationContextAware {
                                     }
                                 }
 
-                                //unescape hash variable
-                                tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
-
                                 //get result from plugin
                                 try {
                                     String removeFormatVar = tempVar;
@@ -598,9 +597,11 @@ public class AppUtil implements ApplicationContextAware {
                                             value = StringUtil.escapeString(value, hashFormat, null);
                                         }
 
-                                        // clean to prevent XSS
-                                        value = StringUtil.stripHtmlRelaxed(value);
-
+                                        if (requiredXssPrevention(hashFormat)){
+                                            // clean to prevent XSS
+                                            value = StringUtil.stripHtmlRelaxed(value);
+                                        }
+                                        
                                         //escape based on api call
                                         value = StringUtil.escapeString(value, escapeFormat, replaceMap);
 
@@ -643,13 +644,35 @@ public class AppUtil implements ApplicationContextAware {
                     || format.equals(StringUtil.TYPE_URL)
                     || format.equals(StringUtil.TYPE_XML)
                     || format.startsWith(StringUtil.TYPE_SEPARATOR)
-                    || format.equals(StringUtil.TYPE_EXP))) {
+                    || format.equals(StringUtil.TYPE_EXP)
+                    || format.equals(HASH_NO_ESCAPE))) {
                 isValid = false;
             }
             //check for 1 enough
             break;
         }
         return isValid;
+    }
+    
+    protected static boolean requiredXssPrevention(String hashFormat) {
+        boolean required = true;
+        String[] formats = hashFormat.split(";");
+        for (String format : formats) {
+            if (format.equals(StringUtil.TYPE_HTML)
+                    || format.equals(StringUtil.TYPE_JAVA)
+                    || format.equals(StringUtil.TYPE_JAVASCIPT)
+                    || format.equals(StringUtil.TYPE_JSON)
+                    || format.equals(StringUtil.TYPE_REGEX)
+                    || format.equals(StringUtil.TYPE_SQL)
+                    || format.equals(StringUtil.TYPE_URL)
+                    || format.equals(StringUtil.TYPE_XML)
+                    || format.equals(StringUtil.TYPE_EXP)
+                    || format.equals(HASH_NO_ESCAPE)) {
+                required = false;
+                break;
+            }
+        }
+        return required;
     }
 
     /**

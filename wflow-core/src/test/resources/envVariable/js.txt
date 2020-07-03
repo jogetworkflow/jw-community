@@ -1,0 +1,5 @@
+$(document).ready(function(){
+    $(body).append('<script>alert("test")</script>');
+    $(body).append('<div>this is just a test</div>');
+    $(body).append("<div>!@#$%^&*()_+-={}|[]\\:\";',./<>?`~</div>");
+});

@@ -1,9 +1,14 @@
 package org.joget.apps.app.model;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.apache.commons.io.FileUtils;
+import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.dao.EnvironmentVariableDao;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Form;
@@ -74,5 +79,31 @@ public class TestUtil {
         appService.createFormDefinition(appDef, formDef);
 
         return formDef;
+    }
+    
+    public static void createEnvVariable(AppDefinition appDef, String id, String value) {
+        EnvironmentVariable var = new EnvironmentVariable();
+        var.setAppDefinition(appDef);
+        var.setId(id);
+        var.setValue(value);
+        
+        EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) AppUtil.getApplicationContext().getBean("environmentVariableDao");
+        environmentVariableDao.add(var);
+    }
+    
+    public static void deleteAllVersions(String appId) {
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
+        appDefinitionDao.deleteAllVersions(appId);
+        
+        cleanAppSrc(appId);
+    }
+    
+    public static void cleanAppSrc(String appId) {
+        File src = new File(AppDevUtil.getAppDevBaseDirectory() + File.separator + appId);
+        if (src.exists()) {
+            try {
+                FileUtils.deleteDirectory(src);
+            } catch (Exception e) {}
+        }
     }
 }

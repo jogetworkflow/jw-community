@@ -1,0 +1,18 @@
+.form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}
+.form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}
+.form-column, .subform-column {position: relative;float: left;min-height: 20px;}
+.form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px;}
+.form-cell > .label, .subform-cell > .label {width: 40%;display: block;float: left;font-weight:bold;}
+table {clear:both;}
+p {margin:5px 0;}
+.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {border: solid 1px silver;padding: 3px;margin: 0px;}
+.subform-container{ border: 5px solid #dfdfdf;padding: 3px;margin-top:5px;}
+.subform-container, .subform-section {background: #efefef;}
+.subform-title{background: #efefef;position:relative;top:-12px;}
+.form-fileupload {float: left;}
+.form-cell-value, .subform-cell-value {float: left;width: 60%;}
+.form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}
+.form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}
+ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}
+.subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }
+.subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}

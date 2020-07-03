@@ -1,0 +1,1 @@
+select * from dir_user where username &lt;&gt; 'admin' or username = '!@#$%^&amp;*()_+-={}|[]\:&quot;;'',./&lt;&gt;?`~';

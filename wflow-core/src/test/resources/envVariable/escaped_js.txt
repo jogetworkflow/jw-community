@@ -1,0 +1,7 @@
+$(document).ready(function(){ $(body).append(''); $(body).append('
+<div>
+ this is just a test
+</div>'); $(body).append(&quot;
+<div>
+ !@#$%^&amp;*()_+-={}|[]\\:\&quot;;',./&lt;&gt;?`~
+</div>&quot;); });

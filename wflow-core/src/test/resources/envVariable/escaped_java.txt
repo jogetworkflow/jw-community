@@ -1,0 +1,4 @@
+import org.joget.apps.app.service.AppUtil; import org.joget.apps.form.model.Element; import org.joget.apps.form.model.FormData; import org.joget.apps.form.model.FormRow; import org.joget.apps.form.model.FormRowSet; import org.joget.commons.util.LogUtil; public FormRowSet load(Element element, String username, FormData formData) { FormRowSet rows = new FormRowSet(); FormRow row = new FormRow(); row.setProperty(&quot;html&quot;, &quot;
+<div>
+ !@#$%^&amp;*()_+-={}|[]\\:\&quot;;',./&lt;&gt;?`~
+</div>&quot;); rows.add(row); return rows; } //call load method with injected variable return load(element, primaryKey, formData);

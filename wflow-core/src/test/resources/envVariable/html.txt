@@ -1,0 +1,16 @@
+<style>
+    body{
+        background:#000;
+        color:#000;
+    }
+</style>
+<div>
+    <h1>Iframe Example</h1>
+    <p style="display:none;">A simple iframe test</p>
+</div>
+<iframe src="demo_iframe.htm" name="iframe_a" title="Iframe Example"></iframe>
+<p><a href="https://www.w3schools.com" target="iframe_a">W3Schools.com</a></p>
+<div>!@#$%^&*()_+-={}|[]\:";',./<>?`~</div>
+<script>
+    alert("test");
+</script>
