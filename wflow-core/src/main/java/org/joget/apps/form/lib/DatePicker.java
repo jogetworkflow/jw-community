@@ -107,7 +107,11 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                             SimpleDateFormat display = new SimpleDateFormat(displayFormat + timeformat);
                             if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                                 data = new SimpleDateFormat(UTC_DATEFORMAT);
-                                data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
+                                    data.setTimeZone(TimeZone.getDefault());
+                                } else {
+                                    data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                }
                                 display.setTimeZone(getUserTZ());
                             } else {
                                 data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
@@ -372,7 +376,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                 SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                 SimpleDateFormat display = new SimpleDateFormat(displayFormat);
                 if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
-                    data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String id = getPropertyString(FormUtil.PROPERTY_ID);
+                    if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
+                        data.setTimeZone(TimeZone.getDefault());
+                    } else {
+                        data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    }
                     display.setTimeZone(getUserTZ());
                 }
                 Date date = data.parse(value);
@@ -401,7 +410,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                     SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                     SimpleDateFormat display = new SimpleDateFormat(displayFormat);
                     if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
-                        data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        String id = getPropertyString(FormUtil.PROPERTY_ID);
+                        if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
+                            data.setTimeZone(TimeZone.getDefault());
+                        } else {
+                            data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        }
                         display.setTimeZone(getUserTZ());
                     }
                     Date date = data.parse(value);

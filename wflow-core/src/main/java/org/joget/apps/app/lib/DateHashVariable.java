@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.TimeZone;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import static org.joget.commons.util.TimeZoneUtil.getTimeZoneByGMT;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
@@ -24,11 +27,16 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                 if (!date.isEmpty()) {
                     try {
                         String format = "yyyy-MM-dd";
+                        String timezone= null;
                         if (date.contains("|")) {
-                            format = date.substring(date.indexOf("|") + 1);
-                            date = date.substring(0, date.indexOf("|"));
+                            String[] temp = date.split("\\|");
+                            format = temp[0];
+                            date = temp[1];
                             if (date == null || date.isEmpty()) {
                                 return null;
+                            }
+                            if (temp.length == 3) {
+                                timezone = temp[12];
                             }
                         }
                         if (date.startsWith("{") && date.endsWith("}")) {
@@ -37,6 +45,19 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                         }
 
                         DateFormat df = new SimpleDateFormat(format);
+                        if (timezone != null && !timezone.isEmpty()) {
+                            try {
+                                TimeZone tz = null;
+                                if ("default".equalsIgnoreCase(timezone)) {
+                                    tz = TimeZone.getDefault();
+                                } else {
+                                    tz = TimeZone.getTimeZone(getTimeZoneByGMT(timezone));
+                                }
+                                if (tz != null) {
+                                    df.setTimeZone(tz);
+                                }
+                            } catch (Exception er) {}
+                        }
                         Date result =  df.parse(date);
                         cal.setTime(result);
                     } catch (Exception e) {
@@ -65,8 +86,20 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
 
                 cal.add(field, Integer.parseInt(amount));
             }
+            
+            String timezone = null;
+            if (variableKey.contains("|")) {
+                String[] temp = variableKey.split("\\|");
+                if (temp.length == 2) {
+                    variableKey = temp[0];
+                    timezone = temp[1];
+                    if ("default".equalsIgnoreCase(timezone)) {
+                        timezone = TimeZone.getDefault().getID();
+                    }
+                }
+            }
 
-            return TimeZoneUtil.convertToTimeZone(cal.getTime(), null, variableKey);
+            return TimeZoneUtil.convertToTimeZone(cal.getTime(), timezone, variableKey);
         } catch (IllegalArgumentException iae) {
             return new Date().toString();
         } catch (Exception ex) {
@@ -106,19 +139,14 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
     public Collection<String> availableSyntax() {
         Collection<String> syntax = new ArrayList<String>();
         syntax.add("date.FORMAT");
-        syntax.add("date.DAY+INTEGER.FORMAT");
-        syntax.add("date.DAY-INTEGER.FORMAT");
-        syntax.add("date.MONTH+INTEGER.FORMAT");
-        syntax.add("date.MONTH-INTEGER.FORMAT");
-        syntax.add("date.YEAR+INTEGER.FORMAT");
-        syntax.add("date.YEAR-INTEGER.FORMAT");
-        syntax.add("date.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.DAY+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.DAY-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.MONTH+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.MONTH-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.YEAR+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
-        syntax.add("date.YEAR-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.FORMAT|TIMEZONE");
+        syntax.add("date.DAY+/-INTEGER.FORMAT");
+        syntax.add("date.MONTH+/-INTEGER.FORMAT");
+        syntax.add("date.YEAR+/-INTEGER.FORMAT");
+        syntax.add("date.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
+        syntax.add("date.DAY+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
+        syntax.add("date.MONTH+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
+        syntax.add("date.YEAR+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
         return syntax;
     }
 }
