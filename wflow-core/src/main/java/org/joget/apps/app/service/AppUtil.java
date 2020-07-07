@@ -316,18 +316,19 @@ public class AppUtil implements ApplicationContextAware {
     public static String getAppDateFormat() {
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
 
-        String systemDateFormat = setupManager.getSettingValue("systemDateFormat");
-        if (systemDateFormat != null && !systemDateFormat.isEmpty()) {
-            return systemDateFormat;
-        } if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
+        if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
             Locale locale = LocaleContextHolder.getLocale();
             DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
             if (dateInstance instanceof SimpleDateFormat) {
                 return ((SimpleDateFormat) dateInstance).toPattern();
             }
         }
-
-        return null;
+        String systemDateFormat = setupManager.getSettingValue("systemDateFormat");
+        if (systemDateFormat != null && !systemDateFormat.isEmpty()) {
+            return systemDateFormat;
+        } else {
+            return ResourceBundleUtil.getMessage("console.setting.general.default.systemDateFormat");
+        }
     }
 
     /**
