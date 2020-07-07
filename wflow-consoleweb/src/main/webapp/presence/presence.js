@@ -234,7 +234,26 @@ PresenceUtil = {
                     PresenceUtil.source.close();
                     PresenceUtil.source = null;
                 } else {
-                    PresenceUtil.createEventSource();
+                    //refresh ConnectionManager token
+                    $.ajax({
+                        type: 'POST',
+                        url: UI.base + "/csrf",
+                        headers: {
+                            "FETCH-CSRF-TOKEN-PARAM":"true",
+                            "FETCH-CSRF-TOKEN":"true"
+                        },
+                        success: function (response) {
+                            var temp = response.split(":");
+                            ConnectionManager.tokenValue = temp[1];
+                            JPopup.tokenValue = temp[1];
+                            
+                            PresenceUtil.createEventSource();
+                        },
+                        error: function(request, status, error) {
+                            console.warn("fail to refresh csrf token");
+                            document.location.href = document.location;
+                        }
+                    });
                 }
             }, false);
         }
