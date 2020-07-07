@@ -579,7 +579,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             String passoverValue = "";
             
             if (FormUtil.PROPERTY_ID.equals(passoverFieldName)) {
-                passoverValue = formData.getPrimaryKeyValue();
+                passoverValue = form.getPrimaryKeyValue(formData);
             } else {
                 Element passoverElement = FormUtil.findElement(passoverFieldName, form, formData, true);
                 if (passoverElement != null) {
