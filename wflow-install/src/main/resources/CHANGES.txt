@@ -3,6 +3,24 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.7
+================
+de5c8eb1 Fixed: wflow-core - App Import/Export - Date created & date modified of imported/exported form data are incorrectly. @7.0-SNAPSHOT
+056726d1 Fixed: wflow-consoleweb - Presence Indicator - Refresh CSRF token when session expired. #8022 @7.0-SNAPSHOT
+f8e6c2fc Fixed: wflow-core - Form/Run Process Menu - Regression of 1405f024. #7978 @6.0-SNAPSHOT
+e868cd1f Fixed: wflow-core - Datalist - Date created & date modified column are not following locale date format when "Using Locale Date Format" is enabled. @7.0-SNAPSHOT
+6076ddb7 Modified: wflow-core - Date Picker - Handle "dateCreated" & "dateModified" field to follow locale format and user timezone when server timezone is not UTC. @7.0-SNAPSHOT Modified: wflow-core - Date Hash Variable - Support format according to specify timezone. @7.0-SNAPSHOT
+f48e40b9 Modified: wflow-core - Hash Variable - Adding `?noescape` to support hash variable to not strip and escape html tags. #7975 @7.0-SNAPSHOT Fixed: wflow-core - Hash Variable - Nested hash variable with value containing '\' char is removed incorrectly. @7.0-SNAPSHOT
+60422019 Fixed: wflow-core - FormPdfUtil - Redundant hash variable parsing causing the encrypted content in form template causing HTML malformed. #7987 @6.0-SNAPSHOT
+92dca2d4 Fixed: wflow-core - Import App - Thread local is not reset in finally block. @7.0-SNAPSHOT
+898cbe3b Fixed: wflow-commons - Host Manager - Host is initialized multiple times for single request. @6.0-SNAPSHOT
+15d8a14b Modified: wflow-core - Import App - Adding progress info log for import app.  @7.0-SNAPSHOT
+5113b0cb Fixed: wflow-core - Id Generator Field - Should not generate an id when in a readonly section. #7968 @7.0-SNAPSHOT
+c131b323 Modified: wflow-core - Email Tool/Userview Notification - Support embedding file in HTML content. #7909 @7.0-SNAPSHOT Modified: wflow-core - Email Tool/Userview Notification - Support image convert to embedding image for rich text field. #7641 @7.0-SNAPSHOT
+8e38317c Fixed: wflow-consoleweb - Userview Builder - Prevent userview name longer than 255 characters. @7.0-SNAPSHOT
+f1f4ce69 Fixed: wflow-core - Date Picker - Max year range set to negative value causing selected date is incorrect. #7952 @7.0-SNAPSHOT
+d6e3cf31 Fixed: wflow-core - Form Data Dao - Show performance during retrieving form columns when there are too many old app version. #7709 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.6
 ================
 6b44e1d5 Fixed: wflow-core - Builder - Advanced Tool - Usages not working when virtualhost mode is enabled. @7.0-SNAPSHOT
