@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
@@ -2196,6 +2197,10 @@ public class FormUtil implements ApplicationContextAware {
     }
     
     public static String formRowSetToJson (FormRowSet rows) {
+        return formRowSetToJson(rows, false);
+    }
+    
+    public static String formRowSetToJson (FormRowSet rows, boolean isExport) {
         String json = "[]";
         try {
             JSONArray jsonArray = new JSONArray();
@@ -2207,10 +2212,18 @@ public class FormUtil implements ApplicationContextAware {
                     obj.put(p.toString(), r.getProperty(p.toString()));
                 }
                 if (r.getDateCreated() != null) {
-                    obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), null, AppUtil.getAppDateFormat()));
+                    if (isExport) {
+                        obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
+                    } else {
+                        obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), null, AppUtil.getAppDateFormat()));
+                    }
                 }
                 if (r.getDateModified() != null) {
-                    obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
+                    if (isExport) {
+                        obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
+                    } else {
+                        obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
+                    }
                 }
                 
                 if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
@@ -2240,6 +2253,7 @@ public class FormUtil implements ApplicationContextAware {
     }
     
     public static FormRowSet jsonToFormRowSet (String json, boolean storeJson) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         FormRowSet rowSet = new FormRowSet();
         rowSet.setMultiRow(true);
 
@@ -2287,6 +2301,15 @@ public class FormUtil implements ApplicationContextAware {
                                         row.putDeleteFilePath(deleteFilePathFieldId, pathValues.toArray(new String[]{}));
                                     }
                                 }
+                            } else if (!storeJson && (FormUtil.PROPERTY_DATE_CREATED.equals(fieldName) || FormUtil.PROPERTY_DATE_MODIFIED.equals(fieldName))) {
+                                String value = jsonRow.getString(fieldName);
+                                Date date = null;
+                                try {
+                                    date = sdf.parse(value);
+                                } catch (Exception de) {
+                                    date = new Date();
+                                }
+                                row.put(fieldName, date);
                             } else {
                                 String value = jsonRow.getString(fieldName);
                                 row.setProperty(fieldName, value);

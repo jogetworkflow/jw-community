@@ -2107,7 +2107,7 @@ public class AppServiceImpl implements AppService {
                 formTable = SecurityUtil.validateStringInput(formTable);
                 FormRowSet rows = formDataDao.find(formTable, formTable, null, null, null, null, null, null);
                 if (!rows.isEmpty()) {
-                    String json = FormUtil.formRowSetToJson(rows);
+                    String json = FormUtil.formRowSetToJson(rows, true);
                     byte[] byteData = json.getBytes("UTF-8");
                     zip.putNextEntry(new ZipEntry("data/"+formTable+".json"));
                     zip.write(byteData);
