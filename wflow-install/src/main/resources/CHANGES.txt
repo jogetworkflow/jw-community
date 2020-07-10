@@ -19,7 +19,7 @@ f48e40b9 Modified: wflow-core - Hash Variable - Adding `?noescape` to support ha
 c131b323 Modified: wflow-core - Email Tool/Userview Notification - Support embedding file in HTML content. #7909 @7.0-SNAPSHOT Modified: wflow-core - Email Tool/Userview Notification - Support image convert to embedding image for rich text field. #7641 @7.0-SNAPSHOT
 8e38317c Fixed: wflow-consoleweb - Userview Builder - Prevent userview name longer than 255 characters. @7.0-SNAPSHOT
 f1f4ce69 Fixed: wflow-core - Date Picker - Max year range set to negative value causing selected date is incorrect. #7952 @7.0-SNAPSHOT
-d6e3cf31 Fixed: wflow-core - Form Data Dao - Show performance during retrieving form columns when there are too many old app version. #7709 @7.0-SNAPSHOT
+d6e3cf31 Fixed: wflow-core - Form Data Dao - Slow performance during retrieving form columns when there are too many old app version. #7709 @7.0-SNAPSHOT
 
 CHANGES IN 7.0.6
 ================
