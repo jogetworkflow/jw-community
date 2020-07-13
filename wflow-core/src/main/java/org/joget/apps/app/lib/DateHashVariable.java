@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import static org.joget.commons.util.TimeZoneUtil.getTimeZoneByGMT;
@@ -30,13 +29,13 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                         String timezone= null;
                         if (date.contains("|")) {
                             String[] temp = date.split("\\|");
-                            format = temp[0];
-                            date = temp[1];
+                            format = temp[1];
+                            date = temp[0];
                             if (date == null || date.isEmpty()) {
                                 return null;
                             }
                             if (temp.length == 3) {
-                                timezone = temp[12];
+                                timezone = temp[2];
                             }
                         }
                         if (date.startsWith("{") && date.endsWith("}")) {
@@ -56,7 +55,9 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                                 if (tz != null) {
                                     df.setTimeZone(tz);
                                 }
-                            } catch (Exception er) {}
+                            } catch (Exception er) {
+                                LogUtil.error(DateHashVariable.class.getName(), er, "");
+                            }
                         }
                         Date result =  df.parse(date);
                         cal.setTime(result);
@@ -103,6 +104,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
         } catch (IllegalArgumentException iae) {
             return new Date().toString();
         } catch (Exception ex) {
+            LogUtil.error(DateHashVariable.class.getName(), ex, "");
             return null;
         }
     }
