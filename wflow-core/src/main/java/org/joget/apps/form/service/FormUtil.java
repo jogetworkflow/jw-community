@@ -2220,7 +2220,7 @@ public class FormUtil implements ApplicationContextAware {
                 }
                 if (r.getDateModified() != null) {
                     if (isExport) {
-                        obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
+                        obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
                     } else {
                         obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
                     }
