@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -31,6 +32,8 @@ public class FormData {
     protected Map<String, String> resultMap = new ListOrderedMap();
     protected Map<String, String> variableMap;
     protected Boolean stay = false;
+    protected Map<Element, Map<String, List<Element>>> elementMap = new HashMap<Element, Map<String, List<Element>>>();
+    protected boolean elementMapBuildingInProgress = false;
 
     public Boolean getStay() {
         return stay;
@@ -404,5 +407,21 @@ public class FormData {
 
     public void setAssignment(WorkflowAssignment assignment) {
         this.assignment = assignment;
+    }
+    
+    public Map<String, List<Element>> getElementMap(Element rootForm) {
+        return this.elementMap.get(rootForm);
+    }
+    
+    public void setElementMap(Element rootForm, Map<String, List<Element>> elementMap) {
+        this.elementMap.put(rootForm, elementMap);
+    }
+
+    public boolean isElementMapBuildingInProgress() {
+        return elementMapBuildingInProgress;
+    }
+
+    public void setElementMapBuildingInProgress(boolean elementMapBuildingInProgress) {
+        this.elementMapBuildingInProgress = elementMapBuildingInProgress;
     }
 }

@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -778,54 +779,162 @@ public class FormUtil implements ApplicationContextAware {
     public static Element findElement(String id, Element rootElement, FormData formData) {
         return findElement(id, rootElement, formData, false);
     }
-
+    
     /**
-     * Utility method to recursively find an element by ID.
+     * Utility method to find an element by ID.
      * @param id
      * @param rootElement
      * @param formData
+     * @param includeSubForm
      * @return
      */
     public static Element findElement(String id, Element rootElement, FormData formData, Boolean includeSubForm) {
-        if (id.contains(".") && rootElement != null) {
-            rootElement = FormUtil.getRootElement(id, rootElement, formData);
-            id = id.substring(id.lastIndexOf(".") + 1);
-        } 
-            
-        if (rootElement == null) {
+        return findElement(id, rootElement, formData, includeSubForm, true);
+    }
+
+    /**
+     * Utility method to find an element by ID.
+     * @param id
+     * @param rootElement
+     * @param formData
+     * @param includeSubForm
+     * @param rebuildMap
+     * @return
+     */
+    protected static Element findElement(String id, Element rootElement, FormData formData, Boolean includeSubForm, boolean rebuildMap) {
+        if (id == null || id.isEmpty()) {
             return null;
         }
+        if (formData == null) {
+            formData = new FormData();
+        }
         
-        Element result = null;
-        String elementId = rootElement.getPropertyString(FormUtil.PROPERTY_ID);
-        if (elementId != null && elementId.equals(id)) {
-            if (rootElement instanceof Form) {
-                Collection<Element> children = rootElement.getChildren(formData);
-                if (children != null) {
-                    for (Element child : children) {
-                        result = FormUtil.findElement(id, child, formData, includeSubForm);
-                        if (result != null) {
-                            break;
-                        }
+        //build prefix based on subform
+        String prefix = "";
+        Form form = FormUtil.findRootForm(rootElement);
+        while (form != null && form.getParent() != null) {
+            if (form.getParent() instanceof AbstractSubForm) {
+                prefix = form.getParent().getPropertyString(FormUtil.PROPERTY_ID) + "." + prefix;
+                form = FormUtil.findRootForm(form.getParent());
+            }
+        }
+        
+        List<Element> list = null;
+        if (form != null) {
+            boolean buildSubformMap = !prefix.isEmpty() || includeSubForm;
+            
+            if (formData.getElementMap(form) == null) {
+                formData.setElementMapBuildingInProgress(true);
+                buildElementMap(form, form, formData, null, buildSubformMap);
+                formData.setElementMapBuildingInProgress(false);
+            }
+            list = formData.getElementMap(form).get(prefix + id);
+            
+            if (list == null && !formData.isElementMapBuildingInProgress() && rebuildMap) {
+                //list is null, element could be added dynamically, update the map once again
+                formData.setElementMapBuildingInProgress(true);
+                buildElementMap(form, form, formData, null, buildSubformMap);
+                formData.setElementMapBuildingInProgress(false);
+                
+                list = formData.getElementMap(form).get(prefix + id);
+            }
+        } else {
+            //for form builder element preview
+            if (id.equalsIgnoreCase(rootElement.getPropertyString(PROPERTY_ID))) {
+                return rootElement;
+            }
+        }
+        
+        if (list != null && !list.isEmpty()) {
+            if (list.size() == 1) {
+                return list.get(0);
+            } else if (list.size() > 1) {
+                //try finding visible element and return it
+                List<Element> parentContinuedValidation = new ArrayList<Element>();
+                for (Element el : list) {
+                    if (el.isHidden(formData)) {
+                        continue;
                     }
+                    if (!isParentContinueValidation(el, formData)) {
+                        parentContinuedValidation.add(el);
+                        continue;
+                    }
+                    //visible element
+                    return el;
+                }
+                //if can't find any visible element
+                if (!parentContinuedValidation.isEmpty()) {
+                    return parentContinuedValidation.get(0);
+                } else {
+                    return list.get(0);
                 }
             }
-            if (result == null) {
-                result = rootElement;
-            }
-            return result;
-        } else if (!(rootElement instanceof AbstractSubForm) || ((rootElement instanceof AbstractSubForm) && includeSubForm)) {
-            Collection<Element> children = rootElement.getChildren(formData);
-            if (children != null) {
-                for (Element child : children) {
-                    result = FormUtil.findElement(id, child, formData, includeSubForm);
-                    if (result != null) {
-                        break;
+        } else if (includeSubForm) {
+            for (String fid : formData.getElementMap(form).keySet()) {
+                if (fid.endsWith("." + id)) {
+                    Element el = findElement(fid, rootElement, formData, false, false);
+                    if (el != null) {
+                        return el;
                     }
                 }
             }
         }
-        return result;
+        return null;
+    }
+    
+    protected static boolean isParentContinueValidation(Element element, FormData formData) {
+        if (element.getParent() != null) {
+            return element.getParent().continueValidation(formData) && isParentContinueValidation(element.getParent(), formData);
+        } else {
+            return true;
+        }
+    }
+    
+    /**
+     * Build a map consist of field id -> list of fields with same ids. 
+     * 
+     * @param rootForm
+     * @param element
+     * @param formData 
+     * @param prefix 
+     * @param includeSubForm 
+     */
+    protected static void buildElementMap(Element rootForm, Element element, FormData formData, String prefix, Boolean includeSubForm) {
+        if (formData.getElementMap(rootForm) == null) {
+            formData.setElementMap(rootForm, new LinkedHashMap<String, List<Element>>());
+        }
+        if (prefix == null) {
+            prefix = "";
+        }
+        
+        String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+        if (!id.isEmpty() && !(element instanceof Form)) {
+            List<Element> list = formData.getElementMap(rootForm).get(prefix + id);
+            if (list == null) {
+                list = new ArrayList<Element>();
+                formData.getElementMap(rootForm).put(prefix + id, list);
+            }
+            list.add(element);
+        }
+        
+        boolean isSubform = false;
+        if (element instanceof AbstractSubForm) {
+            prefix += id + ".";
+            isSubform = true;
+        }
+        
+        if (!isSubform || (isSubform && includeSubForm)) {
+            try {
+                Collection<Element> children = element.getChildren(formData);
+                if (children != null) {
+                    for (Element child : children) {
+                        buildElementMap(rootForm, child, formData, prefix, includeSubForm);
+                    }
+                }
+            } catch (Exception e) {
+                //may fail for subform if the subform is not ready (MPF), but it will rebuild later if the element not found
+            }
+        }
     }
     
     private static Element getRootElement(String id, Element rootElement, FormData formData) {

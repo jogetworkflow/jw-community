@@ -1003,6 +1003,44 @@ public class TestFormPermission {
         Assert.assertTrue("value".equals(row.getProperty("field26")));
     }
     
+    @Test
+    public void testSameFieldId1() throws IOException  {
+        //user: admin
+        User user = new User();
+        user.setUsername("admin");
+        workflowUserManager.setCurrentThreadUser(user);
+        
+        FormData formData = new FormData();
+        Form form = TestUtil.getForm("samefieldid", formData);
+        
+        Element field1 = FormUtil.findElement("field1", form, formData);
+        Assert.assertEquals("admin", FormUtil.getElementPropertyValue(field1, formData));
+        
+        formData.addRequestParameterValues("field1", new String[]{"test"});
+        
+        field1 = FormUtil.findElement("field1", form, formData);
+        Assert.assertEquals("test", FormUtil.getElementPropertyValue(field1, formData));
+    }
+    
+    @Test
+    public void testSameFieldId2() throws IOException  {
+        //user: admin
+        User user = new User();
+        user.setUsername("cat");
+        workflowUserManager.setCurrentThreadUser(user);
+        
+        FormData formData = new FormData();
+        Form form = TestUtil.getForm("samefieldid", formData);
+        
+        Element field1 = FormUtil.findElement("field1", form, formData);
+        Assert.assertEquals("cat", FormUtil.getElementPropertyValue(field1, formData));
+        
+        formData.addRequestParameterValues("field1", new String[]{"test"});
+        
+        field1 = FormUtil.findElement("field1", form, formData);
+        Assert.assertEquals("test", FormUtil.getElementPropertyValue(field1, formData));
+    }
+    
     protected void populateSubmittedData(FormData formData, String value){
         for (int i = 1; i <= 26; i++) {
             formData.addRequestParameterValues("field"+i, new String[]{value});

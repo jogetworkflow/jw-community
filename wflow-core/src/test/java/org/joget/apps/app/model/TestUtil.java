@@ -11,9 +11,12 @@ import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.form.service.FormUtil;
 
 public class TestUtil {
     
@@ -96,6 +99,21 @@ public class TestUtil {
         appDefinitionDao.deleteAllVersions(appId);
         
         cleanAppSrc(appId);
+    }
+    
+    public static void importData(String tableName, String file) throws IOException {
+        FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+        String json = readFile("/forms/" + file + ".json");
+        FormRowSet rows = FormUtil.jsonToFormRowSet(json, false);
+        formDataDao.saveOrUpdate(tableName, tableName, rows);
+    }
+    
+    public static void deleteAllData(String tableName) {
+        FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+        FormRowSet rows = formDataDao.find(tableName, tableName, null, null, null, null, null, null);
+        if (rows != null && !rows.isEmpty()) {
+            formDataDao.delete(tableName, tableName, rows);
+        }
     }
     
     public static void cleanAppSrc(String appId) {
