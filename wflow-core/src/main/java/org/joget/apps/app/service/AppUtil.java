@@ -578,6 +578,10 @@ public class AppUtil implements ApplicationContextAware {
                                         break;
                                     }
                                 }
+                                
+                                if (escapeFormat != null) {
+                                    tempVar = StringUtil.unescapeString(tempVar, escapeFormat, null);
+                                }
 
                                 //get result from plugin
                                 try {
@@ -589,7 +593,7 @@ public class AppUtil implements ApplicationContextAware {
                                             removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
                                         }
                                     }
-
+                                    
                                     String value = cachedPlugin.processHashVariable(removeFormatVar);
 
                                     if (value != null) {

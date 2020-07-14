@@ -3,6 +3,7 @@ package org.joget.apps.app.model;
 import java.io.IOException;
 import junit.framework.Assert;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.StringUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class TestHashVariable {
     public static String specialChars = "!@#$%^&*()_+-={}|[]\\:\";',./<>?\t\r\n`~";
     public static String separated = "Joget Inc.;<ABC> Inc.;Jack & Co.";
     public static String nl2br = "Joget Inc.\n<ABC> Inc.\nJack & Co.";
-    public static String jsEscapeString = "This is a simple string with '\\' char.";
+    public static String jsEscapeString = "This is a simple string with '\\' and '\\/' char.";
     public static String escaped_html;
     public static String escaped_sql;
     public static String escaped_js;
@@ -80,6 +81,12 @@ public class TestHashVariable {
         Assert.assertEquals(jsEscapeString + "\\\r\n" + jsEscapeString, AppUtil.processHashVariable("#exp.'{envVariable.jsEscapeString?expression}' + '\\\r\n' + '{envVariable.jsEscapeString?expression}'#", null, null, null));
         Assert.assertEquals("line 1\\\r\nline 2", AppUtil.processHashVariable("#exp.'line 1' + '\\\r\n' + 'line 2'#", null, null, null));
         Assert.assertEquals(escaped_specialChars + "\\ " + escaped_specialChars, AppUtil.processHashVariable("#exp.'{envVariable.specialChars?expression}' + '\\\r\n' + '{envVariable.specialChars?expression}'#", null, null, null));
+        
+        Assert.assertEquals("{\"value\" : \"" + StringUtil.escapeString("test\'test", StringUtil.TYPE_JSON, null) + "\"}", AppUtil.processHashVariable("{\"value\" : \"" + StringUtil.escapeString("#exp.'test\''' + 'test'#", StringUtil.TYPE_JSON, null) + "\"}", null, StringUtil.TYPE_JSON, null));
+        Assert.assertEquals("{\"value\" : \"" + StringUtil.escapeString("\u663e\u793a\u8865\u5145\u4fe1\u606f", StringUtil.TYPE_JSON, null) + "\"}", AppUtil.processHashVariable("{\"value\" : \"" + StringUtil.escapeString("#exp.'\u663e\u793a\u8865\u5145\u4fe1\u606f'#", StringUtil.TYPE_JSON, null) + "\"}", null, StringUtil.TYPE_JSON, null));
+        Assert.assertEquals("{\"value\" : \"" + StringUtil.escapeString(jsEscapeString + "\\\r\n" + jsEscapeString, StringUtil.TYPE_JSON, null) + "\"}", AppUtil.processHashVariable("{\"value\" : \"" + StringUtil.escapeString("#exp.'{envVariable.jsEscapeString?expression}' + '\\\r\n' + '{envVariable.jsEscapeString?expression}'#", StringUtil.TYPE_JSON, null) + "\"}", null, StringUtil.TYPE_JSON, null));
+        Assert.assertEquals("{\"value\" : \"" + StringUtil.escapeString("line 1\\\r\nline 2", StringUtil.TYPE_JSON, null) + "\"}", AppUtil.processHashVariable("{\"value\" : \"" + StringUtil.escapeString("#exp.'line 1' + '\\\r\n' + 'line 2'#", StringUtil.TYPE_JSON, null) + "\"}", null, StringUtil.TYPE_JSON, null));
+        Assert.assertEquals("{\"value\" : \"" + StringUtil.escapeString(escaped_specialChars + "\\ " + escaped_specialChars, StringUtil.TYPE_JSON, null) + "\"}", AppUtil.processHashVariable("{\"value\" : \"" + StringUtil.escapeString("#exp.'{envVariable.specialChars?expression}' + '\\\r\n' + '{envVariable.specialChars?expression}'#", StringUtil.TYPE_JSON, null) + "\"}", null, StringUtil.TYPE_JSON, null));
     }
     
     @Test
