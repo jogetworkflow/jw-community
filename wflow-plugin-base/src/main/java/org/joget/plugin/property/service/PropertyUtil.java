@@ -78,8 +78,8 @@ public class PropertyUtil implements ApplicationContextAware {
                                     } catch (Exception e) {
                                         //ignore
                                     }
+                                    vObj.put("properties", pProps);
                                 }
-                                vObj.put("properties", pProps);
                                 
                                 values.put(property.getString("name"), vObj);
                             } else {
