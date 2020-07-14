@@ -33,6 +33,14 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
                 if (headerName != null) {
                     String value = request.getHeader(headerName);
                     return (value != null)?value:"";
+                } else if ("baseURL".equalsIgnoreCase(attribute)) {
+                    String baseUrl = request.getScheme() + "://" + request.getServerName();
+                    int port = request.getServerPort();
+                    if (!((port == 80 && "http".equalsIgnoreCase(request.getScheme())) || (port == 443 && "https".equalsIgnoreCase(request.getScheme())))) {
+                        baseUrl += ":" + Integer.toString(port);
+                    }
+                    baseUrl += request.getContextPath();
+                    return baseUrl;
                 } else {
                     try {
                         //convert first character to upper case
@@ -96,6 +104,7 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
             list.add(getPrefix() + ".serverName");
             list.add(getPrefix() + ".serverPort");
             list.add(getPrefix() + ".servletPath");
+            list.add(getPrefix() + ".baseURL");
         }
         return list;
     }
