@@ -18,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class HostManager implements ApplicationContextAware {
 
     public static final String SYSTEM_PROPERTY_VIRTUALHOST = "wflow.virtualhost";
+    public static final String REQUEST_HOST_INITIALIZED = "REQUEST_HOST_INITIALIZED";
 
     protected static final ThreadLocal currentHost = new ThreadLocal();
     protected static final ThreadLocal currentProfile = new ThreadLocal();
@@ -98,10 +99,11 @@ public class HostManager implements ApplicationContextAware {
         // reset profile and set hostname
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            if (request != null) {
+            if (request != null && !"true".equals(request.getAttribute(REQUEST_HOST_INITIALIZED))) {
                 HostManager.setCurrentProfile(null);
                 String hostname = request.getServerName();
                 HostManager.setCurrentHost(hostname);
+                request.setAttribute(REQUEST_HOST_INITIALIZED, "true");
             }
         } catch (Exception e) {
             // ignore if servlet request is not available

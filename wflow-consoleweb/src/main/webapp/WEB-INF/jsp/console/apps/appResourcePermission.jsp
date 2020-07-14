@@ -92,7 +92,7 @@
                         label : '<fmt:message key="console.app.resource.common.label.permission"/>',
                         type : 'elementselect',
                         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',
-                        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                        url : '[CONTEXT_PATH]/web/property/json/${appId}/${appVersion}/getPropertyOptions'
                     }]
                 }],
                 propertyValues : prop,

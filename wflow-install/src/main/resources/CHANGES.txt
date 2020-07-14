@@ -2,6 +2,14 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.30
+=================
+f8e6c2fc Fixed: wflow-core - Form/Run Process Menu - Regression of 1405f024. #7978 @6.0-SNAPSHOT
+60422019 Fixed: wflow-core - FormPdfUtil - Redundant hash variable parsing causing the encrypted content in form template causing HTML malformed. #7987 @6.0-SNAPSHOT
+898cbe3b Fixed: wflow-commons - Host Manager - Host is initialized multiple times for single request. @6.0-SNAPSHOT
+ccbdb86a Fixed: jw-community - Security - Upgrade xercesImpl to 2.12.0 for CVE-2012-0881.  @6.0-SNAPSHOT
+79d5734e Fixed: wflow-core - Run Process/Form Menu - Redirection after form submitted is not handle correctly. #7883 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.29
 =================
 9976d337 Fixed: wflow-core - App i18n - improve performance. #7791 @6.0-SNAPSHOT

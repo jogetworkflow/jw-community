@@ -232,14 +232,15 @@ public class FormMenu extends UserviewMenu {
 
         if (redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
             String passoverFieldName = getPropertyString("fieldPassover");
-            Element passoverElement = FormUtil.findElement(passoverFieldName, form, formData);
-            
             String passoverValue = "";
             
-            if (passoverElement != null) {
-                passoverValue = FormUtil.getElementPropertyValue(passoverElement, formData);
-            } else if (FormUtil.PROPERTY_ID.equals(passoverFieldName)) {
-                passoverValue = formData.getPrimaryKeyValue();
+            if (FormUtil.PROPERTY_ID.equals(passoverFieldName)) {
+                passoverValue = form.getPrimaryKeyValue(formData);
+            } else {
+                Element passoverElement = FormUtil.findElement(passoverFieldName, form, formData, true);
+                if (passoverElement != null) {
+                    passoverValue = FormUtil.getElementPropertyValue(passoverElement, formData);
+                }
             }
             
             try {
