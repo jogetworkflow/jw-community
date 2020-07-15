@@ -802,7 +802,7 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     protected static Element findElement(String id, Element rootElement, FormData formData, Boolean includeSubForm, boolean rebuildMap) {
-        if (id == null || id.isEmpty()) {
+        if (id == null || id.isEmpty() || rootElement == null) {
             return null;
         }
         if (formData == null) {
