@@ -475,70 +475,86 @@ public class TestSectionVisibilityControl {
     
     @Test
     public void testSameFieldId1() throws IOException  {
-        FormData formData = new FormData();
-        formData.setPrimaryKeyValue("admin");
-        Form form = TestUtil.getForm("samefieldid", formData);
-        
-        Element section4 = FormUtil.findElement("section4", form, formData);
-        Assert.assertTrue(!isSectionVisibilityHidden(section4, formData));
-        
-        Element section5 = FormUtil.findElement("section5", form, formData);
-        Assert.assertTrue(isSectionVisibilityHidden(section5, formData));
-        
-        Element section6 = FormUtil.findElement("section6", form, formData);
-        Assert.assertTrue(!isSectionVisibilityHidden(section6, formData));
-        
-        Element section7 = FormUtil.findElement("section7", form, formData);
-        Assert.assertTrue(isSectionVisibilityHidden(section7, formData));
-        
-        Element field2 = FormUtil.findElement("field2", form, formData);
-        Assert.assertEquals("admin", FormUtil.getElementPropertyValue(field2, formData));
-        
-        Element field3 = FormUtil.findElement("field3", form, formData);
-        Assert.assertEquals("admin", FormUtil.getElementPropertyValue(field3, formData));
-        
-        //test store
-        formData = FormUtil.executeElementFormatDataForValidation(form, formData);
-        formData = formService.executeFormStoreBinders(form, formData);
-        FormRowSet rows = formData.getStoreBinderData(form.getStoreBinder());
-        FormRow row = rows.get(0);
-        
-        Assert.assertEquals("admin", row.get("field2"));
-        Assert.assertEquals("admin", row.get("field3"));
+        try {
+            FormData formData = new FormData();
+            formData.addRequestParameterValues("id", new String[]{"admin"});
+            Form form = TestUtil.getForm("samefieldid", formData);
+
+            Element id = FormUtil.findElement("id", form, formData);
+            Assert.assertEquals("admin", FormUtil.getElementPropertyValue(id, formData));
+
+            Element section4 = FormUtil.findElement("section4", form, formData);
+            Assert.assertTrue(!isSectionVisibilityHidden(section4, formData));
+
+            Element section5 = FormUtil.findElement("section5", form, formData);
+            Assert.assertTrue(isSectionVisibilityHidden(section5, formData));
+
+            Element section6 = FormUtil.findElement("section6", form, formData);
+            Assert.assertTrue(!isSectionVisibilityHidden(section6, formData));
+
+            Element section7 = FormUtil.findElement("section7", form, formData);
+            Assert.assertTrue(isSectionVisibilityHidden(section7, formData));
+
+            Element field2 = FormUtil.findElement("field2", form, formData);
+            Assert.assertEquals("admin", FormUtil.getElementPropertyValue(field2, formData));
+
+            Element field3 = FormUtil.findElement("field3", form, formData);
+            Assert.assertEquals("admin", FormUtil.getElementPropertyValue(field3, formData));
+
+            //test store
+            formData = FormUtil.executeElementFormatDataForValidation(form, formData);
+            formData = formService.executeFormStoreBinders(form, formData);
+            FormRowSet rows = formData.getStoreBinderData(form.getStoreBinder());
+            FormRow row = rows.get(0);
+
+            Assert.assertEquals("admin", row.getId());
+            Assert.assertEquals("admin", row.get("field2"));
+            Assert.assertEquals("admin", row.get("field3"));
+        } finally {
+            TestUtil.deleteAllData("test");
+        }
     }
     
     @Test
     public void testSameFieldId2() throws IOException  {
-        FormData formData = new FormData();
-        formData.setPrimaryKeyValue("cat");
-        Form form = TestUtil.getForm("samefieldid", formData);
-        
-        Element section4 = FormUtil.findElement("section4", form, formData);
-        Assert.assertTrue(isSectionVisibilityHidden(section4, formData));
-        
-        Element section5 = FormUtil.findElement("section5", form, formData);
-        Assert.assertTrue(!isSectionVisibilityHidden(section5, formData));
-        
-        Element section6 = FormUtil.findElement("section6", form, formData);
-        Assert.assertTrue(isSectionVisibilityHidden(section6, formData));
-        
-        Element section7 = FormUtil.findElement("section7", form, formData);
-        Assert.assertTrue(!isSectionVisibilityHidden(section7, formData));
-        
-        Element field2 = FormUtil.findElement("field2", form, formData);
-        Assert.assertEquals("cat", FormUtil.getElementPropertyValue(field2, formData));
-        
-        Element field3 = FormUtil.findElement("field3", form, formData);
-        Assert.assertEquals("cat", FormUtil.getElementPropertyValue(field3, formData));
-        
-        //test store
-        formData = FormUtil.executeElementFormatDataForValidation(form, formData);
-        formData = formService.executeFormStoreBinders(form, formData);
-        FormRowSet rows = formData.getStoreBinderData(form.getStoreBinder());
-        FormRow row = rows.get(0);
-        
-        Assert.assertEquals("cat", row.get("field2"));
-        Assert.assertEquals("cat", row.get("field3"));
+        try {
+            FormData formData = new FormData();
+            formData.addRequestParameterValues("id", new String[]{"cat"});
+            Form form = TestUtil.getForm("samefieldid", formData);
+
+            Element id = FormUtil.findElement("id", form, formData);
+            Assert.assertEquals("cat", FormUtil.getElementPropertyValue(id, formData));
+
+            Element section4 = FormUtil.findElement("section4", form, formData);
+            Assert.assertTrue(isSectionVisibilityHidden(section4, formData));
+
+            Element section5 = FormUtil.findElement("section5", form, formData);
+            Assert.assertTrue(!isSectionVisibilityHidden(section5, formData));
+
+            Element section6 = FormUtil.findElement("section6", form, formData);
+            Assert.assertTrue(isSectionVisibilityHidden(section6, formData));
+
+            Element section7 = FormUtil.findElement("section7", form, formData);
+            Assert.assertTrue(!isSectionVisibilityHidden(section7, formData));
+
+            Element field2 = FormUtil.findElement("field2", form, formData);
+            Assert.assertEquals("cat", FormUtil.getElementPropertyValue(field2, formData));
+
+            Element field3 = FormUtil.findElement("field3", form, formData);
+            Assert.assertEquals("cat", FormUtil.getElementPropertyValue(field3, formData));
+
+            //test store
+            formData = FormUtil.executeElementFormatDataForValidation(form, formData);
+            formData = formService.executeFormStoreBinders(form, formData);
+            FormRowSet rows = formData.getStoreBinderData(form.getStoreBinder());
+            FormRow row = rows.get(0);
+
+            Assert.assertEquals("cat", row.getId());
+            Assert.assertEquals("cat", row.get("field2"));
+            Assert.assertEquals("cat", row.get("field3"));
+        } finally {
+            TestUtil.deleteAllData("test");
+        }
     }
     
     protected boolean isSectionVisibilityHidden(Element e, FormData formData) {
