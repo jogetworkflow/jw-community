@@ -3,6 +3,16 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.8
+================
+b39ae0c4 Modified: wflow-core - Request Hash Variable - Adding #request.domainURL# to support shorthand syntax to construct URL without context path. @7.0-SNAPSHOT
+6de7aa3f Fixed: wflow-core - Hash Variable - Regression of f48e40b causing Hash Variable with "/" char cannot parsed correctly. #8057 @7.0-SNAPSHOT
+c69eb099 Modified: wflow-core - Request Hash Variable - Adding #request.baseURL# to support shorthand syntax to construct URL. @7.0-SNAPSHOT
+38108084 Fixed: wflow-plugin-base - PropertyUtil - getDefaultPropertyValues implementation causing Multi Paged Form page properties does not load default value. @7.0-SNAPSHOT
+76b435b0 Fixed: wflow-core - Form - Fields with same id in permission/visibility controlled section does not work correctly. #8034 @7.0-SNAPSHOT
+70221c6a Fixed: wflow-core - App Import/Export - Date modified is incorrect and uses the date created instead, caused by de5c8eb1 @7.0-SNAPSHOT
+650956f3 Fixed: wflow-core - Date Hash Variable - Regression of fc4fdf8. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.7
 ================
 de5c8eb1 Fixed: wflow-core - App Import/Export - Date created & date modified of imported/exported form data are incorrectly. @7.0-SNAPSHOT
