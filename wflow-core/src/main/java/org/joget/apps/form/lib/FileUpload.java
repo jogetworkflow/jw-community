@@ -409,6 +409,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                                 String path = FileManager.storeFile(file);
                                 obj.put("path", path);
                                 obj.put("filename", file.getOriginalFilename());
+                                obj.put("newFilename", path.substring(path.lastIndexOf(File.separator) + 1));
                             } else {
                                 obj.put("error", ResourceBundleUtil.getMessage("form.fileupload.fileType.msg.invalidFileType"));
                             }

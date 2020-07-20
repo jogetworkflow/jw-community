@@ -81,11 +81,12 @@
                         }
                         if (o.removeFile === "true") {
                             $(target).find("li").each(function() {
-                                if (!$(this).is($(file.previewElement)) && $(this).find("input[name$='_path']").val() === resp.filename) {
+                                if (!$(this).is($(file.previewElement)) && ($(this).find("input[name$='_path']").val() === resp.filename || $(this).find("input[name$='_path']").val() === resp.newFilename)) {
                                     $(this).remove();
                                 }
                             });
                         }
+                        $(file.previewElement).find(".name").text(resp.newFilename);
                         $(file.previewElement).find(".progress").remove();
                         $(file.previewElement).find(".remove").show();
                         $(file.previewElement).find("input").val(resp.path);
