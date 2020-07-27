@@ -818,6 +818,10 @@ public class FormUtil implements ApplicationContextAware {
                 form = FormUtil.findRootForm(form.getParent());
             }
         }
+        if (form == null && rootElement instanceof Form) {
+            form = (Form) rootElement;
+            prefix = "";
+        }
         
         List<Element> list = null;
         if (form != null) {
