@@ -815,8 +815,8 @@ public class FormUtil implements ApplicationContextAware {
         while (form != null && form.getParent() != null) {
             if (form.getParent() instanceof AbstractSubForm) {
                 prefix = form.getParent().getPropertyString(FormUtil.PROPERTY_ID) + "." + prefix;
-                form = FormUtil.findRootForm(form.getParent());
             }
+            form = FormUtil.findRootForm(form.getParent());
         }
         if (form == null && rootElement instanceof Form) {
             form = (Form) rootElement;
