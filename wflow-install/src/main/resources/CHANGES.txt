@@ -3,6 +3,13 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.9
+================
+0400a06c Fixed: wflow-core - Form - Regression of 76b435b0. #8114 @7.0-SNAPSHOT
+d847bea5 Fixed: wflow-commons - ServerUtil - Prevent NPE. #8076 @7.0-SNAPSHOT
+48f6ee85 Fixed: wflow-core - Form - Regression of 76b435b causing multi paged form with AJAX loading mode can't load correctly. #8072 @7.0-SNAPSHOT
+e6e92f8f Fixed: wflow-core - File Upload - File attachment with Chinese parentheses in filename does not handle correctly. #8064 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.8
 ================
 b39ae0c4 Modified: wflow-core - Request Hash Variable - Adding #request.domainURL# to support shorthand syntax to construct URL without context path. @7.0-SNAPSHOT
