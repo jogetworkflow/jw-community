@@ -42,6 +42,8 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             
     private static ThreadLocal pluginList = new ThreadLocal();
     
+    private static ThreadLocal executePluginInProgress = new ThreadLocal();
+    
     private static ThreadLocal pluginPropertiesList = new ThreadLocal() {
         @Override
         protected synchronized Object initialValue() {
@@ -118,67 +120,72 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
 
     protected void executePlugin(AuditTrail auditTrail) {
         AppDefinition appDef = auditTrail.getAppDef();
-        if (appDef != null) {
-            //get available audit trail plugins
-            Map<String, AuditTrailPlugin> plugins = (HashMap<String, AuditTrailPlugin>) pluginList.get();
-            if (plugins == null) {
-                Collection<Plugin> availablePluginsList = pluginManager.list(AuditTrailPlugin.class);
-                plugins = new HashMap<String, AuditTrailPlugin>();
-                for (Plugin p: availablePluginsList) {
-                    plugins.put(p.getName(), (AuditTrailPlugin) p);
+        if (appDef != null && executePluginInProgress.get() == null) {
+            executePluginInProgress.set(true);
+            try {
+                //get available audit trail plugins
+                Map<String, AuditTrailPlugin> plugins = (HashMap<String, AuditTrailPlugin>) pluginList.get();
+                if (plugins == null) {
+                    Collection<Plugin> availablePluginsList = pluginManager.list(AuditTrailPlugin.class);
+                    plugins = new HashMap<String, AuditTrailPlugin>();
+                    for (Plugin p: availablePluginsList) {
+                        plugins.put(p.getName(), (AuditTrailPlugin) p);
+                    }
+                    pluginList.set(plugins);
                 }
-                pluginList.set(plugins);
-            }
-            
-            //get available properties setting for audit trail plugin, implemented this way for future development to accept multiple same plugin with different setting.
-            String appId = appDef.getAppId();
-            List<Map> propertiesList = ((HashMap<String, List<Map>>) pluginPropertiesList.get()).get(appId);
-            if (propertiesList == null) {
-                propertiesList = new ArrayList<Map>();
-                
-                Collection<PluginDefaultProperties> pluginDefaultPropertiesList = appDef.getPluginDefaultPropertiesList();
-                
-                if (pluginDefaultPropertiesList != null && !pluginDefaultPropertiesList.isEmpty()) {
-                    for (PluginDefaultProperties prop : pluginDefaultPropertiesList) {
-                        if (plugins.containsKey(prop.getPluginName())) {
-                            AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(prop.getPluginName());
-                            Map propertiesMap = new HashMap();
 
-                            if (!(plugin instanceof PropertyEditable)) {
-                                try {
-                                    propertiesMap = CsvUtil.getPluginPropertyMap(prop.getPluginProperties());
-                                } catch (IOException e) {}
-                            } else {
-                                String json = prop.getPluginProperties();
+                //get available properties setting for audit trail plugin, implemented this way for future development to accept multiple same plugin with different setting.
+                String appId = appDef.getAppId();
+                List<Map> propertiesList = ((HashMap<String, List<Map>>) pluginPropertiesList.get()).get(appId);
+                if (propertiesList == null) {
+                    propertiesList = new ArrayList<Map>();
 
-                                //process basic hash variable
-                                json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
-                                propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                    Collection<PluginDefaultProperties> pluginDefaultPropertiesList = appDef.getPluginDefaultPropertiesList();
+
+                    if (pluginDefaultPropertiesList != null && !pluginDefaultPropertiesList.isEmpty()) {
+                        for (PluginDefaultProperties prop : pluginDefaultPropertiesList) {
+                            if (plugins.containsKey(prop.getPluginName())) {
+                                AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(prop.getPluginName());
+                                Map propertiesMap = new HashMap();
+
+                                if (!(plugin instanceof PropertyEditable)) {
+                                    try {
+                                        propertiesMap = CsvUtil.getPluginPropertyMap(prop.getPluginProperties());
+                                    } catch (IOException e) {}
+                                } else {
+                                    String json = prop.getPluginProperties();
+
+                                    //process basic hash variable
+                                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
+                                    propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                                }
+
+                                propertiesMap.put(AUDIT_TRAIL_PLUGIN_NAME, prop.getPluginName());
+                                propertiesList.add(propertiesMap);
                             }
-
-                            propertiesMap.put(AUDIT_TRAIL_PLUGIN_NAME, prop.getPluginName());
-                            propertiesList.add(propertiesMap);
                         }
                     }
+                    ((HashMap<String, List<Map>>) pluginPropertiesList.get()).put(appId, propertiesList);
                 }
-                ((HashMap<String, List<Map>>) pluginPropertiesList.get()).put(appId, propertiesList);
-            }
-            
-            //execute plugins
-            for (Map props : propertiesList) {
-                props.put("auditTrail", auditTrail);
-                props.put("pluginManager", pluginManager);
-                
-                AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(props.get(AUDIT_TRAIL_PLUGIN_NAME).toString());
-                
-                try {
-                    if (plugin instanceof PropertyEditable) {
-                        ((PropertyEditable) plugin).setProperties(props);
+
+                //execute plugins
+                for (Map props : propertiesList) {
+                    props.put("auditTrail", auditTrail);
+                    props.put("pluginManager", pluginManager);
+
+                    AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(props.get(AUDIT_TRAIL_PLUGIN_NAME).toString());
+
+                    try {
+                        if (plugin instanceof PropertyEditable) {
+                            ((PropertyEditable) plugin).setProperties(props);
+                        }
+                        plugin.execute(props);
+                    } catch (Exception e) {
+                        LogUtil.error(getClass().getName(), e, "Error executing audit trail plugin " + ClassUtils.getUserClass(plugin).getName());
                     }
-                    plugin.execute(props);
-                } catch (Exception e) {
-                    LogUtil.error(getClass().getName(), e, "Error executing audit trail plugin " + ClassUtils.getUserClass(plugin).getName());
                 }
+            } finally {
+                executePluginInProgress.set(null);
             }
         }
     }

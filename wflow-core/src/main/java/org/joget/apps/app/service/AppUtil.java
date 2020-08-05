@@ -634,6 +634,32 @@ public class AppUtil implements ApplicationContextAware {
         return content;
     }
     
+    public static boolean hasUnparsedNestedHashVariable(String content) {
+        if (content != null && !content.isEmpty()) {
+            if (content.contains("{") && content.contains("}")) {
+                Pattern nestedPattern = Pattern.compile("\\{[^\\}]+\\.[^\\}]+\\}");
+                Matcher nestedMatcher = nestedPattern.matcher(content);
+                Set<String> foundPrefixes = new HashSet<String>();
+                while (nestedMatcher.find()) {
+                    String var = nestedMatcher.group();
+                    String prefix = var.substring(1, var.indexOf("."));
+                    foundPrefixes.add(prefix);
+                }
+                if (!foundPrefixes.isEmpty()) {
+                    PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+                    Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
+                    for (Plugin p : pluginList) {
+                        HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
+                        if (foundPrefixes.contains(hashVariablePlugin.getPrefix())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
     protected static boolean isHashEscapeFormat(String hashFormat) {
         boolean isValid = true;
         String[] formats = hashFormat.split(";");
