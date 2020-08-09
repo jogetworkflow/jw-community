@@ -25,7 +25,7 @@ ${nav_before!}
                         ${category_inner_after!}
                     </li>
                 <#else>
-                    <li class="${cClass}">
+                    <li id="${category.properties.id!}" class="${cClass}">
                         ${category_inner_before!}
                         <a class="${category_label_classes!} dropdown" href="javascript:;">${theme.decorateCategoryLabel(category)}</a>
                         ${menu_container_before!}
