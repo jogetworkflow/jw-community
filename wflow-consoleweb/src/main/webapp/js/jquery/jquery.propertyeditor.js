@@ -4909,6 +4909,20 @@ PropertyEditor.Type.ElementSelect.prototype = {
                             elementdata += ' parentelementid="' + currentPage.attr("elementid") + '"';
                         }
                     }
+                    
+                    //handle keep_value_on_change equal to true with new added property default value
+                    if (thisObj.pageOptions.propertyValues !== null && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
+                        $.each(thisObj.pageOptions.propertiesDefinition, function(i, page) {
+                            if (page.properties !== undefined) {
+                                $.each(page.properties, function(i, property) {
+                                    //if there is default value and the property name is not exist in existing values
+                                    if (property.value !== undefined && thisObj.pageOptions.propertyValues[property.name] === undefined) {
+                                        thisObj.pageOptions.propertyValues[property.name] = property.value;
+                                    }
+                                });
+                            }
+                        });
+                    }
 
                     var html = "";
                     $.each(thisObj.pageOptions.propertiesDefinition, function(i, page) {
@@ -5307,6 +5321,20 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                         } else {
                             elementdata += ' parentelementid="' + currentPage.attr("elementid") + '"';
                         }
+                    }
+                    
+                    //handle keep_value_on_change equal to true with new added property default value
+                    if (propertyValues !== null && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
+                        $.each($(row).data("propertiesDefinition"), function(i, page) {
+                            if (page.properties !== undefined) {
+                                $.each(page.properties, function(i, property) {
+                                    //if there is default value and the property name is not exist in existing values
+                                    if (property.value !== undefined && propertyValues[property.name] === undefined) {
+                                        propertyValues[property.name] = property.value;
+                                    }
+                                });
+                            }
+                        });
                     }
                     
                     var newOptions = {
