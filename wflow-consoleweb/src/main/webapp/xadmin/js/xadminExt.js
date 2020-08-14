@@ -161,7 +161,9 @@
             xadmin.openPopup(title, UI.base+"/images/v3/cj.gif", width, height, function(index){
                 JPopup.dialogboxes[id] = index;
                 
-                var form = $('<form method="post" data-ajax="false" style="display:none;" target="layui-layer-iframe'+index+'" action="'+url+'"></form>'); 
+                $("#layui-layer-iframe"+ index).replaceWith('<iframe scrolling="auto" allowtransparency="true" id="'+id+'" name="'+id+'" ></iframe>');
+                
+                var form = $('<form method="post" data-ajax="false" style="display:none;" target="' + id + '" action="' + url + '"></form>');
                 $(document.body).append(form); 
                 $.each(params, function (key, data) {
                     $(form).append("<input id=\""+key+"\" name=\""+key+"\">");
