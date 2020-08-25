@@ -20,6 +20,12 @@ if ((typeof _customFooTableArgs) === "undefined") {
     })
 
     $(document).ready(function() {
+        //Scroll to active menu
+        setTimeout(function () {
+            var yOffset = $("li.active").position().top;
+            $("#sidebar").mCustomScrollbar("scrollTo", yOffset);
+        }, 200);
+        
         //fix tinymce position
         if ($(".tinymce").length > 0) {
             function overrideTinymce() {
