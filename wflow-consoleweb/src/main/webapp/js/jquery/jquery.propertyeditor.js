@@ -4911,7 +4911,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     }
                     
                     //handle keep_value_on_change equal to true with new added property default value
-                    if (thisObj.pageOptions.propertyValues !== null && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
+                    if (thisObj.pageOptions.propertyValues !== null && (typeof thisObj.pageOptions.propertyValues) !== "undefined" && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
                         $.each(thisObj.pageOptions.propertiesDefinition, function(i, page) {
                             if (page.properties !== undefined) {
                                 $.each(page.properties, function(i, property) {
@@ -5324,7 +5324,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     }
                     
                     //handle keep_value_on_change equal to true with new added property default value
-                    if (propertyValues !== null && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
+                    if (propertyValues !== null && (typeof propertyValues) !== "undefined" && !((typeof thisObj.properties.keep_value_on_change) === "undefined") && thisObj.properties.keep_value_on_change.toLowerCase() === "true") {
                         $.each($(row).data("propertiesDefinition"), function(i, page) {
                             if (page.properties !== undefined) {
                                 $.each(page.properties, function(i, property) {
