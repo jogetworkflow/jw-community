@@ -688,14 +688,32 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String tableName = getFormTableName(form);
         formSessionFactoryCache.remove(getSessionFactoryCacheKey(entityName, tableName, null));
         formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
-        clearJoinCache(tableName);
         
         // strip table prefix for form column cache
         if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
             tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
         }
         
+        //clear cache for loading
+        clearFormTableCache(tableName);
+    }
+    
+    @Override
+    public void clearFormTableCache(String tableName) {
         formColumnCache.remove(tableName);
+        
+        tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
+        formSessionFactoryCache.remove(getSessionFactoryCacheKey(tableName, tableName, null));
+        formPersistentClassCache.remove(getPersistentClassCacheKey(tableName));
+        clearJoinCache(tableName);
+        
+        //remove mapping file to recreate
+        String path = getFormMappingPath();
+        String filename = tableName + ".hbm.xml";
+        File mappingFile = new File(path, filename);
+        if (mappingFile.exists()) {
+            mappingFile.delete();
+        }
     }
     
     protected void clearJoinCache(String entity) {

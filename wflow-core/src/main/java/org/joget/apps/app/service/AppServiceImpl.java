@@ -2396,6 +2396,7 @@ public class AppServiceImpl implements AppService {
                     formDefinitionDao.add(o);
                     tables.add(o.getTableName());
                     importedForms.add(o.getId());
+                    formDataDao.clearFormTableCache(o.getTableName());
                 }
 
                 String currentTable = "";
