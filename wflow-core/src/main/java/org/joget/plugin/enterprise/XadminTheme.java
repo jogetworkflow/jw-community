@@ -24,6 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
 import static org.joget.plugin.enterprise.UniversalTheme.INBOX;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -288,7 +289,7 @@ public class XadminTheme extends UniversalTheme {
             html += getInbox(data);
             
             html += "<li class=\"layui-nav-item\">\n";
-            html += "<a href=\"javascript:;\">"+profileImageTag+StringUtil.stripHtmlTag(user.getFirstName(), new String[]{}) + " " + StringUtil.stripHtmlTag(user.getLastName(), new String[]{}) + "</a>\n";
+            html += "<a href=\"javascript:;\">"+profileImageTag+StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "</a>\n";
             html += "<dl class=\"layui-nav-child\">\n";
             
             if (!"true".equals(getPropertyString("profile")) && !user.getReadonly()) {

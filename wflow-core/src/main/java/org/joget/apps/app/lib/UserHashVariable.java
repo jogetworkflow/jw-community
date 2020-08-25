@@ -14,6 +14,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.springframework.context.ApplicationContext;
 
 public class UserHashVariable extends DefaultHashVariablePlugin {
@@ -78,7 +79,7 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
                     attributeValue = StringUtils.join(values, ";");
                     
                 } else if (attribute.equalsIgnoreCase("fullName")) {
-                    attributeValue = user.getFirstName() + ((user.getLastName() != null)?(" "+ user.getLastName()):"");
+                    attributeValue = DirectoryUtil.getUserFullName(user);
                 } else {
                     //convert first character to upper case
                     char firstChar = attribute.charAt(0);

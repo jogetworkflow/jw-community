@@ -95,6 +95,7 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -1785,7 +1786,7 @@ public class AppServiceImpl implements AppService {
                 User user = workflowUserManager.getCurrentUser();
                 String name = null;
                 if (user != null) {
-                    name = user.getFirstName() + ((user.getLastName() != null)?(" "+ user.getLastName()):"");
+                    name = DirectoryUtil.getUserFullName(user);
                 }
                 row.setModifiedByName(name);
                 Date dateCreated = null;

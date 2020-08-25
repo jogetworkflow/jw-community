@@ -182,6 +182,23 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
+                        <label for="displayNameFormat"><fmt:message key="console.setting.general.label.displayNameFormat"/></label>
+                        <span class="form-input">
+                            <select id="displayNameFormat" name="displayNameFormat">
+                                <option value="">{<fmt:message key="console.directory.user.common.label.firstName"/>} {<fmt:message key="console.directory.user.common.label.lastName"/>}</option>
+                                <option value="{lastName} {firstName}" <c:if test="${settingMap['displayNameFormat'] eq '{lastName} {firstName}'}">selected</c:if>>{<fmt:message key="console.directory.user.common.label.lastName"/>} {<fmt:message key="console.directory.user.common.label.firstName"/>}</option>
+                                <option value="{firstName}{lastName}" <c:if test="${settingMap['displayNameFormat'] eq '{firstName}{lastName}'}">selected</c:if>>{<fmt:message key="console.directory.user.common.label.firstName"/>}{<fmt:message key="console.directory.user.common.label.lastName"/>}</option>
+                                <option value="{lastName}{firstName}" <c:if test="${settingMap['displayNameFormat'] eq '{lastName}{firstName}'}">selected</c:if>>{<fmt:message key="console.directory.user.common.label.lastName"/>}{<fmt:message key="console.directory.user.common.label.firstName"/>}</option>
+                            </select>
+                            <br>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> {<fmt:message key="console.directory.user.common.label.firstName"/>} {<fmt:message key="console.directory.user.common.label.lastName"/>}</i>
+                        </span>
+                    </div>
+                </span>
+            </div> 
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
                         <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
                         <span class="form-input">
                             <input id="css" type="text" name="css" value="<c:out value="${settingMap['css']}"/>"/>

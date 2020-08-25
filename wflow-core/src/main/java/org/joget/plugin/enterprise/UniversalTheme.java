@@ -35,6 +35,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -633,7 +634,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 
                 html += "<li class=\"user-link dropdown\">\n"
                       + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
-                      + "	     " + profileImageTag + StringUtil.stripHtmlTag(user.getFirstName(), new String[]{}) + " " + StringUtil.stripHtmlTag(user.getLastName(), new String[]{}) + "\n"
+                      + "	     " + profileImageTag + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";
 
@@ -714,7 +715,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             html += "<li class=\"mm-profile user-link\">\n"
                   + "    <a class=\"dropdown\">\n"
                   + "        "+profileImageTag+"\n"  
-                  + "	     <span>" + StringUtil.stripHtmlTag(user.getFirstName(), new String[]{}) + " " + StringUtil.stripHtmlTag(user.getLastName(), new String[]{}) + "</span>\n"
+                  + "	     <span>" + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "</span>\n"
                   + "	     <small>" + email + "</small>\n"
                   + "    </a>\n";
             

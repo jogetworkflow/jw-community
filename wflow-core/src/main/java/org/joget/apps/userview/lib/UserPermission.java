@@ -16,6 +16,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.service.WorkflowUserManager;
@@ -119,7 +120,7 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
                 for (User u : userList) {
                     Map<String, String> option = new HashMap<String, String>();
                     option.put("value", u.getUsername());
-                    option.put("label", u.getFirstName() + " " + u.getLastName() + "(" + u.getUsername() + ")");
+                    option.put("label", DirectoryUtil.getUserFullName(u) + "(" + u.getUsername() + ")");
                     jsonArray.put(option);
                 }
 

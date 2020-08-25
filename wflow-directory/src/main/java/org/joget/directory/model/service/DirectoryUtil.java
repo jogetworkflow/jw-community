@@ -191,4 +191,19 @@ public class DirectoryUtil implements ApplicationContextAware {
         }
         return departmentsMap;
     }
+    
+    public static String getUserFullName(User u) {
+        SetupManager setupManager = (SetupManager) appContext.getBean("setupManager");
+        String displayNameFormat = setupManager.getSettingValue("displayNameFormat");
+        
+        if ("{lastName} {firstName}".equals(displayNameFormat)) {
+            return ((u.getLastName() != null && !u.getLastName().isEmpty())?(u.getLastName() + " "):"") + u.getFirstName();
+        } else if ("{lastName}{firstName}".equals(displayNameFormat)) {
+            return ((u.getLastName() != null && !u.getLastName().isEmpty())?(u.getLastName()):"") + u.getFirstName();
+        } else if ("{firstName}{lastName}".equals(displayNameFormat)) {
+            return u.getFirstName() + ((u.getLastName() != null && !u.getLastName().isEmpty())?(u.getLastName()):"");
+        } else {
+            return u.getFirstName() + ((u.getLastName() != null && !u.getLastName().isEmpty())?(" " + u.getLastName()):"");
+        }
+    }
 }
