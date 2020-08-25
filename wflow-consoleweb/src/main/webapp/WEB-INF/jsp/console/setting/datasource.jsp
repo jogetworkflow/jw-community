@@ -129,7 +129,7 @@
 
                     var obj = eval('(' + o + ')');
                     if(obj.success == true){
-                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-ok"><fmt:message key="console.setting.datasource.label.connectionOk"/></span>');
+                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-ok"><ui:msgEscJS key="console.setting.datasource.label.connectionOk"/></span>');
                         success[obj.datasource] = true;
 
                         //check if all success

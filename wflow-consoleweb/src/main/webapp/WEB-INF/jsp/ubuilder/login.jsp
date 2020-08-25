@@ -130,7 +130,7 @@
                         <table align="center">
                             <tr><td><fmt:message key="ubuilder.login.username" />: </td><td><input type='text' id='j_username' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
                             <tr><td><fmt:message key="ubuilder.login.password" />:</td><td><input type='password' id='j_password' name='j_password'></td></tr>
-                            <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="<fmt:message key="ubuilder.login" />" /></td></tr>
+                            <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="<ui:msgEscHTML key="ubuilder.login" />" /></td></tr>
                             <tr><td colspan="2">
                                 <%= DirectoryUtil.getLoginFormFooter() %>
                             </td></tr>

@@ -147,7 +147,7 @@
                     </c:when>
                     <c:otherwise>
                         <div class="form-buttons">
-                            <input type="submit" value="<fmt:message key="general.method.label.submit"/>"/>
+                            <input type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>"/>
                         </div>
                     </c:otherwise>
                 </c:choose>
