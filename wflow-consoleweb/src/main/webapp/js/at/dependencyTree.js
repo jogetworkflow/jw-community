@@ -63,12 +63,16 @@ DependencyTree.Node = {
 };
 
 DependencyTree.Util = {
-    cleanData: function(node) {
+    cleanData: function(node, removeState) {
         node.data["parent"] = null;
         node.data["properties"] = null;
         node.data["propertiesDef"] = null;
         for (var i in node.children) {
-            DependencyTree.Util.cleanData(node.children[i]);
+            DependencyTree.Util.cleanData(node.children[i], removeState);
+        }
+        
+        if (removeState) {
+            node.state = {};
         }
     },
     runMatchers : function (viewer, deferreds, node, jsonObj, refObj, matchers) {
@@ -1508,9 +1512,9 @@ DependencyTree.Viewer.prototype = {
         var tree = $.extend(true, {}, DependencyTree.Node);
         DependencyTree.Util.runMatchers(this, deferreds, tree, jsonObj);
         $.when.apply($, deferreds).then(function(){
-            DependencyTree.Util.cleanData(tree);
+            DependencyTree.Util.cleanData(tree, true);
             $('#dependencyTreeViewer').jstree(true).settings.core.data = tree;
-            $('#dependencyTreeViewer').jstree(true).refresh();
+            $('#dependencyTreeViewer').jstree(true).refresh(false, $('#dependencyTreeViewer').jstree(true).get_state());
             
             $(viewer.element).find(".dt-loading").remove();
         });
