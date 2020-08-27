@@ -541,6 +541,20 @@ public class XadminTheme extends UniversalTheme {
             data.put("loginBackground", "<style>#login{background-image:url('"+getPropertyString("loginBackground")+"');}</style>");
         }
         data.put("login_title", StringUtil.stripHtmlRelaxed(userview.getPropertyString("name")));
+        if (!data.containsKey("login_form_before")) {
+            if (getProperties().containsKey("loginPageTop")) {
+                data.put("login_form_before", getPropertyString("loginPageTop"));
+            } else {
+                data.put("login_form_before", this.userview.getSetting().getPropertyString("loginPageTop"));
+            }
+        }
+        if (!data.containsKey("login_form_after")) {
+            if (getProperties().containsKey("loginPageBottom")) {
+                data.put("login_form_after", getPropertyString("loginPageBottom"));
+            } else {
+                data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
+            }
+        }
         return UserviewUtil.getTemplate(this, data, "/templates/xadmin/login.ftl");
     }
     
