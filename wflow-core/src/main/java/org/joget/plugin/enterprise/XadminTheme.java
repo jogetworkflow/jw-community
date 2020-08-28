@@ -627,7 +627,7 @@ public class XadminTheme extends UniversalTheme {
         if (decoratedMenu.contains("badge")) {
             String label = StringUtil.stripAllHtmlTag(menu.getPropertyString("label"));
             String badge = StringUtil.stripAllHtmlTag(decoratedMenu);
-            badge = badge.replaceFirst(label, "");
+            badge = badge.replaceFirst(StringUtil.escapeRegex(label), "");
             return getMenuHtml(category, menu, "<span class='pull-right badge rowCount'>"+badge+"</span>", null);
         } else {
             
