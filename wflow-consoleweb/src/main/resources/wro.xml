@@ -1,6 +1,6 @@
 <groups xmlns="http://www.isdc.ro/wro">
     <group name="common.preload">
-        <js>/js/jquery/jquery-3.4.1.min.js</js>
+        <js>/js/jquery/jquery-3.5.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
         <js>/js/jquery/ui/jquery-ui-1.12.1.custom.min.js</js>
         <js>/js/json/ui.js</js>
@@ -57,7 +57,7 @@
         <css>/mobile/mobile.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
-        <js>/js/jquery/jquery-3.4.1.min.js</js>
+        <js>/js/jquery/jquery-3.5.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
         <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
         <js>/mobile/jqm/jquery.cookie.js</js>
