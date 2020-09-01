@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.CannotAcceptSuspended;
 import org.enhydra.shark.api.client.wfmodel.CannotComplete;
@@ -26,8 +27,10 @@ import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
+import org.joget.workflow.shark.model.dao.DeadlineDao;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -338,6 +341,33 @@ public class CustomWfActivityImpl extends WfActivityImpl {
                 }
             }
             i++;
+        }
+    }
+    
+    public void migration(WMSessionHandle shandle, Set<String> missingVariables) {
+        try {
+            //workflow variable
+            if (missingVariables != null && !missingVariables.isEmpty()) {
+                PersistentManagerInterface pmgr = SharkEngineManager.getInstance().getInstancePersistenceManager();
+                for (String id : missingVariables) {
+                    ActivityVariablePersistenceObject var = new ActivityVariablePersistenceObject();
+                    var.setProcessId(this.processId);
+                    var.setActivityId(this.key);
+                    var.setDefinitionId(id);
+                    var.setValue("");
+                    var.setResultVariable(false);
+                    pmgr.persist(shandle, var, true);
+                }
+            }
+            
+            //deadlines
+            DeadlineDao dao = (DeadlineDao) WorkflowUtil.getApplicationContext().getBean("deadlineDao");
+            dao.deleteForActivity(this.key);
+            this.justCreatedDeadlines = true;
+            reevaluateDeadlines(shandle);
+            persistDeadlines(shandle);
+        } catch (Exception e) {
+            LogUtil.error(CustomWfActivityImpl.class.getName(), e, "");
         }
     }
 }

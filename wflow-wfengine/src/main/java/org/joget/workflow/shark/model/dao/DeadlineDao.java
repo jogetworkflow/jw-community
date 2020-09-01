@@ -13,6 +13,15 @@ import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
 public class DeadlineDao extends AbstractSpringDao {
     public final static String ENTITY_NAME="DeadlinePersistenceObject";
     
+    public void deleteForActivity(String actId) {
+        Collection list = find(ENTITY_NAME, " where e.activity.id = ?", new Object[]{actId}, null, null, null, null);
+        if (list != null && !list.isEmpty()) {
+            for (Object i : list) {
+                delete(ENTITY_NAME, i);
+            }
+        }
+    }
+    
     public Map<CustomActivityPersistenceObject, Collection<CustomDeadlinePersistenceObject>> getDeadlines(String processId, Long timeLimitBoundary) {
         String conditions = "where e.activity.processId = ? and e.activity.state.name like ?";
         

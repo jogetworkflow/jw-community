@@ -47,8 +47,6 @@ import org.enhydra.shark.utilities.WMEntityUtilities;
 
 import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
-import com.lutris.dods.builder.generator.query.QueryBuilder;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -63,12 +61,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.enhydra.shark.CustomWfActivityImpl;
 
 import org.enhydra.shark.CustomWfActivityWrapper;
+import org.enhydra.shark.CustomWfProcessImpl;
 import org.enhydra.shark.CustomWfResourceImpl;
 import org.enhydra.shark.SharkUtil;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
 import org.enhydra.shark.api.client.wfservice.PackageInvalid;
 import org.enhydra.shark.api.common.AssignmentFilterBuilder;
-import org.enhydra.shark.instancepersistence.data.ProcessQuery;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
@@ -77,6 +75,8 @@ import org.joget.commons.util.PagedList;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
+import org.joget.workflow.shark.migrate.model.MigrateActivity;
+import org.joget.workflow.shark.migrate.model.MigrateProcess;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.DeadlineThreadManager;
 import org.springframework.context.ApplicationContext;
@@ -4959,6 +4959,43 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Shark shark = Shark.getInstance();
             
             shark.getExecutionAdministration().checkDeadlinesWithFiltering(shandle, null);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
+    
+    /**
+     * Internal method used to updates workflow variable and deadline of migrated process instance
+     * @param process
+     * @param acts
+     */
+    @Override
+    public void internalUpdateMigratedProcess(MigrateProcess process, Collection<MigrateActivity> acts) {
+        SharkConnection sc = null;
+
+        try {
+            sc = connect();
+
+            WMSessionHandle shandle = sc.getSessionHandle();
+            Shark shark = Shark.getInstance();
+            
+            boolean updatedProcess = false;
+            Set<String> missingVariables = null;
+            for (MigrateActivity a : acts) {
+                CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(shandle, process.getName(), a.getProcessId(), a.getId());
+                if (!updatedProcess) {
+                    missingVariables = ((CustomWfProcessImpl) wrapper.getProcessImpl()).migration(shandle);
+                    updatedProcess = true;
+                }
+                ((CustomWfActivityImpl) wrapper.getActivityImpl()).migration(shandle, missingVariables);
+            }
+            
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {

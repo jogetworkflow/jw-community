@@ -9,15 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
+import org.enhydra.shark.api.internal.instancepersistence.PersistentManagerInterface;
 import org.enhydra.shark.api.internal.instancepersistence.ProcessPersistenceObject;
+import org.enhydra.shark.api.internal.instancepersistence.ProcessVariablePersistenceObject;
 import org.enhydra.shark.api.internal.toolagent.ToolAgentGeneralException;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessMgrInternal;
 import org.enhydra.shark.api.internal.working.WfRequesterInternal;
 import org.enhydra.shark.utilities.MiscUtilities;
+import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Condition;
 import org.enhydra.shark.xpdl.elements.Transition;
+import org.enhydra.shark.xpdl.elements.WorkflowProcess;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.DecisionResult;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -213,5 +217,39 @@ public class CustomWfProcessImpl extends WfProcessImpl {
         }
 
         return transList;
+    }
+    
+    public Set<String> migration(WMSessionHandle shandle) {
+        Set<String> missingVariables = new HashSet<String>();
+        try {
+            Map processVariables = getContext(shandle);
+            WorkflowProcess wp = getProcessDefinition(shandle);
+            Collection dfsAndFPs = wp.getAllVariables().values();
+            Iterator itDfs = dfsAndFPs.iterator();
+            
+            while (itDfs.hasNext()) {
+                XMLCollectionElement dfOrFp = (XMLCollectionElement)itDfs.next();
+                String id = dfOrFp.getId();
+                
+                if (!processVariables.containsKey(id)) {
+                    missingVariables.add(id);
+                }
+            }
+            
+            if (!missingVariables.isEmpty()) {
+                PersistentManagerInterface pmgr = SharkEngineManager.getInstance().getInstancePersistenceManager();
+                for (String id : missingVariables) {
+                    ProcessVariablePersistenceObject var = new ProcessVariablePersistenceObject();
+                    var.setProcessId(this.key);
+                    var.setDefinitionId(id);
+                    var.setValue("");
+                    
+                    pmgr.persist(shandle, var, true);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(CustomWfProcessImpl.class.getName(), e, "");
+        }
+        return missingVariables;
     }
 }
