@@ -212,7 +212,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             "    {\n" +
             "      \"src\": \"" + icon + "\",\n" +
             "      \"type\": \"image/png\",\n" +
-            "      \"sizes\": \"512x512\"\n" +
+            "      \"sizes\": \"512x512\",\n" +
+            "      \"purpose\": \"any maskable\"\n" +    
             "    }\n" +
             "  ],\n" +
             "  \"start_url\": \"" + startUrl + "\",\n" +
