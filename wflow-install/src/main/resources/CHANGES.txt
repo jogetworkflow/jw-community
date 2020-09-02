@@ -3,6 +3,27 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.10
+=================
+d83e590d Fixed: wflow-wfengine - Process Migration - New created workflow variables and deadlines are not handled. #8240 @7.0-SNAPSHOT
+5c4ead8b Fixed: wflow-core - PWA - Manifest doesn't have a maskable icon. @7.0-SNAPSHOT
+8e3196ee Modified: wflow-consoleweb - JQuery - Upgraded to JQuery 3.5.1 @7.0-SNAPSHOT
+a61e9182 Fixed: wflow-core - X-Admin Theme - X-Admin Theme: If CRUD title has bracket (...), the whole menu label is repeated in the row count. #8237 @7.0-SNAPSHOT
+33c77fb7 Fixed: wflow-core - Nest Form grid in a  subform did not display heading color or row border. #8222 @7.0-SNAPSHOT
+6f8aa471 Fixed: wflow-core - X-Admin Theme - Custom HTML before/after Login Form is not working. #8221 @7.0-SNAPSHOT
+946b03be Fixed: wflow-consoleweb - Builder Advanced Tools - Tree Viewer - Tree state is not keep after edit properties. @7.0-SNAPSHOT
+8bf5ea72 Fixed: wflow-consoleweb - Universal/Progressive Theme - Unable to scroll menus in userview category when "menu position" set to horizontal menu. #8185 @7.0-SNAPSHOT
+d35ea00b Modified: wflow-consoleweb - General Setting - Support user display name format. #8143 @7.0-SNAPSHOT
+29f31e2f Fixed: wflow-consoleweb - I18N - Handle single/double quote in label. @7.0-SNAPSHOT
+697b6dfb Fixed: wflow-consoleweb - Property Editor - Correction of ff8a334. Improper handling of undefined data. @7.0-SNAPSHOT
+11470da8 Fixed: wflow-core - Import App - new table column is not created. #8202 @7.0-SNAPSHOT
+bf6e1aeb Fixed: wflow-consoleweb - DX Progressive Theme: On load, auto adjust runtime userview to display the selected menu within browser view even if selected menu is at the bottom of the list. #8203 @7.0-SNAPSHOT
+50a64f94 Fixed: wflow-core - XAdmin Theme - Nested Popup Dialog is not handled correctly. #8151 @7.0-SNAPSHOT
+a18bf606 Fixed: wflow-core - Import app - plugins size are incorrect after imported. #8104 @6.0-SNAPSHOT
+ff8a334f Fixed: wflow-consoleweb - Property Editor - "keep_value_on_change" attribute of "elementSelect" and "elementMultiSelect" type is not populate default value correctly. @7.0-SNAPSHOT
+c2b09631 Modified: wflow-core - Userview Theme - Add id attribute for sidebar menu category. @7.0-SNAPSHOT
+ae082284 Fixed: wflow-core - Audit Trail - StackOverflowError when using Datalist Hash Variable in User Notification plugin. #8124 @7.0-SNAPSHOT Modified: wflow-core - AppUtil - Adding utility method to check unparsed nested hash variable. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.9
 ================
 0400a06c Fixed: wflow-core - Form - Regression of 76b435b0. #8114 @7.0-SNAPSHOT
