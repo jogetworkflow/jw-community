@@ -122,6 +122,7 @@ public class UserviewBuilderWebController {
         if (name.length() > 255) {
             name = name.substring(0, 255);
         }
+        name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
         userview.setName(name);
         userview.setDescription(userviewService.getUserviewDescription(json));
         userview.setJson(PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), json));
