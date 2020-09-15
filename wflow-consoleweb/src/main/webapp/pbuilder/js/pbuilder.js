@@ -4470,7 +4470,7 @@ ProcessBuilder.Mapper = {
                     }
                     url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
                 } else if ((typeof ProcessBuilder.Mapper.mappingData["modifierPlugin"]) !== "undefined") {
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["modifierPlugin"]);
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
                 } else {
                     url += "?activityName=" + encodeURIComponent(title);
                 }
@@ -4489,7 +4489,7 @@ ProcessBuilder.Mapper = {
                     }
                     url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
                 } else if ((typeof ProcessBuilder.Mapper.mappingData["spModifierPlugin"]) !== "undefined") {
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["spModifierPlugin"]);
+                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
                 } else {
                     url += "?activityName=" + encodeURIComponent(title);
                 }
