@@ -76,7 +76,8 @@
     {
         name : 'controlField',
         label : '@@form.selectbox.controlField@@',
-        type : 'textfield'
+        type : 'autocomplete',
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         label : '@@form.selectbox.ui@@',
