@@ -65,7 +65,7 @@
     {
         name : 'controlField',
         label : '@@form.radio.controlField@@',
-        type : 'autocomplete',
+        type : 'selectbox',
         options_callback : 'FormBuilder.getFieldOptions'
     },
     {
