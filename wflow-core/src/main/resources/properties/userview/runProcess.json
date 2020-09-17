@@ -130,8 +130,8 @@
         name : 'paramName',
         label : '@@userview.formmenu.paramName@@',
         type : 'textfield',
-        control_field: 'actionAfterSaved',
-        control_value: '',
+        control_field: 'fieldPassoverMethod',
+        control_value: 'param',
         control_use_regex: 'false'
     },
     {
