@@ -209,6 +209,7 @@ body{
 }
 .left-nav #nav li a cite{
     font-size: 14px;
+    display:inline;
 }
 
 .left-nav #nav li .sub-menu{
