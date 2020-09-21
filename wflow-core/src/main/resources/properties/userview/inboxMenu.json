@@ -36,6 +36,10 @@
         name : 'processId',
         label : '@@userview.inboxmenu.process@@',
         type : 'selectbox',
+        control_field: 'appFilter',
+        control_value: 'process',
+        control_use_regex: 'false',
+        required : 'true',
         options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.InboxMenu/service?action=getProcesses'
     }]
 },
