@@ -2466,8 +2466,9 @@ public class AppServiceImpl implements AppService {
                 }
                 LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
             }
-
+            
             if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
+                Set<String> existId = new HashSet<String>();
                 for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
                     EnvironmentVariable temp = new EnvironmentVariable();
                     temp.setAppDefinition(newAppDef);
@@ -2475,6 +2476,19 @@ public class AppServiceImpl implements AppService {
                     temp.setValue(o.getValue());
                     temp.setRemarks(o.getRemarks());
                     environmentVariableDao.add(temp);
+                    existId.add(o.getId());
+                }
+
+                if (appDef.getEnvironmentVariableList() != null) {
+                    for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                        if (!existId.contains(o.getId())) {
+                            if (o.getValue() == null) {
+                                o.setValue("");
+                            }
+                            o.setAppDefinition(newAppDef);
+                            environmentVariableDao.add(o);
+                        }
+                    }
                 }
             } else {
                 if (appDef.getEnvironmentVariableList() != null) {
