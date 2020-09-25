@@ -13,8 +13,7 @@
             {
                 name:'label',
                 label:'@@form.subform.label@@',
-                type:'textfield',
-                value : 'SubForm'
+                type:'textfield'
             },
             %s
         ]
