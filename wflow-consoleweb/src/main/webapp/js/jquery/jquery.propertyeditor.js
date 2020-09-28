@@ -4677,6 +4677,9 @@ PropertyEditor.Type.CodeEditor.prototype = {
         if (this.properties.mode !== undefined || this.properties.mode !== "") {
             this.codeeditor.getSession().setMode("ace/mode/" + this.properties.mode);
         }
+        if (this.properties.check_syntax !== undefined && this.properties.check_syntax.toLowerCase() === "false") {
+            this.codeeditor.getSession().setUseWorker(false);
+        }
         this.codeeditor.setAutoScrollEditorIntoView(true);
         this.codeeditor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
         this.codeeditor.setOption("minLines", 10);
