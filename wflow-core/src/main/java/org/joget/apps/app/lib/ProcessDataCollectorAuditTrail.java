@@ -77,8 +77,13 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                         actId = auditTrail.getMessage();
                     }
                     
-                    activity = workflowManager.getActivityById(actId);
-                    trackActivity = workflowManager.getRunningActivityInfo(actId);
+                    if (method.equals("activityAbort")) {
+                        activity = workflowManager.getActivityByProcess((String) args[0], (String) args[1]);
+                        trackActivity = workflowManager.getRunningActivityInfo(activity.getId());
+                    } else {
+                        activity = workflowManager.getActivityById(actId);
+                        trackActivity = workflowManager.getRunningActivityInfo(actId);
+                    }
                     process = workflowManager.getRunningProcessById(activity.getProcessId());
                     trackProcess = workflowManager.getRunningProcessInfo(activity.getProcessId());
                     
@@ -132,7 +137,8 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 || auditTrail.getMethod().equals("executeToolCompleted")
                 || auditTrail.getMethod().equals("executeActivity")
                 || auditTrail.getMethod().equals("runSubFlow")
-                || auditTrail.getMethod().equals("finishSubFlow");
+                || auditTrail.getMethod().equals("finishSubFlow")
+                || auditTrail.getMethod().equals("activityAbort");
     }
     
     protected class ReportTask implements Runnable {
