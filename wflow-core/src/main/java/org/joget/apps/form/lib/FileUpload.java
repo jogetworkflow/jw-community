@@ -243,7 +243,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>FileUpload</label><input type='file' />";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.FileUpload.pluginLabel") + "</label><input type='file' />";
     }
 
     @Override

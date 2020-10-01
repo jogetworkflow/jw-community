@@ -141,7 +141,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>Date Picker</label><input type='text' />";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.DatePicker.pluginLabel") + "</label><input type='text' />";
     }
 
     @Override

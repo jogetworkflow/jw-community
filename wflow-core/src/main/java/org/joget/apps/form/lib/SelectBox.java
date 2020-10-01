@@ -158,7 +158,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>Select Box</label><select><option>Option</option></select>";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.SelectBox.pluginLabel") + "</label><select><option>" + ResourceBundleUtil.getMessage("form.checkbox.template.options") + "</option></select>";
     }
 
     @Override

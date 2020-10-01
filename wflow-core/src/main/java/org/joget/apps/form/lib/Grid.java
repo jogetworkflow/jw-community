@@ -20,6 +20,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -230,7 +231,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>Grid</label><table cellspacing='0'><tr><th>Header</th><th>Header</th></tr><tr><td>Cell</td><td>Cell</td></tr></table>";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.Grid.pluginLabel") + "</label><table cellspacing='0'><tr><th>" + ResourceBundleUtil.getMessage("form.grid.header") + "</th><th>" + ResourceBundleUtil.getMessage("form.grid.header") + "</th></tr><tr><td>" + ResourceBundleUtil.getMessage("form.grid.cell") + "</td><td>" + ResourceBundleUtil.getMessage("form.grid.cell") + "</td></tr></table>";
     }
 
     @Override

@@ -14,7 +14,7 @@
         label : '@@form.fileupload.label@@',
         type : 'textfield',
         required : 'True',
-        value : 'FileUpload'
+        value : '@@org.joget.apps.form.lib.FileUpload.pluginLabel@@'
     }]
 },
 {

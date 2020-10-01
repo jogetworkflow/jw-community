@@ -14,7 +14,7 @@
         label : '@@form.textfield.label@@',
         type : 'textfield',
         required : 'True',
-        value : 'TextField'
+        value : '@@org.joget.apps.form.lib.TextField.pluginLabel@@'
     }]
 },
 {

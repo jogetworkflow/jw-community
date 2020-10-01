@@ -13,7 +13,7 @@
         name : 'label',
         label : '@@form.radio.label@@',
         type : 'textfield',
-        value : 'Radio'
+        value : '@@org.joget.apps.form.lib.Radio.pluginLabel@@'
     },
     {
         name : 'options',

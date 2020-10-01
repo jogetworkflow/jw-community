@@ -13,7 +13,7 @@
         name : 'label',
         label : '@@form.textarea.label@@',
         type : 'textfield',
-        value : 'TextArea'
+        value : '@@org.joget.apps.form.lib.TextArea.pluginLabel@@'
     }]
 },
 {

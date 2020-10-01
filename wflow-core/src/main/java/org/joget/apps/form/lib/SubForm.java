@@ -17,6 +17,7 @@ import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -72,7 +73,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<div class='subform-container'><span class='subform-title'>Subform</span></div>";
+        return "<div class='subform-container'><span class='subform-title'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.SubForm.pluginLabel") + "</span></div>";
     }
 
     @Override

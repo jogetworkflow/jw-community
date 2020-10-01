@@ -9,6 +9,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 
 public class Radio extends SelectBox implements FormBuilderPaletteElement {
 
@@ -81,7 +82,7 @@ public class Radio extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>Radio</label><label><input type='radio' value='Option' style='color:silver' />Option</label>";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.Radio.pluginLabel") + "</label><label><input type='radio' value='Option' style='color:silver' />" + ResourceBundleUtil.getMessage("form.checkbox.template.options") + "</label>";
     }
 
     @Override

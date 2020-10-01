@@ -14,7 +14,7 @@
         label : '@@form.datepicker.label@@',
         type : 'textfield',
         required : 'True',
-        value : 'Date Picker'
+        value : '@@org.joget.apps.form.lib.DatePicker.pluginLabel@@'
     },
     {
         name : 'allowManual',

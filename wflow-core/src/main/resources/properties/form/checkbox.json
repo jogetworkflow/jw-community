@@ -13,7 +13,7 @@
         name : 'label',
         label : '@@form.checkbox.label@@',
         type : 'textfield',
-        value : 'Checkbox'
+        value : '@@org.joget.apps.form.lib.CheckBox.pluginLabel@@'
     },
     {
         name : 'options',

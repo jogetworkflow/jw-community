@@ -7,6 +7,7 @@ import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 
 public class TextArea extends Element implements FormBuilderPaletteElement {
 
@@ -44,7 +45,7 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>TextArea</label><textarea cols='20' rows='5'></textarea>";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.TextArea.pluginLabel") + "</label><textarea cols='20' rows='5'></textarea>";
     }
 
     @Override

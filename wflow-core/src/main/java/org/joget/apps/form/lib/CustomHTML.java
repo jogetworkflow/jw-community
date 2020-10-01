@@ -15,6 +15,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 
 public class CustomHTML extends Element implements FormBuilderPaletteElement, FormContainer {
@@ -307,7 +308,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>Custom HTML</label><span class='form-floating-label'>CUSTOM HTML</span>";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.CustomHTML.pluginLabel") + "</label><span class='form-floating-label'>" + ResourceBundleUtil.getMessage("form.customhtml.customHtml") + "</span>";
     }
 
     @Override

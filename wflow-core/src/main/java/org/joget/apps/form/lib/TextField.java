@@ -10,6 +10,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 
@@ -128,7 +129,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>TextField</label><input type='text' />";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.TextField.pluginLabel") + "</label><input type='text' />";
     }
 
     @Override

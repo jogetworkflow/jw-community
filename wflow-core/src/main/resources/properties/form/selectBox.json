@@ -13,7 +13,7 @@
         name : 'label',
         label : '@@form.selectbox.label@@',
         type : 'textfield',
-        value : 'SelectBox'
+        value : '@@org.joget.apps.form.lib.SelectBox.pluginLabel@@'
     },
     {
         name : 'options',

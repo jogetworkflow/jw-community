@@ -9,6 +9,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 
 public class PasswordField extends Element implements FormBuilderPaletteElement {
@@ -126,7 +127,7 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>PasswordField</label><input type='password' />";
+        return "<label class='label'>" + ResourceBundleUtil.getMessage("org.joget.apps.form.lib.PasswordField.pluginLabel") + "</label><input type='password' />";
     }
 
     @Override

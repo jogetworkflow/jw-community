@@ -12,7 +12,7 @@
         name : 'label',
         label : '@@form.grid.label@@',
         type : 'textfield',
-        value : 'Grid'
+        value : '@@org.joget.apps.form.lib.Grid.pluginLabel@@'
     },
     {
         name : 'options',
