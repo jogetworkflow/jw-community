@@ -2375,7 +2375,7 @@ public class AppServiceImpl implements AppService {
         
         AppDevUtil.setImportApp(true);
         try {
-            LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");        
+            LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");
             AppDefinition newAppDef = new AppDefinition();
             newAppDef.setAppId(appId);
             newAppDef.setVersion(appVersion);
@@ -2435,6 +2435,12 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getUserviewDefinitionList() != null) {
                 for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                    String name = StringUtil.stripAllHtmlTag(o.getName());
+                    if (name.length() > 255) {
+                        name = name.substring(0, 255);
+                    }
+                    name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
+                    o.setName(name);
                     o.setAppDefinition(newAppDef);
 
                     //remove tempDisablePermissionChecking setting
