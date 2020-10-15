@@ -4460,16 +4460,37 @@ public class WorkflowManagerImpl implements WorkflowManager {
         SharkConnection sc = null;
 
         try {
-            sc = connect();
+            sc = connect(username);
             WMSessionHandle sessionHandle = sc.getSessionHandle();
-            WfAssignment wfa = getWfAssignmentByActivityId(sc, activityId);
             WfResource res = sc.getResource(username);
 
+            Shark shark = Shark.getInstance();
+            AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
+
+            WMFilter filter = aieb.addActivityIdEquals(sessionHandle, activityId);
+
+            // execute
+            WfAssignmentIterator ai = sc.get_iterator_assignment();
+            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
+            WfAssignment[] wItems = ai.get_next_n_sequence(0);
+            WfAssignment wfa;
+            
+            if (wItems != null && wItems.length > 0) {
+                wfa = wItems[0];
+                for (int i = 0; i < wItems.length; i++) {
+                    if (wItems[i].assignee().resource_key().equals(res.resource_key())) {
+                        wfa = wItems[i];
+                    }
+                }
+            }else{
+                wfa = null;
+            }
+           
             if (res == null) {
                 CustomWfResourceImpl.createResource(sessionHandle, username);
                 res = sc.getResource(username);
             }
-
+                   
             if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
                 wfa.set_assignee(res);
             }
@@ -4479,7 +4500,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
             wfa.activity().complete();
-
 
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
