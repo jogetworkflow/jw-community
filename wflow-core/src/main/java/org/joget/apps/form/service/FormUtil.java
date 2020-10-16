@@ -855,6 +855,10 @@ public class FormUtil implements ApplicationContextAware {
             } else if (list.size() > 1) {
                 //try finding visible element and return it
                 List<Element> parentContinuedValidation = new ArrayList<Element>();
+                
+                //prevent concurrent modification
+                list = new ArrayList<Element>(list);
+                
                 for (Element el : list) {
                     if (el.isHidden(formData)) {
                         continue;
