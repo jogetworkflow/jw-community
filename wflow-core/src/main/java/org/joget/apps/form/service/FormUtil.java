@@ -812,7 +812,7 @@ public class FormUtil implements ApplicationContextAware {
         //build prefix based on subform
         String prefix = "";
         Form form = FormUtil.findRootForm(rootElement);
-        while (form != null && form.getParent() != null) {
+        while (form != null && form.getParent() != null && form.getParent() instanceof AbstractSubForm) {
             if (form.getParent() instanceof AbstractSubForm) {
                 prefix = form.getParent().getPropertyString(FormUtil.PROPERTY_ID) + "." + prefix;
             }
