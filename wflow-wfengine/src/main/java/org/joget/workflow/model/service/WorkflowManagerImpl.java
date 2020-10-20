@@ -4490,17 +4490,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 CustomWfResourceImpl.createResource(sessionHandle, username);
                 res = sc.getResource(username);
             }
-                   
-            if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
-                wfa.set_assignee(res);
+            
+            if (wfa != null) {
+                if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
+                    wfa.set_assignee(res);
+                }
+
+                if (!wfa.get_accepted_status()) {
+                    wfa.set_accepted_status(true);
+                }
+
+                wfa.activity().complete();
             }
-
-            if (!wfa.get_accepted_status()) {
-                wfa.set_accepted_status(true);
-            }
-
-            wfa.activity().complete();
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
