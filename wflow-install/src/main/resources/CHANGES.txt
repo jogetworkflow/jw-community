@@ -3,6 +3,37 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.11
+=================
+9ecdad42 Modified: wflow-consoleweb - Improve wording for Multi Tools @7.0snapshot
+c7dff559 Fixed: wflow-wfengine - WorkflowManager - Correction of 9493f788 to prevent NPE. @7.0-SNAPSHOT
+a54ac0b3 Fixed: wflow-core -Subform Repeater: Ajax options failed to work #8394 @7.0-SNAPSHOT
+e5de8b02 Fixed: wflow-core - FormUtil - Concurrent modification exception when find element. #8375 @7.0-SNAPSHOT
+9493f788 Fixed: wflow-wfengine - WorkflowManager - assignmentForceComplete() cannot complete assignment with multiple assignees. #8360 @7.0-SNAPSHOT
+259b538b Fixed: wflow-core - Import app to handle exception if <name> value is larger than 255 char. #7839 @7.0-SNAPSHOT
+ef243a8c Modified: wflow-core/wflow-consoleweb - Form Builder - Default label value should follow the the label in the list. @7.0-SNAPSHOT
+5aa6cba4 Fixed: wflowcore - ProcessDataCollector - Process Data Collector plugin does not update activity state when aborted by BeanShell. #8341 @7.0-SNAPSHOT
+40b62242 Modified: wflow-consoleweb - Property Editor - Code editor - Allow disable syntax checking. @7.0-SNAPSHOT
+c5d53622 Fixed: wflow-core - Remove default label on subform element. @7.0-SNAPSHOT
+a13dd863 Modified: wflow-install- Update mysql-connector-java to 8.0.19. @7.0-SNAPSHOT
+63fa85f0 Fixed: wflow-core - Import app did not add missing environment variables from the jwa. @7.0-SNAPSHOT
+cf46f9df Modified: wflow-core - Update jackson-databind to 2.9.10.6 for CVE-2020-14060, CVE-2020-14195, CVE-2020-14061 and CVE-2020-14062. @7.0-SNAPSHOT
+df4e0ad0 Modified: wflow-core - Update poi to 3.17 for CVE-2017-12626. @6.0-SNAPSHOT
+1207428d Modified: wflow-consoleweb - Update mysql-connector-java to 8.0.19 for CVE-2019-2692. @6.0-SNAPSHOT
+1393f106 User Profile Menu - When first Name set to readonly a * symbol will be added after the firstname. @7.0-SNAPSHOT
+24795705 Inbox Menu - Process field should only available when Assignment for a Process Only is selected. @7.0-SNAPSHOT
+77019b57 Modified: wflow-consoleweb - Userview - Some labels is not in title case. @7.0-SNAPSHOT
+8e42c503 Modified: wflow-install - Upgraded to Apache Tomcat 8.5.58 @7.0-SNAPSHOT
+92604d40 Modified: wflow-core - User Notification - Support parsing hash variables in the value of a hash variable in email message. #8304 @7.0-SNAPSHOT
+fc74f929 Modified: wflow-consoleweb - Userview - Some labels is not in title case. @7.0-SNAPSHOT
+986f777e Modified: wflow-consoleweb - Userview - Run Process - label "Field Name For URL Redirect Value Passover" should change to "Field ID for URL Redirect Value Passover. @7.0-SNAPSHOT
+5617481a Modified: wflow-core - Form Element - Field ID to control available options based on grouping in Select Box, Check Box, radio, and MultiSelectBox should be autocomplete type, to support the use with subform @7.0-SNAPSHOT
+5dc3524e Fixed: wflow-consoleweb - X-admin Theme - Menu label does not display correctly after clicked on mobile app. @7.0-SNAPSHOT
+986faf63 Modified: wflow-core - PasswordField - Password Field Element default label should be PasswordField not textField.  @7.0-SNAPSHOT
+4c1ef544 Fixed: wflow-consoleweb - Process Mapper - Process Enhancement: "Process Mapper > Run Process" not retrieving/saving "Map Activities to Forms" configurations. #8273 @7.0-SNAPSHOT
+8b4c63ff Fixed: wflow-consoleweb - Regression of  8e38317c  German language with umlaut displayed incorrectly in App Console. #8258 @7.0-SNAPSHOT
+b0bebcb5 Fixed: wflow-consoleweb - process mapper - more settings hover over change to hand cursor @7.0-SNAPSHOT
+
 CHANGES IN 7.0.10
 =================
 d83e590d Fixed: wflow-wfengine - Process Migration - New created workflow variables and deadlines are not handled. #8240 @7.0-SNAPSHOT
