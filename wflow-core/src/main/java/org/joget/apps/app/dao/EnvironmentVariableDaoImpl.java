@@ -11,6 +11,8 @@ import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<EnvironmentVariable> implements EnvironmentVariableDao {
 
@@ -144,7 +146,7 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     }
     
     @Override
-    public Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
+    public synchronized Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
         Integer count = 0;
         
         try {
