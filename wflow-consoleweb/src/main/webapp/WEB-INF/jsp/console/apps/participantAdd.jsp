@@ -394,7 +394,7 @@
 
         function submitPlugin(id){
             UI.blockUI();
-            document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/pconfigure"/>?value='+escape(id) + '&title=' + escape("<c:out value="${title}" escapeXml="true" />");
+            document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/pconfigure"/>?value='+escape(id) + '&title=' + encodeURIComponent("<c:out value="${title}" escapeXml="true" />");
         }
 
         function post(type, params){
