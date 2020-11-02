@@ -579,7 +579,6 @@ public class GeneratorUtil {
                     index = elements.length() - 1;
                 }
                 elements = elements.getJSONObject(index).getJSONArray("elements");
-                elements = elements.getJSONObject(index).getJSONArray("elements");
             }
                 
             if (json.startsWith("{") && json.endsWith("}")) {
