@@ -120,12 +120,23 @@ public class FormPdfUtil {
             ITextRenderer r = getRenderer();
             synchronized (r) {
                 html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter, cleanForm);
+
+                // XML 1.0
+                // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+                String pattern = "[^"
+                        + "\u0009\r\n"
+                        + "\u0020-\uD7FF"
+                        + "\uE000-\uFFFD"
+                        + "\ud800\udc00-\udbff\udfff"
+                        + "]";
+                
+                String legalHtml = html.replaceAll(pattern, "");
             
                 final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 documentBuilderFactory.setValidating(false);
                 DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
                 builder.setEntityResolver(FSEntityResolver.instance());
-                org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(html.getBytes("UTF-8")));
+                org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(legalHtml.getBytes("UTF-8")));
 
                 r.setDocument(xmlDoc, null);
 
