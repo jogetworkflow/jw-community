@@ -150,16 +150,18 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     @Override
     public Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
         Integer count = 0;
+        SessionFactory sf = super.getSessionFactory();
+        Session session = null;
+        Transaction transaction = null;
         try {
+            session = sf.openSession();
             EnvironmentVariable key = new EnvironmentVariable();
             key.setId(id);
             key.setAppId(appDef.getId());
             key.setAppVersion(appDef.getVersion());
             key.setId(id);
             
-            SessionFactory sf = super.getSessionFactory();
-            Session session = sf.openSession();
-            Transaction transaction = session.beginTransaction();
+            transaction = session.beginTransaction();
             EnvironmentVariable env = (EnvironmentVariable) session.get(getEntityName(), key, new LockOptions(LockMode.PESSIMISTIC_WRITE));
             
             if (env != null) {
@@ -180,10 +182,19 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
                 env.setValue(Integer.toString(count));
                 session.save(getEntityName(), env);     
             }
+            session.flush(); 
             transaction.commit();
             clearDeadlineCache(env);
         } catch (Exception e) {
             LogUtil.error(EnvironmentVariableDaoImpl.class.getName(), e, id);
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
         }
         return count;
     }
