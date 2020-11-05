@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -44,7 +45,7 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
         String query = "SELECT e FROM " + getEntityName() + " e " + conds;
 
         Query q = session.createQuery(query);
-        q.setLockOptions(LockOptions.UPGRADE);
+        q.setLockOptions(new LockOptions(LockMode.PESSIMISTIC_WRITE));
         q.setFirstResult(0);
         q.setMaxResults(1);
         int i = 0;

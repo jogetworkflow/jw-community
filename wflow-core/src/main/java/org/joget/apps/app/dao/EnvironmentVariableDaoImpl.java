@@ -2,17 +2,19 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<EnvironmentVariable> implements EnvironmentVariableDao {
 
@@ -146,29 +148,40 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     }
     
     @Override
-    public synchronized Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
+    public Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
         Integer count = 0;
-        
         try {
-            EnvironmentVariable env = loadByIdForUpdate(id, appDef);
-            if (env != null && env.getValue() != null && env.getValue().trim().length() > 0) {
-                count = Integer.parseInt(env.getValue());
-            }
-            count += 1;
-
-            if (env == null) {
-                env = new EnvironmentVariable();
+            EnvironmentVariable key = new EnvironmentVariable();
+            key.setId(id);
+            key.setAppId(appDef.getId());
+            key.setAppVersion(appDef.getVersion());
+            key.setId(id);
+            
+            SessionFactory sf = super.getSessionFactory();
+            Session session = sf.openSession();
+            Transaction transaction = session.beginTransaction();
+            EnvironmentVariable env = (EnvironmentVariable) session.get(getEntityName(), key, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+            
+            if (env != null) {
+                session.refresh(env, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+                if (env.getValue() != null && env.getValue().trim().length() > 0) {
+                    count = Integer.parseInt(env.getValue());
+                }
+                count += 1;
+                env.setValue(Integer.toString(count));
+                
+                session.merge(getEntityName(), env);
+            } else {
+                count += 1;
+                    
+                env = key;        
                 env.setAppDefinition(appDef);
-                env.setAppId(appDef.getId());
-                env.setAppVersion(appDef.getVersion());
-                env.setId(id);
                 env.setRemarks(remark);
                 env.setValue(Integer.toString(count));
-                super.add(env);
-            } else {
-                env.setValue(Integer.toString(count));
-                super.update(env);
+                session.save(getEntityName(), env);     
             }
+            transaction.commit();
+            clearDeadlineCache(env);
         } catch (Exception e) {
             LogUtil.error(EnvironmentVariableDaoImpl.class.getName(), e, id);
         }
