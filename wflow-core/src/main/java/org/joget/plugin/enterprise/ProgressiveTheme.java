@@ -1,5 +1,7 @@
 package org.joget.plugin.enterprise;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 
 public class ProgressiveTheme extends UniversalTheme {
@@ -57,6 +59,136 @@ public class ProgressiveTheme extends UniversalTheme {
             this.dark = dark;
             this.light = light;
         }
+    }
+    
+    @Override
+    protected String getPrimaryColor() {
+        String primary = "#3F51B5";
+        if ("custom".equals(getPropertyString("primaryColor"))) {
+            primary = getPropertyString("customPrimary");
+        } else if (!getPropertyString("primaryColor").isEmpty()) {
+            Color p = Color.valueOf(getPropertyString("primaryColor"));
+            if (p != null) {
+                primary = p.color;
+            }
+        }
+        return primary;
+    }
+    
+    @Override
+    protected String generateLessCss() {
+        String css = "";
+        String lessVariables = "";
+        String primary = "";
+        String dark = "darken(@primary , 10%)";
+        String light = "lighten(@primary , 5%)";
+        String accent = "#1976D2";
+        String lightAccent = "lighten(@accent , 10%)";
+        String button = "#FF9800";
+        String buttonText = "#FFFFFF";
+        String font = "#FFFFFF";
+        
+        if ("custom".equals(getPropertyString("primaryColor"))) {
+            primary = getPropertyString("customPrimary");
+            if (!getPropertyString("customPrimaryDark").isEmpty()) {
+                dark = getPropertyString("customPrimaryDark");
+            }
+            if (!getPropertyString("customPrimaryLight").isEmpty()) {
+                light = getPropertyString("customPrimaryLight");
+            }
+        } else {
+            Color p = Color.INDIGO;
+            if (!getPropertyString("primaryColor").isEmpty()){
+                p = Color.valueOf(getPropertyString("primaryColor")); 
+            }
+            if (p != null) {
+                primary = p.color;
+                dark = (p.dark.isEmpty())?dark:p.dark;
+                if ("light".equals(getPropertyString("themeScheme"))) {
+                    light = "screen(@primary, #eeeeee)";
+                } else {
+                    light = (p.light.isEmpty())?light:p.light;
+                }
+            }
+        }
+        
+        if ("custom".equals(getPropertyString("accentColor"))) {
+            accent = getPropertyString("customAccent");
+            if (!getPropertyString("customAccentLight").isEmpty()) {
+                lightAccent = getPropertyString("customAccentLight");
+            }
+        }  else if (!getPropertyString("accentColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("accentColor"));
+            if (a != null) {
+                accent = a.color;
+                lightAccent = (a.light.isEmpty())?lightAccent:a.light;
+            }
+        }
+        
+        if ("custom".equals(getPropertyString("buttonColor"))) {
+            button = getPropertyString("customButton");
+        } else if (!getPropertyString("buttonColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("buttonColor"));
+            if (a != null) {
+                button = a.color;
+            }
+        }
+        
+        if ("custom".equals(getPropertyString("buttonTextColor"))) {
+            buttonText = getPropertyString("customButtonText");
+        } else if (!getPropertyString("buttonTextColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("buttonTextColor"));
+            if (a != null) {
+                buttonText = a.color;
+            }
+        }
+        
+        if ("custom".equals(getPropertyString("fontColor"))) {
+            font = getPropertyString("customFontColor");
+        } else if (!getPropertyString("fontColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("fontColor"));
+            if (a != null) {
+                font = a.color;
+            }
+        }
+        
+        if ("light".equals(getPropertyString("themeScheme"))) {
+            String menuFont = "#000000";
+            if ("custom".equals(getPropertyString("menuFontColor"))) {
+                menuFont = getPropertyString("customMenuFontColor");
+            } else if (!getPropertyString("menuFontColor").isEmpty()) {
+                Color a = Color.valueOf(getPropertyString("menuFontColor"));
+                if (a != null) {
+                    menuFont = a.color;
+                }
+            }
+            
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+        } else {
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+        }
+        
+        // process LESS
+        String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/" + getPropertyString("themeScheme") + ".less");
+        less = lessVariables + "\n" + less;
+        // read CSS from cache
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        if (cache != null) {
+            Element element = cache.get(less);
+            if (element != null) {
+                css = (String) element.getObjectValue();
+            }
+        }
+        if (css == null || css.isEmpty()) {
+            // not available in cache, compile LESS
+            css = compileLess(less);
+            // store CSS in cache
+            if (cache != null) {
+                Element element = new Element(less, css);
+                cache.put(element);
+            }
+        }
+        return css;
     }
     
     @Override

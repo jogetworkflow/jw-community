@@ -176,17 +176,18 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
         return meta;
     }
-
+    
     protected String getPrimaryColor() {
-        String primary = "#FFFFFF";
+        String primary = "#3b5998";
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
-        } else {
-            Color p = Color.valueOf(getPropertyString("primaryColor")); 
+        } else if (!getPropertyString("primaryColor").isEmpty()) {
+            Color p = Color.valueOf(getPropertyString("primaryColor"));
             if (p != null) {
                 primary = p.color;
-            } 
+            }
         }
+
         return primary;
     }
         
@@ -393,11 +394,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String primary = "";
         String dark = "darken(@primary , 10%)";
         String light = "lighten(@primary , 5%)";
-        String accent = "";
+        String accent = "#2196F3";
         String lightAccent = "lighten(@accent , 10%)";
-        String button = "#D8DADA";
-        String buttonText = "#333";
-        String font = "";
+        String button = "#9E9E9E";
+        String buttonText = "#FFFFFF";
+        String font = "#FFFFFF";
         
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
@@ -408,7 +409,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 light = getPropertyString("customPrimaryLight");
             }
         } else {
-            Color p = Color.valueOf(getPropertyString("primaryColor")); 
+            Color p = Color.DARKROYALBLUE;
+            if (!getPropertyString("primaryColor").isEmpty()){
+                p = Color.valueOf(getPropertyString("primaryColor")); 
+            }
             if (p != null) {
                 primary = p.color;
                 dark = (p.dark.isEmpty())?dark:p.dark;
@@ -425,8 +429,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             if (!getPropertyString("customAccentLight").isEmpty()) {
                 lightAccent = getPropertyString("customAccentLight");
             }
-        } else {
-            Color a = Color.valueOf(getPropertyString("accentColor")); 
+        }  else if (!getPropertyString("accentColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("accentColor"));
             if (a != null) {
                 accent = a.color;
                 lightAccent = (a.light.isEmpty())?lightAccent:a.light;
@@ -436,7 +440,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         if ("custom".equals(getPropertyString("buttonColor"))) {
             button = getPropertyString("customButton");
         } else if (!getPropertyString("buttonColor").isEmpty()) {
-            Color a = Color.valueOf(getPropertyString("buttonColor")); 
+            Color a = Color.valueOf(getPropertyString("buttonColor"));
             if (a != null) {
                 button = a.color;
             }
@@ -444,8 +448,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         if ("custom".equals(getPropertyString("buttonTextColor"))) {
             buttonText = getPropertyString("customButtonText");
-        } else if (!getPropertyString("buttonColor").isEmpty()) {
-            Color a = Color.valueOf(getPropertyString("buttonTextColor")); 
+        } else if (!getPropertyString("buttonTextColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("buttonTextColor"));
             if (a != null) {
                 buttonText = a.color;
             }
@@ -453,8 +457,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         if ("custom".equals(getPropertyString("fontColor"))) {
             font = getPropertyString("customFontColor");
-        } else {
-            Color a = Color.valueOf(getPropertyString("fontColor")); 
+        } else if (!getPropertyString("fontColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("fontColor"));
             if (a != null) {
                 font = a.color;
             }
@@ -465,7 +469,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             if ("custom".equals(getPropertyString("menuFontColor"))) {
                 menuFont = getPropertyString("customMenuFontColor");
             } else if (!getPropertyString("menuFontColor").isEmpty()) {
-                Color a = Color.valueOf(getPropertyString("menuFontColor")); 
+                Color a = Color.valueOf(getPropertyString("menuFontColor"));
                 if (a != null) {
                     menuFont = a.color;
                 }
