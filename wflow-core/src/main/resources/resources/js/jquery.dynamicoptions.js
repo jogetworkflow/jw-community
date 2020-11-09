@@ -97,7 +97,7 @@
                     
                     if (defaultValues.length > 0 && !hasValue) {
                         for (var dv in defaultValues) {
-                            $(target).find("option[value='"+defaultValues[dv]+"']").attr("selected", "selected");
+                            $(target).find("option[value='"+defaultValues[dv]+"']").prop("selected", "selected");
                         }
                     }
                 } else {
@@ -152,12 +152,13 @@
                 var option = $(this);
                 if ($(option).attr("grouping") != "" && $.inArray($(option).attr("grouping"), controlValues) == -1) {
                     $(option).remove();
-                } else {
-                    if ($.inArray($(option).val(), values) !== -1) {
-                        $(option).attr("selected", "selected");
-                    }
                 }
             });
+            for (var i in values) {
+                if (values[i] !== "") {
+                    $(target).find("option[value='"+values[i]+"']").prop("selected", "selected");
+                }
+            }
         } else { 
             
             $(target).find("input").each(function(){
