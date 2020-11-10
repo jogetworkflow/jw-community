@@ -178,16 +178,16 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     protected String getPrimaryColor() {
-        String primary = "#3b5998";
+        Color p = Color.valueOf(getDefaultColor("primary"));
+        String primary = p.color;
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
         } else if (!getPropertyString("primaryColor").isEmpty()) {
-            Color p = Color.valueOf(getPropertyString("primaryColor"));
+            p = Color.valueOf(getPropertyString("primaryColor"));
             if (p != null) {
                 primary = p.color;
             }
         }
-
         return primary;
     }
         
@@ -387,18 +387,40 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }
         return jsCssLink;
     }
-
+    
+    protected String getDefaultColor(String defaultColor) {
+        if (defaultColor.equals("primary")) {
+            defaultColor = "DARKROYALBLUE";
+        }
+        else if (defaultColor.equals("accent")) {
+            defaultColor = "#2196F3";
+        }
+        else if (defaultColor.equals("button")) {
+            defaultColor = "#9E9E9E";
+        }
+        else if (defaultColor.equals("buttonText")) {
+            defaultColor = "#FFFFFF";
+        }
+        else if (defaultColor.equals("menuFont")) {
+            defaultColor = "#000000";
+        }
+        else if (defaultColor.equals("font")) {
+            defaultColor = "#FFFFFF";
+        }
+        return defaultColor;
+    }
+    
     protected String generateLessCss() {
         String css = "";
         String lessVariables = "";
         String primary = "";
         String dark = "darken(@primary , 10%)";
         String light = "lighten(@primary , 5%)";
-        String accent = "#2196F3";
+        String accent = getDefaultColor("accent");
         String lightAccent = "lighten(@accent , 10%)";
-        String button = "#9E9E9E";
-        String buttonText = "#FFFFFF";
-        String font = "#FFFFFF";
+        String button = getDefaultColor("button");
+        String buttonText = getDefaultColor("buttonText");
+        String font = getDefaultColor("font");
         
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
@@ -409,7 +431,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 light = getPropertyString("customPrimaryLight");
             }
         } else {
-            Color p = Color.DARKROYALBLUE;
+            Color p = Color.valueOf(getDefaultColor("primary"));
             if (!getPropertyString("primaryColor").isEmpty()){
                 p = Color.valueOf(getPropertyString("primaryColor")); 
             }
@@ -465,7 +487,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }
         
         if ("light".equals(getPropertyString("themeScheme"))) {
-            String menuFont = "#000000";
+            String menuFont = getDefaultColor("menuFont");
             if ("custom".equals(getPropertyString("menuFontColor"))) {
                 menuFont = getPropertyString("customMenuFontColor");
             } else if (!getPropertyString("menuFontColor").isEmpty()) {
