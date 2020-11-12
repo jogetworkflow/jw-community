@@ -1277,6 +1277,10 @@ UserviewBuilder = {
                 var latest = JSON.decode($('#userview-json').val());
                 merged = DiffMerge.merge(original, current, latest, output);
             },
+            error: function() {
+                currentSaved = $('#userview-json-current').val();
+                merged = $('#userview-json').val();
+            },
             complete: function() {
                 if (callback) {
                     callback.call(thisObject, currentSaved, merged);

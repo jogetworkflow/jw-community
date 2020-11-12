@@ -159,10 +159,10 @@ public class GeneratorUtil {
                 themeProperties = ResourceBundleUtil.getMessage("generator.userview.theme.default.properties");
             }
 
-            userviewId = StringEscapeUtils.escapeJavaScript(userviewId);
-            userviewName = StringEscapeUtils.escapeJavaScript(userviewName);
-            userviewDescription = StringEscapeUtils.escapeJavaScript(userviewDescription);
-            theme = StringEscapeUtils.escapeJavaScript(theme);
+            userviewId = StringUtil.escapeString(userviewId, StringUtil.TYPE_JSON, null);
+            userviewName = StringUtil.escapeString(userviewName, StringUtil.TYPE_JSON, null);
+            userviewDescription = StringUtil.escapeString(userviewDescription, StringUtil.TYPE_JSON, null);
+            theme = StringUtil.escapeString(theme, StringUtil.TYPE_JSON, null);
             String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewDescription, theme, themeProperties}, true, null);
 
             if (json != null && !json.isEmpty()) {

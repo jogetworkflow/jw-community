@@ -2098,9 +2098,9 @@ public class FormUtil implements ApplicationContextAware {
         }
 
         if (json.isEmpty()) {
-            formName = StringEscapeUtils.escapeJavaScript(formName);
-            description = StringEscapeUtils.escapeJavaScript(description);
-             json = "{\"className\": \"org.joget.apps.form.model.Form\",  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"" + formName + "\", \"tableName\":\"" + tableName + "\", \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"description\":\"" + description + "\" },\"elements\":[{\"elements\":[{\"elements\":[],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"label\":\"" + ResourceBundleUtil.getMessage("fbuilder.section") + "\",\"id\":\"section1\"}}]}";
+            formName = StringUtil.escapeString(formName, StringUtil.TYPE_JSON, null);
+            description = StringUtil.escapeString(description, StringUtil.TYPE_JSON, null);
+            json = "{\"className\": \"org.joget.apps.form.model.Form\",  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"" + formName + "\", \"tableName\":\"" + tableName + "\", \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"description\":\"" + description + "\" },\"elements\":[{\"elements\":[{\"elements\":[],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"label\":\"" + ResourceBundleUtil.getMessage("fbuilder.section") + "\",\"id\":\"section1\"}}]}";
         }
 
         return json;

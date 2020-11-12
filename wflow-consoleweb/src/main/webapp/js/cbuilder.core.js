@@ -533,6 +533,10 @@ CustomBuilder = {
                 var latest = JSON.decode($('#cbuilder-json').val());
                 merged = DiffMerge.merge(original, current, latest, output);
             },
+            error: function() {
+                currentSaved = $('#cbuilder-json-current').val();
+                merged = $('#cbuilder-json').val();
+            },
             complete: function() {
                 if (callback) {
                     callback.call(thisObject, currentSaved, merged);

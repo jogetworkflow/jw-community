@@ -8,6 +8,7 @@ import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -60,6 +61,9 @@ public class CustomBuilderUtil {
             } catch (Exception e) {
             }
         } else {
+            id = StringUtil.escapeString(id, StringUtil.TYPE_JSON, null);
+            name = StringUtil.escapeString(name, StringUtil.TYPE_JSON, null);
+            description = StringUtil.escapeString(description, StringUtil.TYPE_JSON, null);
             json = AppUtil.readPluginResource(builder.getClassName(), "/defaultDefinition.json", new String[]{id, name, description}, true, null);
         }
         return json;

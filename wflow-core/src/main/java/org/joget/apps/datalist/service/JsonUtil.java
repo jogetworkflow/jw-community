@@ -671,9 +671,9 @@ public class JsonUtil {
         }
 
         if (json.isEmpty()) {
-            listId = StringEscapeUtils.escapeJavaScript(listId);
-            name = StringEscapeUtils.escapeJavaScript(name);
-            desc = StringEscapeUtils.escapeJavaScript(desc);
+            listId = StringUtil.escapeString(listId, StringUtil.TYPE_JSON, null);
+            name = StringUtil.escapeString(name, StringUtil.TYPE_JSON, null);
+            desc = StringUtil.escapeString(desc, StringUtil.TYPE_JSON, null);
             json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}";
         }
 
