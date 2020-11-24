@@ -144,6 +144,7 @@ var AdvancedTools = {
                 if ($("#advancedToolsOverlayContainer").is(":visible") && activeTab === "treeViewer") {
                     AdvancedTools.treeViewer.redraw();
                 }
+                 AdvancedTools.json = $(AdvancedTools.jsonForm).find('textarea[name="json"]').val();
             }
         });
     },
