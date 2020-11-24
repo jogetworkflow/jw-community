@@ -266,27 +266,34 @@ public class UserviewThemeProcesser {
             String menuId = userview.getParamString("menuId");
             //check current redirect url is exist, else redirect to home
             boolean isExist = false;
-            if (menuId != null && !menuId.isEmpty()) {
-                for (UserviewCategory c : userview.getCategories()) {
-                    for (UserviewMenu m : c.getMenus()) {
-                        if (menuId.equals(m.getPropertyString("id")) || menuId.equals(m.getPropertyString("customId"))) {
-                            isExist = true;
+            
+            if (userview.getCurrent() != null && (menuId.equals(userview.getCurrent().getPropertyString("id")) || menuId.equals(userview.getCurrent().getPropertyString("customId")))) {
+                isExist = true;
+            }
+            
+            if (!isExist) {
+                if (menuId != null && !menuId.isEmpty()) {
+                    for (UserviewCategory c : userview.getCategories()) {
+                        for (UserviewMenu m : c.getMenus()) {
+                            if (menuId.equals(m.getPropertyString("id")) || menuId.equals(m.getPropertyString("customId"))) {
+                                isExist = true;
+                                break;
+                            }
+                        }
+                        if (isExist) {
                             break;
                         }
                     }
-                    if (isExist) {
-                        break;
-                    }
-                }
-                if (!isExist) {
-                    UserviewTheme temp = userview.getSetting().getTheme();
-                    if (temp != null && temp instanceof UserviewV5Theme) {
-                        String[] themeDefinedMenus = ((UserviewV5Theme) temp).themeDefinedMenusId();
-                        if (themeDefinedMenus != null) {
-                            for (String dm : themeDefinedMenus) {
-                                if (dm.equals(menuId)) {
-                                    isExist = true;
-                                    break;
+                    if (!isExist) {
+                        UserviewTheme temp = userview.getSetting().getTheme();
+                        if (temp != null && temp instanceof UserviewV5Theme) {
+                            String[] themeDefinedMenus = ((UserviewV5Theme) temp).themeDefinedMenusId();
+                            if (themeDefinedMenus != null) {
+                                for (String dm : themeDefinedMenus) {
+                                    if (dm.equals(menuId)) {
+                                        isExist = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
