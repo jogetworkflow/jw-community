@@ -159,7 +159,7 @@ public class LoginWebController {
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
             if (userview != null) {
                 String json = userview.getJson();
-                Userview userviewObject = userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key, embed);
+                Userview userviewObject = userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, embed);
                 UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
                 map.addAttribute("userview", userviewObject);
                 map.addAttribute("processer", processer);
