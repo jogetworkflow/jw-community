@@ -4572,7 +4572,10 @@ ProcessBuilder.Mapper = {
                 $(node).find(".edit_mapping").removeClass("hasmapping");
                 
                 if (type === "start" || type === "activity") {
+                    $(node).tooltipster("close");
                     $("#"+id+"_detail").find(".remove, dl, .removesave").remove();
+                    $(".tooltipster-content").find("#"+id+"_detail").find(".remove, dl, .removesave").remove();
+                    
                     delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formId'];
                     delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formLabel'];
                     delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formUrl'];
