@@ -963,7 +963,43 @@ public class AppDevUtil {
         } catch (IOException | GitAPIException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
-    }    
+    }
+
+    public static String workingFileReadToString(AppDefinition appDefinition, String path) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request == null) {
+            //do nothing
+            return null;
+        }
+        
+        path = SecurityUtil.normalizedFileName(path);
+        
+        try {
+            // checkout branch
+            String gitBranch = getGitBranchName(appDefinition);
+            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDefinition);
+            Git git = gitCommitHelper.getGit();
+            try {
+                AppDevUtil.gitCheckout(git, gitBranch);
+            } catch(RefNotFoundException ne) {
+                LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout branch " + gitBranch + ". Reason :" + ne.getMessage());
+            }
+
+            File file = new File(gitCommitHelper.getWorkingDir(), path);
+            if (file != null && file.isFile()) {
+                try {
+                    return FileUtils.readFileToString(file, "UTF-8");
+                } catch (FileNotFoundException ex) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
+                }
+            } else {
+                LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");                
+            }
+        } catch (IOException | GitAPIException ex) {
+            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+        }
+        return null;
+    }
     
     public static String fileReadToString(AppDefinition appDefinition, String path, boolean pull) {
         path = SecurityUtil.normalizedFileName(path);
@@ -1405,8 +1441,8 @@ public class AppDevUtil {
                     concatAppDef += o.getJson() + "~~~";
                 }
             }
-            concatAppDef += AppDevUtil.fileReadToString(appDef, "appDefinition.xml", false) + "~~~";
-            concatAppDef += AppDevUtil.fileReadToString(appDef, "appConfig.xml", false) + "~~~";
+            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appDefinition.xml") + "~~~";
+            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appConfig.xml") + "~~~";
             
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
