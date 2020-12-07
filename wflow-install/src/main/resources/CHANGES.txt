@@ -3,6 +3,29 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.12
+=================
+31aaca03 Fixed: wflow-core - Import App - Process tool is not included in Git plugin sync. #8574 @7.0-SNAPSHOT
+313b5976 Modified: wflow-wfengine - Workflow Activity - Adding debugging log to check assignment creation status. @7.0-SNAPSHOT
+74e1c464 Fixed: wflow-consoleweb - Process Mapper cannot show more setting for first time. @7.0-SNAPSHOT
+2790a22e Fixed: wflow-consoleweb - Process Mapper - Process Mapper dont refresh after form mapping deleted. @7.0-SNAPSHOT
+47087a75 Fixed: wflow-core - Userview - Login redirection not working when the page is a hidden menu. #8515 @7.0-SNAPSHOT
+99e0f39c Fixed: wflow-core - Bean Shell Datalist Action - Logic does not execute if "Confirmation Message" property contains single quote character. #8532 @7.0-SNPAHOT
+6c96de98 fixed: wflow-consoleweb -Form Builder - Advanced Tools - Tree Viewer - Changes done here will not save upon clicking on form save. @7.0-SNPASHOT
+708b6bc6 Modified: wflow-install - Increase Tomcat resources default cacheMaxSize. @7.0-SNAPSHOT
+98452638 Fixed: wflow-core - Builders - Putting single quote in description when create new causing it can't save properly in builder. @7.0-SNAPSHOT
+098ff3a5 Modified: wflow-core - added a new method getDefaultColor to handle theme default value. @7.0-SNAPSHOT
+d1a8f1e2 Fixed: wflow-core - Themes based on Universal Theme not setting primary color will hit server error. @7.0-SNAPSHOT
+0511e3a2 Fixed: wflow-core - Selectbox - Dynamic cascading selection not selected when selected value matches more than one option. @7.0-SNAPSHOT
+0b70b891 Fixed: jw-community - Security - Upgrade spring-core to 4.3.29.RELEASE for CVE-2018-15756. @6.0-SNAPSHOT
+ab22e4ab Fixed: wflow-core - EnvironmentVariableDao - Simultaneous call getIncreasedCounter will sometimes return same value. @8409 @7.0-SNAPSHOT
+7c8130b0 Fixed: wflow-core - PDF Audit Trail NPE if encounter vertical tab special character. #8344 @7.0-SNAPSHOT
+9678eecf Fixed: wflow-consoleweb - Map Participants to Users using BeanShell Tool with chinese title causes NPE. #8421 @7.0-SNAPSHOT
+c21b8de2 Fixed: wflow-core - Generate App w Process Enh plugin caused "JSONException JSONArray[2] not found" error. #8440 @7.0-SNAPSHOT
+d3049c11 Fixed: wflow-core - EnvironmentVariableDaoImpl - getIncreasedCounter() - Simultaneous calls will sometimes return same value. #8409 @7.0-SNAPSHOT
+32637483 Modified: wflow-consoleweb - X-admin Theme - List Grid popup can't display correctly in Firefox. #8426 @7.0-SNAPSHOT
+07e19e5a Fixed: wflow-core - Import App - Vulnerability - Able to import plugin(s) maliciously when upload plugin as form data. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.11
 =================
 9ecdad42 Modified: wflow-consoleweb - Improve wording for Multi Tools @7.0snapshot
