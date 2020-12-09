@@ -484,7 +484,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
             
             if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
-                WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
+                WorkflowAssignment nextActivity = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
                 if (nextActivity != null) { 
                     String redirectUrl = getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");

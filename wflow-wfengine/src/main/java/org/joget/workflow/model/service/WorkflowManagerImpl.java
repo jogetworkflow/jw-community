@@ -5587,4 +5587,26 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public WorkflowAssignment getAssignmentByRecordId(String id, String processDefId, String activityDefId, String username) {
         return workflowAssignmentDao.getAssignmentByRecordId(id, processDefId, activityDefId, username);
     }
+    
+    /**
+     * Gets next assignment by current completed assignment
+     * 
+     * @param assignment
+     * @return 
+     */
+    public WorkflowAssignment getNextAssignmentByCurrentAssignment(WorkflowAssignment assignment) {
+        if (assignment == null) {
+            return null;
+        }
+        WorkflowAssignment nextAss = getAssignmentByProcess(assignment.getProcessId());
+        if (nextAss == null && assignment.isSubflow()) {
+            //get parent process id and try get assignment again
+            WorkflowProcessLink link = workflowProcessLinkDao.getWorkflowProcessLink(assignment.getProcessId());
+            if (link != null) {
+                String parentProcessId = link.getParentProcessId();
+                nextAss = getAssignmentByProcess(parentProcessId);
+            }
+        }
+        return nextAss;
+    }
 }

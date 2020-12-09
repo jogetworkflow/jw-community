@@ -1039,4 +1039,11 @@ public interface WorkflowManager {
      */
     public WorkflowAssignment getAssignmentByRecordId(String id, String processDefId, String activityDefId, String username);
     
+    /**
+     * Gets next assignment by current completed assignment
+     * 
+     * @param assignment
+     * @return 
+     */
+    public WorkflowAssignment getNextAssignmentByCurrentAssignment(WorkflowAssignment assignment);
 }

@@ -482,7 +482,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                     if (!formResult.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                         setAlertMessage(getPropertyString("messageShowAfterComplete"));
                         // redirect to next activity if available
-                        WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
+                        WorkflowAssignment nextActivity = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
                         if (nextActivity != null) {
                             setProperty("view", "redirect");
                             setProperty("messageShowAfterComplete", "");

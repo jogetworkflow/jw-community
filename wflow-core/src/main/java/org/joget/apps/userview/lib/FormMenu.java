@@ -478,7 +478,7 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
                 setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
                 setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
                 // redirect to next activity if available
-                WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
+                WorkflowAssignment nextActivity = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
                 if (nextActivity != null) {
                     String redirectUrl = getUrl() + "?activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");
