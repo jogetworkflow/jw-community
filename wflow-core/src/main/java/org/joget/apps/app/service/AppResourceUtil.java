@@ -32,7 +32,7 @@ public class AppResourceUtil {
     
     public static AppResource storeFile(AppDefinition appDef, MultipartFile file, Boolean isPublic) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
-            String filename = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            String filename = file.getOriginalFilename().replaceAll("[<>:\\\"\\\\/|?*!@#$%^&{};\\[\\]=+,~`]", "_");
             
             AppResourceDao appResourceDao = (AppResourceDao) AppUtil.getApplicationContext().getBean("appResourceDao");
             
