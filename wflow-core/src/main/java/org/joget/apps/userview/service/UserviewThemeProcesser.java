@@ -302,20 +302,26 @@ public class UserviewThemeProcesser {
             }
             if (isExist) {
                 if (!userview.getParamString("menuId").isEmpty()) {
-                    url += menuId; 
+                    url += menuId;
                 }
                 if (request.getQueryString() != null) {
                     url += "?" + StringUtil.decodeURL(request.getQueryString());
+                } else if (request.getQueryString() == null && request.getHeader("referer") != null) {
+                    String referer = request.getHeader("referer");
+                    if (referer != null && referer.contains("?")) {
+                        String queryString = referer.substring(menuId.indexOf("?"));
+                        url += queryString;
+                    }
                 }
             } else {
-                url += userview.getProperty("homeMenuId"); 
+                url += userview.getProperty("homeMenuId");
             }
             
             return "redirect:" + url;
         }
         return null;
     }
-
+        
     protected String loginPageRedirection() {
         boolean isAnonymous = WorkflowUtil.isCurrentUserAnonymous();
         boolean hasCurrentPage = userview.getCurrent() != null;
