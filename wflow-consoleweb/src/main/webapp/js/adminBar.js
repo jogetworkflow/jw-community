@@ -254,6 +254,64 @@ var AdminBar = {
         if (window === parent) {
             $("#adminControl").css("display", "block");
         }
+        
+        if ($("#adminBar #builder-menu").length > 0) {
+            setTimeout(function(){
+                AdminBar.intBuilderMenu();
+            }, 100); //delay the loading to prevent it block the builder ajax call
+        }
+    },
+    intBuilderMenu : function() {
+        $.ajax({
+            type: "GET",
+            url: $("#adminBar #builder-menu").data("ajax"),
+            dataType: 'json',
+            success: function (data) {
+                var container = $("#adminBar #builder-menu > ul");
+                for (var i in data) {
+                    var builder = data[i];
+                    var li = $('<li class="menu-'+builder.value+'"><span title="'+builder.label+'" style="background: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
+                    $(li).find("ul").append('<li class="header">'+builder.label+'</li>');
+                    if (builder.elements) {
+                        for (var j in builder.elements) {
+                            $(li).find("ul").append('<li class="item"><a href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a></li>');
+                        }
+                    }
+                    $(li).find("ul").append('<li class="addnew"><a><i class="las la-plus-circle"></i> Add New</a></li>');
+                    container.append(li);
+                }
+                
+                if (window["CustomBuilder"] !== undefined) {
+                    $("#adminBar #builder-menu > ul > li.menu-" + window["CustomBuilder"].builderType).addClass("active");
+                } else {
+                    $("#adminBar #builder-menu > ul > li:eq(0)").addClass("active");
+                }
+                
+                $("#adminBar #builder-menu > ul > li").on("mouseover touch", function(){
+                    $("#adminBar #builder-menu > ul > li").removeClass("active");
+                    $(this).addClass("active");
+                });
+            }
+        });
+        
+        $("#adminBar-search input").on("keyup", function(){
+            var searchText = $(this).val().toLowerCase();
+            $("#adminBar #builder-menu ul li ul li.item").each(function(){
+                var element = $(this);
+                element.hide();
+                if ($(element).find("a").text().toLowerCase().indexOf(searchText) > -1) { 
+                    element.show();
+                }
+            });
+        });
+        
+        $("#adminBar-search .clear-backspace").on("click", function(){
+            $("#adminBar #builder-menu ul li ul li").show();
+        });
+        
+        $("#adminBar #builder-menu ul").on("click", " li ul li.addnew a", function(){
+            console.log("add new");
+        });
     },
     showAdminBar: function() {
         $("body, html").addClass("adminBarShown");

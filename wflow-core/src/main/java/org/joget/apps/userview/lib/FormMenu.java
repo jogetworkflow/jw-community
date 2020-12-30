@@ -365,6 +365,10 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         FormService formService = (FormService) ac.getBean("formService");
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String formId = getPropertyString("formId");
+        
+        if (formId.isEmpty()) {
+            return null;
+        }
 
         formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 

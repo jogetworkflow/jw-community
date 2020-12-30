@@ -1,0 +1,942 @@
+.form-container  {
+    font-size: 13px;
+    padding: 0 5px;
+}
+.form-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+    padding-bottom: 20px;
+}
+.form-section-title,
+.subform-section-title{
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+    flex: 0 0 100%;
+    margin-bottom: 20px;
+}
+.no_label > .form-section-title,
+.no_label > .subform-section-title{
+    display:none;
+} 
+.form-section.no_label,
+.subform-section.no_label {
+    padding-top:20px;
+}
+.form-section + .form-section:not(.no_label),
+.subform-section + .subform-section:not(.no_label){
+    margin-top: 25px;
+}
+.form-section + .form-section.no_label:not(#section-actions),
+.subform-section + .subform-section.no_label:not(#section-actions) {
+    border-top: 0;
+    margin-top: -20px;
+}
+.form-row > .form-column,
+.form-row > .subform-column {
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+.form-cell,
+.subform-cell{
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.form-cell + .form-cell,
+.subform-cell + .subform-cell{
+    margin-top: 15px;
+}
+    
+.form-cell > label.label,
+.subform-cell > label.label{
+    white-space: normal;
+    position: relative;
+    flex: 0 0 30%;
+    margin-bottom: 0px;
+    padding: 8px 10px 0 0;
+    min-height: 34px;
+}
+.label-top.form-cell > label.label,
+.label-top.subform-cell > label.label{
+    flex: 0 0 100%;
+}
+.form-cell > label.label + *:not(.ui-screen-hidden),
+.subform-cell > label.label + *:not(.ui-screen-hidden),
+.form-cell > label.label + .ui-screen-hidden + *,
+.subform-cell > label.label + .ui-screen-hidden + *{
+    white-space: normal;
+    position: relative;
+    flex: 0 0 70%;
+}
+.label-top.form-cell > label.label + *:not(.ui-screen-hidden),
+.label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
+.label-top.form-cell > label.label + .ui-screen-hidden + *,
+.label-top.subform-cell > label.label + .ui-screen-hidden + *{
+    flex: 0 0 100%;
+}
+.ui-screen-hidden{
+    display: none;
+}
+.form-cell-validator,
+.subform-cell-validator {
+    color: #dc3545;
+}
+.form-cell-full {
+    flex: 0 0 100%;
+}
+.form-clear + * {
+    flex: 0 0 100%;
+}
+.form-column-horizontal,
+.subform-column-horizontal{
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+.form-column-horizontal > .form-cell,
+.subform-column-horizontal > .subform-cell{
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -ms-flex-positive: 1;
+}
+.form-column-horizontal > .form-cell + .form-cell,
+.subform-column-horizontal > .subform-cell + .subform-cell{
+    margin-top: 0px;
+    margin-left: 10px;
+}
+#section-actions {
+    border:1px solid transparent;
+}
+.form-section, .subform-section {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+/* input */
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=time],
+input[type=date],
+input[type=datetime],
+input[type=datetime-local],
+input[type=tel],
+input[type=number],
+input[type=search], 
+select, 
+textarea {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 6px 12px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* checkbox & radio */
+.form-cell-value > label,
+.subform-cell-value > label{
+    display: block;
+    width: auto;
+}
+.form-cell-value > label:last-child,
+.subform-cell-value > label:last-child{
+    margin-bottom: 0;
+}
+.form-cell-value > label > input,
+.subform-cell-value > label > input{
+    position: relative;
+    top: 2px;
+    margin-right: 3px;
+}
+
+/* form button */
+.form-cell .btn:not([class*="btn-"]){
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+}
+#section-actions .form-cell{
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.print-button {
+    float: right;
+}
+
+/* chosen */
+
+
+/* date picker */
+.hasDatepicker + a{
+    position: absolute;
+    right: 20px;
+    bottom: 7px;
+    height: 18px;
+    width: 18px;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-size: 16px;
+    color: #ced4da;
+}
+.hasDatepicker + a:before{
+    content: '\f073';
+}
+.hasDatepicker + a > img{
+    display: none;
+}
+#ui-datepicker-div {
+    border: 1px solid #ced4da !important;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    color: #495057;
+    width: auto;
+}
+.ui-datepicker .ui-widget-header{
+    border: 0 !important;
+}
+.ui-datepicker-title select{
+    display: inline-block;
+    border: 0;
+    outline: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+.ui-datepicker th{
+    color: #ced4da;
+}
+.ui-datepicker td{
+    padding: 5px;
+}
+.ui-datepicker td span, .ui-datepicker td a{
+    border: 0 !important;
+    text-align: center;
+    background: none !important;
+    padding: 6px;
+    color: #495057 !important;
+}
+.ui-datepicker td a:hover{
+    color: #0075ff !important;
+}
+.ui-datepicker td.ui-datepicker-today a {
+    background: #ced4da !important;
+    border-radius: 50%;
+}
+.ui-datepicker td.ui-datepicker-current-day a{
+    background: #0075ff !important;
+    color: #fff !important;
+    border-radius: 50%;
+}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
+    top:9px;
+}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: 900;
+    color: #ced4da;
+    text-align: center;
+}
+.ui-datepicker .ui-datepicker-prev:hover, .ui-datepicker .ui-datepicker-next:hover{
+    color: #0075ff !important;
+    border: 0 !important;
+    background: none !important;
+}
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span{
+    display: none;
+}
+.ui-datepicker .ui-datepicker-prev:after {
+    content: '\f0d9';
+}
+.ui-datepicker .ui-datepicker-next:after {
+    content: '\f0da';
+}
+.ui-datepicker-buttonpane,
+.ui-datepicker-calendar:not([style]) + .ui-timepicker-div {
+    border-top: 1px solid #ced4da !important;
+    margin-top: 15px;
+    padding: 15px 5px 0px;
+}
+.ui-timepicker-div select, .ui-timepicker-div input {
+    display: inline-block !important;
+    border: 0 !important;
+    border-bottom:  0 !important;
+    background: none !important;
+    outline: 0 !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+}
+.ui-widget-header .ui-datepicker-title{
+    color: #ced4da;
+}
+#ui-datepicker-div .ui-timepicker-div dl dt {
+    padding: 7px 0 0 5px;
+    font-weight: normal;
+}
+.ui_tpicker_time_input{
+    padding-left: 16px !important;
+}
+.ui-datepicker-buttonpane button, .ui-datepicker-buttonpane button:hover{
+    border: 0  !important;
+    background: none !important;
+    color: #0075ff !important;
+    font-weight: bold !important;
+    opacity: 0.7;
+}
+.ui-datepicker-buttonpane button:hover{
+    opacity: 1;
+}
+
+/* subform */
+.form-section.no_label > .form-column > .form-cell > .subform-container.no-frame,
+.subform-section.no_label > .subform-column > .subform-cell > .subform-container.no-frame {
+    margin-top:-20px;
+}
+.subform-container.no-frame {
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: -20px;
+    flex: 0 0 calc(100% + 30px);
+}
+.subform-container.no-frame .subform-section + .subform-section:not(.no_label) .subform-section-title {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+}
+.subform-container.no-frame .subform-section + .subform-section:not(.no_label):before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
+    top: -25px;
+    left: -1px;
+    right: -1px;
+}
+.subform-section {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+/* popup selectbox */
+.selector_element {
+    display: block;
+    width: 100%;
+    padding: 0px 10px 6px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.selector_element .selector_button, .selector_element .selector_button:hover{
+    height: 34px;
+    padding: 2px 10px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-mask-image: none; 
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    font-size: inherit;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+}
+.selector_element .selector_button:hover{
+    background-color: #ced4da;
+}
+.selector_element .selector_items {
+    display: block;
+    padding-right: 60px;
+}
+.selector_element .selector_items .selector_item {
+    display: inline-block;
+    background: #e9ecef;
+    margin: 6px 5px 0 0;
+    padding: 0 20px 0 5px;
+    position: relative;
+    border-radius: 3px;
+}
+.selector_element .selector_items .selector_item a {
+    position: absolute;
+    color: transparent;
+    width: 16px;
+    display: inline-block;
+    cursor: pointer;
+    right: 0px;
+}
+.selector_element .selector_items .selector_item a:after {
+    content: '\f00d';
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    line-height: 1;
+    position: absolute;
+    z-index: 1;
+    color: #ced4da;
+    top: 4px;
+    left: 0px;
+}
+.selector_element .selector_items .selector_item a:hover:after {
+    color: #dc3545;
+}
+
+/* upload field */
+.form-fileupload.dropzone {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+}
+.form-fileupload a.remove {
+    color: #f8d7da;
+}
+.form-fileupload a.remove:hover {
+    color: #dc3545;
+}
+.form-fileupload-value {
+    list-style: none;
+    padding: 0;
+}
+.form-fileupload-value li + li{
+    margin-top:5px;
+}
+.form-fileupload-value li img {
+    border: 1px solid #ced4da;
+}
+
+/* grid */
+.grid table {
+    width: 100%;
+}
+.grid table th, .grid table td {
+    border-top: 1px solid #ced4da;
+    border-bottom: 1px solid #ced4da;
+    margin: 0px;
+}
+.grid table th {
+    border-bottom: 2px solid #ced4da;
+}
+.grid table tr:hover td {
+    background: #e9ecef;
+}
+.grid table .grid-action-header, .grid table .grid-action-cell {
+    width: 100px;
+    text-align: right;
+}
+.grid table .grid-row-template {
+    display: none;
+}
+.grid table .grid-cell,
+.grid table .grid-cell form,
+.grid table .grid-cell[column_editable='yes']{
+    display: block;
+}
+.grid table .grid-cell[column_editable='yes'].editable_empty {
+    color:gray;
+}
+.grid a.grid-action-add,
+.grid table td.grid-action-cell a{
+    display:inline-block;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    color: #ced4da;
+    padding: 0 3px;
+}
+.grid .grid-action-add,
+.grid table tr:hover td.grid-action-cell a {
+    color: #0075ff !important;
+    opacity: 0.5;
+}
+.grid .grid-action-add:hover,
+.grid table tr:hover td.grid-action-cell a:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+.grid table tr:hover td.grid-action-cell a.grid-action-delete {
+    color: #dc3545 !important;
+}
+.grid table tr:hover td.grid-action-cell a.disabled{
+    color: #ced4da !important;
+}
+.grid a.grid-action-add span,
+.grid table tr td.grid-action-cell a span{
+    display:none !important;
+}
+.grid table .grid-action-edit:after {
+    content: '\f304';
+}
+.grid table .grid-action-delete:after {
+    content: '\f00d';
+}
+.grid table .grid-action-moveup:after {
+    content: '\f077';
+}
+.grid table .grid-action-movedown:after {
+    content: '\f078';
+}
+.grid.readonly .grid-action-edit:after{
+    content: '\f15c';
+}
+.grid .grid-action-add:after {
+    content: '\f055';
+}
+.grid:not(.enableSorting) a.grid-action-moveup,
+.grid:not(.enableSorting) a.grid-action-movedown,
+.grid.readonly.enableSorting a.grid-action-moveup,
+.grid.readonly.enableSorting a.grid-action-movedown,
+.grid.readonly a.grid-action-add,
+.grid.readonly a.grid-action-delete,
+.grid.disabledAdd a.grid-action-add,
+.grid.disabledDelete a.grid-action-delete{
+    display:none;
+}
+.grid .pg-navigator {
+    text-align: right;
+    padding: 10px 0;
+    margin-bottom: 0;
+    color: #ced4da;
+}
+.grid .pg-navigator :hover {
+    color: #495057;
+}
+.grid .pg-navigator .pg-current {
+    font-weight : bold;
+}
+.grid table tr.pg-tr-hide {
+    display:none;
+}
+.grid table + .pg-navigator + .grid-action-add {
+    position: absolute;
+    bottom: 0px;
+}
+@media screen and (max-width: 39.9375em) {
+    .grid table tr.grid-row{
+        border: 1px solid #ced4da;
+        display: block;
+    }
+    .grid table tbody tr:nth-child(2){
+        border-radius: 2px 2px 0 0;
+    }
+    .grid table tbody tr:last-child{
+        border-radius: 0 0 2px 2px;
+    }
+    .grid table tbody tr:nth-child(2):last-child{
+        border-radius: 2px;
+    }
+    .grid table tr td {
+        border-top:0;
+        border-bottom:0;
+        float: none;
+    }
+    .grid table .grid-action-cell{
+        width: 100%;
+    }
+}
+
+
+/* spreadsheet */
+.spreadsheet_container {
+    flex: 0 0 100%;
+    height: 100%;
+}
+.htMobileEditorContainer {
+    width:260px; 
+    height: 112px;
+}
+.htMobileEditorContainer .positionControls {
+    right: -12px; 
+    top: 48px;
+}
+.htMobileEditorContainer .inputs textarea {
+    height: 25px !important; 
+    width: auto; 
+    max-width:none;
+}
+.handsontable .htAutocompleteArrow, 
+.handsontable .columnSorting::after {
+    font-family: sans-serif;
+}
+.spreadsheet_container, 
+.spreadsheet {
+    width:100%; 
+    overflow:visible !important; 
+    color:inherit;
+}
+.handsontable .file_delete {
+    color: #dc3545;
+    display:inline-block; 
+    margin:0 10px; 
+    cursor:pointer;
+    opacity: 0.5;
+}
+.handsontable .file_delete:hover{
+    opacity: 1;
+}
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important; 
+    overflow: visible !important; 
+    position: relative !important; 
+    top: 0 !important;
+}
+.handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
+    height: auto !important; 
+    max-height: 230px;
+}
+.form-cell .handsontable table td, 
+.form-cell .handsontable table th, 
+.subform-cell .handsontable table td, 
+.subform-cell .handsontable table th {
+    padding: 0 4px;
+}
+body.rtl .ht_clone_left, 
+body.rtl .ht_clone_top, 
+body.rtl .ht_clone_top_left_corner  { 
+    left: unset !important; 
+    right:0;
+}
+body.rtl .handsontableInputHolder textarea {
+    position:absolute; 
+    left:0
+}
+body.rtl .handsontable .htCore tr th:last-child, 
+body.rtl .handsontable .htCore tr td:last-child {
+    border-left-width:1px !important;
+}
+.spreadsheet .handsontable table td, 
+.spreadsheet .handsontable table th{
+    border: 0px solid #ced4da !important; 
+    border-bottom: 1px solid #ced4da !important; 
+    border-right: 1px solid #ced4da !important;
+}
+.spreadsheet .handsontable.ht_clone_left table.htCore th, 
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
+    border-left: 1px solid #ced4da !important;
+} 
+.spreadsheet .handsontable.ht_clone_top table.htCore th, 
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th{
+    border-top: 1px solid #ced4da !important;
+} 
+
+
+/* other */
+.calculationField_value {
+    padding: 10px 12px;
+    color: #495057;
+}
+
+/* Multipaged form */
+.multiPagedForm,
+.multiPagedForm .mpf-container{
+    width:100%;
+}
+.multiPagedForm .page-nav-panel ul{
+    padding: 0;
+}
+.multiPagedForm .page-nav-panel ul,
+.multiPagedForm .page-nav-panel li{
+    list-style: none;
+}
+.multiPagedForm .page-nav-panel .nav_item button{
+    background:transparent;
+    padding: .5rem 1rem;
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    cursor: pointer;
+}
+.multiPagedForm .page-nav-panel .nav_item button:hover{
+    border-color: #e9ecef #e9ecef #dee2e6;
+}
+.multiPagedForm .page-nav-panel .nav_item.current button{
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+.multiPagedForm .page-nav-panel.bottom{
+    display:none;
+}
+.multiPagedForm .page-nav-panel .nav_item.error button span{
+    color: red;
+}
+.multiPagedForm .page-button-panel{
+    text-align:right;
+    padding: 10px 15px;
+}
+.multiPagedForm .page-button-panel .btn{
+    padding: 5px 15px;
+    font-size: 90%;
+}
+.mpf-container .subform-section{
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: transparent;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+    padding-bottom: 20px;
+}
+.multiPagedForm.tab .page-nav-panel{
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 20px;
+}
+.multiPagedForm.tab .page-nav-panel .nav_item{
+    float:left;
+    margin-bottom: -1px;
+}
+@media (min-width: 768px) {
+    .multiPagedForm.wizard .page-nav-panel {
+        text-align: center;
+        margin-bottom: 5px;
+        counter-reset: nav-item;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item{
+        display: inline-block;
+        position:relative;
+        padding: 0 15px;
+        cursor: pointer;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item::before {
+        counter-increment: nav-item;                   
+        content: counter(nav-item);
+        position: absolute;
+        left:calc(50% - 15px);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        padding-top:5px;
+        text-align: center;
+        box-sizing:border-box;
+        box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
+        color:#b7b7b7;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item::after {
+        content: "";
+        width: calc(50% - 40px);
+        position: absolute;
+        border-bottom: 1px solid #dee2e6;
+        top: 15px;
+        right: -2px;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item:last-child::after {
+        display:none;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item button::after {
+        content: "";
+        width: calc(50% - 40px);
+        position: absolute;
+        border-bottom: 1px solid #dee2e6;
+        top: 15px;
+        left: -2px;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item:first-child button::after {
+        display:none;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current::before{
+        color:#fff;
+        box-shadow: none;
+        background: #007bff;
+    }
+}
+.multiPagedForm.wizard .page-nav-panel button{
+    border:0;
+    padding-top: 35px;
+}
+.rtl .multiPagedForm .page-button-panel{
+    text-align:left;
+}
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item {
+    float: right;
+}
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+    float:right;
+}
+.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+    float: right;
+    padding-left:15px;
+    padding-right:auto;
+}
+.rtl .multiPagedForm.wizard .page-nav-panel button{
+    float:right;
+}
+@media (max-width: 767px) {
+    .multiPagedForm .page-nav-panel.bottom{
+        display:block;
+    }
+    
+    .multiPagedForm .page-nav-panel ul {
+        padding:0;
+        margin:0;
+    }
+    .multiPagedForm .page-button-panel,
+    .multiPagedForm .page-nav-panel.top ul li.after,
+    .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .multiPagedForm .page-nav-panel.bottom ul li.before,
+    .rtl .multiPagedForm .page-button-panel,
+    .rtl .multiPagedForm .page-nav-panel.top ul li.after,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.before{
+        display:none;
+    }
+    .multiPagedForm.wizard .page-nav-panel,
+    .multiPagedForm.tab .page-nav-panel{
+        border-bottom: 0px;
+        margin-bottom: 0px;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .multiPagedForm.tab .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item{
+        float:none;
+        display:block;
+        background: none;
+        padding-right:0;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .multiPagedForm.tab .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+        text-align:left;
+        float:none;
+        display:block;
+        width: 100%;
+        background: #f5f5f5;
+        border:#ddd solid 1px;
+        padding:8px;
+        margin:0;
+        margin-bottom: 3px;
+        -moz-border-radius: 5px 5px 5px 5px;
+        -webkit-border-radius: 5px 5px 5px 5px;
+        -khtml-border-radius: 5px 5px 5px 5px;
+        border-radius: 5px 5px 5px 5px;
+    }
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+        text-align:right;
+    }
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button{
+        background: #f5f5f5;
+        color:#000 ;
+        font-weight: bold;
+        margin-bottom: 0px;
+        padding-bottom: 8px;
+        -moz-border-radius: 5px 5px 0px 0px;
+        -webkit-border-radius: 5px 5px 0px 0px;
+        -khtml-border-radius: 5px 5px 0px 0px;
+        border-radius: 5px 5px 0px 0px;
+    }
+    .multiPagedForm .page-container {
+        border:#ddd solid 1px;
+        border-top:0px;
+        padding: 5px;
+        border-radius: 0px 0px 5px 5px;
+        margin-bottom: 3px;
+    }
+    .multiPagedForm .page-container .page > .subform-cell {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .multiPagedForm .page-container .page > .subform-cell .mpf-container{
+        width:100%;
+    }
+    .mpf-container .subform-section{
+        position: relative;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: transparent;
+        background-clip: border-box;
+        border: 0;
+        border-radius: 0.25rem;
+        padding-bottom: 20px;
+    }
+}
+
+/*
+
+table.mceToolbar > tbody > tr > td { display:inline-block; float: left; }
+.mce-tinymce { margin-bottom: 15px !important; }
+
+
+*/
+
+@media (max-width: 991px) {
+    .form-cell > label.label,
+    .subform-cell > label.label,
+    .form-cell > label.label + *:not(.ui-screen-hidden),
+    .subform-cell > label.label + *:not(.ui-screen-hidden),
+    .form-cell > label.label + .ui-screen-hidden + *,
+    .subform-cell > label.label + .ui-screen-hidden + *{
+        white-space: normal;
+        position: relative;
+        flex: 0 0 100%;
+    }
+    
+    .form-column,
+    .subform-column{
+        width:100%;
+    }
+    
+}

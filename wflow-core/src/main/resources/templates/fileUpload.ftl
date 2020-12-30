@@ -6,13 +6,6 @@
         <script type="text/javascript">// Immediately after the js include
             Dropzone.autoDiscover = false;
         </script>
-        <style>
-            .form-fileupload {width:70%;}
-            ul.form-fileupload-value {padding0; margin: 0;}
-            ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
-            ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
-            ul.form-fileupload-value li a {display: inline-block;}
-        </style>
     </#if>
 
     <label class="label" for="${elementParamName!}" field-tooltip="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>

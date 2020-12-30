@@ -31,7 +31,7 @@
                 }
 
                 function launchUserviewBuilder() {
-                    var userviewBuilder = window.parent.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>");
+                    var userviewBuilder = window.parent.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>", "nv-userview-window");
                     if (userviewBuilder) {
                         closeDialog();
                     }

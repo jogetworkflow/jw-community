@@ -2,13 +2,14 @@ package org.joget.apps.userview.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.StringUtil;
 
 /**
  * A base abstract class to develop a Userview Menu plugin. 
  * 
  */
-public abstract class UserviewMenu extends ExtElement {
+public abstract class UserviewMenu extends PageComponent {
 
     public static final String REDIRECT_URL_PROPERTY = "userviewRedirectUrl";
     public static final String REDIRECT_PARENT_PROPERTY = "userviewRedirectParent";
@@ -234,5 +235,22 @@ public abstract class UserviewMenu extends ExtElement {
     
     public Set<String> getOfflineStaticResources() {
         return null;
+    }
+    
+    @Override
+    public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
+        String html = "<div "+attr+" id=\""+id+"\" class=\"main-body-content "+cssClass+"\">" + style;
+        if (isBuilder) {
+            html += UserviewUtil.getUserviewMenuHtmlWithoutCache(this);
+        } else {
+            html += UserviewUtil.getUserviewMenuHtml(this);
+        }
+        
+        return html + "</div>";
+    }
+    
+    @Override
+    public String getBuilderJavaScriptTemplate() {
+        return "{'dragHtml' : '<div class=\"content-placeholder\"></div>'}";
     }
 }

@@ -13,6 +13,7 @@ import org.joget.apps.userview.lib.DefaultV5EmptyTheme;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewPage;
 import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
@@ -645,8 +646,9 @@ public class UserviewThemeProcesser {
                     content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
                     content += "</div>\n";
                 }
-
-                content += UserviewUtil.getUserviewMenuHtml(userview.getCurrent());
+                
+                UserviewPage page = new UserviewPage(userview.getCurrent());
+                content += page.render();
             } else {
                 String pageNotFound = theme.handlePageNotFound(data);
                 if (pageNotFound != null) {

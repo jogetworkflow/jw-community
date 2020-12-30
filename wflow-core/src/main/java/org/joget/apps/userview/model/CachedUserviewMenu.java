@@ -457,4 +457,19 @@ public class CachedUserviewMenu extends UserviewMenu {
             return "supported";
         }
     }
+    
+    @Override
+    public String getBuilderJavaScriptTemplate() {
+        return delegate.getBuilderJavaScriptTemplate();
+    }
+    
+    @Override
+    public String render() {
+        return delegate.render();
+    }
+    
+    @Override
+    public String render(String id, String cssClass, String style, String attributes, boolean isBuilder) {
+        return delegate.render(id, cssClass, style, attributes, isBuilder);
+    }
 }

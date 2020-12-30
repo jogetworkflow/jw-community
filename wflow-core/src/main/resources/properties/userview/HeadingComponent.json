@@ -1,0 +1,60 @@
+[
+    {
+        "title" : "@@userview.page.editHeading@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "tagName",
+                "label" : "@@userview.page.size@@",
+                "type" : "selectbox",
+                "options" : [{
+                    "value" : "h1",
+                    "label" : "H1"
+                },
+                {
+                    "value" : "h2",
+                    "label" : "H2"
+                },
+                {
+                    "value" : "h3",
+                    "label" : "H3"
+                },
+                {
+                    "value" : "h4",
+                    "label" : "H4"
+                },
+                {
+                    "value" : "h5",
+                    "label" : "H5"
+                },
+                {
+                    "value" : "h6",
+                    "label" : "H6"
+                }],
+                "value" : "h1",
+                "required" : "True"
+            },
+            {
+                "name" : "textContent",
+                "label" : "@@userview.page.content@@",
+                "type" : "codeeditor",
+                "mode" : "html",
+                "required" : "True",
+                "value" : "@@org.joget.apps.userview.lib.component.HeadingComponent.pluginLabel@@"
+            }
+        ]
+    }
+]
+
+

@@ -69,6 +69,7 @@ import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.ApplicationPlugin;
+import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.MockRequest;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -1456,9 +1457,10 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static String generateElementMetaData(Element element) {
-        String properties = FormUtil.getElementProcessedJson(element);
-        String escaped = StringEscapeUtils.escapeHtml(properties);
-        String elementMetaData = " element-class=\"" + element.getClassName() + "\" element-property=\"" + escaped + "\" ";
+        String elementMetaData = " data-cbuilder-classname=\"" + element.getClassName() + "\"";
+        if (element instanceof HiddenPlugin) {
+            elementMetaData = "";
+        }
         return elementMetaData;
     }
 

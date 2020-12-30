@@ -38,8 +38,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -131,6 +133,34 @@ public class FormBuilderWebController {
         response.addHeader("X-XSS-Protection", "0");
         
         return "fbuilder/formBuilder";
+    }
+    
+    @RequestMapping(value = "/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/save", method = RequestMethod.POST)
+    @Transactional
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam("json") String json) throws Exception {
+        // verify app license
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        if (page != null) {
+            return page;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        // load existing form definition and update fields
+        FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+        Form form = (Form) formService.createElementFromJson(json);
+        formDef.setName(form.getPropertyString("name"));
+        formDef.setTableName(form.getPropertyString("tableName"));
+        formDef.setJson(PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), json));
+        formDef.setDescription(form.getPropertyString("description"));
+
+        // update
+        boolean success = formDefinitionDao.update(formDef);
+        formDataDao.clearFormCache(form);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("success", success);
+        jsonObject.write(writer);
+        return null;
     }
 
     @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/preview/")

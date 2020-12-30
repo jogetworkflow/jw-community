@@ -1,0 +1,41 @@
+[
+    {
+        "title" : "@@userview.page.editImage@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "attr-src",
+                "label" : "@@datalist.hyperlinkdatalistaction.hyperlink@@",
+                "type" : "textfield",
+                "required" : "True",
+                "value" : "%s/builder/icons/image.svg"
+            },
+            {
+                "name" : "attr-width",
+                "label" : "@@userview.page.image.wifth@@",
+                "type" : "textfield",
+                "required" : "True",
+                "value" : "128"
+            },
+            {
+                "name" : "attr-height",
+                "label" : "@@userview.page.image.height@@",
+                "type" : "textfield",
+                "required" : "True",
+                "value" : "128"
+            }
+        ]
+    }
+]
+

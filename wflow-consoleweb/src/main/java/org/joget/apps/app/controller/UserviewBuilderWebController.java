@@ -1,10 +1,14 @@
 package org.joget.apps.app.controller;
 
+import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -12,17 +16,22 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.lib.DefaultTheme;
+import org.joget.apps.userview.model.PageComponent;
+import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
+import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -49,6 +58,8 @@ public class UserviewBuilderWebController {
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
     @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
+    @Autowired
     PluginManager pluginManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/builder/(*:userviewId)")
@@ -66,7 +77,10 @@ public class UserviewBuilderWebController {
         map.addAttribute("appDefinition", appDef);
 
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
-
+        if (userview == null) {
+            return "error404";
+        }
+        
         String userviewJson = null;
         if (json != null && !json.trim().isEmpty()) {
             try {
@@ -95,7 +109,8 @@ public class UserviewBuilderWebController {
         basicRequestParams.put("appVersion", appVersion);
         basicRequestParams.put("userviewId", userviewId);
         basicRequestParams.put("contextPath", request.getContextPath());
-
+        
+        map.addAttribute("simplePageComponent", getAvailableElements());
         map.addAttribute("menuTypeCategories", userviewBuilderPalette.getUserviewMenuCategoryMap(basicRequestParams));
         
         response.addHeader("X-XSS-Protection", "0");
@@ -125,7 +140,11 @@ public class UserviewBuilderWebController {
         name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
         userview.setName(name);
         userview.setDescription(userviewService.getUserviewDescription(json));
-        userview.setJson(PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), json));
+        
+        UserviewDefinition migratedUserview = userviewService.combinedUserviewDefinition(userview);
+        
+        json = userviewService.saveUserviewPages(PropertyUtil.propertiesJsonStoreProcessing(migratedUserview.getJson(), json), userviewId, appDef);
+        userview.setJson(json);
 
         boolean success = userviewDefinitionDao.update(userview);
         jsonObject.accumulate("success", success);
@@ -144,8 +163,8 @@ public class UserviewBuilderWebController {
         String tempJson = json;
         if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
-
             if (userview != null) {
+                userview = userviewService.combinedUserviewDefinition(userview);
                 tempJson = PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), tempJson);
             }
         }
@@ -183,4 +202,128 @@ public class UserviewBuilderWebController {
         writer.write(propertyOptions);
     }
     
+    @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/menu/template")
+    public void menuTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        String tempJson = json;
+        if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+            if (userview != null) {
+                userview = userviewService.combinedUserviewDefinition(userview);
+                tempJson = PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), tempJson);
+            }
+        }
+        
+        tempJson = AppUtil.replaceAppMessages(tempJson, StringUtil.TYPE_JSON);
+        tempJson = AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null, appDef);
+        
+        response.addHeader("X-XSS-Protection", "0");
+
+        try {
+            JSONObject jObj = new JSONObject(tempJson);
+            UserviewMenu menu = (UserviewMenu) pluginManager.getPlugin(jObj.getString("className"));
+            
+            if (menu != null) {
+                menu.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
+                
+                Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+                requestParameters.put("contextPath", request.getContextPath());
+                requestParameters.put("isPreview", "true");
+                requestParameters.put("isBuilder", "true");
+                requestParameters.put("appId", appDef.getAppId());
+                requestParameters.put("appVersion", appDef.getVersion().toString());
+                menu.setRequestParameters(requestParameters);
+                menu.setUrl("");
+                
+                Userview userview = new Userview();
+                userview.setProperty("id", userviewId);
+                menu.setUserview(userview);
+                
+                writer.write(menu.getMenu());
+            }
+        } catch (Exception e) {
+            LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");
+        }
+    }
+    
+    @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/component/template")
+    public void componentTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        String tempJson = json;
+        if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+            if (userview != null) {
+                userview = userviewService.combinedUserviewDefinition(userview);
+                tempJson = PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), tempJson);
+            }
+        }
+        
+        tempJson = AppUtil.replaceAppMessages(tempJson, StringUtil.TYPE_JSON);
+        tempJson = AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null, appDef);
+        
+        response.addHeader("X-XSS-Protection", "0");
+
+        try {
+            JSONObject jObj = new JSONObject(tempJson);
+            PageComponent pc = (PageComponent) pluginManager.getPlugin(jObj.getString("className"));
+            
+            if (pc != null) {
+                pc.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
+            
+                Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+                requestParameters.put("contextPath", request.getContextPath());
+                requestParameters.put("isPreview", "true");
+                requestParameters.put("isBuilder", "true");
+                requestParameters.put("appId", appDef.getAppId());
+                requestParameters.put("appVersion", appDef.getVersion().toString());
+                pc.setRequestParameters(requestParameters);
+                
+                if (pc instanceof UserviewMenu) {
+                    ((UserviewMenu) pc).setUrl("");
+                    Userview userview = new Userview();
+                    userview.setProperty("id", userviewId);
+                    ((UserviewMenu) pc).setUserview(userview);
+                }
+                
+                String html = pc.render();
+                html = html.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
+                html = pluginManager.processPluginTranslation(html, pc.getClassName(), null);
+                html = html.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
+
+                writer.write(html);
+            }
+        } catch (Exception e) {
+            LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");
+        }
+    }
+    
+    @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/builder/(*:userviewId)/json"})
+    public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+        userview = userviewService.combinedUserviewDefinition(userview);
+        if (userview == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String userviewJson = userview.getJson();
+        writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
+    }
+    
+    protected Collection<SimplePageComponent> getAvailableElements() {
+        Collection<SimplePageComponent> list = new ArrayList<SimplePageComponent>();
+        Collection<Plugin> pluginList = pluginManager.list(SimplePageComponent.class);
+        for (Plugin plugin : pluginList) {
+            if (plugin instanceof SimplePageComponent && !(plugin instanceof HiddenPlugin)) {
+                list.add((SimplePageComponent) plugin);
+            }
+        }
+        return list;
+    }
 }

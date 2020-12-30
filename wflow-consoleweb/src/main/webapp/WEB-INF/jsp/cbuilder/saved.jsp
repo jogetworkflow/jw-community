@@ -31,7 +31,7 @@
                 }
 
                 function launchBuilder() {
-                    var builder = window.parent.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/cbuilder/${builder.objectName}/design/<c:out value="${builderDefinition.id}"/>");
+                    var builder = window.parent.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/cbuilder/${builder.objectName}/design/<c:out value="${builderDefinition.id}"/>", "nv-${builder.objectName}-window");
                     if (builder) {
                         closeDialog();
                     }

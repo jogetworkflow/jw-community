@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -183,6 +184,9 @@ public class JsonUtil {
                 object.setResponsiveSearchPopup(obj.getString(PROPERTY_REPONSIVE_SEARCH_POPUP).equals("true"));
             }
             
+            object.setProperties(PropertyUtil.getProperties(obj));
+            JsonUtil.generateBuilderProperties(object.getProperties(), new String[]{"", "filter-", "column-header-", "column-", "rowaction-header", "rowaction-", "action-", "card-"});
+            
             if (obj.has("permission_rules")) {
                 JSONArray permissionRules = obj.getJSONArray("permission_rules");
                 if (permissionRules != null && permissionRules.length() > 0) {
@@ -308,6 +312,9 @@ public class JsonUtil {
                     }
                 }
                 
+                dataListFilter.setProperties(PropertyUtil.getProperties(filter));
+                JsonUtil.generateBuilderProperties(dataListFilter.getProperties(), new String[]{""});
+                
                 property.add(dataListFilter);
             }
         }
@@ -360,6 +367,9 @@ public class JsonUtil {
                     if (dataListAction != null) {
                         dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
                         dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
+                        
+                        JsonUtil.generateBuilderProperties(dataListAction.getProperties(), new String[]{"", "header-", "link-"});
+                        
                         property.add(dataListAction);
                     }
                 }
@@ -416,6 +426,9 @@ public class JsonUtil {
                     if (dataListAction != null) {
                         dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
                         dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
+                        
+                        JsonUtil.generateBuilderProperties(dataListAction.getProperties(), new String[]{""});
+                        
                         property.add(dataListAction);
                     }
                 }
@@ -530,82 +543,99 @@ public class JsonUtil {
             
             for (int i = 0; i < columns.length(); i++) {
                 JSONObject column = columns.getJSONObject(i);
-                DataListColumn dataListColumn = new DataListColumn();
-                
-                if (column.has(PROPERTY_NAME) && !column.isNull(PROPERTY_NAME)) {
-                    dataListColumn.setName(column.getString(PROPERTY_NAME));
-                }
-                if (column.has(PROPERTY_LABEL) && !column.isNull(PROPERTY_LABEL)) {
-                    dataListColumn.setLabel(column.getString(PROPERTY_LABEL));
-                }
-                if (column.has(PROPERTY_SORTABLE) && !column.isNull(PROPERTY_SORTABLE)) {
-                    dataListColumn.setSortable(column.getBoolean(PROPERTY_SORTABLE));
-                }
-                if (column.has(PROPERTY_HIDDEN) && !column.isNull(PROPERTY_HIDDEN)) {
-                    dataListColumn.setHidden(column.getBoolean(PROPERTY_HIDDEN));
-                }
-                if (column.has(PROPERTY_WIDTH) && !column.isNull(PROPERTY_WIDTH)) {
-                    dataListColumn.setWidth(column.getString(PROPERTY_WIDTH));
-                }
-                if (column.has(PROPERTY_STYLE) && !column.isNull(PROPERTY_STYLE)) {
-                    dataListColumn.setStyle(column.getString(PROPERTY_STYLE));
-                }
-                if (column.has(PROPERTY_ALIGNMENT) && !column.isNull(PROPERTY_ALIGNMENT)) {
-                    dataListColumn.setAlignment(column.getString(PROPERTY_ALIGNMENT));
-                }
-                if (column.has(PROPERTY_HEADER_ALIGNMENT) && !column.isNull(PROPERTY_HEADER_ALIGNMENT)) {
-                    dataListColumn.setHeaderAlignment(column.getString(PROPERTY_HEADER_ALIGNMENT));
-                }
-                if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
-                    DataListAction action = parseActionFromJsonObject(column);
-                    dataListColumn.setAction(action);
-                }
-                if (column.has(PROPERTY_FORMAT) && !column.isNull(PROPERTY_FORMAT)) {
-                    Collection<DataListColumnFormat> formatCollection = new ArrayList<DataListColumnFormat>();
-                    DataListColumnFormat format = parseFormatterFromJsonObject(column);
-                    formatCollection.add(format);
-                    
-                    dataListColumn.setFormats(formatCollection);
-                }
-                if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML) && !column.getString(PROPERTY_RENDER_HTML).isEmpty()) {
-                    dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
-                }
-                
-                dataListColumn.setProperties(PropertyUtil.getProperties(column));
-                
-                if (!Permission.DEFAULT.equals(permissionKey)) {
-                    if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
-                        JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
-                            dataListColumn.setHidden(true);
-                            if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
-                                dataListColumn.setProperty("include_export", "true");
-                                dataListColumn.setProperty("exclude_export", "");
-                            } else {
-                                dataListColumn.setProperty("include_export", "");
-                                dataListColumn.setProperty("exclude_export", "");
-                            }
-                        } else {
-                            dataListColumn.setHidden(false);
-                            if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
-                                dataListColumn.setProperty("include_export", "");
-                                dataListColumn.setProperty("exclude_export", "true");
-                            } else {
-                                dataListColumn.setProperty("include_export", "");
-                                dataListColumn.setProperty("exclude_export", "");
-                            }
-                        }
-                    } else {
-                        dataListColumn.setHidden(false);
-                        dataListColumn.setProperty("include_export", "");
-                        dataListColumn.setProperty("exclude_export", "");
-                    }
-                }
+                DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
                 
                 property.add(dataListColumn);
             }
         }
         return property;
+    }
+    
+    /**
+     * Used to retrieves datalist column from JSON Object
+     * @param obj
+     * @param permissionKey
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static DataListColumn parseColumnFromJsonObject(JSONObject column, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
+        DataListColumn dataListColumn = new DataListColumn();
+                
+        if (column.has(PROPERTY_NAME) && !column.isNull(PROPERTY_NAME)) {
+            dataListColumn.setName(column.getString(PROPERTY_NAME));
+        }
+        if (column.has(PROPERTY_LABEL) && !column.isNull(PROPERTY_LABEL)) {
+            dataListColumn.setLabel(column.getString(PROPERTY_LABEL));
+        }
+        if (column.has(PROPERTY_SORTABLE) && !column.isNull(PROPERTY_SORTABLE)) {
+            dataListColumn.setSortable(column.getBoolean(PROPERTY_SORTABLE));
+        }
+        if (column.has(PROPERTY_HIDDEN) && !column.isNull(PROPERTY_HIDDEN)) {
+            dataListColumn.setHidden(column.getBoolean(PROPERTY_HIDDEN));
+        }
+        if (column.has(PROPERTY_WIDTH) && !column.isNull(PROPERTY_WIDTH)) {
+            dataListColumn.setWidth(column.getString(PROPERTY_WIDTH));
+        }
+        if (column.has(PROPERTY_STYLE) && !column.isNull(PROPERTY_STYLE)) {
+            dataListColumn.setStyle(column.getString(PROPERTY_STYLE));
+        }
+        if (column.has(PROPERTY_ALIGNMENT) && !column.isNull(PROPERTY_ALIGNMENT)) {
+            dataListColumn.setAlignment(column.getString(PROPERTY_ALIGNMENT));
+        }
+        if (column.has(PROPERTY_HEADER_ALIGNMENT) && !column.isNull(PROPERTY_HEADER_ALIGNMENT)) {
+            dataListColumn.setHeaderAlignment(column.getString(PROPERTY_HEADER_ALIGNMENT));
+        }
+        if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
+            DataListAction action = parseActionFromJsonObject(column);
+            dataListColumn.setAction(action);
+        }
+        if (column.has(PROPERTY_FORMAT) && !column.isNull(PROPERTY_FORMAT)) {
+            Collection<DataListColumnFormat> formatCollection = new ArrayList<DataListColumnFormat>();
+            DataListColumnFormat format = parseFormatterFromJsonObject(column);
+            formatCollection.add(format);
+
+            dataListColumn.setFormats(formatCollection);
+        }
+        if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML) && !column.getString(PROPERTY_RENDER_HTML).isEmpty()) {
+            dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
+        }
+
+        dataListColumn.setProperties(PropertyUtil.getProperties(column));
+
+        if (!Permission.DEFAULT.equals(permissionKey)) {
+            if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
+                JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                    dataListColumn.setHidden(true);
+                    if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
+                        dataListColumn.setProperty("include_export", "true");
+                        dataListColumn.setProperty("exclude_export", "");
+                    } else {
+                        dataListColumn.setProperty("include_export", "");
+                        dataListColumn.setProperty("exclude_export", "");
+                    }
+                } else {
+                    dataListColumn.setHidden(false);
+                    if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
+                        dataListColumn.setProperty("include_export", "");
+                        dataListColumn.setProperty("exclude_export", "true");
+                    } else {
+                        dataListColumn.setProperty("include_export", "");
+                        dataListColumn.setProperty("exclude_export", "");
+                    }
+                }
+            } else {
+                dataListColumn.setHidden(false);
+                dataListColumn.setProperty("include_export", "");
+                dataListColumn.setProperty("exclude_export", "");
+            }
+        }
+
+        JsonUtil.generateBuilderProperties(dataListColumn.getProperties(), new String[]{"", "header-"});
+                
+        return dataListColumn;
     }
     
     /**
@@ -674,7 +704,7 @@ public class JsonUtil {
             listId = StringUtil.escapeString(listId, StringUtil.TYPE_JSON, null);
             name = StringUtil.escapeString(name, StringUtil.TYPE_JSON, null);
             desc = StringUtil.escapeString(desc, StringUtil.TYPE_JSON, null);
-            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}";
+            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[],\"responsive_layout\":\"card-layout\",\"responsive_layout\":\"sm-card\"}";
         }
 
         return json;
@@ -766,5 +796,59 @@ public class JsonUtil {
             }
         }
         return result;
+    }
+    
+    public static void generateBuilderProperties(Map<String, Object> props, String[] prefixes) {
+        Set<String> keys = new HashSet<String>();
+        keys.addAll(props.keySet());
+        
+        for (String prefix : prefixes) {
+            String propKey = "BUILDER_GENERATED_" + prefix.toUpperCase().replace("-", "_");
+            props.put(propKey + "CSS", "");
+            props.put(propKey + "ATTR", "");
+            props.put(propKey + "MOBILE_STYLE", "");
+            props.put(propKey + "TABLET_STYLE", "");
+            props.put(propKey + "STYLE", "");
+        }
+        
+        for (String key : keys) {
+            for (String prefix : prefixes) {
+                if ((key.startsWith(prefix+"css-") 
+                        || key.startsWith(prefix+"attr-")
+                        || key.startsWith(prefix+"style-mobile-")
+                        || key.startsWith(prefix+"style-tablet-")
+                        || key.startsWith(prefix+"style-"))
+                     && !props.get(key).toString().isEmpty()) {
+                    String value = props.get(key).toString();
+                    if (key.contains("style") && key.endsWith("-background-image")) {
+                        value = "url('"+value+"')";
+                    }
+                    
+                    String propKey = "BUILDER_GENERATED_" + prefix.toUpperCase().replace("-", "_");
+                    if (key.startsWith(prefix+"css-")) {
+                        propKey += "CSS";
+                        value = " " + value;
+                    } else if (key.startsWith(prefix+"attr-")) {
+                        propKey += "ATTR";
+                        value = " " + key.replace(prefix+"attr-", "") + "=\"" + value + "\"";
+                    } else if (key.startsWith(prefix+"style-mobile-")) {
+                        propKey += "MOBILE_STYLE";
+                        value = key.replace(prefix+"style-mobile-", "") + ":" + value + " !important;";
+                    } else if (key.startsWith(prefix+"style-tablet-")) {
+                        propKey += "TABLET_STYLE";
+                        value = key.replace(prefix+"style-tablet-", "") + ":" + value + " !important;";
+                    } else if (key.startsWith(prefix+"style-")) {
+                        propKey += "STYLE";
+                        value = key.replace(prefix+"style-", "") + ":" + value + " !important;";
+                    }
+                    String currentValue = (String) props.get(propKey);
+                    if (currentValue == null) {
+                        currentValue = "";
+                    }
+                    currentValue += value;
+                    props.put(propKey, currentValue);
+                }
+            }
+        }
     }
 }

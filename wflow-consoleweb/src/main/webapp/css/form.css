@@ -10,9 +10,6 @@
     padding: 10px;
     margin: 5px;
     background: white;
-    border: solid 1px silver;
-    -moz-border-radius: 10px 10px 10px 10px;
-    -webkit-border-radius: 10px;
     min-width: 0;
 }
 #form-canvas textarea {
@@ -22,6 +19,11 @@
     border: none 1px #dddddd;
     padding: 0px;
     margin: 0px;
+}
+.form-section:after, .subform-section:after {
+    clear: both;
+    content: "";
+    display: block;
 }
 .form-section, .subform-section {
     border: none 2px #cccccc;
@@ -301,3 +303,419 @@ span.tablesaw-cell-content {
     .tablesaw-cell-label { display:none;}
     table tr td p {margin:0 !important;}
 }
+
+/* date picker */
+.close-icon:after {
+    content: "x";
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    text-align: center;
+    line-height: 15px;
+    margin-left: 10px;
+    top: 10px;
+    background-color: #FA9595;
+    border-radius: 50%;
+    color: white;
+    font-size: 15px;
+    box-shadow: 0 0 2px #E50F0F;
+    cursor: pointer;
+}
+
+/* File upload */
+.form-fileupload {width:70%;}
+ul.form-fileupload-value {padding0; margin: 0;}
+ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
+ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
+ul.form-fileupload-value li a {display: inline-block;}
+
+/* grid */
+.cgrid table {
+    width: 100%;
+}
+.grid th, .grid td {
+    border: solid 1px silver;
+    margin: 0px;
+}
+.grid-cell-options {
+    width: 10px;
+}
+.grid-row-template {
+    display: none;
+}
+.grid-cell input:focus {
+    background: #efefef;
+    border: 1px solid #a1a1a1;
+}
+.grid-cell {
+    display: block;
+}
+.grid-cell form {
+    display: block;
+}
+
+/* Advanced grid */
+.form-cell .pq-grid table td, .form-cell .pq-grid table th, .subform-cell .pq-grid table td, .subform-cell .pq-grid table th {padding: inherit; border: inherit;}
+#formbuilder .pq_grid .ui-widget-header {height:auto; background: #EEEEEE; color: #666666;}
+.form-cell .pq-grid table td.pq-grid-col, .subform-cell .pq-grid table td.pq-grid-col {border-top:1px solid #CFCFCF; border-right:1px solid #CFCFCF; border-bottom: 0; border-left: 0;}
+.form-cell .pq-grid table td.pq-grid-cell, .subform-cell .pq-grid table td.pq-grid-cell {border-right:1px solid #D0D0D0; border-bottom:1px solid #EDEDED; border-top: 0; border-left: 0;}
+.form-cell .pq-grid table .form-cell-value, .subform-cell .pq-grid table .form-cell-value {width:100%;}
+.pq-grid span.pq-separator {vertical-align:middle; margin-left:3px;}
+.adgrid {position: relative; width:100%;}
+.adgrid .pq-grid-table {margin-bottom: 17px;}
+.adgrid .pq-grid-title {display:none;}
+.adgrid .pq_grid.ui-widget-content {border:0;}
+.adgrid div.pq-grid-top, .adgrid div.pq-grid-bottom {background: none; padding:5px;}
+.adgrid div.pq-grid-toolbar { border-bottom: 0; border-top:0;}
+.adgrid .pq-grid-inner {border: 1px solid #AAAAAA; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; width: 99.5%;}
+.adgrid .editor-cell {background: #eee; display:block; min-width:150px; padding:5px; border:1px solid #333; border-radius: 5px; position:absolute;}
+.adgrid .editor-cell.error {border:1px solid #ff0000; background: #FCEBEB;}
+.adgrid .editor-cell .editor-cell-value label {display:block;}
+.adgrid .editor-cell .actions-buttons {text-align: right;clear:both; font-size: 11px;}
+.adgrid .editor-cell .actions-buttons button {padding:2px;}
+.adgrid .editor-cell .form-fileupload {width: auto;}
+.adgrid .clickable {cursor: pointer;}
+.adGrid_info {font-style:italic; color:#0096cc;}
+.pq-grid-cell  .pq-td-div a {text-decoration: underline; color:blue;}
+.adgrid .pq-grid-footer, .adgrid .pq-grid-toolbar, .adgrid .pq-pager .pq-pageholder {display: inline-block; vertical-align: middle;}
+.adgrid .pq-grid-footer select {width: 50px; height:auto;}
+.adgrid .pq-grid-footer [title="Refresh"], .adgrid .pq-grid-footer .pq-separator, .adgrid .pq-grid-footer .pq-pager-msg {display:none;}
+.adgrid .pq-grid-bottom div.ui-btn {display: inline-block; padding: 5px 5px; margin-right: 5px;}
+.adgrid .pq-grid-bottom button.ui-btn {border: 0px;}
+.adgrid .pq-grid-bottom.ui-corner-bottom > div {display:block;}
+.adgrid td.pq-grid-cell.focused_cell {background: #5FAAF9}
+.pq-grid-toolbar .ui-button .ui-icon {display: inline-block; vertical-align: sub;}
+.pq-grid-toolbar .ui-button{background-image: linear-gradient(#fefefe,#e6e6e6); border: 1px solid #e6e6e6; padding: 5px 11px;}
+
+/* form grid & list grid */
+.pg-navigator .pg-current {
+    font-weight : bold;
+}
+tr.pg-tr-hide {
+    display:none;
+}
+.formgrid table {
+    width: 100%;
+}
+.grid th, .grid td {
+    border: solid 1px silver;
+    margin: 0px;
+}
+.grid-cell-options {
+    width: 10px;
+}
+.grid-row-template {
+    display: none;
+}
+.grid-cell input:focus {
+    background: #efefef;
+    border: 1px solid #a1a1a1;
+}
+.grid-cell {
+    display: block;
+}
+.grid-cell form {
+    display: block;
+}
+.grid-action-edit,
+.grid-action-delete,
+.grid-action-moveup,
+.grid-action-movedown,
+.grid-action-add{
+    display:inline-block;
+    height:16px;
+    width:16px;
+}
+.grid-action-delete{
+    background: url(../images/v3/property_editor/delete.png) no-repeat;
+}
+.grid-action-moveup{
+    display:none;
+    background: url(../images/v3/property_editor/up.png) no-repeat;
+}
+.grid-action-movedown{
+    display:none;
+    background: url(../images/v3/property_editor/down.png) no-repeat;
+}
+.grid-action-add{
+    margin-top:3px;
+    background: url(../images/v3/property_editor/add.png) no-repeat;
+}
+.grid-action-edit{
+    background: url(../plugin/org.joget.plugin.enterprise.FormGrid/images/edit.png) no-repeat;
+}
+.grid-action-moveup.disabled{
+    background: url(../images/v3/property_editor/up_d.png) no-repeat;
+}
+.grid-action-movedown.disabled{
+    background: url(../images/v3/property_editor/down_d.png) no-repeat;
+}
+.grid-action-edit span,
+.grid-action-delete span,
+.grid-action-moveup span,
+.grid-action-movedown span,
+.grid-action-add span{
+    display:none;
+}
+.grid.enableSorting a.grid-action-moveup,
+.grid.enableSorting a.grid-action-movedown{
+    display:inline-block;
+}
+.grid.readonly.enableSorting a.grid-action-moveup,
+.grid.readonly.enableSorting a.grid-action-movedown,
+.grid.readonly a.grid-action-delete,
+.grid.readonly a.grid-action-add,
+.grid.disabledAdd a.grid-action-add,
+.grid.disabledDelete a.grid-action-delete{
+    display:none;
+}
+.grid.readonly a.grid-action-edit{
+    display:inline-block;
+    background: url(../plugin/org.joget.plugin.enterprise.FormGrid/images/view.png) no-repeat;
+}
+.grid .grid-action-header, .grid .grid-action-cell {
+    border: 0 none;
+}
+
+/* ,ulti paged form */
+body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUniqueKey!} div.page-nav-panel.top li:before { transform: scaleX(-1); }
+.multiPagedForm .page-nav-panel ul,
+.multiPagedForm .page-nav-panel li{
+    list-style: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item button{
+    background:transparent;
+    border:0;
+    cursor:pointer;
+    color: #BBB
+}
+
+.multiPagedForm .page-nav-panel .nav_item.current button{
+    font-weight: bold;
+    color: #000;
+}
+
+.multiPagedForm.tab .page-nav-panel .nav_item{
+    float:left;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item {
+    float: right;
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item{
+    float:left;
+    background:#fff url(images/arrow_right.png) no-repeat right center;
+    padding-right:15px;
+}
+
+.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+    float: right;
+    padding-left:15px;
+    padding-right:auto;
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item:last-child{
+    background-image:none;
+}
+
+.multiPagedForm.wizard .page-nav-panel button{
+    float:left;
+    border:0;
+}
+
+.rtl .multiPagedForm.wizard .page-nav-panel button{
+    float:right;
+}
+
+.multiPagedForm.tab .page-nav-panel .nav_item button{
+    float:left;
+    background:#eee;
+    margin: 0 1px;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-bottom: 0;
+    -moz-border-radius: 8px 8px 0 0;
+    -webkit-border-radius: 8px 8px 0 0;
+    -khtml-border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+    float:right;
+}
+
+.multiPagedForm.tab .page-nav-panel .nav_item.current button{
+    background:#FFF;
+    color:#000;
+    margin-bottom: -2px;
+    padding-bottom: 7px;
+}
+
+.multiPagedForm.tab .page-nav-panel{
+    border-bottom: 2px solid #eee;
+    margin-bottom: 5px;
+}
+
+.multiPagedForm .page-button-panel{
+    text-align:right;
+}
+
+.rtl .multiPagedForm .page-button-panel{
+    text-align:left;
+}
+
+.multiPagedForm .page-nav-panel.bottom{
+    display:none;
+}
+
+.mpf-container .subform-section{
+    background:transparent;
+}
+
+.multiPagedForm .page-nav-panel .nav_item.error button span{
+    color: red;
+}
+
+@media (max-width: 767px) {
+    .multiPagedForm .page-nav-panel.bottom{
+        display:block;
+    }
+    
+    .multiPagedForm .page-nav-panel ul {
+        padding:0;
+        margin:0;
+    }
+    
+    .multiPagedForm .page-button-panel,
+    .multiPagedForm .page-nav-panel.top ul li.after,
+    .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .multiPagedForm .page-nav-panel.bottom ul li.before,
+    .rtl .multiPagedForm .page-button-panel,
+    .rtl .multiPagedForm .page-nav-panel.top ul li.after,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.before{
+        display:none;
+    }
+    
+    .multiPagedForm.wizard .page-nav-panel,
+    .multiPagedForm.tab .page-nav-panel{
+        border-bottom: 0px;
+        margin-bottom: 0px;
+    }
+    
+    .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .multiPagedForm.tab .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item{
+        float:none;
+        display:block;
+        background: none;
+        padding-right:0;
+    }
+    
+    .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .multiPagedForm.tab .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+        text-align:left;
+        float:none;
+        display:block;
+        width: 100%;
+        background: #f5f5f5;
+        border:#ddd solid 1px;
+        padding:8px;
+        margin:0;
+        margin-bottom: 3px;
+        -moz-border-radius: 5px 5px 5px 5px;
+        -webkit-border-radius: 5px 5px 5px 5px;
+        -khtml-border-radius: 5px 5px 5px 5px;
+        border-radius: 5px 5px 5px 5px;
+    }
+    
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button{
+        text-align:right;
+    }
+    
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button{
+        background: #f5f5f5;
+        color:#000 ;
+        font-weight: bold;
+        margin-bottom: 0px;
+        padding-bottom: 8px;
+        -moz-border-radius: 5px 5px 0px 0px;
+        -webkit-border-radius: 5px 5px 0px 0px;
+        -khtml-border-radius: 5px 5px 0px 0px;
+        border-radius: 5px 5px 0px 0px;
+    }
+    
+    .multiPagedForm .page-container {
+        border:#ddd solid 1px;
+        border-top:0px;
+        padding: 5px;
+        border-radius: 0px 0px 5px 5px;
+        margin-bottom: 3px;
+    }
+}
+
+/* multiselect */
+.chosen-container-multi .ui-shadow-inset.ui-focus,
+.chosen-container-multi .ui-shadow-inset{
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    margin:2px 0 0 0 !important;
+    border:0 !important;
+}
+.editor-cell .chosen-container {
+    width:300px !important;
+}
+
+/* Popup select box */
+.selector_element {
+    display: block;
+    margin-left: 30%;
+}
+.selector_items {
+    display: block;
+    margin: 5px 0px;
+}
+.selector_item {
+    margin-right: 5px;
+    border: dotted 1px silver;
+    padding: 2px;
+    display: block;
+    float: left;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px;
+}
+.selector_remove {
+    background: red;
+    padding: 2px 5px;
+    margin: 2px;
+    line-height: 2px;
+    font-size: 9px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+/* spreadsheet */
+.htMobileEditorContainer {width:260px; height: 112px;}
+.htMobileEditorContainer .positionControls {right: -12px; top: 48px;}
+.htMobileEditorContainer .inputs textarea {height: 25px !important; width: auto; max-width:none;}
+.handsontable .htAutocompleteArrow, .handsontable .columnSorting::after {font-family: sans-serif;}
+.spreadsheet_container, .spreadsheet {width:100%; overflow:visible !important; color:#000;}
+.handsontable .file_delete {color:red; display:inline-block; margin:0 10px; cursor:pointer;}
+.handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
+.handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
+.form-cell .handsontable table td, .form-cell .handsontable table th, .subform-cell .handsontable table td, .subform-cell .handsontable table th {padding: 0 4px;}
+body.rtl .ht_clone_left, body.rtl .ht_clone_top, body.rtl .ht_clone_top_left_corner  { left: unset !important; right:0;}
+body.rtl .handsontableInputHolder textarea {position:absolute; left:0}
+body.rtl .handsontable .htCore tr th:last-child, body.rtl .handsontable .htCore tr td:last-child {border-left-width:1px !important;}

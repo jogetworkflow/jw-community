@@ -1,496 +1,593 @@
 UserviewBuilder = {
-    //Configuration
-    saveUrl : '',
-    previewUrl : '',
-    contextPath : '/jw',
-    appId: '',
-    appVersion: '',
-    userviewUrl: '',
+    mode: "userview",
+    selectedMenu: null,
+    availableThemeConfigPlugin : {},
     
-    //undo & redo feature
-    undoStack : new Array(),
-    redoStack : new Array(),
-    undoRedoMax : 50,
-
-    //Data storing
-    data : new Object(),
-    categoriesPointer : new Array(),
-    menusPointer : new Array(),
-
-    //Property Options
-    settingPropertyOptions : new Array(),
-    categoryPropertyOptions : new Array(),
-    menuTypes : new Array(),
-
-    //Tracker
-    isCtrlKeyPressed : false,
-    isAltKeyPressed : false,
-    saveChecker : 0,
-
-    //Initial data storing model of userview
-    initDefaultUserviewDataModel : function(id){
+    /*
+     * Intialize the builder, called from CustomBuilder.initBuilder
+     */
+    initBuilder: function (callback) {
+        
+        UserviewBuilder.initUserviewElements();
+        
+        CustomBuilder.Builder.init({
+            callbacks : {
+                "initComponent" : "UserviewBuilder.initComponent",
+                "renderElement" : "UserviewBuilder.renderElement",
+                "selectElement" : "UserviewBuilder.selectElement",
+                "updateElementId" : "UserviewBuilder.updateElementId",
+                "unselectElement" : "UserviewBuilder.unselectElement",
+                "renderXray" : "UserviewBuilder.renderXray",
+                "renderPermission" : "UserviewBuilder.renderPermission"
+            }
+        }, function() {
+            CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<link data-form-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<link data-ubuilder-style href="' + CustomBuilder.contextPath + '/css/ubuilder.css" rel="stylesheet" />');
+            callback();
+            
+            UserviewBuilder.initThemeConfigPluginList();
+            CustomBuilder.initPermissionList("org.joget.apps.userview.model.UserviewPermission");
+        });
+    },
+    
+    /*
+     * retrieve available theme plugin
+     */
+    initThemeConfigPluginList: function(deferreds) {
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.apps.userview.model.SupportBuilderColorConfig',
+            function(returnedData){
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        UserviewBuilder.availableThemeConfigPlugin[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+            }
+        );
+    },
+    
+    /*
+     * Initialize builder components for userview 
+     */
+    initUserviewElements: function() {
+        //userview
+        CustomBuilder.initPaletteElement("", "org.joget.apps.userview.model.Userview", "", "", "", "", false, "", {builderTemplate: {
+            getChildsDataHolder : function(elementObj, component) {
+                return "categories";
+            },
+            getChildsContainerAttr: function(elementObj, component) {
+                return "categories";
+            }
+        }});
+    
+        CustomBuilder.initPaletteElement("", "org.joget.apps.userview.model.UserviewPage", "", "", "", "", false, "", {builderTemplate: {
+        }});
+    
+        CustomBuilder.initPaletteElement("", "userview-header", get_cbuilder_msg('ubuilder.header'), "<i class=\"fas fa-heading\"></i>",  
+            UserviewBuilder.getHeaderProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'stylePrefix' : 'header',
+            'render' : function(element, elementObj, component, callback) {
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            },
+            'isSupportProperties' : function(elementObj, component) {
+                return UserviewBuilder.availableThemeConfigPlugin[CustomBuilder.data.setting.properties.theme.className] !== undefined;
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-welcome-message", get_cbuilder_msg('ubuilder.welcomeMessage'), "<i class=\"fas fa-heading\"></i>",  
+            UserviewBuilder.getWelcomeMessageProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'stylePrefix' : 'welcome-message',
+            'render' : function(element, elementObj, component, callback) {
+                element.find("#welcomeMessage").html(elementObj.properties.welcomeMessage);
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-sidebar", get_cbuilder_msg('ubuilder.sidebar'), "<i class=\"fas fa-columns\"></i>", 
+            UserviewBuilder.getSidebarProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'supportProperties' : false,
+            'stylePrefix' : 'sidebar',
+            'render' : function(element, elementObj, component, callback) {
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            },
+            'isSupportProperties' : function(elementObj, component) {
+                return UserviewBuilder.availableThemeConfigPlugin[CustomBuilder.data.setting.properties.theme.className] !== undefined;
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-brand-logo", get_cbuilder_msg('ubuilder.brandLogo'), "<i class=\"far fa-image\"></i>",  
+            UserviewBuilder.getBrandLogoProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'stylePrefix' : 'brand-logo',
+            'render' : function(element, elementObj, component, callback) {
+                var logoUrl = elementObj.properties.logo;
+                var img = "";
+                if (logoUrl !== undefined && logoUrl !== "") {
+                    if (logoUrl.indexOf("#appResource.") === 0) {
+                        logoUrl = logoUrl.replace('#appResource.', CustomBuilder.contextPath + '/web/app/' + CustomBuilder.appId + '/resources/');
+                        logoUrl = logoUrl.replace('#', '');
+                    }
+                    img += '<img src="'+logoUrl+'"/>';
+                }
+                element.html(img);
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-name", get_cbuilder_msg('ubuilder.userviewName'), "<i class=\"fas fa-heading\"></i>",  
+            UserviewBuilder.getBrandNameProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'stylePrefix' : 'brand-name',
+            'render' : function(element, elementObj, component, callback) {
+                element.find("> span").html(elementObj.properties.name);
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-categories", get_cbuilder_msg('ubuilder.categories'), "<i class=\"fas fa-folder\"></i>", "", "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'supportProperties' : false,
+            'stylePrefix' : 'categories',
+            'getChildsDataHolder' : function(elementObj, component) {
+                return "categories";
+            },
+            'getChildsContainerAttr' : function(elementObj, component) {
+                return "categories";
+            },
+            'render' : function(element, elementObj, component, callback) {
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-breadcrumb", get_cbuilder_msg('ubuilder.breadcrumb'), "<i class=\"fas fa-font\"></i>", "", "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'supportProperties' : false,
+            'stylePrefix' : 'breadcrumb',
+            'render' : function(element, elementObj, component, callback) {
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "userview-footer", get_cbuilder_msg('ubuilder.footer'), "<i class=\"fas fa-font\"></i>",  
+            UserviewBuilder.getFooterProperties()
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'stylePrefix' : 'footer',
+            'render' : function(element, elementObj, component, callback) {
+                element.find("#footerMessage").html(elementObj.properties.footerMessage);
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                if (UserviewBuilder.availableThemeConfigPlugin[CustomBuilder.data.setting.properties.theme.className] !== undefined) {
+                    return UserviewBuilder.getFooterColorProperties()
+                } else {
+                    return elementOptions;
+                }
+            }
+        }});
+        CustomBuilder.initPaletteElement("", "menu-component", get_cbuilder_msg('ubuilder.menuComponent'), "", "", "", false, "", {builderTemplate: {
+            'deletable' : false,
+            'copyable' : false,
+            'getLabel' : function(elementObj, component) {
+                var classname = UserviewBuilder.selectedMenu.className;
+                var self = CustomBuilder.Builder;
+                var actualComponent = self.getComponent(classname);
+                
+                return CustomBuilder.Builder._getElementType(UserviewBuilder.selectedMenu, actualComponent);
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                var classname = UserviewBuilder.selectedMenu.className;
+                var self = CustomBuilder.Builder;
+                var actualComponent = self.getComponent(classname);
+                
+                var elementOptions = actualComponent.propertyOptions;
+                if (actualComponent.builderTemplate !== undefined && actualComponent.builderTemplate.customPropertyOptions !== undefined) {
+                    elementOptions = actualComponent.builderTemplate.customPropertyOptions(elementOptions, element, UserviewBuilder.selectedMenu, actualComponent);
+                }
+                return elementOptions;
+            },
+            'customPropertiesData' : function(properties, elementObj, component) {
+                return UserviewBuilder.selectedMenu.properties;
+            }
+        }});
+    },
+    
+    getHeaderProperties : function() {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.themeColor'),
+                properties : [
+                    {
+                        name : 'dx8headerColor',
+                        label : get_cbuilder_msg('ubuilder.headerColor'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8headerFontColor',
+                        label : get_cbuilder_msg('ubuilder.headerFontColor'),
+                        type : 'color'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getSidebarProperties : function() {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.themeColor'),
+                properties : [
+                    {
+                        name : 'dx8navBackground',
+                        label : get_cbuilder_msg('ubuilder.navBackground'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navLinkBackground',
+                        label : get_cbuilder_msg('ubuilder.navLinkBackground'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navLinkColor',
+                        label : get_cbuilder_msg('ubuilder.navLinkColor'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navLinkIcon',
+                        label : get_cbuilder_msg('ubuilder.navLinkIcon'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navActiveLinkBackground',
+                        label : get_cbuilder_msg('ubuilder.navActiveLinkBackground'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navActiveLinkColor',
+                        label : get_cbuilder_msg('ubuilder.navActiveLinkColor'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navActiveIconColor',
+                        label : get_cbuilder_msg('ubuilder.navActiveIconColor'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navBadge',
+                        label : get_cbuilder_msg('ubuilder.navBadge'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8navBadgeText',
+                        label : get_cbuilder_msg('ubuilder.navBadgeText'),
+                        type : 'color'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getBrandLogoProperties : function () {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.editBrandLogo'),
+                properties : [
+                    {
+                        name : 'logo',
+                        label : get_cbuilder_msg('ubuilder.logo'),
+                        type: 'image',
+                        appPath: CustomBuilder.appPath,
+                        allowInput : 'true',
+                        isPublic : 'true',
+                        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getBrandNameProperties : function () {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.editBrandName'),
+                properties : [
+                    {
+                        name : 'name',
+                        label : get_cbuilder_msg('ubuilder.brandName'),
+                        type : 'textarea'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getWelcomeMessageProperties : function () {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.editWelcomeMessage'),
+                properties : [
+                    {
+                        name : 'welcomeMessage',
+                        label : get_cbuilder_msg('ubuilder.welcomeMessage'),
+                        type : 'textarea'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getFooterProperties : function () {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.editFooter'),
+                properties : [
+                    {
+                        name : 'footerMessage',
+                        label : get_cbuilder_msg('ubuilder.footerMessage'),
+                        type : 'textarea'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    getFooterColorProperties : function () {
+        return [
+            {
+                title: get_cbuilder_msg('ubuilder.editFooter'),
+                properties : [
+                    {
+                        name : 'footerMessage',
+                        label : get_cbuilder_msg('ubuilder.footerMessage'),
+                        type : 'textarea'
+                    },
+                    {
+                        name : 'dx8footerBackground',
+                        label : get_cbuilder_msg('ubuilder.footerBackground'),
+                        type : 'color'
+                    },
+                    {
+                        name : 'dx8footerColor',
+                        label : get_cbuilder_msg('ubuilder.footerColor'),
+                        type : 'color'
+                    }
+                ]
+            }
+        ];
+    },
+    
+    /*
+     * Get the properties for Propertise View
+     */
+    getBuilderProperties : function() {
+        return CustomBuilder.data.setting.properties;
+    },
+    
+    /*
+     * Save properties from properties view
+     */
+    saveBuilderProperties : function(container, properties) {
+        $.extend(CustomBuilder.data.setting.properties, properties);
+        CustomBuilder.update();
+        
+        var combinedProperties = $.extend(true, {}, CustomBuilder.data.properties, CustomBuilder.data.setting.properties.theme.properties);
+        var userviewElement = CustomBuilder.Builder.frameBody;
+        userviewElement.find('[data-cbuilder-classname="userview-header"]').data("data", {className: "userview-header", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-welcome-message"]').data("data", {className: "userview-welcome-message", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-sidebar"]').data("data", {className: "userview-sidebar", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-brand-logo"]').data("data", {className: "userview-brand-logo", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-name"]').data("data", {className: "userview-name", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: combinedProperties, categories: CustomBuilder.data.categories});
+        userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: combinedProperties});
+        
+        UserviewBuilder.updateThemeStyle();
+    },
+    
+    /*
+     * Create default userview data model when it is empty
+     */
+    initDefaultUserviewDataModel : function() {
         var d = new Object();
         d['className'] = "org.joget.apps.userview.model.Userview";
         d['properties'] = new Object();
-        d.properties['id'] = id;
-        d.properties['name'] = "Userview Name";
-        d.properties['description'] = "Userview Description";
-        d.properties['welcomeMessage'] = "Welcome Message";
-        d.properties['logoutText'] = "Logout";
-        d.properties['footerMessage'] = "Powered by Joget",
+        d.properties['id'] = CustomBuilder.id;
+        d.properties['name'] = get_cbuilder_msg('ubuilder.userviewName');
+        d.properties['description'] = get_cbuilder_msg('ubuilder.userviewDescription');
+        d.properties['welcomeMessage'] = get_cbuilder_msg('ubuilder.welcomeMessage');
+        d.properties['logoutText'] = get_cbuilder_msg('ubuilder.logout');
+        d.properties['footerMessage'] = get_cbuilder_msg('ubuilder.poweredBy'),
         d['setting'] = new Object();
         d.setting['className'] = "org.joget.apps.userview.model.UserviewSetting";
         d.setting['properties'] = new Array();
         d['categories'] = new Array();
 
-        this.data = d;
-    },
-
-    //Initial Setting avaiabled property options
-    initSettingPropertyOptions : function(propertyOptions){
-        this.settingPropertyOptions = propertyOptions;
-    },
-
-    //Initial Category avaiabled property options
-    initCategoryPropertyOptions : function(propertyOptions){
-        this.categoryPropertyOptions = propertyOptions;
-    },
-
-    //Initial Menu Type property options
-    initMenuType : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, pwaValidation){
-        this.menuTypes[className] = new Object();
-        this.menuTypes[className]['label'] = label;
+        CustomBuilder.data = d;
+        CustomBuilder.update(false);
         
-        if (propertyOptions !== null && propertyOptions !== undefined 
-                && propertyOptions.length > 0 && propertyOptions[0].properties !== undefined) {
-            for (var i = 0; i < propertyOptions[0].properties.length; i++) {
-                var name = propertyOptions[0].properties[i].name;
-                if (name === "id") {
-                    propertyOptions[0].properties[i].type = "label";
-                    break;
-                }
-            }
-        }
-        
-        this.menuTypes[className]['propertyOptions'] = propertyOptions;
-        this.menuTypes[className]['properties'] = defaultPropertiesValues;
-        this.menuTypes[className]['pwaValidation'] = pwaValidation;
-
-        var iconObj = null;
-        if (icon !== undefined && icon !== null && icon !== "") {
-            try {   
-                iconObj = $(icon);
-            } catch (err) {
-                iconObj =  $('<span class="image" style="background-image:url(\'' + UserviewBuilder.contextPath + icon + '\');" />');
-            }
-        } else {
-            iconObj = $('<i class="fas fa-desktop"></i>');
-        }
-
-        //get category
-        var categoryId = category.replace(/\s/g , "-");
-        if($('ul#'+categoryId).length == 0){
-            $('#builder-palette-body').append('<h3>'+category+'</h3><ul id="'+categoryId+'"></ul>');
-        }
-
-        var li = $('<li><div id="'+className+'" element="'+className+'" class="builder-palette-element"> <label class="label">'+label+'</label></div></li>');
-        $(li).find('.builder-palette-element').prepend(iconObj);
-        $('ul#'+categoryId).append(li);
-    },
-
-    //Initial Builder feature
-    initBuilder : function(){
-        //Popup dialog
-        PropertyEditor.Popup.createDialog("menu-wizard-container");
-        
-        //Shortcut key
-        $(document).keyup(function (e) {
-            if(e.which == 17){
-                UserviewBuilder.isCtrlKeyPressed=false;
-            } else if(e.which === 18){
-                UserviewBuilder.isAltKeyPressed = false;
-            }
-        }).keydown(function (e) {
-            if(e.which == 17){
-                UserviewBuilder.isCtrlKeyPressed=true;
-            } else if(e.which === 18){
-                UserviewBuilder.isAltKeyPressed = true;
-            }
-            if ($(".property-editor-container:visible").length === 0) {
-                if(e.which == 83 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+S - save
-                    UserviewBuilder.mergeAndSave();
-                    return false;
-                }
-                if(e.which == 90 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+Z - undo
-                    UserviewBuilder.undo();
-                    return false;
-                }
-                if(e.which == 89 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+Y - redo
-                    UserviewBuilder.redo();
-                    return false;
-                }
-                if(e.which == 80 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+P - preview
-                    UserviewBuilder.preview();
-                    return false;
-                }
-            }
-        });
-
-        //Steps tab
-        $('#builder-steps li').click( function(){
-            var div = $(this).find('a').attr('href');
-            if($(div).size() > 0){
-                $('#builder-steps li').removeClass("active");
-                $('#builder-steps li').removeClass("next");
-                $(this).addClass("active");
-                $(this).prev().addClass("next");
-                $('#builder-content').children().hide();
-                $(div).show();
-                $("body").removeClass("stop-scrolling");
-            }
-            return false;
-        });
-
-        //setting property page
-        if(UserviewBuilder.data.setting == undefined){
-            UserviewBuilder.data.setting = new Object();
-            UserviewBuilder.data.setting['className'] = "org.joget.apps.userview.model.UserviewSetting";
-            UserviewBuilder.data.setting['properties'] = new Array();
-        }
-        
-        $("#step-setting").on("click", function(){
-            $("#step-setting-container").html("");
-            var options = {
-                appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
-                contextPath: UserviewBuilder.contextPath,
-                propertiesDefinition : UserviewBuilder.settingPropertyOptions,
-                propertyValues : UserviewBuilder.data.setting.properties,
-                showCancelButton:false,
-                closeAfterSaved : false,
-                changeCheckIgnoreUndefined: true,
-                autoSave: true,
-                saveCallback: UserviewBuilder.saveSettingProperties
-            };
-            $('#step-setting-container').propertyEditor(options);
-            $("body").addClass("stop-scrolling");
-            return true;
-        });
-
-        // make palette sections draggable
-        $(".builder-palette-element").draggable({
-            connectToSortable: ".menu-container",
-            helper: "clone",
-            zIndex: 200,
-            revert: "invalid",
-            cursor: "move"
-        }).disableSelection();
-        
-        //Sortable Menu Categories
-        $('#userview-sidebar').sortable({
-            opacity: 0.8,
-            axis: 'y',
-            handle: '.category-label, .category-comment',
-            tolerance: 'intersect',
-            stop: function(event, ui){
-                UserviewBuilder.addToUndo();
-                var id= $(ui.item[0]).attr('id');
-                var category = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[id]];
-                delete UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[id]];
-                
-                $(".category-bottom").remove();
-        
-                if($(ui.item[0]).next().length === 0){
-                    UserviewBuilder.data.categories.push(category);
-                }else{
-                    var nextCategoryId = $(ui.item[0]).next().attr('id');
-                    var newPosition = UserviewBuilder.categoriesPointer[nextCategoryId];
-                    UserviewBuilder.data.categories.splice(newPosition,0, category);
-                }
-
-                UserviewBuilder.updateCategoriesAndMenusPointer();
-            }
-        });
-
-        //Editable Label properties
-        $('.editable').editable(function(value, settings){
-            var id = $(this).attr('id');
-            UserviewBuilder.addToUndo();
-            UserviewBuilder.data.properties[id] = value;
-            if(value==""){
-                value = get_ubuilder_msg('ubuilder.editable.noValue');
-            }
-            UserviewBuilder.adjustJson();
-            value = UI.escapeHTML(value);
-            return value;
-        },{
-            type      : 'text',
-            tooltip   : get_ubuilder_msg('ubuilder.editable.tooltip') ,
-            select    : true ,
-            style     : 'inherit',
-            cssclass  : 'LabelEditableField',
-            onblur    : 'submit',
-            rows      : 1,
-            width     : '80%',
-            minwidth  : 80,
-            data: function(value, settings) {
-                if (value !== "") {
-                    var div = document.createElement('div');
-                    div.innerHTML = value;
-                    var decoded = div.firstChild.nodeValue;
-                    return decoded;
-                } else {
-                    return value;
-                }
-            }
-        });
-        
-        //update paste icons
-        $("#userview-sidebar, .category").on("mouseenter", function() {
-            UserviewBuilder.updatePasteIcon();
-        });
-        
-        //add control
-        $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_ubuilder_msg('ubuilder.undo.disabled.tip')+"'><i class='fas fa-undo'></i> "+get_ubuilder_msg('ubuilder.undo')+"</a>&nbsp;|&nbsp;");
-        $(".controls").append("<a class='action-redo disabled' title='"+get_ubuilder_msg('ubuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_ubuilder_msg('ubuilder.redo')+"</a>");
-        
-        $(".action-undo").click(function(){
-            UserviewBuilder.undo();
-            return false;
-        });
-        
-        $(".action-redo").click(function(){
-            UserviewBuilder.redo();
-            return false;
-        });
+        return CustomBuilder.data;
     },
     
-    ShowPopupUserviewSetting : function () {
-        var options = {
-            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
-            contextPath: UserviewBuilder.contextPath,
-            propertiesDefinition : UserviewBuilder.settingPropertyOptions,
-            propertyValues : UserviewBuilder.data.setting.properties,
-            changeCheckIgnoreUndefined: true,
-            showCancelButton:true,
-            cancelCallback: function() {
-            },
-            saveCallback: function(container, properties) {
-                UserviewBuilder.saveSettingProperties(container, properties);
-            }
-        };
-        
-        PropertyEditor.Popup.showDialog("menu-wizard-container", options);
-    },
-
-    //Generate userview builder element based on json
-    loadUserview : function(id, json){
-        if(json == null){
-            this.initDefaultUserviewDataModel(id);
-        }else{
-            this.data = json;
-            this.data.properties.id = id;
+    /*
+     * Use to migrate some v5 properties to v6
+     */
+    v5PropertiesMigration : function(data) {
+        //handle for v5 app on property migration
+        if (data.setting.properties['loginPageTop'] !== undefined) {
+            data.setting.properties['theme']['properties']['loginPageTop'] = data.setting.properties['loginPageTop'];
+            data.setting.properties['theme']['properties']['loginPageBottom'] = data.setting.properties['loginPageBottom'];
+            delete data.setting.properties['loginPageTop'];
+            delete data.setting.properties['loginPageBottom'];
             
-            //handle for v5 app on property migration
-            if (this.data.setting.properties['loginPageTop'] !== undefined) {
-                this.data.setting.properties['theme']['properties']['loginPageTop'] = this.data.setting.properties['loginPageTop'];
-                this.data.setting.properties['theme']['properties']['loginPageBottom'] = this.data.setting.properties['loginPageBottom'];
-                delete this.data.setting.properties['loginPageTop'];
-                delete this.data.setting.properties['loginPageBottom'];
-            }
-            if (this.data.setting.properties['mobileViewDisabled'] !== undefined) {
-                this.data.setting.properties['theme']['properties']['mobileViewDisabled'] = this.data.setting.properties['mobileViewDisabled'];
-                this.data.setting.properties['theme']['properties']['mobileCacheEnabled'] = this.data.setting.properties['mobileCacheEnabled'];
-                this.data.setting.properties['theme']['properties']['mobileLoginRequired'] = this.data.setting.properties['mobileLoginRequired'];
-                this.data.setting.properties['theme']['properties']['mobileViewBackgroundUrl'] = this.data.setting.properties['mobileViewBackgroundUrl'];
-                this.data.setting.properties['theme']['properties']['mobileViewBackgroundColor'] = this.data.setting.properties['mobileViewBackgroundColor'];
-                this.data.setting.properties['theme']['properties']['mobileViewBackgroundStyle'] = this.data.setting.properties['mobileViewBackgroundStyle'];
-                this.data.setting.properties['theme']['properties']['mobileViewTranslucent'] = this.data.setting.properties['mobileViewTranslucent'];
-                this.data.setting.properties['theme']['properties']['mobileViewLogoUrl'] = this.data.setting.properties['mobileViewLogoUrl'];
-                this.data.setting.properties['theme']['properties']['mobileViewLogoWidth'] = this.data.setting.properties['mobileViewLogoWidth'];
-                this.data.setting.properties['theme']['properties']['mobileViewLogoHeight'] = this.data.setting.properties['mobileViewLogoHeight'];
-                this.data.setting.properties['theme']['properties']['mobileViewLogoAlign'] = this.data.setting.properties['mobileViewLogoAlign'];
-                this.data.setting.properties['theme']['properties']['mobileViewCustomCss'] = this.data.setting.properties['mobileViewCustomCss'];
-                delete this.data.setting.properties['mobileViewDisabled'];
-                delete this.data.setting.properties['mobileCacheEnabled'];
-                delete this.data.setting.properties['mobileLoginRequired'];
-                delete this.data.setting.properties['mobileViewBackgroundUrl'];
-                delete this.data.setting.properties['mobileViewBackgroundColor'];
-                delete this.data.setting.properties['mobileViewBackgroundStyle'];
-                delete this.data.setting.properties['mobileViewTranslucent'];
-                delete this.data.setting.properties['mobileViewLogoUrl'];
-                delete this.data.setting.properties['mobileViewLogoWidth'];
-                delete this.data.setting.properties['mobileViewLogoHeight'];
-                delete this.data.setting.properties['mobileViewLogoAlign'];
-                delete this.data.setting.properties['mobileViewCustomCss'];
-            }
+            CustomBuilder.update(false);
+        }
+        if (data.setting.properties['mobileViewDisabled'] !== undefined) {
+            data.setting.properties['theme']['properties']['mobileViewDisabled'] = data.setting.properties['mobileViewDisabled'];
+            data.setting.properties['theme']['properties']['mobileCacheEnabled'] = data.setting.properties['mobileCacheEnabled'];
+            data.setting.properties['theme']['properties']['mobileLoginRequired'] = data.setting.properties['mobileLoginRequired'];
+            data.setting.properties['theme']['properties']['mobileViewBackgroundUrl'] = data.setting.properties['mobileViewBackgroundUrl'];
+            data.setting.properties['theme']['properties']['mobileViewBackgroundColor'] = data.setting.properties['mobileViewBackgroundColor'];
+            data.setting.properties['theme']['properties']['mobileViewBackgroundStyle'] = data.setting.properties['mobileViewBackgroundStyle'];
+            data.setting.properties['theme']['properties']['mobileViewTranslucent'] = data.setting.properties['mobileViewTranslucent'];
+            data.setting.properties['theme']['properties']['mobileViewLogoUrl'] = data.setting.properties['mobileViewLogoUrl'];
+            data.setting.properties['theme']['properties']['mobileViewLogoWidth'] = data.setting.properties['mobileViewLogoWidth'];
+            data.setting.properties['theme']['properties']['mobileViewLogoHeight'] = data.setting.properties['mobileViewLogoHeight'];
+            data.setting.properties['theme']['properties']['mobileViewLogoAlign'] = data.setting.properties['mobileViewLogoAlign'];
+            data.setting.properties['theme']['properties']['mobileViewCustomCss'] = data.setting.properties['mobileViewCustomCss'];
+            delete data.setting.properties['mobileViewDisabled'];
+            delete data.setting.properties['mobileCacheEnabled'];
+            delete data.setting.properties['mobileLoginRequired'];
+            delete data.setting.properties['mobileViewBackgroundUrl'];
+            delete data.setting.properties['mobileViewBackgroundColor'];
+            delete data.setting.properties['mobileViewBackgroundStyle'];
+            delete data.setting.properties['mobileViewTranslucent'];
+            delete data.setting.properties['mobileViewLogoUrl'];
+            delete data.setting.properties['mobileViewLogoWidth'];
+            delete data.setting.properties['mobileViewLogoHeight'];
+            delete data.setting.properties['mobileViewLogoAlign'];
+            delete data.setting.properties['mobileViewCustomCss'];
             
-            UserviewBuilder.adjustJson();
+            CustomBuilder.update(false);
         }
-
-        $('#header-name span').html(UI.escapeHTML(this.data.properties.name));
-        this.decorateElementOptions($('#header-name'));
-        $('#header-description span').html(UI.escapeHTML(this.data.properties.description));
-        this.decorateElementOptions($('#header-description'));
-        $('#header-welcome-message span').html(UI.escapeHTML(this.data.properties.welcomeMessage));
-        this.decorateElementOptions($('#header-welcome-message'));
-        $('#header-logout-text span').html(UI.escapeHTML(this.data.properties.logoutText));
-        this.decorateElementOptions($('#header-logout-text'));
-        $('#footer-message span').html(UI.escapeHTML(this.data.properties.footerMessage));
-        this.decorateElementOptions($('#footer-message'));
-
-        //empty sidebar and put label on it
-        this.decorateSidebar();
-
-        //generate category & menu based on data
-        for(c in this.data.categories){
-            var category = this.data.categories[c];
-            this.categoriesPointer[category.properties.id] = c;
-            $('#userview-sidebar').append('<div id="'+category.properties.id+'" class="category"></div>');
-            var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
-            $(categoryObject).html(UserviewBuilder.getCategoryModel());
-            $(categoryObject).find('.category-label span').html(category.properties.label);
-            this.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
-            this.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
-
-            this.decorateCategory(categoryObject);
-            for(m in category.menus){
-                var menu = category.menus[m];
-                this.menusPointer[menu.properties.id] = new Object();
-                this.menusPointer[menu.properties.id].categoryId = category.properties.id;
-                this.menusPointer[menu.properties.id].position = m;
-
-                $(categoryObject).find('.menu-container').append('<div id="'+menu.properties.id+'" class="menu"></div>');
-                var menuObject =  $(categoryObject).find('.menu-container #'+menu.properties.id);
-                $(menuObject).html(UserviewBuilder.getMenuModel());
-                $(menuObject).find('.menu-label span').html(menu.properties.label);
-                this.decorateElementOptions(menuObject);
-            }
-            this.decorateElementOptions(categoryObject);
-        }
-        this.decorateElementOptions($('#userview-sidebar'));
-        this.decorateCategoryBottom();
-        $("#loading").remove();
     },
-
-    addCategory : function(element, copiedCategory){
-        UserviewBuilder.addToUndo();
-        var category = new Object();
-        if (copiedCategory !== undefined && copiedCategory !== null) {
-            category = copiedCategory;
-            category['properties']['id'] = 'category-'+UserviewBuilder.uuid();
+    
+    /*
+     * Load and render data, called from CustomBuilder.loadJson
+     */
+    load: function (data) {
+        if (UserviewBuilder.mode === "page") {
+            UserviewBuilder.loadContentPage();
         } else {
-            category['className'] = "org.joget.apps.userview.model.UserviewCategory";
-            category['properties'] = new Object();
-            category['properties']['id'] = 'category-'+UserviewBuilder.uuid();
-            category['properties']['label'] = get_ubuilder_msg('ubuilder.newCategory');
-            category['menus'] = new Array();
-        }
-        
-        var categoryHtml = $('<div id="'+category.properties.id+'" class="category"></div>');
-        
-        
-        if ($(element).hasClass("category-bottom")) {
-            if($(element).next(".category").length === 0) {
-                UserviewBuilder.data.categories.push(category);
-                $('#userview-sidebar').append(categoryHtml);
+            $(".drag-elements-sidepane li.component").hide();
+            
+            if(data.properties === null || data.properties === undefined){
+                data = UserviewBuilder.initDefaultUserviewDataModel();
             } else {
-                var nextCategoryId = $(element).next(".category").attr('id');
-                var newPosition = UserviewBuilder.categoriesPointer[nextCategoryId];
-                UserviewBuilder.data.categories.splice(newPosition,0, category);
-                $(element).after(categoryHtml);
+                UserviewBuilder.v5PropertiesMigration(data);
             }
-        } else {
-            UserviewBuilder.data.categories.splice(0,0, category);
-            $('#userview-sidebar .sidebar-title').after(categoryHtml);
+        
+            CustomBuilder.Builder.load(data, function(){
+                if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
+                    var self = CustomBuilder.Builder;
+                    
+                    var id = UserviewBuilder.selectedMenu.properties.id;
+                    self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
+                }
+            });
         }
+    },
     
-        var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
-        $(categoryObject).html(UserviewBuilder.getCategoryModel());
-        $(categoryObject).find('.category-label span').html(category.properties.label);
-        UserviewBuilder.decorateCategory($(categoryObject));
+    /*
+     * Load and render content page, called from UserviewBuilder.load
+     */
+    loadContentPage : function() {
+        $(".drag-elements-sidepane li.component").show();
         
-        if (category.menus !== undefined && category.menus !== null && category.menus.length > 0) {
-            for(m in category.menus){
-                var menu = category.menus[m];
-                menu.properties.id=UserviewBuilder.uuid();
-                UserviewBuilder.menusPointer[menu.properties.id] = new Object();
-                UserviewBuilder.menusPointer[menu.properties.id].categoryId = category.properties.id;
-                UserviewBuilder.menusPointer[menu.properties.id].position = m;
-                
-                $(categoryObject).find('.menu-container').append('<div id="'+menu.properties.id+'" class="menu"></div>');
-                var menuObject =  $(categoryObject).find('.menu-container #'+menu.properties.id);
-                $(menuObject).html(UserviewBuilder.getMenuModel());
-                $(menuObject).find('.menu-label span').html(UI.escapeHTML(menu.properties.label));
-                UserviewBuilder.decorateElementOptions(menuObject);
-            }
+        var menu = UserviewBuilder.selectedMenu;
+        if (menu.referencePage === undefined) {
+            menu.referencePage = {
+                className : "org.joget.apps.userview.model.UserviewPage",
+                properties : {
+                    id : "up-"+ menu.properties.id
+                },
+                elements : [
+                    {
+                        className : "menu-component"
+                    }
+                ]
+            };
         }
-        UserviewBuilder.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
-        UserviewBuilder.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
-        UserviewBuilder.updateCategoriesAndMenusPointer();
-        UserviewBuilder.decorateElementOptions($(categoryObject));
-        UserviewBuilder.adjustJson();
+        UserviewBuilder.mode = "page";
+        CustomBuilder.Builder.load(menu.referencePage);
     },
-
-    deleteCategory : function(id){
-        UserviewBuilder.addToUndo();
-        $('#'+id).remove();
-        this.data.categories.splice(this.categoriesPointer[id],1);
-        delete this.categoriesPointer[id];
-        this.updateCategoriesAndMenusPointer();
-    },
-
-    addMenu : function(obj, copied){
-        UserviewBuilder.addToUndo();
-        
-        var id = UserviewBuilder.uuid();
-        var categoryId = $(obj).parent().parent().attr('id');
-
-        var menu = new Object();
-        if (copied !== undefined && copied !== null) {
-            menu = copied;
-            menu.properties.id=id;
-        } else {
-            var type = $(obj).attr('element');
-            menu.className = type;
-            menu.properties = JSON.parse(UserviewBuilder.menuTypes[type].properties);
-            menu.properties.id=id;
-            menu.properties.label = UserviewBuilder.menuTypes[type].label;
-        }
     
-        var category = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[categoryId]];
-
-        if($(obj).next().length === 0){
-            category.menus.push(menu);
-        }else{
-            var nextMenuId = $(obj).next().attr('id');
-            var nextMenu = UserviewBuilder.menusPointer[nextMenuId];
-            var newPosition = (nextMenu) ? UserviewBuilder.menusPointer[nextMenuId].position : 0;
-            category.menus.splice(newPosition,0, menu);
-        }
-
-        $(obj).after('<div id="'+menu.properties.id+'" class="menu"></div>');
-        var menuObject = $('#'+id);
-        $(menuObject).html(UserviewBuilder.getMenuModel());
-        $(menuObject).find('.menu-label span').html(menu.properties.label);
-
-        $(obj).remove();
-
-        UserviewBuilder.decorateElementOptions(menuObject);
-        UserviewBuilder.menusPointer[menu.properties.id] = new Object();
-        UserviewBuilder.updateCategoriesAndMenusPointer();
-    },
-
-    editMenu : function(id){
-        var menu = null;
-        
-        if (this.menusPointer[id] === undefined) {
-            //find the menu id using custom id
+    /*
+     * Initialize the builder component behaviour for each elements.
+     * Called from CustomBuilder.Builder.getComponent
+     */
+    initComponent : function(component) {
+        if (component.className === "org.joget.apps.userview.model.UserviewCategory") {
+            component.builderTemplate.parentContainerAttr = "categories";
+            component.builderTemplate.childsContainerAttr = "menus";
+            component.builderTemplate.getChildsDataHolder = function(elementObj, component) {
+                return "menus";
+            };
+            component.builderTemplate.getParentDataHolder = function(elementObj, component) {
+                return "categories";
+            };
+            component.builderTemplate.supportStyle = false;
+        } else if (component.className.indexOf("userview-") === 0) {
+            
+        } else if (component.type === "menu") {
+            component.builderTemplate.getParentContainerAttr = function(elementObj, component) {
+                if (UserviewBuilder.mode === "userview") {
+                    return "menus";
+                } else {
+                    return "elements";
+                }
+            };
+            component.builderTemplate.getParentDataHolder = function(elementObj, component) {
+                if (UserviewBuilder.mode === "userview") {
+                    return "menus";
+                } else {
+                    return "elements";
+                }
+            };
+            component.builderTemplate.getDragHtml = function(component) {
+                if (UserviewBuilder.mode === "userview") {
+                    return '<li><a href="" class="menu-link default"><span>'+component.label+'</span></a></li>';
+                } else {
+                    return this.dragHtml;
+                }
+            };
+            component.builderTemplate.supportStyle = false;
+            
+            //change label to icon text field
             var found = false;
-            for (var i in this.data.categories) {
-                for (var j in this.data.categories[i].menus) {
-                    if (this.data.categories[i].menus[j].properties.customId === id) {
-                        id = this.data.categories[i].menus[j].properties.id;
+            for (var i in component.propertyOptions) {
+                for (var r in component.propertyOptions[i].properties) {
+                    if (component.propertyOptions[i].properties[r].name === "label") {
+                        component.propertyOptions[i].properties[r].type = "icon-textfield";
                         found = true;
                         break;
                     }
@@ -500,817 +597,424 @@ UserviewBuilder = {
                 }
             }
         }
-        
-        menu = this.data.categories[this.categoriesPointer[this.menusPointer[id].categoryId]].menus[this.menusPointer[id].position];
-        
-        if (menu === null) {
-            return;
-        }
-
-        var thisObject = this;
-        var options = {
-            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
-            contextPath: UserviewBuilder.contextPath,
-            propertiesDefinition : thisObject.menuTypes[menu.className].propertyOptions,
-            propertyValues : menu.properties,
-            showCancelButton:true,
-            changeCheckIgnoreUndefined: true,
-            saveCallback: thisObject.saveMenu,
-            customSaveValidation: thisObject.saveMenuValidation,
-            validationFailedCallback: thisObject.saveMenuFailed,
-            cancelCallback: thisObject.cancelEditMenu
-        }
-        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id:id});
-    },
-
-    saveMenu : function(container, properties){
-        UserviewBuilder.addToUndo();
-        var thisObject = UserviewBuilder;
-
-        var id = $(container).attr('data-id');
-        var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
-
-        if (menu.properties.permission_rules !== null && menu.properties.permission_rules !== undefined) {
-            properties.permission_rules = menu.properties.permission_rules;
-        }
-        if (menu.properties.hide !== null && menu.properties.hide !== undefined) {
-            properties.hide = menu.properties.hide;
-        }
-        if (menu.properties.permissionDeny !== null && menu.properties.permissionDeny !== undefined) {
-            properties.permissionDeny = menu.properties.permissionDeny;
-        }
-        if (menu.properties.permissionHidden !== null && menu.properties.permissionHidden !== undefined) {
-            properties.permissionHidden = menu.properties.permissionHidden;
-        }
-
-        menu.properties = properties;
-        var label = properties.label;
-        $('#'+id+' .menu-label span').html(label);
-        UserviewBuilder.adjustJson();
     },
     
-    saveMenuValidation : function(container, properties, saveCallback){
-        if(properties['enableOffline'] === "true") {
-            var thisObject = UserviewBuilder;
-
-            var id = $(container).attr('data-id');
-            var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
+    /*
+     * A callback method called from CustomBuilder.applyElementProperties when properties saved
+     */
+    saveEditProperties : function(container, elementProperty, element) {
+        if (element.className.indexOf("userview-") === 0) {
+            CustomBuilder.data.description = elementProperty.description;
+            CustomBuilder.data.footerMessage = elementProperty.footerMessage;
+            CustomBuilder.data.logoutText = elementProperty.logoutText;
+            CustomBuilder.data.name = elementProperty.name;
+            CustomBuilder.data.welcomeMessage = elementProperty.welcomeMessage;
             
-            var pwaOffline = thisObject.menuTypes[menu.className].pwaValidation;
-            if (pwaOffline === "checking") {
-                $(container).find(".ajaxLoader").show();
-                $.ajax({
-                    url: UserviewBuilder.contextPath + '/web/property/json/'+ UserviewBuilder.appId + "/" + UserviewBuilder.appVersion+"/pwaValidation",
-                    type: "POST",
-                    data : {
-                        className : menu.className,
-                        properties : JSON.stringify(properties)
-                    },
-                    beforeSend: function (request) {
-                       if (ConnectionManager.tokenName !== undefined) { 
-                           request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                       }
-                    },
-                    dataType : "json",
-                    success: function(response) {
-                        if ($.isArray(response) && response.length > 0) {
-                            var warning = get_ubuilder_msg("ubuilder.pwa.warning") + "\n";
-                            for (var r in response) {
-                                for (var i in response[r].messages) {
-                                    warning += "- " + response[r].messages[i] + '\n';
-                                }
-                            }
-                            warning += get_ubuilder_msg("ubuilder.pwa.confirm");
-
-                            if (confirm(warning)) {
-                                $(container).find(".ajaxLoader").hide();
-                                saveCallback();
-                            } else {
-                                $(container).find(".property-editor-page-step-indicator:visible .step:last").trigger("click");
-                                $(container).find(".ajaxLoader").hide();
-                            }
-                        } else {
-                            $(container).find(".ajaxLoader").hide();
-                            saveCallback();
-                        }
+            var temp = $.extend({}, elementProperty);
+            delete temp.description;
+            delete temp.footerMessage;
+            delete temp.logoutText;
+            delete temp.name;
+            delete temp.welcomeMessage;
+            delete temp.id;
+            
+            //remove all styling before merge new changes
+            var orgProperty = CustomBuilder.data.setting.properties.theme.properties;
+            for (var property in orgProperty) {
+                if (orgProperty.hasOwnProperty(property)) {
+                    if ((property.indexOf('attr-') === 0 || property.indexOf('css-') === 0 || property.indexOf('style-') === 0
+                        || property.indexOf('-attr-') > 0 || property.indexOf('-css-') > 0 || property.indexOf('-style-') > 0)) {
+                        delete orgProperty[property];
                     }
-                });
-            } else {
-                saveCallback();
-            }
-        } else {
-            saveCallback();
-        }
-    },
-
-    saveMenuFailed : function(container, returnedErrors){
-        var errorMsg = get_ubuilder_msg('ubuilder.errors') + ':\n';
-        for(key in returnedErrors){
-            errorMsg += returnedErrors[key].fieldName + ' : ' + returnedErrors[key].message + '\n';
-        }
-        alert(errorMsg);
-    },
-
-    deleteMenu : function(id){
-        UserviewBuilder.addToUndo();
-        var thisObject = UserviewBuilder;
-
-        $('#'+id).remove();
-        thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus.splice(thisObject.menusPointer[id].position, 1);
-
-        thisObject.updateCategoriesAndMenusPointer();
-    },
-
-    cancelEditMenu : function(container){
-        
-    },
-
-    setPermission : function(id){
-        var category = this.data.categories[this.categoriesPointer[id]];
-
-        var thisObject = this;
-        var options = {
-            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
-            contextPath: UserviewBuilder.contextPath,
-            propertiesDefinition : UserviewBuilder.categoryPropertyOptions,
-            propertyValues : category.properties,
-            showCancelButton:true,
-            changeCheckIgnoreUndefined: true,
-            saveCallback: thisObject.savePermission,
-            validationFailedCallback: thisObject.saveMenuFailed,
-            cancelCallback: thisObject.cancelEditMenu
-        };
-        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id: id});
-    },
-
-    savePermission : function(container, properties){
-        UserviewBuilder.addToUndo();
-        var thisObject = UserviewBuilder;
-
-        var id = $(container).attr('data-id');
-        var category = thisObject.data.categories[thisObject.categoriesPointer[id]];
-
-        if (properties['hide'] === "true") {
-            properties['permissionDeny'] = "";
-        }
-        category.properties = $.extend(category.properties, properties);
-        
-        $("#"+id).find('.category-label span').html(UI.escapeHTML(category.properties.label));
-        if (category.properties.comment !== undefined && category.properties.comment !== null && category.properties.comment !== "") {
-            $("#"+id).find(".category-comment").remove();
-            $("#"+id).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable">'+UI.escapeHTML(category.properties.comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div></div>');
-            UserviewBuilder.initEditableComment($("#"+id));
-        }
-        UserviewBuilder.adjustJson();
-    },
-
-    //Save setting properties return from property editor
-    saveSettingProperties : function(container, properties){
-        UserviewBuilder.data.setting.properties = $.extend(UserviewBuilder.data.setting.properties, properties);
-        UserviewBuilder.updateSaveStatus("+");
-        UserviewBuilder.adjustJson();
-    },
-
-    //Submit userview json to server for saving
-    save : function(){
-        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saving'));
-        var self = this;
-        var json = this.getJson();
-        $.post(this.saveUrl + this.data.properties.id, {json : json} , function(data) {
-            var d = JSON.decode(data);
-            if(d.success == true){
-                UserviewBuilder.updateSaveStatus("0");
-                UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot", 300, function() {
-                    $('#userview-json-original').val(json);
-                    UserviewBuilder.showMessage("");
-                });
-            }else{
-                alert(get_ubuilder_msg('ubuilder.saveFailed'));
-            }
-            UserviewBuilder.showMessage("");
-        }, "text");
-    },
-
-    //Post userview json for preview it in new windows
-    preview : function() {
-        $('#userview-json').val(this.getJson());
-        $('#userview-preview').attr("action", this.previewUrl + this.data.properties.id);
-        $('#userview-preview').submit();
-        return false;
-    },
-
-    updateFromJson: function() {
-        var json = $('#userview-json').val();
-        if (UserviewBuilder.getJson() !== json) {
-            UserviewBuilder.addToUndo();
-        }
-        UserviewBuilder.loadUserview(UserviewBuilder.data.properties.id, UserviewBuilder.getData(json));
-        
-        return false;
-    },
-
-    //Generate Json string based on data
-    getJson : function(){
-        return JSON.encode(UserviewBuilder.data);
-    },
-
-    //Convert JSON to data object
-    getData : function(data){
-        return JSON.decode(data);
-    },
-
-    //Get base model of category
-    getCategoryModel : function(){
-       return '<div class="category-label"><span class="category-label-editable"></span></div><div class="clear"></div><div class="menu-container"></div>';
-    },
-
-    //Get base model of menu
-    getMenuModel : function(){
-       return '<div class="menu-label"><span></span></div>';
-    },
-
-    //Make category label ediatble
-    attachCategoryLabelEditableEvent : function(object){
-        var thisObject = UserviewBuilder;
-        $(object).editable(function(value, settings){
-            var id = $(object).parent().parent().attr('id');
-            if(value==""){
-                alert(get_ubuilder_msg('ubuilder.emptyLabel'));
-                value = thisObject.data.categories[thisObject.categoriesPointer[id]].properties.label;
-            }else{
-                UserviewBuilder.addToUndo();
-                thisObject.data.categories[thisObject.categoriesPointer[id]].properties.label = value;
-                UserviewBuilder.adjustJson();
-            }
-            return value;
-        },{
-            type      : 'text',
-            tooltip   : get_ubuilder_msg('ubuilder.editable.tooltip') ,
-            select    : true ,
-            style     : 'inherit',
-            cssclass  : 'categoryLabelEditableField',
-            onblur    : 'submit',
-            rows      : 1,
-            width     : '80%',
-            minwidth  : 80,
-            data: function(value, settings) {
-                return value;
-            }
-        });
-    },
-
-    //Make menu in container sortable
-    attachCategoryMenuSortableEvent : function(object){
-        $(object).sortable({
-            connectWith: '.menu-container',
-            opacity: 0.8,
-            axis: 'y',
-            handle: '.menu-label',
-            dropOnEmpty: true,
-            activeClass: "menu-container-highlight",
-            stop: function(event, ui){
-                if($(ui.item[0]).hasClass("menu")){
-                    UserviewBuilder.addToUndo();
-                    var newCategoryId = $(ui.item[0]).parent().parent().attr('id');
-                    var id= $(ui.item[0]).attr('id');
-
-                    var newCategory = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[newCategoryId]];
-                    var originalCategory = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[UserviewBuilder.menusPointer[id].categoryId]];
-
-                    var menu = originalCategory.menus[UserviewBuilder.menusPointer[id].position];
-                    delete originalCategory.menus[UserviewBuilder.menusPointer[id].position];
-
-                    if($(ui.item[0]).next().length == 0){
-                        newCategory.menus.push(menu);
-                    }else{
-                         var nextMenuId = $(ui.item[0]).next().attr('id');
-                         var newPosition = 0;
-                         if (UserviewBuilder.menusPointer[nextMenuId] != undefined) {
-                            newPosition = UserviewBuilder.menusPointer[nextMenuId].position;
-                         }
-                         newCategory.menus.splice(newPosition,0, menu);
-                    }
-
-                    UserviewBuilder.updateCategoriesAndMenusPointer();
-                }
-                if($(ui.item[0]).hasClass("builder-palette-element")){
-                    UserviewBuilder.addMenu(ui.item[0]);
                 }
             }
-        });
-    },
-
-    //Update data pointer for categories & menu 
-    updateCategoriesAndMenusPointer : function(){
-        for(c in this.data.categories){
-            this.categoriesPointer[this.data.categories[c].properties.id] = c;
-            for(m in this.data.categories[c].menus){
-                this.menusPointer[this.data.categories[c].menus[m].properties.id].categoryId = this.data.categories[c].properties.id;
-                this.menusPointer[this.data.categories[c].menus[m].properties.id].position = m;
-            }
+            
+            $.extend(orgProperty, temp);
         }
-        UserviewBuilder.decorateCategoryBottom();
-        
-        UserviewBuilder.adjustJson();
-    },
-
-    //Put extra element on sidebar
-    decorateSidebar : function(){
-        $('#userview-sidebar').html('<div class="sidebar-title">'+get_ubuilder_msg('ubuilder.menu')+'<div>');
-    },
-
-    //Put extra element on category
-    decorateCategory : function(obj){
-        $(obj).find('.menu-container').html('<div class="tips">'+get_ubuilder_msg('ubuilder.dropMenu')+'<div>');
     },
     
-    //put add category & paste button on the bottom of category
-    decorateCategoryBottom : function() {
-        $(".category-bottom").remove();
-        $(".category").each(function(){
-            var bottom = $("<div class='category-bottom'></div>");
-            UserviewBuilder.decorateElementOptions(bottom);
-            $(this).after(bottom);
-        });
-    },
-    
-    //Decorate element with button and its events
-    decorateElementOptions : function(obj){
-        if ($(obj).children(".element-options").length > 0) {
-            // remove if already exists
-            $(obj).children(".element-options").remove();
-            $(obj).children(".element-clear").remove();
-        }
-
-        var optionHtml = "<span class='element-options'>";
-
-        if ($(obj).hasClass("editable-info")) {
-            // add buttons for editable
-            optionHtml += "<button class='element-edit-label' title='"+get_ubuilder_msg('ubuilder.edit')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.edit')+"</span></button>";
-        }else if ($(obj).hasClass("sidebar") || $(obj).hasClass("category-bottom")) {
-            // add buttons for section
-            optionHtml += "<button class='element-add-category' title='"+get_ubuilder_msg('ubuilder.addCategory')+"'><i class='fas fa-plus'></i><span>"+get_ubuilder_msg('ubuilder.addCategory')+"</span></button>";
-            optionHtml += "<button class='element-paste paste-category disabled' title='"+get_ubuilder_msg('ubuilder.pasteCategory')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteCategory')+"</span></button>";
-        }else if ($(obj).hasClass("category")) {
-            // add buttons for section
-            optionHtml += "<button class='element-edit-category' title='"+get_ubuilder_msg('ubuilder.editLabel')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.editLabel')+"</span></button>";
-            optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='far fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
-            optionHtml += "<button class='element-paste paste-menu disabled' title='"+get_ubuilder_msg('ubuilder.pasteMenu')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteMenu')+"</span></button>";
-            optionHtml += "<button class='element-comment' title='"+get_ubuilder_msg('ubuilder.comment')+"'><i class='far fa-comment'></i><span>"+get_ubuilder_msg('ubuilder.comment')+"</span></button>";
-            optionHtml += "<button class='element-delete-category element-delete' title='"+get_ubuilder_msg('ubuilder.deleteCategory')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteCategory')+"</span></button>";
-        
-            //comment
-            $(obj).find(".section-comment").remove();
-            var comment = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[$(obj).attr("id")]].properties.comment;
-            if (comment !== undefined && comment !== null && comment !== "") {
-                $(obj).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable">'+UI.escapeHTML(comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div></div>');
-                UserviewBuilder.initEditableComment(obj);
-            }
-        }else if ($(obj).hasClass("menu")) {
-            // add buttons for section
-            optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
-            optionHtml += "<button class='element-delete-menu element-delete' title='"+get_ubuilder_msg('ubuilder.deleteMenu')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteMenu')+"</span></button>";
-        }
-
-
-        optionHtml += "</span><div class='element-clear'></div>";
-        var optionDiv = $(optionHtml);
-
-        //event
-        // handle editable
-        $(optionDiv).children(".element-edit-label").click(function() {
-            $(this).parent().parent().find('.editable').click();
-        });
-
-        // handle edit category permission
-        $(optionDiv).children(".element-permission").click(function() {
-            var id = $(this).parent().parent().attr('id');
-            UserviewBuilder.setPermission(id);
-        });
-
-        // handle edit category label
-        $(optionDiv).children(".element-edit-category").click(function() {
-            $(this).parent().parent().find('.category-label-editable').click();
-        });
-
-        // handle add category
-        $(optionDiv).children(".element-add-category").click(function() {
-            UserviewBuilder.addCategory($(this).parent().parent());
-        });
-
-        // handle delete category
-        $(optionDiv).children(".element-delete-category").click(function() {
-            var id = $(this).parent().parent().attr('id');
-            UserviewBuilder.deleteCategory(id);
-        });
-
-        // handle delete menu
-        $(optionDiv).children(".element-delete-menu").click(function() {
-            var id = $(this).parent().parent().attr('id');
-            UserviewBuilder.deleteMenu(id);
-        });
-
-        // handle edit menu properties
-        $(optionDiv).children(".element-menu-properties").click(function() {
-            var id = $(this).parent().parent().attr('id');
-            UserviewBuilder.editMenu(id);
-        });
-        
-        // handle copy 
-        $(optionDiv).children(".element-copy").click(function() {
-            var element = $(this).parent().parent();
-            UserviewBuilder.copy(element);
-        });
-        
-        // handle paste
-        $(optionDiv).children(".element-paste").click(function() {
-            if ($(this).hasClass("disabled")) {
-                alert(get_ubuilder_msg("ubuilder.noCopiedItem"));
-                return false;
-            }
-            var element = $(this).parent().parent();
-            UserviewBuilder.paste(element);
-        });
-        
-        // handle comment
-        $(optionDiv).children(".element-comment").click(function() {
-            var element = $(this).parent().parent();
-            
-            if ($(element).find(".category-comment").length === 0) {
-                $(element).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable"></div></div>');
-                UserviewBuilder.initEditableComment(obj);
-            }
-            $(element).find('.category-comment .editable').click();
-            
-            return false;
-        });
-
-        // add option bar
-        $(obj).prepend(optionDiv);
-        $(obj).mouseover(function() {
-            $(optionDiv).css("display", "block");
-            $(optionDiv).css("visibility", "visible");
-        });
-        $(obj).mouseout(function() {
-            $(optionDiv).css("display", "none");
-            $(optionDiv).css("visibility", "hidden");
-        });
-        $(obj).on("click", function() {
-            if ($(optionDiv).css("display") === "block") {
-                $(optionDiv).css("display", "none");
-                $(optionDiv).css("visibility", "hidden");
-            } else {
-                if ($(obj).children().length > 0) {
-                    var $family = $(obj).find("*");
-                    $(".element-options").not($family).css("display", "none");
-                    $(".element-options").not($family).css("visibility", "hidden");
-                }
-                $(optionDiv).css("display", "block");
-                $(optionDiv).css("visibility", "visible");
-            }
-        });
-    },
-    
-    initEditableComment: function(obj) {
-        var thisObject = this;
-        
-        $(obj).find(".category-comment .editable").editable(function(value, settings){
-            UserviewBuilder.addToUndo();
-            var id = $(obj).attr('id');
-            
-            thisObject.data.categories[thisObject.categoriesPointer[id]].properties.comment = value;
-            UserviewBuilder.adjustJson();
-            if(value === ""){
-                $(obj).find(".category-comment").remove();
-            } else {
-                value = UI.escapeHTML(value).replace(/(?:\r\n|\r|\n)/g, '<br />');
-            }
-            return value;
-        },{
-            type      : 'textarea',
-            tooltip   : '' ,
-            select    : true ,
-            style     : 'inherit',
-            cssclass  : 'LabelEditableField',
-            onblur    : 'submit',
-            rows      : 4,
-            width     : '100%',
-            minwidth  : 80,
-            submit  : get_ubuilder_msg("ubuilder.save"),
-            data: function(value, settings) {
-                if (value !== "") {
-                    return value.replace(/<br\s*[\/]?>/gi, "\n");
+    /*
+     * A callback method called from the default component.builderTemplate.render method
+     */
+    renderElement : function(element, elementObj, component, callback) {
+        if (component.builderTemplate.getHtml() === undefined) {
+            if (UserviewBuilder.mode === "userview") {
+                if (elementObj.className === "org.joget.apps.userview.model.Userview") {
+                    UserviewBuilder.renderUserview(element, elementObj, component, callback);
+                } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                    UserviewBuilder.renderCategory(element, elementObj, component, callback);
                 } else {
-                    return value;
+                    UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
+                }
+            } else {
+                if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
+                    UserviewBuilder.renderUserviewPage(element, elementObj, component, callback);
+                } else if (elementObj.className === "menu-component") {
+                    UserviewBuilder.renderMenuComponent(element, elementObj, component, callback);
+                } else {
+                    UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "component");
                 }
             }
-        });
-        $(obj).find(".category-comment").on("click", function(){
-            if ($(obj).find('.category-comment .editable form').length === 0) {
-                $(obj).find('.category-comment .editable').click();
-            }
-        });
-    },
-
-    //Undo the changes from stack
-    undo : function(){
-        if(this.undoStack.length > 0){
-            //if redo stack is full, delete first
-            if(this.redoStack.length >= this.undoRedoMax){
-                this.redoStack.splice(0,1);
-            }
-
-            //save current json data to redo stack
-            this.redoStack.push(this.getJson());
-
-            //load the last data from undo stack
-            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.undoing") + '</div>');
-            $("body").append(loading);
-            this.loadUserview(this.data.properties.id, this.getData(this.undoStack.pop()));
-
-            //enable redo button if it is disabled previously
-            if(this.redoStack.length === 1){
-                $('.action-redo').removeClass('disabled');
-                $('.action-redo').attr('title', get_ubuilder_msg('ubuilder.redo.tip'));
-            }
-
-            //if undo stack is empty, disabled undo button
-            if(this.undoStack.length === 0){
-                $('.action-undo').addClass('disabled');
-                $('.action-undo').attr('title', get_ubuilder_msg('ubuilder.undo.disabled.tip'));
-            }
-
-            this.updateSaveStatus("-");
-        }
-    },
-
-    //Redo the changes from stack
-    redo : function(){
-        if(this.redoStack.length > 0){
-            //if undo stack is full, delete first
-            if(this.undoStack.length >= this.undoRedoMax){
-                this.undoStack.splice(0,1);
-            }
-
-            //save current json data to undo stack
-            this.undoStack.push(this.getJson());
-
-            //load the last data from redo stack
-            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.redoing") + '</div>');
-            $("body").append(loading);
-            this.loadUserview(this.data.properties.id, this.getData(this.redoStack.pop()));
-
-            //enable undo button if it is disabled previously
-            if(this.undoStack.length == 1){
-                $('.action-undo').removeClass('disabled');
-                $('.action-undo').attr('title', get_ubuilder_msg('ubuilder.undo.tip'));
-            }
-
-            //if redo stack is empty, disabled redo button
-            if(this.redoStack.length == 0){
-                $('.action-redo').addClass('disabled');
-                $('.action-redo').attr('title', get_ubuilder_msg('ubuilder.redo.disabled.tip'));
-            }
-
-            this.updateSaveStatus("+");
-        }
-    },
-
-    //Add changes info to stack
-    addToUndo : function(json){
-        //if undo stack is full, delete first
-        if(this.undoStack.length >= this.undoRedoMax){
-            this.undoStack.splice(0,1);
-        }
-        
-        if (json === null || json === undefined) {
-            json = this.getJson();
-        }
-
-        //save current json data to undo stack
-        this.undoStack.push(json);
-
-        //enable undo button if it is disabled previously
-        if(this.undoStack.length == 1){
-            $('.action-undo').removeClass('disabled');
-            $('.action-undo').attr('title', get_ubuilder_msg('ubuilder.undo.tip'));
-        }
-
-        this.updateSaveStatus("+");
-    },
-
-    adjustJson: function() {
-        // update JSON
-        $('#userview-json').val(this.getJson()).trigger("change");
-    },
-
-    //track the save status
-    updateSaveStatus : function(mode){
-        if(mode == "+"){
-            this.saveChecker++;
-        }else if(mode == "-"){
-            this.saveChecker--;
-        }else if(mode == "0"){
-            this.saveChecker = 0;
-        }
-    },
-
-    uuid : function(){
-        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {  //xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        }).toUpperCase();
-    },
-           
-    showMessage: function(message) {
-        if (message && message != "") {
-            $("#builder-message").html(message);
-            $("#builder-message").fadeIn();
         } else {
-            $("#builder-message").fadeOut();
+            callback(element);
         }
     },
-            
-    screenCapture: function(appId, userviewId, title, path, container, width, callback) {
-        container = container || document.body;
-        width = width || 300;
-        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.generatingScreenshot'));
-        var appcontainer = $("<div><i class='fas fa-spinner fa-spin fa-2x'></i><div style='opacity:0'></div></div>");
-        $(container).append(appcontainer);
-        var thisObject = this;
+    
+    /*
+     * Retrieve element template using ajax and render element. Called from UserviewBuilder.renderElement
+     */
+    renderElementAjax : function(element, elementObj, component, callback, type) {
+        var jsonStr = JSON.encode(elementObj);
         $.ajax({
-            url: path + "?_isScreenCapture=true",
-            success: function(data) {
-                var iframe = document.createElement('iframe');
-                var iwidth = 1024; //$(window).width()
-                var iheight = 768; //$(window).height()
-                $(iframe).css({
-                    'visibility':'hidden'
-                }).width(iwidth).height(iheight);
-                $(document.body).append(iframe);
-                var d = iframe.contentWindow.document;
-                d.open();
-                $(iframe.contentWindow).load(function() {
-                    $(iframe).contents().find(".page-loader").remove();
-                    var ibody = $(iframe).contents().find('body');
-                    html2canvas(ibody, {
-                        onrendered: function(canvas) {
-                            $(appcontainer).remove();
-                            $(iframe).remove();
-                            var imgData = canvas.toDataURL();
-                            var img = $("<span class='screenshot'><a target='_blank' href='" + path + "'><div class='screenshot_label'>" + title + "</div><img src='" + imgData + "' width='" + width + "'></a></span>");
-                            $(container).append(img);
-
-                            var saveUrl = UserviewBuilder.contextPath + '/web/console/app/' + appId + '/_/userview/' + userviewId + '/screenshot/submit';
-                            $.ajax({ 
-                                type: "POST", 
-                                url: saveUrl,
-                                dataType: 'text',
-                                beforeSend: function (request) {
-                                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                                },
-                                data: {
-                                    base64data : imgData
-                                }
-                            })
-                        }
-                    });
-                });    
-                try {
-                    if (true) { // disable scripts
-                        data = data.replace(/\<script/gi,"<!--<script");
-                        data = data.replace(/\<\/script\>/gi,"<\/script>-->");
-                    }
-                    d.write(data);
-                } catch(e) {}
-                d.close();
+            type: "POST",
+            data: {"json": jsonStr },
+            url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/'+type+'/template',
+            dataType : "text",
+            beforeSend: function (request) {
+               request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             },
-            complete: function() {
-                UserviewBuilder.showMessage("");
-                setTimeout(function(){ 
-                    UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saved'));
-                    setTimeout(function(){ UserviewBuilder.showMessage(""); }, 2000);
-                    if (callback) {
-                        callback.apply(thisObject);
-                    }
-                }, 500);
+            success: function(response) {
+                //remove onclick inline event
+                response = response.replace("onclick=", "xonclick=");
+                
+                var newElement = null;
+                if (type === "menu") {
+                    newElement = $('<li id="'+elementObj.properties.id+'" class="menu">' + response + '</li>');
+                } else {
+                    newElement = $(response);
+                }
+                $(element).replaceWith(newElement);
+                callback(newElement);
             }
-        })
+        });
     },
     
-    getCopiedElement : function() {
-        var time = $.localStorage.getItem("userviewBuilder.copyTime");
-        //10 mins
-        if (time !== undefined && time !== null && ((new Date()) - (new Date(time))) > 3000000) {
-            $.localStorage.removeItem('userviewBuilder.copyTime');
-            $.localStorage.removeItem('userviewBuilder.copy');
-            return null;
+    /*
+     * used to render userview. Called from UserviewBuilder.renderElement
+     */
+    renderUserview : function(element, elementObj, component, callback) {
+        var html = '<div id="page">';
+        html += '<header class="navbar" data-cbuilder-classname="userview-header"><div class="navbar-inner"><div class="container-fluid"><div class="hi-trigger ma-trigger" id="sidebar-trigger"><div class="line-wrap"><div class="line top"></div><div class="line center"></div><div class="line bottom"></div></div></div>';
+        
+        //header message
+        html += '<div id="header-message" class=""><div id="header-welcome-message" class="" data-cbuilder-classname="userview-welcome-message"><span id="welcomeMessage">'+elementObj.properties.welcomeMessage+'</span></div><div class="clearfix"></div></div>';
+        
+        //home icon
+        html += '<div class="nav-no-collapse header-nav"><ul class="nav pull-right"><li class=""><a class="btn" href="" title="Home"><i class="fa fa-home"></i></a></li>';
+        
+        //inbox
+        html += '<li class="inbox-notification dropdown"><a class="btn dropdown-toggle"><i class="fa fa-tasks white"></i><span class="badge red">1</span></a>';
+        
+        //shortcut
+        html += '<li class="shortcut-link dropdown"><a class="btn dropdown-toggle"><i class="fa fa-th-list white"></i></a></ul></div></div></div></header>';
+        
+        //sidebar
+        html += '<div id="main" class="container-fluid-full"><div class="row-fluid"><div id="sidebar" class="span2" data-cbuilder-classname="userview-sidebar">';
+        
+        //logo
+        html += '<div class="sidebar_brand"><div class="logo_container" data-cbuilder-classname="userview-brand-logo">';
+        if (elementObj.setting.properties.theme !== undefined) {
+            var logoUrl = elementObj.setting.properties.theme.properties.logo;
+            if (logoUrl !== undefined && logoUrl !== "") {
+                if (logoUrl.indexOf("#appResource.") === 0) {
+                    logoUrl = logoUrl.replace('#appResource.', CustomBuilder.contextPath + '/web/app/' + CustomBuilder.appId + '/resources/');
+                    logoUrl = logoUrl.replace('#', '');
+                }
+                html += '<img src="'+logoUrl+'"/>';
+            }
         }
-        var copied = $.localStorage.getItem("userviewBuilder.copy");
-        if (copied !== undefined && copied !== null) {
-            return JSON.decode(copied);
-        }
-        return null;
+        html += '</div>';
+        
+        //userview name
+        html += '<a href="*" id="header-link" class="" data-cbuilder-classname="userview-name"><span>'+elementObj.properties.name+'</span></a></div>';
+        
+        html += '<nav id="navigation" class="nav-collapse sidebar-nav">';
+        
+        //category container
+        html += '<ul id="category-container" class="nav nav-tabs nav-stacked main-menu" data-cbuilder-classname="userview-categories" data-cbuilder-categories></ul></nav></div>';
+        
+        html += '<div id="content" class="span10"><main>';
+        
+        //breadcrumb
+        html += '<ul class="breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
+        
+        html += '<div class="userview-body-content"><div class="center"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
+        html += '</main></div></div></div><div class="clearfix"></div>';
+        
+        //footer
+        html += '<footer class="" data-cbuilder-classname="userview-footer"><div id="footer-message"><p><span id="footerMessage">'+elementObj.properties.footerMessage+'</span></p></div></footer>';
+        html += '</div>';
+        
+        var userviewElement = $(html);
+        
+        var combinedProperties = $.extend(true, {}, elementObj.properties, elementObj.setting.properties.theme.properties);
+        
+        userviewElement.find('[data-cbuilder-classname="userview-header"]').data("data", {className: "userview-header", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-welcome-message"]').data("data", {className: "userview-welcome-message", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-sidebar"]').data("data", {className: "userview-sidebar", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-brand-logo"]').data("data", {className: "userview-brand-logo", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-name"]').data("data", {className: "userview-name", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: combinedProperties, categories: elementObj.categories});
+        userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: combinedProperties});
+        
+        userviewElement.attr("data-cbuilder-uneditable", "");
+        userviewElement.attr("data-cbuilder-unselectable", "");
+        
+        userviewElement.find("#navigation").off("scroll resize");
+        userviewElement.find("#navigation").on("scroll resize", function(){
+            CustomBuilder.Builder._updateBoxes();
+        });
+        
+        userviewElement.find("#edit-content-btn").off("click");
+        userviewElement.find("#edit-content-btn").on("click", function() {
+            UserviewBuilder.loadContentPage();
+        });
+        
+        $(element).replaceWith(userviewElement);
+        
+        UserviewBuilder.updateThemeStyle();
+        callback(userviewElement);
     },
     
-    copy : function(element) {
-        var id = $(element).attr("id");
-        var copy = new Object();
-        if ($(element).hasClass("menu")) {
-            copy['type'] = "menu";
-            var menu = this.data.categories[this.categoriesPointer[this.menusPointer[id].categoryId]].menus[this.menusPointer[id].position];
-            copy['object'] = menu;
-        } else if ($(element).hasClass("category")) {
-            copy['type'] = "category";
-            var category = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[id]];
-            copy['object'] = category;
+    /*
+     * Apply the theme style for header, welcome messge, sidebar, brand logo, brand name categories, breadcrumb and footer
+     */
+    updateThemeStyle : function() {
+        if (UserviewBuilder.mode === "userview") {
+            var builder = CustomBuilder.Builder;
+            var element = builder.frameBody.find("#page");
+            var props = CustomBuilder.data.setting.properties.theme.properties;
+            
+            builder.handleStylingProperties(element, props, "header", "header.navbar");
+            builder.handleStylingProperties(element, props, "welcome-message", "#welcomeMessage");
+            builder.handleStylingProperties(element, props, "sidebar", "#sidebar");
+            builder.handleStylingProperties(element, props, "categories", "#category-container");
+            builder.handleStylingProperties(element, props, "footer", "footer");
+            builder.handleStylingProperties(element, props, "breadcrumb", ".breadcrumb");
+            builder.handleStylingProperties(element, props, "brand-name", ".sidebar_brand #header-link");
+            builder.handleStylingProperties(element, props, "brand-logo", ".sidebar_brand .logo_container img");
+            
+            element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+            if (props.dx8background !== undefined) {
+                var css = "<style data-cbuilder-style='calculatedThemeStyle'>body{";
+                if (props.dx8background !== undefined  && props.dx8background !== "") {
+                    css += "--theme-background:"+props.dx8background+";";
+                }
+                if (props.dx8contentbackground !== undefined  && props.dx8contentbackground !== "") {
+                    css += "--theme-content-background:"+props.dx8contentbackground+";";
+                }
+                if (props.dx8headerColor !== undefined  && props.dx8headerColor !== "") {
+                    css += "--theme-header:"+props.dx8headerColor+";";
+                }
+                if (props.dx8headerFontColor !== undefined  && props.dx8headerFontColor !== "") {
+                    css += "--theme-header-font:"+props.dx8headerFontColor+";";
+                }
+                if (props.dx8navBackground !== undefined  && props.dx8navBackground !== "") {
+                    css += "--theme-sidebar:"+props.dx8navBackground+";";
+                }
+                if (props.dx8navLinkBackground !== undefined  && props.dx8navLinkBackground !== "") {
+                    css += "--theme-sidebar-link-bg:"+props.dx8navLinkBackground+";";
+                }
+                if (props.dx8navLinkColor !== undefined  && props.dx8navLinkColor !== "") {
+                    css += "--theme-sidebar-link:"+props.dx8navLinkColor+";";
+                }
+                if (props.dx8navLinkIcon !== undefined  && props.dx8navLinkIcon !== "") {
+                    css += "--theme-sidebar-icon:"+props.dx8navLinkIcon+";";
+                }
+                if (props.dx8navBadge !== undefined  && props.dx8navBadge !== "") {
+                    css += "--theme-sidebar-badge:"+props.dx8navBadge+";";
+                }
+                if (props.dx8navBadgeText !== undefined  && props.dx8navBadgeText !== "") {
+                    css += "--theme-sidebar-badge-text:"+props.dx8navBadgeText+";";
+                }
+                if (props.dx8navLinkIcon !== undefined  && props.dx8navLinkIcon !== "") {
+                    css += "--theme-sidebar-icon:"+props.dx8navLinkIcon+";";
+                }
+                if (props.dx8navActiveLinkBackground !== undefined  && props.dx8navActiveLinkBackground !== "") {
+                    css += "--theme-sidebar-active-link-bg:"+props.dx8navActiveLinkBackground+";";
+                }
+                if (props.dx8navActiveLinkColor !== undefined  && props.dx8navActiveLinkColor !== "") {
+                    css += "--theme-sidebar-active-link:"+props.dx8navActiveLinkColor+";";
+                }
+                if (props.dx8navActiveIconColor !== undefined  && props.dx8navActiveIconColor !== "") {
+                    css += "--theme-sidebar-active-icon:"+props.dx8navActiveIconColor+";";
+                }
+                if (props.dx8buttonBackground !== undefined  && props.dx8buttonBackground !== "") {
+                    css += "--theme-button-bg:"+props.dx8buttonBackground+";";
+                }
+                if (props.dx8buttonColor !== undefined  && props.dx8buttonColor !== "") {
+                    css += "--theme-button:"+props.dx8buttonColor+";";
+                }
+                if (props.dx8primaryColor !== undefined  && props.dx8primaryColor !== "") {
+                    css += "--theme-primary:"+props.dx8primaryColor+";";
+                }
+                if (props.dx8fontColor !== undefined  && props.dx8fontColor !== "") {
+                    css += "--theme-font-color:"+props.dx8fontColor+";";
+                }
+                if (props.dx8footerBackground !== undefined  && props.dx8footerBackground !== "") {
+                    css += "--theme-footer-bg:"+props.dx8footerBackground+";";
+                }
+                if (props.dx8footerColor !== undefined  && props.dx8footerColor !== "") {
+                    css += "--theme-footer:"+props.dx8footerColor+";";
+                }
+                if (props.dx8linkColor !== undefined  && props.dx8linkColor !== "") {
+                    css += "--theme-link:"+props.dx8linkColor+";";
+                }
+                if (props.dx8linkActiveColor !== undefined  && props.dx8linkActiveColor !== "") {
+                    css += "--theme-link-active:"+props.dx8linkActiveColor+";";
+                }
+                css += "}</style>";
+                element.append(css);
+            }
+        }
+    },
+    
+    /*
+     * used to render category. Called from UserviewBuilder.renderElement
+     */
+    renderCategory : function(element, elementObj, component, callback) {
+        var html = '<li id="'+elementObj.properties.id+'" class="category toggled"><a class="dropdown"><span>'+elementObj.properties.label+'</span></a><ul class="menu-container" data-cbuilder-menus></ul></li>';
+        var category = $(html);
+        $(element).replaceWith(category);
+        callback(category);
+    },
+    
+    /*
+     * used to render userview oage. Called from UserviewBuilder.renderElement
+     */
+    renderUserviewPage : function(element, elementObj, component, callback) {
+        var html = '<div id="page-content-wrapper" data-cbuilder-uneditable data-cbuilder-unselectable>';
+        html += '<div class="bar-var"><button id="save-content-btn" class="btn btn-primary"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button></div>';
+        html += '<div id="content"><main data-cbuilder-elements></main></div>';
+        html += '</div>';
+        
+        var userviewElement = $(html);
+        
+        userviewElement.find("#save-content-btn").off("click");
+        userviewElement.find("#save-content-btn").on("click", function() {
+            UserviewBuilder.mode = "userview";
+            UserviewBuilder.load(CustomBuilder.data);
+        });
+        
+        $(element).replaceWith(userviewElement);
+        callback(userviewElement);
+    },
+    
+    /*
+     * used to render menu. Called from UserviewBuilder.renderElement
+     */
+    renderMenuComponent : function(element, elementObj, component, callback) {
+        var self = CustomBuilder.Builder;
+        
+        var classname = UserviewBuilder.selectedMenu.className;
+        var actualComponent = self.getComponent(classname);
+        
+        UserviewBuilder.renderElementAjax(element, UserviewBuilder.selectedMenu, actualComponent, callback, "component");
+    },
+    
+    /*
+     * A callback method called from the default component.builderTemplate.selectNode method.
+     * It used to listen to navigator scroll event
+     */
+    selectElement : function(element, elementObj, component) {
+        var self = CustomBuilder.Builder;
+        
+        if (UserviewBuilder.mode === "userview") {
+            self.frameBody.find("#btn_container").hide();
+            UserviewBuilder.selectedMenu = null;
         }
         
-        $.localStorage.setItem("userviewBuilder.copy", JSON.encode(copy));
-        $.localStorage.setItem("userviewBuilder.copyTime", new Date());
-        UserviewBuilder.updatePasteIcon();
-        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.copied'));
-        setTimeout(function(){ UserviewBuilder.showMessage(""); }, 2000);
+        if (elementObj.className === "userview-categories") {
+            $("#element-select-box #element-options").append('<a id="category-btn" href="" title="'+get_cbuilder_msg('ubuilder.addCategory')+'"><i class="las la-plus"></i></a>');
+            
+            $("#category-btn").off("click");
+            $("#category-btn").on("click", function(event) {
+                $("#element-select-box").hide();
+                
+                UserviewBuilder.addCategory();
+                
+                event.preventDefault();
+                return false;
+            });
+        } else if (element.closest(".menu-container").length > 0) {
+            //is a menu
+            self.frameBody.find("#btn_container").show();
+            UserviewBuilder.selectedMenu = elementObj;
+        }
+        
+        if (element.closest("#navigation").length > 0) {
+            var elementOffset = element.offset();
+            var navigation = self.frameBody.find("#navigation");
+            var topOffset = $(navigation).find("> *:eq(0)").offset().top;
+            if (elementOffset.top > navigation.offset().top + navigation.height() - 30) {
+                $(navigation).animate({
+                    scrollTop: elementOffset.top - topOffset
+                }, 1000, function(){
+                    self._updateBoxes();
+                });
+            }
+        }
     },
     
-    paste : function(element) {
-        var copied = UserviewBuilder.getCopiedElement();
+    /*
+     * Add category when add action button pressed on navigator
+     */
+    addCategory : function() {
+        var self = CustomBuilder.Builder;
         
-        if ($(element).hasClass("sidebar") || $(element).hasClass("category-bottom")) {
-            UserviewBuilder.addCategory(element, copied['object']);
+        self.component = self.getComponent("org.joget.apps.userview.model.UserviewCategory");
+        var classname = self.component.className;
+        var elementObj = {
+            className: classname,
+            properties: {
+                label : get_cbuilder_msg('ubuilder.newCategory')
+            },
+            menus : []
+        };
+        self.updateElementId(elementObj);
+        
+        var parent = self.selectedEl;
+        var parentDataArray = CustomBuilder.data.categories;
+        parentDataArray.push(elementObj);
+        
+        var temp = $('<div></div>');
+        self.selectedEl.append(temp);
+        
+        self.renderElement(elementObj, temp, self.component, true);
+        
+        CustomBuilder.update();
+    },
+    
+    /*
+     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * It used to render the info of an element
+     */
+    renderXray : function(detailsDiv, element, elementObj, component , callback) {
+        
+        
+        callback();
+    },
+    
+    /*
+     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * It used to render the permission option of an element
+     */
+    renderPermission : function (detailsDiv, element, elementObj, component , callback) {
+        
+        callback();
+    },
+    
+    /*
+     * A callback method from CustomBuilder.Builder.updateElementId to update id to an unqiue value
+     */
+    updateElementId : function(elementObj) {
+        // set ID if empty or it is copied section
+        var elementClass = elementObj.className;
+        if (elementClass === "org.joget.apps.userview.model.UserviewCategory") {
+            elementObj.properties.id = 'category-'+CustomBuilder.uuid();
         } else {
-            var dummy = $("<div></div>");
-            $(element).find(".menu-container").append(dummy);
-            UserviewBuilder.addMenu(dummy, copied['object']);
+            elementObj.properties.id = CustomBuilder.uuid();
         }
-    },
-    
-    updatePasteIcon : function() {
-        $(".element-paste").addClass("disabled");
-        var copied = UserviewBuilder.getCopiedElement();
-        if (copied !== undefined && copied !== null) {
-            if (copied['type'] === "menu") {
-                $(".element-paste.paste-menu").removeClass("disabled");
-            } else {
-                $(".element-paste.paste-category").removeClass("disabled");
-            }
-        }
-    },
-    
-    showDiff : function (callback, output) {
-        var jsonUrl = UserviewBuilder.contextPath + '/web/json/console/app/' + UserviewBuilder.appId + '/' + UserviewBuilder.appVersion + '/userview/' + this.data.properties.id + '/json';
-        var thisObject = this;
-        var merged;
-        var currentSaved;
-        $.ajax({
-            type: "GET",
-            url: jsonUrl,
-            dataType: 'json',
-            success: function (data) {
-                var current = data;
-                var currentString = JSON.stringify(data);
-                currentSaved = currentString;
-                $('#userview-json-current').val(currentString);
-                var original = JSON.decode($('#userview-json-original').val());
-                var latest = JSON.decode($('#userview-json').val());
-                merged = DiffMerge.merge(original, current, latest, output);
-            },
-            error: function() {
-                currentSaved = $('#userview-json-current').val();
-                merged = $('#userview-json').val();
-            },
-            complete: function() {
-                if (callback) {
-                    callback.call(thisObject, currentSaved, merged);
-                }    
-            }
-        });
-    },
-            
-    merge: function (callback) {
-        // get current remote definition
-        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.merging'));
-        var thisObject = this;
-        
-        UserviewBuilder.showDiff(function (currentSaved, merged) {
-            if (currentSaved !== undefined && currentSaved !== "") {
-                $('#userview-json-original').val(currentSaved);
-            }
-            if (merged !== undefined && merged !== "") {
-                $('#userview-json').val(merged);
-            }
-            UserviewBuilder.updateFromJson();
-            UserviewBuilder.showMessage("");
-            
-            if (callback) {
-                callback.call(thisObject, merged);
-            }
-        });
-    },
-    
-    mergeAndSave: function() {
-        UserviewBuilder.merge(UserviewBuilder.save);
-    }  
+    }
 }

@@ -518,11 +518,9 @@
     window.Nav = Nav;
     
     $(function () {
-        if (parent && parent.PopupDialog.closeDialog) {
-            var locationUrl = top.location.href;
-            if (locationUrl.indexOf("/web/console/app") > 0 && locationUrl.indexOf("/builder/") > 0) {
-                $("#nv a.nv-link").attr("target", "_top");
-            }
-        }
+        $("#nv a.nv-link").each(function() {
+            var name = $(this).closest(".nv-col").attr("id");
+            $(this).attr("target", name + "-window");
+        });
     });
 }(jQuery));

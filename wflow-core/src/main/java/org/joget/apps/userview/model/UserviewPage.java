@@ -1,0 +1,106 @@
+package org.joget.apps.userview.model;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
+import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.LogUtil;
+import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+public class UserviewPage {
+    private PluginManager pluginManager;
+    protected UserviewMenu menu;
+    
+    public UserviewPage(UserviewMenu menu) {
+        this.menu = menu;
+    }
+    
+    public String render() {
+        String html = "";
+        Collection<PageComponent> components = getPageComponents();
+        
+        if (components != null) {
+            for (PageComponent c : components) {
+                html += c.render();
+            }
+        } else {
+            html = menu.render();
+        }
+        
+        return html;
+    }
+    
+    private Collection<PageComponent> getPageComponents() {
+        if (menu.getProperties().containsKey("REFERENCE_PAGE")) {
+            try {
+                return getPageComponents(null, (JSONObject) menu.getProperty("REFERENCE_PAGE"));
+            } catch(Exception e) {
+                LogUtil.error(UserviewPage.class.getName(), e, "");
+            }
+        } else {
+            BuilderDefinitionDao dao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
+            BuilderDefinition page = dao.loadById("up-"+menu.getPropertyString("id"), AppUtil.getCurrentAppDefinition());
+
+            try {
+                if (page != null) {
+                    return getPageComponents(null, new JSONObject(page.getJson()));
+                }
+            } catch (Exception e) {
+                LogUtil.error(UserviewPage.class.getName(), e, "");
+            }
+        }
+        
+        return null;
+    }
+    
+    private Collection<PageComponent> getPageComponents(PageComponent parent, JSONObject jsonObj) throws JSONException {
+        Collection<PageComponent> components = new ArrayList<PageComponent>();
+        
+        if (jsonObj.has("elements")) {
+            JSONArray elements = jsonObj.getJSONArray("elements");
+            for (int i = 0; i < elements.length(); i++) {
+                PageComponent pc = getPageComponent(elements.getJSONObject(i));
+                if (pc != null) {
+                    pc.setParent(parent);
+                    components.add(pc);
+                }
+            }
+        }
+        
+        return components;
+    }
+    
+    public PageComponent getPageComponent(JSONObject jsonObj) throws JSONException {
+        if ("menu-component".equalsIgnoreCase(jsonObj.getString("className"))) {
+            return (PageComponent) menu;
+        } else {
+            PageComponent component = (PageComponent) getPluginManager().getPlugin(jsonObj.getString("className"));
+            if (component != null) {
+                if (component instanceof ExtElement) {
+                    ((ExtElement) component).setRequestParameters(menu.getRequestParameters());
+                }
+                if (component instanceof UserviewMenu) {
+                    ((UserviewMenu) component).setKey(menu.getKey());
+                    ((UserviewMenu) component).setUserview(menu.getUserview());
+                    ((UserviewMenu) component).setUrl(menu.getUrl());
+                }
+                component.setProperties(PropertyUtil.getProperties(jsonObj.getJSONObject("properties")));
+                component.setChildren(getPageComponents(component, jsonObj));
+            }
+            return component;
+        }
+    }
+    
+    private PluginManager getPluginManager() {
+        if (pluginManager == null) {
+            pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        }
+        return pluginManager;
+    }
+}

@@ -12,8 +12,10 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -38,6 +40,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,6 +64,8 @@ public class UserviewService {
     private AppService appService;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
     @Autowired
     private SetupManager setupManager;
     @Autowired
@@ -363,6 +368,11 @@ public class UserviewService {
                                     userview.setProperty("homeMenuId", mId);
                                 }
                                 
+                                //for preview
+                                if (preview && menuObj.has("referencePage")) {
+                                    menu.setProperty("REFERENCE_PAGE", menuObj.getJSONObject("referencePage"));
+                                }
+                                
                                 if (menuRuleObj == null || !menuRuleObj.has("permissionHidden") || !"true".equals(menuRuleObj.getString("permissionHidden"))) {
                                     menu = new CachedUserviewMenu(menu);
                                     menus.add(menu);
@@ -525,7 +535,7 @@ public class UserviewService {
         return ids;
     }
     
-    private Map convertRequestParamMap(Map params) {
+    public Map convertRequestParamMap(Map params) {
         Map result = new HashMap();
         for (String key : (Set<String>) params.keySet()) {
             key = StringEscapeUtils.escapeHtml(key);
@@ -613,4 +623,104 @@ public class UserviewService {
         return result;
     }
     
+    public UserviewDefinition combinedUserviewDefinition(UserviewDefinition userviewDef) {
+        try {
+            JSONObject userviewObj = new JSONObject(userviewDef.getJson());
+            JSONArray categoriesArray = userviewObj.getJSONArray("categories");
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
+                JSONArray menusArray = categoryObj.getJSONArray("menus");
+                for (int j = 0; j < menusArray.length(); j++) {
+                    JSONObject menuObj = (JSONObject) menusArray.get(j);
+                    loadPageDefinition(menuObj, userviewDef.getAppDefinition());
+                }
+            }
+            
+            userviewDef.setJson(userviewObj.toString(0));
+        } catch (Exception e) {
+            LogUtil.error(UserviewService.class.getName(), e, "");
+        }
+        
+        return userviewDef;
+    } 
+    
+    public void loadPageDefinition(JSONObject menuObj, AppDefinition appDef) throws JSONException {
+        JSONObject properties = menuObj.getJSONObject("properties");
+        String id = properties.getString("id");
+
+        BuilderDefinition page = builderDefinitionDao.loadById("up-"+id, appDef);
+        if (page != null) {
+            menuObj.put("referencePage", new JSONObject(page.getJson()));
+        }
+        
+        if (menuObj.has("menus")) {
+            JSONArray menusArray = menuObj.getJSONArray("menus");
+            for (int j = 0; j < menusArray.length(); j++) {
+                JSONObject mObj = (JSONObject) menusArray.get(j);
+                loadPageDefinition(mObj, appDef);
+            }
+        }
+    }
+    
+    public String saveUserviewPages(String json, String userviewId, AppDefinition appDef) {
+        try {
+            JSONObject userviewObj = new JSONObject(json);
+            JSONArray categoriesArray = userviewObj.getJSONArray("categories");
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
+                JSONArray menusArray = categoryObj.getJSONArray("menus");
+                for (int j = 0; j < menusArray.length(); j++) {
+                    JSONObject menuObj = (JSONObject) menusArray.get(j);
+                    savePageDefinition(menuObj, userviewId, appDef);
+                }
+            }
+            
+            json = userviewObj.toString(0);
+        } catch (Exception e) {
+            LogUtil.error(UserviewService.class.getName(), e, "");
+        }
+        
+        return json;
+    }
+    
+    protected void savePageDefinition(JSONObject menuObj, String userviewId, AppDefinition appDef) throws JSONException {
+        if (menuObj.has("referencePage")) {
+            JSONObject properties = menuObj.getJSONObject("properties");
+            String id = properties.getString("id");
+            
+            String name = StringUtil.stripAllHtmlTag(properties.getString("label"));
+            if (name.length() > 255) {
+                name = name.substring(0, 255);
+            }
+            name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
+            
+            BuilderDefinition page = builderDefinitionDao.loadById("up-"+id, appDef);
+            if (page != null) {
+                page.setName(name);
+                page.setJson(menuObj.getJSONObject("referencePage").toString(0));
+                
+                builderDefinitionDao.update(page);
+            } else {
+                page = new BuilderDefinition();
+                page.setAppDefinition(appDef);
+                page.setId("up-"+id);
+                page.setName(name);
+                page.setType("INTERNAL_USERVIEW_PAGE");
+                page.setJson(menuObj.getJSONObject("referencePage").toString(0));
+                page.setDescription(userviewId);
+
+                builderDefinitionDao.add(page);
+            }
+            
+            menuObj.remove("referencePage");
+        }
+        
+        if (menuObj.has("menus")) {
+            JSONArray menusArray = menuObj.getJSONArray("menus");
+            for (int j = 0; j < menusArray.length(); j++) {
+                JSONObject mObj = (JSONObject) menusArray.get(j);
+                savePageDefinition(mObj, userviewId, appDef);
+            }
+        }
+    }
 }

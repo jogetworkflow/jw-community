@@ -1,0 +1,53 @@
+[
+    {
+        "title" : "@@userview.page.editLink@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "textContent",
+                "label" : "@@userview.formmenu.label@@",
+                "type" : "textfield",
+                "required" : "True",
+                "value" : "@@org.joget.apps.userview.lib.component.ButtonComponent.pluginLabel@@"
+            },
+            {
+                "name" : "attr-href",
+                "label" : "@@datalist.hyperlinkdatalistaction.hyperlink@@",
+                "type" : "textfield"
+            },
+            {
+                "name" : "attr-target",
+                "label" : "@@datalist.hyperlinkdatalistaction.hyperlinkTarget@@",
+                "type" : "selectbox",
+                "options" : [{
+                    "value" : "",
+                    "label" : "@@datalist.hyperlinkdatalistaction.currentWindow@@"
+                },
+                {
+                    "value" : "_blank",
+                    "label" : "@@datalist.hyperlinkdatalistaction.newWindow@@"
+                },
+                {
+                    "value" : "_top",
+                    "label" : "@@datalist.hyperlinkdatalistaction.top@@"
+                },
+                {
+                    "value" : "_parent",
+                    "label" : "@@datalist.hyperlinkdatalistaction.parent@@"
+                }]
+            }
+        ]
+    }
+]
+

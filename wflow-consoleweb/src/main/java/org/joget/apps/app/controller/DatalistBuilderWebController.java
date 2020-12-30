@@ -27,11 +27,15 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListBinder;
+import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListFilterType;
+import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -265,7 +269,30 @@ public class DatalistBuilderWebController {
             collection.add(hm);
         }
         jsonObject.accumulate("columns", collection);
+        
+        DataListCollection sample = binder.getData(sourceDataList, binder.getProperties(), null, null, null, 0, 1);
+        if (sample != null && sample.size() > 0) {
+            jsonObject.accumulate("sample", sample.get(0));
+        }
+        
         jsonObject.write(writer);
+    }
+    
+    @RequestMapping(value = "/dbuilder/getFormatterTemplate", method = RequestMethod.POST)
+    public void getColumnFormatterTemplate(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String listId, @RequestParam String value, @RequestParam String row, @RequestParam String column, HttpServletRequest request) throws Exception {
+        try {
+            DataListColumn c = JsonUtil.parseColumnFromJsonObject(new JSONObject(column), Permission.DEFAULT);
+            Map rowData = PropertyUtil.getPropertiesValueFromJson(row);
+            
+            JSONObject jsonObject = new JSONObject();
+            DataListDecorator deco = new DataListDecorator(new DataList());
+            String formatted = deco.formatColumn(c, rowData, value);
+            
+            jsonObject.accumulate("formatted", formatted);
+            jsonObject.write(writer);
+        } catch (Exception e) {
+            LogUtil.error(DatalistBuilderWebController.class.getName(), e, "");
+        }
     }
 
     @RequestMapping("/dbuilder/getFilterTemplate")

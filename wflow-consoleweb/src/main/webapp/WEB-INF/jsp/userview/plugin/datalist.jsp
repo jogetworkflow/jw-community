@@ -11,7 +11,6 @@
     </script>
 </c:if>
    
-<link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
 <div class="datalist-body-content">
     <c:if test="${!empty properties.customHeader}">
         ${properties.customHeader}

@@ -77,11 +77,13 @@
     </group>
     <group name="userview.min">
         <css>/css/form.css</css>
+        <css>/css/datalistBuilderView.css</css>
         <css>/css/userview.css</css>
         <css>/css/admin_bar.css</css>
     </group>
     <group name="userview_v5.min">
         <css>/css/form.css</css>
+        <css>/css/datalistBuilderView.css</css>
         <css>/css/userview_v5.css</css>
     </group>
     <group name="userview_print.min">
@@ -100,6 +102,7 @@
     </group>
     <group name="universal.preload.min">
         <css>/css/form.css</css>
+        <css>/css/datalistBuilderView.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
@@ -122,6 +125,7 @@
     </group>
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
+        <css>/css/datalistBuilderView.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/progressive/css/form.css</css>
@@ -144,6 +148,7 @@
     </group>
     <group name="xadmin.min">
         <css>/css/form.css</css>
+        <css>/css/datalistBuilderView.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/xadmin/lib/layui/css/layui.css</css>
         <css>/xadmin/css/xadmin.css</css>
@@ -157,7 +162,27 @@
         <js>/pwa.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
-    </group>  
+    </group> 
+    <group name="ajaxuniversal.preload.min">
+        <!--css>/css/form8.css</css>
+        <css>/css/datalist8.css</css>
+        <css>/css/userview8.css</css-->
+        <css>/js/bootstrap4/css/bootstrap.min.css</css>
+        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
+        <css>/ajaxuniversal/css/ajaxtheme.css</css>
+    </group>    
+    <group name="ajaxuniversal.min">
+        <css>/universal/lib/waves/waves.min.css</css>
+        <css>/css/jquery.toast.min.css</css>
+        <js>/universal/js/preload.js</js>
+        <js>/js/bootstrap4/js/bootstrap.min.js</js>
+        <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
+        <js>/universal/lib/waves/waves.min.js</js>
+        <js>/ajaxuniversal/js/main.js</js>
+        <js>/js/hubspot-offline/offline.min.js</js>
+        <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/pwa.js</js>
+    </group> 
     <group name="quill">
         <css>/js/quill/quill.bubble.css</css>
         <css>/js/quill/quill.snow.css</css>

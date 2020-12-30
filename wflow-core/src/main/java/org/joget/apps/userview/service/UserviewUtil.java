@@ -140,6 +140,26 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         }
         return content;
     }
+    
+    /**
+     * Method used to retrieve HTML template of an userview menu
+     * @param menu
+     * @return
+     * @throws RuntimeException 
+     */
+    public static String getUserviewMenuHtmlWithoutCache(UserviewMenu menu) throws RuntimeException {
+        String content = "";
+        String jspPage = menu.getReadyJspPage();
+        if (jspPage != null && !jspPage.isEmpty()) {
+            Map<String, Object> modelMap = new HashMap<String, Object>();
+            modelMap.put("properties", menu.getProperties());
+            modelMap.put("requestParameters", menu.getRequestParameters());
+            content = UserviewUtil.renderJspAsString(jspPage, modelMap);
+        } else {
+            content = menu.getReadyRenderPage();
+        }
+        return content;
+    }
 
     /**
      * Method used to convert a jsp page as HTML template

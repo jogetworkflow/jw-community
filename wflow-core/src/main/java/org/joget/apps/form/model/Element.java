@@ -267,7 +267,76 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             this.setProperty(FormUtil.PROPERTY_READONLY, "");
         }
 
-        return renderTemplate(formData, dataModel);
+        String html = renderTemplate(formData, dataModel);
+        html = decorateWithBuilderProperties(html, formData);
+        
+        return html;
+    }
+    
+    public String decorateWithBuilderProperties(String html, FormData formData) {
+        String desktopStyle = "";
+        String tabletStyle = "";
+        String mobileStyle = "";
+        String cssClass = "";
+        String attr = ""; 
+        
+        for (String key : getProperties().keySet()) {
+            if ((key.startsWith("css-") 
+                        || key.startsWith("attr-")
+                        || key.startsWith("style-mobile-")
+                        || key.startsWith("style-tablet-")
+                        || key.startsWith("style-"))
+                     && !getPropertyString(key).isEmpty()) {
+                    
+                String value = getPropertyString(key);
+                if (key.contains("style") && key.endsWith("-background-image")) {
+                    value = "url('"+value+"')";
+                }
+                
+                if (key.startsWith("css-")) {
+                    cssClass += " " + value;
+                } else if (key.startsWith("attr-")) {
+                    attr += " " + key.replace("attr-", "") + "=\"" + value + "\"";
+                } else if (key.startsWith("style-mobile-")) {
+                    mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-tablet-")) {
+                    tabletStyle += key.replace("style-tablet-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-")) {
+                    desktopStyle += key.replace("style-", "") + ":" + value + " !important;";
+                }
+            }
+        }
+        
+        String builderStyles = "";
+        
+        if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
+           String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
+           cssClass += " " + styleClass;
+           
+           builderStyles = "<style id=\""+styleClass+"\">";
+           if (!desktopStyle.isEmpty()) {
+               builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
+           }
+           if (!tabletStyle.isEmpty()) {
+               builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
+           }
+           if (!mobileStyle.isEmpty()) {
+               builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
+           }
+           builderStyles += "</style>";
+        }
+        
+        if (!cssClass.isEmpty() || !attr.isEmpty()) {
+            int index = html.indexOf("class=");
+            html = html.substring(0, index) + attr + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
+        }
+        
+        if (!builderStyles.isEmpty()) {
+            int index = html.lastIndexOf("</div>");
+            html = html.substring(0, index) + builderStyles + "</div>";
+        }
+        
+        return html;
     }
 
     /**

@@ -97,7 +97,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
         String menuItem = null;
         boolean showRowCount = Boolean.valueOf(getPropertyString("rowCount")).booleanValue();
         if (showRowCount) {
-            int rowCount = getDataTotalRowCount();
+            int rowCount = 0;
+            
+            if (!"true".equalsIgnoreCase(getRequestParameterString("isBuilder"))) {
+                rowCount = getDataTotalRowCount();
+            }
 
             // sanitize label
             String label = getPropertyString("label");

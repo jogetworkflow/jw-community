@@ -3,31 +3,6 @@
 <#if !(request.getAttribute("org.joget.apps.form.lib.Grid")??) >
     <script type="text/javascript" src="${request.contextPath}/js/jquery/jquery.jeditable.js"></script>
     <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.Grid/js/jquery.formgrid.js"></script>
-    <style type="text/css">
-        .cgrid table {
-            width: 100%;
-        }
-        .grid th, .grid td {
-            border: solid 1px silver;
-            margin: 0px;
-        }
-        .grid-cell-options {
-            width: 10px;
-        }
-        .grid-row-template {
-            display: none;
-        }
-        .grid-cell input:focus {
-            background: #efefef;
-            border: 1px solid #a1a1a1;
-        }
-        .grid-cell {
-            display: block;
-        }
-        .grid-cell form {
-            display: block;
-        }
-    </style>
 </#if>
 <#if element.properties.readonly! != 'true'>
     <script type="text/javascript">

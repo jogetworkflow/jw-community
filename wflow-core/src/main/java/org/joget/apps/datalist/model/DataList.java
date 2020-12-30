@@ -3,6 +3,7 @@ package org.joget.apps.datalist.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -80,6 +81,33 @@ public class DataList {
     private Map<String, String[]> requestParamMap = null;
     private boolean isAuthorized = true;
     private String unauthorizedMsg = null;
+    
+    private Map<String, Object> properties;
+    
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+    
+    public Object getProperty(String property) {
+        Object value = (properties != null) ? properties.get(property) : null;
+        return value;
+    }
+    
+    public String getPropertyString(String property) {
+        String value = (properties != null && properties.get(property) != null) ? (String) properties.get(property) : "";
+        return value;
+    }
+    
+    public void setProperty(String property, Object value) {
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
+        properties.put(property, value);
+    }
 
     //Required when using session
     public void init() {
@@ -692,7 +720,7 @@ public class DataList {
                     cssClass = "hidden-filter";
                 }
                 String label = filterList[i].getLabel();
-                templates.add("<span class=\"filter-cell "+cssClass+"\">"+filterList[i].getType().getTemplate(this, filterList[i].getName(), label)+"</span>");
+                templates.add("<span class=\"filter-cell "+cssClass+" "+ filterList[i].getPropertyString("id") + " " + filterList[i].getPropertyString("BUILDER_GENERATED_CSS") +" \" " + filterList[i].getPropertyString("BUILDER_GENERATED_ATTR") + " >"+filterList[i].getType().getTemplate(this, filterList[i].getName(), label)+"</span>");
             }
             filterTemplates = (String[]) templates.toArray(new String[0]);
         }
@@ -944,5 +972,68 @@ public class DataList {
 
     public void setUnauthorizedMsg(String unauthorizedMsg) {
         this.unauthorizedMsg = unauthorizedMsg;
+    }
+    
+    public String getStyles() {
+        Map<String, String> styles = new HashMap<String, String>();
+        styles.put("MOBILE_STYLE", "");
+        styles.put("TABLET_STYLE", "");
+        styles.put("STYLE", "");
+        
+        generateStyle(styles, getProperties(), ".dataList .filter-cell", "FILTER_");
+        generateStyle(styles, getProperties(), ".dataList table .column_header", "COLUMN_HEADER_");
+        generateStyle(styles, getProperties(), ".dataList table .column_body", "COLUMN_");
+        generateStyle(styles, getProperties(), ".dataList table .rowaction_header", "ROWACTION_HEADER_");
+        generateStyle(styles, getProperties(), ".dataList table .rowaction_body", "ROWACTION_");
+        generateStyle(styles, getProperties(), ".dataList .actions .btn", "ACTION_");
+        generateStyle(styles, getProperties(), ".dataList.card-layout-active tbody tr", "CARD_");
+        
+        if (getFilters() != null) {
+            for (DataListFilter filter : getFilters()) {
+                generateStyle(styles, filter.getProperties(), ".dataList .filter-cell."+ filter.getPropertyString("id"), "");
+            }
+        }
+        if (getColumns() != null) {
+            for (DataListColumn column : getColumns()) {
+                generateStyle(styles, column.getProperties(), ".dataList table .column_header.header_"+ column.getPropertyString("id"), "HEADER_");
+                generateStyle(styles, column.getProperties(), ".dataList table .column_body.body_"+ column.getPropertyString("id"), "");
+            }
+        }
+        if (getRowActions() != null) {
+            for (DataListAction action : getRowActions()) {
+                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_header.header_"+ action.getPropertyString("id"), "HEADER_");
+                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_body.body_"+ action.getPropertyString("id"), "");
+                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_body.body_"+ action.getPropertyString("id") + " a", "LINK_");
+            }
+        }
+        if (getActions() != null) {
+            for (DataListAction action : getActions()) {
+                generateStyle(styles, action.getProperties(), ".dataList .actions .btn."+ action.getPropertyString("id"), "");
+            }
+        }
+        
+        String css = styles.get("STYLE");
+        if (!styles.get("TABLET_STYLE").isEmpty()) {
+            css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
+        }
+        if (!styles.get("MOBILE_STYLE").isEmpty()) {
+            css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+        }
+        return css;
+    }
+    
+    protected static void generateStyle(Map<String, String> styles, Map<String, Object> props, String cssClass, String prefix) {
+        String[] views = new String[]{"MOBILE_STYLE", "TABLET_STYLE", "STYLE"};
+        
+        if (props != null) {
+            for (String view : views) {
+                if (props.containsKey("BUILDER_GENERATED_" + prefix + view)) {
+                    String style = props.get("BUILDER_GENERATED_" + prefix + view).toString();
+                    if (!style.isEmpty()) {
+                        styles.put(view, styles.get(view) + " " + cssClass + "{" + style + "}");
+                    }
+                }
+            }
+        }
     }
 }

@@ -9,13 +9,32 @@
 <html>
     <head>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
-        <script type="text/javascript" src="${pageContext.request.contextPath}/wro/form_common.js?build=<fmt:message key="build.number"/>"></script>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/form_common.css?build=<fmt:message key="build.number"/>" />
+        
+        <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
+        <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
+        <script src="${pageContext.request.contextPath}/wro/common.js"></script>
+        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
         </c:if>
-            
+        <style>
+            html, body
+            {
+                width:100%;
+                height:100%;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0px;
+                border: 0 !important;
+            }
+            body {
+                padding: 25px !important;
+            }
+        </style>    
         <script type="text/javascript">
             UI.base = "${pageContext.request.contextPath}";
             

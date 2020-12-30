@@ -74,20 +74,24 @@ public class DataListMenu extends UserviewMenu implements PwaOfflineValidation {
         String menuItem = null;
         boolean showRowCount = Boolean.valueOf(getPropertyString("rowCount")).booleanValue();
         if (showRowCount) {
-            // get datalist and row count
-            DataList dataList = getDataList();
-            if (dataList != null) {
-                int rowCount = dataList.getTotal();
-
-                // sanitize label
-                String label = getPropertyString("label");
-                if (label != null) {
-                    label = StringUtil.stripHtmlRelaxed(label);
-                }
+            int rowCount = 0;
             
-                // generate menu link
-                menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='pull-right badge rowCount'>" + rowCount + "</span></a>";
+            if (!"true".equalsIgnoreCase(getRequestParameterString("isBuilder"))) {
+                // get datalist and row count
+                DataList dataList = getDataList();
+                if (dataList != null) {
+                    rowCount = dataList.getTotal();
+                }
             }
+            
+            // sanitize label
+            String label = getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+
+            // generate menu link
+            menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='pull-right badge rowCount'>" + rowCount + "</span></a>";
         }
         return menuItem;
     }

@@ -1071,10 +1071,10 @@ body:not(#login).embeded  #content > main > table{
     border:0;
     padding:0;
 }
-
+/*
 #form-canvas .label {
     text-align: left;
-}
+}*/
 
 .waves-input-wrapper .waves-button-input {
     font-style: normal;
@@ -1401,6 +1401,7 @@ main :-ms-input-placeholder{
 main #profile legend {
     padding: 10px;
 } 
+/*
 main .form-row label {
     width: 30%;
 }
@@ -1412,11 +1413,11 @@ main .form-row .form-input input,
 main .form-row .form-input select,
 main .form-row .form-input textarea{
     max-width: 95%;
-}
+}*/
 @media screen and (max-width: 480px) {
-    main .form-row .form-input {
+    /*main .form-row .form-input {
         max-width: 100%;
-    }
+    }*/
     div[class*="-body-content"] div[class*="-body-header"] {
         font-size: 18px;
         margin-bottom: 15px;
@@ -1462,9 +1463,9 @@ main .grid-stack-item-header-refresh {
 }
 
 @media print {
-    .label {
+    /*.label {
         border: 0px;
-    }    
+    } */   
     body {
         height: auto !important;
         margin-top: 0px !important;

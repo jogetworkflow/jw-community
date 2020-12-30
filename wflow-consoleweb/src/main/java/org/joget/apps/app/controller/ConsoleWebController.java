@@ -5278,7 +5278,22 @@ public class ConsoleWebController {
         InputStream inputStream = null;
         try {
             if ("cbuilder".equals(name)) {
-                if (type != null) {
+                if (type != null && (type.endsWith("form") || type.endsWith("datalist"))) {
+                    InputStream inputStream2 = null;
+                    try {
+                        if (type.endsWith("form")) {
+                            inputStream2 = this.getClass().getClassLoader().getResourceAsStream("fbuilder.properties");
+                        } else {
+                            inputStream2 = this.getClass().getClassLoader().getResourceAsStream("dbuilder.properties");
+                        }
+                        
+                        keys.load(inputStream2);
+                    } finally {
+                        if (inputStream2 != null) {
+                            inputStream2.close();
+                        }
+                    }
+                } else if (type != null) {
                     CustomBuilder builder = CustomBuilderUtil.getBuilder(type);
                     if (builder != null) {
                         ResourceBundle bundle =  pluginManager.getPluginMessageBundle(builder.getClassName(), builder.getResourceBundlePath());
@@ -5645,6 +5660,114 @@ public class ConsoleWebController {
         jsonObject.accumulate("data", getSortedLocalList());
 
         jsonObject.write(writer);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/adminbar/builder/menu")
+    public void consoleJsonAdminbarBuilderMenu(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws JSONException, IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        JSONArray jsonArr = new JSONArray();
+        JSONArray elementsArr = null;
+        Map obj = null;
+        
+        String baseUrl = request.getContextPath() + "/web/console/app/"+appDef.getAppId()+"/" + appDef.getVersion();
+        
+        Map data = new HashMap();
+        data.put("value", "form");
+        data.put("label", "Form Builder");
+        data.put("icon", "fas fa-file-alt");
+        data.put("color", "#3f84f4");
+        if (appDef.getFormDefinitionList() != null) {
+            elementsArr = new JSONArray();
+            for (FormDefinition e : appDef.getFormDefinitionList()) {
+                obj = new HashMap();
+                obj.put("url", baseUrl + "/form/builder/" + e.getId());
+                obj.put("label", e.getName());
+                elementsArr.put(obj);
+            }
+            data.put("elements", elementsArr);
+        }
+        jsonArr.put(data);
+        
+        data = new HashMap();
+        data.put("value", "datalist");
+        data.put("label", "Datalist Builder");
+        data.put("icon", "fas fa-table");
+        data.put("color", "#6638b6");
+        if (appDef.getDatalistDefinitionList() != null) {
+            elementsArr = new JSONArray();
+            for (DatalistDefinition e : appDef.getDatalistDefinitionList()) {
+                obj = new HashMap();
+                obj.put("url", baseUrl + "/datalist/builder/" + e.getId());
+                obj.put("label", e.getName());
+                elementsArr.put(obj);
+            }
+            data.put("elements", elementsArr);
+        }
+        jsonArr.put(data);
+        
+        data = new HashMap();
+        data.put("value", "userview");
+        data.put("label", "Userview Builder");
+        data.put("icon", "fas fa-desktop");
+        data.put("color", "#f3b328");
+        if (appDef.getUserviewDefinitionList() != null) {
+            elementsArr = new JSONArray();
+            for (UserviewDefinition e : appDef.getUserviewDefinitionList()) {
+                obj = new HashMap();
+                obj.put("url", baseUrl + "/userview/builder/" + e.getId());
+                obj.put("label", e.getName());
+                elementsArr.put(obj);
+            }
+            data.put("elements", elementsArr);
+        }
+        jsonArr.put(data);
+        
+        data = new HashMap();
+        data.put("value", "process");
+        data.put("label", "Process Builder");
+        data.put("icon", "fas fa-th-list");
+        data.put("color", "#dc4438");
+        PackageDefinition packageDefinition = appDef.getPackageDefinition();
+        if (packageDefinition != null) {
+            Long packageVersion = packageDefinition.getVersion();
+            Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
+            elementsArr = new JSONArray();
+            for (WorkflowProcess p : processList) {
+                obj = new HashMap();
+                obj.put("url", baseUrl + "/process/builder?processId=" + p.getIdWithoutVersion());
+                obj.put("label", p.getName());
+                elementsArr.put(obj);
+            }
+            data.put("elements", elementsArr);
+        }
+        jsonArr.put(data);
+        
+        for (CustomBuilder cb : CustomBuilderUtil.getBuilderList().values()) {
+            Map cdata = new HashMap();
+            cdata.put("value", cb.getObjectName());
+            cdata.put("label", cb.getLabel());
+            cdata.put("icon", cb.getIcon());
+            cdata.put("color", cb.getColor());
+            if (appDef.getBuilderDefinitionList() != null) {
+                elementsArr = new JSONArray();
+                for (BuilderDefinition e : appDef.getBuilderDefinitionList()) {
+                    if (cb.getObjectName().equals(e.getType())) {
+                        obj = new HashMap();
+                        obj.put("url", baseUrl + "/cbuilder/"+cb.getObjectName()+"/design/" + e.getId());
+                        obj.put("label", e.getName());
+                        elementsArr.put(obj);
+                    }
+                }
+                cdata.put("elements", elementsArr);
+            }
+            jsonArr.put(cdata);
+        }
+
+        jsonArr.write(writer);
     }
     
     protected JSONArray sortJSONArray(JSONArray jsonArr, final String fieldName, final boolean desc) {

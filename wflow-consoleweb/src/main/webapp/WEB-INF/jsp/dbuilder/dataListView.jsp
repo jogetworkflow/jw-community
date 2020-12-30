@@ -11,10 +11,6 @@
 </c:if>
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
-<style>
-    .filters { text-align:right; font-size:smaller }
-    .filter-cell{display:inline-block;padding-left:5px;}
-</style>
 
 <div class="dataList">
     <c:choose>
@@ -98,7 +94,11 @@
                     </c:if>
                     <c:if test="${!empty dataList.binder && !empty dataList.binder.properties.errorMsg}">
                         <div class="datalist-error"><c:out value="${dataList.binder.properties.errorMsg}"/></div>
-                    </c:if>   
+                    </c:if>
+                        
+                    <style>
+                        ${dataList.styles}
+                    </style>    
 
                     <!-- Display Filters -->        
                     <c:if test="${fn:length(dataList.filterTemplates) gt 1}">
@@ -113,7 +113,7 @@
                                     ${template}
                                 </c:forEach>
                                  <span class="filter-cell">
-                                     <input type="submit" class="form-button btn button" value="<ui:msgEscHTML key="general.method.label.show"/>"/>
+                                     <input type="submit" class="form-button btn btn-secondary btn-sm button" value="<ui:msgEscHTML key="general.method.label.show"/>"/>
                                  </span>
                             </div>
                         </form>
@@ -136,18 +136,22 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses} ${action.properties.id} ${action.properties.BUILDER_GENERATED_CSS}" ${action.properties.BUILDER_GENERATED_ATTR} value="${action.properties.id}" ${buttonConfirmation}>${action.linkLabel}</button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
                             </c:if>        
                         </c:if>
-                        <div class="footable-buttons" data-disableresponsive="${dataList.disableResponsive}" data-searchpopup="${dataList.responsiveSearchPopup}" data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
+                        <div class="footable-buttons" 
+                             data-responsiveclass="${dataList.properties.responsive_layout} ${dataList.properties.card_layout_label} ${fn:replace(dataList.properties.card_layout_display, ';', ' ')}" 
+                             data-disableresponsive="${dataList.disableResponsive}" 
+                             data-searchpopup="${dataList.responsiveSearchPopup}" 
+                             data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
                             <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
                             <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
                             <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
                         </div>    
-                        <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
+                        <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed ${fn:replace(dataList.properties.card_layout_display, ';', ' ')} ${ataList.properties.card_layout_label}" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                             <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                                 <c:choose>
                                     <c:when test="${selectionType eq 'single'}">
@@ -179,18 +183,32 @@
                                     property="column(${column.name})"
                                     title="${columnLabel}"
                                     sortable="${column.sortable}"
-                                    headerClass="column_${column.name} ${columnHiddenCss} ${column.headerAlignment}"
-                                    class="column_${column.name} ${columnHiddenCss} ${column.alignment}"
+                                    headerClass="column_header column_${column.name} ${columnHiddenCss} ${column.headerAlignment} header_${column.properties.id} ${column.properties.BUILDER_GENERATED_HEADER_CSS}"
+                                    class="column_body  column_${column.name} ${columnHiddenCss} ${column.alignment} body_${column.properties.id} ${column.properties.BUILDER_GENERATED_CSS}"
                                     style="${column.style}"
                                     media="${columnMedia}"
                                     />
                             </c:forEach>
                             <c:if test="${!empty dataListRows[0] && !empty dataList.rowActions[0]}">
                                 <c:set var="actionTitle" value="" />
-                                <c:forEach items="${dataList.rowActions}" var="rowAction" begin="1">
-                                    <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action\">" />
+                                <c:set var="firstCssClass" value="" />
+                                <c:forEach items="${dataList.rowActions}" var="rowAction" varStatus="rowActionStatus" >
+                                    <c:set var="headerTitle" value=""/>
+                                    <c:if test="${!empty rowAction.properties.header_label}">
+                                        <c:set var="headerTitle" value="${rowAction.properties.header_label}"/>
+                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${rowActionStatus.index == 0}">
+                                            <c:set var="actionTitle" value="${headerTitle}" />
+                                            <c:set var="firstHeaderCssClass" value="rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
+                                            <c:set var="firstBodyCssClass" value="rowaction_body body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
+                                        </c:otherwise>
+                                     </c:choose>
                                 </c:forEach>
-                                <display:column headerClass="row_action" class="row_action" property="actions" media="html" title="${actionTitle}"/>
+                                <display:column headerClass="row_action ${firstHeaderCssClass}" class="row_action ${firstBodyCssClass}" property="actions" media="html" title="${actionTitle}"/>
                             </c:if>
                             <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
                                 <c:choose>
@@ -218,7 +236,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses} ${action.properties.id} ${action.properties.BUILDER_GENERATED_CSS}" ${action.properties.BUILDER_GENERATED_ATTR} value="${action.properties.id}" ${buttonConfirmation}>${action.linkLabel}</button>
                                         </c:if>
                                     </c:forEach>
                                 </div>

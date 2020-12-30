@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,14 +15,12 @@ import org.displaytag.decorator.CheckboxTableDecorator;
 import org.displaytag.model.TableModel;
 import org.displaytag.properties.MediaTypeEnum;
 import org.displaytag.tags.TableTagParameters;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
-import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.mozilla.javascript.Scriptable;
 
@@ -181,15 +178,30 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String output = "";
         DataListAction[] actions = dataList.getRowActions();
         if (actions != null) {
+            int i = 0;
             for (DataListAction action : actions) {
                 String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
                 String link = "";
                 if (isRowActionVisible(action)) {
-                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), action.getPropertyString("cssClasses"));
+                    String linkCss = action.getPropertyString("cssClasses");
+                    
+                    if (!action.getPropertyString("BUILDER_GENERATED_LINK_CSS").isEmpty()) {
+                        linkCss = action.getPropertyString("BUILDER_GENERATED_LINK_CSS");
+                    }
+                    
+                    linkCss += " link_" + action.getPropertyString("id");
+                    
+                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), linkCss);
                 }
-                output += " " + link + " </td><td class=\"row_action\"> ";
+                
+                if (i > 0) {
+                    output += "</td><td class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
+                }
+                
+                output += " " + link + " ";
+                
+                i++;
             }
-            output = output.substring(0, output.length() - 30);
         }
         return output;
     }

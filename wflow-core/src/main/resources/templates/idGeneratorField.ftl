@@ -1,8 +1,6 @@
 <#if includeMetaData>
     <div class="form-cell" ${elementMetaData!}>
-        <#if element.properties.hidden! == 'true'>
-            <span class="form-floating-label">@@form.idgeneratorfield.idGeneratorField@@</span>
-        <#else>
+        <#if element.properties.hidden! != 'true'>
             <label class="label">${element.properties.label}</label>
             <span>@@form.idgeneratorfield.auto@@</span>
         </#if>

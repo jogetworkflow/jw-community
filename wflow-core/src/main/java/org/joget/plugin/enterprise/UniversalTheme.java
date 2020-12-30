@@ -141,7 +141,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     public String getMetas(Map<String, Object> data) {
 
         String meta = super.getMetas(data) + "\n";
-        meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+        meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">\n";
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
         meta += getInternalMetas(data);
         return meta;
@@ -385,6 +385,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         + "});</script>";
             }
         }
+        
+        jsCssLink += generateBuilderStyle();
+        
         return jsCssLink;
     }
     
@@ -410,6 +413,77 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         return defaultColor;
     }
     
+    protected String generateBuilderStyle() {
+        Map<String, String> styles = new HashMap<String, String>();
+        styles.put("MOBILE_STYLE", "");
+        styles.put("TABLET_STYLE", "");
+        styles.put("STYLE", "");
+        
+        generateStyle(styles, getProperties(), "header.navbar", "header");
+        generateStyle(styles, getProperties(), "#welcomeMessage", "welcome-message");
+        generateStyle(styles, getProperties(), "#sidebar", "sidebar");
+        generateStyle(styles, getProperties(), "#category-container", "categories");
+        generateStyle(styles, getProperties(), "footer", "footer");
+        generateStyle(styles, getProperties(), ".breadcrumb", "breadcrumb");
+        generateStyle(styles, getProperties(), ".sidebar_brand #header-link", "brand-name");
+        generateStyle(styles, getProperties(), ".sidebar_brand .logo_container img", "brand-logo");
+        
+        String css = styles.get("STYLE");
+        if (!styles.get("TABLET_STYLE").isEmpty()) {
+            css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
+        }
+        if (!styles.get("MOBILE_STYLE").isEmpty()) {
+            css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+        }
+        
+        if (!css.isEmpty()) {
+            return "<style>"+ css + "</style>";
+        }
+        return "";
+    }
+    
+    protected static void generateStyle(Map<String, String> styles, Map<String, Object> props, String cssClass, String prefix) {
+        Set<String> keys = new HashSet<String>();
+        keys.addAll(props.keySet());
+        
+        String mobileCss = "";
+        String tabletCss = "";
+        String desktopCss = "";
+        
+        if (!prefix.isEmpty()) {
+            prefix += "-";
+        }
+        
+        for (String key : keys) {
+            if ((key.startsWith(prefix+"style-mobile-")
+                    || key.startsWith(prefix+"style-tablet-")
+                    || key.startsWith(prefix+"style-"))
+                 && !props.get(key).toString().isEmpty()) {
+                String value = props.get(key).toString();
+                if (key.contains("style") && key.endsWith("-background-image")) {
+                    value = "url('"+value+"')";
+                }
+
+                if (key.startsWith(prefix+"style-mobile-")) {
+                    mobileCss += key.replace(prefix+"style-mobile-", "") + ":" + value + " !important;";
+                } else if (key.startsWith(prefix+"style-tablet-")) {
+                    tabletCss += key.replace(prefix+"style-tablet-", "") + ":" + value + " !important;";
+                } else if (key.startsWith(prefix+"style-")) {
+                    desktopCss += key.replace(prefix+"style-", "") + ":" + value + " !important;";
+                }
+            }
+        }
+        if (!mobileCss.isEmpty()) {
+            styles.put("MOBILE_STYLE", styles.get("MOBILE_STYLE") + " " + cssClass + "{" + mobileCss + "}");
+        }
+        if (!tabletCss.isEmpty()) {
+            styles.put("TABLET_STYLE", styles.get("TABLET_STYLE") + " " + cssClass + "{" + tabletCss + "}");
+        }
+        if (!desktopCss.isEmpty()) {
+            styles.put("STYLE", styles.get("STYLE") + " " + cssClass + "{" + desktopCss + "}");
+        }
+    }
+
     protected String generateLessCss() {
         String css = "";
         String lessVariables = "";

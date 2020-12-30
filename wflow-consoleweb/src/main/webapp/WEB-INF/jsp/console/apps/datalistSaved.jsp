@@ -31,7 +31,7 @@
                 }
 
                 function launchUserviewBuilder() {
-                    var datalistBuilder = window.parent.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/<c:out value="${datalistDefinition.id}"/>");
+                    var datalistBuilder = window.parent.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/<c:out value="${datalistDefinition.id}"/>", "nv-list-window");
                     if (datalistBuilder) {
                         closeDialog();
                     }

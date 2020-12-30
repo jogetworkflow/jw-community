@@ -3,45 +3,59 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/loadCSS/loadCSS.js"></script>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-    
-    <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
-    <style>
-        * { font-family:'PT Sans',Arial; font-size:13px; line-height:16px }
-        body { width:900px }
-    </style>
-</head>
+    <head>
+        <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
-<body>
-<div id="preview">
-    <c:if test="${!empty error}">
-        <h3><fmt:message key="dbuilder.errorGenerating"/></h3>
-        <div id="error">${error}</div>
-    </c:if>
+        <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
+        <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
+        <script src="${pageContext.request.contextPath}/wro/common.js"></script>
+        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
 
-    <c:set scope="request" var="dataListId" value="${dataList.id}"/>
-    
-    <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist.css?build=<fmt:message key="build.number"/>" />
+        <style>
+            html, body
+            {
+                width:100%;
+                height:100%;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0px;
+                border: 0 !important;
+            }
+            body {
+                padding: 25px !important;
+            }
+        </style>
+        <script>
+            var _enableResponsiveTable = true;
+        </script>    
+    </head>
 
-        <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
-        <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
+    <body>
+        <div id="preview">
+            <c:if test="${!empty error}">
+                <h3><fmt:message key="dbuilder.errorGenerating"/></h3>
+                <div id="error">${error}</div>
+            </c:if>
 
-    <script>
-        $(function() {
-            $("#preview input[type=submit], #preview .actions button").attr("disabled", "disabled");
-            $("#preview tbody a").attr("onclick", "return false");
-            $("#preview .actions button, #preview tbody a").click(function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
+            <c:set scope="request" var="dataListId" value="${dataList.id}"/>
+
+            <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />     
+
+        </div>
+        <script>
+            $(function() {
+                $("#preview input[type=submit], #preview .actions button").attr("disabled", "disabled");
+                $("#preview tbody a").attr("onclick", "return false");
+                $("#preview .actions button, #preview tbody a").click(function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                });
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>
 </html>
