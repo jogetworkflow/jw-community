@@ -1474,6 +1474,11 @@ CustomBuilder = {
                 element.show();
             }
 	});
+        if (this.value !== "") {
+            $(this).next("button").show();
+        } else {
+            $(this).next("button").hide();
+        }
     },
     
     /*
@@ -1483,6 +1488,7 @@ CustomBuilder = {
         var tab = $(this).closest(".tab-pane");
         $(tab).find(".component-search").val("");
         $(tab).find(".components-list li ol li").show();
+        $(this).hide();
     },
     
     /*
@@ -1587,6 +1593,11 @@ CustomBuilder = {
                 $(page).addClass("property-search-hide");
             }
         });
+        if (this.value !== "") {
+            $(this).next("button").show();
+        } else {
+            $(this).next("button").hide();
+        }
     },
     
     /*
@@ -1596,6 +1607,7 @@ CustomBuilder = {
         var tab = $(this).closest(".element-properties");
         $(tab).find(".component-search").val("");
         $(tab).find(".property-search-hide").removeClass("property-search-hide");
+        $(this).hide();
     },
     
     /*

@@ -248,6 +248,7 @@ body.viewport-enabled{
     top: 3px;
     right: 0px;
     opacity: 0.8; 
+    display: none;
 }
 .element-properties .search .clear-backspace i,
 #cbuilder .drag-elements > .header .search .clear-backspace i {
