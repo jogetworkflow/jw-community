@@ -629,11 +629,11 @@ UserviewBuilder = {
      */
     saveEditProperties : function(container, elementProperty, element) {
         if (element.className.indexOf("userview-") === 0) {
-            CustomBuilder.data.description = elementProperty.description;
-            CustomBuilder.data.footerMessage = elementProperty.footerMessage;
-            CustomBuilder.data.logoutText = elementProperty.logoutText;
-            CustomBuilder.data.name = elementProperty.name;
-            CustomBuilder.data.welcomeMessage = elementProperty.welcomeMessage;
+            CustomBuilder.data.properties.description = elementProperty.description;
+            CustomBuilder.data.properties.footerMessage = elementProperty.footerMessage;
+            CustomBuilder.data.properties.logoutText = elementProperty.logoutText;
+            CustomBuilder.data.properties.name = elementProperty.name;
+            CustomBuilder.data.properties.welcomeMessage = elementProperty.welcomeMessage;
             
             var temp = $.extend({}, elementProperty);
             delete temp.description;
@@ -948,7 +948,6 @@ UserviewBuilder = {
         if (UserviewBuilder.mode === "userview") {
             UserviewBuilder.selectedMenu = null;
             UserviewBuilder.removeMenuSnapshot();
-            
         }
         
         if (elementObj.className === "userview-categories") {
