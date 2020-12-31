@@ -500,7 +500,7 @@ FormBuilder = {
         if (self.component.properties !== undefined) {
             properties = $.extend(true, properties, self.component.properties);
         }
-        if (self.component.builderTemplate.getElements() !== undefined) {
+        if (self.component.builderTemplate.getElements !== undefined) {
             elements = $.extend(true, elements, self.component.builderTemplate.getElements());
         }
         var elementObj = {
@@ -535,7 +535,7 @@ FormBuilder = {
         if (self.component.properties !== undefined) {
             properties = $.extend(true, properties, self.component.properties);
         }
-        if (self.component.builderTemplate.getElements() !== undefined) {
+        if (self.component.builderTemplate.getElements !== undefined) {
             elements = $.extend(true, elements, self.component.builderTemplate.getElements());
         }
         elements.push({
