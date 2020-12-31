@@ -1815,3 +1815,8 @@ body.popupBody {
     background-color: rgba(0, 0, 0, 0.15);
     outline: 1px solid slategrey; 
 }
+
+/* property editor builder style */
+body#cbuilder .property-editor-page-button-panel input[type=button]{
+    background: #007bff;
+}
