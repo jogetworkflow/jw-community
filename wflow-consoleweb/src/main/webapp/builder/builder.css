@@ -11,36 +11,42 @@ body {
     body {
         --builder-left-panel-width: 20vw;
         --builder-right-panel-width: 30vw; 
+        --builder-logo-width: 20vw;
     } 
 }
 @media (min-width: 768px) {
     body {
         --builder-left-panel-width: 20vw;
         --builder-right-panel-width: 25vw; 
+        --builder-logo-width: 20vw;
     } 
 }
 @media (min-width: 992px) {
     body {
         --builder-left-panel-width: 20vw;
         --builder-right-panel-width: 20vw; 
+        --builder-logo-width: 20vw;
     } 
 }
 @media (min-width: 1200px) {
     body {
         --builder-left-panel-width: 15vw;
         --builder-right-panel-width: 16vw; 
+        --builder-logo-width: 15vw;
     } 
 }
 @media (min-width: 1600px) {
     body {
         --builder-left-panel-width: 12vw;
         --builder-right-panel-width: 20vw; 
+        --builder-logo-width: 12vw;
     } 
 }
 @media (min-width: 2000px) {
     body {
         --builder-left-panel-width: 10vw;
         --builder-right-panel-width: 20vw; 
+        --builder-logo-width: 10vw;
     } 
 }
 body.left-panel-closed {
@@ -886,7 +892,7 @@ div.section, .header > ol {
     font-size: 20px;
     display: table;
     height: 64px;
-    width: 155px;
+    width: calc(var(--builder-logo-width) - 80px);
     line-height: 22px;
 }
 #builderTitle span{
@@ -1595,10 +1601,11 @@ body.property-editor-right-panel table.boxy-wrapper x.property-editor-container{
     display: block !important;
     position: absolute;
     top: 24px;
-    right: calc(85px - var(--builder-logo-width));
+    left: calc(101px - var(--builder-logo-width));
     background: #cccccc;
     height: calc(100vh - 94px);
     width: 350px;
+    min-width: var(--builder-logo-width);
     max-width: 100vw;
     border: 1px solid #cccccc;
     text-align: left;
