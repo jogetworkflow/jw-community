@@ -4,12 +4,17 @@ body {
 .userview-body-content {
     min-height: 70vh;
     position: relative;
+    padding: 0 !important;
 }
 .userview-body-content .center {
     position: absolute;
-    top:50%;
-    left:50%;
+    top: calc(50vh - 80px);
+    left: 50%;
     transform: translate(-50%, -50%);
+}
+.userview-body-content img.screenshot {
+    width: 100%;
+    opacity: 0.5;
 }
 .userview-body-content .center p {
     text-align: center;

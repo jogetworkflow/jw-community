@@ -2,6 +2,8 @@ UserviewBuilder = {
     mode: "userview",
     selectedMenu: null,
     availableThemeConfigPlugin : {},
+    screenshotFrame : null,
+    screenshots : {},
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -25,6 +27,29 @@ UserviewBuilder = {
             CustomBuilder.Builder.setHead('<link data-form-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-ubuilder-style href="' + CustomBuilder.contextPath + '/css/ubuilder.css" rel="stylesheet" />');
+            
+            //create another iframe for page layout screenshot
+            $("#builder_canvas").prepend('<div id="screnshot_iframe_wrapper" style="width: 100%;height: 100%;border: none;overflow: hidden;position: absolute;top:0;left:0;display: block;opacity: 0;padding: 0;z-index:-1;"><iframe src="about:none" id="iframe_screenshot" style="width:100%;height:100%;opacity: 1;"></iframe></div>');
+            UserviewBuilder.screenshotFrame = $("#iframe_screenshot").get(0);
+            $("#iframe_screenshot").on("load", function(){
+                var frameHead = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("head");
+                frameHead.append('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
+                frameHead.append('<link data-form-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
+                frameHead.append('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
+                frameHead.append('<link data-ubuilder-style href="' + CustomBuilder.contextPath + '/css/ubuilder.css" rel="stylesheet" />');
+                
+                var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
+                frameBody.append('<div id="content" style="padding:0"><main style="padding:0"></main></div>');
+            });
+            UserviewBuilder.screenshotFrame.src = CustomBuilder.contextPath+'/builder/blank.jsp';
+            
+            $(CustomBuilder.Builder.iframe).off("change.builder");
+            $(CustomBuilder.Builder.iframe).on("change.builder", function() {
+                if (CustomBuilder.Builder.selectedEl === null) {
+                    UserviewBuilder.removeMenuSnapshot();
+                }
+            });
+            
             callback();
             
             UserviewBuilder.initThemeConfigPluginList();
@@ -921,8 +946,9 @@ UserviewBuilder = {
         var self = CustomBuilder.Builder;
         
         if (UserviewBuilder.mode === "userview") {
-            self.frameBody.find("#btn_container").hide();
             UserviewBuilder.selectedMenu = null;
+            UserviewBuilder.removeMenuSnapshot();
+            
         }
         
         if (elementObj.className === "userview-categories") {
@@ -939,8 +965,8 @@ UserviewBuilder = {
             });
         } else if (element.closest(".menu-container").length > 0) {
             //is a menu
-            self.frameBody.find("#btn_container").show();
             UserviewBuilder.selectedMenu = elementObj;
+            UserviewBuilder.showMenuSnapshot();
         }
         
         if (element.closest("#navigation").length > 0) {
@@ -955,6 +981,57 @@ UserviewBuilder = {
                 });
             }
         }
+    },
+    
+    showMenuSnapshot : function() {
+        var self = CustomBuilder.Builder;
+        var json = JSON.encode(UserviewBuilder.selectedMenu);
+        var screenshotKey = UserviewBuilder.selectedMenu.properties.id + "_" + CustomBuilder.hashCode(json);
+        
+        var renderScreenshot = function(screenshot) {
+            self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
+        };
+        
+        self.frameBody.find("#btn_container").show();
+        
+        if (UserviewBuilder.screenshots[screenshotKey] === undefined) {
+            UserviewBuilder.generateMenuSnapshot(json, screenshotKey, renderScreenshot);
+        } else {
+            renderScreenshot(UserviewBuilder.screenshots[screenshotKey]);
+        }
+    },
+    
+    removeMenuSnapshot : function() {
+        var self = CustomBuilder.Builder;
+        self.frameBody.find("#btn_container").hide();
+        self.frameBody.find(".userview-body-content img.screenshot").remove();
+    },
+    
+    generateMenuSnapshot : function(json, screenshotKey, callback) {
+         var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
+         var main = frameBody.find("#content > main");
+         
+         $.ajax({
+            type: "POST",
+            data: {"json": json },
+            url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/page/template',
+            dataType : "text",
+            beforeSend: function (request) {
+               request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+            },
+            success: function(response) {
+                $(main).html(response);
+                
+                html2canvas(main, {
+                    logging: true,
+                    onrendered: function (canvas) {
+                        var image = canvas.toDataURL("image/png");
+                        UserviewBuilder.screenshots[screenshotKey] = image;
+                        callback(image);
+                    }
+                });
+            }
+        });
     },
     
     /*

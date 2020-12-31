@@ -22,6 +22,7 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewPage;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
@@ -200,6 +201,62 @@ public class UserviewBuilderWebController {
             }
         }
         writer.write(propertyOptions);
+    }
+    
+    @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/page/template")
+    public void menuPageTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        String tempJson = json;
+        if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+            if (userview != null) {
+                userview = userviewService.combinedUserviewDefinition(userview);
+                tempJson = PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), tempJson);
+            }
+        }
+        
+        tempJson = AppUtil.replaceAppMessages(tempJson, StringUtil.TYPE_JSON);
+        tempJson = AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null, appDef);
+        
+        response.addHeader("X-XSS-Protection", "0");
+
+        try {
+            JSONObject jObj = new JSONObject(tempJson);
+            UserviewMenu menu = (UserviewMenu) pluginManager.getPlugin(jObj.getString("className"));
+            
+            if (menu != null) {
+                menu.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
+                
+                Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+                requestParameters.put("contextPath", request.getContextPath());
+                requestParameters.put("isPreview", "true");
+                requestParameters.put("isBuilder", "true");
+                requestParameters.put("appId", appDef.getAppId());
+                requestParameters.put("appVersion", appDef.getVersion().toString());
+                menu.setRequestParameters(requestParameters);
+                menu.setUrl("");
+                
+                Userview userview = new Userview();
+                userview.setProperty("id", userviewId);
+                menu.setUserview(userview);
+                
+                if (jObj.has("referencePage")) {
+                    menu.setProperty("REFERENCE_PAGE", jObj.getJSONObject("referencePage"));
+                }
+                
+                UserviewPage page = new UserviewPage(menu);
+                
+                String html = page.render();
+                html = html.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
+                html = pluginManager.processPluginTranslation(html, menu.getClassName(), null);
+                html = html.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
+
+                writer.write(html);
+            }
+        } catch (Exception e) {
+            LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");
+        }
     }
     
     @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/menu/template")
