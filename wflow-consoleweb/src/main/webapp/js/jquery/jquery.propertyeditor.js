@@ -7968,7 +7968,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
                 'insertdatetime media nonbreaking table contextmenu directionality',
                 'emoticons paste textcolor colorpicker textpattern imagetools codesample toc'
             ],
-            toolbar1: 'undo redo | insert | styleselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | forecolor backcolor emoticons | print preview',
+            toolbar1: 'undo redo | insert | styleselect fontsizeselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample emoticons | print preview',
             menubar: 'edit insert view format table tools',
             image_advtab: true,
             relative_urls: false,

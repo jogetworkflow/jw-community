@@ -1438,3 +1438,12 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode.single-page .property-page-show.property-search-hide {
     display:none !important;
 }
+.editor-panel-mode.narrow .mce-top-part .mce-menubar,
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(1),
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(2),
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(3),
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(6),
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(7),
+.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(8){
+    display:none;
+}
