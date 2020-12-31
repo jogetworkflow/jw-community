@@ -172,21 +172,26 @@
         <div id="right-panel">
             <div id="right-panel-content" class="element-properties ">
                 <div class="element-properties-header-actions">
-                    <button id="apply-btn" title="<fmt:message key="cbuilder.apply"/>" class="btn btn-primary btn-sm" data-cbuilder-action="applyElementProperties">
-                        <i class="las la-check"></i>
-                    </button>
-                    <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.cancel"/>" class="btn btn-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
-                        <i class="las la-times"></i>
-                    </button>
-                    <button id="properties-max-button" title="<fmt:message key="cbuilder.maximize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
-                        <i class="lar la-window-maximize"></i>
-                    </button>
-                    <button id="properties-min-button" title="<fmt:message key="cbuilder.minimize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
-                        <i class="lar la-window-minimize"></i>
-                    </button>
-                    <button id="properties-close-button" title="<fmt:message key="cbuilder.close"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="closePropertiesWindow" style="display:none">
-                        <i class="las la-window-close"></i>
-                    </button>
+                    <div class="float-left">
+                        <button id="apply-btn" title="<fmt:message key="cbuilder.apply"/>" class="btn btn-primary btn-sm" data-cbuilder-action="applyElementProperties">
+                            <i class="las la-check"></i>
+                        </button>
+                        <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.cancel"/>" class="btn btn-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
+                            <i class="las la-times"></i>
+                        </button>
+                    </div>
+                    <div class="float-right">
+                        <button id="properties-max-button" title="<fmt:message key="cbuilder.maximize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
+                            <i class="lar la-window-maximize"></i>
+                        </button>
+                        <button id="properties-min-button" title="<fmt:message key="cbuilder.minimize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
+                            <i class="lar la-window-minimize"></i>
+                        </button>
+                        <button id="properties-close-button" title="<fmt:message key="cbuilder.close"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="closePropertiesWindow" style="display:none">
+                            <i class="las la-window-close"></i>
+                        </button>
+                    </div> 
+                    <div class="clear"></div>        
                 </div>
                 <div class="element-properties-header">
                     <div class="search">
