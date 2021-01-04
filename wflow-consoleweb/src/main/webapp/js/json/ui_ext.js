@@ -51,6 +51,12 @@ JPopup = {
         JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
+        $(".boxy-modal-blackout").off("click");
+        $(".boxy-modal-blackout").on("click", function(){
+            JPopup.dialogboxes[id].hide();
+            $(".boxy-modal-blackout").off("click");
+        });
+        
         JPopup.fixIOS(id);
         
         UI.adjustPopUpDialog(JPopup.dialogboxes[id]);
