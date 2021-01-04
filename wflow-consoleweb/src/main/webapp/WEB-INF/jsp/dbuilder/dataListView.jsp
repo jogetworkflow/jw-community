@@ -430,8 +430,7 @@
             showPopup = confirm(message);
         }
         if (showPopup && AjaxComponent) {
-            console.log(url);
-            //AjaxComponent.triggerUrlEvent(url);
+            AjaxComponent.triggerUrlEvent(url);
         }
         return false;
     }
