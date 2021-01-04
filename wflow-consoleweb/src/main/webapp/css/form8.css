@@ -158,6 +158,10 @@ textarea {
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
+textarea{
+    height: auto;
+}
+
 /* checkbox & radio */
 .form-cell-value > label,
 .subform-cell-value > label{
