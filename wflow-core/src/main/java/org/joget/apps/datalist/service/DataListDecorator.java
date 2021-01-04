@@ -293,6 +293,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
                 targetString = "onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+            } else if (target != null && "event".equalsIgnoreCase(target)) {
+                if (confirmation == null) {
+                    confirmation = "";
+                }
+                confirmation = StringUtil.stripAllHtmlTag(confirmation);
+                targetString = "onclick=\"return dlEventAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + target + "\"";

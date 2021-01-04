@@ -311,6 +311,8 @@
                             popupActionDialog.src = href;
                         }
                         popupActionDialog.init();
+                    } else if (target.toLowerCase() === "event" && AjaxComponent) {
+                        AjaxComponent.triggerUrlEvent(href);
                     } else if (target.toLowerCase() === "_blank") {
                         var win = window.open(href, '_blank');
                         win.focus();
@@ -418,6 +420,18 @@
             
             //reset the action
             $(element).closest("form").attr("action", orgAction);
+        }
+        return false;
+    }
+    function dlEventAction(element, message) {
+        var url = $(element).attr("href");
+        var showPopup = true;
+        if (message != "") {
+            showPopup = confirm(message);
+        }
+        if (showPopup && AjaxComponent) {
+            console.log(url);
+            //AjaxComponent.triggerUrlEvent(url);
         }
         return false;
     }

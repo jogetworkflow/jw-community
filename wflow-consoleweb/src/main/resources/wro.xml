@@ -121,6 +121,7 @@
         <js>/universal/js/main.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-component.js</js>
         <js>/pwa.js</js>
     </group>
     <group name="progressive.preload.min">
@@ -144,6 +145,7 @@
         <js>/progressive/js/main.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-component.js</js>
         <js>/pwa.js</js>
     </group>
     <group name="xadmin.min">
@@ -159,6 +161,7 @@
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-component.js</js>
         <js>/pwa.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
@@ -181,6 +184,7 @@
         <js>/ajaxuniversal/js/main.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-component.js</js>
         <js>/pwa.js</js>
     </group> 
     <group name="quill">

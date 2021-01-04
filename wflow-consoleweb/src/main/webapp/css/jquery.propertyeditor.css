@@ -1414,6 +1414,12 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode table.grid tr td > span.label {
     display: none;
 }
+.editor-panel-mode.narrow table.grid,
+.editor-panel-mode.narrow table.grid tbody,
+.editor-panel-mode.narrow table.grid tr{
+    display: block;
+    width: 100%;
+}
 .editor-panel-mode.narrow table.grid tr:not(.grid_model) {
     display: block;
     border: 1px solid #ddd;
@@ -1446,4 +1452,28 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(7),
 .editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(8){
     display:none;
+}
+.editor-panel-mode.narrow .property-type-repeater .collapseAll,
+.editor-panel-mode.narrow .property-type-repeater .expandAll{
+    display:none !important;
+}
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .actions{
+    padding: 2px;
+    width: 20px;
+}
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .actions.sort{
+    left: 20px;
+}
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs{
+    padding: 0px 19px 0px 40px;
+    font-size: 80%;     
+}
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property{
+    max-width: 100%;
+    min-width: 100%;
+}
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property input,
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property select,
+.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
+    max-width: 100%;
 }

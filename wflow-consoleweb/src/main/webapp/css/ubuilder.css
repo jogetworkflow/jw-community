@@ -14,7 +14,11 @@ body {
 }
 .userview-body-content img.screenshot {
     width: 100%;
-    opacity: 0.5;
+    opacity: 0.7;
+}
+.userview-body-content.has-screenshot{
+    background: transparent !important;
+    border:0 !important;
 }
 .userview-body-content .center p {
     text-align: center;

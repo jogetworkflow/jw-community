@@ -33,6 +33,10 @@
         {
             value : 'popup',
             label : '@@datalist.hyperlinkdatalistaction.popup@@'
+        },
+        {
+            value : 'event',
+            label : '@@ubuilder.eventTriggering@@'
         }]
     },
     {

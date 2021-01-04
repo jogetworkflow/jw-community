@@ -1,7 +1,10 @@
 package org.joget.apps.userview.model;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.property.service.PropertyUtil;
 
@@ -48,7 +51,20 @@ public abstract class PageComponent extends ExtElement {
                         || key.startsWith("style-"))
                      && !getPropertyString(key).isEmpty()) {
                     
-                String value = getPropertyString(key);
+                String value = "";
+                if (!(getProperty(key) instanceof String)) {
+                    try {
+                        Gson gson = new Gson();
+                        value = gson.toJson(getProperty(key));
+                    } catch (Exception e) {
+                        LogUtil.error(getClassName(), e, "");
+                    }
+                    if (value.equals("[]") || value.equals("{}")) {
+                        continue;
+                    }
+                } else {
+                    value =  getPropertyString(key);
+                }
                 if (key.contains("style") && key.endsWith("-background-image")) {
                     value = "url('"+value+"')";
                 }
@@ -56,7 +72,7 @@ public abstract class PageComponent extends ExtElement {
                 if (key.startsWith("css-")) {
                     cssClass += " " + value;
                 } else if (key.startsWith("attr-")) {
-                    attr += " " + key.replace("attr-", "") + "=\"" + value + "\"";
+                    attr += " " + key.replace("attr-", "") + "=\"" + StringUtil.escapeString(value, StringUtil.TYPE_HTML, null) + "\"";
                 } else if (key.startsWith("style-mobile-")) {
                     mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
                 } else if (key.startsWith("style-tablet-")) {

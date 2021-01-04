@@ -134,6 +134,14 @@ public class UserviewThemeProcesser {
     }
 
     public String getHtml() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            String componentId = WorkflowUtil.getHttpServletRequest().getHeader("__ajax_component");
+            if (componentId != null) {
+                return getComponentHtml(componentId);
+            }
+        }
+        
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("params", userview.getParams());
         data.put("userview", userview);
@@ -194,7 +202,7 @@ public class UserviewThemeProcesser {
         } else {
             data.put("login_link", request.getContextPath() + getLoginLink());
         }
-
+        
         data.put("content", getContent(data));
 
         String handleMenuResponse = handleMenuResponse();
@@ -725,5 +733,23 @@ public class UserviewThemeProcesser {
             defaultTheme = new DefaultV5EmptyTheme();
         }
         return defaultTheme;
+    }
+    
+    protected String getComponentHtml(String componentId) {
+        String html = "";
+        
+        if (userview.getCurrent() != null) {
+            UserviewPage page = new UserviewPage(userview.getCurrent());
+            html = page.renderComponent(componentId, null);
+
+            String handleMenuResponse = handleMenuResponse();
+            if (handleMenuResponse != null) {
+                return handleMenuResponse;
+            } else if (redirectUrl != null) {
+                return "<script>location.href = \""+redirectUrl+"\";</script>";
+            }
+        }
+        
+        return html;
     }
 }

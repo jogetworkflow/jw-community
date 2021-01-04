@@ -43,7 +43,7 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
      * @param property 
      */
     public String getPropertyString(String property) {
-        String value = (properties != null && properties.get(property) != null) ? (String) properties.get(property) : "";
+        String value = (properties != null && properties.get(property) != null) ? properties.get(property).toString() : "";
         return value;
     }
     

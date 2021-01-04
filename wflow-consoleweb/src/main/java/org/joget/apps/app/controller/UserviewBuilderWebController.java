@@ -82,6 +82,8 @@ public class UserviewBuilderWebController {
             return "error404";
         }
         
+        userview = userviewService.combinedUserviewDefinition(userview);
+        
         String userviewJson = null;
         if (json != null && !json.trim().isEmpty()) {
             try {

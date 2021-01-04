@@ -36,6 +36,39 @@ public class UserviewPage {
         return html;
     }
     
+    public String renderComponent(String id, Collection<PageComponent> components) {
+        String html = "";
+        
+        if (components == null) {
+            components = getPageComponents();
+        }
+        
+        if (components != null) {
+            for (PageComponent c : components) {
+                if (id.equals("pc-" + c.getPropertyString("id")) || id.equals(c.getPropertyString("customId"))) {
+                    html += c.render();
+                    
+                    if (c instanceof UserviewMenu) {
+                        UserviewMenu t = (UserviewMenu) c;
+                        menu.setProperty(UserviewMenu.ALERT_MESSAGE_PROPERTY, t.getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY));
+                        menu.setProperty(UserviewMenu.REDIRECT_URL_PROPERTY, t.getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY));
+                        menu.setProperty(UserviewMenu.REDIRECT_PARENT_PROPERTY, t.getPropertyString(UserviewMenu.REDIRECT_PARENT_PROPERTY));
+                    }
+                    
+                    break;
+                } else if (c.getChildren() != null && !c.getChildren().isEmpty()) {
+                    html += renderComponent(id, c.getChildren());
+                    
+                    if (!html.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return html;
+    }
+    
     private Collection<PageComponent> getPageComponents() {
         if (menu.getProperties().containsKey("REFERENCE_PAGE")) {
             try {
