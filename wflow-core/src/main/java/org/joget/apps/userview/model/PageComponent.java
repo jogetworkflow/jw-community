@@ -38,6 +38,8 @@ public abstract class PageComponent extends ExtElement {
         String cssClass = "";
         String attr = ""; 
         
+        cssClass += " " + getName().replaceAll(" ", "_");
+        
         for (String key : getProperties().keySet()) {
             if ((key.startsWith("css-") 
                         || key.startsWith("attr-")

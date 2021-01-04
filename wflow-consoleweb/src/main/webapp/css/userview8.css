@@ -812,6 +812,11 @@ body#login #loginForm table td input[type='submit'] {
 /* USERVIEW MENUS */
 
 /* dashboard */
+#content .main-body-content.Dashboard {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+}
 #content .grid-stack-item .grid-stack-item-content{
     background-color: var(--theme-content-background, #ffffff);
     border: 1px solid rgba(0,0,0,.0625)!important;
