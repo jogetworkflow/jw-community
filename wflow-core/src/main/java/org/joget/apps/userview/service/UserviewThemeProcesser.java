@@ -309,7 +309,7 @@ public class UserviewThemeProcesser {
                 } else if (request.getQueryString() == null && request.getHeader("referer") != null) {
                     String referer = request.getHeader("referer");
                     if (referer != null && referer.contains("?")) {
-                        String queryString = referer.substring(menuId.indexOf("?"));
+                        String queryString = referer.substring(referer.indexOf("?"));
                         url += queryString;
                     }
                 }
