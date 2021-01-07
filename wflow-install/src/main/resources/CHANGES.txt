@@ -3,6 +3,14 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.13
+=================
+21cd2f86 Fixed: wflow-core - Git to Joget sync failed for Resources files to wflow folder. #8674 @7.0-SNAPSHOT
+1f8a2ce6 Fixed: wflow-core - Form Menu - If form menu have URL params, as anonymous user, after login, all URL params will be stripped away. @7.0-SNAPSHOT
+5869c313 Fixed: wflow-core - Resource filename in Chinese characters displayed as underscore after upload.#8637 @7.0-SNAPSHOT
+66a64665 Fixed: wflow-core - Universal/Progressive/Xadmin theme - Gravatar image not showing when email is empty. @7.0-SNAPSHOT
+714b8e7c Fixed: wflow-wfengine - WorkflowManager - Can't show next assignment in main process when subflow is completed. #8223 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.12
 =================
 31aaca03 Fixed: wflow-core - Import App - Process tool is not included in Git plugin sync. #8574 @7.0-SNAPSHOT
