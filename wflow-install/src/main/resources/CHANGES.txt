@@ -2,6 +2,18 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.31
+=================
+08b8a8b6 Fixed: wflow-core - Resource filename in Chinese characters displayed as underscore after upload.#8637 @6.0-SNAPSHOT
+f931b8e3 wflow-core - Form Menu - If form menu have URL params, as anonymous user, after login, all URL params will be stripped away. @6.0-SNAPSHOT
+b2383334 Fixed: wflow-core - Universal/Progressive theme - Gravatar image not showing when email is empty. @6.0-SNAPSHOT
+0b70b891 Fixed: jw-community - Security - Upgrade spring-core to 4.3.29.RELEASE for CVE-2018-15756. @6.0-SNAPSHOT
+7dca14a1 Fixed: wflow-core - File Upload - File attachment with Chinese parentheses in filename does not handle correctly. #8064 @6.0-SNAPSHOT
+ab505c86 Modified: wflow-install- Update mysql-connector-java to 8.0.19. @6.0-SNAPSHOT
+b3ca780d Modified: wflow-core - Update poi to 3.17 for CVE-2017-12626. @6.0-SNAPSHOT
+ebb6cda4 Modified: wflow-consoleweb - Update mysql-connector-java to 8.0.19 for CVE-2019-2692. @6.0-SNAPSHOT
+a18bf606 Fixed: wflow-core - Import app - plugins size are incorrect after imported. #8104 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.30
 =================
 f8e6c2fc Fixed: wflow-core - Form/Run Process Menu - Regression of 1405f024. #7978 @6.0-SNAPSHOT
