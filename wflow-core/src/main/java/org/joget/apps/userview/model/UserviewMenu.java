@@ -239,14 +239,17 @@ public abstract class UserviewMenu extends PageComponent {
     
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        String html = "<div "+attr+" id=\""+id+"\" class=\"main-body-content "+cssClass+"\">" + style;
+        String html;
         if (isBuilder) {
-            html += UserviewUtil.getUserviewMenuHtmlWithoutCache(this);
+            html = UserviewUtil.getUserviewMenuHtmlWithoutCache(this);
         } else {
-            html += UserviewUtil.getUserviewMenuHtml(this);
+            html = UserviewUtil.getUserviewMenuHtml(this);
         }
         
-        return html + "</div>";
+        if (html != null) {
+            return "<div "+attr+" id=\""+id+"\" class=\"main-body-content "+cssClass+"\">" + style + html + "</div>";
+        }
+        return "";
     }
     
     @Override
