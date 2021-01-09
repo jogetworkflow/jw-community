@@ -958,6 +958,62 @@ UserviewBuilder = {
     },
     
     /*
+     * Find event names from page component
+     */
+    getEventNames : function() {
+        var menu = UserviewBuilder.selectedMenu;
+        var page = menu.referencePage;
+        
+        var names = [];
+        
+        var addEvent = function(name) {
+            var temps = name.split(" ");
+            for (var t in temps) {
+                if (temps[t] !== "" && $.inArray(temps[t], names) === -1) {
+                    names.push(temps[t]);
+                }
+            }
+        };
+        
+        var loopComponent = function(component) {
+            if (component.properties !== undefined) {
+                if (component.properties['attr-data-event-triggering'] !== undefined) {
+                    addEvent(component.properties['attr-data-event-triggering']);
+                }
+                if (component.properties['attr-data-events-listening'] !== undefined) {
+                    for (var e in component.properties['attr-data-events-listening']) {
+                        addEvent(component.properties['attr-data-events-listening'][e].name);
+                    }
+                }
+                if (component.properties['attr-data-events-triggering'] !== undefined) {
+                    for (var e in component.properties['attr-data-events-triggering']) {
+                        addEvent(component.properties['attr-data-events-triggering'][e].name);
+                    }
+                }
+            }
+            
+            if (component.elements !== undefined && component.elements.length > 0) {
+                for (var c in component.elements) {
+                    loopComponent(component.elements[c]);
+                }
+            }
+        };
+        loopComponent(menu);
+        loopComponent(menu.referencePage);
+        
+        names.sort();
+        
+        var results = [];
+        for (var n in names) {
+            results.push({
+                label : names[n], value : names[n]
+            });
+        }
+        
+        return results;
+    },
+    
+    /*
      *  Used to retrieve ajax & events properties options and inject to menu properties options 
      */
     getAjaxEventPropertyOptions : function (elementOptions) {
@@ -982,7 +1038,8 @@ UserviewBuilder = {
                         {
                             name : 'name',
                             label : get_cbuilder_msg("ubuilder.eventName"),
-                            type : 'textfield',
+                            type : 'autocomplete',
+                            options_callback : 'UserviewBuilder.getEventNames',
                             required : 'True'
                         },
                         {
@@ -1079,7 +1136,8 @@ UserviewBuilder = {
                         {
                             name : 'name',
                             label : get_cbuilder_msg("ubuilder.eventName"),
-                            type : 'textfield',
+                            type : 'autocomplete',
+                            options_callback : 'UserviewBuilder.getEventNames',
                             required : 'True'
                         },
                         {
@@ -1167,7 +1225,8 @@ UserviewBuilder = {
                         {
                             name : 'name',
                             label : get_cbuilder_msg("ubuilder.eventName"),
-                            type : 'textfield',
+                            type : 'autocomplete',
+                            options_callback : 'UserviewBuilder.getEventNames',
                             required : 'True'
                         },
                         {
