@@ -12,7 +12,7 @@
         
         <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form8.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
@@ -71,9 +71,6 @@
                 <button onclick="reloadForm()">Reload</button>
             </div-->
         </fieldset>
-
-        <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
-        <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
                 
         <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />    
     </body>
