@@ -596,6 +596,7 @@
     border: 1px solid gray;
     max-height: 150px;
     overflow:auto;
+    font-size: 13px;
 }
 
 td.error .chosen-container, td.error input {
@@ -824,6 +825,30 @@ td.error .chosen-container, td.error input {
     min-width: 300px;
     display: inline-block;
     vertical-align: top;
+}
+.repeater-row .inputs .property-editor-property.property-type-header,
+.repeater-row .inputs .property-editor-property.property-type-sortableselect,
+.repeater-row .inputs .property-editor-property.property-type-grid,
+.repeater-row .inputs .property-editor-property.property-type-gridcombine,
+.repeater-row .inputs .property-editor-property.property-type-gridfixedrow,
+.repeater-row .inputs .property-editor-property.property-type-repeater,
+.repeater-row .inputs .property-editor-property.property-type-htmleditor,
+.repeater-row .inputs .property-editor-property.property-type-codeeditor,
+.repeater-row .inputs .property-editor-property.property-type-elementmultiselect,
+.repeater-row .inputs .property-editor-property.property-type-custom{
+    width: 100%;
+}
+.repeater-row .inputs .property-editor-property.property-type-header .property-input,
+.repeater-row .inputs .property-editor-property.property-type-sortableselect .property-input,
+.repeater-row .inputs .property-editor-property.property-type-grid .property-input,
+.repeater-row .inputs .property-editor-property.property-type-gridcombine .property-input,
+.repeater-row .inputs .property-editor-property.property-type-gridfixedrow .property-input,
+.repeater-row .inputs .property-editor-property.property-type-repeater .property-input,
+.repeater-row .inputs .property-editor-property.property-type-htmleditor .property-input,
+.repeater-row .inputs .property-editor-property.property-type-codeeditor .property-input,
+.repeater-row .inputs .property-editor-property.property-type-elementmultiselect .property-input,
+.repeater-row .inputs .property-editor-property.property-type-custom .property-input{
+    width: 100%;
 }
 .repeater-row .inputs .property-label-container {
     width: 30%;
