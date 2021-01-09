@@ -911,3 +911,54 @@ form.form .btn {
     color: var(--theme-font-color, #72777a);
     font-weight: 400;
 }
+
+/* quick edit & analyzer */
+body.quickEditModeActive fieldset#form-canvas, 
+body.quickEditModeActive fieldset#form-canvas .subform-container, 
+body.quickEditModeActive .dataList, 
+body.quickEditModeActive #category-container {
+    border: inherit !important;
+    padding: inherit !important;
+    position: relative;
+}
+body.quickEditModeActive fieldset#form-canvas:before, 
+body.quickEditModeActive fieldset#form-canvas .subform-container:before, 
+body.quickEditModeActive .dataList:before, 
+body.quickEditModeActive #category-container:before{
+    border: solid 5px #e7fab6;
+    position: absolute;
+    top:0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    content: "";
+}
+#navigation .menu.analyzer, 
+.form-section.analyzer, 
+.form-column.analyzer, 
+.form-cell.analyzer, 
+.subform-section.analyzer, 
+.subform-column.analyzer, 
+.subform-cell.analyzer, 
+#content.analyzer {
+    border: inherit !important;
+    margin: inherit !important;
+    border-radius: inherit !important;
+    position: relative;
+}
+#navigation .menu.analyzer:before, 
+.form-section.analyzer:before, 
+.form-column.analyzer:before, 
+.form-cell.analyzer:before, 
+.subform-section.analyzer:before, 
+.subform-column.analyzer:before, 
+.subform-cell.analyzer:before, 
+#content.analyzer:before{
+    border: solid 1px orange;
+    position: absolute;
+    top:0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    content: "";
+}
