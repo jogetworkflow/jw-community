@@ -178,6 +178,18 @@ UserviewBuilder = {
                 callback(element);
             }
         }});
+        CustomBuilder.initPaletteElement("", "userview-usermenu", get_cbuilder_msg('ubuilder.usermenu'), "<i class=\"fas fa-user\"></i>", "", "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'supportProperties' : false,
+            'stylePrefix' : 'usermenu',
+            'render' : function(element, elementObj, component, callback) {
+                UserviewBuilder.updateThemeStyle();
+                callback(element);
+            }
+        }});
         CustomBuilder.initPaletteElement("", "userview-categories", get_cbuilder_msg('ubuilder.categories'), "<i class=\"fas fa-folder\"></i>", "", "", false, "", {builderTemplate: {
             'draggable' : false,
             'movable' : false,
@@ -774,6 +786,11 @@ UserviewBuilder = {
         
         html += '<nav id="navigation" class="nav-collapse sidebar-nav">';
         
+        //usermenu
+        html += '<ul class="user-menu nav nav-tabs nav-stacked main-menu"><li class="mm-profile user-link toggled">';
+        html += '<a class="dropdown" data-cbuilder-classname="userview-usermenu" ><img class="gravatar" alt="gravatar" width="30" height="30" src="//www.gravatar.com/avatar/default?d=identicon"><span>Admin</span><small>email@company.com</small></a>';
+        html += '<ul><li><a href=""><span><i class="fa fa-user"></i> '+get_cbuilder_msg('ubuilder.profile')+'</span></a></li><li><a href=""><span><i class="fa fa-power-off"></i> '+get_cbuilder_msg('ubuilder.logout')+'</span></a></li></ul></li></ul>';
+        
         //category container
         html += '<ul id="category-container" class="nav nav-tabs nav-stacked main-menu" data-cbuilder-classname="userview-categories" data-cbuilder-categories></ul></nav></div>';
         
@@ -797,6 +814,7 @@ UserviewBuilder = {
         userviewElement.find('[data-cbuilder-classname="userview-welcome-message"]').data("data", {className: "userview-welcome-message", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-sidebar"]').data("data", {className: "userview-sidebar", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-brand-logo"]').data("data", {className: "userview-brand-logo", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-usermenu"]').data("data", {className: "userview-usermenu", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-name"]').data("data", {className: "userview-name", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: combinedProperties, categories: elementObj.categories});
         userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
@@ -838,6 +856,7 @@ UserviewBuilder = {
             builder.handleStylingProperties(element, props, "breadcrumb", ".breadcrumb");
             builder.handleStylingProperties(element, props, "brand-name", ".sidebar_brand #header-link");
             builder.handleStylingProperties(element, props, "brand-logo", ".sidebar_brand .logo_container img");
+            builder.handleStylingProperties(element, props, "usermenu", "#navigation .user-menu > .mm-profile > a");
             
             element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
             if (props.dx8background !== undefined) {

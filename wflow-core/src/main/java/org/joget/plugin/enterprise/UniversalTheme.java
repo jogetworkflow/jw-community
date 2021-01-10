@@ -427,6 +427,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         generateStyle(styles, getProperties(), ".breadcrumb", "breadcrumb");
         generateStyle(styles, getProperties(), ".sidebar_brand #header-link", "brand-name");
         generateStyle(styles, getProperties(), ".sidebar_brand .logo_container img", "brand-logo");
+        generateStyle(styles, getProperties(), "#navigation .user-menu > .mm-profile > a", "usermenu");
         
         String css = styles.get("STYLE");
         if (!styles.get("TABLET_STYLE").isEmpty()) {

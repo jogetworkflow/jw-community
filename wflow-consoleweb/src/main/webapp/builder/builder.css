@@ -878,7 +878,7 @@ div.section, .header > ol {
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(var(--builder-logo-width) - 1px);
+    width: var(--builder-logo-width);
     padding: 0 15px;
     height: 64px;
     line-height: 80px;
