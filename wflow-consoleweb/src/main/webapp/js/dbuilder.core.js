@@ -1993,19 +1993,19 @@ DatalistBuilder = {
      */
     renderTreeMenuAdditionalNode : function(container, target) {
         var type = "";
-        if (target.is("[data-cbuilder-filters]")) {
+        if (target.is("[data-cbuilder-filters]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "filters";
-        } else if (target.is("[data-cbuilder-columns]")) {
+        } else if (target.is("[data-cbuilder-columns]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "columns";
-        } else if (target.is("[data-cbuilder-rowActions]")) {
+        } else if (target.is("[data-cbuilder-rowActions]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "rowActions";
-        } else if (target.is("[data-cbuilder-actions]")) {
+        } else if (target.is("[data-cbuilder-actions]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "actions";
         }
         
         if (type !== "") {
             var rid = "r" + (new Date().getTime());
-            var label = type; //TODO i18n
+            var label = get_cbuilder_msg("dbuilder.type." + type);
             var li = $('<li class="tree-viewer-node"><label>'+label +'</label><input type="checkbox" id="'+rid+'" checked/></li>');
             
             if (target.is("[data-cbuilder-rowActions]")) {
