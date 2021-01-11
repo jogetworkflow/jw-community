@@ -390,13 +390,15 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
 
                 String profileImageTag = "";
                 if (getPropertyString("userImage").isEmpty()) {
-                    String url = new Gravatar()
-                        .setSize(30)
-                        .setHttps(true)
-                        .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
-                        .setStandardDefaultImage(DefaultImage.IDENTICON)
-                        .getUrl(email);
-                    profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+                    String url = (email != null && !email.isEmpty()) ? 
+                        new Gravatar()
+                            .setSize(20)
+                            .setHttps(true)
+                            .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
+                            .setStandardDefaultImage(DefaultImage.IDENTICON)
+                            .getUrl(email)
+                        : "//www.gravatar.com/avatar/default?d=identicon";
+                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
                 } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                     String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
@@ -470,13 +472,15 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             
             String profileImageTag = "";
             if (getPropertyString("userImage").isEmpty()) {
-                String url = new Gravatar()
-                    .setSize(30)
-                    .setHttps(true)
-                    .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
-                    .setStandardDefaultImage(DefaultImage.IDENTICON)
-                    .getUrl(email);
-                profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+                String url = (email != null && !email.isEmpty()) ? 
+                    new Gravatar()
+                        .setSize(20)
+                        .setHttps(true)
+                        .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
+                        .setStandardDefaultImage(DefaultImage.IDENTICON)
+                        .getUrl(email)
+                    : "//www.gravatar.com/avatar/default?d=identicon";
+                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {

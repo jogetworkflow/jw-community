@@ -2218,24 +2218,32 @@ public class AppServiceImpl implements AppService {
     @Override
     public void importPlugins(byte[] zip) throws Exception {
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            ByteArrayOutputStream out = null;
 
-        ZipEntry entry = null;
+            ZipEntry entry = null;
 
-        while ((entry = in.getNextEntry()) != null) {
-            if (entry.getName().endsWith(".jar")) {
-                int length;
-                byte[] temp = new byte[1024];
-                while ((length = in.read(temp, 0, 1024)) != -1) {
-                    out.write(temp, 0, length);
+            while ((entry = in.getNextEntry()) != null) {
+                if (entry.getName().endsWith(".jar")) {
+                    out = new ByteArrayOutputStream();
+
+                    try {
+                        int length;
+                        byte[] temp = new byte[1024];
+                        while ((length = in.read(temp, 0, 1024)) != -1) {
+                            out.write(temp, 0, length);
+                        }
+
+                        pluginManager.upload(entry.getName(), new ByteArrayInputStream(out.toByteArray()));
+                    } finally {
+                        out.flush();
+                        out.close();
+                    }
                 }
-
-                pluginManager.upload(entry.getName(), new ByteArrayInputStream(out.toByteArray()));
             }
-            out.flush();
-            out.close();
+        } finally {
+            in.close();
         }
-        in.close();
     }
 
     /**
