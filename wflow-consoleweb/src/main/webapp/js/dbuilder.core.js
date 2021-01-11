@@ -1300,6 +1300,72 @@ DatalistBuilder = {
     renderXray : function(detailsDiv, element, elementObj, component , callback) {
         var dl = detailsDiv.find('dl');
         
+        if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
+            dl.find('> *:eq(1)').text(elementObj.name);
+            if ($(element).closest(".card-layout-active").length === 0) {
+                var sortable = get_cbuilder_msg('dbuilder.unsortable');
+                if (elementObj.sortable === "true") {
+                    sortable = get_cbuilder_msg('dbuilder.sortable');
+                }
+                dl.append('<dt><i class="las la-sort" title="'+get_cbuilder_msg('dbuilder.sortable')+'"></i></i></dt><dd>'+sortable+'</dd>');
+                var exportable = get_cbuilder_msg('dbuilder.exportable');
+                if ((elementObj.hidden === "true" && elementObj.include_export !== "true") ||
+                    (elementObj.hidden !== "true" && elementObj.exclude_export === "true")) {
+                    exportable = get_cbuilder_msg('dbuilder.unexportable');
+                }
+                dl.append('<dt><i class="las la-file-export" title="'+get_cbuilder_msg('dbuilder.exportable')+'"></i></i></dt><dd>'+exportable+'</dd>');
+                var width = get_cbuilder_msg("dbuilder.default");
+                if (elementObj.width !== undefined && elementObj.width !== "") {
+                    width = elementObj.width;
+                }
+                dl.append('<dt><i class="las la-ruler-horizontal" title="'+get_cbuilder_msg('dbuilder.width')+'"></i></i></dt><dd>'+width+'</dd>');
+            }
+            var action = "-";
+            if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
+                action = elementObj.action.className;
+                if (DatalistBuilder.availableActions[action] !== undefined) {
+                    action = DatalistBuilder.availableActions[action];
+                } else {
+                    action += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                }
+            }
+            dl.append('<dt><i class="las la-link" title="'+get_cbuilder_msg('dbuilder.action')+'"></i></i></dt><dd>'+action+'</dd>');
+            var format = "-";
+            if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
+                format = elementObj.format.className;
+                if (DatalistBuilder.availableFormatters[format] !== undefined) {
+                    format = DatalistBuilder.availableFormatters[format];
+                } else {
+                    format += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                }
+            }
+            dl.append('<dt><i class="las la-paint-brush" title="'+get_cbuilder_msg('dbuilder.formatter')+'"></i></i></dt><dd>'+format+'</dd>');
+        } else if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
+            dl.find('> *:eq(1)').text(elementObj.name);
+            var type = "-";
+            if (elementObj.type !== undefined && elementObj.type.className !== undefined && elementObj.type.className !== "") {
+                type = elementObj.type.className;
+                if (DatalistBuilder.availableFilters[type] !== undefined) {
+                    type = DatalistBuilder.availableFilters[type];
+                } else {
+                    type += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                }
+            }
+            dl.find("> *:eq(1)").after('<dt><i class="las la-cube" title="'+get_cbuilder_msg('dbuilder.filter')+'"></i></i></dt><dd>'+type+'</dd>');
+        } else if (elementObj.id.indexOf(DatalistBuilder.actionPrefix) === 0) {
+            //nothing
+        } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
+            var fields = [];
+            if (elementObj['properties'] !== undefined && elementObj['properties']['rules'] !== undefined) {
+                for (var i in elementObj['properties']['rules']) {
+                    var name = elementObj['properties']['rules'][i].field;
+                    if ($.inArray(name, fields) === -1) {
+                        fields.push(name);
+                    }
+                }
+            }
+            dl.append('<dt><i class="las la-eye" title="'+get_cbuilder_msg('dbuilder.rowAction.visibility')+'"></i></i></dt><dd>'+fields.join(', ')+'</dd>');
+        }
         
         callback();
     },

@@ -88,6 +88,11 @@
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties"
             }
+        },
+        "advanced_tools" : {
+            "xray" : {
+                "disabled" : false,
+            }
         }  
     }
 </c:set>

@@ -68,6 +68,28 @@ body:not(.show-node-details) [data-cbuilder-tablet-invisible]::after {
     display: flex;
     align-items: center;
     justify-content: center; }
+body.show-node-details [data-cbuilder-classname],
+body.show-node-details [data-cbuilder-select]{
+    min-width: 200px;
+    max-width: 100%;
+}
+.cbuilder-node-details-list > dd {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cbuilder-node-details-list > dd:hover {
+    overflow: visible;
+    white-space: normal;
+}
+.cbuilder-node-details-list > dd > br {
+    display: none;
+}
+.cbuilder-node-details-list {
+    text-align: left;
+    font-size: 11px;
+    z-index: 1;
+}
 @media (min-width: 992px) {
     body:not(.show-node-details) [data-cbuilder-mobile-invisible]::after,
     body:not(.show-node-details) [data-cbuilder-tablet-invisible]::after {
@@ -131,7 +153,8 @@ body:not(.show-node-details) [data-cbuilder-tablet-invisible]::after {
     color: #fff;
     margin: 0;
     line-height: 13px;
-    padding: 5px 15px;
+    padding: 5px 5px;
+    font-weight: normal;
 }
 .cbuilder-node-details-box {
     border: 1px dashed #ffab00;
@@ -139,7 +162,7 @@ body:not(.show-node-details) [data-cbuilder-tablet-invisible]::after {
 .cbuilder-node-details dl dt {
     float: left;
     clear: left;
-    padding-right: 15px;
+    padding-right: 5px;
 }
 .cbuilder-node-details dl dd:last-child{
     margin-bottom: 0;

@@ -325,7 +325,7 @@ FormBuilder = {
         }
         
         if (elementObj['properties']['comment'] !== undefined && elementObj['properties']['comment'] !== "") {
-            dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
+            dl.append('<dt><i class="lar la-comment" title="'+get_cbuilder_msg('ubuilder.comment')+'"></i></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
         }
         
         callback();

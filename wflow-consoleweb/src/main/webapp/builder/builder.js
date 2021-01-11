@@ -435,8 +435,8 @@ CustomBuilder = {
                 iconObj = $(icon);
                 iconStr = icon;
             } catch (err) {
-                iconObj =  $('<span class="image" style="background-image:url(\'' + CustomBuilder.contextPath + icon + '\');" />');
-                iconStr = '<span class="image" style="background-image:url(\'' + CustomBuilder.contextPath + icon + '\');" />';
+                iconObj =  $('<span class="image" style="background-image:url(\'' + CustomBuilder.contextPath + icon + '\');"></span>');
+                iconStr = '<span class="image" style="background-image:url(\'' + CustomBuilder.contextPath + icon + '\');" ></span>';
             }
         } else {
             iconObj = $('<i class="fas fa-th-large"></i>');
@@ -1822,7 +1822,17 @@ CustomBuilder.Builder = {
         var component = self.parseDataToComponent(data);
         var temp = $('<div></div>');
         self.frameBody.append(temp);
-        self.renderElement(data, temp, component, false, null, callback);
+        self.renderElement(data, temp, component, false, null, function(){
+            if ($("body").hasClass("xray-builder-view")) {
+                CustomBuilder.Builder.renderNodeAdditional('Xray');
+            } else if ($("body").hasClass("permission-builder-view")) {
+                CustomBuilder.Builder.renderNodeAdditional('Permission');
+            }
+            
+            if (callback) {
+                callback();
+            }
+        });
         
         if (component !== null && component.builderTemplate.isPastable(data, component)) {
             $("#paste-element-btn").removeClass("disabled");
@@ -2877,6 +2887,9 @@ CustomBuilder.Builder = {
                 'getPasteTemporaryNode' : function(elementObj, component) {
                     return '<div></div>';
                 },
+                'isRenderNodeAdditional' : function(elementObj, component, type) {
+                    return this.renderNodeAdditional;
+                },
                 'isSupportProperties' : function(elementObj, component) {
                     return this.supportProperties;
                 },
@@ -2926,6 +2939,7 @@ CustomBuilder.Builder = {
                 'deletable' : true,
                 'copyable' : true,
                 'navigable' : true,
+                'renderNodeAdditional' : true,
                 'builderReady' : true
             }, component.builderTemplate);
             
@@ -3427,12 +3441,21 @@ CustomBuilder.Builder = {
                 var component = self.parseDataToComponent(data);
                 var props = self.parseElementProps(data);
                 
-                var label = component.label;
-                if (props.label !== undefined && props.label !== "") {
-                    label = props.label;
-                } else if (props.id !== undefined && props.id !== "") {
-                    label = props.id;
+                if (component.builderTemplate.customPropertiesData) {
+                    props = component.builderTemplate.customPropertiesData(props, data, component);
                 }
+                
+                var label = component.label;
+                if (component.builderTemplate.getLabel) {
+                    label = component.builderTemplate.getLabel(data, component);
+                } else if (component.builderTemplate.isSupportProperties(data, component)) {
+                    if (props.label !== undefined && props.label !== "") {
+                        label = props.label;
+                    } else if (props.id !== undefined && props.id !== "") {
+                        label = props.id;
+                    }
+                }
+                
                 var li = $('<li class="tree-viewer-item"><label>'+component.icon+' <a>'+label+'</a></label><input type="checkbox" id="'+rid+'" checked/></li>');
                 $(li).data("node", $(this));
                 
@@ -3447,7 +3470,6 @@ CustomBuilder.Builder = {
                 if (self.selectedEl && self.selectedEl.is($(this))) {
                     $(li).addClass("active");
                 }
-                
                 container.find("> ol").append(li);
                 self.renderTreeMenu(li, $(this));
             } else {
@@ -3505,9 +3527,29 @@ CustomBuilder.Builder = {
             self.renderNodeAdditional(type, $(this), clevel);
         });
         
-        if (target.is("[data-cbuilder-classname]") && !target.is("[data-cbuilder-uneditable]")) {
-            var data = $(target).data("data");
+        if (target.is("[data-cbuilder-classname]") || target.is("[data-cbuilder-select]")) {
+            var element = target;
+            if (target.is("[data-cbuilder-select]")) {
+                var id = $(target).data('cbuilder-select');
+                element = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
+                if ($(element).find("> .cbuilder-node-details").length > 0) {
+                    return;
+                }
+            } else if (!$(element).is(":visible")) {
+                return;
+            }
+            
+            if ($(element).is("[data-cbuilder-uneditable]")) {
+                return;
+            }
+            
+            var data = $(element).data("data");
             var component = self.parseDataToComponent(data);
+            
+            if(!component.builderTemplate.isRenderNodeAdditional(data, component, type)) {
+                return;
+            }
+            
             var detailsDiv = $("<div class='cbuilder-node-details cbuilder-details-"+type+"'></div>");
             $(target).prepend(detailsDiv);
             $(detailsDiv).addClass("cbuilder-node-details-level"+level);
@@ -3515,12 +3557,24 @@ CustomBuilder.Builder = {
             $(detailsDiv).prepend("<div class=\"cbuilder-node-details-box\"></div><dl class=\"cbuilder-node-details-list\"></dl>");
             
             var dl = detailsDiv.find('dl');
-            dl.append('<dt><i class="las la-cube" title="Type"></i></dt><dd>'+component.label+'</dd>');
+            var label = component.label;
+            if (component.builderTemplate.getLabel) {
+                label = component.builderTemplate.getLabel(data, component);
+            }
+            dl.append('<dt><i class="las la-cube" title="Type"></i></dt><dd>'+label+'</dd>');
 
             var props = self.parseElementProps(data);
+            
+            if (component.builderTemplate.customPropertiesData) {
+                props = component.builderTemplate.customPropertiesData(props, data, component);
+            }
+                
             var id = props.id;
             if (id === undefined && data.id !== undefined) {
                 id = data.id;
+            }
+            if (props.customId !== undefined && props.customId !== "") {
+                id = props.customId;
             }
             if (id !== undefined) {
                 dl.append('<dt><i class="las la-id-badge" title="Id"></i></dt><dd>'+id+'</dd>');
@@ -3550,8 +3604,10 @@ CustomBuilder.Builder = {
                 var height = $(detailsDiv).find(".cbuilder-node-details-list").outerHeight();
                 var padding = height + (box.top - dBox.top + offset) + offset;
                 
-                $(detailsDiv).css("padding-top", padding + "px");
-
+                setTimeout(function(){
+                    $(detailsDiv).css("padding-top", padding + "px");
+                }, 1);
+                
                 $(detailsDiv).find(".cbuilder-node-details-box").css({
                     "top" : (box.top - dBox.top + offset) + "px",
                     "left" : (box.left - dBox.left) + "px",
@@ -3566,9 +3622,9 @@ CustomBuilder.Builder = {
             
             var method = component.builderTemplate["render" + type];
             if (method !== undefined) {
-                component.builderTemplate["render" + type](detailsDiv, target, data, component, callback);
+                component.builderTemplate["render" + type](detailsDiv, element, data, component, callback);
             } else if (CustomBuilder.Builder.options.callbacks["render" + type] !== undefined && CustomBuilder.Builder.options.callbacks["render" + type] !== "") {
-                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["render" + type], [detailsDiv, target, data, component, callback]);
+                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["render" + type], [detailsDiv, element, data, component, callback]);
             } else {
                 callback();
             }

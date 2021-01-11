@@ -99,6 +99,7 @@ UserviewBuilder = {
             'deletable' : false,
             'copyable' : false,
             'navigable' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'header',
             'render' : function(element, elementObj, component, callback) {
                 UserviewBuilder.updateThemeStyle();
@@ -106,6 +107,9 @@ UserviewBuilder = {
             },
             'isSupportProperties' : function(elementObj, component) {
                 return UserviewBuilder.availableThemeConfigPlugin[CustomBuilder.data.setting.properties.theme.className] !== undefined;
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-welcome-message", get_cbuilder_msg('ubuilder.welcomeMessage'), "<i class=\"fas fa-heading\"></i>",  
@@ -116,11 +120,15 @@ UserviewBuilder = {
             'deletable' : false,
             'copyable' : false,
             'navigable' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'welcome-message',
             'render' : function(element, elementObj, component, callback) {
                 element.find("#welcomeMessage").html(elementObj.properties.welcomeMessage);
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-sidebar", get_cbuilder_msg('ubuilder.sidebar'), "<i class=\"fas fa-columns\"></i>", 
@@ -132,6 +140,7 @@ UserviewBuilder = {
             'copyable' : false,
             'navigable' : false,
             'supportProperties' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'sidebar',
             'render' : function(element, elementObj, component, callback) {
                 UserviewBuilder.updateThemeStyle();
@@ -139,6 +148,9 @@ UserviewBuilder = {
             },
             'isSupportProperties' : function(elementObj, component) {
                 return UserviewBuilder.availableThemeConfigPlugin[CustomBuilder.data.setting.properties.theme.className] !== undefined;
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-brand-logo", get_cbuilder_msg('ubuilder.brandLogo'), "<i class=\"far fa-image\"></i>",  
@@ -148,6 +160,7 @@ UserviewBuilder = {
             'movable' : false,
             'deletable' : false,
             'copyable' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'brand-logo',
             'render' : function(element, elementObj, component, callback) {
                 var logoUrl = elementObj.properties.logo;
@@ -162,6 +175,9 @@ UserviewBuilder = {
                 element.html(img);
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-name", get_cbuilder_msg('ubuilder.userviewName'), "<i class=\"fas fa-heading\"></i>",  
@@ -171,11 +187,15 @@ UserviewBuilder = {
             'movable' : false,
             'deletable' : false,
             'copyable' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'brand-name',
             'render' : function(element, elementObj, component, callback) {
                 element.find("> span").html(elementObj.properties.name);
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-usermenu", get_cbuilder_msg('ubuilder.usermenu'), "<i class=\"fas fa-user\"></i>", "", "", false, "", {builderTemplate: {
@@ -184,10 +204,14 @@ UserviewBuilder = {
             'deletable' : false,
             'copyable' : false,
             'supportProperties' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'usermenu',
             'render' : function(element, elementObj, component, callback) {
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-categories", get_cbuilder_msg('ubuilder.categories'), "<i class=\"fas fa-folder\"></i>", "", "", false, "", {builderTemplate: {
@@ -196,6 +220,7 @@ UserviewBuilder = {
             'deletable' : false,
             'copyable' : false,
             'supportProperties' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'categories',
             'getChildsDataHolder' : function(elementObj, component) {
                 return "categories";
@@ -206,6 +231,9 @@ UserviewBuilder = {
             'render' : function(element, elementObj, component, callback) {
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-breadcrumb", get_cbuilder_msg('ubuilder.breadcrumb'), "<i class=\"fas fa-font\"></i>", "", "", false, "", {builderTemplate: {
@@ -215,10 +243,14 @@ UserviewBuilder = {
             'copyable' : false,
             'navigable' : false,
             'supportProperties' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'breadcrumb',
             'render' : function(element, elementObj, component, callback) {
                 UserviewBuilder.updateThemeStyle();
                 callback(element);
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-footer", get_cbuilder_msg('ubuilder.footer'), "<i class=\"fas fa-font\"></i>",  
@@ -229,6 +261,7 @@ UserviewBuilder = {
             'deletable' : false,
             'copyable' : false,
             'navigable' : false,
+            'renderNodeAdditional' : false,
             'stylePrefix' : 'footer',
             'render' : function(element, elementObj, component, callback) {
                 element.find("#footerMessage").html(elementObj.properties.footerMessage);
@@ -241,6 +274,9 @@ UserviewBuilder = {
                 } else {
                     return elementOptions;
                 }
+            },
+            'getLabel' : function(elementObj, component) {
+                return component.label;
             }
         }});
         CustomBuilder.initPaletteElement("", "menu-component", get_cbuilder_msg('ubuilder.menuComponent'), "", "", "", false, "", {builderTemplate: {
@@ -1408,7 +1444,87 @@ UserviewBuilder = {
      * It used to render the info of an element
      */
     renderXray : function(detailsDiv, element, elementObj, component , callback) {
+        var dl = detailsDiv.find('dl');
         
+        if (UserviewBuilder.mode === "userview") {
+            if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                var permissionLabel = [];
+                if (elementObj['properties']['permission'] !== undefined && elementObj['properties']['permission']['className'] !== "") {
+                    var label = elementObj['properties']['permission']['className'];
+                    if (CustomBuilder.availablePermission[label]  !== undefined) {
+                        label = CustomBuilder.availablePermission[label];
+                    } else {
+                        label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                    }
+                    permissionLabel.push(label);
+                }
+                if (elementObj['properties']['permission_rules'] !== undefined) {
+                    for (var key of Object.keys(elementObj['properties']['permission_rules'])) {
+                        var rule = elementObj['properties']['permission_rules'][key];
+                        if (rule['permission'] !== undefined && rule['permission']['className'] !== "") {
+                            var label = rule['permission']['className'];
+                            if (FormBuilder.availablePermission[label]  !== undefined) {
+                                label = FormBuilder.availablePermission[label];
+                            } else {
+                                label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                            }
+                            if ($.inArray(label, permissionLabel) === -1) {
+                                permissionLabel.push(label);
+                            }
+                        }
+                    }
+                }
+                if (permissionLabel.length > 0) {
+                    dl.append('<dt><i class="las la-lock" title="'+get_advtool_msg('dependency.tree.Permission')+'"></i></dt><dd>'+permissionLabel.join(', ')+'</dd>');
+                }
+                
+                if (elementObj['properties']['comment'] !== undefined && elementObj['properties']['comment'] !== "") {
+                    dl.append('<dt><i class="lar la-comment" title="'+get_cbuilder_msg('ubuilder.comment')+'"></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
+                }
+            } else {
+                if (elementObj['properties']['userviewCacheScope'] !== undefined && elementObj['properties']['userviewCacheScope'] !== "") {
+                    dl.append('<dt><i class="las la-memory" title="'+get_cbuilder_msg('ubuilder.cache')+'"></i></dt><dd>'+get_cbuilder_msg('ubuilder.' + elementObj['properties']['userviewCacheScope'])+ ' (' + elementObj['properties']['userviewCacheDuration'] + 's)</dd>');
+                }
+                if (elementObj['properties']['enableOffline'] !== undefined && elementObj['properties']['enableOffline'] !== "") {
+                    dl.append('<dt><i class="las la-wifi" title="'+get_cbuilder_msg('ubuilder.offline')+'"></i></dt><dd>'+get_cbuilder_msg('ubuilder.pwa')+ '</dd>');
+                }
+            }
+        } else {
+            var props = elementObj.properties;
+            
+            if (component.builderTemplate.customPropertiesData) {
+                props = component.builderTemplate.customPropertiesData(props, elementObj, component);
+            }
+            
+            if (component.type === "menu" || component.className === "menu-component") {
+                if (props['attr-data-ajax-component'] !== undefined && props['attr-data-ajax-component'] !== "") {
+                    dl.append('<dt><i class="las la-sync" title="'+get_cbuilder_msg('ubuilder.handleWithAjax')+'"></i></dt><dd>'+get_cbuilder_msg('ubuilder.ajaxEnabled')+ '</dd>');
+                }
+            }
+            
+            if (props['attr-data-events-listening'] !== undefined && props['attr-data-events-listening'].length > 0) {
+                var names = [];
+                for (var i in props['attr-data-events-listening']) {
+                    var n = props['attr-data-events-listening'][i]['name'];
+                    if ($.inArray(n, names) === -1) {
+                        names.push(n);
+                    }
+                }
+                dl.append('<dt><i class="las la-assistive-listening-systems" title="'+get_advtool_msg('ubuilder.eventListening')+'"></i></dt><dd>'+names.join(', ')+'</dd>');
+            } 
+            if (props['attr-data-events-triggering'] !== undefined && props['attr-data-events-listening'].length > 0) {
+                var names = [];
+                for (var i in props['attr-data-events-triggering']) {
+                    var n = props['attr-data-events-triggering'][i]['name'];
+                    if ($.inArray(n, names) === -1) {
+                        names.push(n);
+                    }
+                }
+                dl.append('<dt><i class="las la-fire" title="'+get_advtool_msg('ubuilder.eventListening')+'"></i></dt><dd>'+names.join(', ')+'</dd>');
+            } else if (props['attr-data-event-triggering'] !== undefined && props['attr-data-event-triggering'] !== "") {
+                dl.append('<dt><i class="las la-fire" title="'+get_advtool_msg('ubuilder.eventListening')+'"></i></dt><dd>'+props['attr-data-event-triggering']+'</dd>');
+            }
+        }
         
         callback();
     },
@@ -1418,7 +1534,7 @@ UserviewBuilder = {
      * It used to render the permission option of an element
      */
     renderPermission : function (detailsDiv, element, elementObj, component , callback) {
-        
+        var dl = detailsDiv.find('dl');
         callback();
     },
     
