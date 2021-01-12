@@ -2823,6 +2823,9 @@ CustomBuilder.Builder = {
             self.selectedEl.remove();
             self.selectNode(false);
             
+            if (component.builderTemplate.afterRemoved)
+                component.builderTemplate.afterRemoved(parent, elementObj, component);
+            
             self.checkVisible(parent);
             
             CustomBuilder.update();

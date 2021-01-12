@@ -103,6 +103,8 @@ FormBuilder = {
      * Called from CustomBuilder.Builder.getComponent
      */
     initComponent : function(component) {
+        var self = CustomBuilder.Builder;
+        
         if (component.className === "org.joget.apps.form.model.Form") {
             component.builderTemplate.parentContainerAttr = "";
             component.builderTemplate.childsContainerAttr = "sections";
@@ -120,10 +122,24 @@ FormBuilder = {
                 }
                 return false;
             };
+            component.builderTemplate.afterRemoved = function(parent, elementObj, component) {
+                var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+                if (parentDataArray.length === 0) {
+                    self.selectedEl = parent;
+                    FormBuilder.addSection(true, true);
+                }
+            };
         } else if (component.className === "org.joget.apps.form.model.Column") {
             component.builderTemplate.parentContainerAttr = "columns";
             component.builderTemplate.childsContainerAttr = "elements";
             component.icon = '<i class="fas fa-columns"></i>';
+            component.builderTemplate.afterRemoved = function(parent, elementObj, component) {
+                var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+                if (parentDataArray.length === 0) {
+                    self.selectedEl = parent;
+                    FormBuilder.addColumn(true);
+                }
+            };
         } else {
             component.builderTemplate.stylePropertiesDefinition.push({
                 title:'Others',
@@ -151,9 +167,14 @@ FormBuilder = {
     /*
      * A callback method called from CustomBuilder.applyElementProperties when properties saved
      */
-    saveEditProperties : function(container, elementProperty, element) {
+    saveEditProperties : function(container, elementProperty, elementObj, element) {
         if (elementProperty['readonly'] === "true") {
             elementProperty['permissionHidden'] = "";
+        }
+        
+        if (elementObj.className === "org.joget.apps.form.model.Column") {
+            //recalculate width
+            FormBuilder.recalculateColumnWidth(element.parent().closest("[data-cbuilder-classname]"));
         }
     },
     
@@ -325,7 +346,7 @@ FormBuilder = {
         }
         
         if (elementObj['properties']['comment'] !== undefined && elementObj['properties']['comment'] !== "") {
-            dl.append('<dt><i class="lar la-comment" title="'+get_cbuilder_msg('ubuilder.comment')+'"></i></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
+            dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
         }
         
         callback();
@@ -490,7 +511,7 @@ FormBuilder = {
     /*
      * To add a column when an add column action button is clicked
      */
-    addColumn: function() {
+    addColumn: function(noUpdate) {
         var self = CustomBuilder.Builder;
         
         self.component = self.getComponent("org.joget.apps.form.model.Column");
@@ -514,18 +535,69 @@ FormBuilder = {
         var parentDataArray = $(parent).data("data").elements;
         parentDataArray.push(elementObj);
         
+        //recalculate width
+        FormBuilder.recalculateColumnWidth(parent);
+        
         var temp = $('<div></div>');
         self.selectedEl.append(temp);
         
         self.renderElement(elementObj, temp, self.component, true);
         
-        CustomBuilder.update();
+        if (noUpdate === undefined || !noUpdate) {
+            CustomBuilder.update();
+        }
+    },
+    
+    /*
+     * recalculate all the column width in section and update it accordingly
+     */
+    recalculateColumnWidth : function(section) {
+        var sectionDataArray = $(section).data("data").elements;
+        
+        var columnCount = sectionDataArray.length;
+        var customWidthStr = "";
+        for (var i in sectionDataArray) {
+            var columnObj = sectionDataArray[i];
+            var customWidth = columnObj.properties.customWidth;
+            if (customWidth && customWidth !== "") {
+               if (customWidthStr === "") {
+                   customWidthStr = "(100% - ";
+               } else {
+                   customWidthStr += " - ";
+               }
+               customWidthStr += customWidth;
+               columnCount--;
+            }
+        }
+        if (customWidthStr !== "") {
+            customWidthStr += ")";
+            customWidthStr = "calc(" + customWidthStr + "/" + columnCount + ")";
+        } else {
+            var columnWidth = (columnCount !== 1) ? (Math.floor(100 / columnCount)) : 100;
+            customWidthStr = columnWidth + "%";
+        }
+
+        $(section).find("> .form-column").each(function(){
+            var column = $(this);
+            var width = customWidthStr;
+            var columnObj = $(column).data("data");
+            var customWidth = columnObj.properties.customWidth;
+            if (customWidth && customWidth != "") {
+                width = customWidth;
+            }
+            $(column).css("width", width);
+            columnObj.properties.width = width;
+        });
+        
+        if ($(section).find("> .form-column").length !== sectionDataArray.length) {
+            sectionDataArray[sectionDataArray.length - 1].properties.width = customWidthStr;
+        }
     },
     
     /*
      * To add a section when an add section action button is clicked
      */
-    addSection: function(){
+    addSection: function(noUpdate, isForm){
         var self = CustomBuilder.Builder;
         
         self.component = self.getComponent("org.joget.apps.form.model.Section");
@@ -552,16 +624,27 @@ FormBuilder = {
         self.updateElementId(elementObj);
         
         var parent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+        
+        if (isForm) {
+            parent = self.selectedEl;
+        }
+        
         var parentDataArray = $(parent).data("data").elements;
         var newIndex = $.inArray($(self.selectedEl).data("data"), parentDataArray) + 1;
         parentDataArray.splice(newIndex, 0, elementObj);
         
         var temp = $('<div></div>');
-        self.selectedEl.after(temp);
+        if (isForm) {
+            self.selectedEl.append(temp);
+        } else {
+            self.selectedEl.after(temp);
+        }
         
         self.renderElement(elementObj, temp, self.component, true);
         
-        CustomBuilder.update();
+        if (noUpdate === undefined || !noUpdate) {
+            CustomBuilder.update();
+        }
     },
     
     /*
