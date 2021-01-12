@@ -11,8 +11,7 @@
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  
-    </c:if>    
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css?build=<fmt:message key="build.number"/>" />
+    </c:if>
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
         
         <script>
