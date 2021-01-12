@@ -918,13 +918,67 @@ body.rtl .handsontable .htCore tr td:last-child {
     }
 }
 
-/*
-
-table.mceToolbar > tbody > tr > td { display:inline-block; float: left; }
-.mce-tinymce { margin-bottom: 15px !important; }
-
-
-*/
+/* advanced grid */
+.grid.adgrid {
+    width: 100%;
+    position: relative;
+}
+.grid.adgrid .pq-grid-title{
+    display:none;
+}
+.grid.adgrid .ui-widget-content{
+    border: 1px solid #ced4da;
+    border-radius: 0px;
+}
+.grid.adgrid .ui-state-default, 
+.grid.adgrid .ui-widget-content .ui-state-default, 
+.grid.adgrid .ui-widget-header .ui-state-default{
+    border-color: #ced4da;
+    background: #f0f0f0;
+}
+.grid.adgrid .pq-grid td.pq-grid-col{
+    font-weight: 500;
+    color:#222;
+}
+.grid.adgrid .pq-grid-number-col{
+    border-bottom: 0 !important;
+}
+.grid.adgrid div.pq-grid-toolbar{
+    border-bottom: 0;
+    background: #f0f0f0;
+}
+.grid.adgrid div.pq-grid-toolbar .ui-icon{
+    display: inline-block;
+    vertical-align: sub;
+}
+.grid.adgrid .editor-cell{
+    position: absolute;
+    background: #f0f0f0;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+    padding: 5px;
+}
+.grid.adgrid .editor-cell .hasDatepicker + a{
+    right: 8px;
+    bottom: 35px;
+}
+.grid.adgrid .editor-cell .actions-buttons{
+    text-align: right;
+    margin-top: 5px;
+}
+.grid.adgrid .editor-cell .actions-buttons button {
+    margin-left: 2px;
+    font-size: 80%;
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+    border:0;
+    border-radius: 2px;
+}
+.grid.adgrid .editor-cell .actions-buttons button.cancel{
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
 
 @media (max-width: 991px) {
     .form-cell > label.label,
