@@ -29,6 +29,7 @@
             width: 100%;
             height: calc(100% - 34px);
             border: 0;
+            margin-top: 7px
         }
     </style>
     <script>
