@@ -31,7 +31,6 @@ DatalistBuilder = {
                 "selectElement" : "DatalistBuilder.selectElement",
                 "pasteElement" : "DatalistBuilder.pasteElement",
                 "renderXray" : "DatalistBuilder.renderXray",
-                "renderPermission" : "DatalistBuilder.renderPermission",
                 "parseDataToComponent" : "DatalistBuilder.parseDataToComponent",
                 "renderTreeMenuAdditionalNode" : "DatalistBuilder.renderTreeMenuAdditionalNode"
             }
@@ -142,6 +141,13 @@ DatalistBuilder = {
                 CustomBuilder.update();
             }
         });
+    },
+    
+    /*
+     * To retrieve the permission rule property
+     */
+    getRuleObject : function() {
+        return CustomBuilder.data;
     },
     
     /*
@@ -480,6 +486,29 @@ DatalistBuilder = {
                             return true;
                         }
                         return false;
+                    },
+                    'renderPermission' : function(detailsDiv, element, elementObj, component, callback) {
+                        var self = CustomBuilder.Builder;
+                        
+                        var props = self.parseElementProps(elementObj);
+        
+                        var permissionObj = props;
+                        var key = CustomBuilder.Builder.permissionRuleKey;
+                        if (key !== "default") {
+                            if (props["permission_rules"] === undefined) {
+                                props["permission_rules"] = {};
+                            }
+                            if (props["permission_rules"][key] === undefined) {
+                                props["permission_rules"][key] = {};
+                            }
+                            permissionObj = props["permission_rules"][key];
+                        }
+                        
+                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                            self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+                        } else {
+                            DatalistBuilder.renderColumnPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+                        }
                     },
                     'tableStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.tableStylePropertiesDefinition()),
                     'navigable' : false,
@@ -1372,10 +1401,94 @@ DatalistBuilder = {
     
     /*
      * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
-     * It used to render the permission option of an element
+     * It used to render the permission option of a column
      */
-    renderPermission : function (detailsDiv, element, elementObj, component , callback) {
+    renderColumnPermission : function (detailsDiv, element, elementObj, component, permissionObj, callback) {
+        var self = CustomBuilder.Builder;
         var dl = detailsDiv.find('dl');
+        
+        dl.append('<dt class="authorized-web-row" ><i class="lab la-html5" title="'+get_advtool_msg('adv.permission.web')+'"></i></i></dt><dd class="authorized-web-row" ><div class="authorized-web-btns btn-group"></div></dd>');
+        dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
+        dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
+        
+        dl.append('<dt class="authorized-export-row" ><i class="las la-file-download title="'+get_advtool_msg('adv.permission.export')+'"></i></i></dt><dd class="authorized-export-row" ><div class="authorized-export-btns btn-group"></div></dd>');
+        dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
+        dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
+        
+        if (permissionObj["hidden"] === "true") {
+            $(dl).find(".authorized-web-btns .hidden-btn").addClass("active");
+                
+            if (permissionObj["include_export"] === "true") {
+                $(dl).find(".authorized-export-btns .visible-btn").addClass("active");
+            } else {
+                $(dl).find(".authorized-export-btns .hidden-btn").addClass("active");
+            }
+        } else {
+            $(dl).find(".authorized-web-btns .visible-btn").addClass("active");
+
+            if (permissionObj["exclude_export"] === "true") {
+                $(dl).find(".authorized-export-btns .hidden-btn").addClass("active");
+            } else {
+                $(dl).find(".authorized-export-btns .visible-btn").addClass("active");
+            }
+        }
+        
+        dl.on("click", ".btn", function(event) {
+            if ($(this).hasClass("active")) {
+                return false;
+            }
+
+            var group = $(this).closest(".btn-group");
+            group.find(".active").removeClass("active");
+            $(this).addClass("active");
+
+            if ($(dl).find(".authorized-web-btns .hidden-btn").hasClass("active")) {
+                permissionObj["hidden"] = "true";
+                if ($(dl).find(".authorized-export-btns .hidden-btn").hasClass("active")) {
+                    permissionObj["include_export"] = "";
+                    permissionObj["exclude_export"] = "";
+                } else {
+                    permissionObj["include_export"] = "true";
+                    permissionObj["exclude_export"] = "";
+                }
+            } else {
+                permissionObj["hidden"] = "false";
+                if ($(dl).find(".authorized-export-btns .hidden-btn").hasClass("active")) {
+                    permissionObj["include_export"] = "";
+                    permissionObj["exclude_export"] = "true";
+                } else {
+                    permissionObj["include_export"] = "";
+                    permissionObj["exclude_export"] = "";
+                }
+            }
+            
+            var target = $(this).closest(".cbuilder-node-details").parent();
+            if ($(target).is("[data-cbuilder-select]")) {
+                //copy to others
+                $(self.frameBody).find("[data-cbuilder-select='"+$(target).data("cbuilder-select")+"']").each(function(){
+                    if (!$(this).is(target)) {
+                        $(this).find("> .cbuilder-node-details .authorized-web-btns > .active").removeClass("active");
+                        $(this).find("> .cbuilder-node-details .authorized-export-btns > .active").removeClass("active");
+                        
+                        if ($(dl).find(".authorized-web-btns .hidden-btn").hasClass("active")) {
+                            $(this).find("> .cbuilder-node-details .authorized-web-btns .hidden-btn").addClass("active");
+                        } else {
+                            $(this).find("> .cbuilder-node-details .authorized-web-btns .visible-btn").addClass("active");
+                        }
+                        if ($(dl).find(".authorized-export-btns .hidden-btn").hasClass("active")) {
+                            $(this).find("> .cbuilder-node-details .authorized-export-btns .hidden-btn").addClass("active");
+                        } else {
+                            $(this).find("> .cbuilder-node-details .authorized-export-btns .visible-btn").addClass("active");
+                        }
+                    }
+                });
+            }
+
+            CustomBuilder.update();
+
+            event.preventDefault();
+            return false;
+        });
         
         callback();
     },

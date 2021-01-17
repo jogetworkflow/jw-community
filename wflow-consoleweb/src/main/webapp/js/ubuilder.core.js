@@ -19,8 +19,7 @@ UserviewBuilder = {
                 "selectElement" : "UserviewBuilder.selectElement",
                 "updateElementId" : "UserviewBuilder.updateElementId",
                 "unselectElement" : "UserviewBuilder.unselectElement",
-                "renderXray" : "UserviewBuilder.renderXray",
-                "renderPermission" : "UserviewBuilder.renderPermission"
+                "renderXray" : "UserviewBuilder.renderXray"
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
@@ -54,7 +53,6 @@ UserviewBuilder = {
             callback();
             
             UserviewBuilder.initThemeConfigPluginList();
-            CustomBuilder.initPermissionList("org.joget.apps.userview.model.UserviewPermission");
         });
     },
     
@@ -695,7 +693,7 @@ UserviewBuilder = {
      * A callback method called from CustomBuilder.applyElementProperties when properties saved
      */
     saveEditProperties : function(container, elementProperty, element) {
-        if (element.className.indexOf("userview-") === 0) {
+        if (element.className !== undefined && element.className.indexOf("userview-") === 0) {
             CustomBuilder.data.properties.description = elementProperty.description;
             CustomBuilder.data.properties.footerMessage = elementProperty.footerMessage;
             CustomBuilder.data.properties.logoutText = elementProperty.logoutText;
@@ -1533,9 +1531,88 @@ UserviewBuilder = {
      * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
      * It used to render the permission option of an element
      */
-    renderPermission : function (detailsDiv, element, elementObj, component , callback) {
+    renderPermission : function (detailsDiv, element, elementObj, component, permissionObj, callback) {
+        var self = CustomBuilder.Builder;
         var dl = detailsDiv.find('dl');
-        callback();
+        
+        if (UserviewBuilder.mode === "userview") {
+            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
+            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm accessible-btn">'+get_advtool_msg("adv.permission.accessible")+'</button>');
+            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
+            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm deny-btn">'+get_advtool_msg("adv.permission.deny")+'</button>');
+            
+            if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                if (permissionObj["hide"] === "yes") {
+                    dl.find(".authorized-btns .hidden-btn").addClass("active");
+                } else if (permissionObj["permissionDeny"] === "true") {
+                    dl.find(".authorized-btns .deny-btn").addClass("active");
+                } else {
+                    dl.find(".authorized-btns .accessible-btn").addClass("active");
+                }
+            } else {
+                if (permissionObj["permissionHidden"] === "true") {
+                    dl.find(".authorized-btns .hidden-btn").addClass("active");
+                } else if (permissionObj["permissionDeny"] === "true") {
+                    dl.find(".authorized-btns .deny-btn").addClass("active");
+                } else {
+                    dl.find(".authorized-btns .accessible-btn").addClass("active");
+                }
+            }
+            
+            dl.on("click", ".btn", function(event) {
+                if ($(this).hasClass("active")) {
+                    return false;
+                }
+
+                var group = $(this).closest(".btn-group");
+                group.find(".active").removeClass("active");
+                $(this).addClass("active");
+                
+                if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                    if ($(dl).find(".authorized-btns .accessible-btn").hasClass("active")) {
+                        permissionObj["hide"] = "";
+                        permissionObj["permissionDeny"] = "";
+                    } else if ($(dl).find(".authorized-btns .hidden-btn").hasClass("active")) {
+                        permissionObj["hide"] = "yes";
+                        permissionObj["permissionDeny"] = "";
+                    } else {
+                        permissionObj["hide"] = "";
+                        permissionObj["permissionDeny"] = "true";
+                    }
+                } else {
+                    if ($(dl).find(".authorized-btns .accessible-btn").hasClass("active")) {
+                        permissionObj["permissionHidden"] = "";
+                        permissionObj["permissionDeny"] = "";
+                    } else if ($(dl).find(".authorized-btns .hidden-btn").hasClass("active")) {
+                        permissionObj["permissionHidden"] = "true";
+                        permissionObj["permissionDeny"] = "";
+                    } else {
+                        permissionObj["permissionHidden"] = "";
+                        permissionObj["permissionDeny"] = "true";
+                    }
+                }
+                
+                CustomBuilder.update();
+
+                event.preventDefault();
+                return false;
+            });
+            
+            callback();
+        } else {
+            if (elementObj.className === "menu-component") {
+                callback();
+            } else {
+                self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+            }
+        }  
+    },
+    
+    /*
+     * Get the data of permission rules
+     */
+    getRuleObject : function() {
+        return CustomBuilder.data.setting.properties;
     },
     
     /*

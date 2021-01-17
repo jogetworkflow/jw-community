@@ -86,12 +86,20 @@
                 "load" : "UserviewBuilder.load",
                 "saveEditProperties" : "UserviewBuilder.saveEditProperties",
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",
-                "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties"
+                "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties",
+                "getRuleObject" : "UserviewBuilder.getRuleObject"
             }
         },
         "advanced_tools" : {
             "xray" : {
                 "disabled" : false,
+            },
+            "permission" : {
+                "element_support_plugin" : ["org.joget.apps.userview.model.UserviewCategory"],
+                "render_elements_callback" : "UserviewBuilder.renderPermission",
+                "permission_plugin" : "org.joget.apps.userview.model.UserviewAccessPermission",
+                "childs_properties" : ["elements", "categories", "menus"],
+                "supportNoPermisisonMessage" : "true"
             }
         }  
     }

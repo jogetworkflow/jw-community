@@ -68,10 +68,10 @@
                         <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
                             <i class="las la-pencil-ruler"></i> <span><fmt:message key="ubuilder.design"/></span>
                         </button>
-                        <button class="btn btn-light" title="<fmt:message key="ubuilder.properties"/>" id="porperties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView">
+                        <button class="btn btn-light" title="<fmt:message key="ubuilder.properties"/>" id="porperties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-cog"></i> <span><fmt:message key="ubuilder.properties"/></span>
                         </button>
-                        <button class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView">
+                        <button class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-eye"></i> <span><fmt:message key="ubuilder.preview"/></span>
                         </button>
                     </div> 
@@ -95,24 +95,29 @@
                             <i class="la la-lock"></i>
                         </button>
                         
-                        <button class="btn btn-light" title="<fmt:message key="adv.tool.Usages"/>" id="usages-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="findUsages" data-cbuilder-action="switchView">
+                        <button class="btn btn-light" title="<fmt:message key="adv.tool.Usages"/>" id="usages-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="findUsages" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-binoculars"></i>
                         </button>
                         
-                        <button class="btn btn-light" title="<fmt:message key="adv.tool.i18n"/>" id="i18n-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="i18n" data-cbuilder-action="switchView">
+                        <button class="btn btn-light" title="<fmt:message key="adv.tool.i18n"/>" id="i18n-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="i18n" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-language"></i>
                         </button>
                         
-                        <button class="btn btn-light" title="<fmt:message key="adv.tool.Diff.Checker"/>" id="diff-checker-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="diffChecker" data-cbuilder-action="switchView">
+                        <button class="btn btn-light" title="<fmt:message key="adv.tool.Diff.Checker"/>" id="diff-checker-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="diffChecker" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-code-branch"></i>
                         </button>
                         
-                        <button class="btn btn-light" title="<fmt:message key="adv.tool.JSON.Definition"/>" id="json-def-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="jsonDef" data-cbuilder-action="switchView">
+                        <button class="btn btn-light" title="<fmt:message key="adv.tool.JSON.Definition"/>" id="json-def-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="jsonDef" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-code"></i>
                         </button>
                             
                         <a id="hide-advanced-tools-btn" title="<fmt:message key="cbuilder.hideAdvancedTools"/>" data-cbuilder-action="disableEnhancedTools"><i class="las la-angle-right"></i></a>    
-                    </div>  
+                    </div> 
+                    
+                    <div id="node-details-toggle" class="btn-group btn-group-toggle" data-toggle="buttons" style="display:none">
+                        <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-search-plus"></i> </label>
+                        <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-search-minus"></i> </label>
+                    </div>
                     
                     <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
                         <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="save" data-v-cbuilder-shortcut="ctrl+s">

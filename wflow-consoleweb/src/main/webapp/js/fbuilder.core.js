@@ -19,8 +19,7 @@ FormBuilder = {
                 "updateElementId" : "FormBuilder.updateElementId",
                 "unloadElement" : "FormBuilder.unloadElement",
                 "selectElement" : "FormBuilder.selectElement",
-                "renderXray" : "FormBuilder.renderXray",
-                "renderPermission" : "FormBuilder.renderPermission"
+                "renderXray" : "FormBuilder.renderXray"
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-fbuilder-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
@@ -30,7 +29,6 @@ FormBuilder = {
             
             FormBuilder.initBinderList();
             FormBuilder.initValidatorList();
-            CustomBuilder.initPermissionList("org.joget.apps.form.model.FormPermission");
         });
     },
     
@@ -199,7 +197,7 @@ FormBuilder = {
                     
                     $(newElement).find(".form-section").attr("data-cbuilder-columns", "");
                     $(newElement).find(".form-column").attr("data-cbuilder-elements", "");
-                    $(newElement).find("[data-cbuilder-classname='org.joget.apps.form.lib.HiddenField']").attr("data-cbuilder-invisible", "");
+                    $(newElement).find("[data-cbuilder-classname='org.joget.apps.form.lib.HiddenField']").attr("data-cbuilder-element-invisible", "");
                     if ($(newElement).hasClass("form-section")) {
                         $(newElement).attr("data-cbuilder-columns", "");
                     }
@@ -353,47 +351,22 @@ FormBuilder = {
     },
     
     /*
-     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * A callback method called from the CustomBuilder.Builder.renderPermission
      * It used to render the permission option of an element
      */
-    renderPermission : function (detailsDiv, element, elementObj, component , callback) {
+    renderPermission : function (detailsDiv, element, elementObj, component, permissionObj, callback) {
         var dl = detailsDiv.find('dl');
         
         if (elementObj.className === "org.joget.apps.form.model.Column") {
             //do nothing
         } else {
-            var permissionObj = elementObj.properties;
-                
-            var key = CustomBuilder.Builder.permissionRuleKey;
-            if (key !== "default") {
-                if (elementObj["properties"]["permission_rules"] === undefined) {
-                    elementObj["properties"]["permission_rules"] = {};
-                }
-                if (elementObj["properties"]["permission_rules"][key] === undefined) {
-                    elementObj["properties"]["permission_rules"][key] = {};
-                }
-                permissionObj = elementObj["properties"]["permission_rules"][key];
-            }
-
             if (elementObj.className === "org.joget.apps.form.model.Section") {
-                dl.append('<dt><i class="las la-plug" title="Permission Plugin"></i></i></dt><dd><div class="permission-plugin"><span class="name"></span> <a class="edit-permission-plugin-btn"><i class="las la-edit"></i></a></div></dd>');
-                
-                var pluginName = get_advtool_msg('adv.permission.noPlugin');
                 var className = "";
                 if (permissionObj["permission"] !== undefined 
                     && permissionObj["permission"]["className"] !== undefined  
                     && permissionObj["permission"]["className"] !== "") {
 
                     className = permissionObj["permission"]["className"];
-                    var pluginName = FormBuilder.availablePermission[className];
-                    if (pluginName === undefined) {
-                        pluginName = className + "(" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
-                    }
-                }
-                dl.find(".permission-plugin .name").text(pluginName);
-                
-                if (permissionObj["permissionComment"] !== undefined && permissionObj["permissionComment"] !== "") {
-                    dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+permissionObj["permissionComment"]+'</dd>');
                 }
                 
                 dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');

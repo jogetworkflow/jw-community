@@ -76,7 +76,8 @@ CustomBuilder = {
                         {
                             key : "hidden",
                             value : "true",
-                            label : get_cbuilder_msg("ubuilder.hidden")
+                            label : get_cbuilder_msg("ubuilder.hidden"),
+                            disableChild : true
                         }
                     ]
                 },
@@ -92,17 +93,15 @@ CustomBuilder = {
                         {
                             key : "hidden",
                             value : "true",
-                            label : get_cbuilder_msg("ubuilder.hidden")
+                            label : get_cbuilder_msg("ubuilder.hidden"),
+                            disableChild : true
                         }
                     ]
                 },
-                element_label_callback : "",
                 element_support_plugin : [],
-                display_element_id : false,
                 childs_properties : ["elements"],
                 ignore_classes : [],
-                render_elements_callback : "",
-                rules_properties_callback : ""
+                render_elements_callback : ""
             },
             customTabsCallback : ""
         }
@@ -118,6 +117,7 @@ CustomBuilder = {
     data : {},
     paletteElements : {},
     availablePermission : {},
+    permissionOptions: null,
     
     //Tracker
     isCtrlKeyPressed : false,
@@ -184,6 +184,10 @@ CustomBuilder = {
         var builderCallback = function(){
             if (callback) {
                 callback();
+            }
+            
+            if (CustomBuilder.config.advanced_tools.permission.permission_plugin !== undefined && CustomBuilder.config.advanced_tools.permission.permission_plugin !== "") {
+                CustomBuilder.initPermissionList(CustomBuilder.config.advanced_tools.permission.permission_plugin);
             }
             
             $("[data-cbuilder-action]").each(function () {
@@ -518,9 +522,12 @@ CustomBuilder = {
         $.getJSON(
             CustomBuilder.contextPath + '/web/property/json/getElements?classname=' + classname,
             function(returnedData){
-                for (e in returnedData) {
-                    if (returnedData[e].value !== "") {
-                        CustomBuilder.availablePermission[returnedData[e].value] = returnedData[e].label;
+                if (returnedData !== null && returnedData !== undefined) {
+                    CustomBuilder.permissionOptions = returnedData;
+                    for (e in returnedData) {
+                        if (returnedData[e].value !== "") {
+                            CustomBuilder.availablePermission[returnedData[e].value] = returnedData[e].label;
+                        }
                     }
                 }
             }
@@ -935,7 +942,6 @@ CustomBuilder = {
             return;
         }
         var elementOptions = paletteElement.propertyOptions;
-        
         if (paletteElement.builderTemplate !== undefined && paletteElement.builderTemplate.customPropertyOptions !== undefined) {
             elementOptions = paletteElement.builderTemplate.customPropertyOptions(elementOptions, element, elementObj, paletteElement);
         }
@@ -1167,6 +1173,7 @@ CustomBuilder = {
             CustomBuilder[currentView+"ViewBeforeClosed"]($("#"+currentView+"View.builder-view .builder-view-body"));
         }
         $("body").removeClass(currentView+"-builder-view");
+        $("body").removeClass("hide-tool");
         
         $("[data-cbuilder-view]").removeClass("active-view active");
         $(".builder-view").hide();
@@ -1184,6 +1191,11 @@ CustomBuilder = {
             } else if (CustomBuilder[view+"ViewInit"] !== undefined) {
                 CustomBuilder[view+"ViewInit"]($(viewDiv).find('.builder-view-body'));
             }
+    
+            if ($this.data("hide-tool") !== undefined) {
+                $("body").addClass("hide-tool");
+            }
+            
             $("#"+view+"View.builder-view").show();
             $(viewDiv).find('.builder-view-body').trigger("builder-view-show");
             $("body").addClass(view+"-builder-view");
@@ -1703,6 +1715,13 @@ CustomBuilder = {
      */
     pasteElement : function() {
         CustomBuilder.Builder.pasteNode();
+    },
+    
+    /*
+     * Retrieve permision plugin option for permission editor
+     */
+    getPermissionOptions: function(){
+        return CustomBuilder.permissionOptions;
     }
 };
 
@@ -1806,6 +1825,7 @@ CustomBuilder.Builder = {
         
         self._initDragdrop();
         self._initBox();
+        self._initPermissionComponent();
         
         self.dragElement = null;
     },
@@ -1815,6 +1835,20 @@ CustomBuilder.Builder = {
      */
     load: function(data, callback) {
         var self = CustomBuilder.Builder;
+        
+        var selectedELSelector = "";
+        var selectedElIndex = 0;
+        if (self.selectedEl) {
+            if ($(self.selectedEl).is("[data-cbuilder-id]")) {
+                selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).data("cbuilder-id") +'"]';
+            } else {
+                selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
+                selectedELSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
+            }
+            
+            selectedElIndex = self.frameBody.find(selectedELSelector).index(self.selectedEl);
+        } 
+        
         self.frameBody.html("");
         self.selectNode(false);
         $("#element-highlight-box").hide();
@@ -1823,10 +1857,21 @@ CustomBuilder.Builder = {
         var temp = $('<div></div>');
         self.frameBody.append(temp);
         self.renderElement(data, temp, component, false, null, function(){
-            if ($("body").hasClass("xray-builder-view")) {
-                CustomBuilder.Builder.renderNodeAdditional('Xray');
-            } else if ($("body").hasClass("permission-builder-view")) {
-                CustomBuilder.Builder.renderNodeAdditional('Permission');
+            if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
+                CustomBuilder.Builder.renderNodeAdditional(self.nodeAdditionalType);
+            }
+            
+            //reselect previous selected element
+            if (selectedELSelector !== "") {
+                var element = self.frameBody.find(selectedELSelector);
+                if (element.length > 1) {
+                    do {
+                        element = element[selectedElIndex];
+                    } while (element === undefined && selectedElIndex-- > 0);
+                }
+                if ($(element).length > 0) {
+                    self.selectNode(element);
+                }
             }
             
             if (callback) {
@@ -2349,6 +2394,12 @@ CustomBuilder.Builder = {
         }
         if (target)
         {
+            if (self.frameBody.hasClass("show-node-details-single")) {
+                self.frameBody.find(".cbuilder-node-details.current").removeClass("current");
+                $(target).find("> .cbuilder-node-details").addClass("current");
+                self.adjustNodeAdditional(target);
+            }
+            
             self.selectedEl = target;
 
             try {
@@ -2835,6 +2886,101 @@ CustomBuilder.Builder = {
             return false;
         });
     },
+    
+    /*
+     * Create a dummy component for permission rules and plugins
+     */
+    _initPermissionComponent : function() {
+        CustomBuilder.initPaletteElement("", "permission-rule", "", "",[], "", false, "", {builderTemplate: {
+            customPropertyOptions : function(elementOptions, element, elementObj, paletteElement){
+                var propertiesDefinition;
+                if (elementObj.properties.permission_key === undefined) {
+                    propertiesDefinition = [
+                        {
+                            title : get_advtool_msg('adv.tool.permission') + " (" + get_advtool_msg('adv.permission.default') + ")",
+                            properties : [{
+                                name: 'permission',
+                                label: get_advtool_msg('adv.tool.permission'),
+                                type: 'elementselect',
+                                options_callback: "CustomBuilder.getPermissionOptions",
+                                url: CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
+                            }]
+                        }
+                    ];
+                    if (CustomBuilder.config.advanced_tools.permission.supportNoPermisisonMessage === "true") {
+                        propertiesDefinition[0]["properties"].push({
+                            name : 'noPermissionMessage',
+                            type : 'textarea',
+                            label : get_advtool_msg('adv.permission.noPermissionMessage')
+                        });  
+                    }
+                } else {
+                    propertiesDefinition = [
+                        {
+                            title : get_advtool_msg('adv.tool.permission') + " (" + $(element).data("data").permission_name + ")",
+                            properties : [{
+                                name : 'permission_key',
+                                type : 'hidden'
+                            },
+                            {
+                                name : 'permission_name',
+                                type : 'textfield',
+                                label : get_advtool_msg('dependency.tree.Name'),
+                                required : "true"
+                            },
+                            {
+                                name: 'permission',
+                                label: get_advtool_msg('adv.tool.permission'),
+                                type: 'elementselect',
+                                options_callback: "CustomBuilder.getPermissionOptions",
+                                url: CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
+                            }]
+                        }
+                    ];
+                }
+                return propertiesDefinition;
+            },
+            'render' : function(element, elementObj, component, callback) {
+                var name = get_advtool_msg('adv.permission.default');
+                var pluginName = get_advtool_msg('adv.permission.noPlugin');
+
+                if (elementObj.properties['permission_key'] !== undefined) {
+                    name = elementObj.properties['permission_name'];
+                }
+                if (elementObj.properties['permission'] !== undefined && elementObj.properties['permission']["className"] !== undefined) {
+                    var className = elementObj.properties['permission']["className"];
+                    if (className !== "") {
+                        pluginName = CustomBuilder.availablePermission[className];
+
+                        if (pluginName === undefined) {
+                            pluginName = className + "(" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                        }
+                    }
+                }
+                $(element).find(".name").text(name);
+                $(element).find(".plugin_name").text(pluginName);
+                $("body").addClass("no-right-panel");
+            }
+        }});
+        
+        CustomBuilder.initPaletteElement("", "permission-plugin", "", "", [
+            {
+                title : get_advtool_msg('adv.tool.permission'),
+                properties : [{
+                    name: 'permission',
+                    label: get_advtool_msg('adv.tool.permission'),
+                    type: 'elementselect',
+                    options_callback: "CustomBuilder.getPermissionOptions",
+                    url: CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
+                },
+                {
+                    name : 'permissionComment',
+                    type : 'textarea',
+                    label : get_advtool_msg('adv.permission.permissionComment')
+                }]
+            }
+        ], "", false, "", {builderTemplate: {}});
+    },
 
     /*
      * Get builder component based on classname
@@ -3201,7 +3347,15 @@ CustomBuilder.Builder = {
      */
     updateElement : function(elementObj, element, deferreds) {
         var self = CustomBuilder.Builder;
-        self.renderElement(elementObj, element,  self.parseDataToComponent(elementObj), true, deferreds);
+        self.renderElement(elementObj, element,  self.parseDataToComponent(elementObj), true, deferreds, function(newElement){
+            if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
+                var level = $(element).data("cbuilder-node-level");
+                CustomBuilder.Builder.renderNodeAdditional(self.nodeAdditionalType, newElement, level);
+                setTimeout(function(){
+                    self._updateBoxes();
+                }, 2);
+            }
+        });
     },
     
     /*
@@ -3289,7 +3443,7 @@ CustomBuilder.Builder = {
                 }
                 
                 if (callback) {
-                    callback();
+                    callback(element);
                 }
 
                 self.triggerChange();
@@ -3417,7 +3571,11 @@ CustomBuilder.Builder = {
      */
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
-        if ($(node).outerHeight() === 0) {
+        var height = $(node).outerHeight();
+        if ($(node).find("> .cbuilder-node-details").length > 0) {
+            height = height - $(node).find("> .cbuilder-node-details").outerHeight();
+        }
+        if (height === 0) {
             $(node).attr("data-cbuilder-invisible", "");
         }
     },
@@ -3513,9 +3671,26 @@ CustomBuilder.Builder = {
     renderNodeAdditional : function(type, node, level) {
         var self = CustomBuilder.Builder;
         
+        self.nodeAdditionalType = type;
+        
         var target = $(node);
         if (node === undefined) {
             target = self.frameBody;
+            
+            $("#node-details-toggle").find("label").removeClass("active");
+            $("#node-details-toggle").find("#details-toggle-all").trigger("click");
+            $("#node-details-toggle").show();
+            
+            $("#node-details-toggle").find("input").off("click");
+            $("#node-details-toggle").find("input").on("click", function(){
+                if ($("#details-toggle-single").is(":checked")) {
+                    self.frameBody.addClass("show-node-details-single");
+                } else {
+                    self.frameBody.removeClass("show-node-details-single");
+                }
+                self._updateBoxes();
+            });
+            
             self.frameBody.addClass("show-node-details");
             level = 0;
             self.colorCount = 0;
@@ -3553,11 +3728,11 @@ CustomBuilder.Builder = {
                 return;
             }
             
-            var detailsDiv = $("<div class='cbuilder-node-details cbuilder-details-"+type+"'></div>");
+            var detailsDiv = $("<div class='cbuilder-node-details cbuilder-details-"+type+"' style='visibility:hidden'></div>");
             $(target).prepend(detailsDiv);
+            $(target).attr("data-cbuilder-node-level", level);
             $(detailsDiv).addClass("cbuilder-node-details-level"+level);
-            $(detailsDiv).addClass("cbuilder-node-details-color"+(self.colorCount++ % 16));
-            $(detailsDiv).prepend("<div class=\"cbuilder-node-details-box\"></div><dl class=\"cbuilder-node-details-list\"></dl>");
+            $(detailsDiv).prepend("<dl class=\"cbuilder-node-details-list\"></dl>");
             
             var dl = detailsDiv.find('dl');
             var label = component.label;
@@ -3584,43 +3759,7 @@ CustomBuilder.Builder = {
             }
             
             var callback = function() {
-                //check if negative margin top
-                if ($(target).css("margin-top").indexOf("-") !== -1) {
-                    $(target).addClass("cbuilder-node-details-reset-margin-top");
-                }
-                
-                var box = self.getBox(target);
-                var dBox = self.getBox(detailsDiv, 3);
-                var targetOffset = target.offset();
-                
-                var offset = 0;
-                if (targetOffset.top !== box.top) {
-                    offset = targetOffset.top - box.top;
-                }
-                
-                $(detailsDiv).find(".cbuilder-node-details-list").css({
-                    "top" : (box.top - dBox.top + offset) + "px",
-                    "left" : (box.left - dBox.left) + "px",
-                    "right" : ((dBox.left + dBox.width) - (box.left + box.width)) + "px"
-                });
-                
-                var height = $(detailsDiv).find(".cbuilder-node-details-list").outerHeight();
-                var padding = height + (box.top - dBox.top + offset) + offset;
-                
-                setTimeout(function(){
-                    $(detailsDiv).css("padding-top", padding + "px");
-                }, 1);
-                
-                $(detailsDiv).find(".cbuilder-node-details-box").css({
-                    "top" : (box.top - dBox.top + offset) + "px",
-                    "left" : (box.left - dBox.left) + "px",
-                    "right" : ((dBox.left + dBox.width) - (box.left + box.width)) + "px",
-                    "bottom" : (- (box.height + (box.top - dBox.top))) + "px"
-                });
-                
-                $(detailsDiv).uitooltip({
-                    position: { my: "left+15 center", at: "right center" }
-                });
+                self.adjustNodeAdditional(target);
             };
             
             var method = component.builderTemplate["render" + type];
@@ -3628,10 +3767,60 @@ CustomBuilder.Builder = {
                 component.builderTemplate["render" + type](detailsDiv, element, data, component, callback);
             } else if (CustomBuilder.Builder.options.callbacks["render" + type] !== undefined && CustomBuilder.Builder.options.callbacks["render" + type] !== "") {
                 CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["render" + type], [detailsDiv, element, data, component, callback]);
+            } else if (CustomBuilder.Builder["render" + type] !== undefined) {
+                CustomBuilder.Builder["render" + type](detailsDiv, element, data, component, callback);
             } else {
                 callback();
             }
         }
+    },
+    
+    adjustNodeAdditional : function(target) {
+        var self = CustomBuilder.Builder;
+        
+        //check if negative margin top
+        if ($(target).css("margin-top").indexOf("-") !== -1) {
+            $(target).addClass("cbuilder-node-details-reset-margin-top");
+        }
+        
+        var detailsDiv = $(target).find("> .cbuilder-node-details");
+        
+        //reset to empty first
+        $(detailsDiv).find(".cbuilder-node-details-list").css({
+            "top" : "",
+            "left" : "",
+            "right" : ""
+        });
+        $(detailsDiv).css("padding-top", "");
+        $(detailsDiv).css("visibility", "hidden");
+
+        var box = self.getBox(target);
+        var dBox = self.getBox(detailsDiv, 3);
+        var targetOffset = target.offset();
+
+        var offset = 0;
+        if (targetOffset.top !== box.top) {
+            offset = targetOffset.top - box.top;
+        }
+
+        $(detailsDiv).find(".cbuilder-node-details-list").css({
+            "top" : (box.top - dBox.top + offset) + "px",
+            "left" : (box.left - dBox.left) + "px",
+            "right" : ((dBox.left + dBox.width) - (box.left + box.width)) + "px"
+        });
+
+        var height = $(detailsDiv).find(".cbuilder-node-details-list").outerHeight();
+        var padding = height + (box.top - dBox.top + offset) + offset;
+
+        setTimeout(function(){
+            $(detailsDiv).css("padding-top", padding + "px");
+            $(detailsDiv).css("visibility", "visible");
+            self._updateBoxes();
+        }, 1);
+
+        $(detailsDiv).uitooltip({
+            position: { my: "left+15 center", at: "right center" }
+        });
     },
     
     /*
@@ -3641,10 +3830,13 @@ CustomBuilder.Builder = {
     removeNodeAdditional : function(node) {
         var self = CustomBuilder.Builder;
         
+        self.nodeAdditionalType = "";
+        
         var target = $(node);
         if (node === undefined) {
             target = self.frameBody;
-            self.frameBody.removeClass("show-node-details");
+            $("#node-details-toggle").hide();
+            self.frameBody.removeClass("show-node-details show-node-details-single");
             self.frameBody.find(".cbuilder-node-details").remove();
             self.frameBody.find(".cbuilder-node-details-reset-margin-top").removeClass("cbuilder-node-details-reset-margin-top");
         }
@@ -3652,6 +3844,226 @@ CustomBuilder.Builder = {
         $(target).find(".cbuilder-node-details-wrap").each(function() {
             $(this).find("> [data-cbuilder-classname]").unwrap();
         });
+    },
+    
+    /*
+     * Default render node permisison options method for renderNodeAdditional
+     */
+    renderPermission : function(detailsDiv, element, elementObj, component , callback) {
+        var self = CustomBuilder.Builder;
+        
+        var dl = detailsDiv.find('dl');
+        
+        //if the classname is one of the ignore class
+        var ignore_classes = CustomBuilder.config.advanced_tools.permission.ignore_classes;
+        if (ignore_classes.length > 0) {
+            if (elementObj["className"] === null || elementObj["className"] === undefined || $.inArray(elementObj["className"], ignore_classes) !== -1) {
+                callback();
+                return;
+            }
+        }
+        
+        //if the element is not in the allowed child properties
+        var childs_properties = CustomBuilder.config.advanced_tools.permission.childs_properties;
+        var parentDataHolder = component.builderTemplate.getParentDataHolder(elementObj, component);
+        if ($.inArray(parentDataHolder, childs_properties) === -1) {
+            callback();
+            return;
+        }
+        
+        var props = self.parseElementProps(elementObj);
+        
+        var permissionObj = props;
+        var key = CustomBuilder.Builder.permissionRuleKey;
+        if (key !== "default") {
+            if (props["permission_rules"] === undefined) {
+                props["permission_rules"] = {};
+            }
+            if (props["permission_rules"][key] === undefined) {
+                props["permission_rules"][key] = {};
+            }
+            permissionObj = props["permission_rules"][key];
+        }
+        
+        //if the element should support permission plugin
+        var plugins_classes = CustomBuilder.config.advanced_tools.permission.element_support_plugin;
+        if ($.inArray(elementObj["className"], plugins_classes) !== -1) {
+            dl.append('<dt><i class="las la-plug" title="Permission Plugin"></i></i></dt><dd><div class="permission-plugin"><span class="name"></span> <a class="edit-permission-plugin-btn"><i class="las la-edit"></i></a></div></dd>');
+            var pluginName = get_advtool_msg('adv.permission.noPlugin');
+            var className = "";
+            if (permissionObj["permission"] !== undefined 
+                && permissionObj["permission"]["className"] !== undefined  
+                && permissionObj["permission"]["className"] !== "") {
+
+                className = permissionObj["permission"]["className"];
+                var pluginName = CustomBuilder.availablePermission[className];
+                if (pluginName === undefined) {
+                    pluginName = className + "(" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                }
+            }
+            dl.find(".permission-plugin .name").text(pluginName);
+
+            if (permissionObj["permissionComment"] !== undefined && permissionObj["permissionComment"] !== "") {
+                dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+permissionObj["permissionComment"]+'</dd>');
+            }
+            
+            dl.find(".edit-permission-plugin-btn").on("click", function() {
+                self.editPermissionPlugin( element, elementObj, component);
+            });
+        }
+        
+        //if no specify callback is available, using default rendering
+        var renderElementCallback = CustomBuilder.config.advanced_tools.permission.render_elements_callback;
+        if (renderElementCallback !== undefined && renderElementCallback !== "") {
+            CustomBuilder.callback(renderElementCallback, [detailsDiv, element, elementObj, component, permissionObj, callback]);
+        } else {
+            self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+        }
+    },
+    
+    /*
+     * show popup to edit permission plugin
+     */
+    editPermissionPlugin : function( element, elementObj, component) {
+        var self = CustomBuilder.Builder;
+        
+        var props = self.parseElementProps(elementObj);
+        var permissionObj = props;
+        var key = CustomBuilder.Builder.permissionRuleKey;
+        if (key !== "default") {
+            if (props["permission_rules"] === undefined) {
+                props["permission_rules"] = {};
+            }
+            if (props["permission_rules"][key] === undefined) {
+                props["permission_rules"][key] = {};
+            }
+            permissionObj = props["permission_rules"][key];
+        }
+        CustomBuilder.editProperties("permission-plugin", permissionObj, elementObj, element);
+        
+        $("#style-properties-tab-link").hide();
+        $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
+        $("body").removeClass("no-right-panel");
+    },
+    
+    /*
+     * Default implementation of rendering permission option, called from renderPermission
+     */
+    _internalRenderPermission : function(detailsDiv, element, elementObj, component, permissionObj, callback) {
+        var self = CustomBuilder.Builder;
+        var dl = detailsDiv.find('dl');
+        
+        var authorizedOptions = CustomBuilder.config.advanced_tools.permission.authorized;
+        if (authorizedOptions !== undefined && authorizedOptions.property !== undefined && authorizedOptions.property !== "") {
+            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
+
+            var value = permissionObj[authorizedOptions.property];
+            if (value === undefined || value === null) {
+                value = authorizedOptions.default_value;
+            }
+
+            for (var i in authorizedOptions.options) {
+                var active = "";
+                if (authorizedOptions.options[i]['value'] === value) {
+                    active = "active";
+                }
+                var disableChild = "";
+                if (authorizedOptions.options[i]['value'] === true) {
+                    disableChild = "data-disable-child";
+                }
+                dl.find(".authorized-btns").append('<button type="button" class="'+active+' btn btn-outline-success btn-sm '+authorizedOptions.options[i]['key']+'-btn" data-value="'+authorizedOptions.options[i]['value']+'" '+disableChild+'>'+authorizedOptions.options[i]['label']+'</button>');
+            }
+
+            dl.on("click", ".authorized-btns .btn", function(event) {
+                if ($(this).hasClass("active")) {
+                    return false;
+                }
+
+                var group = $(this).closest(".btn-group");
+                group.find(".active").removeClass("active");
+                $(this).addClass("active");
+
+                var selectedValue = $(this).data("value");
+                permissionObj[authorizedOptions.property] = "" + selectedValue;
+
+                $(element).find("[data-cbuilder-classname] .authorized-row .btn, [data-cbuilder-select] .authorized-row .btn").removeAttr("disabled");
+                if ($(this).is("[data-disable-child]")) {
+                    $(element).find("[data-cbuilder-classname] .authorized-row .btn, [data-cbuilder-select] .authorized-row .btn").addAttr("disabled");
+                }
+                
+                var target = $(this).closest(".cbuilder-node-details").parent();
+                if ($(target).is("[data-cbuilder-select]")) {
+                    //copy to others
+                    $(self.frameBody).find("[data-cbuilder-select='"+$(target).data("cbuilder-select")+"']").each(function(){
+                        if (!$(this).is(target)) {
+                            $(this).find("> .cbuilder-node-details .authorized-btns > .active").removeClass("active");
+                            $(this).find("> .cbuilder-node-details .authorized-btns > [data-value='"+selectedValue+"']").addClass("active");
+                        }
+                    });
+                }
+
+                CustomBuilder.update();
+
+                event.preventDefault();
+                return false;
+            });
+        }
+
+        var unauthorizedOptions = CustomBuilder.config.advanced_tools.permission.unauthorized;
+        if (unauthorizedOptions !== undefined && unauthorizedOptions.property !== undefined && unauthorizedOptions.property !== "") {
+            dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
+
+            var value = permissionObj[unauthorizedOptions.property];
+            if (value === undefined || value === null) {
+                value = unauthorizedOptions.default_value;
+            }
+
+            for (var i in unauthorizedOptions.options) {
+                var active = "";
+                if (unauthorizedOptions.options[i]['value'] === value) {
+                    active = "active";
+                }
+                dl.find(".unauthorized-btns").append('<button type="button" class="'+active+' btn btn-outline-danger btn-sm '+unauthorizedOptions.options[i]['key']+'-btn" data-value="'+unauthorizedOptions.options[i]['value']+'" >'+unauthorizedOptions.options[i]['label']+'</button>');
+            }
+
+            dl.on("click", ".unauthorized-btns .btn", function(event) {
+                if ($(this).hasClass("active")) {
+                    return false;
+                }
+
+                var group = $(this).closest(".btn-group");
+                group.find(".active").removeClass("active");
+                $(this).addClass("active");
+                
+                var selectedValue = $(this).data("value");
+                permissionObj[unauthorizedOptions.property] = "" + selectedValue;
+
+                $(element).find("[data-cbuilder-classname] .unauthorized-row .btn, [data-cbuilder-select] .unauthorized-row .btn").removeAttr("disabled");
+                if ($(this).is("[data-disable-child]")) {
+                    $(element).find("[data-cbuilder-classname] .unauthorized-row .btn, [data-cbuilder-select] .unauthorized-row .btn").addAttr("disabled");
+                }
+                
+                var target = $(this).closest(".cbuilder-node-details").parent();
+                if ($(target).is("[data-cbuilder-select]")) {
+                    //copy to others
+                    $(self.frameBody).find("[data-cbuilder-select='"+$(target).data("cbuilder-select")+"']").each(function(){
+                        if (!$(this).is(target)) {
+                            $(this).find("> .cbuilder-node-details .unauthorized-btns > .active").removeClass("active");
+                            $(this).find("> .cbuilder-node-details .unauthorized-btns > [data-value='"+selectedValue+"']").addClass("active");
+                        }
+                    });
+                }
+
+                CustomBuilder.update();
+
+                event.preventDefault();
+                return false;
+            });
+        }
+        
+        if (callback) {
+            callback();
+        }
     },
     
     /*
@@ -3664,8 +4076,6 @@ CustomBuilder.Builder = {
         container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.newRule")+'" id="new-rule-btn"><i class="las la-plus"></i></button>');
         container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.editRule")+'" id="edit-rule-btn"><i class="las la-pen"></i></button>');
         container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.deleteRule")+'" id="delete-rule-btn" style="display:none;"><i class="las la-trash"></i></button>');
-        
-        
         
         var rulesContainer = container.find(".permission-rules-container");
         rulesContainer.append("<div class=\"sortable\"></div>");
@@ -3723,6 +4133,7 @@ CustomBuilder.Builder = {
         $("#edit-rule-btn").off("click");
         $("#edit-rule-btn").on("click", function() {
             var rule = rulesContainer.find(".active");
+            self.editPermissionRule(rule);
         });
         
         $("#delete-rule-btn").off("click");
@@ -3787,7 +4198,7 @@ CustomBuilder.Builder = {
         
         $(rule).data("key", key);
         $(rule).attr("id", "permission-rule-"+key);
-        $(rule).data("data", obj);
+        $(rule).data("data", {className: "permission-rule", properties : obj});
         $(rule).find(".name").text(name);
         $(rule).find(".plugin_name").text(pluginName);
         
@@ -3850,10 +4261,27 @@ CustomBuilder.Builder = {
             container.find("#delete-rule-btn").show();
         }
         
+        CustomBuilder.Builder.permissionRuleKey = $(rule).data("key");
+        
         CustomBuilder.Builder.removeNodeAdditional();
         CustomBuilder.Builder.renderNodeAdditional('Permission');
+    },
+    
+    /*
+     * Show popup to edit permission rule
+     */
+    editPermissionRule : function(rule) {
+        $("body").addClass("no-right-panel");
         
-        CustomBuilder.Builder.permissionRuleKey = $(rule).data("key");
+        var self = CustomBuilder.Builder;
+        
+        var data = $(rule).data("data");
+        var props = data.properties;
+        CustomBuilder.editProperties("permission-rule", props, data, rule);
+        
+        $("#style-properties-tab-link").hide();
+        $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
+        $("body").removeClass("no-right-panel");
     },
     
     /*

@@ -162,6 +162,9 @@ body.viewport-enabled{
     font-size: 22px;
     line-height: 3px;
 }
+#cbuilder.hide-tool #top-panel .btn-group.tool{
+    visibility: hidden
+}
 #cbuilder #top-panel .btn-group.tool .btn {
     padding: 3px;
 }
@@ -1391,7 +1394,6 @@ li.jsondiffpatch-unchanged {
     width: 500px;
 }
 
-
 /* popup */
 body .ui-widget-overlay{
     background: #000;
@@ -1805,6 +1807,7 @@ body.popupBody {
 }
 *::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
     background-color: rgba(255, 255, 255, 0.1);
     -webkit-box-shadow: none; 
 }

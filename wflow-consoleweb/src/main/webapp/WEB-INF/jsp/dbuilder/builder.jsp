@@ -17,6 +17,9 @@
 <c:set var="builderConfig" scope="request">
     {
         "builder" : {
+            "options" : {
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/datalist/${datalist.id}/json"
+            },
             "callbacks" : {
                 "initBuilder" : "DatalistBuilder.initBuilder",
                 "load" : "DatalistBuilder.load",
@@ -24,11 +27,16 @@
                 "getBuilderProperties" : "DatalistBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "DatalistBuilder.saveBuilderProperties",
                 "dataBinderViewInit" : "DatalistBuilder.dataBinderViewInit",
+                "getRuleObject" : "DatalistBuilder.getRuleObject"
             }
         },
         "advanced_tools" : {
             "xray" : {
                 "disabled" : false,
+            },
+            "permission" : {
+                "permission_plugin" : "org.joget.apps.datalist.model.DatalistPermission",
+                "childs_properties" : ["filters", "columns", "rowActions", "actions"]
             }
         }
     }

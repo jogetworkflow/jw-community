@@ -30,6 +30,10 @@ public abstract class PageComponent extends ExtElement {
     }
 
     public String render() {
+        if (getPropertyString("hidden").equalsIgnoreCase("true")) {
+            return "";
+        }
+        
         String id = "pc-" + getPropertyString("id");
         if (!getPropertyString("customId").isEmpty()) {
             id = getPropertyString("customId");

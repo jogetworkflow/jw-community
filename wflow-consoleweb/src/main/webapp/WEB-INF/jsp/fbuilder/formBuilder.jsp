@@ -68,6 +68,9 @@
 <c:set var="builderConfig" scope="request">
     {
         "builder" : {
+            "options" : {
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/${formId}/json"
+            },
             "callbacks" : {
                 "initBuilder" : "FormBuilder.initBuilder",
                 "load" : "FormBuilder.load",
@@ -79,6 +82,12 @@
         "advanced_tools" : {
             "xray" : {
                 "disabled" : false,
+            },
+            "permission" : {
+                "element_support_plugin" : ["org.joget.apps.form.model.Section"],
+                "ignore_classes" : ["org.joget.apps.form.model.Column"],
+                "render_elements_callback" : "FormBuilder.renderPermission",
+                "permission_plugin" : "org.joget.apps.form.model.FormPermission"
             }
         }
     }
