@@ -224,6 +224,8 @@ PropertyEditor.Popup = {
 /* Utility Functions */
 PropertyEditor.Util = {
     resources: {},
+    cachedAjaxCalls: {},
+    timeCachedAjaxCalls: {},
     ajaxCalls: {},
     prevAjaxCalls: {},
     types: {},
@@ -743,13 +745,26 @@ PropertyEditor.Util = {
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl] === undefined || PropertyEditor.Util.ajaxCalls[ajaxUrl] === null) {
             PropertyEditor.Util.ajaxCalls[ajaxUrl] = [];
         }
-
+        
         PropertyEditor.Util.ajaxCalls[ajaxUrl].push({
             field: field,
             mapping: mapping,
             reference: reference
         });
         PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference] = ajaxUrl;
+        
+        if (PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] !== undefined) {
+            PropertyEditor.Util.handleAjaxOptions(PropertyEditor.Util.cachedAjaxCalls[ajaxUrl], ajaxUrl, extra);
+            return;
+        } else if (PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl] !== undefined) {
+            //cache for 30sec
+            if (((new Date().getTime()) - PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl].time) < 30000) {
+                PropertyEditor.Util.handleAjaxOptions(PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl].data, ajaxUrl, extra);
+                return;
+            } else {
+                delete PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl];
+            }
+        }
 
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl].length === 1) {
             if (method === undefined || method.toUpperCase() !== "POST") {
@@ -762,57 +777,18 @@ PropertyEditor.Util = {
                 dataType: "text",
                 method: method.toUpperCase(),
                 success: function(data) {
-                    if (data !== undefined && data !== null) {
-                        var options = $.parseJSON(data);
-                        var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
-                        for (var i in calls) {
-                            var tempOptions = options;
-
-                            if (calls[i].mapping !== undefined) {
-                                if (calls[i].mapping.arrayObj !== undefined) {
-                                    tempOptions = PropertyEditor.Util.getValueFromObject(tempOptions, calls[i].mapping.arrayObj);
-                                }
-
-                                var newOptions = [];
-                                calls[i].mapping.addEmpty = true;
-                                if (calls[i].mapping.addEmpty !== undefined && calls[i].mapping.addEmpty) {
-                                    newOptions.push({ value: '', label: '' });
-                                }
-
-                                for (var o in tempOptions) {
-                                    if (calls[i].mapping.value !== undefined && calls[i].mapping.label !== undefined) {
-                                        newOptions.push({
-                                            value: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.value),
-                                            label: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.label)
-                                        });
-                                    } else {
-                                        newOptions.push(tempOptions[o]);
-                                    }
-                                }
-                                tempOptions = newOptions;
-                            }
-
-                            if (extra !== undefined && extra !== null) {
-                                if (tempOptions !== undefined && tempOptions.length > 0) {
-                                    if (tempOptions[0].value === "") {
-                                        var empty = tempOptions[0];
-                                        tempOptions.shift();
-                                        tempOptions = extra.concat(tempOptions);
-                                        tempOptions.unshift(empty);
-                                    } else {
-                                        tempOptions = extra.concat(tempOptions);
-                                    }
-                                } else {
-                                    tempOptions = extra;
-                                }
-                            }
-
-                            calls[i].field.handleAjaxOptions(tempOptions, calls[i].reference);
-                            PropertyEditor.Util.removeAjaxLoading(calls[i].field.editor, calls[i].field, calls[i].reference);
-                            calls[i].field.isDataReady = true;
-                        }
-                        delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
+                    //cache the data for plugins options
+                    if (ajaxUrl.indexOf("/property/json/getElements") !== -1
+                            || ajaxUrl.indexOf("/workflowVariable/options") !== -1) {
+                        PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] = data;
+                    } else {
+                        PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl] = {
+                            time : (new Date().getTime()),
+                            data : data
+                        };
                     }
+                    
+                    PropertyEditor.Util.handleAjaxOptions(data, ajaxUrl, extra);
                 },
                 error: function(xhr,status,error){
                     var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
@@ -823,6 +799,59 @@ PropertyEditor.Util = {
                     delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
                 }
             });
+        }
+    },
+    handleAjaxOptions : function(data, ajaxUrl, extra) {
+        if (data !== undefined && data !== null) {
+            var options = $.parseJSON(data);
+            var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
+            for (var i in calls) {
+                var tempOptions = options;
+
+                if (calls[i].mapping !== undefined) {
+                    if (calls[i].mapping.arrayObj !== undefined) {
+                        tempOptions = PropertyEditor.Util.getValueFromObject(tempOptions, calls[i].mapping.arrayObj);
+                    }
+
+                    var newOptions = [];
+                    calls[i].mapping.addEmpty = true;
+                    if (calls[i].mapping.addEmpty !== undefined && calls[i].mapping.addEmpty) {
+                        newOptions.push({ value: '', label: '' });
+                    }
+
+                    for (var o in tempOptions) {
+                        if (calls[i].mapping.value !== undefined && calls[i].mapping.label !== undefined) {
+                            newOptions.push({
+                                value: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.value),
+                                label: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.label)
+                            });
+                        } else {
+                            newOptions.push(tempOptions[o]);
+                        }
+                    }
+                    tempOptions = newOptions;
+                }
+
+                if (extra !== undefined && extra !== null) {
+                    if (tempOptions !== undefined && tempOptions.length > 0) {
+                        if (tempOptions[0].value === "") {
+                            var empty = tempOptions[0];
+                            tempOptions.shift();
+                            tempOptions = extra.concat(tempOptions);
+                            tempOptions.unshift(empty);
+                        } else {
+                            tempOptions = extra.concat(tempOptions);
+                        }
+                    } else {
+                        tempOptions = extra;
+                    }
+                }
+
+                calls[i].field.handleAjaxOptions(tempOptions, calls[i].reference);
+                PropertyEditor.Util.removeAjaxLoading(calls[i].field.editor, calls[i].field, calls[i].reference);
+                calls[i].field.isDataReady = true;
+            }
+            delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
         }
     },
     fieldOnChange: function(field, reference, ajax_url, on_change, mapping, method, extra) {
@@ -8311,6 +8340,13 @@ PropertyEditor.Type.ElementSelect.prototype = {
     getElementProperties: function(value) {
         var thisObj = this;
         var d = $.Deferred();
+        
+        var ajaxUrl = PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath) + "?" + "value=" + encodeURIComponent(value);
+        if (PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] !== undefined) {
+            thisObj.pageOptions.propertiesDefinition = $.extend(true, [], PropertyEditor.Util.cachedAjaxCalls[ajaxUrl]);
+            d.resolve();
+            return d;
+        }
 
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
@@ -8323,6 +8359,10 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 if (response !== null && response !== undefined && response !== "") {
                     try {
                         var data = eval(response);
+                        if (ajaxUrl.indexOf("/getPropertyOptions?") !== -1) {
+                            PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] = $.extend(true, [], data);
+                        }
+                        
                         thisObj.pageOptions.propertiesDefinition = data;
                     } catch (err) {
                         if (console && console.log) {
@@ -8345,6 +8385,14 @@ PropertyEditor.Type.ElementSelect.prototype = {
 
         if (this.properties.default_property_values_url !== null && this.properties.default_property_values_url !== undefined &&
             this.properties.default_property_values_url !== "") {
+        
+            var ajaxUrl = PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath) + "?" + "value=" + encodeURIComponent(value);
+            if (PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] !== undefined) {
+                thisObj.pageOptions.defaultPropertyValues = $.extend(true, {}, PropertyEditor.Util.cachedAjaxCalls[ajaxUrl]);
+                d.resolve();
+                return d;
+            }
+        
             $.ajax({
                 url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
                 data: "value=" + encodeURIComponent(value),
@@ -8352,6 +8400,10 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 success: function(response) {
                     if (response !== null && response !== undefined && response !== "") {
                         var data = $.parseJSON(response);
+                        if (ajaxUrl.indexOf("/getDefaultProperties?") !== -1) {
+                            PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] = $.extend(true, {}, data);
+                        }
+                        
                         thisObj.pageOptions.defaultPropertyValues = data;
                     } else {
                         thisObj.pageOptions.defaultPropertyValues = null;
@@ -8739,7 +8791,14 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     getElementProperties: function(row, value) {
         var thisObj = this;
         var d = $.Deferred();
-
+        
+        var ajaxUrl = PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath) + "?" + "value=" + encodeURIComponent(value);
+        if (PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] !== undefined) {
+            $(row).data("propertiesDefinition", $.extend(true, [], PropertyEditor.Util.cachedAjaxCalls[ajaxUrl]));
+            d.resolve();
+            return d;
+        }
+        
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
             data: "value=" + encodeURIComponent(value),
@@ -8751,6 +8810,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {
                     try {
                         var data = eval(response);
+                        if (ajaxUrl.indexOf("/getPropertyOptions?") !== -1) {
+                            PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] = $.extend(true, [], data);
+                        }
+                        
                         $(row).data("propertiesDefinition", data);
                     } catch (err) {
                         if (console && console.log) {
@@ -8774,6 +8837,14 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         if (this.properties.default_property_values_url !== null && !((typeof this.properties.default_property_values_url) === "undefined") &&
             this.properties.default_property_values_url !== "") {
             if (((typeof thisObj.properties.defaultPropertyValues[value]) === "undefined")) {
+                
+                var ajaxUrl = PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath) + "?" + "value=" + encodeURIComponent(value);
+                if (PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] !== undefined) {
+                    thisObj.properties.defaultPropertyValues[value] = $.extend(true, {}, PropertyEditor.Util.cachedAjaxCalls[ajaxUrl]);
+                    d.resolve();
+                    return d;
+                }
+            
                 $.ajax({
                     url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
                     data: "value=" + encodeURIComponent(value),
@@ -8781,6 +8852,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     success: function(response) {
                         if (response !== null && !((typeof response) === "undefined") && response !== "") {
                             var data = $.parseJSON(response);
+                            if (ajaxUrl.indexOf("/getDefaultProperties?") !== -1) {
+                                PropertyEditor.Util.cachedAjaxCalls[ajaxUrl] = $.extend(true, {}, data);
+                            }
+
                             thisObj.properties.defaultPropertyValues[value] = data;
                         } else {
                             thisObj.properties.defaultPropertyValues[value] = null;

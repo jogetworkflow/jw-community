@@ -645,7 +645,7 @@ td.error .chosen-container, td.error input {
     left:0; 
     width: 100%; 
     height: 100%; 
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.05);
 }
 .property-editor-container .loaderIcon {
     text-align: center;
@@ -653,6 +653,7 @@ td.error .chosen-container, td.error input {
     position: absolute;
     width: 100%;
     margin-top: -26px;
+    color: #fafbfc;
 }
 .form-message.form-success {
     color:blue;
