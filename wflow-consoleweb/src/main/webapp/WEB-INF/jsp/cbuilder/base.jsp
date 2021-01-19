@@ -27,20 +27,6 @@
                 <i class="fa-2x ${builderIcon}"></i>
                 <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
             </a>
-            <div id="builder-quick-nav">
-                <i class="fas fa-caret-down"></i>
-                <i class="fas fa-caret-up"></i>
-                <div id="builder-menu" style="display: none;">
-                    <div id="builder-menu-search">
-                        <input type="text" placeholder="<fmt:message key="cbuilder.search"/>" value="" />
-                        <button class="clear-backspace">
-                            <i class="la la-close"></i>
-                        </button>
-                    </div>
-                    <ul>
-                    </ul>
-                </div>
-            </div>
             <div id="top-panel-main">
                 <div id="builderElementName" style="color:${builderColor};"><c:out value="${appDefinition.name}" /> v${appDefinition.version}: <c:out value="${builderDef.name}"/> <c:if test="${appDefinition.published}"><small>(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                 <div id="builderToolbar">

@@ -1627,6 +1627,14 @@ CustomBuilder = {
      */
     initQuickNav : function() {
         setTimeout(function(){
+            $("#adminBarButtons").prepend('<div class="separator"></div><div id="builder-quick-nav"><span>'+get_cbuilder_msg("cbuilder.quickNav") + '</span>\
+                <div id="builder-menu" style="display: none;">\
+                    <div id="builder-menu-search">\
+                        <input type="text" placeholder="'+get_cbuilder_msg("cbuilder.search") + '" value="" />\
+                        <button class="clear-backspace" style="display:none;"><i class="la la-close"></i></button>\
+                    </div><ul></ul>\
+                </div></div>');
+            
             $.ajax({
                 type: "GET",
                 url: CustomBuilder.contextPath + "/web/json/console/app/"+CustomBuilder.appId+"/"+CustomBuilder.appVersion+"/adminbar/builder/menu",
@@ -1668,11 +1676,17 @@ CustomBuilder = {
                         element.show();
                     }
                 });
+                if (searchText !== "") {
+                    $("#builder-menu-search .clear-backspace").show();
+                } else {
+                    $("#builder-menu-search .clear-backspace").hide();
+                }
             });
 
             $("#builder-menu-search .clear-backspace").on("click", function(){
                 $("#builder-menu ul li ul li").show();
                 $("#builder-menu-search input").val("");
+                $("#builder-menu-search .clear-backspace").hide();
             });
 
             $("#builder-menu ul").on("click", " li ul li.addnew a", function(){

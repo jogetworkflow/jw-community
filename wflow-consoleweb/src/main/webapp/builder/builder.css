@@ -1580,38 +1580,29 @@ body.property-editor-right-panel table.boxy-wrapper x.property-editor-container{
 
 
 /* Quick Nav */
-#builder-quick-nav{
-    position: absolute;
-    top: 40px;
-    left: calc(var(--builder-logo-width) - 102px);
-    z-index: 10000;
-    text-align: right;
-    width: 100px;
-    padding: 0 5px;
-}
-#builder-quick-nav > i {
-    color:#fff;
-    font-size: 18px;
+#builder-quick-nav > span {
+    display: block;
+    color: #CFD8DC;
+    padding: 8px 6px;
+    font-size: 13px;
+    line-height: 14px;
+    height: 30px;
+    box-sizing: border-box;
     cursor: pointer;
-}
-#builder-quick-nav:not(:hover)  i.fa-caret-up{
-    display: none;
-}
-#builder-quick-nav:hover i.fa-caret-down {
-    display: none;
 }
 #builder-quick-nav:hover #builder-menu {
     display: block !important;
-    position: absolute;
-    top: 24px;
-    left: calc(101px - var(--builder-logo-width));
+    position: fixed;
+    top: 64px;
+    left: 0;
     background: #cccccc;
-    height: calc(100vh - 94px);
+    height: calc(100vh - 93px);
     width: 350px;
     min-width: var(--builder-logo-width);
     max-width: 100vw;
     border: 1px solid #cccccc;
     text-align: left;
+    z-index: -1;
 }
 #builder-menu ul {
     padding: 0;
