@@ -126,6 +126,8 @@ CustomBuilder = {
     
     navCreateNewDialog : null,
     
+    cachedAjaxCalls: {},
+    
     /*
      * Utility method to call a function by name
      */
@@ -1736,6 +1738,43 @@ CustomBuilder = {
      */
     getPermissionOptions: function(){
         return CustomBuilder.permissionOptions;
+    },
+    
+    /*
+     * Utility method to cache ajax call, this is for better performance when frquently undo/redo or update element
+     */
+    cachedAjax: function(ajaxObj) {
+        var json = "";
+        if (ajaxObj.data !== null && ajaxObj.data !== undefined) {
+            json = JSON.encode(ajaxObj.data);
+        }
+        var key = (ajaxObj.type?ajaxObj.type:"") + "::" + ajaxObj.url + "::" + CustomBuilder.hashCode(json);
+        
+        if (CustomBuilder.cachedAjaxCalls[key] !== undefined) {
+            //cache for 60sec
+            if (((new Date().getTime()) - CustomBuilder.cachedAjaxCalls[key].time) < 60000) {
+                if (ajaxObj.success) {
+                    ajaxObj.success(CustomBuilder.cachedAjaxCalls[key].data);
+                }
+                return;
+            } else {
+                delete CustomBuilder.cachedAjaxCalls[key];
+            }
+        }
+        
+        var orgSuccess = ajaxObj.success;
+        ajaxObj.success = function(response) {
+            CustomBuilder.cachedAjaxCalls[key] = {
+                time : (new Date().getTime()),
+                data : response
+            };
+
+            if (orgSuccess) {
+                orgSuccess(response);
+            }
+        };
+        
+        $.ajax(ajaxObj);
     }
 };
 
@@ -3443,6 +3482,7 @@ CustomBuilder.Builder = {
                 self.loadAndUpdateChildElements(newElement, elementObj, component, deferreds);
 
                 element = newElement;
+                
                 d.resolve();
             });
         }
@@ -3692,7 +3732,9 @@ CustomBuilder.Builder = {
             target = self.frameBody;
             
             $("#node-details-toggle").find("label").removeClass("active");
-            $("#node-details-toggle").find("#details-toggle-all").trigger("click");
+            $("#node-details-toggle").find("#details-toggle-all").attr("checked", "");
+            $("#node-details-toggle").find("#details-toggle-all").parent().addClass("active");
+            $("#node-details-toggle").find("#details-toggle-single").removeAttr("checked");
             $("#node-details-toggle").show();
             
             $("#node-details-toggle").find("input").off("click");

@@ -755,7 +755,7 @@ UserviewBuilder = {
      */
     renderElementAjax : function(element, elementObj, component, callback, type) {
         var jsonStr = JSON.encode(elementObj);
-        $.ajax({
+        CustomBuilder.cachedAjax({
             type: "POST",
             data: {"json": jsonStr },
             url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/'+type+'/template',

@@ -184,7 +184,7 @@ FormBuilder = {
         if (component.builderTemplate.getHtml() === undefined) {
             //load by ajax
             var jsonStr = JSON.encode(elementObj);
-            $.ajax({
+            CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {"json": jsonStr },
                 url: CustomBuilder.contextPath + '/web/fbuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/form/'+ CustomBuilder.id + '/element/preview/',
@@ -712,7 +712,7 @@ FormBuilder = {
     retrieveExistingFieldIds : function() {
         var tableName = CustomBuilder.data.properties['tableName'];
         
-        $.ajax({
+        CustomBuilder.cachedAjax({
             url: CustomBuilder.contextPath + '/web/json/console/app/'+CustomBuilder.appId+'/'+CustomBuilder.appVersion+'/form/columns/options?tableName='+tableName,
             dataType: "text",
             success: function(data) {

@@ -96,7 +96,9 @@ table.breakpoint th .overlay{
 body:not(.show-node-details) .card-layout:not(.card-layout-active) tbody td[data-cbuilder-element-invisible]:after{
     display: none;
 }
-
+.footable-visible[data-cbuilder-element-invisible]:after{
+    display:none !important;
+}
 @media (min-width: 992px) {
     body:not(.show-node-details) .card-layout.card-layout-active [data-cbuilder-desktop-invisible]{
         display: block !important;

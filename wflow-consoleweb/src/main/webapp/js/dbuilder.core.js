@@ -162,8 +162,25 @@ DatalistBuilder = {
         
         DatalistBuilder.retrieveColumns(deferreds);   
         
+        var self = CustomBuilder.Builder;
+            
+        var selectedELSelector = "";
+        var selectedElIndex = 0;
+        if (self.subSelectedEl) {
+            selectedELSelector = '[data-cbuilder-select="'+ $(self.subSelectedEl).data("cbuilder-select") +'"]';
+            selectedElIndex = self.frameBody.find(selectedELSelector).index(self.subSelectedEl);
+        } else if (self.selectedEl) {
+            if ($(self.selectedEl).is("[data-cbuilder-id]")) {
+                selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).data("cbuilder-id") +'"]';
+            } else {
+                selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
+                selectedELSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
+            }
+            selectedElIndex = self.frameBody.find(selectedELSelector).index(self.selectedEl);
+        } 
+        
+        
         $.when.apply($, deferreds).then(function() {
-            var self = CustomBuilder.Builder;
             self.frameBody.html("");
             self.selectNode(false);
             $("#element-highlight-box").hide();
@@ -200,13 +217,17 @@ DatalistBuilder = {
 
             $("#iframe-wrapper").show();
             
+            var cdeferreds = [];
+            var d = $.Deferred();
+            cdeferreds.push(d);
+            
             for (var i in CustomBuilder.data.filters) {
                 var data = CustomBuilder.data.filters[i];
                 
                 var component = self.parseDataToComponent(data);
                 var temp = $('<span></span>');
                 self.frameBody.find(".filters").append(temp);
-                self.renderElement(data, temp, component);
+                self.renderElement(data, temp, component, null, cdeferreds);
             }
             
             for (var i in CustomBuilder.data.columns) {
@@ -215,7 +236,7 @@ DatalistBuilder = {
                 var component = self.parseDataToComponent(data);
                 var temp = $('<th></th>');
                 self.frameBody.find("table thead tr .gap").before(temp);
-                self.renderElement(data, temp, component);
+                self.renderElement(data, temp, component, null, cdeferreds);
             }
             
             for (var i in CustomBuilder.data.actions) {
@@ -224,7 +245,7 @@ DatalistBuilder = {
                 var component = self.parseDataToComponent(data);
                 var temp = $('<span></span>');
                 self.frameBody.find("div.actions").append(temp);
-                self.renderElement(data, temp, component);
+                self.renderElement(data, temp, component, null, cdeferreds);
             }
             
             for (var i in CustomBuilder.data.rowActions) {
@@ -233,17 +254,39 @@ DatalistBuilder = {
                 var component = self.parseDataToComponent(data);
                 var temp = $('<div></div>');
                 self.frameBody.find("th.row_action_container").append(temp);
-                self.renderElement(data, temp, component);
+                self.renderElement(data, temp, component, null, cdeferreds);
             }
             
-            DatalistBuilder.refreshTableLayout();
+            d.resolve();
             
-            var dlComponent = self.parseDataToComponent(CustomBuilder.data);
-            DatalistBuilder.updateDatalistStyle(self.frameBody.find(".dataList"), CustomBuilder.data, dlComponent);
-            
-            if (dlComponent.builderTemplate.isPastable(CustomBuilder.data, dlComponent)) {
-                $("#paste-element-btn").removeClass("disabled");
-            }
+            $.when.apply($, cdeferreds).then(function() {
+                DatalistBuilder.refreshTableLayout();
+
+                var dlComponent = self.parseDataToComponent(CustomBuilder.data);
+                DatalistBuilder.updateDatalistStyle(self.frameBody.find(".dataList"), CustomBuilder.data, dlComponent);
+
+                if (dlComponent.builderTemplate.isPastable(CustomBuilder.data, dlComponent)) {
+                    $("#paste-element-btn").removeClass("disabled");
+                }
+
+                if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
+                    CustomBuilder.Builder.renderNodeAdditional(self.nodeAdditionalType);
+                }
+
+                //reselect previous selected element
+                if (selectedELSelector !== "") {
+                    var element = self.frameBody.find(selectedELSelector);
+                    if (element.length > 1) {
+                        do {
+                            element = element[selectedElIndex];
+                        } while (element === undefined && selectedElIndex-- > 0);
+                    }
+                    
+                    if ($(element).length > 0) {
+                        self.selectNode(element);
+                    }
+                }
+            });
         });
     },
     
@@ -455,7 +498,7 @@ DatalistBuilder = {
                     },
                     'customPropertyOptions' : function(elementOptions, element, elementObj, paletteElement) {
                         if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
-                            return DatalistBuilder.getColumnPropertiesDefinition();
+                            return DatalistBuilder.getFilterPropertiesDefinition();
                         } else {
                             return DatalistBuilder.getColumnPropertiesDefinition();
                         }
@@ -919,8 +962,8 @@ DatalistBuilder = {
         }
         
         $.when.apply($, [deferrer]).then(function() {
-            var element = arguments[0].element;
-            callback(element);
+            var newElement = arguments[0].element;
+            callback(newElement);
         });
     },
     
@@ -1052,7 +1095,8 @@ DatalistBuilder = {
         if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
             var colStr = JSON.encode(elementObj);
             var rowStr = JSON.encode(rowData);
-            $.ajax({
+            
+            CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
                     "column": colStr,
@@ -1088,7 +1132,7 @@ DatalistBuilder = {
     renderFilter : function(element, elementObj, component, deferrer) {
         
         var jsonStr = JSON.encode(elementObj);
-        $.ajax({
+        CustomBuilder.cachedAjax({
             type: "POST",
             data: {"json": jsonStr },
             url: CustomBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
@@ -1411,7 +1455,7 @@ DatalistBuilder = {
         dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
-        dl.append('<dt class="authorized-export-row" ><i class="las la-file-download title="'+get_advtool_msg('adv.permission.export')+'"></i></i></dt><dd class="authorized-export-row" ><div class="authorized-export-btns btn-group"></div></dd>');
+        dl.append('<dt class="authorized-export-row" ><i class="las la-file-download" title="'+get_advtool_msg('adv.permission.export')+'"></i></i></dt><dd class="authorized-export-row" ><div class="authorized-export-btns btn-group"></div></dd>');
         dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
