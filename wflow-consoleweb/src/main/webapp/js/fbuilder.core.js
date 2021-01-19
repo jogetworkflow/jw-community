@@ -394,6 +394,7 @@ FormBuilder = {
                         dl.find(".unauthorized-btns .readonly-btn").addClass("active");
                     } else {
                         dl.find(".unauthorized-btns .hidden-btn").addClass("active");
+                        $(element).find("[data-cbuilder-classname] .unauthorized-row .btn").attr("disabled", "");
                     }
                 } else {
                     dl.find(".unauthorized-btns .btn").attr("disabled", "");
