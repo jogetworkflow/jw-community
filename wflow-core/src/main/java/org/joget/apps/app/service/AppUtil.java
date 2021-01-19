@@ -28,10 +28,13 @@ import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.DtEnd;
+import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
@@ -1377,7 +1380,10 @@ public class AppUtil implements ApplicationContextAware {
                     endDate.setTime(sdFormat.parse(endDateTime));
                     DateTime end = new DateTime(endDate.getTime());
                     
-                    event = new VEvent(start, end, eventName);
+                    event = new VEvent();
+                    event.getProperties().add(new DtStart(start.toString(),timezone));
+                    event.getProperties().add(new DtEnd(end.toString(),timezone));
+                    event.getProperties().add(new Summary(eventName));
                 }
                 
                 UidGenerator ug = new FixedUidGenerator("joget-workflow");
