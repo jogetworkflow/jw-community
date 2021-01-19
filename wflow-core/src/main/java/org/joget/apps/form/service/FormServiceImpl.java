@@ -57,7 +57,7 @@ public class FormServiceImpl implements FormService {
      */
     @Override
     public String previewElement(String json, boolean includeMetaData) {
-        Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
+        Element element = createElementFromJson(StringUtil.decryptContent(json), true);
         FormData formData = new FormData();
         formData.addFormResult(PREVIEW_MODE, "true");
         
