@@ -405,24 +405,21 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                 if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                     dataFormat = UTC_DATEFORMAT;
                 }
-                
-                boolean inDisplayFormat = DateUtil.validateDateFormat(value, displayFormat);
-                if (!inDisplayFormat) {
-                    if (!displayFormat.equals(dataFormat)) {
-                        SimpleDateFormat data = new SimpleDateFormat(dataFormat);
-                        SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                        if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
-                            String id = getPropertyString(FormUtil.PROPERTY_ID);
-                            if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
-                                data.setTimeZone(TimeZone.getDefault());
-                            } else {
-                                data.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            }
-                            display.setTimeZone(getUserTZ());
+                    
+                if (!displayFormat.equals(dataFormat)) {
+                    SimpleDateFormat data = new SimpleDateFormat(dataFormat);
+                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                        String id = getPropertyString(FormUtil.PROPERTY_ID);
+                        if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
+                            data.setTimeZone(TimeZone.getDefault());
+                        } else {
+                            data.setTimeZone(TimeZone.getTimeZone("UTC"));
                         }
-                        Date date = data.parse(value);
-                        value = display.format(date);
+                        display.setTimeZone(getUserTZ());
                     }
+                    Date date = data.parse(value);
+                    value = display.format(date);
                 }
             } catch (Exception e) {
             }
