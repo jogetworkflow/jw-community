@@ -1205,9 +1205,12 @@ PropertyEditor.Model.Editor.prototype = {
         return properties;
     },
     validation: function(successCallaback, failureCallback) {
+        var thisObj = this;
         var errors = new Array();
         var data = this.getData();
         var deferreds = [];
+        
+        $(thisObj.editor).find(".property-page-has-errors").removeClass("property-page-has-errors");
 
         if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
             $.each(this.options.propertiesDefinition, function(i, page) {
@@ -1225,6 +1228,8 @@ PropertyEditor.Model.Editor.prototype = {
 
         $.when.apply($, deferreds).then(function() {
             if (errors.length > 0) {
+                $(thisObj.editor).find(".property-input-error").closest(".property-editor-page").addClass("property-page-has-errors");
+               
                 failureCallback(errors);
             } else {
                 successCallaback(data);
@@ -2243,6 +2248,7 @@ PropertyEditor.Validator.Ajax.prototype = {
                     }
                     var errorContainer = $(page).find(".property-editor-page-errors");
                     $(errorContainer).append(errorsHtml);
+                    $(page).addClass("property-page-has-errors");
                 }
                 d.resolve();
             },
@@ -8527,11 +8533,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         var thisObj = this;
         thisObj.properties.propertiesDefinition = {};
         thisObj.properties.defaultPropertyValues = {};
-        var currentPage = $(thisObj.editor).find("#" + thisObj.page.id);
-        while ($(currentPage).next().data("page") === this.page.id) {
-            currentPage = $(currentPage).next();
+        if (!($(thisObj.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode)) {
+            var currentPage = $(thisObj.editor).find("#" + thisObj.page.id);
+            while ($(currentPage).next().data("page") === thisObj.page.id) {
+                currentPage = $(currentPage).next();
+            }
+            $(currentPage).after("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+thisObj.id+"\" style=\"display:none\"></div>");
         }
-        $(currentPage).after("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+thisObj.id+"\" style=\"display:none\"></div>");
         
         thisObj.loadValues();
         
@@ -8598,6 +8606,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         html += '</select>';
         
         $(row).find(".inputs .inputs-container").append(html);
+        
+        if ($(this.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode) {
+            $(row).find(".inputs").append("<div class=\"element-pages\" style=\"display:none;\"><div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div></div>");
+        }
+        
         $(row).data("element", value);
         
         if (before !== null && !((typeof before) === "undefined") && !$(before).hasClass("pebutton")) {
@@ -8645,8 +8658,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         if ($(row).next(".repeater-row").length > 0) {
             nextRowId = $(row).next(".repeater-row").find("select").attr("id");
         }
-        var movePages = $(".anchor[anchorfield=\""+fieldId+"\"], .property-editor-page[elementid=\""+fieldId+"\"]");
-        $(".anchor[anchorfield=\""+nextRowId+"\"]").before(movePages);
+        if (!($(thisObj.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode)) {
+            var movePages = $(".anchor[anchorfield=\""+fieldId+"\"], .property-editor-page[elementid=\""+fieldId+"\"]");
+            $(".anchor[anchorfield=\""+nextRowId+"\"]").before(movePages);
+        }
         
         this.updateRows();
     },
@@ -8782,6 +8797,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     var parentTitle = '<h1>' + thisObj.properties.label + " (" + valueLabel + ')</h1>';
                     var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementid=' + thisObj.id + '].property-page-show:eq(0)');
                     $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
+                    
+                    if ($(anchor).parent(".element-pages").length > 0 && $(anchor).parent(".element-pages").find(".property-page-show").length > 0) {
+                        $(anchor).parent(".element-pages").show();
+                        $(anchor).parent(".element-pages").find(".property-page-show").addClass("collapsed");
+                    }
                 }
                 thisObj.editorObject.refresh();
                 PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");

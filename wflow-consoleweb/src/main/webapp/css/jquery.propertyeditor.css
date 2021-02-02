@@ -1431,8 +1431,21 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .element-pages{
     border:1px solid #ced4da;
     border-radius: 0.25rem;
-    background: #ced4da36;
+    background: #ced4da21;
     margin-top: 5px;
+}
+.editor-panel-mode .element-pages .property-editor-page-title {
+    padding: 0px 10px 3px;
+}
+.editor-panel-mode .element-pages .property-editor-page-title span{
+    line-height: 14px;
+}
+.editor-panel-mode .element-pages .property-editor-page-title:after{
+    right: 0px;
+    margin-top: -5px;
+}
+.editor-panel-mode .element-pages .property-editor-property{
+    padding: 0 10px;
 }
 .property-search-hide {
     display: none;
@@ -1502,4 +1515,58 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property select,
 .editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
+}
+.editor-panel-mode .elementmultiselect {
+    background: transparent;
+    border: 0;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row{
+    border-bottom: 0;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row + .repeater-row {
+    margin-top: 5px;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row  > .property-label-container {
+    display: none;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row  > .actions.sort{
+    left: -7px;
+    font-size: 0;
+    border-left: 1px solid #ced4da;
+    border-right: 1px solid #ced4da;
+    width: 3px;
+    top: 5px;
+    bottom: auto;
+    background: transparent;
+    padding: 0;
+    height: 25px;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row > .inputs{
+    padding: 0px 8px 0 0px;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row > .inputs .chosen-container{
+    width: 100% !important;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row > .actions.rowbuttons{
+    background: transparent;
+    border-left: 0;
+    padding: 0;
+    right: -15px;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row > .actions.rowbuttons .deleterow{
+    top:17px;
+}
+.editor-panel-mode .elementmultiselect > .repeater-row > .inputs > .element-pages > .property-page-show > .property-editor-property-container > .property-editor-property{
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.editor-panel-mode .helplink{
+    font-size: 60%;
+}
+.editor-panel-mode .property-page-has-errors .property-editor-page-title span{
+    color: red;
+}
+.editor-panel-mode .property-editor-page-errors {
+    padding: 5px 10px;
 }
