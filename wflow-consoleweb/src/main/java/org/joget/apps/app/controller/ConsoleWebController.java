@@ -5278,13 +5278,15 @@ public class ConsoleWebController {
         InputStream inputStream = null;
         try {
             if ("cbuilder".equals(name)) {
-                if (type != null && (type.endsWith("form") || type.endsWith("datalist"))) {
+                if (type != null && (type.endsWith("form") || type.endsWith("datalist") || type.endsWith("process"))) {
                     InputStream inputStream2 = null;
                     try {
                         if (type.endsWith("form")) {
                             inputStream2 = this.getClass().getClassLoader().getResourceAsStream("fbuilder.properties");
-                        } else {
+                        } else if (type.endsWith("datalist")) {
                             inputStream2 = this.getClass().getClassLoader().getResourceAsStream("dbuilder.properties");
+                        } else if (type.endsWith("process")) {
+                            inputStream2 = this.getClass().getClassLoader().getResourceAsStream("pbuilder.properties");
                         }
                         
                         keys.load(inputStream2);
@@ -5738,7 +5740,7 @@ public class ConsoleWebController {
             elementsArr = new JSONArray();
             for (WorkflowProcess p : processList) {
                 obj = new HashMap();
-                obj.put("url", baseUrl + "/process/builder?processId=" + p.getIdWithoutVersion());
+                obj.put("url", baseUrl + "/process/builder#" + p.getIdWithoutVersion());
                 obj.put("label", p.getName());
                 elementsArr.put(obj);
             }

@@ -1,16 +1,19 @@
 package org.joget.apps.app.controller;
 
+import com.github.underscore.lodash.U;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -19,31 +22,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
-import org.joget.apps.app.model.ProcessFormModifier;
-import org.joget.apps.app.model.ProcessMappingInfo;
-import org.joget.apps.app.model.StartProcessFormModifier;
-import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.directory.model.Department;
-import org.joget.directory.model.Group;
-import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.plugin.base.Plugin;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
-import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.XpdlImageUtil;
@@ -51,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -72,6 +69,9 @@ public class ProcessBuilderWebController {
     @Resource
     FormDefinitionDao formDefinitionDao;
     
+    @Autowired
+    PackageDefinitionDao packageDefinitionDao;
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/process/builder")
     public String processBuilder(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         // verify app version
@@ -89,268 +89,338 @@ public class ProcessBuilderWebController {
         model.addAttribute("appId", appDef.getId());
         model.addAttribute("version", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
+        
+        model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
+        
         return "pbuilder/pbuilder";
     }
     
-    @RequestMapping("/console/app/(*:appId)/(~:version)/process/mapper")
-    public String processMapper(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/process/builder/save", method = RequestMethod.POST)
+    @Transactional
+    public String save(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("json") String json) throws Exception {
         // verify app version
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
+        JSONObject jsonObject = new JSONObject();
 
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        String oriJson = getXpdlAndMappingJson(appDef, request);
+        json = PropertyUtil.propertiesJsonStoreProcessing(oriJson, json);
+        
+        boolean success = true;
+        String error = "";
+        
+        try {
+            if (!oriJson.equals(json)) {
+                JSONObject oriObject = new JSONObject(oriJson);
+                JSONObject newObject = new JSONObject(json);
+
+                //compare xpdl
+                String oriXpdlJson = oriObject.getJSONObject("xpdl").toString();
+                String newXpdlJson = newObject.getJSONObject("xpdl").toString();
+                if (!oriXpdlJson.equals(newXpdlJson)) {
+                    String xpdl = U.jsonToXml(newXpdlJson);
+                    try {
+                        // deploy package
+                        appService.deployWorkflowPackage(appId, version, xpdl.getBytes(), true);
+                    } catch (Exception ex) {
+                        success = false;
+                        error = ex.getMessage().replace(":", "");
+                    }
+                }
+                
+                //compare mapping
+                if (success) {
+                    PackageDefinition packageDef = packageDefinitionDao.loadAppPackageDefinition(appId, appDef.getVersion());
+                    if (packageDef == null) {
+                        packageDef = packageDefinitionDao.createPackageDefinition(appDef, appDef.getVersion());
+                    }
+                    
+                    JSONObject oldFormMappings = oriObject.getJSONObject("activityForms");
+                    JSONObject newFormMappings = newObject.getJSONObject("activityForms");
+                    
+                    //check form mapping deleted
+                    Iterator keys = oldFormMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        if (!newFormMappings.has(key)) {
+                            String[] temp = key.split("::");
+                            packageDef.removePackageActivityForm(temp[0], temp[1]);
+                        }
+                    }
+                    
+                    //check new/updated form mapping
+                    keys = newFormMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        String[] temp = key.split("::");
+                        JSONObject mapping = newFormMappings.getJSONObject(key);
+                        
+                        PackageActivityForm activityForm = packageDef.getPackageActivityForm(temp[0], temp[1]);
+                        boolean isNew = false;
+                        if (activityForm == null) {
+                            isNew = true;
+                            activityForm = new PackageActivityForm();
+                            activityForm.setProcessDefId(temp[0]);
+                            activityForm.setActivityDefId(temp[1]);
+                        }
+                        
+                        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
+                            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
+                            activityForm.setFormUrl(mapping.getString("formUrl"));
+                            activityForm.setFormIFrameStyle(mapping.getString("formIFrameStyle"));
+                            activityForm.setFormId(null);
+                            activityForm.setDisableSaveAsDraft(null);
+                        } else {
+                            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
+                            activityForm.setFormId(mapping.getString("formId"));
+                            activityForm.setDisableSaveAsDraft(mapping.getBoolean("disableSaveAsDraft"));
+                            activityForm.setFormUrl(null);
+                            activityForm.setFormIFrameStyle(null);
+                        }
+                        activityForm.setAutoContinue(mapping.getBoolean("autoContinue"));
+                        if (isNew) {
+                            packageDef.addPackageActivityForm(activityForm);
+                        }
+                    }
+                    
+                    //check plugin mapping deleted
+                    JSONObject oldPluginMappings = oriObject.getJSONObject("activityPlugins");
+                    JSONObject newPluginMappings = newObject.getJSONObject("activityPlugins");
+                    keys = oldPluginMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        if (!newPluginMappings.has(key)) {
+                            String[] temp = key.split("::");
+                            packageDef.removePackageActivityPlugin(temp[0], temp[1]);
+                        }
+                    }
+                    
+                    //check new/updated plugin mapping
+                    keys = newPluginMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        String[] temp = key.split("::");
+                        JSONObject mapping = newPluginMappings.getJSONObject(key);
+                        
+                        PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(temp[0], temp[1]);
+                        boolean isNew = false;
+                        if (activityPlugin == null) {
+                            isNew = true;
+                            activityPlugin = new PackageActivityPlugin();
+                            activityPlugin.setProcessDefId(temp[0]);
+                            activityPlugin.setActivityDefId(temp[1]);
+                        }
+                        
+                        activityPlugin.setPluginName(mapping.getString("className"));
+                        activityPlugin.setPluginProperties(mapping.getJSONObject("properties").toString());
+                        
+                        if (isNew) {
+                            packageDef.addPackageActivityPlugin(activityPlugin);
+                        }
+                    }
+                    
+                    //check participant mapping deleted
+                    JSONObject oldParticipantMappings = oriObject.getJSONObject("participants");
+                    JSONObject newParticipantMappings = newObject.getJSONObject("participants");
+                    keys = oldParticipantMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        if (!newParticipantMappings.has(key)) {
+                            String[] temp = key.split("::");
+                            packageDef.removePackageParticipant(temp[0], temp[1]);
+                        }
+                    }
+                    
+                    //check new/updated participant mapping
+                    keys = newParticipantMappings.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next().toString();
+                        String[] temp = key.split("::");
+                        JSONObject mapping = newParticipantMappings.getJSONObject(key);
+                        
+                        PackageParticipant participant = packageDef.getPackageParticipant(temp[0], temp[1]);
+                        boolean isNew = false;
+                        if (participant == null) {
+                            isNew = true;
+                            participant = new PackageParticipant();
+                            participant.setProcessDefId(temp[0]);
+                            participant.setParticipantId(temp[1]);
+                        }
+                        
+                        participant.setType(mapping.getString("type"));
+                        participant.setValue(mapping.getString("value"));
+                        
+                        if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType())) {
+                            participant.setPluginProperties(mapping.getJSONObject("properties").toString());
+                        } else {
+                            participant.setPluginProperties(null);
+                        }
+                        
+                        if (isNew) {
+                            packageDef.addPackageParticipant(participant);
+                        }
+                    }
+                    
+                    packageDefinitionDao.saveOrUpdate(packageDef);
+                }
+            }
+        } catch (Exception e) {
+            success = false;
+            LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
+        }
+
+        if (success) {
+            jsonObject.accumulate("success", success);
+        } else {
+            jsonObject.accumulate("error", error);
+        }
+        jsonObject.write(writer);
+        
+        return null;
+    }
+    
+    protected String getXpdlAndMappingJson(AppDefinition appDef, HttpServletRequest request) {
+        JSONObject jsonDef = new JSONObject();
+        
+        try {
+            String xpdl = getXpdl(appDef);
+            if (xpdl != null && !xpdl.isEmpty()) {
+                String xpdlJson = U.xmlToJson(xpdl);
+                jsonDef.put("xpdl", new JSONObject(xpdlJson));
+            }
+            
+            PackageDefinition packageDefinition = appDef.getPackageDefinition();
+            if (packageDefinition != null) {
+                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+                JSONObject activityForms = new JSONObject();
+                if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                    for (String k : activityFormMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityForm f = activityFormMap.get(k);
+
+                        populateActivityForm(o, f, appDef);
+                        activityForms.put(k, o);
+                    }
+                }
+                jsonDef.put("activityForms", activityForms);
+
+                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+                JSONObject activityPlugins = new JSONObject();
+                if (activityMap != null && !activityMap.isEmpty()) {
+                    for (String k : activityMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityPlugin p = activityMap.get(k);
+
+                        populateActivityPlugin(o, p);
+                        activityPlugins.put(k, o);
+                    }
+                }
+                jsonDef.put("activityPlugins", activityPlugins);
+
+                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+                JSONObject participants = new JSONObject();
+                if (participantMap != null && !participantMap.isEmpty()) {
+                    for (String k : participantMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageParticipant p = participantMap.get(k);
+
+                        populateParticipant(request, o, p);
+                        participants.put(k, o);
+                    }
+                }
+                jsonDef.put("participants", participants);
+            }
+            
+        } catch (Exception e) {
+            LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
+        }
+        
+        return jsonDef.toString();
+    }
+
+    protected String getXpdl(AppDefinition appDef) {
+        try {
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            if (packageDef != null) {
+                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+                String xpdl = new String(content, "UTF-8");
+                return xpdl;
+            } else {
+                // read default xpdl
+                InputStream input = null;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                try {
+                    // get resource input stream
+                    String url = "/org/joget/apps/app/model/default.xpdl";
+                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
+                    if (input != null) {
+                        // write output
+                        byte[] bbuf = new byte[65536];
+                        int length = 0;
+                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
+                            out.write(bbuf, 0, length);
+                        }
+                        // form xpdl
+                        String xpdl = new String(out.toByteArray(), "UTF-8");
+
+                        // replace package ID and name
+                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
+                        return xpdl;
+                    }
+                } finally {
+                    if (input != null) {
+                        input.close();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
+        }
+        return null;
+    }
+    
+    @RequestMapping({"/console/app/(*:appId)/(~:version)/process/builder/json"})
+    public void getJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return null;
+            return;
         }
-        model.addAttribute("appId", appDef.getId());
-        model.addAttribute("version", appDef.getVersion());
-        model.addAttribute("appDefinition", appDef);
-        return "pbuilder/pmapper";
+        
+        String json = getXpdlAndMappingJson(appDef, request);
+        writer.write(PropertyUtil.propertiesJsonLoadProcessing(json));
     }
     
-    @RequestMapping("/json/console/app/(*:appId)/(~:version)/process/mapping")
-    public void processMapping(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
-        JSONObject jsonObject = new JSONObject();
-        
-        Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
-        Map<String, String> formsMap = new HashMap<String, String>();
-        Map<String, Group> groupMaps = new HashMap<String, Group>();
-        Map<String, Department> deptMaps = new HashMap<String, Department>();
-        
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDefinition = appDef.getPackageDefinition();
-        if (packageDefinition != null) {
-            Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
-            JSONObject activityForms = new JSONObject();
-            if (activityFormMap != null && !activityFormMap.isEmpty()) {
-                for (String k : activityFormMap.keySet()) {
-                    JSONObject o = new JSONObject();
-                    PackageActivityForm f = activityFormMap.get(k);
-                    
-                    populateActivityForm(o, f, appDef, formsMap);
-                    activityForms.put(k, o);
-                }
-            }
-            jsonObject.put("activityForms", activityForms);
-            
-            Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
-            JSONObject activityPlugins = new JSONObject();
-            if (activityMap != null && !activityMap.isEmpty()) {
-                for (String k : activityMap.keySet()) {
-                    JSONObject o = new JSONObject();
-                    PackageActivityPlugin p = activityMap.get(k);
-                    
-                    populateActivityPlugin(o, p, pluginsMap);
-                    activityPlugins.put(k, o);
-                }
-            }
-            jsonObject.put("activityPlugins", activityPlugins);
-            
-            Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
-            JSONObject participants = new JSONObject();
-            if (participantMap != null && !participantMap.isEmpty()) {
-                for (String k : participantMap.keySet()) {
-                    JSONObject o = new JSONObject();
-                    PackageParticipant p = participantMap.get(k);
-                    
-                    populateParticipant(request, o, p, pluginsMap, groupMaps, deptMaps);
-                    participants.put(k, o);
-                }
-            }
-            jsonObject.put("participants", participants);
-            jsonObject.put("packageVersion", packageDefinition.getVersion().toString());
-            
-            Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
-            jsonObject.put("modifierPluginCount", modifierPluginMap.size());
-            if (modifierPluginMap.size() == 1) {
-                jsonObject.put("modifierPlugin", modifierPluginMap.keySet().iterator().next());
-            }
-            
-            Map<String, Plugin> spModifierPluginMap = pluginManager.loadPluginMap(StartProcessFormModifier.class);
-            jsonObject.put("spModifierPluginCount", spModifierPluginMap.size());
-            if (spModifierPluginMap.size() == 1) {
-                jsonObject.put("spModifierPlugin", spModifierPluginMap.keySet().iterator().next());
-            }
-        }
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
-    
-    @RequestMapping("/json/console/app/(*:appId)/(~:version)/process/(*:processDefId)/mapping/(*:type)/(*:id)")
-    public void activityMapping(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("processDefId") String processDefId, @RequestParam("type") String type, @RequestParam("id") String id, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
-        JSONObject jsonObject = new JSONObject();
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDefinition = appDef.getPackageDefinition();
-        
-        if (packageDefinition != null) {
-            if ("participant".equals(type) || "whitelist".equals(type)) {
-                Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();        
-                Map<String, Group> groupMaps = new HashMap<String, Group>();
-                Map<String, Department> deptMaps = new HashMap<String, Department>();
-                PackageParticipant participant = packageDefinition.getPackageParticipant(processDefId, id);
-                if (participant != null) {
-                    populateParticipant(request, jsonObject, participant, pluginsMap, groupMaps, deptMaps);
-                }
-            } else if ("start".equals(type) || "activity".equals(type)) {
-                Map<String, String> formsMap = new HashMap<String, String>();
-                PackageActivityForm form = packageDefinition.getPackageActivityForm(processDefId, id);
-                if (form != null) {
-                    populateActivityForm(jsonObject, form, appDef, formsMap);
-                }
-                PackageActivityPlugin plugin = packageDefinition.getPackageActivityPlugin(processDefId, id);
-                if (plugin != null) {
-                    Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
-                    JSONObject modifierObject = new JSONObject();
-                    populateActivityPlugin(modifierObject, plugin, pluginsMap);
-                    jsonObject.put("modifier", modifierObject);
-                }
-            } else {
-                Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
-                PackageActivityPlugin plugin = packageDefinition.getPackageActivityPlugin(processDefId, id);
-                if (plugin != null) {
-                    populateActivityPlugin(jsonObject, plugin, pluginsMap);
-                }
-            }
-        }
-                    
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
-    
-    protected void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef, Map<String, String> formsMap) throws JSONException {
-        o.put("activityDefId", f.getActivityDefId());
-        o.put("processDefId", f.getProcessDefId());
+    protected void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef) throws JSONException {
         o.put("formId", f.getFormId());
         o.put("formUrl", f.getFormUrl());
+        o.put("formIFrameStyle", f.getFormIFrameStyle());
         o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
         o.put("autoContinue", f.isAutoContinue());
         o.put("type", f.getType());
-
-        if (f.getFormId() != null && !f.getFormId().isEmpty()) {
-            if (!formsMap.containsKey(f.getFormId())) {
-                FormDefinition formDefinition = formDefinitionDao.loadById(f.getFormId(), appDef);
-                if (formDefinition != null) {
-                    formsMap.put(f.getFormId(), formDefinition.getName());
-                }
-            }
-            o.put("formName", formsMap.get(f.getFormId()));
-        }
     }
     
-    protected void populateActivityPlugin(JSONObject o, PackageActivityPlugin p, Map<String, Plugin> pluginsMap) throws JSONException {
-        o.put("activityDefId", p.getActivityDefId());
-        o.put("processDefId", p.getProcessDefId());
-        o.put("pluginClassName", p.getPluginName());
-
-        if (!pluginsMap.containsKey(p.getPluginName())) {
-            Plugin plugin = pluginManager.getPlugin(p.getPluginName());
-            if (plugin != null) {
-                pluginsMap.put(p.getPluginName(), plugin);
-            }
-        }
-        if (pluginsMap.containsKey(p.getPluginName())) {
-            o.put("pluginLabel", pluginsMap.get(p.getPluginName()).getI18nLabel());
-            o.put("pluginVersion", pluginsMap.get(p.getPluginName()).getVersion());
-            
-            Plugin plugin = pluginsMap.get(p.getPluginName());
-            if (plugin instanceof ProcessMappingInfo && p.getPluginProperties() != null) {
-                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, p.getPluginProperties(), AppUtil.getCurrentAppDefinition(), null);
-                if (plugin instanceof PropertyEditable) {
-                    ((PropertyEditable) plugin).setProperties(propertiesMap);
-                }   
-                String info = ((ProcessMappingInfo) plugin).getMappingInfo();
-                if (info != null && !info.isEmpty()) {
-                    o.put("mappingInfo", info);
-                }
-            }
+    protected void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
+        o.put("className", p.getPluginName());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
         } else {
-            o.put("pluginLabel", p.getPluginName());
-            o.put("pluginVersion", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable"));
+            o.put("properties", new JSONObject());
         }
     }
     
-    protected void populateParticipant(HttpServletRequest request, JSONObject o, PackageParticipant p, Map<String, Plugin> pluginsMap, Map<String, Group> groupMaps, Map<String, Department> deptMaps) throws JSONException {
-        o.put("participantId", p.getParticipantId());
-        o.put("processDefId", p.getProcessDefId());
+    protected void populateParticipant(HttpServletRequest request, JSONObject o, PackageParticipant p) throws JSONException {
         o.put("type", p.getType());
-        o.put("typeLabel", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.type."+p.getType()));
-
-        if ("plugin".equals(p.getType())) {
-            if (!pluginsMap.containsKey(p.getValue())) {
-                Plugin plugin = pluginManager.getPlugin(p.getValue());
-                if (plugin != null) {
-                    pluginsMap.put(p.getValue(), plugin);
-                }
-            }
-            if (pluginsMap.containsKey(p.getValue())) {
-                String htmlValue = pluginsMap.get(p.getValue()).getI18nLabel() + " (" + ResourceBundleUtil.getMessage("console.plugin.label.version") + " " +pluginsMap.get(p.getValue()).getVersion()+")";
-                o.put("htmlValue", htmlValue);
-            } else {
-                String htmlValue = p.getValue() + " (" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable");
-                o.put("htmlValue", htmlValue);
-            }
-        } else if ("group".equals(p.getType())) {
-            if (groupMaps.isEmpty()) {
-                groupMaps.putAll(DirectoryUtil.getGroupsMap());
-            }
-            String htmlValue = "";
-            String values = p.getValue();
-            values = values.replaceAll(";", ",");
-            for (String v : values.split(",")) {
-                if (groupMaps.containsKey(v)) {
-                    if (DirectoryUtil.isExtDirectoryManager()) {
-                        htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/group/view/"+v+"\" target=\"_blank\">"+groupMaps.get(v).getName()+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
-                    } else {
-                        htmlValue += "<div class=\"single_value\">" + groupMaps.get(v).getName() + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
-                    }
-                } else {
-                    htmlValue += "<div class=\"single_value\"><span class=\"unavailable\">"+v+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
-                }
-            }
-            o.put("htmlValue", htmlValue);
-        } else if ("hod".equals(p.getType()) || "department".equals(p.getType())) {
-            if (deptMaps.isEmpty()) {
-                deptMaps.putAll(DirectoryUtil.getDepartmentsMap());
-            }
-            String htmlValue = "";
-            if (deptMaps.containsKey(p.getValue())) {
-                if (DirectoryUtil.isExtDirectoryManager()) {
-                    htmlValue += "<a href=\""+request.getContextPath()+"/web/console/directory/dept/view/"+p.getValue()+".\" target=\"_blank\">"+deptMaps.get(p.getValue()).getName()+"</a>";
-                } else {
-                    htmlValue += deptMaps.get(p.getValue()).getName();
-                }
-            } else {
-                htmlValue += "<span class=\"unavailable\">"+p.getValue()+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span>";
-            }
-            o.put("htmlValue", htmlValue);
-        } else if ("user".equals(p.getType())) {
-            String htmlValue = "";
-            String values = p.getValue();
-            values = values.replaceAll(";", ",");
-            for (String v : values.split(",")) {
-                if (DirectoryUtil.isExtDirectoryManager()) {
-                    htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/user/view/"+v+".\" target=\"_blank\">"+v+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
-                } else {
-                    htmlValue += "<div class=\"single_value\">" + v + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
-                }
-            }
-            o.put("htmlValue", htmlValue);
-        } else if ("workflowVariable".endsWith(p.getType())) {
-            String[] values = p.getValue().split(",");
-            String htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.app.process.common.label.variableId") + " :</font> " + values[0] + "<br/>"+ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.variable."+values[1]);
-            o.put("htmlValue", htmlValue);
-        } else if (p.getType().startsWith("requester")) {
-            String htmlValue = ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.previousActivity");
-            if (p.getValue() != null && !p.getValue().isEmpty()) {        
-                htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.app.process.common.label.definitionId") + " :</font> " + p.getValue();
-            } else {
-                htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.previousActivity") + "</font> ";
-            }
-            o.put("htmlValue", htmlValue);
-        } else if ("role".equals(p.getType())) {
-            o.put("htmlValue", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.role."+p.getValue()));
+        o.put("value", p.getValue());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
         }
     }
 

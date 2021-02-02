@@ -24,7 +24,6 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="pbuilder.label.designProcess"/></button></li>
-            <li><button id="launchMapper" onclick="launchMapper()"><fmt:message key="console.process.config.label.mapFromFlow"/></button></li>
             <li><button id="uploadPackage" onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
             <li><button id="runProcess" onclick="runProcess()"><fmt:message key="console.process.config.label.startProcess"/></button></li>
         </ul>
@@ -713,11 +712,7 @@
                 function launchDesigner(){
                     $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
                     $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
-                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>");
-                }
-                
-                function launchMapper(){
-                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/mapper?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>");
+                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder#<ui:escape value="${process.idWithoutVersion}" format="u"/>");
                 }
 
                 function launchFormBuilder(formId) {

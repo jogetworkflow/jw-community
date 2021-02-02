@@ -1,234 +1,86 @@
-<%@ page import="org.joget.apps.app.service.AppUtil"%>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
-<%@ page import="org.joget.commons.util.SecurityUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@page contentType="text/html" pageEncoding="utf-8"%>
 
-<%
-    String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-    pageContext.setAttribute("rightToLeft", rightToLeft);
-%>
+<c:set var="appDef" scope="request" value="${appDefinition}"/>
+<c:set var="builderLabel" scope="request"><fmt:message key="pbuilder.title"/></c:set>
+<c:set var="builderI18N" scope="request" value=""/>
+<c:set var="builderJS" scope="request">
+    <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
+</c:set>
+<c:set var="builderCSS" scope="request">
+    <style>
+        #dragElement-clone{display: none !important;}
+        body {--builder-header-top-height : 110px;}
+        #process-selector {
+            position: fixed; 
+            top : 65px; 
+            margin-right: 15vw;
+            margin-left: 15vw;
+            margin-right: var(--builder-right-panel-width);
+            margin-left: var(--builder-left-panel-width);
+            width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+            background: #fafbfc;
+            padding: 5px 10px 5px 23px;
+            z-index: 9;
+        }
+        #process-selector .process_action {display:inline-block; padding: 0px 15px; font-size: 110%; vertical-align: middle;}
+        #process-delete-btn {color:#ff4500}
+        #process-delete-btn:hover {color:red}
+        #process-selector .process_action .graybtn {color: #212529;}
+        #process-selector .process_action .graybtn:hover {color: #666;}
+        #node_dialog ul {list-style: none; padding: 0; margin: 0; min-height: 0;}
+        #node_dialog li {padding: 5px; font-size: 13px; border: 1px solid #ccc; margin-bottom: 3px; border-radius: 3px; cursor: pointer}
+        #node_dialog li:hover {background: #0069d9; color: #fff}
+        [aria-describedby="node_dialog"] {width: 100px !important;}
+        [aria-describedby="node_dialog"] .ui-dialog-titlebar{display:none}
+        #listViewerView {top: var(--builder-header-top-height); right: var(--builder-right-panel-width); z-index: 8;}
+        #listViewerView .nav-tabs .nav-link.active{border-color: #dee2e6 #dee2e6 #fff #dee2e6; border-top-left-radius: .25rem !important; border-top-right-radius: .25rem !important;}
+        #listViewerView .nav-tabs .nav-item:first-child .nav-link.active{border-left: 1px solid #dee2e6;}
+        #listViewerView .tab-content > div {padding: 15px 0;}
+        #listViewerView .cbuilder-node-details-list {margin-bottom: 0; padding: 10px; cursor: pointer; font-size: 13px;}
+        #listViewerView .cbuilder-node-details-list.active {background:#0069d9 !important; color:#fff;}
+        #listViewerView .cbuilder-node-details-list:hover {background:#f6ffff;}
+        #listViewerView .cbuilder-node-details + .cbuilder-node-details {border-top:1px solid #dee2e6;}
+        #listViewerView .cbuilder-node-details-list dt {float: left;clear: left; padding-right: 5px; width: 120px;}
+        #listViewerView .cbuilder-node-details-list.ac
+    </style>    
+</c:set>    
+<c:set var="builderCode" scope="request" value="process"/>
+<c:set var="builderColor" scope="request" value="#dc4438"/>
+<c:set var="builderIcon" scope="request" value="fas fa-th-list"/>
+<c:set var="builderDefJson" scope="request" value="${json}"/>
+<c:set var="builderCanvas" scope="request" value=""/>
+<c:set var="builderConfig" scope="request">
+    {
+        "builder" : {
+            "options" : {
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json"
+            },
+            "callbacks" : {
+                "initBuilder" : "ProcessBuilder.initBuilder",
+                "load" : "ProcessBuilder.load",
+                "beforeUpdate" : "ProcessBuilder.updateXpdl",
+                "zoomMinus" : "ProcessBuilder.zoomMinus",
+                "zoomPlus" : "ProcessBuilder.zoomPlus",
+                "builderBeforeSave" : "ProcessBuilder.beforeSaveValidation",
+                "listViewerViewInit" : "ProcessBuilder.listViewerViewInit",
+                "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed"
+            }
+        },
+        "advanced_tools" : {
+            "xray" : {
+                "disabled" : false,
+            },
+            "permission" : {
+                "disabled" : true,
+            },
+            "usage" : {
+                "disabled" : true,
+            }
+        }
+    }
+</c:set>
+<c:set var="builderProps" scope="request" value="" />
+<c:set var="saveUrl" scope="request" value="${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/save"/>
+<c:set var="previewUrl" scope="request" value=""/>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><fmt:message key="console.header.submenu.label.processes"/>: <c:out value="${appDefinition.name}"/></title>
-
-        <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
-        <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
-        
-        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
-        </c:if>
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
-        <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
-        <script src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/html2canvas-0.4.1.js"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.plugin.html2canvas.js"></script>        
-        <script src="${pageContext.request.contextPath}/pbuilder/js/rgbcolor.js"></script> 
-        <script src="${pageContext.request.contextPath}/pbuilder/js/StackBlur.js"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/canvg.js"></script> 
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/pbuilder?build=<fmt:message key="build.number"/>"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/undomanager.js"></script> 
-        <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.format.js"></script> 
-        <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
-        <script>
-            $(function() {
-                //init ApiClient base url (add to support different context path)
-                ProcessBuilder.ApiClient.appName = "<c:out value="${appDefinition.name}"/>";
-                ProcessBuilder.ApiClient.baseUrl = "${pageContext.request.contextPath}";
-                ProcessBuilder.ApiClient.designerBaseUrl = "${pageContext.request.contextPath}";
-                ProcessBuilder.Designer.contextPath = "${pageContext.request.contextPath}";
-                ProcessBuilder.Designer.setZoom(1.0);
-                <c:if test="${param.editable == 'false'}">
-                    ProcessBuilder.Designer.editable = false;
-                </c:if>
-                <c:if test="${param.autoValidate == 'false'}">
-                    ProcessBuilder.Designer.autoValidate = false;
-                </c:if>
-                <c:choose>
-                <c:when test="${!empty appId && empty param.xpdl}">
-                    var loadCallback;
-                    <c:if test="${!empty param.processId}">
-                        loadCallback = function() {
-                            ProcessBuilder.Actions.viewProcess('<c:out value="${param.processId}"/>');
-                        }
-                    </c:if>
-                    ProcessBuilder.ApiClient.load('<c:out value="${appId}"/>','<c:out value="${version}"/>', loadCallback);
-                </c:when>
-                <c:otherwise>
-                    var xpdl = $("#xpdl").val();
-                    if (xpdl && xpdl !== '') {
-                        ProcessBuilder.Designer.init(xpdl);
-                    }
-                    ProcessBuilder.ApiClient.appId = "<c:out value="${appId}"/>";
-                    ProcessBuilder.ApiClient.appVersion = "<c:out value="${version}"/>";
-                </c:otherwise>
-                </c:choose>
-                $(window).bind('beforeunload', function() {
-                    if (ProcessBuilder.Designer.isModified()) {
-                        return '<ui:msgEscJS key="pbuilder.label.modifiedPrompt"/>';
-                    }
-                });
-                // check for web designer
-                var designerUrl = "<%= AppUtil.getDesignerWebBaseUrl() %>/designer/webstart.jsp";
-                $.ajax({
-                    type: 'GET',
-                    url: designerUrl,
-                    cache: false,
-                    success: function(data) {
-                        $("#launchDesigner").show();
-                    },
-                    error: function(data) {
-                    }
-                });
-            });
-            function launchDesigner(){
-            <%
-                String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
-                String locale = "en";
-                if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
-                    locale = WorkflowUtil.getSystemSetupValue("systemLocale");
-                }
-            %>
-                var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
-                var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/package/xpdl";
-                var path = base + '${pageContext.request.contextPath}';
-                <c:set var="sessionId" value="${cookie.JSESSIONID.value}"/>
-                <c:if test="${empty sessionId}"><c:set var="sessionId" value="${pageContext.request.session.id}"/></c:if>
-                document.location = '<%= designerwebBaseUrl%>/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appDefinition.version}&locale=<%= locale%>&username=${username}&domain=${pageContext.request.serverName}&port=${pageContext.request.serverPort}&context=${pageContext.request.contextPath}&session=<c:out value="${sessionId}"/>&tokenName=<%= SecurityUtil.getCsrfTokenName() %>&tokenValue=<%= SecurityUtil.getCsrfTokenValue(request) %>';
-            }            
-        </script>
-    </head>
-
-    <body id="pbuilder">
-        <div id="builder-container">
-            <div id="builder-header">
-                <a class="reload" onclick="location.reload(true);"></a>
-                <i class="fas fa-2x fa-th-list"></i>
-                <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="pbuilder.title"/> <i> - <c:out value="${appDefinition.name}"/> v${appDefinition.version}</i></div>
-                <div id="deploy-button" class="highlight-button last-inactive"><a id="deploy" href="#" onclick="ProcessBuilder.ApiClient.deploy(); return false"><span class="steps-bg"><span class="title"> <i class="fas fa-cloud-upload-alt"></i> <fmt:message key="pbuilder.label.deploy"/></span></span></a></div>
-            </div>
-            <div id="builder-body">
-                <div id="builder-bar">
-                        <ul id="builder-steps">
-                    </ul>
-                    <div id="builder-bg"></div>
-                </div>
-                <div id="builder-content">
-                    <div id="step-design-container">
-                        
-                        <div id="designer-container">
-                            <div id="header"><div id="header_title"><strong><fmt:message key="pbuilder.title"/></strong></div></div>
-                            <div id="viewport">
-                                <div id="canvas"></div>
-                            </div>
-                            <div id="panel">
-                                <div id="controls">                                    
-                                    <a href="#" onclick="ProcessBuilder.Actions.undo(); return false" class="action-undo"><i class="fas fa-undo"></i> <fmt:message key="pbuilder.label.undo"/></a> | 
-                                    <a href="#" onclick="ProcessBuilder.Actions.redo(); return false" class="action-redo"><i class="fas fa-redo"></i> <fmt:message key="pbuilder.label.redo"/></a> | 
-                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fas fa-search-minus"></i> </a> 
-                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fas fa-search-plus"></i></a> | 
-                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.saveScreenshots(function(){}, true); return false"><i class="fas fa-camera"></i> <fmt:message key="pbuilder.label.screenshot"/></a> |--> 
-                                    <!--<a href="#" onclick="ProcessBuilder.Designer.validate(); return false"><i class="fas fa-check"></i> <fmt:message key="pbuilder.label.validate"/></a> | -->
-                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.list(); return false"><i class="fas fa-cloud-download-alt"></i> <fmt:message key="pbuilder.label.load"/></a> |-->
-                                    <span id="launchDesigner"><a href="#" onclick="launchDesigner(); return false"><i class="fas fa-upload"></i> <fmt:message key="console.process.config.label.launchDesigner"/></a> |</span>
-                                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fas fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
-                                </div>
-                                <div id="config">
-                                    <form method="POST" action="?">
-                                        <textarea id="xpdl" name="xpdl" rows="12" cols="30"><c:if test="${empty param.xpdl}"><jsp:include page="resources/default.xpdl"/></c:if><c:if test="${!empty param.xpdl}"><c:out value="${param.xpdl}" escapeXml="true"/></c:if></textarea>
-                                        <br />
-                                        <!--
-                                        <input type="checkbox" name="editable" value="false" <c:if test="${param.editable == 'false'}">checked</c:if> /> <fmt:message key="pbuilder.label.readonly"/>
-                                        <br />
-                                        <input type="checkbox" name="autoValidate" value="false" <c:if test="${param.autoValidate == 'false'}">checked</c:if> /> <fmt:message key="pbuilder.label.disableAutoValidate"/>
-                                        <br />
-                                        -->
-                                        <input type="submit" value="<ui:msgEscHTML key="pbuilder.label.update"/>" />
-                                    </form>
-                                </div>
-                            </div>
-                            <c:if test="${param.editable != 'false'}">
-                                <div id="palette">
-                                    <div class="palette_participant participant">
-                                        <div class="participant_handle">
-                                            <div class="participant_label"><fmt:message key="pbuilder.label.participant"/></div>
-                                        </div>
-                                    </div>                
-                                    <div class="palette_node activity">
-                                        <div class="node_label"><fmt:message key="pbuilder.label.activity"/></div>
-                                    </div>                
-                                    <div class="palette_node tool">
-                                        <div class="node_label"><fmt:message key="pbuilder.label.tool"/></div>
-                                    </div>
-                                    <div class="palette_node route">
-                                        <div class="node_label"><fmt:message key="pbuilder.label.route"/></div>
-                                        <div class="node_route"></div>
-                                    </div>
-                                    <div class="palette_node subflow">
-                                        <div class="node_label"><fmt:message key="pbuilder.label.subflow"/></div>
-                                    </div>
-                                    <div class="palette_node palette_start">
-                                        <fmt:message key="pbuilder.label.start"/>
-                                    </div>
-                                    <div class="palette_node palette_end">
-                                        <fmt:message key="pbuilder.label.end"/>
-                                    </div>
-                                </div>
-                            </c:if>
-                        </div>                        
-
-                    </div>                    
-                </div>
-            </div>
-            <div id="builder-footer">
-                <fmt:message key="pbuilder.footer"/> <fmt:message key="console.footer.label.revision"/>
-            </div>
-        </div>
-
-        <div id="builder-message"></div>
-        <div id="builder-screenshot"></div>
-        
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
-        
-        <script>
-            $(function() {
-                $('#builder-steps li').click(function(){
-                    var div = $(this).find('a').attr('href');
-                    if($(div).length > 0){
-                        $('#builder-steps li').removeClass("active");
-                        $('#builder-steps li').removeClass("next");
-                        $(this).addClass("active");
-                        $(this).prev().addClass("next");
-                        $('#builder-content').children().hide();
-                        $(div).show();
-                        if (div === "#step-design-container") {
-                            $("#palette").dialog("open");
-                        } else {
-                            $("#palette").dialog("close");
-                        }
-                    }
-                    return false;
-                });
-            });
-        </script>
-
-        <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
-            <jsp:param name="appId" value="${appId}"/>
-            <jsp:param name="appVersion" value="${appDefinition.version}"/>
-            <jsp:param name="webConsole" value="true"/>
-            <jsp:param name="builderMode" value="true"/>
-        </jsp:include>
-        
-    </body>
-</html>
+<jsp:include page="../cbuilder/base.jsp" flush="true" />

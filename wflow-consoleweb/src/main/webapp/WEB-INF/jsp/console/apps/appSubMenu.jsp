@@ -5,7 +5,7 @@
 <li id="nav-app-forms"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/forms"><span class="nav-steps"><i class="fas fa-edit"></i></span><fmt:message key="console.header.submenu.label.formsAndUi"/></a></li>
 <c:set var="hasBuilders" value="<%= CustomBuilderUtil.hasBuilders() %>"/>
 
-<li id="nav-app-processes"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes"><span class="nav-steps"><i class="fas fa-th-list"></i></span><fmt:message key="console.header.submenu.label.processes"/></a></li>
+<li id="nav-app-processes"><a class="nav-link" target="process-builder" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder"><span class="nav-steps"><i class="fas fa-th-list"></i></span><fmt:message key="console.header.submenu.label.processes"/></a></li>
 <li id="nav-app-props"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/properties"><span class="nav-steps"><i class="fas fa-cog"></i></span><fmt:message key="console.header.submenu.label.properties"/></a></li>
 
 <li class="divider"></li>

@@ -284,7 +284,7 @@ FormBuilder = {
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
             }
-            dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Load.Binder')+'"></i></i></dt><dd>'+label+'</dd>');
+            dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Load.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
         if (elementObj['properties']['storeBinder'] !== undefined && elementObj['properties']['storeBinder']['className'] !== "" && elementObj['properties']['storeBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
             var label = elementObj['properties']['storeBinder']['className'];
@@ -293,7 +293,7 @@ FormBuilder = {
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
             }
-            dl.append('<dt><i class="las la-download" title="'+get_advtool_msg('dependency.tree.Store.Binder')+'"></i></i></dt><dd>'+label+'</dd>');
+            dl.append('<dt><i class="las la-download" title="'+get_advtool_msg('dependency.tree.Store.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
         if (elementObj['properties']['optionsBinder'] !== undefined && elementObj['properties']['optionsBinder']['className'] !== "") {
             var label = elementObj['properties']['optionsBinder']['className'];
@@ -302,7 +302,7 @@ FormBuilder = {
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
             }
-            dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Options.Binder')+'"></i></i></dt><dd>'+label+'</dd>');
+            dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Options.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
         if (elementObj['properties']['validator'] !== undefined && elementObj['properties']['validator']['className'] !== "") {
             var label = elementObj['properties']['validator']['className'];
@@ -311,7 +311,7 @@ FormBuilder = {
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
             }
-            dl.append('<dt><i class="las la-asterisk" title="'+get_advtool_msg('dependency.tree.Validator')+'"></i></i></dt><dd>'+label+'</dd>');
+            dl.append('<dt><i class="las la-asterisk" title="'+get_advtool_msg('dependency.tree.Validator')+'"></i></dt><dd>'+label+'</dd>');
         }
         var permissionLabel = [];
         if (elementObj['properties']['permission'] !== undefined && elementObj['properties']['permission']['className'] !== "") {
@@ -340,11 +340,11 @@ FormBuilder = {
             }
         }
         if (permissionLabel.length > 0) {
-            dl.append('<dt><i class="las la-lock" title="'+get_advtool_msg('dependency.tree.Permission')+'"></i></i></dt><dd>'+permissionLabel.join(', ')+'</dd>');
+            dl.append('<dt><i class="las la-lock" title="'+get_advtool_msg('dependency.tree.Permission')+'"></i></dt><dd>'+permissionLabel.join(', ')+'</dd>');
         }
         
         if (elementObj['properties']['comment'] !== undefined && elementObj['properties']['comment'] !== "") {
-            dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
+            dl.append('<dt><i class="lar la-comment" title="Comment"></i></dt><dd>'+elementObj['properties']['comment']+'</dd>');
         }
         
         callback();
@@ -369,7 +369,7 @@ FormBuilder = {
                     className = permissionObj["permission"]["className"];
                 }
                 
-                dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
+                dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn">'+get_advtool_msg("adv.permission.visible")+'</button>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm readonly-btn">'+get_advtool_msg("adv.permission.readonly")+'</button>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
@@ -384,7 +384,7 @@ FormBuilder = {
                     dl.find(".authorized-btns .visible-btn").addClass("active");
                 }
             
-                dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
+                dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
                     
                 dl.find(".unauthorized-btns").append('<button type="button" class="btn btn-outline-danger btn-sm readonly-btn">'+get_advtool_msg("adv.permission.readonly")+'</button>');
                 dl.find(".unauthorized-btns").append('<button type="button" class="btn btn-outline-danger btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
@@ -402,7 +402,7 @@ FormBuilder = {
                 }
                 
             } else {
-                dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
+                dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn">'+get_advtool_msg("adv.permission.visible")+'</button>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm readonly-btn">'+get_advtool_msg("adv.permission.readonly")+'</button>');
                 dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
@@ -415,7 +415,7 @@ FormBuilder = {
                     dl.find(".authorized-btns .visible-btn").addClass("active");
                 }
                 
-                dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
+                dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
                     
                 dl.find(".unauthorized-btns").append('<button type="button" class="btn btn-outline-danger btn-sm readonly-btn">'+get_advtool_msg("adv.permission.readonly")+'</button>');
                 dl.find(".unauthorized-btns").append('<button type="button" class="btn btn-outline-danger btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');

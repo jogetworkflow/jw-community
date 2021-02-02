@@ -69,7 +69,7 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/${formId}/json"
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appDefinition.version}/form/${formId}/json"
             },
             "callbacks" : {
                 "initBuilder" : "FormBuilder.initBuilder",

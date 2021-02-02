@@ -225,24 +225,29 @@ body.viewport-enabled{
 #cbuilder .drag-elements > .header {
     background: #f5f5f5; 
 }
+.search-container,
 .element-properties .search,
 #cbuilder .drag-elements > .header .search {
     position: relative; 
 }
+.search-container .form-control
 .element-properties .search .form-control,
 #cbuilder .drag-elements > .header .search .form-control {
     border-color: #fff;
     border-bottom-color: #ddd;
     border-radius: 0px; 
 }
+.search-container .form-control:focus,
 .element-properties .search .form-control:focus,
 #cbuilder .drag-elements > .header .search .form-control:focus {
     border-color: #80bdff; 
 }
+.search-container .form-control::placeholder,
 .element-properties .search .form-control::placeholder,
 #cbuilder .drag-elements > .header .search .form-control::placeholder {
     font-size: .75rem; 
 }
+.search-container .clear-backspace,
 .element-properties .search .clear-backspace,
 #cbuilder .drag-elements > .header .search .clear-backspace {
     border: none;
@@ -253,19 +258,27 @@ body.viewport-enabled{
     opacity: 0.8; 
     display: none;
 }
+.search-container .clear-backspace i,
 .element-properties .search .clear-backspace i,
 #cbuilder .drag-elements > .header .search .clear-backspace i {
     font-size: 13px; 
 }
+.search-container .clear-backspace:hover,
 .element-properties .search .clear-backspace:hover,
 #cbuilder .drag-elements > .header .search .clear-backspace:hover {
     opacity: 1; 
 }
+.search-container input:focus + #clear-backspace,
+.search-container input:hover + #clear-backspace,
 .element-properties .search input:focus + #clear-backspace,
 .element-properties .search input:hover + #clear-backspace,
 #cbuilder .drag-elements > .header .search input:focus + #clear-backspace,
 #cbuilder .drag-elements > .header .search input:hover + #clear-backspace {
     opacity: 1; 
+}
+.search-container{
+    margin-bottom: 10px;
+    max-width: 300px;
 }
 #cbuilder .drag-elements .nav-item .nav-link {
     text-align: center;
@@ -354,6 +367,12 @@ body.viewport-enabled{
 #cbuilder.preview #left-panel, #cbuilder.preview #right-panel {
     display: none; 
 }
+#cbuilder.no-left-panel {
+    --builder-left-panel-width: 0px; 
+}
+#cbuilder.no-left-panel #left-panel {
+    display: none; 
+}
 #cbuilder.no-right-panel {
     --builder-right-panel-width: 0px; 
 }
@@ -390,7 +409,7 @@ body.viewport-enabled{
     top: 0px;
     left: 0px;
     display: none; }
-#cbuilder #element-actions, #cbuilder #wysiwyg-editor {
+#cbuilder #wysiwyg-editor {
     position: absolute;
     right: -1px;
     top: -25px;
@@ -506,12 +525,23 @@ body.viewport-enabled{
     font-size: 12px;
     color: #fff;
     position: relative;
-    top: -25px;
+    top: -24px;
     left: -1px;
     width: auto;
-    padding: 3px 5px;
     display: inline-block;
     border-radius: 3px 3px 0px 0px; 
+}
+#cbuilder #element-highlight-name,
+#cbuilder #element-select-name #element-name{
+    padding: 3px 8px;
+}
+#cbuilder #element-select-name #element-name,
+#cbuilder #element-select-name #element-actions{
+    display:inline-block;
+    vertical-align: top;
+}
+#cbuilder #element-select-name #element-actions{
+    margin-left: 3px;
 }
 #cbuilder #element-select-name{
     background: #4285f4;
@@ -963,10 +993,24 @@ div.section, .header > ol {
     background-repeat: no-repeat;
     background-position: center;
 }
+.tree ol li.tree-viewer-item label > svg,
+.builder-palette-element > svg{
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    top: 10px;
+    left: 12.5px;
+    transform-origin: 50% 50%;
+    transform: scale(1.5);
+}
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
     top: 1px;
     color: #ccc;
+}
+.tree ol li.tree-viewer-item label > svg{
+    transform: scale(1);
+    top: 1px;
 }
 .tree ol li.tree-viewer-item label > span.fa-stack,
 .builder-palette-element > span.fa-stack{
@@ -1192,10 +1236,8 @@ div.section, .header > ol {
 #permissionView .builder-view-body {
     background: #ffffff;
 }
-.permission-builder-view #element-actions,
 .permission-builder-view #element-select-name,
 .permission-builder-view #element-bottom-actions,
-.xray-builder-view #element-actions,
 .xray-builder-view #element-select-name,
 .xray-builder-view #element-bottom-actions{
     display:none;
@@ -1718,6 +1760,7 @@ body.property-editor-right-panel table.boxy-wrapper x.property-editor-container{
     position: fixed; 
     top: 70px; 
     left: calc(var(--builder-left-panel-width) + 10px);
+    z-index: 1000;
 }
 #builder-message .toast{
     position: relative;
@@ -1813,4 +1856,28 @@ body.popupBody {
 /* property editor builder style */
 body#cbuilder .property-editor-page-button-panel input[type=button]{
     background: #007bff;
+}
+
+/* diff checker */
+#diffoutput {
+    padding-right: 20px;
+    position: relative;
+}
+#diffoutput table{
+    width:100%;
+}
+table.diff tbody th{
+    width: 40px;
+}
+#diffoutput table thead,
+#diffoutput table tbody > th{
+    display: none;
+}
+#diff-indicator {
+    position: fixed;
+    height: calc(100% - 120px);
+    right: 6px;
+    top: 65px;
+    width: 20px;
+    overflow: hidden;
 }

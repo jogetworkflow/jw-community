@@ -869,7 +869,7 @@ DatalistBuilder = {
     /*
      * A callback method from CustomBuilder.Builder.addElement
      */
-    addElement : function(component, dragElement) {
+    addElement : function(component, dragElement, callback) {
         var parentArray;
         var type = "";
         if ($(dragElement).parent().is("[data-cbuilder-filters]")) {
@@ -926,7 +926,7 @@ DatalistBuilder = {
         index = $(container).find("> *").index(dragElement);
         parentArray.splice(index, 0, elementObj);
 
-        CustomBuilder.Builder.renderElement(elementObj, dragElement, component);
+        callback(elementObj);
     },
     
     /*
@@ -1380,18 +1380,18 @@ DatalistBuilder = {
                 if (elementObj.sortable === "true") {
                     sortable = get_cbuilder_msg('dbuilder.sortable');
                 }
-                dl.append('<dt><i class="las la-sort" title="'+get_cbuilder_msg('dbuilder.sortable')+'"></i></i></dt><dd>'+sortable+'</dd>');
+                dl.append('<dt><i class="las la-sort" title="'+get_cbuilder_msg('dbuilder.sortable')+'"></i></dt><dd>'+sortable+'</dd>');
                 var exportable = get_cbuilder_msg('dbuilder.exportable');
                 if ((elementObj.hidden === "true" && elementObj.include_export !== "true") ||
                     (elementObj.hidden !== "true" && elementObj.exclude_export === "true")) {
                     exportable = get_cbuilder_msg('dbuilder.unexportable');
                 }
-                dl.append('<dt><i class="las la-file-export" title="'+get_cbuilder_msg('dbuilder.exportable')+'"></i></i></dt><dd>'+exportable+'</dd>');
+                dl.append('<dt><i class="las la-file-export" title="'+get_cbuilder_msg('dbuilder.exportable')+'"></i></dt><dd>'+exportable+'</dd>');
                 var width = get_cbuilder_msg("dbuilder.default");
                 if (elementObj.width !== undefined && elementObj.width !== "") {
                     width = elementObj.width;
                 }
-                dl.append('<dt><i class="las la-ruler-horizontal" title="'+get_cbuilder_msg('dbuilder.width')+'"></i></i></dt><dd>'+width+'</dd>');
+                dl.append('<dt><i class="las la-ruler-horizontal" title="'+get_cbuilder_msg('dbuilder.width')+'"></i></dt><dd>'+width+'</dd>');
             }
             var action = "-";
             if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
@@ -1402,7 +1402,7 @@ DatalistBuilder = {
                     action += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
                 }
             }
-            dl.append('<dt><i class="las la-link" title="'+get_cbuilder_msg('dbuilder.action')+'"></i></i></dt><dd>'+action+'</dd>');
+            dl.append('<dt><i class="las la-link" title="'+get_cbuilder_msg('dbuilder.action')+'"></i></dt><dd>'+action+'</dd>');
             var format = "-";
             if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
                 format = elementObj.format.className;
@@ -1412,7 +1412,7 @@ DatalistBuilder = {
                     format += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
                 }
             }
-            dl.append('<dt><i class="las la-paint-brush" title="'+get_cbuilder_msg('dbuilder.formatter')+'"></i></i></dt><dd>'+format+'</dd>');
+            dl.append('<dt><i class="las la-paint-brush" title="'+get_cbuilder_msg('dbuilder.formatter')+'"></i></dt><dd>'+format+'</dd>');
         } else if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
             dl.find('> *:eq(1)').text(elementObj.name);
             var type = "-";
@@ -1424,7 +1424,7 @@ DatalistBuilder = {
                     type += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
                 }
             }
-            dl.find("> *:eq(1)").after('<dt><i class="las la-cube" title="'+get_cbuilder_msg('dbuilder.filter')+'"></i></i></dt><dd>'+type+'</dd>');
+            dl.find("> *:eq(1)").after('<dt><i class="las la-cube" title="'+get_cbuilder_msg('dbuilder.filter')+'"></i></dt><dd>'+type+'</dd>');
         } else if (elementObj.id.indexOf(DatalistBuilder.actionPrefix) === 0) {
             //nothing
         } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
@@ -1437,7 +1437,7 @@ DatalistBuilder = {
                     }
                 }
             }
-            dl.append('<dt><i class="las la-eye" title="'+get_cbuilder_msg('dbuilder.rowAction.visibility')+'"></i></i></dt><dd>'+fields.join(', ')+'</dd>');
+            dl.append('<dt><i class="las la-eye" title="'+get_cbuilder_msg('dbuilder.rowAction.visibility')+'"></i></dt><dd>'+fields.join(', ')+'</dd>');
         }
         
         callback();
@@ -1451,11 +1451,11 @@ DatalistBuilder = {
         var self = CustomBuilder.Builder;
         var dl = detailsDiv.find('dl');
         
-        dl.append('<dt class="authorized-web-row" ><i class="lab la-html5" title="'+get_advtool_msg('adv.permission.web')+'"></i></i></dt><dd class="authorized-web-row" ><div class="authorized-web-btns btn-group"></div></dd>');
+        dl.append('<dt class="authorized-web-row" ><i class="lab la-html5" title="'+get_advtool_msg('adv.permission.web')+'"></i></dt><dd class="authorized-web-row" ><div class="authorized-web-btns btn-group"></div></dd>');
         dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         dl.find(".authorized-web-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
-        dl.append('<dt class="authorized-export-row" ><i class="las la-file-download" title="'+get_advtool_msg('adv.permission.export')+'"></i></i></dt><dd class="authorized-export-row" ><div class="authorized-export-btns btn-group"></div></dd>');
+        dl.append('<dt class="authorized-export-row" ><i class="las la-file-download" title="'+get_advtool_msg('adv.permission.export')+'"></i></dt><dd class="authorized-export-row" ><div class="authorized-export-btns btn-group"></div></dd>');
         dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         dl.find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         

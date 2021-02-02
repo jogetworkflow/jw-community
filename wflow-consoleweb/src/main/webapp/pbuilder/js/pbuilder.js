@@ -1,3872 +1,1125 @@
-ProcessBuilder = {};
-ProcessBuilder.Model = {};
-
-/* Participant Definition */
-ProcessBuilder.Model.Participant = function() {
-};
-ProcessBuilder.Model.Participant.prototype = {
-    class: "participant",
-    id: "",
-    name: "",
-    type: "ROLE",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.participantProperties"),
-            helplink: get_pbuilder_msg("pbuilder.label.participantProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'True',
-                value: get_pbuilder_msg("pbuilder.label.participant")
-            }]
-        }];
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateParticipant(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.name;
-    }
-};
-
-/* Process Definition */
-ProcessBuilder.Model.Process = function() {
-};
-ProcessBuilder.Model.Process.prototype = {
-    class: "process",
-    id: "",
-    name: "",
-    swimlanes: "",
-    durationUnit: "h",
-    limit: null,
-    dataFields: [], // workflow variables
-    formalParameters: [], // subflow parameters
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.processProperties"),
-            helplink: get_pbuilder_msg("pbuilder.label.processProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'True',
-                value: get_pbuilder_msg("pbuilder.label.process")
-            },{
-                name: 'dataFields',
-                label: get_pbuilder_msg("pbuilder.label.workflowVariables"),
-                type: 'grid',
-                columns: [{
-                    key: 'variableId',
-                    label: get_pbuilder_msg("pbuilder.label.variableId")
-                }],
-                js_validation: "ProcessBuilder.Designer.validateVariables"
-            }]
-        },{
-            title: get_pbuilder_msg("pbuilder.label.subflowProperties"),
-            properties: [{
-                name: 'formalParameters',
-                label: get_pbuilder_msg("pbuilder.label.formalParameters"),
-                type: 'grid',
-                columns: [{
-                    key: 'parameterId',
-                    label: get_pbuilder_msg("pbuilder.label.parameterId")
-                },{
-                    key: 'mode',
-                    label: get_pbuilder_msg("pbuilder.label.mode"),
-                    options: [{
-                        value: 'INOUT',
-                        label: get_pbuilder_msg("pbuilder.label.inAndOut")
-                    },{
-                        value: 'IN',
-                        label: get_pbuilder_msg("pbuilder.label.in")
-                    },{
-                        value: 'OUT',
-                        label: get_pbuilder_msg("pbuilder.label.out")
-                    }]
-                }]
-            }]
-        },{
-            title: get_pbuilder_msg("pbuilder.label.slaOptions"),
-            helplink: get_pbuilder_msg("pbuilder.label.slaOptions.helplink"),
-            properties: [{
-                name: 'durationUnit',
-                label: get_pbuilder_msg("pbuilder.label.durationUnit"),
-                type: 'selectbox',
-                options: [{
-                    value: 'D',
-                    label: get_pbuilder_msg("pbuilder.label.day")
-                },{
-                    value: 'h',
-                    label: get_pbuilder_msg("pbuilder.label.hour")
-                },{
-                    value: 'm',
-                    label: get_pbuilder_msg("pbuilder.label.minute")
-                },{
-                    value: 's',
-                    label: get_pbuilder_msg("pbuilder.label.second")
-                }]
-            },{
-                name: 'limit',
-                label: get_pbuilder_msg("pbuilder.label.limit"),
-                type: 'textfield',
-                regex_validation: '^[0-9_]+$'
-            }]
-        }];
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateProcess(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.name;
-    }
-};
-
-/* Activity Definition */
-ProcessBuilder.Model.Activity = function() {
-};
-ProcessBuilder.Model.Activity.prototype = {
-    class: "activity",
-    id: "",
-    name: "",
-    type: "",
-    performer: "",
-    join: "",
-    split: "",
-    joinTransitions: null,
-    splitTransitions: null,
-    subflowId: "",
-    limit: null,
-    deadlines: [],
-    x: "",
-    y: "",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.activityProperties"),
-            helplink : get_pbuilder_msg("pbuilder.label.activityProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'True',
-                value: this.type
-            }]
-        },{
-            title: get_pbuilder_msg("pbuilder.label.deadlines"),
-            helplink : get_pbuilder_msg("pbuilder.label.deadlines.helplink"),
-            properties: [{
-                name: 'deadlines',
-                label: get_pbuilder_msg("pbuilder.label.deadlines"),
-                type: 'grid',
-                columns: [{
-                    key: 'execution',
-                    label: get_pbuilder_msg("pbuilder.label.execution"),
-                    options: [{
-                        value: 'ASYNCHR',
-                        label: get_pbuilder_msg("pbuilder.label.asynchronous")
-                    },{
-                        value: 'SYNCHR',
-                        label: get_pbuilder_msg("pbuilder.label.synchronous")
-                    }]
-                },{
-                    key: 'durationUnit',
-                    label: get_pbuilder_msg("pbuilder.label.durationUnit"),
-                    options: [{
-                        value: 'D',
-                        label: get_pbuilder_msg("pbuilder.label.day")
-                    },{
-                        value: 'h',
-                        label: get_pbuilder_msg("pbuilder.label.hour")
-                    },{
-                        value: 'm',
-                        label: get_pbuilder_msg("pbuilder.label.minute")
-                    },{
-                        value: 's',
-                        label: get_pbuilder_msg("pbuilder.label.second")
-                    },{
-                        value: 'd',
-                        label: get_pbuilder_msg("pbuilder.label.dateFormat")
-                    },{
-                        value: '1',
-                        label: get_pbuilder_msg("pbuilder.label.dateFormat2")
-                    },{
-                        value: 't',
-                        label: get_pbuilder_msg("pbuilder.label.dateTimeFormat")
-                    },{
-                        value: '2',
-                        label: get_pbuilder_msg("pbuilder.label.dateTimeFormat2")
-                    }]
-                },{
-                    key: 'deadlineLimit',
-                    label: get_pbuilder_msg("pbuilder.label.deadlineLimit")
-                },{
-                    key: 'exceptionName',
-                    label: get_pbuilder_msg("pbuilder.label.exceptionName")
-                }]
-            }]
-        },{
-            title: get_pbuilder_msg("pbuilder.label.slaOptions"),
-            helplink: get_pbuilder_msg("pbuilder.label.slaOptions.helplink"),
-            properties: [{
-                name: 'limit',
-                label: get_pbuilder_msg("pbuilder.label.limit"),
-                type: 'textfield',
-                regex_validation: '^[0-9_]+$'
-            }]
-        }];
-
-        if (this.join !== "") {
-            options[0].properties.push({
-                name: 'join',
-                label: get_pbuilder_msg("pbuilder.label.joinType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        if (this.split !== "") {
-            options[0].properties.push({
-                name: 'split',
-                label: get_pbuilder_msg("pbuilder.label.splitType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateNode(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.join + "; " + this.split + "; " + this.performer + "; " + this.subflowId + "; " + this.x + "," + this.y + "; " + this.name;
-    }
-};
-
-/* Tool Definition */
-ProcessBuilder.Model.Tool = function() {
-};
-ProcessBuilder.Model.Tool.prototype = {
-    class: "tool",
-    id: "",
-    name: "",
-    type: "",
-    performer: "",
-    join: "",
-    split: "",
-    joinTransitions: null,
-    splitTransitions: null,
-    subflowId: "",
-    x: "",
-    y: "",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.toolProperties"),
-            helplink : get_pbuilder_msg("pbuilder.label.toolProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'True',
-                value: this.type
-            }]
-        }];
-        if (this.join !== "") {
-            options[0].properties.push({
-                name: 'join',
-                label: get_pbuilder_msg("pbuilder.label.joinType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        if (this.split !== "") {
-            options[0].properties.push({
-                name: 'split',
-                label: get_pbuilder_msg("pbuilder.label.splitType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateNode(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.join + "; " + this.split + "; " + this.performer + "; " + this.subflowId + "; " + this.x + "," + this.y + "; " + this.name;
-    }
-};
-
-/* Route Definition */
-ProcessBuilder.Model.Route = function() {
-};
-ProcessBuilder.Model.Route.prototype = {
-    class: "route",
-    id: "",
-    name: "",
-    type: "route",
-    performer: "",
-    join: "",
-    split: "",
-    joinTransitions: null,
-    splitTransitions: null,
-    subflowId: "",
-    x: "",
-    y: "",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.routeProperties"),
-            helplink : get_pbuilder_msg("pbuilder.label.routeProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield'
-            }]
-        }];
-        if (this.join !== "") {
-            options[0].properties.push({
-                name: 'join',
-                label: get_pbuilder_msg("pbuilder.label.joinType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        if (this.split !== "") {
-            options[0].properties.push({
-                name: 'split',
-                label: get_pbuilder_msg("pbuilder.label.splitType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateNode(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.join + "; " + this.split + "; " + this.performer + "; " + this.subflowId + "; " + this.x + "," + this.y + "; " + this.name;
-    }
-};
-
-/* Subflow Definition */
-ProcessBuilder.Model.Subflow = function() {
-};
-ProcessBuilder.Model.Subflow.prototype = {
-    class: "Subflow",
-    id: "",
-    name: "",
-    type: "subflow",
-    performer: "",
-    join: "",
-    split: "",
-    joinTransitions: null,
-    splitTransitions: null,
-    subflowId: null,
-    execution: null,
-    actualParameters: [],
-    limit: null,
-    deadlines: [],
-    x: "",
-    y: "",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.subflowProperties"),
-            helplink : get_pbuilder_msg("pbuilder.label.subflowProperties.helplink"),
-            properties: [{
-                name: 'id',
-                label: get_pbuilder_msg("pbuilder.label.id"),
-                type: 'textfield',
-                required: 'True',
-                regex_validation: '^[a-zA-Z0-9_]+$',
-                validation_message: get_pbuilder_msg("pbuilder.label.invalidId")
-            },{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'True',
-                value: this.type
-            },{
-                name: 'subflowId',
-                label: get_pbuilder_msg("pbuilder.label.subProcessId"),
-                type: 'textfield',
-                required: 'True'
-            },{
-                name: 'execution',
-                label: get_pbuilder_msg("pbuilder.label.execution"),
-                type: "selectbox",
-                options: [{
-                    value: 'SYNCHR',
-                    label: get_pbuilder_msg("pbuilder.label.synchronous")
-                },{
-                    value: 'ASYNCHR',
-                    label: get_pbuilder_msg("pbuilder.label.asynchronous")
-                }],
-                value: "SYNCHR"
-            },{
-                name: 'actualParameters',
-                label: get_pbuilder_msg("pbuilder.label.parameters"),
-                type: 'grid',
-                columns: [{
-                    key: 'actualParameter',
-                    label: get_pbuilder_msg("pbuilder.label.actualParameter")
-                }]
-            }]
-        },{
-            title: get_pbuilder_msg("pbuilder.label.deadlines"),
-            helplink : get_pbuilder_msg("pbuilder.label.deadlines.helplink"),
-            properties: [{
-                name: 'deadlines',
-                label: get_pbuilder_msg("pbuilder.label.deadlines"),
-                type: 'grid',
-                columns: [{
-                    key: 'execution',
-                    label: get_pbuilder_msg("pbuilder.label.execution"),
-                    options: [{
-                        value: 'ASYNCHR',
-                        label: get_pbuilder_msg("pbuilder.label.asynchronous")
-                    },{
-                        value: 'SYNCHR',
-                        label: get_pbuilder_msg("pbuilder.label.synchronous")
-                    }]
-                },{
-                    key: 'durationUnit',
-                    label: get_pbuilder_msg("pbuilder.label.durationUnit"),
-                    options: [{
-                        value: 'D',
-                        label: get_pbuilder_msg("pbuilder.label.day")
-                    },{
-                        value: 'h',
-                        label: get_pbuilder_msg("pbuilder.label.hour")
-                    },{
-                        value: 'm',
-                        label: get_pbuilder_msg("pbuilder.label.minute")
-                    },{
-                        value: 's',
-                        label: get_pbuilder_msg("pbuilder.label.second")
-                    },{
-                        value: 'd',
-                        label: get_pbuilder_msg("pbuilder.label.dateFormat")
-                    },{
-                        value: 't',
-                        label: get_pbuilder_msg("pbuilder.label.dateTimeFormat")
-                    }]
-                },{
-                    key: 'deadlineLimit',
-                    label: get_pbuilder_msg("pbuilder.label.deadlineLimit")
-                },{
-                    key: 'exceptionName',
-                    label: get_pbuilder_msg("pbuilder.label.exceptionName")
-                }]
-            }]
-        }];
-        if (this.join !== "") {
-            options[0].properties.push({
-                name: 'join',
-                label: get_pbuilder_msg("pbuilder.label.joinType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        if (this.split !== "") {
-            options[0].properties.push({
-                name: 'split',
-                label: get_pbuilder_msg("pbuilder.label.splitType"),
-                type: "selectbox",
-                options: [{
-                    value: 'AND',
-                    label: get_pbuilder_msg("pbuilder.label.and")
-                },{
-                    value: 'XOR',
-                    label: get_pbuilder_msg("pbuilder.label.xor")
-                }]
-            });
-        }
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateNode(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.join + "; " + this.split + "; " + this.performer + "; " + this.subflowId + "; " + this.x + "," + this.y + "; " + this.name;
-    }
-};
-
-/* StartEndNode Definition */
-ProcessBuilder.Model.StartEnd = function() {
-};
-ProcessBuilder.Model.StartEnd.prototype = {
-    class: "startend",
-    id: "",
-    type: "",
-    performer: "",
-    x: "",
-    y: "",
-    toString: function() {
-        return this.id + "; " + this.type + "; " + this.performer + "; " + this.x + "," + this.y;
-    }
-};
-
-/* Transition Definition */
-ProcessBuilder.Model.Transition = function() {
-};
-ProcessBuilder.Model.Transition.prototype = {
-    class: "transition",
-    id: "",
-    name: "",
-    from: "",
-    to: "",
-    type: "",
-    condition: "",
-    style: "",
-    propertyOptions: function() {
-        var options = [{
-            title: get_pbuilder_msg("pbuilder.label.transitionProperties"),
-            helplink : get_pbuilder_msg("pbuilder.label.transitionProperties.helplink"),
-            properties: [{
-                name: 'name',
-                label: get_pbuilder_msg("pbuilder.label.name"),
-                type: 'textfield',
-                required: 'False',
-                value: get_pbuilder_msg("pbuilder.label.transition")
-            },{
-                name: 'style',
-                label: get_pbuilder_msg("pbuilder.label.style"),
-                type: 'radio',
-                options: [{
-                    value: 'straight',
-                    label: get_pbuilder_msg("pbuilder.label.straight")
-                },{
-                    value: 'orthogonal',
-                    label: get_pbuilder_msg("pbuilder.label.orthogonal")
-                }],
-                value: 'straight'
-            },{
-                name: 'type',
-                label: get_pbuilder_msg("pbuilder.label.type"),
-                type: 'selectbox',
-                options: [{
-                    value: '',
-                    label: get_pbuilder_msg("pbuilder.label.normal")
-                },{
-                    value: 'CONDITION',
-                    label: get_pbuilder_msg("pbuilder.label.condition")
-                },{
-                    value: 'OTHERWISE',
-                    label: get_pbuilder_msg("pbuilder.label.otherwise")
-                },{
-                    value: 'EXCEPTION',
-                    label: get_pbuilder_msg("pbuilder.label.exception")
-                }],
-                value: ''
-            },{
-                name: 'conditionHelper',
-                label: get_pbuilder_msg("pbuilder.label.conditionHelper"),
-                type: 'selectbox',
-                options: [{
-                    value: '',
-                    label: get_pbuilder_msg("pbuilder.label.no")
-                },{
-                    value: 'yes',
-                    label: get_pbuilder_msg("pbuilder.label.yes")
-                }],
-                value: (this.condition && this.condition !== '') ? '' : 'yes',
-                control_field: 'type',
-                control_value: 'CONDITION',
-                control_use_regex: 'false'
-            },{
-                name: 'conditions',
-                label: get_pbuilder_msg("pbuilder.label.conditions"),
-                type: 'grid',
-                columns : [{
-                    key : 'join',
-                    label : get_pbuilder_msg("pbuilder.label.join"),
-                    options : [{
-                        value : '&&',
-                        label : get_pbuilder_msg("pbuilder.label.and")
-                    },
-                    {
-                        value : '||',
-                        label : get_pbuilder_msg("pbuilder.label.or")
-                    }]
-                },
-                {
-                    key : 'variable',
-                    label : get_pbuilder_msg("pbuilder.label.variable"),
-                    options_callback : "ProcessBuilder.Util.getVariableOptions"
-                },
-                {
-                    key : 'operator',
-                    label : get_pbuilder_msg("pbuilder.label.operation"),
-                    options : [{
-                        value : '===',
-                        label : get_pbuilder_msg("pbuilder.label.equalTo")
-                    },
-                    {
-                        value : '!==',
-                        label : get_pbuilder_msg("pbuilder.label.notEqualTo")
-                    },
-                    {
-                        value : '>',
-                        label : get_pbuilder_msg("pbuilder.label.greaterThan")
-                    },
-                    {
-                        value : '>=',
-                        label : get_pbuilder_msg("pbuilder.label.greaterThanOrEqualTo")
-                    },
-                    {
-                        value : '<',
-                        label : get_pbuilder_msg("pbuilder.label.lessThan")
-                    },
-                    {
-                        value : '<=',
-                        label : get_pbuilder_msg("pbuilder.label.lessThanOrEqualTo")
-                    },
-                    {
-                        value : '=== \'true\'',
-                        label : get_pbuilder_msg("pbuilder.label.isTrue")
-                    },
-                    {
-                        value : '=== \'false\'',
-                        label : get_pbuilder_msg("pbuilder.label.isFalse")
-                    },
-                    {
-                        value : '(',
-                        label : get_pbuilder_msg("pbuilder.label.openParenthesis")
-                    },
-                    {
-                        value : ')',
-                        label : get_pbuilder_msg("pbuilder.label.closeParenthesis")
-                    }]
-                },
-                {
-                    key : 'value',
-                    label : get_pbuilder_msg("pbuilder.label.value")
-                }],
-                required: 'True',
-                js_validation: "ProcessBuilder.Designer.validateConditions",
-                control_field: 'conditionHelper',
-                control_value: 'yes',
-                control_use_regex: 'false',
-                value: ''
-            },{
-                name: 'condition',
-                label: get_pbuilder_msg("pbuilder.label.condition"),
-                type: 'textarea',
-                required: 'True',
-                js_validation: "ProcessBuilder.Designer.validateConditions",
-                control_field: 'conditionHelper',
-                control_value: '',
-                control_use_regex: 'false',
-                value: ''
-            },{
-                name: 'exceptionName',
-                label: get_pbuilder_msg("pbuilder.label.exceptionName"),
-                type: 'textfield',
-                required: 'True',
-                control_field: 'type',
-                control_value: 'EXCEPTION',
-                control_use_regex: 'false',
-                value: ''
-            }]
-        }];
-        return options;
-    },
-    propertyUpdate: function(properties) {
-        return ProcessBuilder.Actions.updateTransition(this, properties);
-    },
-    toString: function() {
-        return this.id + "; " + this.from + "; " + this.to + "; " + "; " + this.type + "; " + this.condition + "; " + this.style;
-    }
-};
-
-/* Utility Functions */
-ProcessBuilder.Util = {
-    preventUndefined : function (string) {
-        if (string === undefined) {
-            return '';
-        } else {
-            return string;
-        }
-    },
-    escapeXPDL: function(string) {
-        var str = string;
-        str = str.replace(/\&/g, "&amp;");
-        str = str.replace(/xpdl\:/g, "");
-        return str;
-    },
-    escapeXMLText: function(string) {
-        var str = string;
-        if (str) {
-            str = str.replace(/\&/g, "&amp;");
-            str = str.replace(/\</g, "&lt;");
-        }
-        return str;
-    },
-    encodeXML: function(value) {
-        if (value) {
-            value = $('<div />').text(value).html();
-            return value.replace(/\"/g, "&quot;");
-        } else {
-            return '';
-        }
-    },
-    decodeXML: function(value) {
-        if (value) {
-            return $('<div />').html(value).text();
-        } else {
-            return '';
-        }
-    },
-    unescapeQuote: function(string) {
-        var str = string;
-        str = str.replace(/\&quot;/g, "\"");
-        return str;
-    },
-    preventJS: function(html) {
-        return html.replace(/<script(?=(\s|>))/i, '<script type="text/xml" ');
-    },
-    escapeHTML: function(c) {
-        if (c === null || c === undefined) {
-            return '';
-        } else {
-            var span = $('<span></span>').text(c);
-            return span.html();
-        }
-    },
-    getVariableOptions : function(properties) {
-        try {
-            var model = ProcessBuilder.Designer.model;
-            var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-            var currentProcess = model.processes[currentProcessDefId];
-            var variables = new Array();
-            var empty = new Object();
-            empty.value = "";
-            empty.label = "";
-            variables.push(empty);
-            for (var df=0; df<currentProcess.dataFields.length; df++) {
-                var dataField = currentProcess.dataFields[df];
-                var variable = new Object();
-                variable.value = dataField.variableId;
-                variable.label = dataField.variableId;
-                variables.push(variable);
+ProcessBuilder = {
+    currentProcessData : {},
+    jsPlumb: null,
+    
+    /*
+     * Intialize the builder, called from CustomBuilder.initBuilder
+     */
+    initBuilder: function (callback) {
+        
+        CustomBuilder.Builder.init({
+            "enableViewport" : false,
+            callbacks : {
+                "initComponent" : "ProcessBuilder.initComponent",
+                "renderElement" : "ProcessBuilder.renderElement",
+                "updateElementId" : "ProcessBuilder.updateElementId",
+                "unloadElement" : "ProcessBuilder.unloadElement",
+                "renderXray" : "ProcessBuilder.renderXray"
             }
-            return variables;
-        } catch (err) {};
-
-        return null;
-    },
-    adjustCanvasPosition : function() {
-        var top = $("#header").height() + 15;
-        $("#viewport").css("top", top + "px");
-    },
-    jsPlumb: jsPlumb,
-    undoManager: new UndoManager()
-};
-
-/* Utility Functions */
-ProcessBuilder.ApiClient = {
-    baseUrl: "/jw",
-    designerBaseUrl: "/jw",
-    appId: "",
-    appVersion: "",
-    appName: null,
-    httpGet: function(url, callback) {
-        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.loading") + '</div>');
-        $("body").append(loading);
-        var connCallback = {
-            success: function(data) {
-                $("#loading").remove();
-                if (callback.success) {
-                    callback.success.call(this, data);
-                }
-            },
-            error: function(data) {
-                $("#loading").remove();
-                if (callback.error) {
-                    callback.error.call(this, data);
-                }
-            }
-        };
-        // make request
-        ConnectionManager.get(url, connCallback);
-    },
-    httpPost: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
-        $("body").append(loading);
-        var connCallback = {
-            success: function(data) {
-                $("#loading").remove();
-                if (callback.success) {
-                    callback.success.call(this, data);
-                }
-            },
-            error: function(data) {
-                $("#loading").remove();
-                if (callback.error) {
-                    callback.error.call(this, data);
-                }
-            }
-        };
-        ConnectionManager.post(url, connCallback, params);
-    },
-    httpPostMultipart: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
-        $("body").append(loading);
-        var connCallback = {
-            success: function(data) {
-                $("#loading").remove();
-                if (callback.success) {
-                    callback.success.call(this, data);
-                }
-            },
-            error: function(data) {
-                $("#loading").remove();
-                if (callback.error) {
-                    callback.error.call(this, data);
-                }
-            }
-        };
-        var thisWindow = this;
-        $.support.cors = true;
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: params,
-            cache: false,
-            processData: false,
-            contentType: false,
-            beforeSend: function (request) {
-               request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-            },
-            success: function(data) {
-                connCallback.success.call(thisWindow, data);
-            },
-            error: function(data) {
-                try {
-                    // do nothing for now
-                    if (connCallback.error) {
-                        connCallback.error.call(thisWindow, data);
-                    }
-                }
-                catch (e) {
-                }
-            }
-        });
-    },
-    list: function(packageList) {
-        if (ProcessBuilder.Designer.isModified()) {
-            if (!confirm(get_pbuilder_msg("pbuilder.label.confirmLoad"))) {
-                return;
-            }
-        }
-        var url = ProcessBuilder.ApiClient.baseUrl + "/web/json/workflow/package/list";
-        var loginCallback = function() {
-            $("#loginForm").dialog("close");
-            ProcessBuilder.ApiClient.list(packageList);
-        };
-        var callback = {
-            success: function(data) {
-                try {
-                    // parse data
-                    var obj = JSON.decode(data);
-                    // add containers
-                    packageList = packageList || "#packageList";
-                    var $packageListDiv = $(packageList);
-                    var $packageUl = $("<ul></ul>");
-                    if ($packageListDiv.length === 0) {
-                        $packageListDiv = $('<div id="packageList"></div>');
-                        $packageListDiv.append($('<div id="packageListHeader"></div>'));
-                        $packageListDiv.append($packageUl);
-                        $(document.body).append($packageListDiv);
-                        // add list filter
-                        (function($) {
-                            jQuery.expr[':'].Contains = function(a, i, m) {
-                                return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
-                            };
-
-                            function listFilter(header, list) {
-                                var form = $("<form>").attr({"class": "filterform", "action": "#", "onsubmit": "return false"}),
-                                input = $("<input>").attr({"class": "filterinput", "type": "text"});
-                                $(form).append(input).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).appendTo(header);
-                                $(input).change(function() {
-                                    var filter = $(this).val();
-                                    if (filter) {
-                                        $(list).find("a:not(:Contains(" + filter + "))").parent().slideUp();
-                                        $(list).find("a:Contains(" + filter + ")").parent().slideDown();
-                                    } else {
-                                        $(list).find("li").slideDown();
-                                    }
-                                    return false;
-                                }).keyup(function() {
-                                    $(this).change();
-                                });
-                            }
-                            listFilter($("#packageListHeader"), $("#packageList ul"));
-                        }(jQuery));
-                    }
-                    $packageUl.empty();
-                    // add list items
-                    for (var p=0; p<obj.data.length; p++) {
-                        var package = obj.data[p];
-                        var $packageLink = $('<a href="#" onclick="return false" id="a_' + package.packageId + '">' + package.packageName + '</a>');
-                        var $packageLi = $('<li id="li_' + package.packageId + '"></li>');
-                        $packageLi.append($packageLink);
-                        $packageUl.append($packageLi);
-                        $packageLink.click(function() {
-                            var packageId = $(this).attr("id").substring("a_".length);
-                            ProcessBuilder.ApiClient.load(packageId);
-                        });
-                    }
-                    // show dialog
-                    $packageListDiv.dialog({title: 'Apps', width: 480, modal: true, height: 300});
-                } catch(e) {
-                    // invalid login
-                    ProcessBuilder.ApiClient.showLogin(loginCallback);
-                }
-            },
-            error: function(data) {
-                alert(get_pbuilder_msg("pbuilder.label.invalidLogin"));
-                ProcessBuilder.ApiClient.showLogin(loginCallback);
-            }
-        };
-        ProcessBuilder.ApiClient.httpGet(url, callback);
-    },
-    load: function(appId, version, callback) {
-        if (!appId || appId === '') {
-            alert(get_pbuilder_msg("pbuilder.label.invalidApp"));
-            return;
-        }
-        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + appId + "/" + version + "/package/xpdl?_=" + jQuery.now();
-        var loadCallback = {
-            success: function(data) {
-                if (data.indexOf("loginForm") > 0) {
-                    // handle login
-                    var loginCallback = function() {
-                        $("#loginForm").dialog("close");
-                        ProcessBuilder.ApiClient.load(appId, version);
-                    };
-                    ProcessBuilder.ApiClient.showLogin(loginCallback);
-                    return;
-                }
-                var xpdl = data;
-                ProcessBuilder.ApiClient.appId = appId;
-                ProcessBuilder.ApiClient.appVersion = (version) ? version: "";
-                ProcessBuilder.ApiClient.appName = null;
-                ProcessBuilder.Designer.init(xpdl, null, true);
-                $("#packageList").dialog("close");
-                ProcessBuilder.Actions.clearUndo();
-                // set title
-                document.title = document.title.substring(0, document.title.indexOf(":")) + ": " + ProcessBuilder.Util.decodeXML(ProcessBuilder.Designer.model.packageName);
-                // callback
-                if (callback) {
-                    callback();
-                }
-            },
-            error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.error") + ": " + e);
-            }
-        };
-        ProcessBuilder.ApiClient.httpGet(loadUrl, loadCallback);
-    },
-    saveScreenshots: function(callback, show) {
-        var packageId = ProcessBuilder.Designer.model.packageId;
-        var processes = ProcessBuilder.Designer.model.processes;
-        var packageUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/workflow/process/list?packageId=" + packageId;
-        var processCount = 0;
-        var processCounter = 0;
-        var processCallback = {
-            success: function(data) {
-                var obj = JSON.decode(data);
-                var process;
-                if (obj.total > 1) {
-                    process = obj.data[0];
-                    processCount = obj.data.length;
-                } else {
-                    process = obj.data;
-                    processCount = 1;
-                }
-                var processVersion = process.version;
-                var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-                for (var processId in processes) {
-                    (function() {
-                        if (processId !== ProcessBuilder.Designer.currentProcessDefId) {
-                            ProcessBuilder.Actions.viewProcess(processId);
-                        }
-                        var processDefId = packageId + "#" + processVersion + "#" + processId;
-                        var saveUrl = ProcessBuilder.ApiClient.designerBaseUrl + "/web/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/builder/screenshot/submit?processDefId=" + encodeURIComponent(processDefId);
-                        var screenshotCallback = function(imgData) {
-                            var image = new Blob([imgData], {type : 'text/plain'});
-                            var params = new FormData();
-                            params.append("xpdlimage", image);
-                            $.ajax({
-                                type: "POST",
-                                url: saveUrl,
-                                data: params,
-                                cache: false,
-                                processData: false,
-                                contentType: false,
-                                beforeSend: function (request) {
-                                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                                },
-                                success: function() {
-                                },
-                                error: function(e) {
-                                    alert(get_pbuilder_msg("pbuilder.label.errorSaving") + ": " + processDefId);
-                                },
-                                complete: function() {
-                                    processCounter++;
-                                    if (processCounter === processCount) {
-                                        if (callback) {
-                                            callback();
-                                        } else {
-                                            alert(get_pbuilder_msg("pbuilder.label.screenshotsSaved") + ": " + processCounter);
-                                        }
-                                    }
-                                }
-                            });
-                        };
-                        ProcessBuilder.Designer.screenshot(screenshotCallback, show);
-                    })();
-                }
-                ProcessBuilder.Actions.viewProcess(currentProcessDefId);
-            },
-            error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.errorSavingScreenshot") + ": " + e);
-            }
-        };
-        ProcessBuilder.ApiClient.httpGet(packageUrl, processCallback);
-    },
-    deploy: function() {
-        if (typeof FormData === "undefined" || typeof Blob === "undefined") {
-            alert(get_pbuilder_msg("pbuilder.label.browserNotSupported"));
-            return;
-        }
-        if (!ProcessBuilder.Designer.validate()) {
-            alert(get_pbuilder_msg("pbuilder.label.designInvalid"));
-            return;
-        } else if (ProcessBuilder.Designer.isModified()) {
-            if (!confirm(get_pbuilder_msg("pbuilder.label.confirmDeployment"))) {
-                return;
-            }
-        } else {
-            alert(get_pbuilder_msg("pbuilder.label.designNotModified"));
-            return;
-        }
-        var packageId = ProcessBuilder.Designer.model.packageId;
-        var deployUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/"+ProcessBuilder.ApiClient.appVersion+"/package/deploy";
-        $(ProcessBuilder.Designer.source).val(ProcessBuilder.Designer.xpdl);
-        $(ProcessBuilder.Designer.source).format({method: 'xml'});
-        var xpdlSrc = $(ProcessBuilder.Designer.source).val();
-        var xpdl = new Blob([xpdlSrc], {type : 'text/xml'});
-        var params = new FormData();
-        params.append("packageXpdl", xpdl);
-        var loginCallback = function() {
-            $("#loginForm").dialog("close");
-            ProcessBuilder.ApiClient.deploy();
-        };
-        var deployCallback = {
-            success: function(data) {
-                if (data && data.status === "complete") {
-                    ProcessBuilder.Designer.originalXpdl = ProcessBuilder.Designer.xpdl;
-                    alert(get_pbuilder_msg("pbuilder.label.deploymentSuccessful"));
-                    // don't generate screenshot here, as it will be generated on-demand later
-                    /*
-                    var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
-                    $("body").append(loading);
-                    setTimeout(function() {
-                        $("#loading").remove();
-                        ProcessBuilder.ApiClient.saveScreenshots(function() {
-                        });
-                    }, 3000);
-                    */
-                } else if (data && data.errorMsg) {
-                    // show only ERROR messages, ignore WARNING messages
-                    var errorMsg = "";
-                    var errorMsgArray = data.errorMsg.split("\r\n\r\n");
-                    if (errorMsgArray.length <= 1) {
-                        errorMsg = data.errorMsg;
-                    } else {
-                        for (var i=0; i<errorMsgArray.length; i++) {
-                            var error = errorMsgArray[i];
-                            if (error.indexOf("Type=ERROR") >= 0) {
-                                errorMsg += error + "\r\n\r\n";
-                            }
-                        }
-                    }
-                    alert(get_pbuilder_msg("pbuilder.label.deploymentError") + ": " + errorMsg);
-                } else if (!data || data.indexOf("Login") > 0) {
-                    ProcessBuilder.ApiClient.showLogin(loginCallback);
-                } else {
-                    alert(get_pbuilder_msg("pbuilder.label.deploymentUnsuccessful"));
-                }
-            },
-            error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.deploymentError") + ": " + e.statusText);
-            }
-        };
-        ProcessBuilder.ApiClient.httpPostMultipart(deployUrl, deployCallback, params);
-    },
-    showLogin: function(callback) {
-        var loginForm = "#loginForm";
-        var $login = $(loginForm);
-        if ($login.length === 0) {
-            $login = $('<form id="loginForm"><dl><dt><label for="username">' + get_pbuilder_msg("pbuilder.label.username") + '</label></dt><dd><input name="username"/></dd><dt><label for="password">' + get_pbuilder_msg("pbuilder.label.password") + '</label></dt><dd><input type="password" name="password"/></dd></dl><p><button id="loginButton">' + get_pbuilder_msg("pbuilder.label.login") + '</button></p></form>');
-            $(document.body).append($login);
-            $(function() {
-                var doLogin = function() {
-                    var username = $("input[name=username]").val();
-                    var password = $("input[name=password]").val();
-                    ProcessBuilder.ApiClient.login(username, password, callback);
-                    return false;
-                };
-                $("#loginForm").submit(doLogin);
-                $("#loginButton").click(doLogin);
-            });
-        }
-        $login.dialog({title: get_pbuilder_msg("pbuilder.label.login"), width: 480, modal: true});
-    },
-    login: function(username, password, callback) {
-        var loginUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/directory/user/sso";
-        var params = "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password);
-        var loginCallback = {
-            success: function() {
-                callback.apply();
-            },
-            error: function() {
-                alert(get_pbuilder_msg("pbuilder.label.invalidLogin"));
-            }
-        };
-        ProcessBuilder.ApiClient.httpPost(loginUrl, loginCallback, params);
-    },
-    loadProcessMapping : function(callback) {
-        if (ProcessBuilder.ApiClient.appId === "") {
-            return;
-        }
-        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/mapping?_=" + jQuery.now();
-        var loadCallback = {
-            success: function(data) {
-                // callback
-                if (callback) {
-                    callback(data);
-                }
-            },
-            error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.error") + ": " + e);
-            }
-        };
-        ProcessBuilder.ApiClient.httpGet(loadUrl, loadCallback);
-    },
-    reloadNodeMapping : function(processDefId, type, id, callback) {
-        if (ProcessBuilder.ApiClient.appId === "") {
-            return;
-        }
-        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/"+escape(processDefId)+"/mapping/"+escape(type)+"/"+escape(id)+"?_=" + jQuery.now();
-        var loadCallback = {
-            success: function(data) {
-                // callback
-                if (callback) {
-                    callback(data);
-                }
-            },
-            error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.error") + ": " + e);
-            }
-        };
-        ProcessBuilder.ApiClient.httpGet(loadUrl, loadCallback);
-    }
-};
-
-/* Actions */
-ProcessBuilder.Actions = {
-    undoRedoInProgress: false,
-    editProperties: function(model) {
-        var propertyOptions = model.propertyOptions();
-        if (propertyOptions) {
-            if (!PropertyEditor.Popup.hasDialog("property-editor")) {
-                PropertyEditor.Popup.createDialog("property-editor");
-            }
-            var saveCallback = function(container, properties) {
-                ProcessBuilder.Actions.execute(function() {
-                    // update model
-                    var error = model.propertyUpdate(properties);
-                    if (error !== true) {
-                        // re-init and show current process
-                        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-                        var xpdl = ProcessBuilder.Designer.generateXPDL();
-                        ProcessBuilder.Designer.init(xpdl, currentProcessDefId);
-                        ProcessBuilder.Designer.refresh();
-                    }
-                });
-            };
-            var validationFailedCallback = function() {
-            };
-            var cancelCallback = function() {
-            };
-            var options = {
-                contextPath: ProcessBuilder.Designer.contextPath,
-                propertiesDefinition: propertyOptions,
-                propertyValues: model,
-                showCancelButton: true,
-                closeAfterSaved: false,
-                changeCheckIgnoreUndefined: true,
-                saveCallback: saveCallback,
-                validationFailedCallback: validationFailedCallback,
-                cancelCallback: cancelCallback
-            };
-            PropertyEditor.Popup.showDialog("property-editor", options, {id:model.id, defaultWidth: 680, defaultHeight: 495});
-        }
-    },
-    addTransition: function(source, target, connection) {
-        var $source = $(source);
-        var $target = $(target);
-        var sourceId = $source.attr("id").substring("node_".length);
-        var targetId = $target.attr("id").substring("node_".length);
-        // update model
-        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[currentProcessDefId];
-        var transition = (connection) ? connection.model : null;
-        // update start end nodes
-        if ($source.hasClass("start")) {
-            var startId = targetId;
-            var prevStartId = $source.attr("id");
-            var newStartId = "start_" + startId;
-            $source[0].model.id = startId;
-            ProcessBuilder.Util.jsPlumb.setId($source, newStartId);
-            var prevStartNode = process.startEndNodes[prevStartId];
-            delete process.startEndNodes[prevStartId];
-            process.startEndNodes[newStartId] = prevStartNode;
-            connection.setPaintStyle({strokeStyle: "#000", lineWidth: 1});
-            if (ProcessBuilder.Designer.editable) {
-                connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
-            }
-        } else if ($target.hasClass("end")) {
-            var endId = sourceId;
-            var prevEndId = $target.attr("id");
-            var newEndId = "end_" + endId;
-            $target[0].model.id = endId;
-            ProcessBuilder.Util.jsPlumb.setId($target, newEndId);
-            var prevEndNode = process.startEndNodes[prevEndId];
-            delete process.startEndNodes[prevEndId];
-            process.startEndNodes[newEndId] = prevEndNode;
-            connection.setPaintStyle({strokeStyle: "#000", lineWidth: 1});
-            if (ProcessBuilder.Designer.editable) {
-                connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
-            }
-        } else {
-            // add transition
-            var prevTransition;
-            if (transition) {
-                prevTransition = transition;
-                // remove existing transition
-                var prevSource = process.activities[transition.from];
-                var prevTarget = process.activities[transition.to];
-                ProcessBuilder.Actions.deleteTransition(prevSource, prevTarget, connection);
-            }
-            transition = new ProcessBuilder.Model.Transition();
-            transition.name = "";
-            process.transitions.push(transition);
-            var count = $(".transition_label").length;
-            var transitionId = "transition"+count;
-            while ($("#transition_"+transitionId).length > 0) {
-                count++;
-                transitionId = "transition"+count;
-            }
-            transition.id = transitionId;
-            transition.from = sourceId;
-            transition.to = targetId;
-            transition.process = process;
-            if (prevTransition) {
-                transition.name = prevTransition.name;
-                transition.type = prevTransition.type;
-                transition.style = prevTransition.style;
-                transition.condition = prevTransition.condition;
-                transition.conditions = prevTransition.conditions;
-                transition.conditionHelper = prevTransition.conditionHelper;
-                transition.exceptionName = prevTransition.exceptionName;
-            }
-            if (connection) {
-                connection.model = transition;
-            }
-            // add join/split
-            var source = process.activities[sourceId];
-            var target = process.activities[targetId];
-            if (!source.splitTransitions) {
-                source.splitTransitions = [];
-            }
-            source.splitTransitions.push(transitionId);
-            //set split type
-            if (source.split === '' && source.splitTransitions.length > 1) {
-                if (source.class === 'route') {
-                    source.split = "XOR";
-                } else {
-                    source.split = "AND";
-                }
-            }
-            if (!target.joinTransitions) {
-                target.joinTransitions = [];
-            }
-            target.joinTransitions.push(transitionId);
-            //set Join type
-            //set split type
-            if (target.join === '' && target.joinTransitions.length > 1) {
-                target.join = "XOR";
-            }
-        }
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-    },
-    deleteTransition: function(source, target, connection) {
-        var transition = connection.model;
-        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[currentProcessDefId];
-        for (var t=0; t<process.transitions.length; t++) {
-            var pt = process.transitions[t];
-            if (pt === transition) {
-                if (transition.from) {
-                    var fromNode = process.activities[transition.from];
-                    var indexOf = fromNode.splitTransitions.indexOf(transition.id);
-                    if (indexOf >= 0) {
-                        fromNode.splitTransitions.splice(indexOf, 1);
-                    }
-                    if (fromNode.splitTransitions.length === 1) {
-                        fromNode.split = "";
-                    }
-                }
-                if (transition.to) {
-                    var toNode =  process.activities[transition.to];
-                    var indexOf = toNode.joinTransitions.indexOf(transition.id);
-                    if (indexOf >= 0) {
-                        toNode.joinTransitions.splice(indexOf, 1);
-                    }
-                    if (toNode.joinTransitions.length === 1) {
-                        fromNode.join = "";
-                    }
-                }
-                process.transitions.splice(t, 1);
-                break;
-            }
-        }
-        // remove related start end nodes
-        if (source !== null && $(source).hasClass("start")) {
-            var startEndNodes = process.startEndNodes;
-            for (var startEndId in startEndNodes) {
-                if (startEndId === $(source).attr("id")) {
-                    delete startEndNodes[startEndId];
-                }
-            }
-        }
-        if (target !== null && $(target).hasClass("end")) {
-            var startEndNodes = process.startEndNodes;
-            for (var startEndId in startEndNodes) {
-                if (startEndId === $(target).attr("id")) {
-                    delete startEndNodes[startEndId];
-                }
-            }
-        }
-
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-
-        // remove start end elements only after a delay to prevent jsplumb redraw problem
-        setTimeout(function() {
-            if ($(source).hasClass("start")) {
-                ProcessBuilder.Util.jsPlumb.remove($(source));
-            }
-            if ($(target).hasClass("end")) {
-                ProcessBuilder.Util.jsPlumb.remove($(target));
-            }
-        }, 10);
-    },
-    updateTransition: function(transition, properties) {
-        transition.name = properties.name;
-        transition.type = properties.type;
-        transition.style = properties.style;
-        if (transition.type === "CONDITION") {
-            if (properties.conditionHelper === "yes") {
-                transition.conditions = properties.conditions;
-                transition.condition = ProcessBuilder.Designer.buildConditions(properties.conditions);
-            } else {
-                if (transition.conditions  !== undefined) {
-                    delete transition.conditions;
-                }
-                transition.condition = properties.condition;
-            }
-            transition.exceptionName = "";
-        } else if (transition.type === "EXCEPTION") {
-            transition.condition = "";
-            transition.exceptionName = properties.exceptionName;
-        } else {
-            transition.condition = "";
-            transition.exceptionName = "";
-        }
-        ProcessBuilder.Designer.refresh();
-    },
-    addNode: function(element, participant, top, left) {
-        var $element = $(element);
-        var $participant = $(participant);
-
-        // remove palette classes
-        $element.removeClass("palette_node");
-        if ($element.hasClass("palette_start")) {
-            $element.removeClass("palette_start");
-            $element.addClass("start");
-            $element.text("");
-        } else if ($element.hasClass("palette_end")) {
-            $element.removeClass("palette_end");
-            $element.addClass("end");
-            $element.text("");
-        } else {
-            $element.addClass("node");
-        }
-        $element.css("position", "absolute");
-
-        // add node to participant element
-        var zoom = ProcessBuilder.Designer.zoom;
-        ProcessBuilder.Designer.setZoom(1);
-        $participant.append($element);
-
-        // calculate offsets to handle chrome and firefox
-        if (left && top) {
-            var newLeft = Math.round(left / zoom);
-            newLeft = newLeft - Math.round(($element.width()) / zoom);
-            var newTop = Math.round(top);
-            newTop = (newTop - Math.round(($element.height())) / zoom);
-            $element.offset({left: newLeft, top: newTop});
-        }
+        }, function() {
+            $("#builder_canvas").before('<div id="process-selector"></div>');
             
-        // update model
-        var nodeName = $element.find(".node_label").text();
-        var performer = $participant[0].model.id;
-        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[currentProcessDefId];
-        var nodeId;
-        var node;
-        if ($element.hasClass("start")) {
-            node = new ProcessBuilder.Model.StartEnd();
-            node.type = "start";
-            var nodeCount = $(".start." + node.type).length;
-            nodeId = node.type + nodeCount;
-            nodeName += " " + nodeCount;
-            while (process.startEndNodes[nodeId]) {
-                nodeId += "_1";
+            $("#style-properties-tab-link").find("i").replaceWith('<i class="las la-handshake"></i>');
+            $("#style-properties-tab-link").find("span").text(get_cbuilder_msg('pbuilder.label.mapping'));
+            
+            $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
+            
+            $(".responsive-buttons").after('<div class="btn-group mr-3 zoom-buttons float-right" role="group">\
+                <button id="zoom-minus" class="btn btn-light"  title="Zoom Minus" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
+                <button id="zoom-plus" class="btn btn-light"  title="Zoom Plus" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
+            
+            ProcessBuilder.initComponents();
+            CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<script data-jsPlumb-script src="' + CustomBuilder.contextPath + '/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>');
+
+            //wait for jsplumb available
+            while (!ProcessBuilder.jsPlumb) {
+                ProcessBuilder.jsPlumb = CustomBuilder.Builder.iframe.contentWindow.jsPlumb;
             }
-        } else if ($element.hasClass("end")) {
-            node = new ProcessBuilder.Model.StartEnd();
-            node.type = "end";
-            var nodeCount = $(".end." + node.type).length;
-            nodeId = node.type + nodeCount;
-            nodeName += " " + nodeCount;
-            while (process.startEndNodes[nodeId]) {
-                nodeId += "_1";
-            }
-        } else {
-            if ($element.hasClass("tool")) {
-                node = new ProcessBuilder.Model.Tool();
-                node.type = "tool";
-            } else if ($element.hasClass("route")) {
-                node = new ProcessBuilder.Model.Route();
-                node.type = "route";
-            } else if ($element.hasClass("subflow")) {
-                node = new ProcessBuilder.Model.Subflow();
-                node.type = "subflow";
-            } else {
-                node = new ProcessBuilder.Model.Activity();
-                node.type = "activity";
-            }
-            var nodeCount = $(".node." + node.type).length;
-            nodeId = node.type + nodeCount;
-            nodeName += " " + nodeCount;
-            while (process.activities[nodeId]) {
-                nodeId += "_1";
-            }
-        }
-        
-        if (node.type === "route" || node.type === "start" || node.type === "end") {
-            nodeName = "";
-        }
-        
-        node.id = nodeId;
-        node.name = nodeName;
-        node.performer = performer;
-        node.process = process;
-        node.join = "";
-        node.split = "";
-        node.x = $element.position().left / zoom;
-        node.y = $element.position().top / zoom;
-        if (node.class === "startend") {
-            process.startEndNodes[node.type + "_" + nodeId] = node;
-            $element.attr("id", node.type + "_" + nodeId);
-        } else {
-            process.activities[nodeId] = node;
-            $element.attr("id", "node_" + nodeId);
-        }
-        $element[0].model = node;
-
-        // init node elements
-        $element.find(".node_label").text(nodeName);
-        ProcessBuilder.Designer.initNodes($element);
-        ProcessBuilder.Designer.setZoom(zoom);
-        if (ProcessBuilder.Designer.editable) {
-            ProcessBuilder.Designer.initEditable();
-        }
-    },
-    moveNode: function(element, participant, top, left) {
-        var $element = $(element);
-        var zoom = ProcessBuilder.Designer.zoom;
-
-        var $participant = $(participant);
-        var newLeft = $element.offset().left;
-        var newTop = $element.offset().top;
-        if ($participant.find($element).length === 0) {
-            $participant.append($element);
-            $element.css("top", "0px"); // reset top to zero first to fix jquery positioning issue
-            $element.offset({top: newTop, left: newLeft});
-        }
-
-        // update model
-        var node = $element[0].model;
-        node.x = $element.position().left / zoom;
-        node.y = $element.position().top;
-        var performer = $participant[0].model.id;
-        node.performer = performer;
-    },
-    deleteNode: function(element) {
-        var $element = $(element);
-
-        // remove connections
-        ProcessBuilder.Util.jsPlumb.detachAllConnections($element);
-
-        // remove element
-        ProcessBuilder.Util.jsPlumb.remove($element);
-
-        // remove from model
-        if ($element.length > 0) {
-            var obj = $element[0].model;
-            var process = obj.process;
-
-            // remove node
-            var id = obj.id;
-            if (obj.class === 'startend') {
-                delete process.startEndNodes[obj.type + "_" + obj.id];
-            } else {
-                delete process.activities[obj.id];
-                // remove transitions
-                for (var t=0; t<process.transitions.length; t++) {
-                    var transition = process.transitions[t];
-                    if (transition.from === id || transition.to === id) {
-                        process.transitions.splice(t, 1);
-                    }
-                }
-            }
-
-            // remove start end nodes
-            if (obj.class !== 'startend') {
-                ProcessBuilder.Util.jsPlumb.remove($("#start_" + id + ", #end_" + id));
-                var startEndNodes = process.startEndNodes;
-                for (var startEndId in startEndNodes) {
-                    if (startEndId === "start_" + id) {
-                        delete startEndNodes[startEndId];
-                    }
-                    if (startEndId === "end_" + id) {
-                        delete startEndNodes[startEndId];
-                    }
-                }
-            }
-        }
-
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-    },
-    updateNode: function(node, properties) {
-        var currentId = node.id;
-        var newId = properties.id;
-        // check for modified ID
-        if (newId !== currentId) {
-//            // check for duplicate in all processes
-//            var processes = ProcessBuilder.Designer.model.processes;
-//            for (var processId in processes) {
-//                var proc = processes[processId];
-//                var act = proc.activities[newId];
-//                if (act) {
-//                    alert(get_pbuilder_msg("pbuilder.label.duplicateId"));
-//                    return true;
-//                }
-//            }
-            // check for duplicate only within the current process
-            var proc = ProcessBuilder.Designer.model.processes[ProcessBuilder.Designer.currentProcessDefId];
-            var act = proc.activities[newId];
-            if (act) {
-                alert(get_pbuilder_msg("pbuilder.label.duplicateId"));
-                return true;
-            }
-
-            // replace current activity
-            var process = node.process;
-            delete process.activities[currentId];
-            process.activities[newId] = node;
-
-            // replace all transitions
-            for (var t=0; t<process.transitions.length; t++) {
-                var transition = process.transitions[t];
-                if (transition.to === currentId) {
-                    transition.to = newId;
-                }
-                if (transition.from === currentId) {
-                    transition.from = newId;
-                }
-            }
-
-            // replace startend node transitions
-            var startEndNodes = process.startEndNodes;
-            for (var startEndId in startEndNodes) {
-                var startEnd = startEndNodes[startEndId];
-                if (startEndId === "start_" + currentId) {
-                    startEnd.id = newId;
-                    startEndNodes["start_" + startEnd.id] = startEnd;
-                    delete startEndNodes[startEndId];
-                }
-                if (startEndId === "end_" + currentId) {
-                    startEnd.id = newId;
-                    startEndNodes["end_" + startEnd.id] = startEnd;
-                    delete startEndNodes[startEndId];
-                }
-            }
-        }
-        // update properties
-        node.id = properties.id;
-        node.name = properties.name;
-        node.subflowId = properties.subflowId;
-        node.execution = properties.execution;
-        node.actualParameters = properties.actualParameters;
-        node.limit = properties.limit;
-        node.deadlines = properties.deadlines;
-        node.join = properties.join;
-        node.split = properties.split;
-    },
-    addParticipant: function(participant) {
-        var $participant = $(participant);
-
-        // update model
-        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[currentProcessDefId];
-        var participantId = $participant.attr("id");
-        if (!participantId) {
-            participantId = "participant" + $(".participant:not(.palette_participant)").length;
-        }
-        while (model.participants[participantId]) {
-            participantId += "_1";
-        }
-        $participant.attr("id", "participant_" + participantId);
-        var swimlanes = "";
-        $(".participant").each(function(index) {
-            var performerId = $(this).attr("id");
-            if (performerId) {
-                performerId = performerId.substring("participant_".length);
-                if (index > 0) {
-                    swimlanes += ";";
-                }
-                swimlanes += performerId;
-            }
-        });
-        process.swimlanes = swimlanes;
-        var participant = new ProcessBuilder.Model.Participant();
-        participant.id = participantId;
-        participant.name = $participant.find(".participant_label").text();
-        model.participants[participantId] = participant;
-        $participant[0].model = participant;
-        $participant[0].process = process;
-
-        // reinit swimlanes
-        ProcessBuilder.Designer.initParticipants();
-
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-    },
-    moveParticipant: function() {
-        // reinit swimlanes
-        ProcessBuilder.Designer.initParticipants();
-
-        // update model
-        var swimlanes = "";
-        $(".participant").each(function(index) {
-            var participantId = $(this).attr("id");
-            if (participantId) {
-                participantId = participantId.substring("participant_".length);
-                if (index > 0) {
-                    swimlanes += ";";
-                }
-                swimlanes += participantId;
-            }
-        });
-        var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[currentProcessDefId];
-        process.swimlanes = swimlanes;
-
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-    },
-    deleteParticipant: function(participant) {
-        var $participant = $(participant);
-        $participant.find(".node").each(function() {
-            var $node = $(this);
-            // remove connections
-            ProcessBuilder.Util.jsPlumb.detachAllConnections($node);
-
-            // remove element
-            $node.remove();
-        });
-
-        // remove participant
-        $participant.remove();
-
-        // update model
-        var performer = $participant[0].model;
-        var process = performer.process;
-        if (process) {
-            // remove process swimlane
-            var swimlanes = process.swimlanes;
-            var newSwimlanes = "";
-            if (swimlanes) {
-                var swimlanes = swimlanes.split(";");
-                for (var i = 0; i < swimlanes.length; i++) {
-                    var performerId = swimlanes[i];
-                    if (performerId !== performer.id) {
-                        if (i > 0) {
-                            newSwimlanes += ";";
-                        }
-                        newSwimlanes += performerId;
-                    }
-                }
-            }
-            process.swimlanes = newSwimlanes;
-            // delete related activities, transitions and startend nodes
-            var activities = process.activities;
-            for (var actId in activities) {
-                var act = activities[actId];
-                if (act.performer === performer.id) {
-                    delete process.activities[actId];
-                }
-            }
-            var startEndNodes = process.startEndNodes;
-            for (var startendId in startEndNodes) {
-                var startend = startEndNodes[startendId];
-                if (startend.performer === performer.id) {
-                    delete process.startEndNodes[startendId];
-                }
-            }
-        }
-
-        // delete participant from package if not used in any process
-        var participantUsed = false;
-        var model = ProcessBuilder.Designer.model;
-        var processes = model.processes;
-        for (var processId in processes) {
-            var proc = processes[processId];
-            if (proc.swimlanes) {
-                var sw = proc.swimlanes.split(";");
-                for (var i = 0; i < sw.length; i++) {
-                    var performerId = sw[i];
-                    if (performerId === performer.id) {
-                        participantUsed = true;
-                        break;
-                    }
-                }
-            }
-        }
-        if (!participantUsed) {
-            delete model.participants[performer.id];
-        }
-
-        // update xpdl
-        ProcessBuilder.Designer.refresh();
-    },
-    updateParticipant: function(participant, properties) {
-        var currentId = participant.id;
-        var newId = properties.id;
-        // check for modified ID
-        if (newId !== currentId) {
-            // check for duplicate
-            var part = ProcessBuilder.Designer.model.participants[newId];
-            if (part) {
-                alert(get_pbuilder_msg("pbuilder.label.duplicateId"));
-                return true;
-            }
-
-            // remove current participant
-            delete ProcessBuilder.Designer.model.participants[currentId];
-
-            // replace all performers
-            var processes = ProcessBuilder.Designer.model.processes;
-            for (var processId in processes) {
-                var process = processes[processId];
-                // replace swimlanes
-                var newSwimlanes = "";
-                var swimlanes = process.swimlanes.split(";");
-                for (var i = 0; i < swimlanes.length; i++) {
-                    var performerId = swimlanes[i];
-                    if (i > 0) {
-                        newSwimlanes += ";";
-                    }
-                    if (performerId !== currentId) {
-                        newSwimlanes += performerId;
-                    } else {
-                        newSwimlanes += newId;
-                    }
-                }
-                process.swimlanes = newSwimlanes;
-                // replace activity performers
-                var activities = process.activities;
-                for (var activityId in activities) {
-                    var activity = activities[activityId];
-                    if (activity.performer === currentId) {
-                        activity.performer = newId;
-                    }
-                }
-                // replace startend node performers
-                var startEndNodes = process.startEndNodes;
-                for (var startEndId in startEndNodes) {
-                    var startEnd = startEndNodes[startEndId];
-                    if (startEnd.performer === currentId) {
-                        startEnd.performer = newId;
-                    }
-                }
-            }
-        }
-        // update properties
-        participant.id = properties.id;
-        participant.name = properties.name;
-        ProcessBuilder.Designer.model.participants[newId] = participant;
-    },
-    attachTransitionEvent: function (transition, connection) {
-        var transitionId = "transition_" + transition.id;
-        $("#" + transitionId).find(".transition_edit, .transition_delete").off("click");
-        $("#" + transitionId).find(".transition_edit").on("click", function(e) {
-            var transId = $(this).parent().attr("id").substring("transition_".length);
-            var transitions = ProcessBuilder.Designer.model.processes[ProcessBuilder.Designer.currentProcessDefId].transitions;
-            var selectedTransition;
-            for (var t = 0; t < transitions.length; t++) {
-                var ts = transitions[t];
-                if (ts.id === transId) {
-                    selectedTransition = ts;
-                }
-            }
-            if (selectedTransition) {
-                selectedTransition.condition = ProcessBuilder.Util.decodeXML(selectedTransition.condition);
-                ProcessBuilder.Actions.editProperties(selectedTransition);
-            }
-        });
-        $("#" + transitionId).find(".transition_delete").on("click", function(e) {
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.deleteTransition(null, null, connection);
-                ProcessBuilder.Util.jsPlumb.detach(connection);
-            });
-        });
-        if (ProcessBuilder.Designer.editable) {
-            $(connection.canvas).next(".transition_label").bind("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var transId = $(this).find(".transition_editable").attr("id").substring("transition_".length);
-                var transitions = ProcessBuilder.Designer.model.processes[ProcessBuilder.Designer.currentProcessDefId].transitions;
-                var selectedTransition;
-                for (var t = 0; t < transitions.length; t++) {
-                    var ts = transitions[t];
-                    if (ts.id === transId) {
-                        selectedTransition = ts;
-                    }
-                }
-                if (selectedTransition) {
-                    selectedTransition.condition = ProcessBuilder.Util.decodeXML(selectedTransition.condition);
-                    ProcessBuilder.Actions.editProperties(selectedTransition);
-                }
-            });
-            $(connection.canvas).bind("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                var transId = $(this).next(".transition_label").find(".transition_editable").attr("id");
-                if (transId) {
-                    transId = transId.substring("transition_".length);
-                }
-                var transitions = ProcessBuilder.Designer.model.processes[ProcessBuilder.Designer.currentProcessDefId].transitions;
-                var selectedTransition;
-                for (var t = 0; t < transitions.length; t++) {
-                    var ts = transitions[t];
-                    if (ts.id === transId) {
-                        selectedTransition = ts;
-                    }
-                }
-                if (selectedTransition) {
-                    selectedTransition.condition = ProcessBuilder.Util.decodeXML(selectedTransition.condition);
-                    ProcessBuilder.Actions.editProperties(selectedTransition);
-                }
-            });
-            connection.bind("mouseenter", function(connection) {
-                $(connection.canvas).next(".transition_label").find(".transition_editable").addClass("hover");
-            });
-            connection.bind("mouseleave", function(connection) {
-                $(".transition_editable").removeClass("hover");
-            });
-            // associate connection with transition model
-            connection.model = transition;
-        }
-    },
-    viewProcess: function(processId) {
-        // render process
-        var model = ProcessBuilder.Designer.model;
-        if (typeof model.processes[processId] === "undefined") {
-            return;
-        }
-        ProcessBuilder.Designer.renderModel(model, processId);
-
-        // select process in header
-        $("#subheader_list").val(processId);
-        $("#subheader_list").trigger("chosen:updated");
-
-        // validate
-        if (ProcessBuilder.Designer.autoValidate) {
-            ProcessBuilder.Designer.validate();
-        }
-    },
-    addProcess: function() {
-        // create process
-        var model = ProcessBuilder.Designer.model;
-        var count = (Object.keys(model.processes).length + 1);
-        var processId = "process" + count;
-        while (model.processes[processId]) {
-            processId += "_1";
-        }
-        var processName = get_pbuilder_msg("pbuilder.label.process") + " " + count;
-        var process = new ProcessBuilder.Model.Process();
-        process.id = processId;
-        process.name = processName;
-        // create participant
-        var count = (Object.keys(model.participants).length + 1);
-        var participantId = "participant" + count;
-        while (model.participants[participantId]) {
-            participantId += "_1";
-        }
-        var participant = new ProcessBuilder.Model.Participant();
-        var participantName = get_pbuilder_msg("pbuilder.label.participant") + " " + count;
-        participant.id = participantId;
-        participant.name = participantName;
-        model.participants[participantId] = participant;
-        process.swimlanes = participantId;
-
-        // add default "status" workflow variable
-        var defaultVariableId = "status";
-        var dataFields = new Array();
-        var dataField = new Object();
-        dataField.variableId = defaultVariableId;
-        dataFields.push(dataField);
-        process.dataFields = dataFields;
-
-        // add process to model
-        model.processes[processId] = process;
-
-        // re-init and switch to process
-        var xpdl = ProcessBuilder.Designer.generateXPDL();
-        ProcessBuilder.Designer.init(xpdl);
-        ProcessBuilder.Actions.viewProcess(processId);
-        ProcessBuilder.Designer.refresh();
-
-        // add a start node
-        var $newNode = $('<div id="newNode" class="start"><div class="node_label">' + get_pbuilder_msg("pbuilder.label.start") + '</div></div>');
-        ProcessBuilder.Actions.addNode($newNode, $(".participant:not(.palette_participant)"), 180, 220);
-    },
-    deleteProcess: function(processId) {
-        var currentProcessId = ProcessBuilder.Designer.currentProcessDefId;
-
-        // delete from model
-        var model = ProcessBuilder.Designer.model;
-        delete model.processes[processId];
-
-        // switch to first process
-        var processes = model.processes;
-        if (Object.keys(processes).length > 0) {
-            if (!model.processes[currentProcessId]) {
-                var process = model.processes[Object.keys(processes)[0]];
-                currentProcessId = process.id;
-            }
-            ProcessBuilder.Actions.viewProcess(currentProcessId);
-        } else {
-            // no process left, delete participants
-            model.participants = new Object();
-            delete ProcessBuilder.Designer.currentProcessDefId;
-
-            // create a new one
-            ProcessBuilder.Actions.addProcess();
-        }
-        ProcessBuilder.Designer.refresh();
-    },
-    duplicateProcess: function(processId) {
-        var model = ProcessBuilder.Designer.model;
-        var process = model.processes[processId];
-
-        var count = (Object.keys(model.processes).length + 1);
-        var newProcessId = "process" + count;
-        while (model.processes[newProcessId]) {
-            newProcessId += "_1";
-        }
-
-        var newProcess = new ProcessBuilder.Model.Process();
-        newProcess.id = newProcessId;
-        newProcess.name = process.name + get_pbuilder_msg("pbuilder.label.copy");
-        newProcess.activities = process.activities;
-        newProcess.dataFields = process.dataFields;
-        newProcess.durationUnit = process.durationUnit;
-        newProcess.formalParameters = process.formalParameters;
-        newProcess.limit = process.limit;
-        newProcess.startEndNodes = process.startEndNodes;
-        newProcess.swimlanes = process.swimlanes;
-        newProcess.transitions = process.transitions;
-        
-        model.processes[newProcessId] = newProcess;
-
-        var xpdl = ProcessBuilder.Designer.generateXPDL(null, newProcessId);
-        ProcessBuilder.Designer.init(xpdl, newProcessId);
-        ProcessBuilder.Designer.refresh();
-
-        ProcessBuilder.Actions.viewProcess(newProcessId);
-
-        ProcessBuilder.Designer.refresh();
-    },
-    moveProcess: function() {
-
-    },
-    updateProcess: function(process, properties) {
-        var currentId = process.id;
-        var newId = properties.id;
-        // check for modified ID
-        if (newId !== currentId) {
-            // check for duplicate
-            var proc = ProcessBuilder.Designer.model.processes[newId];
-            if (proc) {
-                alert(get_pbuilder_msg("pbuilder.label.duplicateId"));
-                return true;
-            }
-
-            // if currently viewing process, switch ID
-            if (ProcessBuilder.Designer.currentProcessDefId === currentId) {
-                ProcessBuilder.Designer.currentProcessDefId = newId;
-            }
-
-            // remove current process
-            delete ProcessBuilder.Designer.model.processes[currentId];
-        }
-        // update properties
-        process.id = properties.id;
-        process.name = properties.name;
-        process.durationUnit = properties.durationUnit;
-        process.limit = properties.limit;
-        process.dataFields = properties.dataFields;
-        process.formalParameters = properties.formalParameters;
-        ProcessBuilder.Designer.model.processes[newId] = process;
-    },
-    execute: function(action) {
-        var isUndoRedoInProgress = ProcessBuilder.Actions.undoRedoInProgress;
-        ProcessBuilder.Actions.undoRedoInProgress = true;
-
-        // get previous xpdl
-        var previousXpdl = ProcessBuilder.Designer.generateXPDL();
-        var previousProcessId = ProcessBuilder.Designer.currentProcessDefId;
-
-        // execute action
-        action.apply(this);
-
-        if (!isUndoRedoInProgress) {
-            // get next xpdl
-            var nextXpdl = ProcessBuilder.Designer.generateXPDL();
-            var nextProcessId = ProcessBuilder.Designer.currentProcessDefId;
-
-            // set undo and redo
-            ProcessBuilder.Util.undoManager.add({
-                undo: function() {
-                    ProcessBuilder.Designer.init(previousXpdl, previousProcessId);
-                },
-                redo: function() {
-                    ProcessBuilder.Designer.init(nextXpdl, nextProcessId);
-                }
-            });
-        }
-        ProcessBuilder.Actions.updateUndoRedo();
-        ProcessBuilder.Actions.undoRedoInProgress = isUndoRedoInProgress;
-    },
-    undo: function() {
-        if (ProcessBuilder.Actions.undoRedoInProgress || !ProcessBuilder.Actions.hasUndo()) {
-            return;
-        }
-        ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.undoing") + '</div>');
-        $("body").append(loading);
-        setTimeout(function() {
-            ProcessBuilder.Actions.undoRedoInProgress = true;
-            ProcessBuilder.Util.undoManager.undo();
-            ProcessBuilder.Designer.refresh();
-            $("#loading").remove();
-            ProcessBuilder.Actions.updateUndoRedo();
-            ProcessBuilder.Actions.undoRedoInProgress = false;
-        }, 1);
-    },
-    redo: function() {
-        if (ProcessBuilder.Actions.undoRedoInProgress || !ProcessBuilder.Actions.hasRedo()) {
-            return;
-        }
-        ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.redoing") + '</div>');
-        $("body").append(loading);
-        setTimeout(function() {
-            ProcessBuilder.Actions.undoRedoInProgress = true;
-            ProcessBuilder.Util.undoManager.redo();
-            ProcessBuilder.Designer.refresh();
-            $("#loading").remove();
-            ProcessBuilder.Actions.updateUndoRedo();
-            ProcessBuilder.Actions.undoRedoInProgress = false;
-        }, 1);
-    },
-    hasUndo: function() {
-        return ProcessBuilder.Util.undoManager.hasUndo();
-    },
-    hasRedo: function() {
-        return ProcessBuilder.Util.undoManager.hasRedo();
-    },
-    updateUndoRedo: function() {
-        if (ProcessBuilder.Actions.hasUndo()) {
-            $(".action-undo").css("opacity", "1.0");
-        } else {
-            $(".action-undo").css("opacity", "0.3");
-        }
-        if (ProcessBuilder.Actions.hasRedo()) {
-            $(".action-redo").css("opacity", "1.0");
-        } else {
-            $(".action-redo").css("opacity", "0.3");
-        }
-    },
-    clearUndo: function() {
-        ProcessBuilder.Util.undoManager.clear();
-        ProcessBuilder.Actions.updateUndoRedo();
-    }
-};
-
-/* Designer settings and functions */
-ProcessBuilder.Designer = {
-    source: "#xpdl",
-    isMapper: false,
-    editable: true,
-    autoValidate: true,
-    participantLabelVertical: true,
-    minWidth: 640,
-    zoom: 1,
-    originalXpdl: null,
-    xpdl: null,
-    model: null,
-    currentProcessDefId: null,
-    isCtrlKeyPressed: false,
-    isAltKeyPressed : false,
-    refresh: function(delay) {
-        ProcessBuilder.Util.adjustCanvasPosition();
-        if (!delay) {
-            delay = 100;
-        } else if (delay < 0) {
-            delay = 0;
-        }
-        setTimeout(function() {
-            // refresh transitions
-            ProcessBuilder.Util.jsPlumb.recalculateOffsets("canvas");
-            ProcessBuilder.Util.jsPlumb.repaintEverything();
-
-            // refresh xml
-            var xpdl = ProcessBuilder.Designer.generateXPDL();
-
-            // update xml
-            ProcessBuilder.Designer.xpdl = xpdl;
-            $(ProcessBuilder.Designer.source).val(xpdl);
-            $(ProcessBuilder.Designer.source).format({method: 'xml'});
-
-            // validate
-            if (ProcessBuilder.Designer.autoValidate) {
-                ProcessBuilder.Designer.validate();
-            }
-        }, delay);
-    },
-    clear: function() {
-        ProcessBuilder.Util.jsPlumb.unbind();
-        ProcessBuilder.Util.jsPlumb.detachEveryConnection();
-        ProcessBuilder.Util.jsPlumb.reset();
-        $("#canvas").empty();
-    },
-    setZoom: function(z) {
-        var p = ["-webkit-", "-moz-", "-ms-", "-o-", ""],
-                s = "scale(" + z + ")";
-
-        for (var i = 0; i < p.length; i++) {
-            $("#canvas").css(p[i] + "transform", s);
-            $("#canvas").css(p[i] + "transition", p[i] + "transform .5s ease-in-out");
-        }
-
-        ProcessBuilder.Util.jsPlumb.setZoom(z);
-        ProcessBuilder.Designer.zoom = z;
-    },
-    parseXPDL: function(xpdl) {
-        var model = new Object();
-
-        // get XPDL
-        var xml = ProcessBuilder.Util.escapeXPDL(xpdl);
-
-        // parse XPDL
-        var xmlDoc = $.parseXML(xml);
-        var $xml = $(xmlDoc);
-        var $package = $xml.find("Package");
-
-        // get app details
-        var appId = $package.attr("Id");
-        var appName = (ProcessBuilder.ApiClient.appName) ? ProcessBuilder.ApiClient.appName : $package.attr("Name");
-        model.packageId = appId;
-        model.packageName = appName;
-
-        // get participants
-        var participants = {};
-        var $participantElements = $package.find("Participant");
-        for (var i = 0; i < $participantElements.length; i++) {
-            var $participantElement = $($participantElements[i]);
-            var participantId = $participantElement.attr("Id");
-            var participantName = $participantElement.attr("Name");
-            var participantType = $participantElement.find("ParticipantType").attr("Type");
-            var participant = new ProcessBuilder.Model.Participant();
-            participant.id = participantId;
-            participant.name = ProcessBuilder.Util.decodeXML(participantName);
-            participant.type = participantType;
-            participants[participantId] = participant;
-        }
-        model.participants = participants;
-
-        // get processes
-        var processes = {};
-        var $processElements = $package.find("WorkflowProcess");
-        for (var p = 0; p < $processElements.length; p++) {
-            var $processElement = $($processElements[p]);
-            var processId = $processElement.attr("Id");
-            var processName = $processElement.attr("Name");
-            var dataFields;
-            var formalParameters;
-            var process = new ProcessBuilder.Model.Process();
-            process.id = processId;
-            process.name = ProcessBuilder.Util.decodeXML(processName);
-            processes[processId] = process;
-
-            // get workflow variables
-            var dataFields = new Array();
-            var $dataFields = $processElement.find("DataField");
-            $dataFields.each(function() {
-                var $dataField = $(this);
-                var dataFieldId = $dataField.attr("Id");
-                var dataField = new Object();
-                dataField.variableId = dataFieldId;
-                dataFields.push(dataField);
-            });
-            process.dataFields = dataFields;
-
-            // get SLA properties
-            var durationUnit;
-            var limit;
-            var $processHeader = $processElement.find("ProcessHeader");
-            if ($processHeader) {
-                durationUnit = $processHeader.attr("DurationUnit");
-                limit = $processHeader.find("Limit").text();
-            }
-            process.durationUnit = durationUnit;
-            process.limit = limit;
-
-            // get formal parameters
-            var formalParameters = new Array();
-            var $formalParameters = $processElement.find("FormalParameter");
-            $formalParameters.each(function() {
-                var $formalParameter = $(this);
-                var parameterId = $formalParameter.attr("Id");
-                var mode = $formalParameter.attr("Mode");
-                var formalParameter = new Object();
-                formalParameter.parameterId = parameterId;
-                formalParameter.mode = mode;
-                formalParameters.push(formalParameter);
-            });
-            process.formalParameters = formalParameters;
-
-            // get activities
-            process.activities = {};
-            var $activityElements = $processElement.find("Activity");
-            for (var i = 0; i < $activityElements.length; i++) {
-                // get activity details
-                var $activityElement = $($activityElements[i]);
-                var activityId = $activityElement.attr("Id");
-                var activityName = $activityElement.attr("Name");
-                var subflowId = null;
-                if ($activityElement.find("SubFlow").length > 0) {
-                    subflowId = $activityElement.find("SubFlow").attr("Id");
-                    if (subflowId === "") {
-                        subflowId = "none";
-                    }
-                }
-                var activity;
-                var activityType = "activity";
-                if ($activityElement.find("Route").length > 0) {
-                    activity = new ProcessBuilder.Model.Route();
-                    activityType = "route";
-                } else if ($activityElement.find("Tool").length > 0) {
-                    activity = new ProcessBuilder.Model.Tool();
-                    activityType = "tool";
-                } else if (subflowId) {
-                    activity = new ProcessBuilder.Model.Subflow();
-                    activityType = "subflow";
-                } else {
-                    activity = new ProcessBuilder.Model.Activity();
-                    activityType = "activity";
-                }
-                var join = $activityElement.find("Join").length > 0 ? $activityElement.find("Join").attr("Type") : "";
-                var split = $activityElement.find("Split").length > 0 ? $activityElement.find("Split").attr("Type") : "";
-                var joinTransitions = [];
-                var $joinTransitionRefs = $activityElement.find("Join").find("TransitionRef");
-                if ($joinTransitionRefs.length > 0) {
-                    $joinTransitionRefs.each(function(index) {
-                        var transitionId = $(this).attr("Id");
-                        joinTransitions[index] = transitionId;
-                    });
-                }
-                var splitTransitions = [];
-                var $splitTransitionRefs = $activityElement.find("Split").find("TransitionRef");
-                if ($splitTransitionRefs.length > 0) {
-                    $splitTransitionRefs.each(function(index) {
-                        var transitionId = $(this).attr("Id");
-                        splitTransitions[index] = transitionId;
-                    });
-                }
-                var performer = $activityElement.find("ExtendedAttribute[Name='JaWE_GRAPH_PARTICIPANT_ID']").attr("Value");
-                var offset = $activityElement.find("ExtendedAttribute[Name='JaWE_GRAPH_OFFSET']").attr("Value");
-                var coords = offset.split(",");
-                var activityX = coords[0];
-                var activityY = coords[1];
-                activity.id = activityId;
-                activity.name = ProcessBuilder.Util.decodeXML(activityName);
-                activity.type = activityType;
-                activity.join = join;
-                activity.split = split;
-                activity.performer = performer;
-                activity.subflowId = subflowId;
-                activity.x = activityX;
-                activity.y = activityY;
-                activity.joinTransitions = joinTransitions;
-                activity.splitTransitions = splitTransitions;
-                activity.process = process;
-                process.activities[activityId] = activity;
-
-                // get limit
-                var $limit = $activityElement.find("Limit");
-                var limit = ($limit.length > 0) ? $limit.text() : null;
-                activity.limit = limit;
-
-                // get deadlines
-                var deadlines = new Array();
-                var $deadlines = $activityElement.find("Deadline");
-                $deadlines.each(function() {
-                    var $deadline = $(this);
-                    var deadline = new Object();
-                    var durationUnit;
-                    var deadlineLimit;
-                    deadline.execution = $deadline.attr("Execution");
-                    deadline.exceptionName = $deadline.find("ExceptionName").text();
-                    var deadlineCondition = $deadline.find("DeadlineCondition").text();
-                    if (deadlineCondition) {
-                        if (deadlineCondition.indexOf("dd/MM/yyyy HH:mm") >= 0) {
-                            durationUnit = "t";
-                            var matches = deadlineCondition.match("parse\(.+\)");
-                            if (matches.length > 1) {
-                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
-                            }
-                        } else if (deadlineCondition.indexOf("dd/MM/yyyy") >= 0) {
-                            durationUnit = "d";
-                            var matches = deadlineCondition.match("parse\(.+\)");
-                            if (matches.length > 1) {
-                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
-                            }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
-                            durationUnit = "2";
-                            var matches = deadlineCondition.match("parse\(.+\)");
-                            if (matches.length > 1) {
-                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
-                            }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
-                            durationUnit = "1";
-                            var matches = deadlineCondition.match("parse\(.+\)");
-                            if (matches.length > 1) {
-                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
-                            }
-                        } else {
-                            var limitMatch = deadlineCondition.match("\\+\\(.+\\*");
-                            if (limitMatch && limitMatch.length > 0) {
-                                deadlineLimit = limitMatch[0].substring(2, limitMatch[0].length-1);
-                            }
-                            var unitMatch = deadlineCondition.match("\\*\\d+\\)");
-                            if (unitMatch && unitMatch.length > 0) {
-                                var millis = unitMatch[0].substring(1, unitMatch[0].length-1);
-                                if (millis === "1000") {
-                                    durationUnit = "s";
-                                } else if (millis === "60000") {
-                                    durationUnit = "m";
-                                } else if (millis === "3600000") {
-                                    durationUnit = "h";
-                                } else {
-                                    durationUnit = "D";
-                                }
-                            }
-                        }
-                        deadline.durationUnit = durationUnit;
-                        deadline.deadlineLimit = deadlineLimit;
-                    }
-                    deadlines.push(deadline);
-                });
-                activity.deadlines = deadlines;
-
-                // get subflow parameters
-                var $subflow = $activityElement.find("SubFlow");
-                if ($subflow.length > 0) {
-                    var execution = $subflow.attr("Execution");
-                    activity.execution = execution;
-                    var actualParameters = new Array();
-                    var $actualParameters = $subflow.find("ActualParameter");
-                    $actualParameters.each(function() {
-                        var $actualParameter = $(this);
-                        var parameterId = $actualParameter.text();
-                        var actualParameter = new Object();
-                        actualParameter.actualParameter = parameterId;
-                        actualParameters.push(actualParameter);
-                    });
-                    activity.actualParameters = actualParameters;
-                }
-            }
-
-            // get transitions
-            process.transitions = new Array();
-            var $transitionElements = $processElement.find("Transition");
-            for (var i = 0; i < $transitionElements.length; i++) {
-                var $transitionElement = $($transitionElements[i]);
-                var transitionId = $transitionElement.attr("Id");
-                var transitionName = $transitionElement.attr("Name");
-                var transitionFrom = $transitionElement.attr("From");
-                var transitionTo = $transitionElement.attr("To");
-                var transitionType = $transitionElement.find("Condition").length > 0 ? $transitionElement.find("Condition").attr("Type") : "";
-                var transitionCondition = $transitionElement.find("Condition[Type='CONDITION']").length > 0 ? $transitionElement.find("Condition[Type='CONDITION']").text() : "";
-                var transitionException = $transitionElement.find("Condition[Type='EXCEPTION']").length > 0 ? $transitionElement.find("Condition[Type='EXCEPTION']").text() : "";
-                var transitionStyle = $transitionElement.find("ExtendedAttribute[Name='JaWE_GRAPH_BREAK_POINTS']").length > 0 ? "orthogonal" : "straight";
-                var transitionConditions = $transitionElement.find("ExtendedAttribute[Name='PBUILDER_TRANSITION_CONDITIONS']").length > 0 ? $transitionElement.find("ExtendedAttribute[Name='PBUILDER_TRANSITION_CONDITIONS']").attr("Value") : null;
-                var transition = new ProcessBuilder.Model.Transition();
-                transition.id = transitionId;
-                transition.name = ProcessBuilder.Util.decodeXML(transitionName);
-                transition.from = transitionFrom;
-                transition.to = transitionTo;
-                transition.type = transitionType;
-                transition.condition = ProcessBuilder.Util.decodeXML(transitionCondition);
-                transition.exceptionName = ProcessBuilder.Util.decodeXML(transitionException);
-                transition.style = transitionStyle;
-                transition.process = process;
-                if (transitionConditions !== null) {
-                    transition.conditionHelper = "yes";
-                    transitionConditions = ProcessBuilder.Util.decodeXML(transitionConditions);
-                    transitionConditions = ProcessBuilder.Util.unescapeQuote(transitionConditions);
-                    transition.conditions = JSON.decode(transitionConditions);
-                }
-                // add join and split transitions
-                var joinActivity = process.activities[transitionTo];
-                if (!joinActivity.joinTransitions || joinActivity.joinTransitions.length === 0) {
-                    joinActivity.joinTransitions = [];
-                }
-                if (joinActivity.joinTransitions.indexOf(transitionId) < 0) {
-                    joinActivity.joinTransitions.push(transitionId);
-                }
-                var splitActivity = process.activities[transitionFrom];
-                if (!splitActivity.splitTransitions || splitActivity.splitTransitions.length === 0) {
-                    splitActivity.splitTransitions = [];
-                }
-                if (splitActivity.splitTransitions.indexOf(transitionId) < 0) {
-                    splitActivity.splitTransitions.push(transitionId);
-                }
-                process.transitions[i] = transition;
-            }
-
-            // get start and end nodes
-            process.startEndNodes = {};
-            var $startEndElements = $processElement.find("ExtendedAttribute[Name='JaWE_GRAPH_START_OF_WORKFLOW'], ExtendedAttribute[Name='JaWE_GRAPH_END_OF_WORKFLOW']");
-            for (var i = 0; i < $startEndElements.length; i++) {
-                // get node values
-                var swimlane;
-                var activityId;
-                var xOffset;
-                var yOffset;
-                var $startEndElement = $($startEndElements[i]);
-                var value = $startEndElement.attr("Value");
-                var type = ($startEndElement.attr("Name") === "JaWE_GRAPH_START_OF_WORKFLOW") ? "start" : "end";
-                var options = value.split(",");
-                for (var j = 0; j < options.length; j++) {
-                    var option = options[j];
-                    var keyvalue = option.split("=");
-                    var key = keyvalue[0];
-                    var value = keyvalue[1];
-                    if (key === "CONNECTING_ACTIVITY_ID") {
-                        activityId = value;
-                    } else if (key === "JaWE_GRAPH_PARTICIPANT_ID") {
-                        swimlane = value;
-                    } else if (key === "X_OFFSET") {
-                        xOffset = value;
-                    } else if (key === "Y_OFFSET") {
-                        yOffset = value;
-                    }
-                }
-                var startEnd = new ProcessBuilder.Model.StartEnd();
-                startEnd.id = activityId;
-                startEnd.type = type;
-                startEnd.performer = swimlane;
-                startEnd.x = xOffset;
-                startEnd.y = yOffset;
-                startEnd.process = process;
-                process.startEndNodes[startEnd.type + "_" + activityId] = startEnd;
-            }
-
-            // get participant swimlanes
-            var swimlanes = $processElement.find("ExtendedAttribute[Name='JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER']").attr("Value");
-            process.swimlanes = swimlanes;
-        }
-        model.processes = processes;
-        return model;
-    },
-    renderModel: function(model, processDefId) {
-        // clear canvas
-        ProcessBuilder.Designer.clear();
-
-        // set Package ID in header
-        var appId = model.packageId;
-        var appName = model.packageName;
-        $("#header_name").remove();
-        var $headerName = $("<div id='header_name'> </div>");
-        $("#header").append($headerName);
-
-        // get process
-        var processes = model.processes;
-        $("#config").append($("<ol></ol>"));
-        var process = (processDefId) ? processes[processDefId] : processes[Object.keys(processes)[0]];
-        ProcessBuilder.Designer.currentProcessDefId = process.id;
-
-        // display processes in header
-        $("#subheader_list").off("change");
-        $("#subheader_list_container").remove();
-        var $processHeader = $("<select id='subheader_list'></select>");
-        for (var processId in processes) {
-            var subprocess = processes[processId];
-            var processName = ProcessBuilder.Util.escapeHTML(subprocess.name);
-            if (processName === "") {
-                processName = subprocess.id;
-            }
-            var $processLi = $("<option value='" + subprocess.id + "'>" + processName + "</option>");
-            $processLi.on("click", function() {
-                if ($(this).hasClass("subheader_selected")) {
-                    return;
-                }
-                var selectedProcessId = $(this).attr("id");
-                ProcessBuilder.Actions.execute(function() {
-                    ProcessBuilder.Actions.viewProcess(selectedProcessId);
-                });
-            });
-            $processHeader.append($processLi);
-        }
-        $processHeader.on("change", function(){
-            var selectedProcessId = $(this).val();
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.viewProcess(selectedProcessId);
-            });
-        });
-        
-        $("#header").append($processHeader);
-        $processHeader.wrap("<div id='subheader_list_container'></div>");
-        $("#subheader_list").val(ProcessBuilder.Designer.currentProcessDefId);
-        $processHeader.chosen({ width: "250px", placeholder_text: " " });
-
-        // display participants
-        var participants = model.participants;
-        var swimlanes = process.swimlanes;
-        if (swimlanes) {
-            var swimlanes = swimlanes.split(";");
-            for (var i = 0; i < swimlanes.length; i++) {
-                var participantId = swimlanes[i];
-                var participant = participants[participantId];
-                if (participant) {
-                    var participantName = ProcessBuilder.Util.encodeXML(participant.name);
-                    var $swimlane = $("<div id='participant_" + participantId + "' title='" + participantId + "' class='participant'><div class='participant_handle'><div class='participant_label'>" + participantName + "</div></div></div>");
-                    var $canvas = $("#canvas");
-                    $canvas.append($swimlane);
-                    // associate swimlane with participant model
-                    $swimlane[0].model = participant;
-                    participant.process = process;
-                    $swimlane.off("click");
-                    $swimlane.on("click", function() {
-                        // clicking anywhere on swimlane outside node de-selects any selected node
-                        $(".node_selected").removeClass("node_selected");
-                    });
-                }
-            }
-            if (ProcessBuilder.Designer.participantLabelVertical) {
-                $(".participant_handle").addClass("participant_handle_vertical");
-            }
-        }
-
-        // display activities
-        var activities = process.activities;
-        for (var activityId in activities) {
-            var activity = activities[activityId];
-
-            // add activity debug info to config panel
-            var $li = $("<li>" + ProcessBuilder.Util.escapeHTML(activity.toString()) + "</li>");
-            $("#config ol").append($li);
-
-            // add activity to swimlane
-            var activityLabel = ProcessBuilder.Util.encodeXML(activity.name);
-            var $activityNode = $("<div class='node " + activity.type + "' id='node_" + activity.id + "' title='" + activity.id + "'><div class='node_label'>" + activityLabel + "</div></div>");
-            if (activity.type === 'route') {
-                var $routeNode = $("<div class='node_route'></div>");
-                $activityNode.append($routeNode);
-                if (activity.join === 'AND' || activity.split === 'AND') {
-                    $activityNode.find(".node_label").html(activityLabel + " <div class='node_route_icon'>+</div>");
-                }
-            }
-            if (activity.limit !== undefined && activity.limit !== null) {
-                $activityNode.find(".node_label").after("<div class='node_limit'>" + activity.limit + process.durationUnit.toLowerCase() + "</div>");
-            }
-            $activityNode.css("position", "absolute");
-            $activityNode.css("left", activity.x + "px");
-            $activityNode.css("top", activity.y + "px");
-            var $participant = $("#participant_" + activity.performer);
-            if ($participant.length > 0) {
-                $participant.append($activityNode);
-
-                // adjust participant height
-                ProcessBuilder.Designer.adjustParticipantSize($participant);
-            } else {
-                var $canvas = $("#canvas");
-                $canvas.append($activityNode);
-            }
-            // associate activity element with activity model
-            $activityNode[0].model = activity;
-        }
-
-        // init jsPlumb
-        ProcessBuilder.Util.jsPlumb.importDefaults({
-            Container: "canvas",
-            Anchor: "Continuous",
-            Endpoint: ["Dot", {radius: 5}],
-            Connector: ["StateMachine", {curviness:0.1}],
-            PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-            HoverPaintStyle: {lineWidth: (ProcessBuilder.Designer.editable?4:1)},
-            ConnectionOverlays: [
-                ["Arrow", {
+            
+            // init jsPlumb
+            ProcessBuilder.jsPlumb.importDefaults({
+                Container: "canvas",
+                Anchor: "Continuous",
+                Endpoint: ["Dot", {radius: 4}],
+                Connector: ["StateMachine", {curviness:0.1}],
+                PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
+                HoverPaintStyle: {lineWidth: 4},
+                ConnectionOverlays: [
+                    ["Arrow", {
                         location: 0.99,
                         id: "arrow",
                         length: 10,
                         width: 10,
                         foldback: 0.8
                     }]
-            ],
-            ConnectionsDetachable: ProcessBuilder.Designer.editable
-        });
-        if (ProcessBuilder.Util.jsPlumb.setContainer) { // for jsPlumb 1.6.2 onwards
-            ProcessBuilder.Util.jsPlumb.setContainer($("#canvas"));
-        }
-
-        // display transitions
-        var transitions = process.transitions;
-        ProcessBuilder.Util.jsPlumb.ready(function() {
-            // draw transitions
-            for (var i=0; i<transitions.length; i++) {
-                var transition = transitions[i];
-
-                // add transition debug info to config panel
-                var $li = $("<li>" + transition.toString() + "</li>");
-                $("#config ol").append($li);
-
-                // add transition
-                var label = (transition.name) ? ProcessBuilder.Util.encodeXML(transition.name) : "";
-                var color = "#999";
-                if (transition.type === 'CONDITION') {
-                    if (label !== "") {
-                        label += "<br/>";
-                    }
-                    label += (transition.condition) ? transition.condition : "";
-                    color = "#80A2DB";
-                } else if (transition.type === 'OTHERWISE') {
-                    if (label !== "") {
-                        label += "<br/>";
-                    }
-                    label += "[otherwise]";
-                    color = "#D19D00";
-                } else if (transition.type === 'EXCEPTION') {
-                    if (label !== "") {
-                        label += "<br/>";
-                    }
-                    label += "[exception] " + (transition.exceptionName) ? ProcessBuilder.Util.encodeXML(transition.exceptionName) : "";
-                    color = "#E37F96";
-                } else if (transition.type === 'DEFAULTEXCEPTION') {
-                    if (label !== "") {
-                        label += "<br/>";
-                    }
-                    label += "[defaultexception]";
-                    color = "#E37F96";
-                }
-                var transitionId = "transition_" + transition.id;
-                if (ProcessBuilder.Designer.editable) {
-                    label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
-                }
-                var connector = (transition.style === 'orthogonal') ?
-                        ["Flowchart", {cornerRadius: 5, gap: 0}] :
-                        ["StateMachine", {curviness:0.1}];
-                var connection = ProcessBuilder.Util.jsPlumb.connect({
-                    source: "node_" + transition.from,
-                    target: "node_" + transition.to,
-                    connector: connector,
-                    paintStyle: {strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-                    endpointStyle:{ fillStyle: "#EBEBEB" },
-                    overlays: [
-                        ["Label", {label: label, cssClass: "transition_label"}]
-                    ]
-                });
-                ProcessBuilder.Actions.attachTransitionEvent(transition, connection);
-            }
-        });
-
-        // display start and end nodes
-        var startEndNodes = process.startEndNodes;
-        for (var activityId in startEndNodes) {
-            var startEndNode = startEndNodes[activityId];
-
-            // add node to swimlane
-            var type = startEndNode.type;
-            var activityId = startEndNode.id;
-            var xOffset = startEndNode.x;
-            var yOffset = startEndNode.y;
-            var swimlane = startEndNode.performer;
-            if (type === "end") {
-                xOffset = parseInt(xOffset) + 40;
-            }
-            var $startEndNode = $("<div class='" + type + "' id='" + type + '_' + activityId + "'></div>");
-            $startEndNode.css("position", "absolute");
-            $startEndNode.css("left", xOffset + "px");
-            $startEndNode.css("top", yOffset + "px");
-            var $participant = $("#participant_" + swimlane);
-            if ($participant.length > 0) {
-                $participant.append($startEndNode);
-                if ($startEndNode.height() + parseInt(yOffset) > $participant.height()) {
-                    var newHeight = $startEndNode.height() + parseInt(yOffset) + 20;
-                    $participant.css("height", newHeight + "px");
-                }
-                // adjust participant width
-                if ($startEndNode.width() + parseInt(xOffset) > $participant.width()) {
-                    var newWidth = $startEndNode.width() + parseInt(xOffset) + 80;
-                    $participant.css("width", newWidth + "px");
-                    // reset all participant widths
-                    $(".participant").each(function() {
-                        if (newWidth > $(this).width()) {
-                            $(this).css("width", newWidth + "px");
-                        }
-                    });
-                }
-                // adjust participant handle width
-                $("#canvas .participant").each(function () {
-                    var handle = $(this).find(".participant_handle_vertical");
-                    if (handle) {
-                        var handleWidth = $(this).height() - 20;
-                        handle.css("width", handleWidth + "px");
-                    }
-                });
-            }
-            // associate startEndNode element with startEndNode model
-            $startEndNode[0].model = startEndNode;
-
-            // connect node to activity
-            if (activityId) {
-                ProcessBuilder.Util.jsPlumb.ready(function() {
-                    var connector = ["StateMachine", {curviness:0.1}];
-                    var source = (type === "start") ? "start_" + activityId : "node_" + activityId;
-                    var target = (type === "start") ? "node_" + activityId : "end_" + activityId;
-                    try {
-                        if ($("#" + source).length > 0 && $("#" + target).length > 0) {
-                            var connection = ProcessBuilder.Util.jsPlumb.connect({
-                                source: source,
-                                target: target,
-                                paintStyle: {strokeStyle: "#000", lineWidth: 1},
-                                endpointStyle:{ fillStyle: "#EBEBEB" },
-                                connector: connector
-                            });
-                            connection.bind("mouseenter", function(connection) {
-                            });
-                            connection.bind("mouseleave", function(connection) {
-                            });
-                        }
-                    } catch(e) {
-                    }
-                });
-            }
-
-        }
-        
-        // refresh transitions
-        ProcessBuilder.Designer.refresh();
-        
-        for (var participantId in participants) {
-            if($("#participant_"+participantId).length > 0) {
-                ProcessBuilder.Designer.adjustParticipantSize($("#participant_"+participantId));
-            }
-        }
-
-        if (ProcessBuilder.Designer.editable) {
-            // make stuff editable
-            ProcessBuilder.Designer.initEditable();
-
-            // init palette
-            ProcessBuilder.Designer.initPalette();
-
-        }
-        if (ProcessBuilder.Designer.isMapper) {
-            ProcessBuilder.Mapper.load(processDefId);
-        }
-    },
-    isModified: function() {
-        var mod = ProcessBuilder.Designer.originalXpdl !== ProcessBuilder.Designer.xpdl;
-        return mod;
-    },
-    init: function(xpdl, processDefId, setOriginal) {
-        // reset model
-        ProcessBuilder.Designer.model = new Object();
-
-        // parse xpdl and set into model
-        var model = ProcessBuilder.Designer.parseXPDL(xpdl);
-        ProcessBuilder.Designer.model = model;
-
-        // render model
-        ProcessBuilder.Designer.renderModel(model, processDefId);
-
-        // store for comparison later
-        if (setOriginal !== undefined && setOriginal) {
-            ProcessBuilder.Designer.originalXpdl = ProcessBuilder.Designer.xpdl;
-        }
-        $(ProcessBuilder.Designer.source).val(xpdl);
-        $(ProcessBuilder.Designer.source).format({method: 'xml'});
-
-        // validate
-        if (ProcessBuilder.Designer.autoValidate) {
-            ProcessBuilder.Designer.validate();
-        }
-
-        // shortcut keys
-        $(document).on("keyup", function (e) {
-            if (e.which === 17) {
-                ProcessBuilder.Designer.isCtrlKeyPressed = false;
-            } else if(e.which === 18){
-                ProcessBuilder.Designer.isAltKeyPressed = false;
-            }
-        }).on("keydown", function (e) {
-            if (e.which === 17) {
-                ProcessBuilder.Designer.isCtrlKeyPressed = true;
-            } else if(e.which === 18){
-                ProcessBuilder.Designer.isAltKeyPressed = true;
-            }
-            if ($(".property-editor-container:visible").length === 0) {
-                if (e.which === 90 && ProcessBuilder.Designer.isCtrlKeyPressed && !ProcessBuilder.Designer.isAltKeyPressed) { // CTRL+Z - undo
-                    ProcessBuilder.Actions.undo();
-                    return false;
-                }
-                if (e.which === 89 && ProcessBuilder.Designer.isCtrlKeyPressed && !ProcessBuilder.Designer.isAltKeyPressed) { // CTRL+Z - redo
-                    ProcessBuilder.Actions.redo();
-                    return false;
-                }
-            }
-        });
-    },
-    initNodes: function(nodes, revert) {
-        // append connector endpoints
-        var $endpoints = $("<div class='endleft endpoint'></div><div class='endtop endpoint'></div><div class='endright endpoint'></div><div class='endbottom endpoint'></div>");
-        $(nodes).find(".endpoint").remove();
-        $(nodes).append($endpoints);
-
-        // make nodes draggable
-        $(nodes).removeClass("ui-draggable");
-        var selectedObjs;
-        function moveSelected(ol, ot){
-            var zoom = ProcessBuilder.Designer.zoom;
-            selectedObjs.each(function() {
-                var $this = $(this);
-                var p = $this.position();
-                var l = p.left;
-                var t = p.top;
-                var newLeft = Math.round(ol + l / zoom);
-                var newTop = Math.round(ot + t / zoom);
-                $this.css('left', newLeft);
-                $this.css('top', newTop);
-                ProcessBuilder.Util.jsPlumb.setSuspendDrawing(false, true);
-                ProcessBuilder.Util.jsPlumb.repaint($this);
-            });
-        }
-        var revertFunction = function(valid) {
-            if (!valid) {
-                ProcessBuilder.Designer.refresh(200);
-                return true;
-            } else {
-                return false;
-            }
-        };
-        var dragging = false;
-        ProcessBuilder.Util.jsPlumb.draggable($(nodes), {
-            connectToSortable: ".participant",
-            zIndex: 200,
-            opacity: 0.7,
-            revert: revert ? revertFunction : null,
-            revertDuration: 100,
-            cursor: "move",
-            snap: false,
-            start: function(event, ui) {
-                jsPlumb.setSuspendDrawing(true); // needed for jsPlumb-1.6.2 onwards
-                if (ui.helper.hasClass('node_selected'))
-                    selectedObjs = $('.node_selected');
-                else {
-                    selectedObjs = $(ui.helper);
-                    $('.node_selected').removeClass('node_selected');
-                }
-                dragging = true;
-            },
-            stop: function(event, ui) {
-                setTimeout(function() {
-                    dragging = false;
-                }, 300);
-                jsPlumb.setSuspendDrawing(false, true); // needed for jsPlumb-1.6.2 onwards
-            },
-            drag: function(event, ui) {
-                var currentLoc = $(this).position();
-                var prevLoc = $(this).data('prevLoc');
-                if (!prevLoc) {
-                    prevLoc = ui.originalPosition;
-                }
-
-                var offsetLeft = currentLoc.left - prevLoc.left;
-                var offsetTop = currentLoc.top - prevLoc.top;
-
-                moveSelected(offsetLeft, offsetTop);
-                $(this).data('prevLoc', currentLoc);
-            }
-        });
-        // Disable click to edit node for now, as dragging will trigger it
-//        $(nodes).click(function(e) {
-//            // open edit property dialog instead of selection in previous code // $(this).toggleClass("node_selected");
-//            var $node = $(this).closest(".node");
-//            var node = $node[0].model;
-//            ProcessBuilder.Actions.editProperties(node);
-//            e.stopPropagation();
-//        });
-
-        // append delete button
-        var $deleteButton = $("<div class='node_delete'>x</div>");
-        $(nodes).find(".node_delete").remove();
-        $(nodes).append($deleteButton);
-        $(nodes).find(".node_delete").off("click");
-        $(nodes).find(".node_delete").on("click", function() {
-            if (dragging) {
-                return false;
-            }
-            var $node = $(this).parent();
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.deleteNode($node);
-            });
-        });
-
-        // append edit button
-        if (!$(nodes).hasClass("end")) {
-            var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
-            var $nodes = $(nodes);
-            $nodes.find(".node_edit").remove();
-            $nodes.prepend($editButton);
-            $nodes.find(".node_edit").on("click", function(e) {
-                if (dragging) {
-                    return false;
-                }
-                var $node = $(this).closest(".node");
-                var node = $node[0].model;
-                ProcessBuilder.Actions.editProperties(node);
-                e.stopPropagation();
-            });
-        } else {
-            $(nodes).removeClass("node");
-        }
-
-        // make nodes connectable with transitions
-        $(".node, .start").each(function(i, e) {
-            var label = "<div class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
-            ProcessBuilder.Util.jsPlumb.makeSource($(e), {
-                filter: ".endpoint",
-                anchor: "Continuous",
-                connectorStyle: {strokeStyle: "#ccc", lineWidth: 2, outlineWidth: 15, outlineColor: 'transparent'},
-                connectorOverlays: [
-                    ["Label", {
-                            label: label,
-                            cssClass: "transition_label"
-                        }]
                 ],
-                endpoint: ["Dot", {radius: 6, hoverClass: 'endpoint_hover'}],
-                paintStyle: {fillStyle: "#EBEBEB"},
-                isSource: true,
-                isTarget: true,
-                maxConnections: 20,
-                onMaxConnections: function(info, e) {
-                    alert(get_pbuilder_msg("pbuilder.label.maximumConnectionsReached") + ": " + info.maxConnections);
-                },
-                dragOptions: {
-                    start: function() {
-                    }
-                }
-            });
-        });
-        ProcessBuilder.Util.jsPlumb.makeTarget($(".node"), {
-            dropOptions: {
-                hoverClass: "activity_hover",
-                drop: function(e, ui) {
-                    ProcessBuilder.Designer.refresh();
-                }
-            },
-            anchor: "Continuous",
-            endpoint: ["Dot", {radius: 6, hoverClass: 'endpoint_hover'}],
-            isSource: true,
-            isTarget: true,
-            paintStyle: {fillStyle: "#EBEBEB"}
-        });
-        ProcessBuilder.Util.jsPlumb.makeTarget($(".end"), {
-            dropOptions: {
-                hoverClass: "activity_hover",
-                drop: function(e, ui) {
-                    ProcessBuilder.Designer.refresh();
-                }
-            },
-            anchor: "AutoDefault",
-            endpoint: ["Dot", {radius: 6, hoverClass: 'endpoint_hover'}],
-            isSource: true,
-            isTarget: true,
-            paintStyle: {fillStyle: "#EBEBEB"}
-        });
-
-//        // not required now, using property editor instead
-//        if (ProcessBuilder.Designer.editable) {
-//            // make node label editable
-//            $(nodes).find(".node_label").editable(function(value, settings) {
-//                return value;
-//            }, {
-//                submit: "OK",
-//                onblur: "submit"
-//            });
-//        }
-    },
-    initParticipants: function(participants) {
-        if (!participants) {
-            participants = $(".participant:not(.palette_participant)");
-        }
-        // make participants droppable to move existing nodes
-        $(participants).droppable({
-            drop: function(event, ui) {
-                var node = $(ui.draggable);
-                if ($(node).hasClass("palette_node")) {
-                    // handle new node from palette
-                    var $newNode = $(node).clone();
-                    var $participant = $(this);
-                    var top = event.pageY;
-                    var left = event.pageX;
-                    ProcessBuilder.Actions.execute(function() {
-                        ProcessBuilder.Actions.addNode($newNode, $participant, top, left);
-                    });
-                } else {
-                    var $participant = $(this);
-                    var top = ui.helper.offset().top;
-                    var left = ui.helper.offset().left;
-                    ProcessBuilder.Actions.execute(function() {
-                        ProcessBuilder.Actions.moveNode(node, $participant, top, left);
-                    });
-                }
-
-                ProcessBuilder.Designer.adjustParticipantSize($participant);
-
-                // refresh transitions
-                ProcessBuilder.Designer.refresh();
-            },
-            hoverClass: "participant_highlight",
-            accept: ".node, .start, .end, .palette_node, .palette_start, .palette_end",
-            greedy: true,
-            tolerance: "fit"
-        });
-
-        // append delete button
-        var $deleteButton = $("<div class='node_delete'>x</div>");
-        var $participants = $(participants).find(".participant_handle");
-        $participants.find(".node_delete").remove();
-        $participants.prepend($deleteButton);
-        $participants.find(".node_delete").on("click", function() {
-            var $participant = $(this).closest(".participant");
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.deleteParticipant($participant);
-            });
-        });
-
-        // append add button
-        var $addButton = $("<div class='participant_add'>+</div>");
-        var $participants = $(participants).find(".participant_handle");
-        $participants.find(".participant_add").remove();
-        $participants.prepend($addButton);
-        $participants.find(".participant_add").on("click", function() {
-            var $participant = $(this).closest(".participant");
-            var $newParticipant = $("<div class='participant'><div class='participant_handle'><div class='participant_label'>" + get_pbuilder_msg("pbuilder.label.participant") + "</div></div></div>");
-            if (ProcessBuilder.Designer.participantLabelVertical) {
-                $newParticipant.find(".participant_handle").addClass("participant_handle_vertical");
-            }
-            $participant.after($newParticipant);
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.addParticipant($newParticipant);
-            });
-        });
-
-        // append edit button
-        var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
-        var $participants = $(participants).find(".participant_handle");
-        $participants.find(".node_edit").remove();
-        $participants.prepend($editButton);
-        $participants.find(".node_edit").on("click", function(e) {
-            var $participant = $(this).closest(".participant");
-            var participant = $participant[0].model;
-            ProcessBuilder.Actions.editProperties(participant);
-            e.stopPropagation();
-        });
-
-        // show on touch
-        $(".participant_handle").on("touchend", function(e) {
-            if (!$(this).hasClass("hovered")) {
-                $(".hovered").removeClass("hovered");
-                $(this).addClass("hovered");
-                e.preventDefault();
-            }
-        });
-
-    },
-    adjustParticipantSize: function(participant) {
-        var $participant = $(participant);
-        // recalculate participant height
-        var zoom = ProcessBuilder.Designer.zoom;
-        var topOffset = null, bottomOffset = null, outer = true;
-        $participant.children().each(function (i, e) {
-            var $e = $(e),
-                    eTopOffset = $e.offset().top,
-                    eBottomOffset = eTopOffset + (outer ? $e.outerHeight() : $e.height());
-            if (topOffset === null) {
-                topOffset = eTopOffset;
-            }
-            if (bottomOffset === null) {
-                bottomOffset = eBottomOffset;
-            }    
-            if (eTopOffset < topOffset) {
-                topOffset = eTopOffset;
-            }
-            if (eBottomOffset > bottomOffset) {
-                bottomOffset = eBottomOffset;
-            }
-        });
-        var childrenHeight = (bottomOffset - topOffset) / zoom + 50;
-        $participant.css("height", childrenHeight + "px");
-        var participantHeight = $participant.height();
-        var participantHeightNoPadding = participantHeight - 20;
-        // set partipant handle dimensions
-        var handle = $participant.find(".participant_handle_vertical");
-        handle.css("width", "" + participantHeightNoPadding + "px");
-        handle.css("bottom", "-" + participantHeight + "px");
-
-        // recalculate participant width
-        var leftOffset = 0, rightOffset = 0, outer = true;
-        $participant.children().each(function (i, e) {
-            var $e = $(e),
-                    eLeftOffset = $e.offset().left,
-                    eRightOffset = eLeftOffset + (outer ? $e.outerWidth() : $e.width());
-
-            if (eLeftOffset < leftOffset && eLeftOffset > 0) {
-                leftOffset = eLeftOffset;
-            }
-            if (eRightOffset > rightOffset) {
-                rightOffset = eRightOffset;
-            }
-        });
-        var childrenWidth = (rightOffset - leftOffset - $participant.offset().left) / zoom + 80;
-        if (childrenWidth > $participant.width()) {
-            $(".participant").css("width", childrenWidth + "px");
-        }
-    },
-    initEditable: function() {
-        // add class to canvas
-        $("#canvas").addClass("editable");
-
-        // make participants draggable
-        $("#canvas").sortable({
-            handle: ".participant_handle",
-            connectWith: "#canvas",
-            items: ".participant",
-            sort: function() {
-                ProcessBuilder.Designer.refresh();
-            },
-            stop: function(event, ui) {
-                var $participant = $(ui.item);
-                if ($participant.hasClass("palette_participant")) {
-                    // new participant
-                    $participant.removeClass("palette_participant");
-                    ProcessBuilder.Actions.execute(function() {
-                        ProcessBuilder.Actions.addParticipant($participant);
-                    });
-                } else {
-                    // existing participant
-                    ProcessBuilder.Actions.execute(function() {
-                        ProcessBuilder.Actions.moveParticipant();
-                    });
-                }
-            },
-            tolerance: "pointer",
-            revertDuration: 100,
-            revert: "invalid"
-        }).disableSelection();
-
-        // make participants droppable to move existing nodes
-        ProcessBuilder.Designer.initParticipants();
-
-        // make nodes draggable
-        ProcessBuilder.Designer.initNodes($(".node"), true);
-        ProcessBuilder.Designer.initNodes($(".start, .end"));
-
-        var $buttons = $("#subheader_list_container");
-        
-        if ($buttons.find(".edit_process").length === 0) {
-            // append edit button to processes
-            var $editButton = $("<span class='edit_process icnbtn'><i class='fas fa-pencil-alt'></i></span>");
-            $buttons.append($editButton);
-            $editButton.off("click");
-            $editButton.on("click", function(e) {
-                var processId = $("#subheader_list").val();
-                var process = ProcessBuilder.Designer.model.processes[processId];
-                if (ProcessBuilder.Designer.currentProcessDefId !== processId) {
-                    ProcessBuilder.Actions.viewProcess(processId);
-                }
-                ProcessBuilder.Actions.editProperties(process);
-                e.stopPropagation();
-            });
-
-            // append duplicate button to processes
-            var $copyButton = $("<span class='copy_process icnbtn'><i class=\"far fa-copy\"></i></span>");
-            $buttons.append($copyButton);
-            $copyButton.off("click");
-            $copyButton.on("click", function(e) {
-                var processId = $("#subheader_list").val();
-                ProcessBuilder.Actions.duplicateProcess(processId);
-                e.stopPropagation();
-            });
-
-            // append delete button to processes
-            var $deleteButton = $("<span class='delete_process icnbtn'><i class='fas fa-trash-alt'></i></span>");
-            $buttons.append($deleteButton);
-            $deleteButton.off("click");
-            $deleteButton.on("click", function(e) {
-                var processId = $("#subheader_list").val();
-                ProcessBuilder.Actions.execute(function() {
-                    ProcessBuilder.Actions.deleteProcess(processId);
-                });
-                e.stopPropagation();
+                ConnectionsDetachable: true
             });
             
-            // append add process button to header
-            var $addButton = $("<span class='add_process icnbtn'><i class='fas fa-plus'></i></span>");
-            $buttons.append($addButton);
-            $addButton.off("click");
-            $addButton.on("click", function() {
-                ProcessBuilder.Actions.execute(function() {
-                    ProcessBuilder.Actions.addProcess();
-                });
+            CustomBuilder.Builder.bindEvent("change.builder", function(){
+                ProcessBuilder.refresh();
             });
-        }
-        
-        // show on touch
-//        $(".header_process, .node").on("touchend", function(e) {
-//            if (!$(this).hasClass("hovered")) {
-//                $(".hovered").removeClass("hovered");
-//                $(this).addClass("hovered");
-//                e.preventDefault();
-//            }
-//        });
+            CustomBuilder.Builder.bindEvent("nodeAdditionalSelected nodeAdditionalAdded nodeAdditionalRemoved nodeAdditionalModeChanged", ProcessBuilder.refreshConnections);
+            
+            $(window).on('hashchange', ProcessBuilder.viewProcess);
 
-        // single click on any endpoint
-        ProcessBuilder.Util.jsPlumb.unbind("endpointClick");
-        ProcessBuilder.Util.jsPlumb.bind("endpointClick", function(endpoint, originalEvent) {
+            var deferreds = [];
+            
+            var wait = $.Deferred();
+            deferreds.push(wait);
+            
+            var jsPlumbReady = $.Deferred();
+            deferreds.push(jsPlumbReady);
+            ProcessBuilder.jsPlumb.ready(function() {
+                //make some delay for css to load
+                setTimeout(function(){
+                    jsPlumbReady.resolve();
+                }, 20);
+                
+            });
+            
+            ProcessBuilder.getMultiToolsProps(deferreds);
+            ProcessBuilder.getAssignmentFormModifier(deferreds);
+            ProcessBuilder.getStartProcessFormModifier(deferreds);
+            ProcessBuilder.getTools(deferreds);
+            ProcessBuilder.getDecisionPlugin(deferreds);
+            ProcessBuilder.getForms(deferreds);
+            ProcessBuilder.getParticipants(deferreds);
+            
+            wait.resolve();
+            
+            $.when.apply($, deferreds).then(function() {
+                if (callback) {
+                    callback();
+                }
+            });
         });
-        // check for invalid connections
-        ProcessBuilder.Util.jsPlumb.unbind("beforeDrop");
-        ProcessBuilder.Util.jsPlumb.bind("beforeDrop", function(info) {
+    },
+    
+    /*
+     * bind event for the js plumb library
+     */
+    initJsPlumb : function() {
+        // single click on any endpoint
+        ProcessBuilder.jsPlumb.unbind("endpointClick");
+        ProcessBuilder.jsPlumb.bind("endpointClick", function(endpoint, originalEvent) {
+        });
+        //check for invalid connection
+        ProcessBuilder.jsPlumb.unbind("beforeDrop");
+        ProcessBuilder.jsPlumb.bind("beforeDrop", function(info) {
             var connection = info.connection;
-            var process = connection.source.model.process;
-            var sourceId = info.sourceId;
-            if (sourceId.indexOf("start_") === 0) {
-                sourceId = sourceId.substring("start_".length);
-            } else {
-                sourceId = sourceId.substring("node_".length);
-            }
-            var targetId = info.targetId;
-            if (targetId.indexOf("end_") === 0) {
-                targetId = targetId.substring("end_".length);
-            } else {
-                targetId = targetId.substring("node_".length);
-            }
-            // disallow duplicate transitions from start node, or directly from start to end
-            if (info.sourceId.indexOf("start_") === 0) {
-                if (process.startEndNodes["start_" + targetId] || info.targetId.indexOf("end_") === 0) {
+            if ($(connection.source).hasClass("start")) {
+                //disallow duplicate transitions from start node
+                var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(connection.source)});
+                if (connSet.length > 0) {
                     return false;
                 }
-            }
-            // disallow duplicate transitions to end node
-            if (info.targetId.indexOf("end_") === 0) {
-                if (process.startEndNodes["end_" + sourceId]) {
+            } else if ($(connection.target).hasClass("end")) {
+                //disallow duplicate transitions to end node
+                var connSet = ProcessBuilder.jsPlumb.getConnections({target: $(connection.target)});
+                if (connSet.length > 0) {
                     return false;
                 }
+            } else if ($(connection.source).hasClass("start") && $(connection.target).hasClass("end")) {
+                //disallow from start to end
+                return false;
             }
             return true;
         });
+        
         // bind event handling to new or moved connections
-        ProcessBuilder.Util.jsPlumb.unbind("connection");
-        ProcessBuilder.Util.jsPlumb.bind("connection", function(info) {
+        ProcessBuilder.jsPlumb.unbind("connection");
+        ProcessBuilder.jsPlumb.bind("connection", function(info) {
             var connection = info.connection;
-            var source = info.source;
-            var target = info.target;
-            ProcessBuilder.Actions.execute(function() {
-                ProcessBuilder.Actions.addTransition(source, target, connection);
-            });
-            // register edit event
-            setTimeout(function() {
-                var transition = connection.model;
-                if (transition) {
-                    var transitionId = "transition_" + transition.id;
-                    var $label = $(connection.canvas).next(".transition_label").find(".transition_editable");
-                    $label.attr("id", transitionId);
-                    if ($label.length === 0) {
-                        var label = "<span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span>";
-                        var overlay = connection.getOverlay();
-                        if (overlay) {
-                            overlay.setLabel(label);
-                        }
-                    }
-                    ProcessBuilder.Actions.attachTransitionEvent(transition, connection);
-                }
-            }, 100);
-            // remove unused endpoints
-            var endpoints = ProcessBuilder.Util.jsPlumb.getEndpoints($(source));
-            if (endpoints.length > 0) {
-                for (var i=0; i<endpoints.length; i++) {
-                    if (endpoints[i].connections.length === 0) {
-                        ProcessBuilder.Util.jsPlumb.deleteEndpoint(endpoints[i]);
-                    }
-                }
-            }
+            ProcessBuilder.addConnection(connection);
         });
+        
         // bind event handling to detached connections
-        ProcessBuilder.Util.jsPlumb.unbind("connectionDetached");
-        ProcessBuilder.Util.jsPlumb.bind("connectionDetached", function(info) {
+        ProcessBuilder.jsPlumb.unbind("connectionDetached");
+        ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
             var connection = info.connection;
-            var source = info.source;
-            var target = info.target;
-            var viewportTop = $("#viewport").scrollTop();
-            var viewportLeft = $("#viewport").scrollLeft();
-            if ($(target).attr("id").indexOf("jsPlumb") >= 0) {
-                $("#node_dialog").remove();
-                var offsetLeft = $(target).offset().left + viewportLeft;
-                var offsetTop = $(target).offset().top + viewportTop;
-                var swimlane;
-                // determine swimlane
-                $(".participant").each(function(index, participant) {
-                    var participantTop = $(participant).offset().top + viewportTop; // * ProcessBuilder.Designer.zoom;
-                    var participantHeight = $(participant).height() * ProcessBuilder.Designer.zoom;
-                    if (offsetTop >= participantTop && offsetTop <= (participantTop + participantHeight)) {
-                        target = participant;
-                        swimlane = target;
-                        return false;
-                    }
-                });
-                if (!swimlane) {
-                    return false;
-                }
-                // remove unused endpoints
-                var endpoints = ProcessBuilder.Util.jsPlumb.getEndpoints($(source));
-                if (endpoints.length > 0) {
-                    for (var i=0; i<endpoints.length; i++) {
-                        if (endpoints[i].connections.length === 0) {
-                            ProcessBuilder.Util.jsPlumb.deleteEndpoint(endpoints[i]);
-                        }
-                    }
-                }
-                // display dialog to choose node type
-                var nodeTop = connection.endpoints[1].endpoint.y + 100 - viewportTop;
-                var nodeLeft = connection.endpoints[1].endpoint.x - viewportLeft;
-                var $nodeDialog = $('<div id="node_dialog"><ul><li type="activity">' + get_pbuilder_msg("pbuilder.label.activity") + '</li><li type="tool">' + get_pbuilder_msg("pbuilder.label.tool") + '</li><li type="route">' + get_pbuilder_msg("pbuilder.label.route") + '</li><li type="subflow">' + get_pbuilder_msg("pbuilder.label.subflow") + '</li><li type="end">' + get_pbuilder_msg("pbuilder.label.end") + '</li><ul></div>');
-                $nodeDialog.dialog({
-                    autoOpen: true,
-                    modal: true,
-                    width: 100,
-                    open: function(event, ui) {
-                        var dialogTop = (nodeTop - 50 ) * ProcessBuilder.Designer.zoom;
-                        var dialogLeft = (nodeLeft + 50) * ProcessBuilder.Designer.zoom;
-                        $nodeDialog.parent().css("left", dialogLeft + "px");
-                        $nodeDialog.parent().css("top", dialogTop + "px");
-                        $("#node_dialog").parent().find(".ui-dialog-titlebar").remove();
-                        $('.ui-widget-overlay').off('click');
-                        $('.ui-widget-overlay').on('click',function(){
-                            $nodeDialog.dialog("close");
-                        });
-                    }
-                });
-                // remove irrelevant node types
-                var endNodeId = "end_" + source.model.id;
-                var currentProcess = ProcessBuilder.Designer.model.processes[ProcessBuilder.Designer.currentProcessDefId];
-                if (currentProcess.startEndNodes[endNodeId]) {
-                    $nodeDialog.find("[type=end]").remove();
-                }
-                // handle node type selection
-                $("#node_dialog li").on("click", function() {
-                    $nodeDialog.dialog("close");
-                    var nodeType = $(this).attr("type");
-                    var nodeLabel =  $(this).text();
-                    // create new node
-                    var $participant = $(swimlane);
-                    var zoom = ProcessBuilder.Designer.zoom;
-                    ProcessBuilder.Designer.setZoom(1);
-                    var $newNode = $('<div id="newNode" class="node ' + nodeType + '"><div class="node_label">' + nodeLabel + '</div></div>');
-                    $newNode.offset({left: nodeLeft + viewportLeft});
-                    $newNode.offset({top: nodeTop});
-                    ProcessBuilder.Designer.setZoom(zoom);
-                    ProcessBuilder.Actions.execute(function() {
-                        var newNodeLeft = (nodeLeft + 180) * ProcessBuilder.Designer.zoom;
-                        ProcessBuilder.Actions.addNode($newNode, $participant, nodeTop, newNodeLeft);
-                        // connect nodes
-                        var connector = ["StateMachine", {curviness:0.1}];
-                        var label = "<div class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
-                        ProcessBuilder.Util.jsPlumb.setSuspendDrawing(true);
-                        var newConnection = ProcessBuilder.Util.jsPlumb.connect({
-                            source: $(source).attr("id"),
-                            target: $newNode.attr("id"),
-                            container: "canvas",
-                            connector: connector,
-                            endpointStyle:{ fillStyle: "#EBEBEB" },
-                            overlays: [
-                                ["Label", {label: label, cssClass: "transition_label"}]
-                            ]
-                        });
-                        ProcessBuilder.Designer.adjustParticipantSize($participant);
-                        ProcessBuilder.Util.jsPlumb.setSuspendDrawing(false);
-                    });
-                });
-                return false;
+            if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
+                ProcessBuilder.showConnectionDialog(connection);
             } else {
-                // delete existing transition
-                ProcessBuilder.Actions.execute(function() {
-                    ProcessBuilder.Actions.deleteTransition(source, target, connection);
+                ProcessBuilder.removeConnection(connection);
+            }
+        });
+    },
+    
+    /*
+     * Load and render data, called from CustomBuilder.loadJson
+     */
+    load: function (data) {
+        ProcessBuilder.updateProcessSelector();
+        ProcessBuilder.viewProcess();
+    },
+    
+    /*
+     * Create and update process selector
+     */
+    updateProcessSelector : function() {
+        var selector = $('#process-selector select');
+        if (selector.length === 0) {
+            $('#process-selector').append('<select id="processes_list"></select> <div class="process_action"></div>');
+            selector = $('#process-selector select');
+            $(selector).chosen({ width: "250px", placeholder_text: " " });
+            
+            $('#process-selector .process_action').append(' <a id="process-edit-btn" href="" title="'+get_cbuilder_msg("ubuilder.edit")+'" style=""><i class="la la-pen"></i></a>');
+            $('#process-selector .process_action').append(' <a id="process-delete-btn" title="'+get_cbuilder_msg("cbuilder.remove")+'" style=""><i class="la la-trash"></i></a>');
+            $('#process-selector .process_action').append('&nbsp;&nbsp;&nbsp;<a class="graybtn" id="process-clone-btn" title="'+get_cbuilder_msg("cbuilder.clone")+'" style=""><i class="la la-copy"></i></a>');
+            $('#process-selector .process_action').append(' <a class="graybtn" id="process-add-btn" title="'+get_cbuilder_msg("cbuilder.addnew")+'" style=""><i class="la la-plus"></i></a>');
+            
+            $("#process-edit-btn").on("click", function(event){
+                ProcessBuilder.editProcess();
+                event.preventDefault();
+                return false;
+            });
+            $("#process-delete-btn").on("click", function(event){
+                ProcessBuilder.deleteProcess();
+                event.preventDefault();
+                return false;
+            });
+            $("#process-clone-btn").on("click", function(event){
+                ProcessBuilder.cloneProcess();
+                event.preventDefault();
+                return false;
+            });
+            $("#process-add-btn").on("click", function(event){
+                ProcessBuilder.addProcess();
+                event.preventDefault();
+                return false;
+            });
+            
+            var updateLabel = function(chosen) {
+                $(chosen.container).find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
+                    var index = $(this).attr("data-option-array-index");
+                    var isError = false;
+                    if (index === undefined) {
+                        isError = $(selector).find("option[value='"+$(selector).val()+"']").hasClass("invalidProcess");
+                    } else {
+                        isError = $(selector).find("option:eq("+index+")").hasClass("invalidProcess");
+                    }
+                    
+                    if (isError) {
+                        $(this).html('<span style="color:red">'+$(this).html()+'</span>');
+                    }
                 });
             }
+            $(selector).on("chosen:showing_dropdown chosen:hiding_dropdown chosen:ready chosen:updated change", function(evt) {
+                updateLabel($(selector).data("chosen"));
+            });
+            setTimeout(function() {
+                $($(selector).data("chosen").container).find(".chosen-search input").on("keydown", function() {
+                    setTimeout(function() { updateLabel($(selector).data("chosen")); }, 5);
+                });
+            }, 1000);
+        }
+        $(selector).html('');
+        
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses']['WorkflowProcess']);
+        
+        for (var p in xpdlProcesses) {
+            $(selector).append('<option value="'+xpdlProcesses[p]['-Id']+'">'+xpdlProcesses[p]['-Name']+'</option>');
+        }
+        $(selector).trigger("chosen:updated");
+        $(selector).off("change");
+        $(selector).on("change", function(){
+            window.location.hash = $(selector).val();
         });
     },
-    initPalette: function() {
-        var click = {
-            x: 0,
-            y: 0
+    
+    /*
+     * To handle the xpdl data to always return in array even there is only single value
+     */
+    getArray : function(data, key) {
+        if (data === undefined || (key !== undefined && key !== null && key !== "" && data[key] === undefined)) {
+            return [];
+        }
+        if (key !== undefined && key !== null && key !== "") {
+            data = data[key];
+        }
+        if (!$.isArray(data)) {
+            return [data];
+        }
+        return data;
+    },
+    
+    /*
+     * To handle the xpdl data to always return in array even there is only single value
+     */
+    setArray : function(obj, key, arrayKey, values) {
+        if (obj === undefined) {
+            return;
+        }
+        var dataObj;
+        if (key !== undefined && key !== null && key !== "") {
+            dataObj = obj[key];
+            if (dataObj === undefined) {
+                dataObj = {};
+                obj[key] = dataObj;
+            }
+        } else {
+            dataObj = obj;
+        }
+        if (values.length > 1) {
+            dataObj[arrayKey] = values;
+        } else if (values.length === 1) {
+            dataObj[arrayKey] = values[0];
+        } else if (values.length === 0 && (key !== undefined && key !== null && key !== "")) {
+            delete obj[key];
+        }
+    },
+    
+    /*
+     * Based on selection and url hash, construct the process data from spdl data and view the process in canvas 
+     */
+    viewProcess : function() {
+        var id = window.location.hash.replace("#", "");
+        
+        var xpdlProcess = null;
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            if (xpdlProcesses[p]["-Id"] === id) {
+                xpdlProcess = xpdlProcesses[p];
+                break;
+            }
+        }
+        
+        if (xpdlProcess === null) {
+            xpdlProcess = xpdlProcesses[0];
+            id = xpdlProcess['-Id'];
+            window.location.hash = id;
+            return;
+        }
+        
+        $('#process-selector select').val(id);
+        $('#process-selector select').trigger("chosen:updated");
+        
+        var process = {
+            className : 'process',
+            properties : {
+                id : id,
+                label : xpdlProcess['-Name']
+            },
+            participants : [],
+            transitions : [],
+            xpdlObj : xpdlProcess
         };
-        // make palette participant draggable
-        $(".palette_participant").draggable({
-            connectToSortable: "#canvas",
-            appendTo: "#canvas",
-            helper: "clone",
-            opacity: 0.7,
-            revert: "invalid",
-            cursor: "move",
-            start: function(event) {
-                click.x = event.clientX;
-                click.y = event.clientY;
-            },
-            drag: function(event, ui) {
-                // This is the parameter for scale()
-                var zoom = ProcessBuilder.Designer.zoom;
-                var original = ui.originalPosition;
-                // jQuery will simply use the same object we alter here
-                ui.position = {
-                    left: (event.clientX - click.x + original.left) / zoom,
-                    top: (event.clientY - click.y + original.top) / zoom
-                };
+        ProcessBuilder.currentProcessData = process;
+        
+        //adding workflow variable
+        if (xpdlProcess['DataFields'] !== undefined) {
+            var dataFields = new Array();
+            
+            var xpdlDataFields = ProcessBuilder.getArray(xpdlProcess['DataFields'], 'DataField');
+            for (var d in xpdlDataFields) {
+                dataFields.push({
+                    variableId : xpdlDataFields[d]['-Id']
+                });
             }
-        });
-
-        // make palette nodes draggable
-        $(".palette_node, .palette_start, .palette_end").draggable({
-            connectToSortable: ".participant",
-            appendTo: "#canvas",
-            helper: "clone",
-            zIndex: 200,
-            opacity: 0.7,
-            revert: "invalid",
-            cursor: "move",
-            snap: false,
-            start: function(event) {
-                click.x = event.clientX;
-                click.y = event.clientY;
-            },
-            drag: function(event, ui) {
-                // This is the parameter for scale()
-                var zoom = ProcessBuilder.Designer.zoom;
-                var original = ui.originalPosition;
-                // jQuery will simply use the same object we alter here
-                ui.position = {
-                    left: (event.clientX - click.x + original.left) / zoom,
-                    top: (event.clientY - click.y + original.top) / zoom
-                };
+            process.properties.dataFields = dataFields;
+        }
+        
+        //adding subflow properties
+        if (xpdlProcess['FormalParameters'] !== undefined) {
+            var formalParameters = new Array();
+            
+            var xpdlFormalParameters = ProcessBuilder.getArray(xpdlProcess['FormalParameters'], 'FormalParameter');
+            for (var p in xpdlFormalParameters) {
+                formalParameters.push({
+                    parameterId : xpdlFormalParameters[p]['-Id'],
+                    mode : xpdlFormalParameters[p]['-Mode']
+                });
             }
-        });
-
-        // make palette as dialog
-        $(function() {
-            $("#palette").show();
-            $("#palette").dialog({
-                title: '',
-                width: "96px",
-                position:  { my: "left top", at: "left top+39" },
-                closeOnEscape: false,
-                open: function(event, ui) {
-                    $(".ui-dialog-titlebar-close", this.parentNode).hide();
+            process.properties.formalParameters = formalParameters;
+        }
+        
+        //adding sla options
+        if (xpdlProcess['ProcessHeader'] !== undefined && xpdlProcess['ProcessHeader']['-DurationUnit'] !== undefined) {
+            process.properties.durationUnit =  xpdlProcess['ProcessHeader']['-DurationUnit'];
+            if (xpdlProcess['ProcessHeader']['Limit'] !== undefined) {
+                process.properties.limit = xpdlProcess['ProcessHeader']['Limit'];
+            }
+        }
+        
+        //add participant
+        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        var participants = {};
+        for (var p in xpdlParticipants) {
+            participants[xpdlParticipants[p]['-Id']] = {
+                className : 'participant',
+                properties : {
+                    id : xpdlParticipants[p]['-Id'],
+                    label : xpdlParticipants[p]['-Name']
                 },
-                appendTo: document.body,
-                dialogClass: "palette",
-                resizable: false,
-                modal: false
-            });
-            $('.palette.ui-dialog').css({position: "fixed"});
-//            var container = $("#viewport");
-//            var dialog = $('.ui-dialog');
-//            dialog.draggable("option", "containment", container);
-        });
-    },
-    screenshot: function(callback, show) {
-       (function() {
-            // set zoom
-            var zoom = ProcessBuilder.Designer.zoom;
-            ProcessBuilder.Designer.setZoom(1);
-
-            // replace connectors from svg to canvas (to support html2canvas)
-            var $clonedBody = $(document.body).clone();
-            var $canvas = $clonedBody.find("#canvas");
-            $canvas.detach();
-
-            $clonedBody.append($canvas);
-            $clonedBody.find("#viewport").remove();
-            $clonedBody.find("#header, #footer, #panel, #builder-header, #builder-footer, #palette, #loading, #adminBar, .ui-dialog, iframe").remove();
-            //$clonedBody.find("#canvas, .participant").css("background", "white");
-            $clonedBody.find("#canvas").css({
-                "top":"0px"
-            });
-            $clonedBody.find("#canvas .participant").css({
-                "border":"solid 1px #999"
-            });
-            $clonedBody.find("svg._jsPlumb_connector").each(function() {
-                var $svg = $(this);
-                var svg = $(this).clone().wrap('<p>').parent().html();
-                var $tempCanvas = $('<canvas></canvas>');
-                $tempCanvas.attr("style", $svg.attr("style"));
-                $clonedBody.find("#canvas").append($tempCanvas);
-                // fix duplicate xmlns
-                svg = svg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
-                // render
-                canvg($tempCanvas[0], svg);
-                $svg.remove();
-            });
-            $clonedBody.find(".participant_handle_vertical").each(function() {
-                var label = $(this).find(".participant_label").text();
-                var $cvs = $('<canvas></canvas>');
-                $cvs.height(110);
-                $(this).parent().append($cvs);
-                var context = $cvs[0].getContext('2d');
-
-                // rotate 90 degrees counter clockwise
-                context.rotate(-90 * Math.PI/180);
-
-                // draw new label
-                context.font="14px Arial";
-                context.fillText(label, -100, 20);
-
-                // remove previous label
-                $(this).find(".participant_label").remove();
-                $(this).css("zIndex", "-1");
-
-            });
-
-            // create invisible iframe for canvas
-            var iframe = document.createElement('iframe');
-            var iwidth = $("#canvas").width();
-            var iheight = 0; // $("#canvas").height();
-            $(iframe).css({
-                'visibility':'hidden'
-            }).width(iwidth).height(iheight);
-            $(document.body).append(iframe);
-            var d = iframe.contentWindow.document;
-            d.open();
-            $(iframe.contentWindow).load(function() {
-                var ibody = $(iframe).contents().find('body');
-
-                // workaround: remove participant transform rotate for now, not supported yet
-        //        $clonedBody.find(".participant_handle_vertical").removeClass("participant_handle_vertical");
-                // append to body
-                $($clonedBody).prepend($('<link href="' + ProcessBuilder.Designer.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />'));
-                $(ibody).append($clonedBody);
-
-//                var $loading = $("<span>generating image... &nbsp;</span> ");
-//                $("#controls").prepend($loading);
-                var $loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
-                $("body").append($loading);
-
-                // restore zoom
-                ProcessBuilder.Designer.setZoom(zoom);
-
-                setTimeout(function() {
-                    // generate image
-                    html2canvas($clonedBody, {
-                        onrendered: function(canvas) {
-                            // capture image
-                            var imgData = canvas.toDataURL();
-                            if (callback) {
-                                callback.call(this, imgData);
-                            }
-                            if (show || !callback) {
-                                // create screenshot div
-                                var $screenshot = $("<div class='screenshot'></div>");
-                                $(document.body).append($screenshot);
-                                $screenshot.html("generating screenshot...");
-
-                                var $img = $("<img src='" + imgData + "' width='640'>");
-                                $screenshot.empty();
-                                $screenshot.append($img);
-
-                                // show dialog
-                                $screenshot.dialog({title: 'Screenshot', width: 680, modal: true});
-                            }
-
-                            // cleanup
-                            $clonedBody.remove();
-                            $loading.remove();
-                            $(iframe).remove();
-                        }
-                    });
-                }, 300);
-            });
-            d.close();
-        })();
-    },
-    generateXPDL: function(package, duplicateProcessId) {
-        var model = (!package) ? ProcessBuilder.Designer.model : package;
-
-        // add package
-        var xml = '<xpdl:Package xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="' + model.packageId + '" Name="' + model.packageName + '" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">';
-
-        // add header
-        xml += '<xpdl:PackageHeader>\
-                <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>\
-                <xpdl:Vendor/>\
-                <xpdl:Created/>\
-                </xpdl:PackageHeader>';
-
-        // add script
-        xml += '<xpdl:Script Type="text/javascript"/>';
-
-        // add participants
-        xml += '<xpdl:Participants>';
-        
-        var existingSwimlaneIds = [];
-        for (var id in model.processes) {
-            var swimlaneIds = model.processes[id].swimlanes.split(";");
-            existingSwimlaneIds = existingSwimlaneIds.concat(swimlaneIds);
+                activities : [],
+                xpdlObj : xpdlParticipants[p]
+            };
         }
         
-        var participants = model.participants;
-        for (var id in participants) {
-            if ($.inArray(id, existingSwimlaneIds) !== -1) {
-                var participant = participants[id];
-                xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
-                        <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
-                        </xpdl:Participant>';
-            }
-        }
-        
-        if (duplicateProcessId !== undefined) {
-            var swimlaneIds = model.processes[duplicateProcessId].swimlanes.split(";");
-            for (var id in participants) {
-                if ($.inArray(id, swimlaneIds) !== -1) {
-                    var participant = participants[id];
-                    xml += '<xpdl:Participant Id="' + duplicateProcessId + "_" + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
-                            <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
-                            </xpdl:Participant>';
+        var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
+        for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
+            if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                var orders = xpdlProcessesAttrs[p]['-Value'].split(";");
+                for (var o in orders) {
+                    if (participants[orders[o]] !== undefined) {
+                        ProcessBuilder.currentProcessData['participants'].push(participants[orders[o]]);
+                        
+                        //find mapping
+                        ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
+                    }
                 }
+                break;
             }
         }
         
-        xml += '</xpdl:Participants>';
-
-        // add applications
-        xml += '<xpdl:Applications>\
-                <xpdl:Application Id="default_application"/>\
-                </xpdl:Applications>';
-
-        // add processes
-        xml += '<xpdl:WorkflowProcesses>';
-        var processes = model.processes;
-        for (var id in processes) {
-            var prefix = "";
-            if (duplicateProcessId !== undefined && duplicateProcessId === id) {
-                prefix = duplicateProcessId + "_";
+        //populate activities
+        var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+        for (var a in xpdlActivities) {
+            var act = xpdlActivities[a];
+            var type = "activity";
+            if (act['Route'] !== undefined) {
+                type = "route";
+            } else if (act['Implementation'] !== undefined && act['Implementation']['Tool'] !== undefined) {
+                type = "tool";
+            } else if (act['Implementation'] !== undefined && act['Implementation']['SubFlow'] !== undefined) {
+                type = "subflow";
             }
             
-            var process = processes[id];
-            // add process header
-            xml += '<xpdl:WorkflowProcess Id="' + process.id + '" Name="' + ProcessBuilder.Util.encodeXML(process.name) + '">\
-                    <xpdl:ProcessHeader DurationUnit="' + ProcessBuilder.Util.preventUndefined(process.durationUnit) + '">';
-            if (process.limit) {
-                xml += '<xpdl:Limit>' + process.limit + '</xpdl:Limit>';
-            }
-            xml += "</xpdl:ProcessHeader>";
-
-            // add formal parameters
-            xml += '<xpdl:FormalParameters>';
-            for (var df=0; df<process.formalParameters.length; df++) {
-                var formalParameter = process.formalParameters[df];
-                xml += '<xpdl:FormalParameter Id="' + formalParameter.parameterId + '" Mode="' + ProcessBuilder.Util.preventUndefined(formalParameter.mode) + '">\
-                            <xpdl:DataType>\
-                                <xpdl:BasicType Type="STRING"/>\
-                            </xpdl:DataType>\
-                        </xpdl:FormalParameter>';
-            }
-            xml += '</xpdl:FormalParameters>';
-
-            // add workflow variables
-            xml += '<xpdl:DataFields>';
-            for (var df=0; df<process.dataFields.length; df++) {
-                var dataField = process.dataFields[df];
-                xml += '<xpdl:DataField Id="' + dataField.variableId + '" IsArray="FALSE">\
-                            <xpdl:DataType>\
-                                <xpdl:BasicType Type="STRING"/>\
-                            </xpdl:DataType>\
-                        </xpdl:DataField>';
-            }
-            xml += '</xpdl:DataFields>';
-
-            // add activities
-            xml += '<xpdl:Activities>';
-            var activities = process.activities;
-            for (var id in activities) {
-                var activity = activities[id];
-                xml += '<xpdl:Activity Id="' + activity.id + '" Name="' + ProcessBuilder.Util.encodeXML(activity.name) + '">';
-                if (activity.limit) {
-                    xml += '<xpdl:Limit>' + activity.limit + '</xpdl:Limit>';
+            var participantId = "";
+            var x = 0;
+            var y = 0;
+            
+            var attrs = ProcessBuilder.getArray(act['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var at in attrs) {
+                if (attrs[at]['-Name'] === "JaWE_GRAPH_PARTICIPANT_ID") {
+                    participantId = attrs[at]['-Value'];
+                } else if (attrs[at]['-Name'] === "JaWE_GRAPH_OFFSET") {
+                    var values = attrs[at]['-Value'].split(",");
+                    x = values[0];
+                    y = values[1];
                 }
-                if (activity.deadlines) {
-                    for (var d=0; d<activity.deadlines.length; d++) {
-                        var deadline = activity.deadlines[d];
-                        xml += '<xpdl:Deadline Execution="' + deadline.execution + '">';
+            }
+            
+            var obj = {
+                className : type,
+                properties : {
+                    id : act['-Id']
+                },
+                x_offset : x,
+                y_offset : y,
+                xpdlObj : xpdlActivities[a]      
+            };
+            
+            if (act['-Name'] !== undefined) {
+                obj.properties.label = act['-Name'];
+            }
+            
+            //set join & split
+            var join = "", split = "";
+            if (act['TransitionRestrictions'] !== undefined && act['TransitionRestrictions']['TransitionRestriction'] !== undefined) {
+                var temp = act['TransitionRestrictions']['TransitionRestriction'];
+                
+                if (temp['Join'] !== undefined) {
+                    join = temp['Join']['-Type'];
+                }
+                if (temp['Split'] !== undefined) {
+                    split = temp['Split']['-Type'];
+                }
+            }
+            obj.properties.join = join;
+            obj.properties.split = split;
+            
+            //set limit
+            if (act['Limit'] !== undefined) {
+                obj.properties.limit = act['Limit'];
+            }
+            
+            //set deadline
+            var deadlines = new Array();
+            var xpdlDeadlines = ProcessBuilder.getArray(act['Deadline']);
+            for (var d in xpdlDeadlines) {
+                var durationUnit;
+                var deadlineLimit;
+                
+                var deadlineCondition = xpdlDeadlines[d]['DeadlineCondition'];
+                if (deadlineCondition) {
+                    if (deadlineCondition.indexOf("dd/MM/yyyy HH:mm") >= 0) {
+                        durationUnit = "t";
+                        var matches = deadlineCondition.match("parse\(.+\)");
+                        if (matches.length > 1) {
+                            deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                        }
+                    } else if (deadlineCondition.indexOf("dd/MM/yyyy") >= 0) {
+                        durationUnit = "d";
+                        var matches = deadlineCondition.match("parse\(.+\)");
+                        if (matches.length > 1) {
+                            deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                        }
+                    } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
+                        durationUnit = "2";
+                        var matches = deadlineCondition.match("parse\(.+\)");
+                        if (matches.length > 1) {
+                            deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                        }
+                    } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
+                        durationUnit = "1";
+                        var matches = deadlineCondition.match("parse\(.+\)");
+                        if (matches.length > 1) {
+                            deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                        }
+                    } else {
+                        var limitMatch = deadlineCondition.match("\\+\\(.+\\*");
+                        if (limitMatch && limitMatch.length > 0) {
+                            deadlineLimit = limitMatch[0].substring(2, limitMatch[0].length-1);
+                        }
+                        var unitMatch = deadlineCondition.match("\\*\\d+\\)");
+                        if (unitMatch && unitMatch.length > 0) {
+                            var millis = unitMatch[0].substring(1, unitMatch[0].length-1);
+                            if (millis === "1000") {
+                                durationUnit = "s";
+                            } else if (millis === "60000") {
+                                durationUnit = "m";
+                            } else if (millis === "3600000") {
+                                durationUnit = "h";
+                            } else {
+                                durationUnit = "D";
+                            }
+                        }
+                    }
+                }
+                
+                deadlines.push({
+                    execution : xpdlDeadlines[d]['-Execution'],
+                    exceptionName : xpdlDeadlines[d]['ExceptionName'],
+                    durationUnit : durationUnit,
+                    deadlineLimit : deadlineLimit
+                });
+            }
+            
+            //set subflow properties
+            if (type === "subflow") {
+                var subflow = act['Implementation']['SubFlow'];
+                obj.properties.subflowId = subflow['-Id'];
+                obj.properties.execution = subflow['-Execution'];
+                
+                if (subflow['ActualParameters'] !== undefined) {
+                    var actualParameters = new Array();
+                    var params = ProcessBuilder.getArray(subflow['ActualParameters'], 'ActualParameter');
+                    for (var p in params) {
+                        actualParameters.push({
+                            actualParameter : params[p]
+                        });
+                    }
+                    obj.properties.actualParameters = actualParameters;
+                }
+            }
+            
+            //find mapping
+            ProcessBuilder.populateActivityMapping(obj);
+            
+            participants[participantId]['activities'].push(obj);
+        }
+        
+        //add start and end node
+        for (var p in xpdlProcessesAttrs) {
+            if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW") {
+                var values = xpdlProcessesAttrs[p]['-Value'].split(",");
+                var obj = {
+                    className : (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW")?"end":"start",
+                    properties : {},
+                    xpdlObj : xpdlProcessesAttrs[p]
+                };
+                
+                obj.properties.id = obj.className;
+                
+                for (var v in values) {
+                    var attr = values[v].split("=");
+                    if (attr[0] === "JaWE_GRAPH_PARTICIPANT_ID") {
+                        participants[attr[1]]['activities'].push(obj);
+                    } else if (attr[0] === "CONNECTING_ACTIVITY_ID") {
+                        if (attr[1] !== "") {
+                            obj.properties.id = obj.className + "_" + attr[1];
+
+                            var transition = {
+                                className :'transition',
+                                properties : {
+                                    id : "transition_" + obj.properties.id,
+                                    type : 'startend'
+                                }
+                            };
+                            if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
+                                transition.properties.from = attr[1];
+                                transition.properties.to = obj.properties.id;
+                            } else {
+                                transition.properties.from = obj.properties.id;
+                                transition.properties.to = attr[1];
+                            }
+
+                            process['transitions'].push(transition);
+                        }
+                    } else if (attr[0] === "X_OFFSET") {
+                        obj.x_offset = attr[1];
+                    } else if (attr[0] === "Y_OFFSET") {
+                        obj.y_offset = attr[1];
+                    }
+                }
+                
+                //find mapping
+                ProcessBuilder.populateActivityMapping(obj);
+            }
+        }
+        
+        //populate transitions
+        var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+        for (var t in xpdlTransitions) {
+            var transition = {
+                className :'transition',
+                properties : {
+                    id : xpdlTransitions[t]['-Id'],
+                    label : (xpdlTransitions[t]['-Name'] !== undefined)?xpdlTransitions[t]['-Name']:"",
+                    from : xpdlTransitions[t]['-From'],
+                    to : xpdlTransitions[t]['-To']
+                },
+                xpdlObj : xpdlTransitions[t]
+            };
+            
+            //type
+            var type = "";
+            var condition = "";
+            var exceptionName = "";
+            if (xpdlTransitions[t]['Condition'] !== undefined) {
+                type = xpdlTransitions[t]['Condition']['-Type'];
+                if (type === "CONDITION") {
+                    condition = xpdlTransitions[t]['Condition']['#text'];
+                } else if (type === "EXCEPTION") {
+                    exceptionName = xpdlTransitions[t]['Condition']['#text'];
+                }
+            }
+            transition.properties.type = type;
+            transition.properties.condition = condition;
+            transition.properties.exceptionName = exceptionName;
+            
+            var style = "straight";
+            var transitionConditions = "";
+            var extendedAttributes = ProcessBuilder.getArray(xpdlTransitions[t]['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var i in extendedAttributes) {
+                if (extendedAttributes[i]['-Name'] === "JaWE_GRAPH_BREAK_POINTS") {
+                    style = "orthogonal";
+                } else if (extendedAttributes[i]['-Name'] === "PBUILDER_TRANSITION_CONDITIONS") {
+                    transitionConditions = extendedAttributes[i]['-Value'];
+                }
+            }
+            transition.properties.style = style;
+            if (transitionConditions !== "") {
+                transition.properties.conditions = JSON.decode(transitionConditions);
+            }
+
+            process['transitions'].push(transition);
+        }
+        
+        //find whitelist mapping
+        ProcessBuilder.populateParticipantMapping(ProcessBuilder.currentProcessData);
+        
+        CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+            ProcessBuilder.validate();
+        });
+    },
+    
+    /*
+     * Convert the process data back to xpdl in JSON definition
+     */
+    updateXpdl : function() {
+        var data = ProcessBuilder.currentProcessData;
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        
+        if (data !== undefined && data !== null) {
+            var xpdlProcess = data.xpdlObj;
+            
+            var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+            var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
+            
+            xpdlProcess['-Id'] = data.properties.id;
+            xpdlProcess['-Name'] = data.properties.label;
+
+            //update duration unit
+            if (data.properties.durationUnit !== undefined && data.properties.durationUnit !== "") {
+                xpdlProcess['ProcessHeader']['-DurationUnit'] = data.properties.durationUnit
+            }
+
+            //update limit
+            if (data.properties.limit !== undefined && data.properties.limit !== "") {
+                xpdlProcess['Limit'] = data.properties.limit;
+            } else {
+                delete xpdlProcess['Limit'];
+            }
+
+            //update formal parameters
+            if (data.properties.formalParameters !== undefined && data.properties.formalParameters.length > 0) {
+                var formalParameters = [];
+                for (var f in data.properties.formalParameters) {
+                    formalParameters.push({
+                        "-Id": data.properties.formalParameters[f].parameterId,
+                        "DataType": {
+                            "BasicType": {
+                                "-Type": "STRING",
+                                "-self-closing": "true"
+                            }
+                        },
+                        "-Mode": data.properties.formalParameters[f].mode
+                    });
+                }
+                ProcessBuilder.setArray(xpdlProcess, 'FormalParameters', 'FormalParameter', formalParameters);
+            } else {
+                delete xpdlProcess['FormalParameters'];
+            }
+        
+            //update workflow variables
+            if (data.properties.dataFields !== undefined && data.properties.dataFields.length > 0) {
+                var dataFields = [];
+                for (var f in data.properties.dataFields) {
+                    dataFields.push({
+                        "-IsArray": "FALSE",
+                        "-Id": data.properties.dataFields[f].variableId,
+                        "DataType": {
+                            "BasicType": {
+                                "-Type": "STRING",
+                                "-self-closing": "true"
+                            }
+                        }
+                    });
+                }
+                ProcessBuilder.setArray(xpdlProcess, 'DataFields', 'DataField', dataFields);
+            } else {
+                delete xpdlProcess['DataFields'];
+            }
+        
+            //update participants
+            var order = "";
+            var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+            for (var p in data.participants) {
+                var participant = data.participants[p];
+                order += (order !== ""?";":"") + participant.properties.id;
+                if (participant.xpdlObj !== undefined) {
+                    participant.xpdlObj['-Id'] = participant.properties.id;
+                    participant.xpdlObj['-Name'] = participant.properties.label;
+                } else {
+                    participant.xpdlObj = {
+                        "-Name": participant.properties.label,
+                        "-Id": participant.properties.id,
+                        "ParticipantType": {
+                            "-Type": "ROLE",
+                            "-self-closing": "true"
+                        }
+                    }
+                    xpdlParticipants.push(participant.xpdlObj);
+                }
+
+                //update activities
+                ProcessBuilder.updateXpdlActivities(xpdlActivities, xpdlProcessesAttrs, participant);
+                
+                ProcessBuilder.updateParticipantMapping(participant);
+            }
+            ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
+
+            //update participant order
+            for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
+                if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                    xpdlProcessesAttrs[p]['-Value'] = order;
+                    break;
+                }
+            }
+            ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
+            
+            //update transitions
+            var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+            for (var t in data.transitions) {
+                var transition = data.transitions[t];
+                if (transition.properties.type === "startend") {
+                    continue;
+                }
+
+                var transitionXpdlObj = transition.xpdlObj;
+                if (transitionXpdlObj === undefined) {
+                    transitionXpdlObj = {};
+                    xpdlTransitions.push(transitionXpdlObj);
+                    
+                    transition.xpdlObj = transitionXpdlObj;
+                }
+
+                transitionXpdlObj['-Id'] = transition.properties.id;
+                transitionXpdlObj['-To'] = transition.properties.to;
+                transitionXpdlObj['-From'] = transition.properties.from;
+
+                if (transition.properties.label !== undefined && transition.properties.label !== "") {
+                    transitionXpdlObj['-Name'] = transition.properties.label;
+                } else {
+                    delete transitionXpdlObj['-Name'];
+                }
+
+                var extendedAttribute = [];
+
+                extendedAttribute.push({
+                    "-Name": "JaWE_GRAPH_TRANSITION_STYLE",
+                    "-Value": "NO_ROUTING_ORTHOGONAL",
+                    "-self-closing": "true"
+                });
+
+                if (transition.properties.style === 'orthogonal') {
+                    extendedAttribute.push({
+                        "-Name": "JaWE_GRAPH_BREAK_POINTS",
+                        "-Value": "orthogonal",
+                        "-self-closing": "true"
+                    });
+                }
+
+                if (transition.properties.type === 'CONDITION') {
+                    transitionXpdlObj['Condition'] = {
+                        "#text": transition.properties.condition,
+                        "-Type": "CONDITION"
+                    };
+                } else if(transition.properties.type === 'OTHERWISE') {
+                    transitionXpdlObj['Condition'] = {
+                        "-Type": "OTHERWISE",
+                        "-self-closing": "true"
+                    };
+                } else if(transition.properties.type === 'EXCEPTION') {
+                    transitionXpdlObj['Condition'] = {
+                        "#text": transition.properties.exceptionName,
+                        "-Type": "EXCEPTION"
+                    };
+                } else if(transition.properties.type === 'DEFAULTEXCEPTION') {
+                    transitionXpdlObj['Condition'] = {
+                        "-Type": "DEFAULTEXCEPTION",
+                        "-self-closing": "true"
+                    };
+                }
+
+                if (transition.properties.type === 'CONDITION' && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
+                    var conditionsJson = JSON.encode(transition.properties.conditions);
+                    extendedAttribute.push({
+                        "-Name": "PBUILDER_TRANSITION_CONDITIONS",
+                        "-Value": conditionsJson,
+                        "-self-closing": "true"
+                    });
+                }
+                ProcessBuilder.setArray(transitionXpdlObj, 'ExtendedAttributes', 'ExtendedAttribute', extendedAttribute); 
+            }
+            ProcessBuilder.setArray(xpdlProcess, 'Transitions', 'Transition', xpdlTransitions);
+            
+            ProcessBuilder.updateParticipantMapping(data);
+        }
+        
+        //remove participants not used by any processes
+        var partipantKeys = {};
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var a = 0; a < xpdlProcessesAttrs.length; p++) {
+                if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                    var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
+                    for (var i in ids) {
+                        partipantKeys[ids[i]] = "";
+                    }
+                    break;
+                }
+            }
+        }
+        
+        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        xpdlParticipants.forEach(function(xpdlParticipant, index, object) {
+            if (partipantKeys[xpdlParticipant['-Id']] === undefined) {
+                object.splice(index, 1);
+                
+                //delete mapping
+            }
+        });
+        ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
+        
+        ProcessBuilder.validate();
+    },
+    
+    /*
+     * Set the participant mapping to object properties
+     */
+    populateParticipantMapping : function (participant) {
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "process")?"processStartWhiteList":participant.properties.id);
+        var mapping = CustomBuilder.data['participants'][id];
+        if (mapping !== undefined) {
+            participant.properties['mapping_type'] = mapping.type; //user, group, department, hod, performer, workflow variable, plugin, role, 
+            if (mapping.type === "user") {
+                participant.properties['mapping_users'] = mapping.value;
+            } else if (mapping.type === "group") {
+                participant.properties['mapping_groups'] = mapping.value;
+            } else if (mapping.type === "department" || mapping.type === "hod") {
+                participant.properties['mapping_department'] = mapping.value;
+            } else if (mapping.type === "requester" || mapping.type === "requesterHod" || mapping.type === "requesterHodIgnoreReportTo" || mapping.type === "requesterSubordinates" || mapping.type === "requesterDepartment") {
+                participant.properties['mapping_type'] = "performer";
+                participant.properties['mapping_performer_type'] = mapping.type;
+                participant.properties['mapping_performer_act'] = mapping.value;
+            } else if (mapping.type === "workflowVariable") {
+                var temp = mapping.value.split(",");
+                participant.properties['mapping_workflowVariable'] = temp[0];
+                participant.properties['mapping_wv_type'] = temp[1];
+            } else if (mapping.type === "plugin") {
+                participant.properties['mapping_plugin'] = {
+                    className : mapping.value,
+                    properties : mapping.properties
+                };
+            } else if (mapping.type === "role") {
+                participant.properties['mapping_type'] = "";
+                participant.properties['mapping_role'] = mapping.value;
+            }
+
+            participant.mapping = mapping;
+        }
+    },
+    
+    /*
+     * Update the participant mapping back to data
+     */
+    updateParticipantMapping : function (participant) {
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "process")?"processStartWhiteList":participant.properties.id);
+        var mapping = CustomBuilder.data['participants'][id];
+        if (mapping === undefined) {
+            mapping = {};
+            CustomBuilder.data['participants'][id] = mapping;
+        }
+        mapping.type = "";
+        
+        if (participant.properties['mapping_type'] === "user" && participant.properties['mapping_users'] !== "") {
+            mapping.type = "user";
+            mapping.value = participant.properties['mapping_users'];
+        } else if (participant.properties['mapping_type'] === "group" && participant.properties['mapping_groups'] !== "") {
+            mapping.type = "group";
+            mapping.value = participant.properties['mapping_groups'];
+        } else if ((participant.properties['mapping_type'] === "department" || participant.properties['mapping_type'] === "hod") && participant.properties['mapping_department'] !== "") {
+            mapping.type = participant.properties['mapping_type'];
+            mapping.value = participant.properties['mapping_department'];
+        } else if (participant.properties['mapping_type'] === "performer" && participant.properties['mapping_performer_type'] !== "") {
+            mapping.type = participant.properties['mapping_performer_type'];
+            mapping.value = participant.properties['mapping_performer_act'];
+        } else if (participant.properties['mapping_type'] === "workflowVariable") {
+            mapping.type = "workflowVariable";
+            mapping.value = participant.properties['mapping_workflowVariable'] + "," + participant.properties['mapping_wv_type'];
+        } else if (participant.properties['mapping_type'] === "plugin") {
+            if (participant.properties['mapping_plugin'] !== undefined
+                    && participant.properties['mapping_plugin']['className'] !== undefined
+                    && participant.properties['mapping_plugin']['className'] !== "") {
+                mapping.type = "plugin";
+                mapping.value = participant.properties['mapping_plugin']['className'];
+                mapping.properties = $.extend(true, {}, participant.properties['mapping_plugin']['properties']);
+            }
+        } else if (participant.className === "process" && participant.properties['mapping_type'] === "" && participant.properties['mapping_role'] !== "") {
+            mapping.type = "role";
+            mapping.value = participant.properties['mapping_role'];
+        }
+        
+        if (mapping.type === "") {
+            delete CustomBuilder.data['participants'][id];
+        } if (mapping.type === "plugin") {
+            mapping.properties = {};
+        }
+    },
+    
+    /*
+     * Set the activity mapping to object properties
+     */
+    populateActivityMapping : function (activity) {
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((activity.className === "start")?"runProcess":activity.properties.id);
+        var mapping = CustomBuilder.data['activityPlugins'][id];
+        
+        if (activity.className === "activity" || activity.className === "start") {
+            var formMapping = CustomBuilder.data['activityForms'][id];
+            
+            if (formMapping !== undefined) {
+                activity.properties['mapping_type'] = formMapping.type;
+                activity.properties['mapping_formId'] = formMapping.formId;
+                activity.properties['mapping_formUrl'] = formMapping.formUrl;
+                activity.properties['mapping_formIFrameStyle'] = formMapping.formIFrameStyle;
+                activity.properties['mapping_disableSaveAsDraft'] = formMapping.disableSaveAsDraft + "";
+                activity.properties['mapping_autoContinue'] = formMapping.autoContinue + "";
+                        
+                activity.formMapping = formMapping;
+            }
+            if (mapping !== undefined) {
+                activity.properties['mapping_modifier'] = {
+                    className : mapping.className,
+                    properties : $.extend(true, {}, mapping.properties)
+                };
+            }
+        } else if (activity.className === "tool") {
+            //convert to multi tools by default
+            if (mapping !== undefined) {
+                if (mapping.className !== "org.joget.apps.app.lib.MultiTools") {
+                    activity.properties['tools'] = [
+                        {
+                            className : mapping.className,
+                            properties : $.extend(true, {}, mapping.properties)
+                        }
+                    ];
+                } else {
+                    $.extend(true, activity.properties, mapping.properties);
+                }
+            }
+        } else if (activity.className === "route") {
+            if (mapping !== undefined) {
+                activity.properties['mapping_plugin'] = {
+                    className : mapping.className,
+                    properties : $.extend(true, {}, mapping.properties)
+                };
+            }
+        }
+        
+        if (mapping !== undefined) {
+            activity.mapping = mapping;
+        }
+    },
+    
+    /*
+     * Update the activity mapping back to data
+     */
+    updateActivityMapping : function (activity) {
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((activity.className === "start")?"runProcess":activity.properties.id);
+        if (activity.className === "activity" || activity.className === "start") {
+            var formMapping = CustomBuilder.data['activityForms'][id];
+            
+            if (formMapping === undefined) {
+                formMapping = {};
+                CustomBuilder.data['activityForms'][id] = formMapping;
+            }
+            formMapping.type = activity.properties['mapping_type'];
+            if (formMapping.type === "SINGLE") {
+                formMapping.formId = (activity.properties['mapping_formId'] !== undefined)?activity.properties['mapping_formId']:"";
+                formMapping.disableSaveAsDraft = (activity.properties['mapping_disableSaveAsDraft'] === "true");
+                
+                delete formMapping['formUrl'];
+                delete formMapping['formIFrameStyle'];
+            } else {
+                formMapping.formUrl = (activity.properties['mapping_formUrl'] !== undefined)?activity.properties['mapping_formUrl']:"";
+                formMapping.formIFrameStyle = (activity.properties['mapping_formIFrameStyle'] !== undefined)?activity.properties['mapping_formIFrameStyle']:"";
+            
+                delete formMapping['formUrl'];
+                delete formMapping['disableSaveAsDraft'];
+            }
+            formMapping.autoContinue = (activity.properties['mapping_autoContinue'] === "true");
+            
+            var mapping = CustomBuilder.data['activityPlugins'][id];
+            if (mapping !== undefined) {
+                if (activity.properties['mapping_modifier'] !== undefined 
+                        && activity.properties['mapping_modifier']['className'] !== undefined 
+                        && activity.properties['mapping_modifier']['className'] !== "" ) {
+                    CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_modifier']);
+                } else {
+                    delete CustomBuilder.data['activityPlugins'][id];
+                }
+            }
+        } else if (activity.className === "tool") {
+            var mapping = CustomBuilder.data['activityPlugins'][id];
+            
+            if (activity.properties['tools'] !== undefined && activity.properties['tools'].length === 1 
+                    && mapping !== undefined
+                    && mapping.className === activity.properties['tools'][0]['className']
+                    && (activity.properties['comment'] === "" || activity.properties['comment'] === undefined)
+                    && (activity.properties['runInMultiThread'] === "" || activity.properties['runInMultiThread'] === undefined)) {
+                //continue using single tool
+                mapping.properties = $.extend(true, mapping.properties, activity.properties['tools'][0]['properties']);
+            } else if ((activity.properties['tools'] === undefined || activity.properties['tools'].length === 0) && mapping !== undefined) {
+                delete CustomBuilder.data['activityPlugins'][id];
+            } else {
+                //use multi tools
+                if (mapping === undefined) {
+                    mapping = {};
+                    CustomBuilder.data['activityPlugins'][id] = mapping;
+                }
+                mapping.className = "org.joget.apps.app.lib.MultiTools";
+                if (mapping.properties === undefined) {
+                    mapping.properties = {};
+                }
+                
+                for (var p in ProcessBuilder.multiToolProps) {
+                    for (var i in ProcessBuilder.multiToolProps[p].properties) {
+                        var property = ProcessBuilder.multiToolProps[p].properties[i];
+                        mapping.properties[property.name] = activity.properties[property.name];
+                    }
+                }
+            }
+        } else if (activity.className === "route") {
+            var mapping = CustomBuilder.data['activityPlugins'][id];
+            if (activity.properties['mapping_plugin'] !== undefined 
+                    && activity.properties['mapping_plugin']['className'] !== undefined
+                    && activity.properties['mapping_plugin']['className'] !== "") {
+                if (mapping === undefined) {
+                    mapping = {};
+                    CustomBuilder.data['activityPlugins'][id] = mapping;
+                }
+                mapping = $.extend(true, {}, activity.properties['mapping_plugin']);
+            } else if (mapping !== undefined){
+                delete CustomBuilder.data['activityPlugins'][id];
+            }
+        }
+    },
+    
+    /*
+     * Update the activity properties back to xpdl data
+     */
+    updateXpdlActivities : function(xpdlActivities, xpdlProcessesAttrs, participant) {
+        var self = CustomBuilder.Builder;
+        
+        for (var a in participant.activities) {
+            var activity = participant.activities[a];
+            
+            if (activity.className !== "start" && activity.className !== "end") {
+                var xpdlObj = activity.xpdlObj;
+                if (xpdlObj === undefined) {
+                    xpdlObj = {
+                        "ExtendedAttributes": {"ExtendedAttribute": []}
+                    };
+                    activity.xpdlObj = xpdlObj;
+
+                    xpdlActivities.push(xpdlObj);
+                }
+                
+                xpdlObj['-Id'] = activity.properties.id;
+                
+                if (activity.properties.label !== undefined && activity.properties.label !== "") {
+                    xpdlObj['-Name'] = activity.properties.label;
+                } else {
+                    delete xpdlObj['Name'];
+                }
+                
+                xpdlObj['Performer'] = participant.properties.id;
+                
+                if (activity.properties.limit !== undefined && activity.properties.limit !== "") {
+                    xpdlObj['Limit'] = activity.properties.limit;
+                } else {
+                    delete xpdlObj['Limit'];
+                }
+                
+                //deadline
+                if (activity.properties.deadlines !== undefined && activity.properties.deadlines.length > 0) {
+                    var deadlines = [];
+                    for (var d in activity.properties.deadlines) {
+                        var deadline = activity.properties.deadlines[d];
+                        var dObj = {
+                            '-Execution' : deadline.execution
+                        };
+                        
                         // determine condition
                         var deadlineCondition;
                         
                         //if date, and the value is not quoted and it is not workflow variable, add quote for it
+                        var pDataFields = ProcessBuilder.currentProcessData.properties.dataFields;
                         if ((deadline.durationUnit === 'd' || deadline.durationUnit ==='t' || deadline.durationUnit === '1' || deadline.durationUnit === '2')) {
                             if (!((deadline.deadlineLimit.substring(0, 1) === "\"" && deadline.deadlineLimit.substring(deadline.deadlineLimit.length - 1, deadline.deadlineLimit.length) === "\"") 
                                     || (deadline.deadlineLimit.substring(0, 1) === "'" && deadline.deadlineLimit.substring(deadline.deadlineLimit.length - 1, deadline.deadlineLimit.length) === "'"))) {
                                 //check is workflow variable
                                 var isWV = false;
-                                for (var df=0; df<process.dataFields.length; df++) {
-                                    var dataField = process.dataFields[df];
+                                for (var df=0; df<pDataFields.length; df++) {
+                                    var dataField = pDataFields[df];
                                     if (dataField.variableId === deadline.deadlineLimit) {
                                         isWV = true;
                                         break;
@@ -3876,8 +1129,8 @@ ProcessBuilder.Designer = {
                                     deadline.deadlineLimit = "\"" + deadline.deadlineLimit + "\"";
                                 }
                             } else {
-                                for (var df=0; df<process.dataFields.length; df++) {
-                                    var dataField = process.dataFields[df];
+                                for (var df=0; df<pDataFields.length; df++) {
+                                    var dataField = pDataFields[df];
                                     if ("\"" + dataField.variableId + "\"" === deadline.deadlineLimit || "'" + dataField.variableId + "'" === deadline.deadlineLimit) {
                                         deadline.deadlineLimit = dataField.variableId;
                                         break;
@@ -3909,215 +1162,1949 @@ ProcessBuilder.Designer = {
                             duration = "(" + limit + "*" + duration + ")";
                             deadlineCondition = "var " + deadline.durationUnit + "=new java.util.Date(); " + deadline.durationUnit + ".setTime(ACTIVITY_ACTIVATED_TIME.getTime()+" + duration + "); " + deadline.durationUnit + ";";
                         }
-                        xml += '    <xpdl:DeadlineCondition>' + deadlineCondition + '</xpdl:DeadlineCondition>';
-                        xml += '    <xpdl:ExceptionName>' + deadline.exceptionName + '</xpdl:ExceptionName>';
-                        xml += '</xpdl:Deadline>';
+                        dObj['DeadlineCondition'] = deadlineCondition;
+                        dObj['ExceptionName'] = deadline.exceptionName;
+                        deadlines.push(dObj);
                     }
-                }
-                if (activity.type === 'tool') {
-                    xml += '<xpdl:Implementation><xpdl:Tool Id="default_application"/></xpdl:Implementation>';
-                } else if (activity.type === 'route') {
-                    xml += '<xpdl:Route/>';
-                } else if (activity.type === 'subflow') {
-                    var execution = (activity.execution) ? activity.execution : "SYNCHR";
-                    xml += '<xpdl:Implementation><xpdl:SubFlow Execution="' + ProcessBuilder.Util.preventUndefined(execution) + '" Id="' + activity.subflowId + '">';
-                    xml += '<xpdl:ActualParameters>';
-                    for (var p=0; p<activity.actualParameters.length; p++) {
-                        var actualParameter = activity.actualParameters[p];
-                        xml += '<xpdl:ActualParameter>' + actualParameter.actualParameter + '</xpdl:ActualParameter>';
-                    }
-                    xml += '</xpdl:ActualParameters>';
-                    xml += '</xpdl:SubFlow></xpdl:Implementation>';
+                    ProcessBuilder.setArray(xpdlObj, null, 'Deadline', deadlines);
                 } else {
-                    xml += '<xpdl:Implementation><xpdl:No/></xpdl:Implementation>';
+                    delete xpdlObj['Deadline'];
                 }
-                if (activity.performer) {
-                    xml += '<xpdl:Performer>' + prefix + activity.performer + '</xpdl:Performer>';
-                }
-                if (activity.join || activity.split) {
-                    xml += '<xpdl:TransitionRestrictions><xpdl:TransitionRestriction>';
-                    if (activity.join) {
-                        xml += '<xpdl:Join Type="' + ProcessBuilder.Util.preventUndefined(activity.join) + '">';
-                        if (activity.joinTransitions.length > 0) {
-                            xml += '<xpdl:TransitionRefs>';
-                            for (var j=0; j<activity.joinTransitions.length; j++) {
-                                var transition = activity.joinTransitions[j];
-                                xml += '<xpdl:TransitionRef Id="' + transition + '"/>';
-                            }
-                            xml += '</xpdl:TransitionRefs>';
+                
+                if (activity.className === "tool") {
+                    xpdlObj['Implementation'] = {
+                        "Tool": {
+                            "-Id": "default_application",
+                            "-self-closing": "true"
                         }
-                        xml += '</xpdl:Join>';
-                    }
-                    if (activity.split) {
-                        xml += '<xpdl:Split Type="' + ProcessBuilder.Util.preventUndefined(activity.split) + '">';
-                        if (activity.splitTransitions.length > 0) {
-                            xml += '<xpdl:TransitionRefs>';
-                            for (var j=0; j<activity.splitTransitions.length; j++) {
-                                var transition = activity.splitTransitions[j];
-                                xml += '<xpdl:TransitionRef Id="' + transition + '"/>';
-                            }
-                            xml += '</xpdl:TransitionRefs>';
+                    };
+                } else if (activity.className === "route") {
+                    xpdlObj["Route"] = {
+                        "-self-closing": "true"
+                    };
+                } else if (activity.className === "subflow") {
+                    var parameters = [];
+                    xpdlObj['Implementation'] = {
+                        "SubFlow": {
+                            "ActualParameters" : {},
+                            "-Id" : activity.properties.subflowId,
+                            "-Execution": activity.properties.execution
                         }
-                        xml += '</xpdl:Split>';
+                    };
+                    
+                    for (var i  in activity.properties.actualParameters) {
+                        parameters.push(activity.properties.actualParameters[i]['actualParameter']);
                     }
-                    xml += '</xpdl:TransitionRestriction></xpdl:TransitionRestrictions>';
+                    
+                    ProcessBuilder.setArray(xpdlObj['Implementation']['SubFlow'], 'ActualParameters', 'ActualParameter', parameters);
+                } else {
+                    xpdlObj['Implementation'] = {
+                        "No": {
+                            "-self-closing": "true"
+                        }
+                    };
                 }
-                xml += '<xpdl:ExtendedAttributes>\
-                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="' +  prefix + activity.performer + '"/>\
-                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="' + activity.x + ',' + activity.y + '"/>\
-                    </xpdl:ExtendedAttributes>';
-                xml += '</xpdl:Activity>';
-            }
-
-            // close activities
-            xml += '</xpdl:Activities>';
-
-            // add transitions
-            xml += '<xpdl:Transitions>';
-            var transitions = process.transitions;
-            if (transitions) {
-                for (var t=0; t<transitions.length; t++) {
-                    var transition = transitions[t];
-                    xml += '<xpdl:Transition From="' + transition.from + '" Id="' + transition.id + '" To="' + transition.to + '" Name="' + ProcessBuilder.Util.encodeXML(transition.name) + '">';
-                    var condition = transition.condition;//ProcessBuilder.Util.encodeXML(transition.condition);
-                    if (transition.type === 'CONDITION') {
-                        xml += '<xpdl:Condition Type="CONDITION">' + ProcessBuilder.Util.escapeXMLText(condition) + '</xpdl:Condition>';
-                    } else if (transition.type === 'OTHERWISE') {
-                        xml += '<xpdl:Condition Type="OTHERWISE"/>';
-                    } else if (transition.type === 'EXCEPTION') {
-                        xml += '<xpdl:Condition Type="EXCEPTION">' + ProcessBuilder.Util.escapeXMLText(transition.exceptionName) + '</xpdl:Condition>';
-                    } else if (transition.type === 'DEFAULTEXCEPTION') {
-                        xml += '<xpdl:Condition Type="DEFAULTEXCEPTION">' + ProcessBuilder.Util.escapeXMLText(condition) + '</xpdl:Condition>';
-                    }
-                    xml += '<xpdl:ExtendedAttributes>\
-                                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>';
-                    if (transition.style === 'orthogonal') {
-                        xml += '<xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="orthogonal"/>';
-                    }
-                    if (transition.conditions !== undefined) {
-                        var conditionsJson = JSON.encode(transition.conditions);
-                        xml += '<xpdl:ExtendedAttribute Name="PBUILDER_TRANSITION_CONDITIONS" Value="'+ProcessBuilder.Util.encodeXML(conditionsJson)+'"/>';
-                    }
-                    xml += '</xpdl:ExtendedAttributes>';
-                    xml += '</xpdl:Transition>';
+                
+                //join & split
+                var transitionRestriction = {};
+                if (xpdlObj['TransitionRestrictions'] !== undefined && xpdlObj['TransitionRestrictions']['TransitionRestriction'] !== undefined ) {
+                    transitionRestriction = xpdlObj['TransitionRestrictions']['TransitionRestriction'];
                 }
-            }
-            // close transitions
-            xml += '</xpdl:Transitions>';
-
-            // add extended attributes
-            xml += '<xpdl:ExtendedAttributes>';
-
-            // add swimlanes
-            if (duplicateProcessId !== undefined && duplicateProcessId === process.id) {
-                var swimlaneIds = model.processes[duplicateProcessId].swimlanes.split(";");
-                process.swimlanes = "";
-                for (var i in swimlaneIds) {
-                    if (process.swimlanes !== "") {
-                        process.swimlanes += ";";
+                var actElement = self.frameBody.find("#" + activity.properties.id);
+                var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(actElement)});
+                if (sourceConnSet.length > 1) {
+                    if (activity.properties.split === "") {
+                        activity.properties.split = "XOR";
                     }
-                    process.swimlanes += prefix + swimlaneIds[i];
+                    if (transitionRestriction['Split'] === undefined) {
+                        transitionRestriction['Split'] = {
+                            "-Type": activity.properties.split,
+                            "TransitionRefs": {
+                                "TransitionRef": []
+                            }
+                        };
+                    } else {
+                        transitionRestriction['Split']['-Type'] = activity.properties.split;
+                    }
+                    if (transitionRestriction['Split']['-self-closing'] !== undefined) {
+                        delete transitionRestriction['Split']['-self-closing'];
+                        transitionRestriction['Split']['TransitionRefs'] = {"TransitionRef" : []};
+                    }
+                    var tids = [];
+                    for (var c in sourceConnSet) {
+                        tids.push($(sourceConnSet[c].canvas).data("data").properties.id);
+                    }
+                    var transitionRefs = ProcessBuilder.getArray(transitionRestriction['Split']["TransitionRefs"], "TransitionRef");
+                    transitionRefs.forEach(function(transitionRef, index, object) {
+                        var fi = $.inArray(transitionRef['-Id'], tids);
+                        if (fi === -1) {
+                            object.splice(index, 1);
+                        } else {
+                            tids.splice(fi, 1);
+                        }
+                    });
+                    for (var tid in tids) {
+                        transitionRefs.push({
+                            "-Id": tids[tid],
+                            "-self-closing": "true"
+                        });
+                    }
+                    ProcessBuilder.setArray(transitionRestriction['Split'], "TransitionRefs", "TransitionRef", transitionRefs);
+                } else {
+                    activity.properties.split = "";
+                    delete transitionRestriction['Split'];
                 }
+                var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
+                if (targetConnSet.length > 1) {
+                    if (activity.properties.join === "") {
+                        activity.properties.join = "XOR";
+                    }
+                    if (transitionRestriction['Join'] === undefined) {
+                        transitionRestriction['Join'] = {
+                            "-Type": activity.properties.join,
+                            "-self-closing": "true"
+                        };
+                    } else {
+                        transitionRestriction['Join']['-Type'] = activity.properties.join;
+                    }
+                } else {
+                    activity.properties.join = "";
+                    delete transitionRestriction['Join'];
+                }
+                if (activity.properties.split === "" && activity.properties.join === "") {
+                    delete xpdlObj['TransitionRestrictions'];
+                } else {
+                    xpdlObj['TransitionRestrictions'] = {
+                        'TransitionRestriction' : transitionRestriction
+                    };
+                }
+                
+                xpdlObj["ExtendedAttributes"]['ExtendedAttribute'] = [{
+                    "-Name": "JaWE_GRAPH_PARTICIPANT_ID",
+                    "-Value": xpdlObj['Performer'],
+                    "-self-closing": "true"
+                },{
+                    "-Name": "JaWE_GRAPH_OFFSET",
+                    "-Value": activity.x_offset + "," + activity.y_offset,
+                    "-self-closing": "true"
+                }];
+            } else {
+                //start and end node
+                var xpdlObj = activity.xpdlObj;
+                if (xpdlObj === undefined) {
+                    xpdlObj = {
+                        "-Name": "JaWE_GRAPH_"+activity.className.toUpperCase()+"_OF_WORKFLOW",
+                        "-Value": "",
+                        "-self-closing": "true"
+                    };
+                    activity.xpdlObj = xpdlObj;
+                    xpdlProcessesAttrs.push(xpdlObj);
+                }
+                
+                var actElement = self.frameBody.find("#" + activity.properties.id);
+                var actId = "";
+                if (activity.className === "start") {
+                    var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(actElement)});
+                    if (connSet.length > 0) {
+                        actId = $(connSet[0].target).attr("id");
+                    }
+                } else {
+                    var connSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
+                    if (connSet.length > 0) {
+                        actId = $(connSet[0].source).attr("id");
+                    }
+                }
+                xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
             }
-            xml += '<xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="' + process.swimlanes + '"/>';
+            
+            ProcessBuilder.updateActivityMapping(activity);
+        }
+    },
+    
+    /*
+     * Show the process properties editor panel
+     */
+    editProcess : function(){
+        var self = CustomBuilder.Builder;
+        
+        self.selectNode(false);
+        self._showPropertiesPanel(self.frameBody.find(".process"), ProcessBuilder.currentProcessData, self.getComponent('process'));
+    },
+    
+    /*
+     * delete the process from xpdl, create empty process if it is the last process to delete
+     */
+    deleteProcess : function(){
+        var self = CustomBuilder.Builder;
+        
+        var data = ProcessBuilder.currentProcessData;
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        
+        $('#process-selector select [value="'+ProcessBuilder.currentProcessData.properties.id+'"]').remove();
+        $('#process-selector select').trigger("chosen:updated");
 
-            // add start end nodes
-            var startEndNodes = process.startEndNodes;
-            for (var activityId in startEndNodes) {
-                var startEndNode = startEndNodes[activityId];
-                var name = (startEndNode.type === 'start') ? "JaWE_GRAPH_START_OF_WORKFLOW" : "JaWE_GRAPH_END_OF_WORKFLOW";
-                var type = (startEndNode.type === 'start') ? 'START_DEFAULT' : 'END_DEFAULT';
-                xml += '<xpdl:ExtendedAttribute Name="' + ProcessBuilder.Util.encodeXML(name) + '" Value="JaWE_GRAPH_PARTICIPANT_ID=' + prefix + startEndNode.performer + ',CONNECTING_ACTIVITY_ID=' + startEndNode.id + ',X_OFFSET=' + parseInt(startEndNode.x) + ',Y_OFFSET=' + parseInt(startEndNode.y) + ',JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=' + type +'"/>';
+        if (data.xpdlObj !== undefined) {
+            var index = $.inArray(data.xpdlObj, xpdlProcesses);
+            if (index !== -1) {
+                xpdlProcesses.splice(index, 1);
             }
-
-            // close extended attributes
-            xml += '</xpdl:ExtendedAttributes>';
-
-            // close process
-            xml += '</xpdl:WorkflowProcess>';
+            ProcessBuilder.setArray(xpdl, 'WorkflowProcesses', 'WorkflowProcess', xpdlProcesses);
+            
+            if (xpdlProcesses.length === 0) {
+                ProcessBuilder.addEmptyProcess();
+            }
         }
 
-        // close processes
-        xml += '</xpdl:WorkflowProcesses>';
-
-        // add package extended attributes
-        var extAttr = '<xpdl:ExtendedAttributes>\
-                <xpdl:ExtendedAttribute Name="EDITING_TOOL" Value="Web Workflow Designer"/>\
-                <xpdl:ExtendedAttribute Name="EDITING_TOOL_VERSION" Value="5.0-pre-alpha"/>\
-                </xpdl:ExtendedAttributes>';
-        xml += extAttr;
-
-        // close package
-        xml += '</xpdl:Package>';
-
-        // return xml
-        var result = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + xml;
-        return result;
+        ProcessBuilder.currentProcessData = null;
+        
+        CustomBuilder.update();
+        ProcessBuilder.updateProcessSelector();
+        self.triggerChange();
+        
+        window.location.hash = "";
     },
-    validate: function() {
-        var designInvalid = false;
-        // clear previous validation errors
-        $(".invalidProcess, .invalidNode").removeClass("invalidProcess").removeClass("invalidNode");
-        $(".invalidNodeMessage").remove();
-        // get model
-        var model = ProcessBuilder.Designer.model;
-        for (var processId in model.processes) {
-            // validate process
-            var processInvalid = false;
-            var process = model.processes[processId];
-            var activities = process.activities;
-            var transitions = process.transitions;
-            for (var actId in activities) {
+    
+    /*
+     * Create a new empty process model to xpdl
+     */
+    addEmptyProcess : function() {
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        
+        var id;
+        var count = xpdlProcesses.length;
+        if (count > 0) {
+            var ids = [];
+            for (var p in xpdlProcesses) {
+                ids.push(xpdlProcesses[p]['-Id']);
+            }
+            do {
+                id = "process" + ++count;
+            } while ($.inArray(id, ids) !== -1)
+        } else {
+            id = "process1";
+            count = 1;
+        }
+        
+        //create a participant
+        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        var pcount = xpdlParticipants.length;
+        var pid;
+        if (pcount > 1) {
+            var pids = [];
+            for (var p in xpdlParticipants) {
+                pids.push(xpdlParticipants[p]['-Id']);
+            }
+            do {
+                pid = id + "_participant" + ++pcount;
+            } while ($.inArray(pid, pids) !== -1)
+        } else {
+            pid = id + "_participant1";
+        }
+        var newParticipant = {
+            "-Name": get_cbuilder_msg("pbuilder.label.participant"),
+            "-Id": pid,
+            "ParticipantType": {
+                "-Type": "ROLE",
+                "-self-closing": "true"
+            }
+        };
+        xpdlParticipants.push(newParticipant);
+        
+        ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
+        
+        var emptyProcess = {
+            "ExtendedAttributes": {
+                "ExtendedAttribute": [
+                    {
+                        "-Name": "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER",
+                        "-Value": pid,
+                        "-self-closing": "true"
+                    },
+                    {
+                        "-Name": "JaWE_GRAPH_START_OF_WORKFLOW",
+                        "-Value": "JaWE_GRAPH_PARTICIPANT_ID="+pid+",CONNECTING_ACTIVITY_ID=,X_OFFSET=75,Y_OFFSET=46,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT",
+                        "-self-closing": "true"
+                    }
+                ]
+            },
+            "-Name": get_cbuilder_msg('pbuilder.label.process') + " " + count,
+            "ProcessHeader": {
+                "-DurationUnit": "h",
+                "-self-closing": "true"
+            },
+            "-Id": id,
+            "DataFields": {
+                "DataField": {
+                    "-IsArray": "FALSE",
+                    "-Id": "status",
+                    "DataType": {
+                        "BasicType": {
+                            "-Type": "STRING",
+                            "-self-closing": "true"
+                        }
+                    }
+                }
+            },
+        };
+        xpdlProcesses.push(emptyProcess);
+        
+        ProcessBuilder.setArray(xpdl, 'WorkflowProcesses', 'WorkflowProcess', xpdlProcesses);
+        
+        return emptyProcess;
+    },
+    
+    /*
+     * clone the current process and set as current process to edit
+     */
+    cloneProcess : function(){
+        var self = CustomBuilder.Builder;
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        
+        var cloneProcessData = $.extend(true, {}, ProcessBuilder.currentProcessData.xpdlObj);
+        var oriId = ProcessBuilder.currentProcessData.properties.id;
+                
+        var id = cloneProcessData['-Id'];
+        var count = 1;
+        var ids = [];
+        for (var p in xpdlProcesses) {
+            ids.push(xpdlProcesses[p]['-Id']);
+        }
+        do {
+            id = cloneProcessData['-Id'] + "_" + ++count;
+        } while ($.inArray(id, ids) !== -1);
+        cloneProcessData['-Id'] = id;  
+        cloneProcessData['-Name'] = cloneProcessData['-Name'] + " " + get_cbuilder_msg("pbuilder.label.copy");
+        
+        //clone participant
+        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        var currentParticipants = ProcessBuilder.currentProcessData.participants;
+        for (var c in currentParticipants) {
+            var xpdlObj = $.extend(true, {}, currentParticipants[c].xpdlObj);
+            xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
+            xpdlParticipants.push(xpdlObj);
+        }
+        ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
+        
+        //update participant in all activities and attributes
+        var xpdlProcessesAttrs = ProcessBuilder.getArray(cloneProcessData['ExtendedAttributes'], 'ExtendedAttribute');
+        for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
+            if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                xpdlProcessesAttrs[p]['-Value'] = id + "_" + xpdlProcessesAttrs[p]['-Value'].replaceAll(";", ";"+ id + "_");
+            } else if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
+                xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID=", "JaWE_GRAPH_PARTICIPANT_ID="+id + "_" );
+            }
+        }
+        ProcessBuilder.setArray(cloneProcessData, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
+        
+        var xpdlActivities = ProcessBuilder.getArray(cloneProcessData['Activities'], 'Activity');
+        for (var a in xpdlActivities) {
+            xpdlActivities[a]['Performer'] = id + "_" + xpdlActivities[a]['Performer'];
+            
+            var attrs = ProcessBuilder.getArray(xpdlActivities[a]['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var at in attrs) {
+                if (attrs[at]['-Name'] === "JaWE_GRAPH_PARTICIPANT_ID") {
+                    attrs[at]['-Value'] = id + "_" + attrs[at]['-Value'];
+                }
+            }
+        }
+        ProcessBuilder.setArray(cloneProcessData, 'Activities', 'Activity', xpdlActivities);
+        
+        xpdlProcesses.push(cloneProcessData);
+        ProcessBuilder.setArray(xpdl, 'WorkflowProcesses', 'WorkflowProcess', xpdlProcesses);
+        
+        //clone mappings
+        var newParticipantMapping = {};
+        for (var key in CustomBuilder.data.participants) {
+            if (key.indexOf(oriId + "::") === 0) {
+                newParticipantMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.participants[key];
+            }
+        }
+        $.extend(CustomBuilder.data.participants, newParticipantMapping);
+        
+        var newFormMapping = {};
+        for (var key in CustomBuilder.data.activityForms) {
+            if (key.indexOf(oriId + "::") === 0) {
+                newFormMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.activityForms[key];
+            }
+        }
+        $.extend(CustomBuilder.data.activityForms, newFormMapping);
+        
+        var newPluginsMapping = {};
+        for (var key in CustomBuilder.data.activityPlugins) {
+            if (key.indexOf(oriId + "::") === 0) {
+                newPluginsMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.activityPlugins[key];
+            }
+        }
+        $.extend(CustomBuilder.data.activityPlugins, newPluginsMapping);
+        
+        CustomBuilder.update();
+        ProcessBuilder.updateProcessSelector();
+        self.triggerChange();
+        
+        window.location.hash = cloneProcessData['-Id'];
+    },
+    
+    /*
+     * add a new empty process to xpdl to edit
+     */
+    addProcess : function(){
+        var self = CustomBuilder.Builder;
+        
+        var process = ProcessBuilder.addEmptyProcess();
+        CustomBuilder.update();
+        ProcessBuilder.updateProcessSelector();
+        self.triggerChange();
+        
+        window.location.hash = process['-Id'];
+    },
+    
+    /*
+     * Prepare the components to render in canvas
+     */
+    initComponents : function() {
+        //Process
+        CustomBuilder.initPaletteElement("", "process", get_cbuilder_msg('pbuilder.label.process'), '<i class="fas fa-th-list"></i>',  
+            [{
+                title: get_cbuilder_msg("pbuilder.label.processProperties"),
+                helplink: get_cbuilder_msg("pbuilder.label.processProperties.helplink"),
+                properties: [{
+                    name: 'id',
+                    label: get_cbuilder_msg("pbuilder.label.id"),
+                    type: 'textfield',
+                    required: 'True',
+                    js_validation: "ProcessBuilder.validateProcessDuplicateId",
+                    regex_validation: '^[a-zA-Z0-9_]+$',
+                    validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                },{
+                    name: 'label',
+                    label: get_cbuilder_msg("pbuilder.label.name"),
+                    type: 'textfield',
+                    required: 'True',
+                    value: get_cbuilder_msg("pbuilder.label.process")
+                },{
+                    name: 'dataFields',
+                    label: get_cbuilder_msg("pbuilder.label.workflowVariables"),
+                    type: 'grid',
+                    columns: [{
+                        key: 'variableId',
+                        label: get_cbuilder_msg("pbuilder.label.variableId")
+                    }],
+                    js_validation: "ProcessBuilder.validateVariables"
+                }]
+            },{
+                title: get_cbuilder_msg("pbuilder.label.subflowProperties"),
+                properties: [{
+                    name: 'formalParameters',
+                    label: get_cbuilder_msg("pbuilder.label.formalParameters"),
+                    type: 'grid',
+                    columns: [{
+                        key: 'parameterId',
+                        label: get_cbuilder_msg("pbuilder.label.parameterId")
+                    },{
+                        key: 'mode',
+                        label: get_cbuilder_msg("pbuilder.label.mode"),
+                        options: [{
+                            value: 'INOUT',
+                            label: get_cbuilder_msg("pbuilder.label.inAndOut")
+                        },{
+                            value: 'IN',
+                            label: get_cbuilder_msg("pbuilder.label.in")
+                        },{
+                            value: 'OUT',
+                            label: get_cbuilder_msg("pbuilder.label.out")
+                        }]
+                    }]
+                }]
+            },{
+                title: get_cbuilder_msg("pbuilder.label.slaOptions"),
+                helplink: get_cbuilder_msg("pbuilder.label.slaOptions.helplink"),
+                properties: [{
+                    name: 'durationUnit',
+                    label: get_cbuilder_msg("pbuilder.label.durationUnit"),
+                    type: 'selectbox',
+                    options: [{
+                        value: 'D',
+                        label: get_cbuilder_msg("pbuilder.label.day")
+                    },{
+                        value: 'h',
+                        label: get_cbuilder_msg("pbuilder.label.hour")
+                    },{
+                        value: 'm',
+                        label: get_cbuilder_msg("pbuilder.label.minute")
+                    },{
+                        value: 's',
+                        label: get_cbuilder_msg("pbuilder.label.second")
+                    }]
+                },{
+                    name: 'limit',
+                    label: get_cbuilder_msg("pbuilder.label.limit"),
+                    type: 'textfield',
+                    regex_validation: '^[0-9_]+$'
+                }]
+            }]
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : false,
+            'copyable' : false,
+            'navigable' : false,
+            'renderNodeAdditional' : false,
+            'render' : ProcessBuilder.renderProcess,
+            'getStylePropertiesDefinition' : ProcessBuilder.getProcessStartWhiteListDef
+        }});
+    
+        //Participant
+        CustomBuilder.initPaletteElement("", "participant", get_cbuilder_msg('pbuilder.label.participant'), '<i class="las la-swimmer"></i>',  
+            [{
+                title: get_cbuilder_msg("pbuilder.label.participantProperties"),
+                helplink: get_cbuilder_msg("pbuilder.label.participantProperties.helplink"),
+                properties: [{
+                    name: 'id',
+                    label: get_cbuilder_msg("pbuilder.label.id"),
+                    type: 'textfield',
+                    required: 'True',
+                    js_validation: "ProcessBuilder.validateParticipantDuplicateId",
+                    regex_validation: '^[a-zA-Z0-9_]+$',
+                    validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                },{
+                    name: 'label',
+                    label: get_cbuilder_msg("pbuilder.label.name"),
+                    type: 'textfield',
+                    required: 'True',
+                    value: get_cbuilder_msg("pbuilder.label.participant")
+                }]
+            }]
+        , "", true, "", {builderTemplate: {
+            'dragHtml' : '<div class="participant"><div class="participant_handle"><div class="participant_label">'+get_cbuilder_msg('pbuilder.label.participant')+'</div></div><div class="activities-container"></div></div>',    
+            'draggable' : true,
+            'movable' : true,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'parentContainerAttr' : 'participants',
+            'childsContainerAttr' : 'activities',
+            'parentDataHolder' : 'participants',
+            'childsDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderParticipant,
+            'dragging' : ProcessBuilder.dragParticipant,
+            'unload' : ProcessBuilder.unloadParticipant,
+            'getStylePropertiesDefinition' : ProcessBuilder.getParticipantDef
+        }});
+        
+        //Activity
+        CustomBuilder.initPaletteElement("", "activity", get_cbuilder_msg('pbuilder.label.activity'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="47" height="36" viewBox="0 0 47 36" ><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" transform="translate(0.25 0.25)"/></svg>', 
+            [], {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node activity"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.activity')+'</div></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'absolutePosition' : true,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderActivity,
+            'dragging' : ProcessBuilder.dragActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'getStylePropertiesDefinition' : ProcessBuilder.getActivityDef,
+            'nodeDetailContainerColorNumber' : function() {
+                return 3;
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                var options = [{
+                    title: get_cbuilder_msg("pbuilder.label.activityProperties"),
+                    helplink : get_cbuilder_msg("pbuilder.label.activityProperties.helplink"),
+                    properties: [{
+                        name: 'id',
+                        label: get_cbuilder_msg("pbuilder.label.id"),
+                        type: 'textfield',
+                        required: 'True',
+                        js_validation: "ProcessBuilder.validateDuplicateId",
+                        regex_validation: '^[a-zA-Z0-9_]+$',
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                    },{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label.name"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    }]
+                },{
+                    title: get_cbuilder_msg("pbuilder.label.deadlines"),
+                    helplink : get_cbuilder_msg("pbuilder.label.deadlines.helplink"),
+                    properties: [{
+                        name: 'deadlines',
+                        label: get_cbuilder_msg("pbuilder.label.deadlines"),
+                        type: 'grid',
+                        columns: [{
+                            key: 'execution',
+                            label: get_cbuilder_msg("pbuilder.label.execution"),
+                            options: [{
+                                value: 'ASYNCHR',
+                                label: get_cbuilder_msg("pbuilder.label.asynchronous")
+                            },{
+                                value: 'SYNCHR',
+                                label: get_cbuilder_msg("pbuilder.label.synchronous")
+                            }]
+                        },{
+                            key: 'durationUnit',
+                            label: get_cbuilder_msg("pbuilder.label.durationUnit"),
+                            options: [{
+                                value: 'D',
+                                label: get_cbuilder_msg("pbuilder.label.day")
+                            },{
+                                value: 'h',
+                                label: get_cbuilder_msg("pbuilder.label.hour")
+                            },{
+                                value: 'm',
+                                label: get_cbuilder_msg("pbuilder.label.minute")
+                            },{
+                                value: 's',
+                                label: get_cbuilder_msg("pbuilder.label.second")
+                            },{
+                                value: 'd',
+                                label: get_cbuilder_msg("pbuilder.label.dateFormat")
+                            },{
+                                value: '1',
+                                label: get_cbuilder_msg("pbuilder.label.dateFormat2")
+                            },{
+                                value: 't',
+                                label: get_cbuilder_msg("pbuilder.label.dateTimeFormat")
+                            },{
+                                value: '2',
+                                label: get_cbuilder_msg("pbuilder.label.dateTimeFormat2")
+                            }]
+                        },{
+                            key: 'deadlineLimit',
+                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit")
+                        },{
+                            key: 'exceptionName',
+                            label: get_cbuilder_msg("pbuilder.label.exceptionName")
+                        }]
+                    }]
+                },{
+                    title: get_cbuilder_msg("pbuilder.label.slaOptions"),
+                    helplink: get_cbuilder_msg("pbuilder.label.slaOptions.helplink"),
+                    properties: [{
+                        name: 'limit',
+                        label: get_cbuilder_msg("pbuilder.label.limit"),
+                        type: 'textfield',
+                        regex_validation: '^[0-9_]+$'
+                    }]
+                }];
+
+                if (elementObj.properties.join !== "") {
+                    options[0].properties.push({
+                        name: 'join',
+                        label: get_cbuilder_msg("pbuilder.label.joinType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                if (elementObj.properties.split !== "") {
+                    options[0].properties.push({
+                        name: 'split',
+                        label: get_cbuilder_msg("pbuilder.label.splitType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                return options;
+            }
+        }});
+    
+        //Tool
+        CustomBuilder.initPaletteElement("", "tool", get_cbuilder_msg('pbuilder.label.tool'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="47" height="36" viewBox="0 0 47 36" ><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#E1FFE0" transform="translate(0.25 0.25)"/></svg>', 
+            [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node tool"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.tool')+'</div></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'absolutePosition' : true,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'dragging' : ProcessBuilder.dragActivity,
+            'render' : ProcessBuilder.renderActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'getStylePropertiesDefinition' : ProcessBuilder.getToolDef,
+            'nodeDetailContainerColorNumber' : function() {
+                return 4;
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                var options = [{
+                    title: get_cbuilder_msg("pbuilder.label.toolProperties"),
+                    helplink : get_cbuilder_msg("pbuilder.label.toolProperties.helplink"),
+                    properties: [{
+                        name: 'id',
+                        label: get_cbuilder_msg("pbuilder.label.id"),
+                        type: 'textfield',
+                        required: 'True',
+                        js_validation: "ProcessBuilder.validateDuplicateId",
+                        regex_validation: '^[a-zA-Z0-9_]+$',
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                    },{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label.name"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    }]
+                }];
+                if (elementObj.properties.join !== "") {
+                    options[0].properties.push({
+                        name: 'join',
+                        label: get_cbuilder_msg("pbuilder.label.joinType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                if (elementObj.properties.split !== "") {
+                    options[0].properties.push({
+                        name: 'split',
+                        label: get_cbuilder_msg("pbuilder.label.splitType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                return options;
+            }
+        }});
+    
+        //Route
+        CustomBuilder.initPaletteElement("", "route", get_cbuilder_msg('pbuilder.label.route'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="43" height="43" viewBox="0 0 43 43" ><path d="M 21 0 L 0 21 L 21 42 L 42 21 Z" stroke-width="0.5" fill="#fdfde1" stroke="#333333" transform="translate(0.25 0.25)"/></svg>', 
+            [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node route"></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'absolutePosition' : true,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderActivity,
+            'dragging' : ProcessBuilder.dragActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'getStylePropertiesDefinition' : ProcessBuilder.getRouteDef,
+            'nodeDetailContainerColorNumber' : function() {
+                return 5;
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                var options = [{
+                    title: get_cbuilder_msg("pbuilder.label.routeProperties"),
+                    helplink : get_cbuilder_msg("pbuilder.label.routeProperties.helplink"),
+                    properties: [{
+                        name: 'id',
+                        label: get_cbuilder_msg("pbuilder.label.id"),
+                        type: 'textfield',
+                        required: 'True',
+                        js_validation: "ProcessBuilder.validateDuplicateId",
+                        regex_validation: '^[a-zA-Z0-9_]+$',
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                    },{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label.name"),
+                        type: 'textfield'
+                    }]
+                }];
+                if (elementObj.properties.join !== "") {
+                    options[0].properties.push({
+                        name: 'join',
+                        label: get_cbuilder_msg("pbuilder.label.joinType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                if (elementObj.properties.split !== "") {
+                    options[0].properties.push({
+                        name: 'split',
+                        label: get_cbuilder_msg("pbuilder.label.splitType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                return options;
+            }
+        }});
+    
+        //Subflow
+        CustomBuilder.initPaletteElement("", "subflow", get_cbuilder_msg('pbuilder.label.subflow'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" rx="2" transform="translate(1.5 6.5)"/><rect height="27" width="38" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" rx="1" transform="translate(5.5 10.5)"/></svg>', 
+            [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node subflow"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.subflow')+'</div></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'absolutePosition' : true,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderActivity,
+            'dragging' : ProcessBuilder.dragActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'supportStyle' : false,
+            'nodeDetailContainerColorNumber' : function() {
+                return 6;
+            },
+            'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                var options = [{
+                    title: get_cbuilder_msg("pbuilder.label.subflowProperties"),
+                    helplink : get_cbuilder_msg("pbuilder.label.subflowProperties.helplink"),
+                    properties: [{
+                        name: 'id',
+                        label: get_cbuilder_msg("pbuilder.label.id"),
+                        type: 'textfield',
+                        required: 'True',
+                        js_validation: "ProcessBuilder.validateDuplicateId",
+                        regex_validation: '^[a-zA-Z0-9_]+$',
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
+                    },{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label.name"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    },{
+                        name: 'subflowId',
+                        label: get_cbuilder_msg("pbuilder.label.subProcessId"),
+                        type: 'textfield',
+                        required: 'True'
+                    },{
+                        name: 'execution',
+                        label: get_cbuilder_msg("pbuilder.label.execution"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'SYNCHR',
+                            label: get_cbuilder_msg("pbuilder.label.synchronous")
+                        },{
+                            value: 'ASYNCHR',
+                            label: get_cbuilder_msg("pbuilder.label.asynchronous")
+                        }],
+                        value: "SYNCHR"
+                    },{
+                        name: 'actualParameters',
+                        label: get_cbuilder_msg("pbuilder.label.parameters"),
+                        type: 'grid',
+                        columns: [{
+                            key: 'actualParameter',
+                            label: get_cbuilder_msg("pbuilder.label.actualParameter")
+                        }]
+                    }]
+                },{
+                    title: get_cbuilder_msg("pbuilder.label.deadlines"),
+                    helplink : get_cbuilder_msg("pbuilder.label.deadlines.helplink"),
+                    properties: [{
+                        name: 'deadlines',
+                        label: get_cbuilder_msg("pbuilder.label.deadlines"),
+                        type: 'grid',
+                        columns: [{
+                            key: 'execution',
+                            label: get_cbuilder_msg("pbuilder.label.execution"),
+                            options: [{
+                                value: 'ASYNCHR',
+                                label: get_cbuilder_msg("pbuilder.label.asynchronous")
+                            },{
+                                value: 'SYNCHR',
+                                label: get_cbuilder_msg("pbuilder.label.synchronous")
+                            }]
+                        },{
+                            key: 'durationUnit',
+                            label: get_cbuilder_msg("pbuilder.label.durationUnit"),
+                            options: [{
+                                value: 'D',
+                                label: get_cbuilder_msg("pbuilder.label.day")
+                            },{
+                                value: 'h',
+                                label: get_cbuilder_msg("pbuilder.label.hour")
+                            },{
+                                value: 'm',
+                                label: get_cbuilder_msg("pbuilder.label.minute")
+                            },{
+                                value: 's',
+                                label: get_cbuilder_msg("pbuilder.label.second")
+                            },{
+                                value: 'd',
+                                label: get_cbuilder_msg("pbuilder.label.dateFormat")
+                            },{
+                                value: 't',
+                                label: get_cbuilder_msg("pbuilder.label.dateTimeFormat")
+                            }]
+                        },{
+                            key: 'deadlineLimit',
+                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit")
+                        },{
+                            key: 'exceptionName',
+                            label: get_cbuilder_msg("pbuilder.label.exceptionName")
+                        }]
+                    }]
+                }];
+                if (elementObj.properties.join !== "") {
+                    options[0].properties.push({
+                        name: 'join',
+                        label: get_cbuilder_msg("pbuilder.label.joinType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                if (elementObj.properties.split !== "") {
+                    options[0].properties.push({
+                        name: 'split',
+                        label: get_cbuilder_msg("pbuilder.label.splitType"),
+                        type: "selectbox",
+                        options: [{
+                            value: 'AND',
+                            label: get_cbuilder_msg("pbuilder.label.and")
+                        },{
+                            value: 'XOR',
+                            label: get_cbuilder_msg("pbuilder.label.xor")
+                        }]
+                    });
+                }
+                return options;
+            }
+        }});
+    
+        //Start
+        CustomBuilder.initPaletteElement("", "start", get_cbuilder_msg('pbuilder.label.start'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect fill="#90ee90" height="42" rx="25" width="42" x="0" y="0" stroke-width="0.5" stroke="#333333" transform="translate(3.5 3.5)"/></svg>', [] , "", true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node start"></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'supportProperties' : false,
+            'absolutePosition' : true,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderActivity,
+            'dragging' : ProcessBuilder.dragActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'nodeDetailContainerColorNumber' : function() {
+                return 7;
+            },
+            'getStylePropertiesDefinition' : ProcessBuilder.getStartDef
+        }});
+    
+        //End
+        CustomBuilder.initPaletteElement("", "end", get_cbuilder_msg('pbuilder.label.end'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect fill="#fefefe" height="42" rx="25" width="42" x="0" y="0" stroke-width="0.5" stroke="#ff4500" transform="translate(3.5 3.5)"/><rect height="34" rx="25" width="34" x="0" y="0" stroke-width="0.5" stroke="#ff4500" fill="#ff4500" transform="translate(7.5 7.5)"/></svg>', [] , "", true, "", {builderTemplate: {
+            'dragHtml' : '<div class="node end"></div>',
+            'draggable' : true,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : true,
+            'navigable' : false,
+            'supportProperties' : false,
+            'absolutePosition' : true,
+            'supportProperties' : false,            
+            'supportStyle' : false,
+            'parentContainerAttr' : 'activities',
+            'parentDataHolder' : 'activities',
+            'render' : ProcessBuilder.renderActivity,
+            'dragging' : ProcessBuilder.dragActivity,
+            'unload' : ProcessBuilder.unloadActivity,
+            'nodeDetailContainerColorNumber' : function() {
+                return 8;
+            }
+        }});
+    
+        //Transition
+        CustomBuilder.initPaletteElement("", "transition", get_cbuilder_msg('pbuilder.label.transition'), '<i class="las la-arrow-right"></i>', 
+            [{
+                title: get_cbuilder_msg("pbuilder.label.transitionProperties"),
+                helplink : get_cbuilder_msg("pbuilder.label.transitionProperties.helplink"),
+                properties: [{
+                    name: 'label',
+                    label: get_cbuilder_msg("pbuilder.label.name"),
+                    type: 'textfield',
+                    required: 'False',
+                    value: get_cbuilder_msg("pbuilder.label.transition")
+                },{
+                    name: 'style',
+                    label: get_cbuilder_msg("pbuilder.label.style"),
+                    type: 'radio',
+                    options: [{
+                        value: 'straight',
+                        label: get_cbuilder_msg("pbuilder.label.straight")
+                    },{
+                        value: 'orthogonal',
+                        label: get_cbuilder_msg("pbuilder.label.orthogonal")
+                    }],
+                    value: 'straight'
+                },{
+                    name: 'type',
+                    label: get_cbuilder_msg("cbuilder.type"),
+                    type: 'selectbox',
+                    options: [{
+                        value: '',
+                        label: get_cbuilder_msg("pbuilder.label.normal")
+                    },{
+                        value: 'CONDITION',
+                        label: get_cbuilder_msg("pbuilder.label.condition")
+                    },{
+                        value: 'OTHERWISE',
+                        label: get_cbuilder_msg("pbuilder.label.otherwise")
+                    },{
+                        value: 'EXCEPTION',
+                        label: get_cbuilder_msg("pbuilder.label.exception")
+                    }],
+                    value: ''
+                },{
+                    name: 'conditionHelper',
+                    label: get_cbuilder_msg("pbuilder.label.conditionHelper"),
+                    type: 'selectbox',
+                    options: [{
+                        value: '',
+                        label: get_cbuilder_msg("pbuilder.label.no")
+                    },{
+                        value: 'yes',
+                        label: get_cbuilder_msg("pbuilder.label.yes")
+                    }],
+                    value: (this.condition && this.condition !== '') ? '' : 'yes',
+                    control_field: 'type',
+                    control_value: 'CONDITION',
+                    control_use_regex: 'false'
+                },{
+                    name: 'conditions',
+                    label: get_cbuilder_msg("pbuilder.label.conditions"),
+                    type: 'grid',
+                    columns : [{
+                        key : 'join',
+                        label : get_cbuilder_msg("pbuilder.label.join"),
+                        options : [{
+                            value : '&&',
+                            label : get_cbuilder_msg("pbuilder.label.and")
+                        },
+                        {
+                            value : '||',
+                            label : get_cbuilder_msg("pbuilder.label.or")
+                        }]
+                    },
+                    {
+                        key : 'variable',
+                        label : get_cbuilder_msg("pbuilder.label.variable"),
+                        options_callback : "ProcessBuilder.Util.getVariableOptions"
+                    },
+                    {
+                        key : 'operator',
+                        label : get_cbuilder_msg("pbuilder.label.operation"),
+                        options : [{
+                            value : '===',
+                            label : get_cbuilder_msg("pbuilder.label.equalTo")
+                        },
+                        {
+                            value : '!==',
+                            label : get_cbuilder_msg("pbuilder.label.notEqualTo")
+                        },
+                        {
+                            value : '>',
+                            label : get_cbuilder_msg("pbuilder.label.greaterThan")
+                        },
+                        {
+                            value : '>=',
+                            label : get_cbuilder_msg("pbuilder.label.greaterThanOrEqualTo")
+                        },
+                        {
+                            value : '<',
+                            label : get_cbuilder_msg("pbuilder.label.lessThan")
+                        },
+                        {
+                            value : '<=',
+                            label : get_cbuilder_msg("pbuilder.label.lessThanOrEqualTo")
+                        },
+                        {
+                            value : '=== \'true\'',
+                            label : get_cbuilder_msg("pbuilder.label.isTrue")
+                        },
+                        {
+                            value : '=== \'false\'',
+                            label : get_cbuilder_msg("pbuilder.label.isFalse")
+                        },
+                        {
+                            value : '(',
+                            label : get_cbuilder_msg("pbuilder.label.openParenthesis")
+                        },
+                        {
+                            value : ')',
+                            label : get_cbuilder_msg("pbuilder.label.closeParenthesis")
+                        }]
+                    },
+                    {
+                        key : 'value',
+                        label : get_cbuilder_msg("pbuilder.label.value")
+                    }],
+                    required: 'True',
+                    js_validation: "ProcessBuilder.validateConditions", 
+                    control_field: 'conditionHelper',
+                    control_value: 'yes',
+                    control_use_regex: 'false',
+                    value: ''
+                },{
+                    name: 'condition',
+                    label: get_cbuilder_msg("pbuilder.label.condition"),
+                    type: 'textarea',
+                    required: 'True',
+                    js_validation: "ProcessBuilder.validateConditions",
+                    control_field: 'conditionHelper',
+                    control_value: '',
+                    control_use_regex: 'false',
+                    value: ''
+                },{
+                    name: 'exceptionName',
+                    label: get_cbuilder_msg("pbuilder.label.exceptionName"),
+                    type: 'textfield',
+                    required: 'True',
+                    control_field: 'type',
+                    control_value: 'EXCEPTION',
+                    control_use_regex: 'false',
+                    value: ''
+                }]
+            }]
+        , "", false, "", {builderTemplate: {
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : false,
+            'navigable' : false,
+            'supportProperties' : true,
+            'supportStyle' : false,
+            'parentDataHolder' : 'transitions',
+            'render' : ProcessBuilder.renderTransition,
+            'customTreeMenu' : ProcessBuilder.renderTransitionTreeMenu,
+            'nodeDetailContainerColorNumber' : function() {
+                return 9;
+            }
+        }});
+    },
+    
+    /*
+     * Render the process
+     */
+    renderProcess : function(element, elementObj, component, callback) {
+        var self = CustomBuilder.Builder;
+        
+        if (element.hasClass("process")) {
+            var id = element.attr("id");
+            
+            $('#process-selector select [value="'+id+'"]').text(elementObj.properties.label);
+            if (id !== elementObj.properties.id) {
+                $('#process-selector select [value="'+id+'"]').attr("value", elementObj.properties.id);
+                $('#process-selector select').val(elementObj.properties.id);
+                $('#process-selector select').trigger("chosen:updated");
+                element.attr("id", elementObj.properties.id);
+                
+                $(window).off('hashchange');
+                window.location.hash = elementObj.properties.id;
+                setTimeout(function(){
+                    $(window).on('hashchange', ProcessBuilder.viewProcess);
+                }, 10);
+            } 
+            $('#process-selector select').trigger("chosen:updated");
+            callback(element);
+        } else {
+            ProcessBuilder.jsPlumb.unbind();
+            ProcessBuilder.jsPlumb.detachEveryConnection();
+            ProcessBuilder.jsPlumb.reset();
+            ProcessBuilder.initJsPlumb();
+
+            element.addClass("process");
+            element.attr("id", elementObj.properties.id);
+            element.html("");
+            element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
+
+            if (ProcessBuilder.jsPlumb.setContainer) { // for jsPlumb 1.6.2 onwards
+                ProcessBuilder.jsPlumb.setContainer(element);
+            }
+
+            var deferreds = [];
+            var dummy = $.Deferred();
+            deferreds.push(dummy);
+
+            //render participants
+            for (var i in elementObj.participants) {
+                var childComponent = self.parseDataToComponent(elementObj.participants[i]);
+                var temp = $('<div></div>');
+                $(element).append(temp);
+                self.renderElement(elementObj.participants[i], temp, childComponent, false, deferreds);
+            }
+
+            dummy.resolve();
+
+            $.when.apply($, deferreds).then(function() {
+                //render transitions
+                for (var i in elementObj.transitions) {
+                    var childComponent = self.parseDataToComponent(elementObj.transitions[i]);
+                    var temp = $('<div></div>');
+                    $(element).append(temp);
+                    self.renderElement(elementObj.transitions[i], temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
+                }
+                callback(element);
+            });
+        }
+    },
+    
+    //Render the participant
+    renderParticipant : function(element, elementObj, component, callback) {
+        element.html('<div class="participant_inner"><div class="participant_handle"><div class="participant_label">'+elementObj.properties.label+'</div></div><div class="activities-container" data-cbuilder-activities></div></div>');
+        element.addClass("participant");
+        element.attr("id", elementObj.properties.id);
+        
+        callback(element);
+    },
+    
+    //Render activity, tool, subflow, route, start & end
+    renderActivity : function(element, elementObj, component, callback) {
+        if (elementObj.className !== "end") {
+            element.html('<div class="endleft endpoint"></div><div class="endtop endpoint"></div><div class="endright endpoint"></div><div class="endbottom endpoint"></div>');
+        }
+        var label = "";
+        
+        if (elementObj.properties.label !== undefined) {
+            label += elementObj.properties.label;
+        }
+        
+        if (elementObj.className === "route") {
+            if (elementObj.properties.join === 'AND' || elementObj.properties.split === 'AND') {
+                label += "<div class='node_route_icon'>+</div>";
+            }
+        }
+        
+        if (label !== "") {
+            element.append('<div class="node_label">'+label+'</div>');
+        }
+        
+        if (elementObj.properties.limit !== undefined && elementObj.properties.limit !== null && elementObj.properties.limit !== "") {
+            element.append("<div class='node_limit'>" + elementObj.properties.limit + ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase() + "</div>");
+        }
+        
+        element.addClass("node " + elementObj.className);
+        element.attr("id", elementObj.properties.id);
+        
+        if (elementObj.className !== "end") {
+            ProcessBuilder.jsPlumb.makeSource($(element), {
+                filter: ".endpoint",
+                anchor: "Continuous",
+                connectorOverlays: [
+                    ["Label", {
+                        label: "",
+                        cssClass: "transition_label"
+                    }]
+                ],
+                endpoint: ["Dot", {radius: 4, hoverClass: 'endpoint_hover'}],
+                paintStyle: {fillStyle: "#EBEBEB"},
+                isSource: true,
+                isTarget: true,
+                maxConnections: 20,
+                onMaxConnections: function(info, e) {
+                    alert(get_cbuilder_msg("pbuilder.label.maximumConnectionsReached") + ": " + info.maxConnections);
+                },
+                dragOptions: {
+                    start: function() {
+                    }
+                }
+            });
+        }
+        if (elementObj.className !== "start") {
+            ProcessBuilder.jsPlumb.makeTarget($(element), {
+                dropOptions: {
+                    hoverClass: "activity_hover"
+                },
+                anchor: "Continuous",
+                endpoint: ["Dot", {radius: 4, hoverClass: 'endpoint_hover'}],
+                isSource: true,
+                isTarget: true,
+                paintStyle: {fillStyle: "#EBEBEB"}
+            });
+        }
+        
+        callback(element);
+    },
+    
+    //Render transition
+    renderTransition : function(element, elementObj, component, callback) {
+        var self = CustomBuilder.Builder;
+        
+        var label = elementObj.properties.label;
+        var color = "#999";
+        if (elementObj.properties.type === 'CONDITION') {
+            if (label !== "") {
+                label += "<br/>";
+            }
+            label += (elementObj.properties.condition) ? elementObj.properties.condition : "";
+            color = "#80A2DB";
+        } else if (elementObj.properties.type === 'OTHERWISE') {
+            if (label !== "") {
+                label += "<br/>";
+            }
+            label += "[otherwise]";
+            color = "#D19D00";
+        } else if (elementObj.properties.type === 'EXCEPTION') {
+            if (label !== "") {
+                label += "<br/>";
+            }
+            label += "[exception] " + (elementObj.properties.exceptionName) ? elementObj.properties.exceptionName : "";
+            color = "#E37F96";
+        } else if (elementObj.properties.type === 'DEFAULTEXCEPTION') {
+            if (label !== "") {
+                label += "<br/>";
+            }
+            label += "[defaultexception]";
+            color = "#E37F96";
+        } else if (elementObj.properties.type === 'startend') {
+            color = "#000";
+        }
+        
+        var transitionId = elementObj.properties.id;
+        if (label === undefined) {
+            label = "";
+        }
+        
+        var connector = (elementObj.properties.style === 'orthogonal') ?
+                ["Flowchart", {cornerRadius: 5, gap: 0}] :
+                ["StateMachine", {curviness:0.1}];
+        
+        if (!$(element).is('div')) {
+            var connection = elementObj.connection;
+            
+            connection.setPaintStyle({strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'});
+            connection.setConnector(connector);
+            connection.removeOverlay(transitionId+"-label");
+            connection.addOverlay([ 
+                "Arrow", {
+                    location: 0.99,
+                    id: "arrow",
+                    length: 10,
+                    width: 10,
+                    foldback: 0.8
+                }
+            ]); 
+            connection.addOverlay([ 
+                "Label", {
+                    label: label, cssClass: "transition_label", id : transitionId+"-label"
+                }
+            ]); 
+            $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
+            
+            element = $(connection.canvas);
+        } else {
+            var connection = ProcessBuilder.jsPlumb.connect({
+                source: self.frameBody.find("#" + elementObj.properties.from),
+                target: self.frameBody.find("#" + elementObj.properties.to),
+                connector: connector,
+                paintStyle: {strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
+                endpointStyle:{ fillStyle: "#EBEBEB" },
+                overlays: [
+                    ["Label", {label: label, cssClass: "transition_label", id : transitionId+"-label"}]
+                ]
+            });
+
+            element.remove();
+            element = $(connection.canvas);
+            $(connection.canvas).addClass("transition").attr("id", transitionId).attr("data-cbuilder-ignore-dragging", "");
+
+            if (elementObj.properties.type === 'startend') {
+                $(connection.canvas).attr("data-cbuilder-uneditable", "");
+            }
+
+            //add group select
+            for (var e in connection.endpoints) {
+                $(connection.endpoints[e].canvas).attr("data-cbuilder-group", transitionId).attr("data-cbuilder-ignore-dragging", "");
+            }
+
+            $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
+            
+            elementObj.connection = connection;
+        }
+        
+        callback(element);
+    },
+    
+    //To redraw the connections when dragging participant
+    dragParticipant : function(dragElement, component) {
+        var self = CustomBuilder.Builder;
+        ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
+        ProcessBuilder.jsPlumb.repaintEverything();
+        return dragElement;
+    },
+    
+    //To redraw the connection when dragging node (activity, tool, subflow, route, start & end)
+    dragActivity : function(dragElement, component) {
+        ProcessBuilder.jsPlumb.repaint(dragElement);
+        return dragElement;
+    },
+    
+    //To remove related transitions when participant deleted
+    unloadParticipant : function(element, elementObj, component) {
+        $(element).find(".node").each(function(){
+            ProcessBuilder.removeNode($(this));
+        });
+    },
+    
+    //To remove related transitions when node (activity, tool, subflow, route, start & end) deleted
+    unloadActivity : function(element, elementObj, component) {
+        ProcessBuilder.removeNode($(element));
+    },
+    
+    //Handling for node deleted
+    removeNode : function (node) {
+        var data = $(node).data("data");
+        if (data.xpdlObj !== undefined) {
+            //get process xpdl obj
+            var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
+            if (data.className !== "start" && data.className !== "end") {
+                var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+            
+                var index = $.inArray(data.xpdlObj, xpdlActivities);
+                if (index !== -1) {
+                    xpdlActivities.splice(index, 1);
+                }
+                ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
+            } else {
+                var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
+                
+                var index = $.inArray(data.xpdlObj, xpdlProcessesAttrs);
+                if (index !== -1) {
+                    xpdlProcessesAttrs.splice(index, 1);
+                }
+                ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
+            }
+            if (data.mapping !== undefined) {
+                delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + data.properties.id];
+            }
+            if (data.formMapping !== undefined) {
+                delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + data.properties.id];
+            }
+        }
+        
+        var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(node)});
+        for (var c in connSet) {
+            ProcessBuilder.removeConnection(connSet[c]);
+        }
+        
+        connSet = ProcessBuilder.jsPlumb.getConnections({target: $(node)});
+        for (var c in connSet) {
+            ProcessBuilder.removeConnection(connSet[c]);
+        }
+        
+        // remove connections
+        ProcessBuilder.jsPlumb.detachAllConnections($(node));
+        // remove element
+        ProcessBuilder.jsPlumb.remove($(node));
+    },
+    
+    //Handling for a connection event triggered 
+    addConnection : function(connection) {
+        var self = CustomBuilder.Builder;
+        
+        if (self.frameBody.find(".process").data("data") !== undefined) {
+            var source = connection.source;
+            var target = connection.target;
+
+            // update split & join
+            var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(source)});
+            var sourceData = $(source).data("data");
+            if (sourceConnSet.length > 1) {
+                if (sourceData.properties.split === "") {
+                    sourceData.properties.split = "XOR";
+                }
+            } else {
+                sourceData.properties.split = "";
+            }
+            var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(target)});
+            var targetData = $(target).data("data");
+            if (targetConnSet.length > 1) {
+                if (targetData.properties.join === "") {
+                    targetData.properties.join = "XOR";
+                }
+            } else {
+                targetData.properties.join = "";
+            }
+
+            var data = $(connection.canvas).data("data");
+            if (data === undefined) {
+                // new connection
+                var parentDataArray = self.frameBody.find(".process").data("data")['transitions'];
+                data = {
+                    className :'transition',
+                    properties : {
+                        name : "",
+                        type : "",
+                        style : "straight"
+                    }
+                };
+
+                self.updateElementId(data);
+                parentDataArray.push(data);
+
+                $(connection.canvas).addClass("transition").attr("id", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
+
+                //add group select
+                for (var e in connection.endpoints) {
+                    $(connection.endpoints[e].canvas).attr("data-cbuilder-group", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
+                }
+                
+                if (connection._jsPlumb.overlays[1] !==undefined) {
+                    $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
+                }
+
+                $(connection.canvas).attr("data-cbuilder-classname", 'transition');
+                $(connection.canvas).attr("data-cbuilder-id", data.properties.id);
+                $(connection.canvas).data("data", data);
+                
+                data.connection = connection;
+            }
+
+            data.properties.from = sourceData.properties.id;
+            data.properties.to = targetData.properties.id;
+
+            if (sourceData.className === "start" || targetData.className === "end") {
+                data.properties.type = "startend";
+                $(connection.canvas).attr("data-cbuilder-uneditable", "");
+
+                connection.setPaintStyle({
+                    strokeStyle: "#000", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'
+                });   
+            } else {
+                if (data.properties.type === "startend") {
+                    data.properties.type = "";
+                    $(connection.canvas).removeAttr("data-cbuilder-uneditable", "");
+
+                    connection.setPaintStyle({
+                        strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'
+                    }); 
+                }
+            }
+            
+            // remove unused endpoints
+            var endpoints = ProcessBuilder.jsPlumb.getEndpoints($(source));
+            if (endpoints.length > 0) {
+                for (var i=0; i<endpoints.length; i++) {
+                    if (endpoints[i].connections.length === 0) {
+                        ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                    }
+                }
+            }
+
+            CustomBuilder.update();
+            self._updateBoxes();
+        }
+    },
+    
+    //Handling for a remove connection event triggered 
+    removeConnection : function(connection) {
+        var self = CustomBuilder.Builder;
+        var parentDataArray = self.frameBody.find(".process").data("data")['transitions'];
+        
+        var data = $(connection.canvas).data("data");
+        
+        if (data.xpdlObj !== undefined) {
+            //get process xpdl obj
+            var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
+            var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+
+            var index = $.inArray(data.xpdlObj, xpdlTransitions);
+            if (index !== -1) {
+                xpdlTransitions.splice(index, 1);
+            }
+            ProcessBuilder.setArray(xpdlProcess, 'Transitions', 'Transition', xpdlTransitions);
+        }
+        
+        var index = $.inArray(data, parentDataArray);
+        if (index !== -1) {
+            parentDataArray.splice(index, 1);
+        }
+        
+        var source = connection.source;
+        var target = connection.target;
+        
+        // update split & join
+        var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(source)});
+        var sourceData = $(source).data("data");
+        if (sourceConnSet.length > 1) {
+            if (sourceData.properties.split === "") {
+                sourceData.properties.split = "XOR";
+            }
+        } else {
+            sourceData.properties.split = "";
+        }
+        var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(target)});
+        var targetData = $(target).data("data");
+        if (targetConnSet.length > 1) {
+            if (targetData.properties.join === "") {
+                targetData.properties.join = "XOR";
+            }
+        } else {
+            targetData.properties.join = "";
+        }
+        
+        CustomBuilder.update();
+        self._updateBoxes();
+    },
+      
+    /*
+     * Show a dialog to choose to add connection node
+     */                
+    showConnectionDialog : function(connection){
+        var self = CustomBuilder.Builder;
+        var source = $(connection.source);
+        var target = $(connection.target);
+        var viewportTop = self.frameDoc.scrollTop();
+        var viewportLeft = self.frameDoc.scrollLeft();
+        
+        self.frameBody.find("#node_dialog").remove();
+        
+        var box = target.offset();
+        
+        var offsetLeft = box.left + viewportLeft;
+        var offsetTop = box.top + viewportTop;
+        
+        var swimlane;
+        // determine swimlane
+        self.frameBody.find(".participant").each(function(index, participant) {
+            var participantTop = $(participant).offset().top + viewportTop; 
+            var participantHeight = $(participant).outerHeight() * self.zoom;
+            if (offsetTop >= participantTop && offsetTop <= (participantTop + participantHeight)) {
+                target = participant;
+                swimlane = target;
+                return false;
+            }
+        });
+        if (!swimlane) {
+            return false;
+        }
+        
+        // display dialog to choose node type
+        var $nodeDialog = $('<div id="node_dialog"><ul><li type="activity">' + get_cbuilder_msg("pbuilder.label.activity") + '</li><li type="tool">' + get_cbuilder_msg("pbuilder.label.tool") + '</li><li type="route">' + get_cbuilder_msg("pbuilder.label.route") + '</li><li type="subflow">' + get_cbuilder_msg("pbuilder.label.subflow") + '</li><li type="end">' + get_cbuilder_msg("pbuilder.label.end") + '</li><ul></div>');
+        $nodeDialog.dialog({
+            autoOpen: true,
+            modal: true,
+            width: 100,
+            open: function(event, ui) {
+                var iframeOffset = $("#iframe-wrapper").offset();
+                var dialogTop = box.top - self.frameDoc.scrollTop() + iframeOffset.top - 85;
+                var dialogLeft = box.left - self.frameDoc.scrollLeft() + iframeOffset.left - 50;
+                $nodeDialog.parent().css("left", dialogLeft + "px");
+                $nodeDialog.parent().css("top", dialogTop + "px");
+                $("#node_dialog").parent().find(".ui-dialog-titlebar").remove();
+                $("#node_dialog").parent().css("width", "100px");
+                $("#node_dialog").parent().addClass("node_dialog_container");
+                $('.ui-widget-overlay').off('click');
+                $('.ui-widget-overlay').on('click',function(){
+                    $nodeDialog.dialog("close");
+                });
+            }
+        });
+        if ($(source).hasClass("start") || $(source).hasClass("route")) {
+            $nodeDialog.find("[type=end]").remove();
+        }
+        $("#node_dialog li").on("click", function() {
+            $nodeDialog.dialog("close");
+            var nodeType = $(this).attr("type");
+            
+            self.component = self.getComponent(nodeType);
+            self.dragElement = $('<div></div>');
+            $(swimlane).find('> .activities-container').append(self.dragElement);
+            
+            var containerOffset = $(swimlane).offset();
+            var x_offset = (offsetLeft - (containerOffset.left + viewportLeft)) * self.zoom;
+            var y_offset = (offsetTop - (containerOffset.top + viewportTop)) * self.zoom;
+            
+            self.dragElement.css({
+               "top" : y_offset + "px",
+               "left" : x_offset + "px",
+               "position" : "absolute"
+            });
+            
+            self.addElement(function(){
+                var connection = ProcessBuilder.jsPlumb.connect({
+                    source: self.frameBody.find("#" + $(source).data("data").properties.id),
+                    target: self.frameBody.find("#" + $(self.selectedEl).data("data").properties.id),
+                    connector: ["StateMachine", {curviness:0.1}],
+                    paintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
+                    endpointStyle:{ fillStyle: "#EBEBEB" }
+                });
+
+                ProcessBuilder.addConnection(connection);
+            });
+        });
+    },
+    
+    /*
+     * Move the transition under activity in tree viewer
+     */
+    renderTransitionTreeMenu : function(li, elementObj, component) {
+        var sourceId = elementObj.properties.from;
+        var sourceNodeConatiner = $(li).closest(".tree-container").find("[data-cbuilder-node-id='"+sourceId+"'] > ol");
+        sourceNodeConatiner.append(li);
+    },
+    
+    /*
+     * On canvas changed, adjust the participants Size
+     */
+    adjustParticipantSize : function() {
+        var self = CustomBuilder.Builder;
+        var participantWidth = 0;
+        self.frameBody.find(".participant").each(function(){
+            var $participant = $(this);
+            var bottomOffset = null;
+            var rightOffset = 0;
+            
+            $participant.find(".activities-container").children().each(function (i, e) {
+                var $e = $(e),
+                eBottomOffset = ($e.offset().top / self.zoom) + $e.outerHeight(),
+                eRightOffset = ($e.offset().left / self.zoom) + $e.outerWidth();
+                
+                if (eBottomOffset > bottomOffset) {
+                    bottomOffset = eBottomOffset;
+                }
+                if (eRightOffset > rightOffset) {
+                    rightOffset = eRightOffset;
+                }
+            });
+            // recalculate participant height
+            var childrenHeight = (bottomOffset - ($participant.offset().top / self.zoom)) + 50;
+            $participant.find("> div").css("height", childrenHeight + "px");
+
+            // recalculate participant width
+            var childrenWidth = (rightOffset - ($participant.offset().left / self.zoom)) + 100;
+            if (childrenWidth > participantWidth) {
+                participantWidth = childrenWidth;
+            }
+        });
+        self.frameBody.find(".process").css({"width" : participantWidth + "px", "min-width" : "100%"});
+    },
+    
+    /*
+     * udpate the id & name when element added
+     */
+    updateElementId : function(elementObj) {
+        var self = CustomBuilder.Builder;
+        var className = elementObj.className;
+            
+        if (elementObj.properties.id === undefined || elementObj.properties.id === "" || className === "participant") {
+            var nodeCount = self.frameBody.find("."+className).length - 1;
+            
+            var id;
+            do {
+                id = className + ++nodeCount;
+            } while (self.frameBody.find("#"+id).length > 0);
+
+            if (className === "participant") {
+                id = ProcessBuilder.currentProcessData.properties.id + "_" + id; 
+            }
+
+            elementObj.properties.id = id;
+        } else if (self.frameBody.find("#"+elementObj.properties.id).length > 0) {
+            var nodeCount = self.frameBody.find("#"+elementObj.properties.id).length;
+            var id = elementObj.properties.id;
+            
+            while (self.frameBody.find("#"+id).length > 0) {
+                id = elementObj.properties.id + "_" + ++nodeCount;
+            }
+            elementObj.properties.id = id;
+        }
+        
+        if ((className === "activity" || className === "tool" || className === "subflow" || className === "participant") 
+                && (elementObj.properties.label === undefined || elementObj.properties.label === "")) {
+            var componenet = self.getComponent(className);
+            elementObj.properties.label = componenet.label + " " + nodeCount;
+        }
+        
+        delete elementObj['xpdlObj'];
+    },
+    
+    /*
+     * triggered on canvas changed to update participants size and connection position
+     */
+    refresh : function() {
+        var self = CustomBuilder.Builder;
+        
+        ProcessBuilder.adjustParticipantSize();
+        ProcessBuilder.refreshConnections();
+        setTimeout(function(){
+            self._updateBoxes();
+        }, 10);
+    },
+    
+    /*
+     * recalculate the connection position
+     */
+    refreshConnections() {
+        var self = CustomBuilder.Builder;
+        
+        if (self.frameBody.find(".process").length > 0) {
+            setTimeout(function(){
+                ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
+                ProcessBuilder.jsPlumb.repaintEverything();
+            }, 10);
+        }
+    },
+    
+    /*
+     * Action implementation for zoom minus icon
+     */
+    zoomMinus : function() {
+        var self = CustomBuilder.Builder;
+        self.setZoom("-");
+        ProcessBuilder.jsPlumb.setZoom(self.zoom);
+    },
+    
+    /*
+     * Action implementation for zoom plus icon
+     */
+    zoomPlus : function() {
+        var self = CustomBuilder.Builder;
+        self.setZoom("+");
+        ProcessBuilder.jsPlumb.setZoom(self.zoom);
+    },
+     
+    /*
+     * validate before post to save
+     */                
+    beforeSaveValidation : function() {
+        if (!ProcessBuilder.validate()) {
+            CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.label.designInvalid"), "danger");
+            return false;
+        }
+        return true;
+    },        
+    
+    /*
+     * Validate the whole xpdl
+     */
+    validate : function() {
+        var self = CustomBuilder.Builder;
+        $('#process-selector select option').removeClass("invalidProcess");
+        
+        self.frameBody.find(".invalidNode").removeClass("invalidNode");
+        self.frameBody.find(".invalidNodeMessage").remove();
+        
+        var valid = true;
+        
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            var xpdlProcess = xpdlProcesses[p];
+            var validProcess = true;
+            
+            var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+            var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+            var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
+            
+            var starts = [], ends = [], fromTransition = {}, toTransition = {};
+            for (var a in xpdlProcessesAttrs) {
+                var attr = xpdlProcessesAttrs[a];
+                if (attr['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW" || attr['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW") {
+                    var actId = attr['-Value'].replace(/.*,CONNECTING_ACTIVITY_ID=([^,]+),.*/g, "$1");
+                    if (attr['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW") {
+                        starts.push(actId);
+                    } else {
+                        ends.push(actId);
+                    }
+                }
+            }
+            
+            for (var t in xpdlTransitions) {
+                var transition = xpdlTransitions[t];
+                var from = transition['-From'];
+                var to = transition['-To'];
+                if (fromTransition[from] === undefined) {
+                    fromTransition[from] = [transition];
+                } else {
+                    fromTransition[from].push(transition);
+                }
+                if (toTransition[to] === undefined) {
+                    toTransition[to] = [transition];
+                } else {
+                    toTransition[to].push(transition);
+                }
+            }
+            
+            for (var a in xpdlActivities) {
                 var activityInvalid = false;
                 var deadlineInvalid = false;
-                var act = activities[actId];
-                // validate activity transitions
-                if (!act.joinTransitions || act.joinTransitions.length === 0) {
-                    // no incoming transitions, check for start node
-                    var startId = "start_" + actId;
-                    if (!process.startEndNodes[startId]) {
-                        activityInvalid = true;
-                    }
+                
+                var act = xpdlActivities[a];
+                var aid = act['-Id'];
+                if ((fromTransition[aid] === undefined && $.inArray(aid, ends) === -1)
+                        || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
+                    activityInvalid = true;
                 }
-                if (!act.splitTransitions || act.splitTransitions.length === 0) {
-                    // no outgoing transitions, check for start node
-                    var endId = "end_" + actId;
-                    if (!process.startEndNodes[endId]) {
-                        activityInvalid = true;
-                    }
-                }
-                if (act.deadlines && act.deadlines.length > 0) {
-                    if (!act.splitTransitions || act.splitTransitions.length === 0) {
+                
+                var xpdlDeadlines = ProcessBuilder.getArray(act['Deadline']);
+                if (xpdlDeadlines.length > 0) {
+                    if (fromTransition[aid] === undefined) {
                         deadlineInvalid = true;
                     } else {
-
-                        for (var d in act.deadlines) {
-                            var deadline = act.deadlines[d];
-                            var name = deadline.exceptionName;
-                            var found = false;
-
-                            for (var t=0; t<transitions.length; t++) {
-                                var pt = transitions[t];
-                                if ($.inArray(pt.id, act.splitTransitions) > -1 && pt.type === 'EXCEPTION' && pt.exceptionName === name) {
-                                    found = true;
-                                    break;
-                                }
+                        var exceptionNames = [];
+                        for (var t in fromTransition[aid]) {
+                            var transition = fromTransition[aid][t];
+                            if (transition['Condition'] !== undefined && transition['Condition']['-Type'] === "EXCEPTION") {
+                                exceptionNames.push(transition['Condition']['#text']);
                             }
-
-                            if (!found) {
+                        }
+                        for (var d in xpdlDeadlines) {
+                            if ($.inArray(xpdlDeadlines[d]['ExceptionName'], exceptionNames) === -1) {
                                 deadlineInvalid = true;
                                 break;
                             }
                         }
                     }
                 }
+                
                 if (activityInvalid || deadlineInvalid) {
-                    // only hilite in current process in canvas
-                    if (ProcessBuilder.Designer.currentProcessDefId === processId) {
-                        var $node = $("#canvas").find("#node_" + act.id);
+                    // only show in current process in canvas
+                    if (ProcessBuilder.currentProcessData.properties.id === xpdlProcess['-Id']) {
+                        var $node = self.frameBody.find("#"+ aid);
                         $node.addClass("invalidNode");
-                        var messageTransition = get_pbuilder_msg("pbuilder.label.missingTransition");
-                        var messageDeadline = get_pbuilder_msg("pbuilder.label.unhandleDeadline");
+                        var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
+                        var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
                         var message = "";
                         if (activityInvalid) {
                             message += '<p>' + messageTransition +'</p>';
@@ -4128,24 +3115,78 @@ ProcessBuilder.Designer = {
                         var $nodeMessage = $('<div class="invalidNodeMessage">' + message +'</div>');
                         $node.append($nodeMessage);
                     }
-                    processInvalid = true;
-                    designInvalid = true;
+                    validProcess = false;
                 }
             }
-//            var startEndNodes = process.startEndNodes;
-//            for (var startendId in startEndNodes) {
-//                var startend = startEndNodes[startendId];
-//                if (startend.performer === performer.id) {
-//                    delete process.startEndNodes[startendId];
-//                }
-//            }
-            if (processInvalid) {
-               var $processLink = $("#subheader_list").find("[value=" + processId+"]");
-               $processLink.addClass("invalidProcess");
+            
+            if (starts.length === 0 || starts.length > 1 || ends.length === 0) {
+                validProcess = false;
+            }
+            
+            if (!validProcess) {
+                valid = false;
+                $('#process-selector select option[value="'+xpdlProcess['-Id']+'"]').addClass("invalidProcess");
+            }
+            $('#process-selector select').trigger("chosen:updated");
+        }
+        
+        return valid;
+    },
+    
+    /*
+     * Validation for duplicate id of process
+     */
+    validateProcessDuplicateId : function (name, value) {
+        var self = CustomBuilder.Builder;
+        var data = ProcessBuilder.currentProcessData;
+        
+        //find in the process list which is not a match
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            var process = xpdlProcesses[p];
+            if (process['-Id'] === value && (data.xpdlObj !== process)) {
+                return get_cbuilder_msg("pbuilder.label.duplicateId");
             }
         }
-        return !designInvalid;
+        
+        return null;
     },
+    
+    /*
+     * Validation for duplicate id of participant
+     */
+    validateParticipantDuplicateId : function (name, value) {
+        var self = CustomBuilder.Builder;
+        var data = $(self.selectedEl).data("data");
+        
+        //find in the participant list which is not a match
+        var xpdl = CustomBuilder.data.xpdl['Package'];
+        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        for (var p in xpdlParticipants) {
+            var particpant = xpdlParticipants[p];
+            if (particpant['-Id'] === value && (data.xpdlObj !== particpant)) {
+                return get_cbuilder_msg("pbuilder.label.duplicateId");
+            }
+        }
+        return null;
+    },
+    
+    /*
+     * Validation for duplicate id of activity node
+     */
+    validateDuplicateId : function (name, value) {
+        var self = CustomBuilder.Builder;
+        var found = self.frameBody.find("#"+value);
+        if (found.length > 0 && !(found.length === 1 && found.is(self.selectedEl))) {
+            return get_cbuilder_msg("pbuilder.label.duplicateId");
+        }
+        return null;
+    },
+    
+    /*
+     * Validation for process variables property
+     */
     validateVariables : function (name, values) {
         try {
             var result = true;
@@ -4162,30 +3203,32 @@ ProcessBuilder.Designer = {
             if (result) {
                 return null;
             } else {
-                return get_pbuilder_msg("pbuilder.label.invalidVariable");
+                return get_cbuilder_msg("pbuilder.label.invalidVariable");
             }
         } catch (err) {
-            return get_pbuilder_msg("pbuilder.label.invalidVariable");
+            return get_cbuilder_msg("pbuilder.label.invalidVariable");
         };
         return null;
     },
+    
+    /*
+     * Validation for transition conditions property
+     */
     validateConditions : function (name, value) {
         try {
-            var model = ProcessBuilder.Designer.model;
-            var currentProcessDefId = ProcessBuilder.Designer.currentProcessDefId;
-            var currentProcess = model.processes[currentProcessDefId];
+            var data = ProcessBuilder.currentProcessData;
 
             var executionStatement = "";
 
             //assign number as variable value for checking;
-            for (var df=0; df<currentProcess.dataFields.length; df++) {
-                var dataField = currentProcess.dataFields[df];
+            for (var df=0; df<data.properties.dataFields.length; df++) {
+                var dataField = data.properties.dataFields[df];
 
                 executionStatement += "var " + dataField.variableId + " = \"0\";\n";
             }
 
             if ($.isArray(value)) {
-                executionStatement += ProcessBuilder.Designer.buildConditions(value) + ";";
+                executionStatement += ProcessBuilder.buildConditions(value) + ";";
             } else {
                 executionStatement += value + ";";
             }
@@ -4195,13 +3238,17 @@ ProcessBuilder.Designer = {
             if (result === true || result === false) {
                 return null;
             } else {
-                return get_pbuilder_msg("pbuilder.label.invalidCondition");
+                return get_cbuilder_msg("pbuilder.label.invalidCondition");
             }
         } catch (err) {
-            return get_pbuilder_msg("pbuilder.label.invalidCondition");
+            return get_cbuilder_msg("pbuilder.label.invalidCondition");
         };
         return null;
     },
+    
+    /*
+     * Used to construct condition string from condition helper
+     */
     buildConditions : function (values) {
         var conditions = "";
 
@@ -4232,481 +3279,816 @@ ProcessBuilder.Designer = {
             }
         }
         return conditions;
-    }
-};
-
-/* Mapper settings and functions */
-ProcessBuilder.Mapper = {
-    mappingData : null,
-    timer : null,
-    popupDialog : new PopupDialog("", " "),
-    load : function(processDefId) {
-        if (processDefId === null) {
-            processDefId = $("#subheader_list").val();
-        }
-        if (ProcessBuilder.Mapper.mappingData === null) {
-            ProcessBuilder.ApiClient.loadProcessMapping(function(data){
-                if (processDefId !== $("#subheader_list").val()) {
-                    return;
-                }
-                ProcessBuilder.Mapper.mappingData = eval("["+data+"]")[0];
-                ProcessBuilder.Mapper.init(processDefId);
+    },
+    
+    /*
+     * Get the mapping properties options for process start whitelist
+     */                
+    getProcessStartWhiteListDef : function(elementObj, component) {
+        var def = ProcessBuilder.getParticipantDef(elementObj, component);
+        
+        def[0].properties[0].options.unshift({value : "", label : get_cbuilder_msg("pbuilder.label.type.role")});
+        
+        return def;
+    },
+    
+    /*
+     * Get the mapping properties options for participant
+     */   
+    getParticipantDef : function(elementObj, component) {
+        var def = [
+            {
+                title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                properties: [{
+                    name: 'mapping_type',
+                    label: get_cbuilder_msg("cbuilder.type"),
+                    type : 'selectbox',
+                    options : [
+                        {value : "user", label : get_cbuilder_msg("pbuilder.label.users")},
+                        {value : "group", label : get_cbuilder_msg("pbuilder.label.groups")},
+                        {value : "department", label : get_cbuilder_msg("pbuilder.label.department")},
+                        {value : "hod", label : get_cbuilder_msg("pbuilder.label.hod")},
+                        {value : "performer", label : get_cbuilder_msg("pbuilder.label.performer")},
+                        {value : "workflowVariable", label : get_cbuilder_msg("pbuilder.label.workflowVariable")},
+                        {value : "plugin", label : get_cbuilder_msg("pbuilder.label.plugin")}
+                    ]
+                },{
+                    name : 'mapping_users',
+                    label : get_cbuilder_msg("pbuilder.label.users"),
+                    type : 'multiselect',
+                    required : 'True',
+                    options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getUsers',
+                    control_field: 'mapping_type',
+                    control_value: 'user',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_groups',
+                    label : get_cbuilder_msg("pbuilder.label.groups"),
+                    type : 'multiselect',
+                    required : 'True',
+                    options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.GroupPermission/service?action=getGroups',
+                    control_field: 'mapping_type',
+                    control_value: 'group',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_department',
+                    label : get_cbuilder_msg("pbuilder.label.department"),
+                    type : 'selectbox',
+                    required : 'True',
+                    options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.DepartmentPermission/service?action=getDepts',
+                    control_field: 'mapping_type',
+                    control_value: 'department|hod',
+                    control_use_regex: 'true'
+                },{
+                    name : 'mapping_performer_type',
+                    label : get_cbuilder_msg("pbuilder.label.performerType"),
+                    type : 'selectbox',
+                    required : 'True',
+                    options : [
+                        {value : "requester" , label : get_cbuilder_msg("pbuilder.label.performerType.requester")},
+                        {value : "requesterHod" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterHod")},
+                        {value : "requesterHodIgnoreReportTo" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterHodIgnoreReportTo")},
+                        {value : "requesterSubordinates" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterSubordinates")},
+                        {value : "requesterDepartment" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterDepartment")}
+                    ],
+                    control_field: 'mapping_type',
+                    control_value: 'performer',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_performer_act',
+                    label : get_cbuilder_msg("pbuilder.label.performerActivity"),
+                    type : 'selectbox',
+                    options_callback : "ProcessBuilder.getActivitiesOptions",
+                    control_field: 'mapping_type',
+                    control_value: 'performer',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_workflowVariable',
+                    label : get_cbuilder_msg("pbuilder.label.workflowVariable"),
+                    type : 'selectbox',
+                    required : 'True',
+                    options_callback : "ProcessBuilder.getWorkflowVariablesOptions",
+                    control_field: 'mapping_type',
+                    control_value: 'workflowVariable',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_wv_type',
+                    label : get_cbuilder_msg("pbuilder.label.workflowVariableRepresent"),
+                    type : 'selectbox',
+                    required : 'True',
+                    options : [
+                        {value : "group" , label : get_cbuilder_msg("pbuilder.label.groups")},
+                        {value : "user" , label : get_cbuilder_msg("pbuilder.label.users")},
+                        {value : "department" , label : get_cbuilder_msg("pbuilder.label.department")},
+                        {value : "hod" , label : get_cbuilder_msg("pbuilder.label.hod")}
+                    ],
+                    control_field: 'mapping_type',
+                    control_value: 'workflowVariable',
+                    control_use_regex: 'false'
+                },{
+                    name: 'mapping_plugin',
+                    label: get_cbuilder_msg("pbuilder.label.plugin"),
+                    type : 'elementselect',
+                    required : 'True',
+                    options_callback : function(props, values) {
+                        var options = [{label : '', value : ''}];
+                        var plugins = ProcessBuilder.availableParticipantPlugin;
+                        for(var e in plugins){
+                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        }
+                        return options;
+                    },
+                    url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions',
+                    control_field: 'mapping_type',
+                    control_value: 'plugin',
+                    control_use_regex: 'false'
+                },{
+                    name: 'mapping_role',
+                    label: get_cbuilder_msg("pbuilder.label.type.role"),
+                    type : 'selectbox',
+                    options : [
+                        {value : "" , label : get_cbuilder_msg("pbuilder.label.type.role.everyone")},
+                        {value : "loggedInUser" , label : get_cbuilder_msg("pbuilder.label.loggedInUser")},
+                        {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")}
+                    ],
+                    control_field: 'mapping_type',
+                    control_value: '',
+                    control_use_regex: 'false'
+                }]
+            }
+        ];
+        
+        return def;
+    },
+    
+    /*
+     * Get the mapping properties options for activity node
+     */   
+    getActivityDef : function(elementObj, component) {
+        var def = [
+            {
+                title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                properties: [{
+                    name: 'mapping_type',
+                    label: get_cbuilder_msg("cbuilder.type"),
+                    type : 'selectbox',
+                    options : [
+                        {value : "SINGLE", label : get_cbuilder_msg("pbuilder.label.form")},
+                        {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")},
+                    ]
+                },{
+                    name : 'mapping_formId',
+                    label : get_cbuilder_msg("pbuilder.label.formName"),
+                    type : 'selectbox',
+                    required : 'True',
+                    options_callback : function(props, values) {
+                        var options = [{label : '', value : ''}];
+                        var plugins = ProcessBuilder.availableForms;
+                        for(var e in plugins){
+                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        }
+                        return options;
+                    },
+                    control_field: 'mapping_type',
+                    control_value: 'SINGLE',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_formIFrameStyle',
+                    label : get_cbuilder_msg("pbuilder.label.iframeStyle"),
+                    type : 'codeeditor',
+                    mode : 'css',
+                    control_field: 'mapping_type',
+                    control_value: 'EXTERNAL',
+                    control_use_regex: 'false'
+                },{
+                    name: 'mapping_disableSaveAsDraft',
+                    label: get_cbuilder_msg("pbuilder.label.removeSaveAsDraftButton"),
+                    type : 'checkbox',
+                    options : [
+                        {value : "true", label : ''}
+                    ],
+                    control_field: 'mapping_type',
+                    control_value: 'SINGLE',
+                    control_use_regex: 'false'
+                },{
+                    name: 'mapping_autoContinue',
+                    label: get_cbuilder_msg("pbuilder.label.showNextAssignment"),
+                    type : 'checkbox',
+                    options : [
+                        {value : "true", label : ''}
+                    ]
+                }]
+            }
+        ];
+        
+        if (Object.keys(ProcessBuilder.availableAssignmentFormModifier).length > 0) {
+            def[0].properties.push({
+                name: 'mapping_modifier',
+                label: get_cbuilder_msg("pbuilder.label.moreSettings"),
+                type : 'elementselect',
+                options_callback : function(props, values) {
+                    var options = [{label : '', value : ''}];
+                    var plugins = ProcessBuilder.availableAssignmentFormModifier;
+                    for(var e in plugins){
+                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                    }
+                    return options;
+                },
+                url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
             });
-        } else {
-            ProcessBuilder.Mapper.init(processDefId);
         }
+        
+        return def;
     },
-    init : function(processDefId) {
-        $("#subheader_list_container").find("span.processWhiteList").remove();
-        
-        var wlId= "processStartWhiteList";
-        var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
-        
-        $("#subheader_list_container").append('<span class="processWhiteList"><a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a></span>');
-        $("#subheader_list_container").find(".edit_mapping").data("mapping", wlmapping);
-        
-        $(".node").each(function(){
-            var actId = $(this).attr("id").substring(5);
-            var type = "";
-            var mapping = null;
-            if ($(this).hasClass("activity")) {
-                type = "activity";
-                if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId] !== undefined) {
-                    mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
-                }
-                if (mapping !== null && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
-                    mapping['modifier'] = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
-                }
-            } else if ($(this).hasClass("tool")) {
-                type = "tool";
-                if (ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
-                    mapping = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
-                }
-            } else if ($(this).hasClass("route")) {
-                type = "route";
-                if (ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
-                    mapping = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
-                }
-            }
-            
-            if (type !== "") {
-                var cssClass = "type_"+type;
-                if ((mapping !== null && mapping !== undefined) || type === "activity") {
-                    cssClass += " hasmapping";
-                }
-
-                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="far fa-edit"></i></a>');
-                $(this).find(".edit_mapping").data("mapping", mapping);
-                $(this).removeAttr("title");
-            }
-        });
-        
-        $(".participant").each(function(){
-            var pId = $(this).attr("id").substring(12);
-            var type = "participant";
-            var mapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+pId];
-            var cssClass = "type_"+type;
-            if (mapping !== null && mapping !== undefined) {
-                cssClass += " hasmapping";
-            }
-            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="far fa-edit"></i></a>');
-            $(this).find(".participant_handle .edit_mapping").data("mapping", mapping);
-            $(this).removeAttr("title");
-        });
-        
-        var actId= "runProcess";
-        var type = "start";
-        var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
-
-        var cssClass = "type_"+type;
-        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="far fa-edit"></i></a>');
-        $(".start").find(".edit_mapping").data("mapping", mapping);
-        
-        ProcessBuilder.Mapper.attachEvents();
-        
-        $(".showallcontrol li").off("click");
-        $(".showallcontrol li").on("click", function(){
-            if ($(".tooltipstered").length > 0) {
-                $(".tooltipstered").tooltipster("close");
-            }
-            var selector = "";
-            if ($(this).hasClass("showParticipant")) {
-                selector = ".header_process.tooltipstered, .participant_handle.tooltipstered";
-            } else if ($(this).hasClass("showActivity")) {
-                selector = ".start.tooltipstered, .activity.tooltipstered";
-            } else if ($(this).hasClass("showTool")) {
-                selector = ".tool.tooltipstered";
-            } else if ($(this).hasClass("showRoute")) {
-                selector = ".route.tooltipstered";
-            }
-            if (selector !== "" && $(selector).length > 0) {
-                $(selector).tooltipster("open");
-            }
-        });
+    
+    /*
+     * Get the mapping properties options for tool node
+     */   
+    getToolDef : function(elementObj, component) {
+        return ProcessBuilder.multiToolProps;
     },
-    attachEvents : function() {
-        $(".edit_mapping").each(function(){
-            $(this).parent().addClass("mapping_editable");
-            if ($(this).hasClass("hasmapping")) {
-                ProcessBuilder.Mapper.attachDetail($(this).parent());
+    
+    /*
+     * Get the mapping properties options for route node
+     */   
+    getRouteDef : function(elementObj, component) {
+        var def = [
+            {
+                title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                properties: [{
+                    name: 'mapping_plugin',
+                    label: get_cbuilder_msg("pbuilder.label.plugin"),
+                    type : 'elementselect',
+                    options_callback : function(props, values) {
+                        var options = [{label : '', value : ''}];
+                        var plugins = ProcessBuilder.availableDecisionPlugin;
+                        for(var e in plugins){
+                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        }
+                        return options;
+                    },
+                    url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
+                }]
             }
-        });
-        
-        $("body").off("click", ".mapping_editable");
-        $("body").on("click", ".mapping_editable", function(){
-            var type = $(this).find(".edit_mapping").attr("type");
-            var mapping = $(this).find(".edit_mapping").data("mapping");
-            ProcessBuilder.Mapper.editMapping($(this), type, mapping);
-        });
-        
-        $("body").off("click", ".mapping_detail .clickable")
-        $("body").on("click", ".mapping_detail .clickable", function(){
-            ProcessBuilder.Mapper.toggleCheckbox($(this).closest(".mapping_detail").data("parent"), $(this));
-        });
-        
-        $("body").off("click", ".mapping_detail .remove");
-        $("body").on("click", ".mapping_detail .remove", function(){
-            ProcessBuilder.Mapper.removeMapping($(this).closest(".mapping_detail").data("parent"));
-        });
-        
-        $("body").off("click", ".mapping_detail .remove_single");
-        $("body").on("click", ".mapping_detail .remove_single", function(){
-            ProcessBuilder.Mapper.removeSingleMapping($(this).closest(".mapping_detail").data("parent"), $(this));
-        });
-        
-        $("body").off("click", ".mapping_detail .more_setting");
-        $("body").on("click", ".mapping_detail .more_setting", function(){
-            ProcessBuilder.Mapper.moreSetting($(this).closest(".mapping_detail").data("parent"), $(this));
-        });
+        ];
+        return def;
     },
-    attachDetail : function (node) {
-        var type = $(node).find(".edit_mapping").attr("type");
-        var mapping = $(node).find(".edit_mapping").data("mapping");
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        if (type === "whitelist" && (mapping === undefined || mapping === null)) {
-            mapping = {
-                'typeLabel' : get_pbuilder_msg("pbuilder.label.type.role"),
-                'htmlValue' : get_pbuilder_msg("pbuilder.label.type.role.everyone"),
-                'remove' : false
-            };
-        }
-
-        $(node).find(".mapping_detail_div").remove();
-        if ($(node).hasClass("tooltipstered")) {
-            try {
-                $(node).tooltipster("destroy");
-            } catch (err) {}
-        }
-        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fas fa-trash-alt"></i></a><dl></dl></div></div>');
-        $(node).find(".mapping_detail").data("parent",  $(node));
-
-        if (type === "participant" || type === "whitelist") {
-            ProcessBuilder.Mapper.attachParticipantDetail($(node), mapping);
-        } else if (type === "start" || type === "activity") {
-            ProcessBuilder.Mapper.attachFormDetail($(node), mapping);
-        } else {
-            ProcessBuilder.Mapper.attachPluginDetail($(node), mapping);
-        }
-
-        $(node).attr("data-tooltip-content", "#"+id+"_detail");
-        $(node).tooltipster({
-            contentCloning: false,
-            side : 'right',
-            interactive : true
-        });
-    },
-    attachParticipantDetail : function(node, mapping) {
-        $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.type")+"</dt><dd>"+mapping['typeLabel']+"</dd>");
-        if (mapping !== undefined && mapping['htmlValue']  !== undefined) {
-            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['htmlValue']+"</dd>");
-        } else {
-            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['value']+"</dd>");
-        }
-        if (mapping !== undefined && mapping['remove'] !== undefined && !mapping['remove']) {
-            $(node).find(".mapping_detail .remove").remove();
-            $(node).find(".edit_mapping").removeClass("hasmapping");
-        }
-    },
-    attachFormDetail : function(node, mapping) {
-        if (mapping !== null && mapping !== undefined && mapping['type'] !== "EXTERNAL") {
-            if (mapping['formId'] !== undefined) {
-                var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/form/builder/' + mapping['formId'];
-                $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.formName")+"</dd><dd><a href=\""+url+"\" target=\"_blank\">"+mapping['formName']+"</a></dd>");
-                if ($(node).find(".edit_mapping").attr("type") !== "start") {
-                    var tick = "far fa-square";
-                    if (mapping['disableSaveAsDraft']) {
-                        tick = "far fa-check-square";
+    
+    /*
+     * Get the mapping properties options for start node
+     */   
+    getStartDef : function(elementObj, component) {
+        var def = [
+            {
+                title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                properties: [{
+                    name: 'mapping_type',
+                    label: get_cbuilder_msg("cbuilder.type"),
+                    type : 'selectbox',
+                    options : [
+                        {value : "SINGLE", label : get_cbuilder_msg("pbuilder.label.form")},
+                        {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")},
+                    ]
+                },{
+                    name : 'mapping_formId',
+                    label : get_cbuilder_msg("pbuilder.label.formName"),
+                    type : 'selectbox',
+                    options_callback : function(props, values) {
+                        var options = [{label : '', value : ''}];
+                        var plugins = ProcessBuilder.availableForms;
+                        for(var e in plugins){
+                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        }
+                        return options;
+                    },
+                    control_field: 'mapping_type',
+                    control_value: 'SINGLE',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_formIFrameStyle',
+                    label : get_cbuilder_msg("pbuilder.label.iframeStyle"),
+                    type : 'codeeditor',
+                    mode : 'css',
+                    control_field: 'mapping_type',
+                    control_value: 'EXTERNAL',
+                    control_use_regex: 'false'
+                },{
+                    name: 'mapping_autoContinue',
+                    label: get_cbuilder_msg("pbuilder.label.showNextAssignment"),
+                    type : 'checkbox',
+                    options : [
+                        {value : "true", label : ''}
+                    ]
+                }]
+            }
+        ];
+        
+        if (Object.keys(ProcessBuilder.availableStartProcessFormModifier).length > 0) {
+            def[0].properties.push({
+                name: 'mapping_modifier',
+                label: get_cbuilder_msg("pbuilder.label.moreSettings"),
+                type : 'elementselect',
+                options_callback : function(props, values) {
+                    var options = [{label : '', value : ''}];
+                    var plugins = ProcessBuilder.availableStartProcessFormModifier;
+                    for(var e in plugins){
+                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
                     }
-                    $(node).find(".mapping_detail").append("<p class=\"removesave\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.removeSaveAsDraftButton")+"</p>");
-                }
-            } else {
-                $(node).find(".mapping_detail .remove").remove();
-                $(node).find(".edit_mapping").removeClass("hasmapping");
-            }
-        } else if (mapping !== null && mapping !== undefined && mapping['type'] === "EXTERNAL") {
-            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.externalForm")+"</dt><dd>"+mapping['formUrl']+"</dd>");
-        } else if (mapping === null || mapping !== undefined) {
-            $(node).find(".mapping_detail .remove").remove();
-            $(node).find(".edit_mapping").removeClass("hasmapping");
+                    return options;
+                },
+                url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
+            });
         }
-        var tick = "far fa-square";
-        if (mapping !== null && mapping !== undefined && mapping['autoContinue']) {
-            tick = "far fa-check-square";
-        }
-        $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
-        if (mapping !== null && mapping !== undefined && mapping['type'] !== "EXTERNAL" 
-                && mapping['formId'] !== undefined) {
-            if ($(node).find(".edit_mapping").attr("type") !== "start"
-                && ProcessBuilder.Mapper.mappingData["modifierPluginCount"] > 0) {
-                var id = $(node).find(".edit_mapping").attr("nodeid");
-                var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
-                var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
-                url += "/activityForm/" + escape(id) + "/plugin";
-                var title = $(node).find(".node_label").text();
-
-                if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
-                    if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
-                        $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
-                    }
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
-                } else if ((typeof ProcessBuilder.Mapper.mappingData["modifierPlugin"]) !== "undefined") {
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["modifierPlugin"]);
-                } else {
-                    url += "?activityName=" + encodeURIComponent(title);
-                }
-                $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
-            } else if ($(node).find(".edit_mapping").attr("type") === "start"
-                && ProcessBuilder.Mapper.mappingData["spModifierPluginCount"] > 0) {
-                var id = $(node).find(".edit_mapping").attr("nodeid");
-                var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
-                var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
-                url += "/activityForm/" + escape(id) + "/plugin";
-                var title = $(node).find(".node_label").text();
-
-                if (mapping['modifier'] !== null && (typeof mapping['modifier']) !== "undefined") {
-                    if ((typeof mapping['modifier']['mappingInfo']) !== "undefined") {
-                        $(node).find(".mapping_detail").append(mapping['modifier']['mappingInfo']);
-                    }
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList";
-                } else if ((typeof ProcessBuilder.Mapper.mappingData["spModifierPlugin"]) !== "undefined") {
-                    url += "/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=activityList&pluginname=" + encodeURIComponent(ProcessBuilder.Mapper.mappingData["spModifierPlugin"]);
-                } else {
-                    url += "?activityName=" + encodeURIComponent(title);
-                }
-                $(node).find(".mapping_detail").append("<p class=\"moresetting\"><a class=\"more_setting\" data-url=\""+url+"\">"+get_pbuilder_msg("pbuilder.label.moreSettings")+"</a></p>");
-            }
-        }
+        
+        return def;
     },
-    attachPluginDetail : function(node, mapping) {
-        if (mapping !== undefined) { 
-            var info = "";
-            if ((typeof mapping['mappingInfo']) !== "undefined") {
-                info = "<dt>"+get_pbuilder_msg("pbuilder.label.mappingInfo")+"</dt><dd>"+mapping['mappingInfo']+"</dd>";
+    
+    /*
+     * return a list of available activities options
+     */
+    getActivitiesOptions : function() {
+        var options = [
+            {value : "", label : get_cbuilder_msg("pbuilder.label.previousActivity")}
+        ];
+        
+        for (var i in ProcessBuilder.currentProcessData.participants) {
+            for (var j in ProcessBuilder.currentProcessData.participants[i].activities) {
+                var act = ProcessBuilder.currentProcessData.participants[i].activities[j];
+                if (act.className === "activity") {
+                    options.push({value : act.properties.id, label : act.properties.label});    
+                }
             }
-            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>"+info);
-        }
-    },
-    editMapping : function(node, type, mapping) {
-        if ($(".tooltipstered").length > 0) {
-            $(".tooltipstered").tooltipster("close");
         }
             
-        $(".currentedit").removeClass("currentedit");
-        $(node).find(".edit_mapping").addClass("currentedit");
+        options.push({value : "runProcess", label : get_cbuilder_msg("pbuilder.label.runProcess")});    
         
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
-        var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
-        
-        if (type === "start" || type === "activity") {
-            var title = get_pbuilder_msg("pbuilder.label.runProcess");
-            if (type === "activity") {
-                title = $(node).find(".node_label").text();
-            }
-            url += "/activity/" + escape(id) + "/form?activityName=" + encodeURIComponent(title);
-        } else if (type === "participant" || type === "whitelist") {
-            var title = get_pbuilder_msg("pbuilder.label.processStartWhiteList");
-            if (type !== "whitelist") {
-                title = $(node).find(".participant_label").text();
-            }
-            if (mapping !== undefined && mapping !== null && mapping['type'] === "plugin") {
-                url += "/participant/" + escape(id) + "/pconfigure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=";
-            } else {
-                url += "/participant/" + escape(id) + "?participantName=" + encodeURIComponent(title);
-            }
-        } else {
-            var mode = "activity";
-            if (type !== "tool") {
-                mode = "route";
-            }
-            var title = $(node).find(".node_label").text();
-            if (type !== "tool" && title === "") {
-                title = id;
-            }
-            if (mapping !== undefined && mapping !== null) {
-                url += "/"+mode+"/" + escape(id) + "/plugin/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=";
-            } else {
-                url += "/" + mode + "/" + escape(id) + "/plugin?activityName=" + encodeURIComponent(title);
-            }
-        }
-        
-        ProcessBuilder.Mapper.popupDialog.src = url;
-        ProcessBuilder.Mapper.popupDialog.init();
+        return options;
     },
-    removeMapping : function(node) {
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
-        var type = $(node).find(".edit_mapping").attr("type");
-        var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + processDefId);
+   
+    /*
+     * return a list of available workflow variables options
+     */                
+    getWorkflowVariablesOptions : function() {
+        var options = [];
         
-        if (type === "start" || type === "activity") {
-            url +=  "/activity/" + escape(id) + "/form/remove";
-        } else if (type === "participant" || type === "whitelist") {
-            url +=  "/participant/" + escape(id) + "/remove";
-        } else {
-            url +=  "/activity/" + escape(id) + "/plugin/remove";
+        for (var i in ProcessBuilder.currentProcessData.properties.dataFields) {
+            var id = ProcessBuilder.currentProcessData.properties.dataFields[i].variableId;
+            options.push({value : id, label : id});    
         }
         
-        var reload = {
-            success : function(resp) {
-                $(node).find(".edit_mapping").removeClass("hasmapping");
-                
-                if (type === "start" || type === "activity") {
-                    $(node).tooltipster("close");
-                    $("#"+id+"_detail").find(".remove, dl, .removesave").remove();
-                    $(".tooltipster-content").find("#"+id+"_detail").find(".remove, dl, .removesave").remove();
-                    
-                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formId'];
-                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formLabel'];
-                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formUrl'];
-                } else {
-                    $(node).find('.mapping_detail_div').remove();
-                    $(node).tooltipster("destroy");
-                    $(node).find(".edit_mapping").data("mapping", null);
-                    
-                    if (type === "participant" || type === "whitelist") {
-                        delete ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+id];
+        return options;
+    },
+    
+    /*
+     * Retrive the multi tools properties options for tool mapping
+     */
+    getMultiToolsProps : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        CustomBuilder.cachedAjax({
+            type: "POST",
+            data: {
+                "value": "org.joget.apps.app.lib.MultiTools"
+            },
+            url: CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions',
+            dataType : "json",
+            beforeSend: function (request) {
+                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+            },
+            success: function(response) {
+                if (response !== null && response !== undefined && response !== "") {
+                    try {
+                        var data = eval(response);
+                        
+                        data[0].title = get_cbuilder_msg("pbuilder.label.configureMapping");
+                        
+                        ProcessBuilder.multiToolProps = data;
+                    } catch (err) {}
+                }
+                wait.resolve();        
+            },
+            error: function() {
+                //ignore
+            }
+        });
+    },
+        
+    /*
+     * Retrieve a list of available assignment form modifier
+     */                
+    getAssignmentFormModifier : function (deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.apps.app.model.ProcessFormModifier',
+            function(returnedData){
+                ProcessBuilder.availableAssignmentFormModifier = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },
+    
+    /*
+     * Retrieve a list of available start process form modifier
+     */
+    getStartProcessFormModifier: function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.apps.app.model.StartProcessFormModifier',
+            function(returnedData){
+                ProcessBuilder.availableStartProcessFormModifier = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },  
+         
+    /*
+     * Retrieve a list of available tools
+     */                
+    getTools : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin',
+            function(returnedData){
+                ProcessBuilder.availableTools = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableTools[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },   
+            
+    /*
+     * Retrieve a list of available decision plugin
+     */                
+    getDecisionPlugin : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.workflow.model.DecisionPlugin',
+            function(returnedData){
+                ProcessBuilder.availableDecisionPlugin = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableDecisionPlugin[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },
+      
+    /*
+     * Retrieve a list of available participant plugin
+     */                  
+    getParticipants : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.workflow.model.ParticipantPlugin',
+            function(returnedData){
+                ProcessBuilder.availableParticipantPlugin = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableParticipantPlugin[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },
+    
+    /*
+     * Retrieve a list of available forms
+     */                
+    getForms : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/json/console/app'+CustomBuilder.appPath+'/forms/options',
+            function(returnedData){
+                ProcessBuilder.availableForms = {};
+                for (e in returnedData) {
+                    if (returnedData[e].value !== "") {
+                        ProcessBuilder.availableForms[returnedData[e].value] = returnedData[e].label;
+                    }
+                }
+                wait.resolve();
+            }
+        );
+    },  
+    
+    /*
+     * Prepare and render the list view
+     */
+    listViewerViewInit: function(view) {
+        $("body").addClass("no-left-panel");
+        
+        $(CustomBuilder.Builder.iframe).off("change.builder", ProcessBuilder.renderListViewer);
+        $(CustomBuilder.Builder.iframe).on("change.builder", ProcessBuilder.renderListViewer);
+        
+        ProcessBuilder.renderListViewer();
+    },
+    
+    /*
+     * Reset the builder back to design view
+     */
+    listViewerViewBeforeClosed: function(view) {
+        $("body").removeClass("no-left-panel");
+    },
+    
+    /*
+     * Render or update the list viewer
+     */
+    renderListViewer : function() {
+        var self = CustomBuilder.Builder;
+        var view = $("#listViewerView");
+        
+        if ($(view).find("ul.nav").length === 0) {
+            $(view).find(".builder-view-body").html('<div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div><ul class="nav nav-tabs nav-fill" id="process-list-tabs" role="tablist"></ul><div class="tab-content"></div>');
+        
+            //render participants
+            $(view).find('ul.nav').append('<li id="participants-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-toggle="tab" href="#participants-list-tab" role="tab" aria-controls="participants-list-tab" aria-selected="true"><span>'+get_cbuilder_msg('pbuilder.label.participant')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="participants-list-tab" class="tab-pane fade active show"></div>');
+            
+            //render activities
+            $(view).find('ul.nav').append('<li id="activities-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#activities-list-tab" role="tab" aria-controls="activities-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.activity')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="activities-list-tab" class="tab-pane fade show"></div>');
+            
+            //render tools
+            $(view).find('ul.nav').append('<li id="tools-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#tools-list-tab" role="tab" aria-controls="tools-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.tool')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="tools-list-tab" class="tab-pane fade show"></div>');
+            
+            //render subflow
+            $(view).find('ul.nav').append('<li id="subflows-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#subflows-list-tab" role="tab" aria-controls="subflows-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.subflow')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="subflows-list-tab" class="tab-pane fade show"></div>');
+            
+            //render routes
+            $(view).find('ul.nav').append('<li id="routes-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#routes-list-tab" role="tab" aria-controls="routes-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.route')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="routes-list-tab" class="tab-pane fade show"></div>');
+            
+            //render transitions
+            $(view).find('ul.nav').append('<li id="transitions-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#transitions-list-tab" role="tab" aria-controls="transitions-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.transition')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="transitions-list-tab" class="tab-pane fade show"></div>');
+            
+            $(view).off("click", ".cbuilder-node-details-list");
+            $(view).on("click", ".cbuilder-node-details-list", function(){
+                $(view).find(".cbuilder-node-details-list").removeClass("active");
+                $(this).addClass("active");
+                var id = $(this).attr("data-cbuilder-select");
+                var node = self.frameBody.find("#"+id);
+                self.selectNode(node);
+            });
+            
+            $(view).find('.search-container input').off("keyup");
+            $(view).find('.search-container input').on("keyup", function(){
+                var searchText = $(this).val().toLowerCase();
+                $(view).find(".cbuilder-node-details-list").each(function(){
+                    var match = false;
+                    $(this).find('dd').each(function(){
+                        if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
+                            match = true;
+                        }
+                    });
+                    if (match) {
+                        $(this).show();
                     } else {
-                        delete ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+id];
+                        $(this).hide();
                     }
-                }
-                ProcessBuilder.Mapper.refresh();
-            }
-        };
-       
-        ProcessBuilder.ApiClient.httpPost(url, reload);
-    },
-    moreSetting : function(node, link) {
-        if ($(".tooltipstered").length > 0) {
-            $(".tooltipstered").tooltipster("close");
-        }
-            
-        $(".currentedit").removeClass("currentedit");
-        $(node).find(".edit_mapping").addClass("currentedit");
-        
-        ProcessBuilder.Mapper.popupDialog.src = $(link).data('url');
-        ProcessBuilder.Mapper.popupDialog.init();
-    },
-    removeSingleMapping : function (node, valueRemoveLink) {
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
-        var mapping = $(node).find(".edit_mapping").data("mapping");
-        var value = $(valueRemoveLink).val();
-        
-        var removeItem = {
-            success : function(response) {
-                $(valueRemoveLink).closest(".single_value").remove();
-                ProcessBuilder.Mapper.refresh();
-            }
-        };
-        var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/processes/' + escape(ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + processDefId) + '/participant/' + id + '/remove';
-        ProcessBuilder.ApiClient.httpPost(url, removeItem, 'type='+encodeURIComponent(mapping['type'])+'&value='+encodeURIComponent(value));
-    },
-    toggleCheckbox : function (node, checkbox) {
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
-        
-        var checked = false;
-        if ($(checkbox).hasClass("fa-square")) {
-            checked = true;
-        }
-        
-        var params = "="+checked;
-        var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/processes/' + escape(processDefId) + '/activity/' + id + '/';
-        var key = "";
-        if ($(checkbox).parent().hasClass("removesave")) {
-            params = "disable" + params;
-            url += "draft";
-            key = "disableSaveAsDraft";
-        } else {
-            params = "auto" + params;
-            url += "continue";
-            key = "autoContinue";
-        }
-        
-        var response = {
-            success : function() {
-                if ($(checkbox).hasClass("fa-square")) {
-                    $(checkbox).removeClass("fa-square");
-                    $(checkbox).addClass("fa-check-square");
+                });
+                if (this.value !== "") {
+                    $(this).next("button").show();
                 } else {
-                    $(checkbox).removeClass("fa-check-square");
-                    $(checkbox).addClass("fa-square");
+                    $(this).next("button").hide();
                 }
-                
-                if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id] === undefined) {
-                    ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id] = {
-                        processDefId : processDefId,
-                        activityDefId : id
-                    };
-                }
-                ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id][key] = checked; 
-                ProcessBuilder.Mapper.refresh();
-            }
-        };
+            });
+            
+            $(view).find('.search-container .clear-backspace').off("click");
+            $(view).find('.search-container .clear-backspace').on("click", function(){
+                $(this).hide();
+                $(this).prev("input").val("");
+                $(view).find(".cbuilder-node-details-list").show();
+            });
+        }
         
-        ProcessBuilder.ApiClient.httpPost(url, response, params);
+        var process = ProcessBuilder.currentProcessData;
+        $(view).find('.tab-content > div').html("");
+        
+        var start;
+        
+        for (var p in process.participants) {
+            var par = process.participants[p];
+            ProcessBuilder.renderListViewerDetails($(view), par);
+            
+            for (var act in par.activities) {
+                var activity = par.activities[act];
+                if (activity.className === "end") {
+                    continue;
+                } else if (activity.className !== "start") {
+                    ProcessBuilder.renderListViewerDetails($(view), activity);
+                } else {
+                    start = activity;
+                }
+            }
+        }
+        
+        for (var t in process.transitions) {
+            var transition = process.transitions[t];
+            if (transition.properties.type !== "startend") {
+                ProcessBuilder.renderListViewerDetails($(view), transition);
+            }
+        }
+        
+        if (start !== undefined) {
+            ProcessBuilder.renderListViewerDetails($(view), start);
+        }
     },
-    reload : function () {
-        ProcessBuilder.Mapper.popupDialog.close();
-        var node = $(".edit_mapping.currentedit").parent();
-        var id = $(node).find(".edit_mapping").attr("nodeid");
-        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
-        var type = $(node).find(".edit_mapping").attr("type");
-        ProcessBuilder.ApiClient.reloadNodeMapping(processDefId, type, id, function(data){
-            var key = "activityPlugins";
-            if (type === "participant" || type === "whitelist") {
-                key = "participants";
-            } else if (type === "start" || type === "activity") {
-                key = "activityForms";
-            }
-            
-            var mapping = eval("["+data+"]")[0];
-            
-            if (Object.keys(mapping).length === 0) {
-                delete ProcessBuilder.Mapper.mappingData[key][processDefId+"::"+id];
-                $(node).find(".edit_mapping").data("mapping", null);
-                $(node).find(".edit_mapping").removeClass("hasmapping");
-            } else {
-                ProcessBuilder.Mapper.mappingData[key][processDefId+"::"+id] = mapping;
-                $(node).find(".edit_mapping").data("mapping", mapping);
-                $(node).find(".edit_mapping").addClass("hasmapping");
-            }
-            
-            ProcessBuilder.Mapper.attachDetail($(node));
-            ProcessBuilder.Mapper.refresh();
+    
+    /*
+     * render the detail row in list view
+     */
+    renderListViewerDetails : function(container, obj) {
+        var self = CustomBuilder.Builder;
+        
+        var listName = (obj.className === "start" || obj.className === "activity")?"activitie":obj.className;
+        var list = $(container).find("#"+listName+"s-list-tab");
+        
+        var detailsDiv = $('<div class="cbuilder-node-details"><dl class=\"cbuilder-node-details-list\"></dl></div>');
+        $(list).append(detailsDiv);
+        var dl = detailsDiv.find('dl');
+        dl.attr("data-cbuilder-select", obj.properties.id);
+        
+        var id = obj.properties.id;
+        if (obj.className === "start") {
+            id = "runProcess";
+        }
+        dl.append('<dt><i class="las la-id-badge" title="'+get_cbuilder_msg('cbuilder.id')+'"></i></dt><dd>'+id+'</dd>');
+        
+        if (obj.properties.label !== undefined && obj.properties.label !== "") {
+            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label.name')+'"></i></dt><dd>'+obj.properties.label+'</dd>');
+        }
+        if (obj.className === "start") {
+            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label.name')+'"></i></dt><dd>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</dd>');
+        }
+        
+        var component = self.getComponent(obj.className);
+        ProcessBuilder.renderXray(detailsDiv, detailsDiv, obj, component, function(){
+            $(dl).find('dt i').each(function(){
+                var i = $(this);
+                var title = $(i).attr("title");
+                $(i).after(' <span>'+title+'</span>');
+                $(i).removeAttr("title");
+            });
         });
     },
-    refresh : function() {
-        if (ProcessBuilder.Mapper.timer !== null) {
-            clearTimeout(ProcessBuilder.Mapper.timer);
-        }
-        if (window.opener) {
-            ProcessBuilder.Mapper.timer = setTimeout(function() {
-                if (window.opener) {
-                    window.opener.location.reload(true);
+    
+    /*
+     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * It used to render the info of an element
+     */
+    renderXray: function(detailsDiv, element, elementObj, component , callback) {
+        var dl = detailsDiv.find('dl');
+        
+        if (elementObj.className === "activity" || elementObj.className === "start") {
+            if (elementObj.properties.deadlines !== undefined && elementObj.properties.deadlines.length > 0) {
+                var deadlines = [];
+                for (var d in elementObj.properties.deadlines) {
+                    deadlines.push(elementObj.properties.deadlines[d].exceptionName);
                 }
-            }, 5000); //delay 5 sec
+                $(dl).append('<dt><i class="las la-clock" title="'+get_cbuilder_msg('pbuilder.label.deadlines')+'"></i></dt><dd>'+deadlines.join(', ')+'</dd>');
+            }
+            if (elementObj.properties.limit !== undefined && elementObj.properties.limit !== "") {
+                $(dl).append('<dt><i class="las la-user-clock" title="'+get_cbuilder_msg('pbuilder.label.sla')+'"></i></dt><dd>'+elementObj.properties.limit+ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase()+'</dd>');
+            }
+            if (elementObj.properties.mapping_type === "SINGLE" 
+                    && elementObj.properties.mapping_formId !== undefined && elementObj.properties.mapping_formId !== "") {
+                var label = ProcessBuilder.availableForms[elementObj.properties.mapping_formId];
+                $(dl).append('<dt><i class="las la-file-alt" title="'+get_cbuilder_msg('pbuilder.label.form')+'"></i></dt><dd>'+label+'</dd>');
+            } else if (elementObj.properties.mapping_formUrl !== undefined && elementObj.properties.mapping_formUrl !== "") {
+                $(dl).append('<dt><i class="las la-link" title="'+get_cbuilder_msg('pbuilder.label.url')+'"></i></dt><dd>'+elementObj.properties.mapping_formUrl+'</dd>');
+            }
+            if (elementObj.properties.mapping_modifier !== undefined 
+                    && elementObj.properties.mapping_modifier["className"] !== undefined 
+                    && elementObj.properties.mapping_modifier["className"] !== "") {
+                var label = elementObj.properties.mapping_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_modifier["className"]] !== undefined) {
+                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_modifier["className"]];
+                } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_modifier["className"]] !== undefined) {
+                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_modifier["className"]]
+                }
+                $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.moreSettings')+'"></i></dt><dd>'+label+'</dd>');
+            }
+        } else if (elementObj.className === "tool") {
+            if (elementObj.properties.tools !== undefined 
+                    && elementObj.properties.tools.length > 0) {
+                var toolsLabel = "";
+                var count = 1;
+                for (var t in elementObj.properties.tools) {
+                    var className = elementObj.properties.tools[t]['className'];
+                    if (className !== undefined && className !== "") {
+                        if (toolsLabel !== "") {
+                            toolsLabel += "<br/>";
+                        }
+                        var label = ProcessBuilder.availableTools[className];
+                        if (label === undefined) {
+                            label = className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                        }
+                        toolsLabel += count + ". " +label;
+                        count++;
+                    }
+                }
+                $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+toolsLabel+'</dd>');
+            }
+        } else if (elementObj.className === "route") {
+            if (elementObj.properties.mapping_plugin !== undefined 
+                    && elementObj.properties.mapping_plugin["className"] !== undefined 
+                    && elementObj.properties.mapping_plugin["className"] !== "") {
+                var label = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
+                if (label === undefined) {
+                    label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                }
+                $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+label+'</dd>');
+            }
+        } else if (elementObj.className === "transition") {
+            $(dl).append('<dt><i class="las la-play" title="'+get_cbuilder_msg('pbuilder.label.from')+'"></i></dt><dd>'+elementObj.properties.from+'</dd>');
+            $(dl).append('<dt><i class="las la-stop" title="'+get_cbuilder_msg('pbuilder.label.to')+'"></i></dt><dd>'+elementObj.properties.to+'</dd>');
+            if (elementObj.properties.type !== "") {
+                $(dl).append('<dt><i class="las la-shapes" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+elementObj.properties.type+'</dd>');
+                if (elementObj.properties.type === "CONDITION") {
+                    $(dl).append('<dt><i class="las la-bars" title="'+get_cbuilder_msg('pbuilder.label.condition')+'"></i></dt><dd>'+elementObj.properties.condition+'</dd>');
+                } else if (elementObj.properties.type === "EXCEPTION") {
+                    $(dl).append('<dt><i class="las la-exclamation-circle" title="'+get_cbuilder_msg('pbuilder.label.condition')+'"></i></dt><dd>'+elementObj.properties.exceptionName+'</dd>');
+                }
+            }
+        } else if (elementObj.className === "subflow") {
+            var label = elementObj.properties.subflowId;
+            if ($("#processes_list option[value='"+label+"']").length > 0) {
+                label = $("#processes_list option[value='"+label+"']").text();
+            }
+            $(dl).append('<dt><i class="las la-th-list" title="'+get_cbuilder_msg('pbuilder.label.process')+'"></i></dt><dd>'+label+'</dd>');
+        } else if (elementObj.className === "participant") {
+            var type = elementObj.properties.mapping_type;
+            if (type !== undefined && type !== "") {
+                if (type === "user" || type === "group") {
+                    type += "s";
+                }
+                $(dl).append('<dt><i class="las la-shapes" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+type)+'</dd>');
+
+                if (elementObj.properties.mapping_type === "user") {
+                    $(dl).append('<dt><i class="las la-user" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_users.replace(';', ', ')+'</dd>');
+                } else if (elementObj.properties.mapping_type === "groups") {
+                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_groups.replace(';', ', ')+'</dd>');
+                } else if (elementObj.properties.mapping_type === "department" || elementObj.properties.mapping_type === "hod") {
+                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_department+'</dd>');
+                } else if (elementObj.properties.mapping_type === "performer") {
+                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.performerType.'+elementObj.properties.mapping_performer_type)+'</dd>');
+                    var options = ProcessBuilder.getActivitiesOptions();
+                    var label = elementObj.properties.mapping_performer_act;
+                    for (var o in options) {
+                        if (options[o].value === label) {
+                            label = options[o].label;
+                        }
+                    }
+                    $(dl).append('<dt><i class="las la-check-square" title="'+get_cbuilder_msg('pbuilder.label.activity')+'"></i></dt><dd>'+label+'</dd>');
+                } else if (elementObj.properties.mapping_type === "workflowVariable") {
+                    $(dl).append('<dt><i class="las la-font" title="'+get_cbuilder_msg('pbuilder.label.variable')+'"></i></dt><dd>'+elementObj.properties.mapping_workflowVariable+'</dd>');
+                    var r = elementObj.properties.mapping_wv_type;
+                    if (r === "user" || r === "group") {
+                        r += "s";
+                    }
+                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.represent')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+r)+'</dd>');    
+                } else if (elementObj.properties.mapping_type === "plugin") {
+                    var label = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
+                    if (label === undefined) {
+                        label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                    }
+                    $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+label+'</dd>');
+                }
+            }
         }
+        
+        callback();
     }
 };

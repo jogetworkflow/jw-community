@@ -1536,7 +1536,7 @@ UserviewBuilder = {
         var dl = detailsDiv.find('dl');
         
         if (UserviewBuilder.mode === "userview") {
-            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
+            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
             dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm accessible-btn">'+get_advtool_msg("adv.permission.accessible")+'</button>');
             dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
             dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm deny-btn">'+get_advtool_msg("adv.permission.deny")+'</button>');

@@ -5,13 +5,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><c:out value="${builderLabel}"/> : <c:out value="${builderDef.name}"/></title>
+        <title><c:out value="${builderLabel}"/> <c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if></title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
         
         <link id="favicon" rel="alternate icon" href="${pageContext.request.contextPath}/images/favicon.ico" /> 
-        
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/difflib/diffview.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/advancedTool.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/builder.css?build=<fmt:message key="build.number"/>" />
@@ -28,7 +28,7 @@
                 <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
             </a>
             <div id="top-panel-main">
-                <div id="builderElementName" style="color:${builderColor};"><c:out value="${appDefinition.name}" /> v${appDefinition.version}: <c:out value="${builderDef.name}"/> <c:if test="${appDefinition.published}"><small>(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                <div id="builderElementName" style="color:${builderColor};"><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"><small>(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                 <div id="builderToolbar">
                     <div class="btn-group tool copypaste mr-1" style="display:none;"  role="group">
                         <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
@@ -54,10 +54,10 @@
                         <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
                             <i class="las la-pencil-ruler"></i> <span><fmt:message key="ubuilder.design"/></span>
                         </button>
-                        <button class="btn btn-light" title="<fmt:message key="ubuilder.properties"/>" id="porperties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool>
+                        <button style="display:none" class="btn btn-light" title="<fmt:message key="ubuilder.properties"/>" id="properties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-cog"></i> <span><fmt:message key="ubuilder.properties"/></span>
                         </button>
-                        <button class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
+                        <button style="display:none" class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
                             <i class="la la-eye"></i> <span><fmt:message key="ubuilder.preview"/></span>
                         </button>
                     </div> 
@@ -101,8 +101,8 @@
                     </div> 
                     
                     <div id="node-details-toggle" class="btn-group btn-group-toggle" data-toggle="buttons" style="display:none">
-                        <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-search-plus"></i> </label>
-                        <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-search-minus"></i> </label>
+                        <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-layer-group"></i> </label>
+                        <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-crosshairs"></i> </label>
                     </div>
                     
                     <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
@@ -234,6 +234,8 @@
         <div id="builder-message"></div>
         <div id="builder-screenshot"></div>
         
+        <script type="text/javascript" src="${pageContext.request.contextPath}/builder/difflib/diffview.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/builder/difflib/difflib.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>  
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/diff_match_patch_uncompressed.js"></script>
@@ -264,7 +266,7 @@
                     CustomBuilder.builderLabel = '<c:out value="${builderObjectLabel}"/>';
                     CustomBuilder.builderColor = '<c:out value="${builderColor}"/>';
                     CustomBuilder.builderIcon = '<c:out value="${builderIcon}"/>';
-                    CustomBuilder.id = '<c:out value="${builderDef.id}"/>';
+                    CustomBuilder.id = '<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>';
 
                     CustomBuilder.initConfig(${builderConfig});
                     CustomBuilder.initPropertiesOptions(${builderProps});
