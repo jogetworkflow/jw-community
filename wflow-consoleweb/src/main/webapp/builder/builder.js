@@ -3226,7 +3226,7 @@ CustomBuilder.Builder = {
                     }
                 },
                 'selectNode' : function(element, elementObj, component) {
-                    if (CustomBuilder.Builder.options.callbacks[""] !== undefined && CustomBuilder.Builder.options.callbacks["selectElement"] !== "") {
+                    if (CustomBuilder.Builder.options.callbacks["selectElement"] !== undefined && CustomBuilder.Builder.options.callbacks["selectElement"] !== "") {
                         CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["selectElement"], [element, elementObj, component]);
                     }
                 },
