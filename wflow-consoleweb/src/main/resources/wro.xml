@@ -26,16 +26,13 @@
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
     </group>
     <group name="advancedTool">
-        <css>/js/jstree/themes/default/style.min.css</css>
-        <css>/js/at/dependencyTree.css</css>
         <css>/js/at/usages.css</css>
         <css>/js/at/i18n.css</css>
         <css>/js/at/permission.css</css>
+        <js>/js/html2canvas/rgbcolor.js</js>
+        <js>/js/html2canvas/canvg.js</js>
         <js>/js/html2canvas/html2canvas.js</js>
-        <js>/js/html2canvas/jquery.plugin.html2canvas.js</js>     
-        <js>/js/jstree/jstree.min.js</js>
         <js>/js/at/advancedTools.js</js>
-        <js>/js/at/dependencyTree.js</js>
         <js>/js/at/usages.js</js>
         <js>/js/at/i18n.js</js>
         <js>/js/at/permission.js</js>

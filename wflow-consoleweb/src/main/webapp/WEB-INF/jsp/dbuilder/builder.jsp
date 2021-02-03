@@ -34,6 +34,9 @@
             "xray" : {
                 "disabled" : false,
             },
+            "screenshot" : {
+                "disabled" : false,
+            },
             "permission" : {
                 "permission_plugin" : "org.joget.apps.datalist.model.DatalistPermission",
                 "childs_properties" : ["filters", "columns", "rowActions", "actions"]

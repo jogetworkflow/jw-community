@@ -83,6 +83,9 @@
             "xray" : {
                 "disabled" : false,
             },
+            "screenshot" : {
+                "disabled" : false,
+            },
             "permission" : {
                 "element_support_plugin" : ["org.joget.apps.form.model.Section"],
                 "ignore_classes" : ["org.joget.apps.form.model.Column"],

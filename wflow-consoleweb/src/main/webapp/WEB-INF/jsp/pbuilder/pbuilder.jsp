@@ -32,7 +32,7 @@
         #node_dialog li:hover {background: #0069d9; color: #fff}
         [aria-describedby="node_dialog"] {width: 100px !important;}
         [aria-describedby="node_dialog"] .ui-dialog-titlebar{display:none}
-        #listViewerView {top: var(--builder-header-top-height); right: var(--builder-right-panel-width); z-index: 8;}
+        #screenshotView, #listViewerView {top: var(--builder-header-top-height); right: var(--builder-right-panel-width); z-index: 8;}
         #listViewerView .nav-tabs .nav-link.active{border-color: #dee2e6 #dee2e6 #fff #dee2e6; border-top-left-radius: .25rem !important; border-top-right-radius: .25rem !important;}
         #listViewerView .nav-tabs .nav-item:first-child .nav-link.active{border-left: 1px solid #dee2e6;}
         #listViewerView .tab-content > div {padding: 15px 0;}
@@ -41,7 +41,7 @@
         #listViewerView .cbuilder-node-details-list:hover {background:#f6ffff;}
         #listViewerView .cbuilder-node-details + .cbuilder-node-details {border-top:1px solid #dee2e6;}
         #listViewerView .cbuilder-node-details-list dt {float: left;clear: left; padding-right: 5px; width: 120px;}
-        #listViewerView .cbuilder-node-details-list.ac
+        #screenshotView .sticky-buttons {top: 125px;}
     </style>    
 </c:set>    
 <c:set var="builderCode" scope="request" value="process"/>
@@ -68,6 +68,9 @@
         },
         "advanced_tools" : {
             "xray" : {
+                "disabled" : false,
+            },
+            "screenshot" : {
                 "disabled" : false,
             },
             "permission" : {

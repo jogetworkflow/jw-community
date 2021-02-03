@@ -20,6 +20,9 @@ body.is-dragging *{
 body.is-dragging div[data-cbuilder-droparea] {
     background: rgba(0, 123, 255, 0.05);
 }
+body.screenshot-in-progress .screenshot-hidden{
+    display:none;
+}
 [data-cbuilder-disabled] {
     pointer-events: none;
     position: relative; }

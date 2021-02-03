@@ -103,6 +103,9 @@ CustomBuilder = {
                 ignore_classes : [],
                 render_elements_callback : ""
             },
+            screenshot : {
+                 disabled : true
+            },
             customTabsCallback : ""
         }
     },
@@ -186,6 +189,9 @@ CustomBuilder = {
         }
         if (!CustomBuilder.supportPermission()) {
             $(".advanced-tools #permission-btn").remove();
+        }
+        if (!CustomBuilder.supportScreenshot()) {
+            $(".advanced-tools #screenshot-btn").remove();
         }
         
         if (CustomBuilder.previewUrl !== "") {
@@ -933,6 +939,13 @@ CustomBuilder = {
     },
     
     /*
+     * Builder support screenshot in advanced tool based on config
+     */
+    supportScreenshot: function() {
+        return !CustomBuilder.config.advanced_tools.screenshot.disabled;
+    },
+    
+    /*
      * Used to initialize additional advanced tool tabs in toolbar
      */
     customAdvancedToolTabs: function() {
@@ -1549,6 +1562,28 @@ CustomBuilder = {
     },
     
     /*
+     * Prepare and render the screeshot view, called by switchView method
+     */
+    screenshotViewInit: function(view) {
+        $("body").addClass("no-left-panel");
+        $(view).html('<div id="screenshotViewImage"></div><div class="sticky-buttons"></div>');
+        
+        if ($("body").hasClass("default-builder")) {
+            $(CustomBuilder.Builder.iframe).off("change.builder", CustomBuilder.Builder.renderScreenshot);
+            $(CustomBuilder.Builder.iframe).on("change.builder", CustomBuilder.Builder.renderScreenshot);
+
+            CustomBuilder.Builder.renderScreenshot();
+        }
+    },
+    
+    /*
+     * Reset the builder back to design view, called by switchView method
+     */
+    screenshotViewBeforeClosed: function(view) {
+        $("body").removeClass("no-left-panel");
+    },
+    
+    /*
      * Search element in left panel when left panel search field keyup
      */
     tabSearch : function() {
@@ -1848,6 +1883,44 @@ CustomBuilder = {
         };
         
         $.ajax(ajaxObj);
+    },
+    
+    /*
+     * Get screenshot of an element
+     */
+    getScreenshot: function(target, callback, errorCallback) {
+        var hasSvg = false;
+        if ($(target).find("svg").length > 0) {
+            hasSvg = true;
+            $(target).find("svg").each(function(i, svg){
+                var newsvg = $(svg).clone().wrap('<p>').parent().html();
+                var $tempCanvas = $('<canvas class="screenshotSvg"></canvas>');
+                $tempCanvas.attr("style", $(svg).attr("style"));
+                $(svg).after($tempCanvas);
+                // fix duplicate xmlns
+                newsvg = newsvg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
+                // render
+                canvg($tempCanvas[0], newsvg);
+            });
+        }
+        target = $(target)[0];
+        html2canvas(target, {logging : false}).then(canvas => {
+            if (hasSvg === true) {
+                $(target).find('canvas.screenshotSvg').remove();
+            }
+            var image = canvas.toDataURL("image/png");
+            if (callback) {
+                callback(image);
+            }
+        },
+        error => {
+            if (hasSvg === true) {
+                $(target).find('canvas.screenshotSvg').remove();
+            }
+            if (errorCallback) {
+                callback(error);
+            }
+        });
     }
 };
 
@@ -5227,6 +5300,9 @@ CustomBuilder.Builder = {
         return element;
     },
     
+    /*
+     * Set zoom ratio for the canvas
+     */
     setZoom : function(action) {
         var self = CustomBuilder.Builder;
         if (action === "-") {
@@ -5246,6 +5322,44 @@ CustomBuilder.Builder = {
         });
         self.triggerChange();
         self._updateBoxes();
+    },
+    
+    /*
+     * Render a screesnhot for download in screenshot view
+     */
+    renderScreenshot : function() {
+        $("#screenshotViewImage").html('<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
+        $("#screenshotView .sticky-buttons").html("");
+        
+        var self = CustomBuilder.Builder;
+        
+        self.frameBody.addClass("screenshot-in-progress");
+        var target = self.frameBody;
+        var id = CustomBuilder.id;
+        
+        if (self.frameBody.find('> *:eq(0)').length > 0) {
+            var tempId = self.frameBody.find('> *:eq(0)').attr("id");
+            if (tempId === undefined || tempId === "") {
+                id = tempId;
+            }
+        }
+        
+        setTimeout(function() {
+            CustomBuilder.getScreenshot(target, function(image){
+                $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
+                
+                var link = document.createElement('a');
+                link.download = id+'.png';
+                link.href = image;
+                $(link).addClass("btn button btn-secondary");  
+                $(link).html(get_cbuilder_msg('cbuilder.download'));
+                $("#screenshotView .sticky-buttons").append(link);
+                
+                self.frameBody.removeClass("screenshot-in-progress");
+            }, function(error) {
+                self.frameBody.removeClass("screenshot-in-progress");
+            });
+        }, 300);
     }
 }
 

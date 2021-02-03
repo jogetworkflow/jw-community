@@ -833,7 +833,7 @@ UserviewBuilder = {
         //breadcrumb
         html += '<ul class="breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
         
-        html += '<div class="userview-body-content"><div class="center"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
+        html += '<div class="userview-body-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
         html += '</main></div></div></div><div class="clearfix"></div>';
         
         //footer
@@ -1381,10 +1381,10 @@ UserviewBuilder = {
      * Retreive the menu page html based on json and generate a screenshot 
      */
     generateMenuSnapshot : function(json, screenshotKey, callback) {
-         var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
-         var main = frameBody.find("#content > main");
-         
-         $.ajax({
+        var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
+        var main = frameBody.find("#content > main");
+                
+        $.ajax({
             type: "POST",
             data: {"json": json },
             url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/page/template',
@@ -1395,14 +1395,9 @@ UserviewBuilder = {
             success: function(response) {
                 $(main).html(response);
                 UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
-                
-                html2canvas(main, {
-                    logging: true,
-                    onrendered: function (canvas) {
-                        var image = canvas.toDataURL("image/png");
-                        UserviewBuilder.screenshots[screenshotKey] = image;
-                        callback(image);
-                    }
+                CustomBuilder.getScreenshot($(main), function(image){
+                    UserviewBuilder.screenshots[screenshotKey] = image;
+                    callback(image);
                 });
             }
         });

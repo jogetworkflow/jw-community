@@ -97,6 +97,10 @@
                             <i class="la la-code"></i>
                         </button>
                             
+                        <button class="btn btn-light" title="<fmt:message key="cbuilder.screenshot"/>" id="screenshot-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="screenshot" data-cbuilder-action="switchView" data-hide-tool>
+                            <i class="la la-camera"></i>
+                        </button>
+                            
                         <a id="hide-advanced-tools-btn" title="<fmt:message key="cbuilder.hideAdvancedTools"/>" data-cbuilder-action="disableEnhancedTools"><i class="las la-angle-right"></i></a>    
                     </div> 
                     
