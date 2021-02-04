@@ -120,19 +120,23 @@ var Usages = {
         });
     },
     render: function (element, id, type, options) {
+        $(element).append('<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
         $(element).append('<ul class="item_usages_container"></ul>');
         var container = $(element).find(".item_usages_container");
         
         Usages.getUsages(id, type, options, function(response) {
             Usages.renderUsage(container, response, id, type, options);
+            $(element).find('i.la-spinner').remove();
         });
     },
     renderOtherApp: function (element, id, type, options) {
+        $(element).append('<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
         $(element).append('<ul class="item_usages_container"></ul>');
         var container = $(element).find(".item_usages_container");
         
         Usages.getUsages(id, type, options, function(response) {
             Usages.renderUsage(container, response, id, type, options, true);
+            $(element).find('i.la-spinner').remove();
         }, true);
     },
     highlight : function (element, str) {
