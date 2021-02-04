@@ -78,9 +78,9 @@ DatalistBuilder = {
             changeCheckIgnoreUndefined: true,
             autoSave: true,
             saveCallback: function(container, properties) {
+                var binderChanged = CustomBuilder.data.binder.className !== properties.binder.className;
                 CustomBuilder.data = $.extend(CustomBuilder.data, properties);
                 
-                var binderChanged = CustomBuilder.data.binder.className !== properties.binder.className;
                 if (binderChanged) {
                     DatalistBuilder.updateBinderProperties(DatalistBuilder.UPDATE);
                 } else {
@@ -119,9 +119,12 @@ DatalistBuilder = {
      */
     updateBinderProperties : function(mode){
         var deferreds = [];
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
         DatalistBuilder.retrieveColumns(deferreds);
         
-        if(mode == DatalistBuilder.UPDATE){
+        if(mode === DatalistBuilder.UPDATE){
             //reset all fields
             CustomBuilder.data.filters = new Array();
             CustomBuilder.data.columns = new Array();
@@ -132,14 +135,17 @@ DatalistBuilder = {
             DatalistBuilder.filterIndexCounter = 0;
             DatalistBuilder.actionIndexCounter = 0;
             
-            DatalistBuilder.data['orderBy'] = "";
-            DatalistBuilder.data['order'] = "";
+            CustomBuilder.data['orderBy'] = "";
+            CustomBuilder.data['order'] = "";
         }
+        
+        wait.resolve();
         
         $.when.apply($, deferreds).then(function() {
             if (DatalistBuilder.availableColumns !== null) {
                 CustomBuilder.update();
             }
+            DatalistBuilder.load(CustomBuilder.data);
         });
     },
     
@@ -319,6 +325,7 @@ DatalistBuilder = {
             temp['binderJson'] = JSON.encode(CustomBuilder.data.binder.properties);
             temp['id'] = CustomBuilder.data.id;
             temp['binderId'] = CustomBuilder.data.binder.className;
+            temp['retrieveSample'] = true;
         
             $.post(
                 CustomBuilder.contextPath + '/web/json/console/app' + CustomBuilder.appPath + '/builder/binder/columns',
@@ -565,14 +572,14 @@ DatalistBuilder = {
         DatalistBuilder.availableColumns = fields;
         
         //remove not exist columns and filters
-        var i = CustomBuilder.data.filters;
+        var i = CustomBuilder.data.filters.length;
         while (i--) {
             var filter = CustomBuilder.data.filters[i];
             if (DatalistBuilder.availableColumns[filter.name] === undefined) { 
                 CustomBuilder.data.filters.splice(i, 1);
             } 
         }
-        var i = CustomBuilder.data.columns;
+        var i = CustomBuilder.data.columns.length;
         while (i--) {
             var column = CustomBuilder.data.columns[i];
             if (DatalistBuilder.availableColumns[column.name] === undefined) { 

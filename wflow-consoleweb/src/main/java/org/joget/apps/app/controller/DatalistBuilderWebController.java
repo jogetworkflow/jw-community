@@ -30,6 +30,7 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
+import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
@@ -213,7 +214,7 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns", method = RequestMethod.POST)
-    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request) throws Exception {
+    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request, @RequestParam(required = false) Boolean retrieveSample) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
 
@@ -265,14 +266,23 @@ public class DatalistBuilderWebController {
             hm.put("displayLabel", AppUtil.processHashVariable(sourceColumn.getLabel(), null, null, null, appDef));
             hm.put("sortable", true);
             hm.put("filterable", sourceColumn.isFilterable());
-            hm.put("type", sourceColumn.getType());
+            hm.put("type", (sourceColumn.getType() != null)?sourceColumn.getType():"");
             collection.add(hm);
         }
         jsonObject.accumulate("columns", collection);
         
-        DataListCollection sample = binder.getData(sourceDataList, binder.getProperties(), null, null, null, 0, 1);
-        if (sample != null && sample.size() > 0) {
-            jsonObject.accumulate("sample", sample.get(0));
+        if (retrieveSample != null && retrieveSample) {
+            DataListCollection sample = binder.getData(sourceDataList, binder.getProperties(), new DataListFilterQueryObject[0], null, null, 0, 1);
+            if (sample != null && sample.size() > 0) {
+                Object obj = sample.get(0);
+                JSONObject sampleObj = new JSONObject();
+                for (DataListColumn sourceColumn : sourceColumns) {
+                    Object value = DataListService.evaluateColumnValueFromRow(obj, sourceColumn.getName());
+                    sampleObj.put(sourceColumn.getName(), value);
+                }
+
+                jsonObject.put("sample", sampleObj);
+            }
         }
         
         jsonObject.write(writer);
