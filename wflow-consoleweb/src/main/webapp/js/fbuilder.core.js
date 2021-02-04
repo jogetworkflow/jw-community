@@ -662,17 +662,29 @@ FormBuilder = {
         if ($(view).find(".i18n_table").length === 0) {
             $(view).html("");
             $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
-            AdvancedTools.options = {
-                contextPath : CustomBuilder.contextPath,
-                appId : CustomBuilder.appId,
-                appVersion : CustomBuilder.appVersion,
-                id : CustomBuilder.id,
-                builder : "custom"
-            };
-            I18nEditor.initTooltip($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), AdvancedTools.options);
+            
+            I18nEditor.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), $.extend(true, {
+                skip : function(key, obj) {
+                    if (key === "properties" && (obj.className === "org.joget.apps.form.model.Form" || obj.className === "org.joget.apps.form.model.Section" || obj.className === "org.joget.apps.form.model.Column")) {
+                        return true;
+                    }
+                    return false;
+                },
+                key : function(key, obj) {
+                    return "tooltip." + CustomBuilder.id + "." + obj.id;
+                },
+                label : function(label, obj) {
+                    return label + " (" + obj.id + ")";
+                },
+                sort : false,
+                i18nHash : false,
+                loadEnglish : true
+            }, CustomBuilder.advancedToolsOptions));
+            
             $(view).find(".dt-loading").remove();
             
-            $("#cbuilder-info").find('textarea[name="json"]').on("change", function() {
+            $("#cbuilder-info").find('textarea[name="json"]').off("change.i18n");
+            $("#cbuilder-info").find('textarea[name="json"]').on("change.i18n", function() {
                 $(view).html("");
             });
         }
@@ -685,7 +697,45 @@ FormBuilder = {
      * A callback method from CustomBuilder.switchView to render table usage view
      */
     tableUsageViewInit: function(view) {
+        $(view).html('<div class="column_names"><h3>'+get_advtool_msg('adv.tool.Table.Columns')+'</h3>\
+            <div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>\
+            <div class="sameapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage')+'</h3>\
+            <div class="usage_content"></div></div>\
+            <div class="diffapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage.otherApp')+'</h3>\
+            <div class="usage_content"></div></div>');
         
+        CustomBuilder.cachedAjax({
+            method: "POST",
+            url: CustomBuilder.contextPath + '/web/json/console/app'+CustomBuilder.appPath+'/builder/binder/columns',
+            data : {
+                binderJson: '{"formDefId":"'+CustomBuilder.data.properties.id+'"}',
+                id: 'getColumns',
+                binderId:'org.joget.apps.datalist.lib.FormRowDataListBinder'
+            },
+            dataType : "json",
+            success: function(resp) {
+                if (resp.columns.length > 0) {
+                    var ul = $('<ul class="table_column_items">');
+                    var fields = [];
+                    $(view).find(".column_names .usage_content").append(ul);
+                    for (var i in resp.columns) {
+                        fields.push(resp.columns[i]['name']);
+                    }
+                    fields.sort();
+                    for (var i in fields) {
+                        $(ul).append('<li>'+fields[i]+'</li>');
+                    }
+                } else {
+                    $(view).find(".column_names .usage_content").append('<ul><li class="no_usage"><h3>'+get_advtool_msg('table.column.noExistingColumns')+'</h3></li></ul>');
+                }
+            },
+            complete: function() {
+                $(view).find(".column_names .usage_content i.la-spinner").remove();
+            }
+        });
+        
+        Usages.render($(view).find('.sameapp_usage .usage_content'), CustomBuilder.data.properties.tableName, "table", CustomBuilder.advancedToolsOptions);
+        Usages.renderOtherApp($(view).find('.diffapp_usage .usage_content'), CustomBuilder.data.properties.tableName, "table", CustomBuilder.advancedToolsOptions);
     },
     
     /*

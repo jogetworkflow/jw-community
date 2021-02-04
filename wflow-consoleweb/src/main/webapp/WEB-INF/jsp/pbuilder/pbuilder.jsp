@@ -78,6 +78,40 @@
             },
             "usage" : {
                 "disabled" : true,
+            },
+            "i18n" : {
+                keywords : [
+                    "-Name"
+                ],
+                options : {
+                    sort : false,
+                    i18nHash : false,
+                    loadEnglish : true,
+                    key : function(key, obj, options) {
+                        return "plabel." + options.processId + "." + obj['-Id'];
+                    },
+                    label : function(label, obj, options) {
+                        return label + " ("+options.processId + ":" + obj['-Id']+")";
+                    },
+                    skip : function(key, obj, keys, labels, options) {
+                        if ($.inArray(key, ["xpdl", "Package", "WorkflowProcesses", "WorkflowProcess", "Activities", "Activity"]) !== -1
+                                || (key === "-Name" && obj["Implementation"] !== undefined && obj["Implementation"]["No"] !== undefined)
+                                || Array.isArray(obj)) {
+                                
+                            if (obj["ProcessHeader"] !== undefined) {
+                                //add the process label first
+                                labels.push({
+                                    key : "plabel." + obj['-Id'],
+                                    label : obj['-Name'] + " ("+obj['-Id']+")"
+                                });
+                                keys.push("plabel." + obj['-Id']);
+                                options.processId = obj['-Id'];
+                            }    
+                            return false;
+                        }
+                        return true;
+                    }
+                }
             }
         }
     }

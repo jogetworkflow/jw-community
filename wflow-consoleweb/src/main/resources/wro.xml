@@ -32,7 +32,6 @@
         <js>/js/html2canvas/rgbcolor.js</js>
         <js>/js/html2canvas/canvg.js</js>
         <js>/js/html2canvas/html2canvas.js</js>
-        <js>/js/at/advancedTools.js</js>
         <js>/js/at/usages.js</js>
         <js>/js/at/i18n.js</js>
         <js>/js/at/permission.js</js>

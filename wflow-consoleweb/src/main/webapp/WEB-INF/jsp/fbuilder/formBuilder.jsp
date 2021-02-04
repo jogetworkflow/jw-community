@@ -58,7 +58,11 @@
     <jsp:include page="extend.jsp" flush="true" />
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
 </c:set>
-<c:set var="builderCSS" scope="request" value=""/>
+<c:set var="builderCSS" scope="request">
+    <style>
+        .usage_content {margin-bottom: 25px;}
+    </style>    
+</c:set>
 <c:set var="builderCode" scope="request" value="form"/>
 <c:set var="builderColor" scope="request" value="#3f84f4"/>
 <c:set var="builderIcon" scope="request" value="fas fa-file-alt"/>

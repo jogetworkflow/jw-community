@@ -1,32 +1,28 @@
 I18nEditor = {
     languages : undefined,
-    retrieveLabels : function (labels, jsonObj, keywords) {
+    retrieveLabels : function (keys, labels, jsonObj, keywords, options) {
         for (var key in jsonObj) {
-            if ($.inArray(key, keywords) !== -1) {
-                if ($.inArray(jsonObj[key], labels) === -1) {
-                        labels.push(jsonObj[key]);
+            if (!(options.skip && options.skip(key, jsonObj, keys, labels, options))) {
+                if ($.inArray(key, keywords) !== -1) {
+                    if ($.inArray(jsonObj[key], keys) === -1) {
+                        var lkey = jsonObj[key],
+                        label = jsonObj[key];
+
+                        if (options.key) {
+                            lkey = options.key(lkey, jsonObj, options);
+                        }
+                        if (options.label) {
+                            label = options.label(label, jsonObj, options);
+                        }
+                        labels.push({
+                            key : lkey,
+                            label : label
+                        });
+                        keys.push(lkey);
                     }
-            } else if ($.type(jsonObj[key]) === "object" || $.type(jsonObj[key]) === "array") {
-                I18nEditor.retrieveLabels(labels, jsonObj[key], keywords);
-            }
-        }
-    },
-    retrieveTooltipLabels : function(labels, jsonObj) {
-        if (jsonObj.className !== "" &&
-                jsonObj.className !== "org.joget.apps.form.model.Form" &&
-                jsonObj.className !== "org.joget.apps.form.model.Section" && 
-                jsonObj.className !== "org.joget.apps.form.model.Column") {
-            if (jsonObj.properties.id !== "" && jsonObj.properties.id !== undefined 
-                    && jsonObj.properties.label !== "" && jsonObj.properties.label !== undefined) {
-                labels.push({
-                    id : jsonObj.properties.id,
-                    label : jsonObj.properties.label
-                });
-            }
-        }
-        if (jsonObj.elements !== undefined) {
-            for (var i in jsonObj.elements) {
-                I18nEditor.retrieveTooltipLabels(labels, jsonObj.elements[i]);
+                } else if ($.type(jsonObj[key]) === "object" || $.type(jsonObj[key]) === "array") {
+                    I18nEditor.retrieveLabels(keys, labels, jsonObj[key], keywords, options);
+                }
             }
         }
     },
@@ -35,91 +31,89 @@ I18nEditor = {
         var height = $(container).height();
         $(container).find(".sticky_container").height(height - 46);
     },
-    retrieveI18nHash : function (labels, found) {
+    retrieveI18nHash : function (keys, labels, found, options) {
         for (var i in found) {
             if (found[i].indexOf("#i18n.") !== -1 || found[i].indexOf("{i18n.") === 0) {
-                labels.push(found[i].substring(6, found[i].length - 1));
+                var label = found[i].substring(6, found[i].length - 1);
+                if ($.inArray(label, keys) === -1) {
+                    labels.push({
+                        key : label,
+                        label : label
+                    });
+                    keys.push(label);
+                }
             } else if (found[i].indexOf("{", 1) !== -1) {
                 var regex = new RegExp("\\{([^\\{^\\}])*\\}","gi");
                 var nestedfound = found[i].match(regex);
-                I18nEditor.retrieveI18nHash(labels, nestedfound);
+                I18nEditor.retrieveI18nHash(labels, nestedfound, options);
             }
         }
     },
     init : function (container, json, options) {
         var jsonObj = JSON.parse(json);
         
+        var keys = [];
         var labels = [];
-        if (AdvancedTools.options.builder === "custom") {
-            I18nEditor.retrieveLabels(labels, jsonObj, CustomBuilder.config.advanced_tools.i18n.keywords);
-        } else {
-            I18nEditor.retrieveLabels(labels, jsonObj, ['label']);
+        I18nEditor.retrieveLabels(keys, labels, jsonObj, CustomBuilder.config.advanced_tools.i18n.keywords, options);
+        
+        if (options.i18nHash) {
+            var regex = new RegExp("\\#([^#^\"^ ])*\\.([^#^\"])*\\#", "gi");
+            var found = json.match(regex);
+            I18nEditor.retrieveI18nHash(keys, labels, found, options);
+        }
+        if (options.sort) {
+            labels.sort(function(a, b) {
+                return a.label.localeCompare(b.label);
+            });
         }
         
-        var regex = new RegExp("\\#([^#^\"^ ])*\\.([^#^\"])*\\#", "gi");
-        var found = json.match(regex);
-        I18nEditor.retrieveI18nHash(labels, found);
-        
-        I18nEditor.renderTable(container, labels.sort(), options);
-    },
-    initTooltip : function (container, json, options) {
-        var jsonObj = JSON.parse(json);
-        
-        var labels = [];
-        I18nEditor.retrieveTooltipLabels(labels, jsonObj);
-        
-        options.isTooltip = true;
-        options.formDefId = (jsonObj.properties !== undefined)?jsonObj.properties.id:"";
-        
-        I18nEditor.renderTable(container, labels, options);
-    },
-    initProcess : function (container, options) {
-        var labels = [];
-        if (ProcessBuilder !== undefined) {
-            for (var id in ProcessBuilder.Designer.model.processes) {
-                var process = ProcessBuilder.Designer.model.processes[id];
-                labels.push({
-                    label : process.name + " ("+id+")",
-                    key : "plabel." + id
-                });
-                
-                for (var act in process.activities) {
-                    var activity = process.activities[act];
-                    if (activity.type === "activity") {
-                        labels.push({
-                            label : activity.name + " ("+id+":"+act+")",
-                            key : "plabel." + id + "." + act
-                        });
-                    }
-                }
-            }
-        }
-        options.isKeyValue = true;
         I18nEditor.renderTable(container, labels, options);
     },
     renderTable : function (container, labels, options) {
         if (labels.length > 0) {
-            $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th>&nbsp;</th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
+            $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
             var $table = $(container).find(".i18n_table");
+            
+            $(container).find('.search-container input').off("keyup");
+            $(container).find('.search-container input').on("keyup", function(){
+                var searchText = $(this).val().toLowerCase();
+                $(container).find("tbody tr").each(function(){
+                    var match = false;
+                    $(this).find('td.label > span').each(function(){
+                        if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
+                            match = true;
+                        }
+                    });
+                    if (match) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                if (this.value !== "") {
+                    $(this).next("button").show();
+                } else {
+                    $(this).next("button").hide();
+                }
+            });
+            
+            $(container).find('.search-container .clear-backspace').off("click");
+            $(container).find('.search-container .clear-backspace').on("click", function(){
+                $(this).hide();
+                $(this).prev("input").val("");
+                $(container).find("tbody tr").show();
+            });
             
             var i = 0;
             for (var l in labels) {
                 var key = "";
                 var label = "";
                 var css = "odd";
-                if (options.isTooltip) {
-                    label = labels[l].label + " (" + labels[l].id + ")";
-                    key = "tooltip." + options.formDefId + "." + labels[l].id;
-                } else if (options.isKeyValue) {
-                    label = labels[l].label;
-                    key = labels[l].key;
-                } else {
-                    if (UI.escapeHTML(labels[l]) === "") {
-                        continue;
-                    }
-                    label = labels[l];
-                    key = labels[l];
+                if (UI.escapeHTML(labels[l].key).trim() === "") {
+                    continue;
                 }
+                label = labels[l].label;
+                key = labels[l].key;
                 if (i % 2 === 0) {
                     css = "even";
                 }
@@ -136,7 +130,7 @@ I18nEditor = {
                         I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1", options);
                         I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2", options);
                         
-                        if (options.isTooltip || options.isKeyValue) {
+                        if (options.loadEnglish) {
                             $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
                         }
                     }
@@ -145,7 +139,7 @@ I18nEditor = {
                 I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1",  options);
                 I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2",  options);
                 
-                if (options.isTooltip || options.isKeyValue) {
+                if (options.loadEnglish) {
                     $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
                 }
             }
@@ -164,7 +158,7 @@ I18nEditor = {
             var locale = $(this).val();
             $(header).find("a.button").remove();
             if (locale !== "") {
-                $(header).append('<a class="button">'+get_advtool_msg('i18n.editor.save')+'</a>');
+                $(header).append('<a class="button btn btn-secondary btn-sm">'+get_advtool_msg('i18n.editor.save')+'</a>');
             }
             I18nEditor.loadLocale(container, locale, id, options);
         });
@@ -205,7 +199,7 @@ I18nEditor = {
     },
     saveLocale : function(container, button, locale, id, options) {
         $(button).hide();
-        $(button).after('<i class="fa-spinner fa-spin" aria-hidden="true"></i>');
+        $(button).after('<i class="las la-spinner la-2x la-spin" style="color:#000;opacity:0.3"></i>');
         var data = [];
         $(container).find('td.'+id+' textarea').each(function(){
             var id = $(this).attr("rel");
@@ -224,18 +218,18 @@ I18nEditor = {
                 locale : locale,
                 data : JSON.encode(data)
             },
-            dataType : "json"
+            dataType : "text"
         }).done(function() {
             $(button).next().remove();
-            $(button).after('<span> '+get_advtool_msg('i18n.editor.saved')+'</span>');
+            $(button).after('<span style="color:green;"> '+get_advtool_msg('i18n.editor.saved')+'</span>');
         }).fail(function() {
             $(button).next().remove();
-            $(button).after('<span> '+get_advtool_msg('i18n.editor.error')+'</span>');
+            $(button).after('<span style="color:red;"> '+get_advtool_msg('i18n.editor.error')+'</span>');
         }).always(function() {
             setTimeout(function(){
                 $(button).next().remove();
                 $(button).show();
-            }, 5000);
+            }, 3000);
         });
     }
 };

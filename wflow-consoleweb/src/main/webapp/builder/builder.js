@@ -59,7 +59,11 @@ CustomBuilder = {
                 disabled : false,
                 keywords : [
                     "label"
-                ]
+                ],
+                options : {
+                    sort : true,
+                    i18nHash : true
+                }
             },
             permission : {
                 disabled : false,
@@ -1400,11 +1404,8 @@ CustomBuilder = {
      * Show the find usage view, called by switchView method
      */
     findUsagesViewInit : function(view) {
-        if ($(view).find(".item_usages_container").length === 0) {
-            $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
-            Usages.render($(view), CustomBuilder.id, CustomBuilder.advancedToolsOptions.builder, CustomBuilder.advancedToolsOptions);
-            $(view).find(".dt-loading").remove();
-        }
+        $(view).html("");
+        Usages.render($(view), CustomBuilder.id, CustomBuilder.advancedToolsOptions.builder, CustomBuilder.advancedToolsOptions);
     },
     
     /*
@@ -1414,7 +1415,10 @@ CustomBuilder = {
         if ($(view).find(".i18n_table").length === 0) {
             $(view).html("");
             $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
-            I18nEditor.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), CustomBuilder.advancedToolsOptions);
+            
+            var config = $.extend(true, CustomBuilder.config.advanced_tools.i18n.options, CustomBuilder.advancedToolsOptions);
+            I18nEditor.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), config);
+            
             $(view).find(".dt-loading").remove();
             
             $("#cbuilder-info").find('textarea[name="json"]').off("change.i18n");
