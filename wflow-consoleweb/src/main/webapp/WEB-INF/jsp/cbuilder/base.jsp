@@ -217,8 +217,11 @@
                     </div>
                 </div>
             </div>    
-            <button id="right-panel-toogle" data-cbuilder-action="toogleRightPanel">
+            <button id="right-panel-toogle" data-cbuilder-action="toogleRightPanel" >
                 <i class="las la-angle-right"></i>
+            </button>
+            <button id="right-panel-resize" data-cbuilder-action="resizeRightPanel" data-cbuilder-on="mousedown" style="display:none">
+                <i class="las la-grip-lines-vertical"></i>
             </button>
         </div>    
         <div id="bottom-panel">

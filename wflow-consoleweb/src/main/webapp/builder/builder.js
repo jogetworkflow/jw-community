@@ -1195,6 +1195,42 @@ CustomBuilder = {
     },
     
     /*
+     * Resize builder right panel
+     */
+    resizeRightPanel : function(event) {
+        var button = $(this);
+        var panel = $("#right-panel");
+        
+        var stopResize = function() {
+            $("body").off("mousemove.resize");
+            $("body").off("mouseup.resize");
+            
+            if ($("body").hasClass("default-builder")) {
+                CustomBuilder.Builder.frameHtml.off("mousemove.resize");
+                CustomBuilder.Builder.frameHtml.off("mouseup.resize");
+            }
+        };
+        
+        var resize = function(e) {
+            var x = e.pageX;
+            if (!$(e.currentTarget).is("#cbuilder")) {
+                x += $(CustomBuilder.Builder.iframe).offset().left;
+            }
+            var newWidth = $(panel).offset().left - x + $(panel).outerWidth();
+            $(panel).css("width", newWidth + "px");
+            CustomBuilder.setBuilderSetting("right-panel-width", newWidth + "px");
+        };
+        
+        if ($("body").hasClass("default-builder")) {
+            CustomBuilder.Builder.frameHtml.on("mousemove.resize touchmove.resize", resize);
+            CustomBuilder.Builder.frameHtml.on("mouseup.resize", stopResize);
+        }
+        
+        $("body").on("mousemove.resize touchmove.resize", resize);
+        $("body").on("mouseup.resize", stopResize);
+    },
+    
+    /*
      * Animate the builder left panel to reopen it
      */
     animateLeftPanel : function() {
@@ -1675,6 +1711,9 @@ CustomBuilder = {
     maxPropertiesWindow : function () {
         $("body").addClass("max-property-editor");
         $("#right-panel .property-editor-container").removeClass("narrow");
+        
+        var width = CustomBuilder.getBuilderSetting("right-panel-width");
+        $("#right-panel").css("width", width);
     },
     
     /*
@@ -1689,7 +1728,6 @@ CustomBuilder = {
      * Close the right panel
      */
     closePropertiesWindow : function() {
-        CustomBuilder.minPropertiesWindow();
         $("body").addClass("no-right-panel");
     },
     

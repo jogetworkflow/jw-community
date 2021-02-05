@@ -131,7 +131,7 @@ body.viewport-enabled{
 #cbuilder #left-panel .components-list, #cbuilder #left-panel .blocks-list, #cbuilder #left-panel .component-properties {
     width: var(--builder-left-panel-width); 
 }
-#cbuilder #right-panel {
+#cbuilder:not(.max-property-editor) #right-panel {
     float: right;
     right: 0px;
     border-left-width: 1px;
@@ -144,7 +144,7 @@ body.viewport-enabled{
     background: linear-gradient(right, #fff 85%, #fafbfc 100%);
     box-shadow: 1px -2px 2px #f3f3f3 inset;
     width: 15vw;
-    width: var(--builder-right-panel-width); 
+    width: var(--builder-right-panel-width) !important; 
 }
 #cbuilder #right-panel .components-list, #cbuilder #right-panel .blocks-list, #cbuilder #right-panel .component-properties {
     width: var(--builder-right-panel-width); 
@@ -1090,6 +1090,7 @@ div.section, .header > ol {
     height: 30px;
     width: 30px;
 }
+#right-panel-resize,
 #right-panel-toogle,
 #left-panel-toogle{
     position: absolute;
@@ -1106,11 +1107,14 @@ div.section, .header > ol {
     color: #999;
     z-index: 10;
     overflow: hidden;
+    outline: 0;
 }
+#right-panel-resize,
 #right-panel-toogle{
     left: -1px;
     right: auto;
 }
+#right-panel-resize i,
 #right-panel-toogle i,
 #left-panel-toogle i {
     position: relative;
@@ -1345,19 +1349,23 @@ div.section, .header > ol {
 .element-properties-actions button:hover{
     opacity: 1;
 }
-.max-property-editor #right-panel .element-properties {
+.max-property-editor #right-panel {
     position: fixed;
-    top:0;
+    top:65px;
     right: 0;
-    bottom: 0;
-    left:0;
+    bottom: 30px;
+    width: 35vw;
+    min-width: 35vw;
     z-index: 1000000;
     background: #fff;
+    border-left: 2px solid #ccc !important;
 }
-.max-property-editor #presence,
-.max-property-editor #adminControl,
-.max-property-editor #adminBar{
-    display:none !important;
+.max-property-editor #right-panel-toogle{
+    display:none;
+}
+.max-property-editor #right-panel-resize{
+    display:block !important;
+    cursor: ew-resize;
 }
 .max-property-editor #properties-max-button{
     display: none;
