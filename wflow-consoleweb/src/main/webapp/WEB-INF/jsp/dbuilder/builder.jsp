@@ -2,7 +2,7 @@
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
-<c:set var="builderLabel" scope="request" value="Datalist Builder"/>
+<c:set var="builderLabel" scope="request"><fmt:message key="dbuilder.title"/></c:set>
 <c:set var="builderI18N" scope="request" value=""/>
 <c:set var="builderJS" scope="request">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/dbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
@@ -22,6 +22,7 @@
             },
             "callbacks" : {
                 "initBuilder" : "DatalistBuilder.initBuilder",
+                "unloadBuilder" : "DatalistBuilder.unloadBuilder",
                 "load" : "DatalistBuilder.load",
                 "saveEditProperties" : "DatalistBuilder.saveEditProperties",
                 "getBuilderProperties" : "DatalistBuilder.getBuilderProperties",

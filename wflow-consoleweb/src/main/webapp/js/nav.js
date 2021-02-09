@@ -1,49 +1,20 @@
 (function ($) {
-    jQuery.expr[':'].Contains = function(a,i,m){ 
-        return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
-    };
-        
     var Nav = {
         target : null,
         options : null,
         definition : null,
         patch : [],
-        init: function(target, definition, options) {
+        init: function(target, options) {
             Nav.target = target;
-            Nav.definition = definition;
             Nav.options = options;
 
-            $(Nav.options.refreshBtn).off("click");
-            $(Nav.options.refreshBtn).on("click", function(){
-                Nav.refresh();
-                return false;
-            });
-            $(Nav.options.infoBtn).off("click");
-            $(Nav.options.infoBtn).on("click", function(){
+            $(Nav.target).off("click", Nav.options.infoBtn);
+            $(Nav.target).on("click", Nav.options.infoBtn, function(){    
                 Nav.toggleInfo();
                 return false;
             });
-
-            if ($(Nav.options.search).find("input").length === 0) {
-                var input = $("<input>").attr({"class":"filterinput","type":"text","placeholder":Nav.options.message.search}); 
-                $(Nav.options.search).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).append(input);
-                $(input).on("change keyup", function(){
-                    Nav.filter();
-                    return false;
-                });
-            }
-
-            Nav.renderTags();
             
-            var showInfoActive = $.cookie("showInfoActive");
-            if (showInfoActive === "true") {
-                Nav.showInfo();
-            }
-            
-            if ($(Nav.options.search).find("input").val() !== "") {
-                Nav.filter();
-            }
-            
+            $(Nav.target).off("click", ".nv-tags .nv-tag-plus");
             $(Nav.target).on("click", ".nv-tags .nv-tag-plus", function(){
                 Nav.editTags($(this).closest("li"));
                 event.preventDefault();
@@ -51,6 +22,7 @@
                 return false;
             });
             
+            $(Nav.target).off("click", ".nv-tags .nv-tag");
             $(Nav.target).on("click", ".nv-tags .nv-tag", function(){
                 Nav.searchTag($(this));
                 event.preventDefault();
@@ -58,27 +30,16 @@
                 return false;
             });
             
-            $.tooltipster.off('close');
-            $.tooltipster.on('close', function(event){
+            $.tooltipster.off('close.tags');
+            $.tooltipster.on('close.tags', function(event){
                 Nav.saveTags();
             });
         },
         refresh: function() {
-            if ($(Nav.options.buttons).css("visibility") !== "hidden") {
-                var loading = $("<img id='nv-loading' src='"+Nav.options.contextPath+"/images/v3/loading.gif'>");
-                $(Nav.options.buttons).find("a").css("visibility", "hidden");
-                $(Nav.options.buttons).append(loading);
+            var showInfoActive = $.cookie("showInfoActive");
+            if (showInfoActive === "true") {
+                Nav.showInfo();
             }
-            $.ajax({
-                url: Nav.options.url + "&_=" + jQuery.now(),
-                success: function(data) {
-                    $(Nav.target).html(data);
-                },
-                complete: function() {
-                    $(Nav.options.buttons).find("a").css("visibility", "visible");
-                    $(loading).remove();
-                }
-            });
         },
         toggleInfo: function() {
             if (!$(Nav.options.infoBtn).hasClass("show")) {
@@ -96,79 +57,41 @@
         showInfo: function() {
             $(Nav.options.infoBtn).addClass("show");
             Nav.renderTags();
-            $(".nv-link .nv-extra").show();
-            $(".nv-link-name").addClass("nv-link-hilite");
+            $(".nv-tags").show();
             $(Nav.options.infoBtn).find("i").attr("class", "fas fa-list-ul");
             $(Nav.options.infoBtn).find("span").text(Nav.options.message.hide);
         },
         hideInfo: function() {
             $(Nav.options.infoBtn).removeClass("show");
-            $(".nv-link .nv-extra").hide();
-            $(".nv-link-name").removeClass("nv-link-hilite");
+            $(".nv-tags").hide();
             $(Nav.options.infoBtn).find("i").attr("class", "fas fa-tags");
             $(Nav.options.infoBtn).find("span").text(Nav.options.message.show);
         },
-        filter: function() {
-            var filter = $(Nav.options.search).find("input").val();
-            if(filter) {
-                var tags = "";
-                if (filter.indexOf("#") === 0) {
-                    tags = filter;
-                    filter = "";
-                } else if (filter.indexOf("#") > 0) {
-                    tags = filter.substring(filter.indexOf("#"));
-                    filter = filter.substring(0, filter.indexOf("#") - 1);
-                }
-                
-                filter = filter.trim();
-                var tagsArr = [];
-                if (tags !== "") {
-                    var temp = tags.split("#");
-                    for (var i in temp) {
-                        var t = temp[i].trim();
-                        if (t !== "") {
-                            tagsArr.push(t);
-                        }
-                    }
-                }
-                
-                $(Nav.target).find("li").each(function(){
-                    var li = $(this);
-                    var show = true;
-                    if (filter !== "") {
-                        var found = $(li).find(".nv-link-name:Contains(" + filter + "), .nv-form-table:Contains(" + filter + "), .nv-subinfo:visible:Contains(" + filter + ")");
-                        if (found.length === 0) {
-                            show = false;
-                        }
-                    }
-                    var hasTags = true;
-                    if (tagsArr.length > 0) {
-                        for (var i in tagsArr) {
-                            var found = $(li).find(".nv-tag:Contains(" + tagsArr[i] + ")");
-                            if (found.length === 0) {
-                                hasTags = false;
-                            }
-                        }
-                    }
-                    
-                    if (show && hasTags) {
-                        $(this).slideDown();
-                    } else {
-                        $(this).slideUp();
+        renderTags: function() {
+            if (Nav.definition === null) {
+                $.ajax({
+                    type: "GET",
+                    url: Nav.options.tagUrl,
+                    dataType: 'json',
+                    success: function (data) {
+                        Nav.definition = data;
+                        Nav.renderTags();
                     }
                 });
-            } else {
-                $(Nav.target).find("li").slideDown();
+                return;
             }
-        },
-        renderTags: function() {
-            $(".nv-link .nv-extra .nv-tags .nv-tag").remove();
-            $(Nav.target).find("div.nv-col").each(function(){
-                var type = $(this).attr("id").replace("nv-", "");
-                $(this).find("li").each(function(){
+            
+            $(".nv-tag").remove();
+            $(Nav.target).find("div.builder-type").each(function(){
+                var type = $(this).data("builder-type");
+                if (type === "datalist") {
+                    type = "list"; //for backward compatible
+                }
+                
+                $(this).find("li.item").each(function(){
                     var liobj = $(this);
-                    if ($(liobj).find(".nv-extra .nv-tags").length === 0) {
-                        $(liobj).find(".nv-extra").prepend('<div class="nv-tags"><label><i class="fas fa-tags"></i> Tags:</label><span class="nv-tag-plus"><i class="fas fa-plus"></i></span></div>');
+                    if ($(liobj).find(".nv-tags").length === 0) {
+                        $(liobj).append('<div class="nv-tags"><label><i class="las la-tags"></i>: </label> <span class="nv-tag-plus"><i class="las la-plus"></i></span></div>');
                     }
                     var id = $(liobj).data("id");
                     
@@ -179,7 +102,7 @@
                     
                     for (var i in tags) {
                         var tinfo = Nav.definition["labels"][tags[i]];
-                        var label = "<span style=\"visibility:hidden\">"+tinfo.color + " " + Nav.options.message[tinfo.color]+"</span>";
+                        var label = "<span style=\"display:none\">"+tinfo.color + " " + Nav.options.message[tinfo.color]+"</span>";
                         if (tinfo.label !== undefined && tinfo.label !== "") {
                             label = tinfo.label;
                         }
@@ -201,8 +124,11 @@
             }
             
             var id = $(li).data("id");
-            var type = $(li).closest("div.nv-col").attr("id").replace("nv-", "");
-            
+            var type = $(li).closest("div.builder-type").data("builder-type");
+            if (type === "datalist") {
+                type = "list"; //for backward compatible
+            }
+                
             $(Nav.target).find("#manageTagDiv").html('<div id="tooltip-tags"></div>');
             
             var html = '<div class="chooseTags" data-id="'+id+'" data-type="'+type+'"><h4>'+Nav.options.message.tags+' <a class="close"><i class="fas fa-times"></i></a></h4>';
@@ -289,7 +215,10 @@
         },
         toggleTag : function(li, tag) {
             var id = $(li).data("id");
-            var type = $(li).closest("div.nv-col").attr("id").replace("nv-", "");
+            var type = $(li).closest("div.builder-type").data("builder-type");
+            if (type === "datalist") {
+                type = "list"; //for backward compatible
+            }
             var tagId = $(tag).data("id");
             var tagObj = Nav.definition["labels"][tagId];
                     
@@ -511,16 +440,9 @@
                     filter += " ";
                 }
                 $(Nav.options.search).find("input").val(filter + "#" + searchTxt);
+                $(Nav.options.search).find("input").trigger("change");
             }
-            Nav.filter();
         }
     };
     window.Nav = Nav;
-    
-    $(function () {
-        $("#nv a.nv-link").each(function() {
-            var name = $(this).closest(".nv-col").attr("id");
-            $(this).attr("target", name + "-window");
-        });
-    });
 }(jQuery));

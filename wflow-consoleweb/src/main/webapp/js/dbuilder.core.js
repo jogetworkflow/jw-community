@@ -2438,5 +2438,12 @@ DatalistBuilder = {
                 DatalistBuilder.refreshTableLayout();
             }, 100);
         }
-    }
+    },
+      
+    /*
+     * remove dynamically added items    
+     */            
+    unloadBuilder : function() {
+        $("#binder-btn").remove();
+    } 
 }

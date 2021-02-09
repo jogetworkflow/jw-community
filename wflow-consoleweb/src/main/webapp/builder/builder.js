@@ -3,6 +3,7 @@
  */
 
 CustomBuilder = {
+    isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
     contextPath : '/jw',
@@ -13,7 +14,8 @@ CustomBuilder = {
     builderLabel: '',
     defaultBuilder: false,
     id: '',
-    config: {
+    config : {},
+    defaultConfig: {
         builder : {
             options : {
                 getDefinitionUrl : ""
@@ -108,7 +110,13 @@ CustomBuilder = {
                 render_elements_callback : ""
             },
             screenshot : {
-                 disabled : true
+                disabled : true
+            },
+            definition : {
+                disabled : false
+            },
+            diffChecker : {
+                disabled : false
             },
             customTabsCallback : ""
         }
@@ -135,6 +143,9 @@ CustomBuilder = {
     
     cachedAjaxCalls: {},
     
+    builderItems : null,
+    builderItemsLoading : [],
+    
     /*
      * Utility method to call a function by name
      */
@@ -151,6 +162,7 @@ CustomBuilder = {
      * Used in cbuilder/base.jsp to setup the configuration of the builder 
      */
     initConfig : function (config) {
+        CustomBuilder.config = $.extend(true, {}, CustomBuilder.defaultConfig);
         CustomBuilder.config = $.extend(true, CustomBuilder.config, config);
     },
     
@@ -162,14 +174,139 @@ CustomBuilder = {
         if (options !== undefined && options !== null && options !== "") {
             $("#properties-btn").show();
         } else {
-            $("#properties-btn").remove();
+            $("#properties-btn").hide();
         }
+    },
+    
+    ajaxRenderBuilder: function(url) {
+        //check url is same
+        var temp = url;
+        var hash = ""
+        if (url.indexOf("#") > 0) {
+            temp = url.substring(0, url.indexOf("#"));
+            hash = url.substring(url.indexOf("#"));
+        }
+        if (window.location.pathname === temp) {
+            if (window.location.hash !== hash) {
+                window.location.hash = hash.replace("#", "");
+            }
+            return;
+        }
+        
+        //check if there is unsave changes in current builder
+        if (!CustomBuilder.isSaved()) {
+            if (confirm(get_cbuilder_msg('ubuilder.saveBeforeClose'))) {
+                return;
+            }
+        }
+        $("body").addClass("initializing");
+        
+        const headers = new Headers();
+        headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+        headers.append("_ajax-rendering", "true");
+        
+        var args = {
+            method : "GET",
+            headers: headers
+        };
+        
+        fetch(url, args)
+        .then(function (response) {
+            history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
+            return response.text();
+        })
+        .then(data => {
+            data = eval("[" + data.trim() + "]")[0];
+            
+            $("#design-btn").trigger("click");
+            $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(data.builderDefJson);
+            CustomBuilder.id = data.id;
+            $("head title").text(data.title);
+            $("#builderElementName").html(data.name);
+            
+            CustomBuilder.appId = data.appId;
+            CustomBuilder.appVersion = data.appVersion;
+            CustomBuilder.appPath = data.appPath;
+            CustomBuilder.appPublished = data.appPublished;
+            CustomBuilder.saveUrl = data.saveUrl;
+            CustomBuilder.previewUrl = data.previewUrl;
+            CustomBuilder.undoStack = new Array();
+            CustomBuilder.redoStack = new Array();
+            CustomBuilder.saveChecker = 0;
+            
+            if (CustomBuilder.builderType === data.builderType) {
+                $("body").removeClass("initializing");
+                if ($("body").hasClass("default-builder")) {
+                    CustomBuilder.Builder.selectedEl = null;
+                    CustomBuilder.Builder.highlightEl = null;
+                }
+                CustomBuilder.loadJson($("#cbuilder-json").val());
+            } else {
+                
+                CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
+                
+                CustomBuilder.paletteElements = {};
+                CustomBuilder.availablePermission = {};
+                CustomBuilder.permissionOptions = null;
+                CustomBuilder.builderType = data.builderType;
+                CustomBuilder.builderLabel = data.builderLabel;
+                CustomBuilder.builderColor = data.builderColor;
+                CustomBuilder.builderIcon = data.builderIcon;
+                
+                //reset builder 
+                $("#builderIcon").css("background-color", data.builderColor);
+                $("#builderIcon i").attr("class", "fa-2x " + data.builderIcon);
+                $("#builderTitle span").text(data.builderLabel);
+                $("#builderElementName").css("color", data.builderColor);
+                $("#builder_canvas").html(data.builderCanvas);
+                $("#left-panel .drag-elements-sidepane .components-list").html("");
+                $("#elements-tabs").hide().html('<li class="nav-item component-tab"><a class="nav-link active" id="components-tab" data-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="true" title="' + get_cbuilder_msg('cbuilder.elements') + '"/>"><div><small>' + get_cbuilder_msg('cbuilder.elements') + '</small></div></a></li>');
+                $("#elements-tabs").next().find(" > :not(#components)").remove();
+                $("#top-panel .responsive-buttons").hide();
+                $("#builderToolbar .copypaste").hide();
+                $("#style-properties-tab-link").hide();
+                $("#style-properties-tab-link a").html('<i class="las la-palette"></i> <span>'+get_cbuilder_msg("cbuilder.styles") + '/></span>');
+                
+                if ($("body").hasClass("default-builder")) {
+                    CustomBuilder.Builder.reset();
+                }
+                
+                //load css and js
+                $("style[data-cbuilder-style], script[data-cbuilder-script]").remove();
+                $("head").append('<script data-cbuilder-script type="text/javascript" src="'+CustomBuilder.contextPath+'/web/console/i18n/cbuilder?type='+CustomBuilder.builderType+'&build='+CustomBuilder.buildNumber+'"></script>');
+                if (data.builderCSS !== "") {
+                    $("head").append(data.builderCSS);
+                }
+                if (data.builderJS !== "") {
+                    $("head").append(data.builderJS);
+                }
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
     },
     
     /*
      * Used in cbuilder/base.jsp to initialize the builder
      */
     initBuilder: function (callback) {
+        if (!CustomBuilder.isAjaxReady) {
+            window.onpopstate = function(event) {
+                if (event.state) {
+                    var url = event.state.url;
+                    console.log(url);
+                    CustomBuilder.ajaxRenderBuilder(url);
+                }
+            };
+            window.onbeforeunload = function() {
+                if(!CustomBuilder.isSaved()){
+                    return get_cbuilder_msg("ubuilder.saveBeforeClose");
+                }
+            };
+            CustomBuilder.isAjaxReady = true;
+        }
+        
         CustomBuilder.advancedToolsOptions = {
             contextPath : CustomBuilder.contextPath,
             appId : CustomBuilder.appId,
@@ -178,30 +315,51 @@ CustomBuilder = {
             builder : (CustomBuilder.builderType !== "form" && CustomBuilder.builderType !== "userview" && CustomBuilder.builderType !== "datalist")?"custom":CustomBuilder.builderType
         };
         
-        
         if (!CustomBuilder.supportTreeViewer()) {
-            $(".advanced-tools #treeviewer-btn").remove();
+            $(".advanced-tools #treeviewer-btn").hide();
+        } else {
+            $(".advanced-tools #treeviewer-btn").show();
         }
         if (!CustomBuilder.supportXray()) {
-            $(".advanced-tools #xray-btn").remove();
+            $(".advanced-tools #xray-btn").hide();
+        } else {
+            $(".advanced-tools #xray-btn").show();
         }
         if (!CustomBuilder.supportI18n()) {
-            $(".advanced-tools #i18n-btn").remove();
+            $(".advanced-tools #i18n-btn").hide();
+        } else {
+            $(".advanced-tools #i18n-btn").show();
         }
         if (!CustomBuilder.supportUsage()) {
-            $(".advanced-tools #usages-btn").remove();
+            $(".advanced-tools #usages-btn").hide();
+        } else {
+            $(".advanced-tools #usages-btn").show();
         }
         if (!CustomBuilder.supportPermission()) {
-            $(".advanced-tools #permission-btn").remove();
+            $(".advanced-tools #permission-btn").hide();
+        } else {
+            $(".advanced-tools #permission-btn").show();
         }
         if (!CustomBuilder.supportScreenshot()) {
-            $(".advanced-tools #screenshot-btn").remove();
+            $(".advanced-tools #screenshot-btn").hide();
+        } else {
+            $(".advanced-tools #screenshot-btn").show();
+        }
+        if (!CustomBuilder.supportDiffChecker()) {
+            $(".advanced-tools #diff-checker-btn").hide();
+        } else {
+            $(".advanced-tools #diff-checker-btn").show();
+        }
+        if (!CustomBuilder.supportDefinition()) {
+            $(".advanced-tools #json-def-btn").hide();
+        } else {
+            $(".advanced-tools #json-def-btn").show();
         }
         
         if (CustomBuilder.previewUrl !== "") {
             $("#preview-btn").show();
         } else {
-            $("#preview-btn").remove();
+            $("#preview-btn").hide();
         }
         
         var builderCallback = function(){
@@ -232,12 +390,17 @@ CustomBuilder = {
                         action.call(this, event);
                     }
                 };
-
+                
+                $(this).off(on);
                 $(this).on(on, buttonAction);
                 if (this.dataset.cbuilderShortcut)
                 {
+                    $(document).unbind('keydown', this.dataset.cbuilderShortcut);
                     $(document).bind('keydown', this.dataset.cbuilderShortcut, buttonAction);
-                    $(window.FrameDocument).bind('keydown', this.dataset.cbuilderShortcut, buttonAction);
+                    if (window.FrameDocument) {
+                        $(window.FrameDocument).unbind('keydown', this.dataset.cbuilderShortcut);
+                        $(window.FrameDocument).bind('keydown', this.dataset.cbuilderShortcut, buttonAction);
+                    }
                 }
             });
             
@@ -248,7 +411,7 @@ CustomBuilder = {
             CustomBuilder.builderFavIcon();
             CustomBuilder.updateBuilderBasedOnSettings();
             
-            CustomBuilder.initQuickNav();
+            $("body").removeClass("initializing");
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
@@ -947,6 +1110,20 @@ CustomBuilder = {
      */
     supportScreenshot: function() {
         return !CustomBuilder.config.advanced_tools.screenshot.disabled;
+    },
+    
+    /*
+     * Builder support diff checker in advanced tool based on config
+     */
+    supportDiffChecker: function() {
+        return !CustomBuilder.config.advanced_tools.diffChecker.disabled;
+    },
+    
+    /*
+     * Builder support definition in advanced tool based on config
+     */
+    supportDefinition: function() {
+        return !CustomBuilder.config.advanced_tools.definition.disabled;
     },
     
     /*
@@ -1775,92 +1952,6 @@ CustomBuilder = {
     },
     
     /*
-     * Initialize a quick item navagation for all builders
-     */
-    initQuickNav : function() {
-        setTimeout(function(){
-            $("#adminBarButtons").prepend('<div class="separator"></div><div id="builder-quick-nav"><span>'+get_cbuilder_msg("cbuilder.quickNav") + '</span>\
-                <div id="builder-menu" style="display: none;">\
-                    <div id="builder-menu-search">\
-                        <input type="text" placeholder="'+get_cbuilder_msg("cbuilder.search") + '" value="" />\
-                        <button class="clear-backspace" style="display:none;"><i class="la la-close"></i></button>\
-                    </div><ul></ul>\
-                </div></div>');
-            
-            $.ajax({
-                type: "GET",
-                url: CustomBuilder.contextPath + "/web/json/console/app/"+CustomBuilder.appId+"/"+CustomBuilder.appVersion+"/adminbar/builder/menu",
-                dataType: 'json',
-                success: function (data) {
-                    var container = $("#builder-menu > ul");
-                    for (var i in data) {
-                        var builder = data[i];
-                        var li = $('<li class="menu-'+builder.value+'"><span title="'+builder.label+'" style="background: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
-                        $(li).find("ul").append('<li class="header">'+builder.label+'</li>');
-                        if (builder.elements) {
-                            for (var j in builder.elements) {
-                                $(li).find("ul").append('<li class="item"><a href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a></li>');
-                            }
-                        }
-                        $(li).find("ul").append('<li class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></li>');
-                        container.append(li);
-                    }
-
-                    if (window["CustomBuilder"] !== undefined) {
-                        $("#builder-menu > ul > li.menu-" + window["CustomBuilder"].builderType).addClass("active");
-                    } else {
-                        $("#builder-menu > ul > li:eq(0)").addClass("active");
-                    }
-
-                    $("#builder-menu > ul > li").on("mouseover touch", function(){
-                        $("#builder-menu > ul > li").removeClass("active");
-                        $(this).addClass("active");
-                    });
-                }
-            });
-
-            $("#builder-menu-search input").on("keyup", function(){
-                var searchText = $(this).val().toLowerCase();
-                $("#builder-menu ul li ul li.item").each(function(){
-                    var element = $(this);
-                    element.hide();
-                    if ($(element).find("a").text().toLowerCase().indexOf(searchText) > -1) { 
-                        element.show();
-                    }
-                });
-                if (searchText !== "") {
-                    $("#builder-menu-search .clear-backspace").show();
-                } else {
-                    $("#builder-menu-search .clear-backspace").hide();
-                }
-            });
-
-            $("#builder-menu-search .clear-backspace").on("click", function(){
-                $("#builder-menu ul li ul li").show();
-                $("#builder-menu-search input").val("");
-                $("#builder-menu-search .clear-backspace").hide();
-            });
-
-            $("#builder-menu ul").on("click", " li ul li.addnew a", function(){
-                var type = $(this).data("type");
-                if (type === "process") {
-                    window.open(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
-                } else {
-                    var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/';
-                    if (type === "form" || type === "datalist" || type === "userview") {
-                        url += type + '/create?builderMode=true';
-                    } else {
-                        url += "cbuilder/" + type + "/create?builderMode=false";
-                    }
-                    JPopup.show("navCreateNewDialog", url, {}, "");
-                }
-                return false;
-            });
-            
-        }, 100); //delay the loading to prevent it block the builder ajax call
-    },
-    
-    /*
      * Utility method to get property for an object
      */
     getPropString : function(value) {
@@ -1963,6 +2054,135 @@ CustomBuilder = {
                 callback(error);
             }
         });
+    },
+    
+    /*
+     * Utility method to check is there an unsaved changes
+     */
+    isSaved : function(){
+        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val()){
+            return true;
+        }else{
+            return false;
+        }
+    },
+    
+    /*
+     * Used to retrieve all the builder items in current app
+     */
+    getBuilderItems : function(callback) {
+        if (callback) {
+            CustomBuilder.builderItemsLoading.push(callback);
+        }
+        
+        if (CustomBuilder.builderItemsLoading.length === 1) {
+            $.ajax({
+                type: "GET",
+                url: CustomBuilder.contextPath + "/web/json/console/app/"+CustomBuilder.appId+"/"+CustomBuilder.appVersion+"/adminbar/builder/menu",
+                dataType: 'json',
+                success: function (data) {
+                    CustomBuilder.builderItems = data;
+                    
+                    var callbacks = $.extend([], CustomBuilder.builderItemsLoading);
+                    CustomBuilder.builderItemsLoading = [];
+                    
+                    for (var i in callbacks) {
+                        callbacks[i](data);
+                    }
+                }
+            });
+        }
+    },
+    
+    /*
+     * Render additional menus to adding bar
+     */
+    intBuilderMenu : function() {
+        if ($("#adminBar").find("#builder-quick-nav").length === 0) {
+            $("#adminBar").find("#appCenter").after('<div id="builder-quick-nav">\
+                <div id="builder-menu" style="display: none;">\
+                    <div id="builder-menu-search">\
+                        <input type="text" placeholder="'+get_cbuilder_msg("cbuilder.search") + '" value="" />\
+                        <button class="clear-backspace" style="display:none;"><i class="la la-close"></i></button>\
+                    </div><ul></ul>\
+                </div></div>');
+
+            $("#builder-menu-search input").on("keyup", function(){
+                var searchText = $(this).val().toLowerCase();
+                $("#builder-menu ul li ul li.item").each(function(){
+                    var element = $(this);
+                    element.hide();
+                    if ($(element).find("a").text().toLowerCase().indexOf(searchText) > -1) { 
+                        element.show();
+                    }
+                });
+                if (searchText !== "") {
+                    $("#builder-menu-search .clear-backspace").show();
+                } else {
+                    $("#builder-menu-search .clear-backspace").hide();
+                }
+            });
+
+            $("#builder-menu-search .clear-backspace").on("click", function(){
+                $("#builder-menu ul li ul li").show();
+                $("#builder-menu-search input").val("");
+                $("#builder-menu-search .clear-backspace").hide();
+            });
+
+            $("#builder-quick-nav").on("click", "a.builder-link", function(){
+                CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
+                return false;
+            });
+
+            $("#builder-menu ul").on("click", "li.addnew a", function(){
+                var type = $(this).data("type");
+                if (type === "process") {
+                    CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
+                } else {
+                    var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/';
+                    if (type === "form" || type === "datalist" || type === "userview") {
+                        url += type + '/create?builderMode=true';
+                    } else {
+                        url += "cbuilder/" + type + "/create?builderMode=false";
+                    }
+                    JPopup.show("navCreateNewDialog", url, {}, "");
+                }
+                return false;
+            });
+        }
+        
+        CustomBuilder.getBuilderItems(CustomBuilder.renderBuilderMenu);
+    },
+    
+    renderBuilderMenu : function(data) {
+        $("#builder-menu > ul").html("");
+        
+        var container = $("#builder-menu > ul");
+        
+        $("#builder-quick-nav .backToApp").remove();
+        $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="las la-arrow-circle-left"></i></a></div>');
+        
+        for (var i in data) {
+            var builder = data[i];
+            var li = $('<li class="builder-icon menu-'+builder.value+'"><span title="'+builder.label+'" style="background: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
+            $(li).find("ul").append('<li class="header">'+builder.label+'</li>');
+            if (builder.elements) {
+                for (var j in builder.elements) {
+                    $(li).find("ul").append('<li class="item" data-id="'+builder.elements[j].id+'" ><a class="builder-link" href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a></li>');
+                }
+            }
+            
+            $(li).find("ul").append('<li class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></li>');
+            container.append(li);
+        }
+
+        $("#builder-menu > ul > li.menu-" + CustomBuilder.builderType).addClass("active");
+
+        $("#builder-menu > ul > li.builder-icon").off("mouseover touch");
+        $("#builder-menu > ul > li.builder-icon").on("mouseover touch", function(){
+            $("#builder-menu > ul > li.builder-icon").removeClass("active");
+            $(this).addClass("active");
+        });
     }
 };
 
@@ -1972,7 +2192,7 @@ CustomBuilder = {
 CustomBuilder.Builder = {
     zoom : 1,
     dragMoveMutation : false,
-    options : {
+    defaultOptions : {
         "enableViewport" : true,
         "enableCopyPaste" : true,
         callbacks : {
@@ -1983,17 +2203,21 @@ CustomBuilder.Builder = {
             "unloadElement" : ""
         }
     },
+    options : {},
     
     /*
      * A stating point to use the default builder
      */
     init : function(options, callback) {
+        CustomBuilder.Builder.options = $.extend(true, {}, CustomBuilder.Builder.defaultOptions);
         CustomBuilder.Builder.options = $.extend(true, CustomBuilder.Builder.options, options);
         
         if (CustomBuilder.Builder.options.enableViewport) {
             $("#top-panel .responsive-buttons").show();
             $("body").addClass("viewport-enabled");
             CustomBuilder.viewport("desktop");
+        } else {
+            $("#top-panel .responsive-buttons").hide();
         }
         
         if (CustomBuilder.Builder.options.enableCopyPaste) {
@@ -2026,11 +2250,14 @@ CustomBuilder.Builder = {
                     }
                 }, false);
             }
+        } else {
+            $("#builderToolbar .copypaste").hide();
         }
         
         var self = this;
         self.selectedEl = null;
 	self.highlightEl = null;
+        self.zoom = 1;
                 
         $("#builder_canvas").append('<div id="iframe-wrapper"> \
                 <div id="iframe-layer"> \
@@ -2074,10 +2301,20 @@ CustomBuilder.Builder = {
     },
     
     /*
+     * Reset to initial state
+     */
+    reset: function() {
+        var self = CustomBuilder.Builder;
+        self.unbindEvent("change.builder");
+        self.unbindEvent("nodeAdditionalSelected nodeAdditionalAdded nodeAdditionalRemoved nodeAdditionalModeChanged");
+        $("body").removeClass("default-builder");
+    },
+    
+    /*
      * Render the json to canvas
      */
     load: function(data, callback) {
-        CustomBuilder.Builder.frameBody.css("opacity", "0.2");
+        CustomBuilder.Builder.frameBody.addClass("initializing");
         
         var self = CustomBuilder.Builder;
         
@@ -2124,7 +2361,7 @@ CustomBuilder.Builder = {
             }
             
             setTimeout(function(){
-                CustomBuilder.Builder.frameBody.css("opacity", "");
+                CustomBuilder.Builder.frameBody.removeClass("initializing");
             }, 1);
         });
         
@@ -5312,7 +5549,11 @@ CustomBuilder.Builder = {
      * A convenient method to unbind to a canvas event 
      */
     unbindEvent : function(eventName, callback) {
-        $(CustomBuilder.Builder.iframe).off(eventName, callback);
+        if (callback) {
+            $(CustomBuilder.Builder.iframe).off(eventName, callback);
+        } else {
+            $(CustomBuilder.Builder.iframe).off(eventName);
+        }
     },
     
     /*

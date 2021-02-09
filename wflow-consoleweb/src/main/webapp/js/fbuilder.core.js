@@ -749,11 +749,7 @@ FormBuilder = {
      * Utility method to check is there an unsaved changes
      */
     isSaved : function(){
-        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val()){
-            return true;
-        }else{
-            return false;
-        }
+        return CustomBuilder.isSaved();
     },
     
     /*
@@ -871,5 +867,13 @@ FormBuilder = {
             return get_cbuilder_msg("fbuilder.reserveIds");
         }
         return null;    
-    }
+    },
+      
+    /*
+     * remove dynamically added items    
+     */            
+    unloadBuilder : function() {
+        $("#tooltip-btn, #table-usage-btn").remove();
+        $("#generator-btn").parent().remove();
+    } 
 }

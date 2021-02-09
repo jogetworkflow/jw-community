@@ -2,7 +2,7 @@
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
-<c:set var="builderLabel" scope="request" value="Userview Builder"/>
+<c:set var="builderLabel" scope="request"><fmt:message key="ubuilder.title"/></c:set>
 <c:set var="builderI18N" scope="request" value=""/>
 <c:set var="builderJS" scope="request">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/ubuilder.core.js?build=<fmt:message key="build.number"/>"></script>
@@ -83,6 +83,7 @@
             },
             "callbacks" : {
                 "initBuilder" : "UserviewBuilder.initBuilder",
+                "unloadBuilder" : "UserviewBuilder.unloadBuilder",
                 "load" : "UserviewBuilder.load",
                 "saveEditProperties" : "UserviewBuilder.saveEditProperties",
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",

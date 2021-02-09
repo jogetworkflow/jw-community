@@ -9,6 +9,17 @@ UserviewBuilder = {
      * Intialize the builder, called from CustomBuilder.initBuilder
      */
     initBuilder: function (callback) {
+        if (CustomBuilder.appPublished === "true") {
+            $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("ubuilder.launch")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("ubuilder.launch")+'</span></button></div>');
+            $("#launch-btn").on("click", function(){
+                if(!CustomBuilder.isSaved()){
+                    alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
+                } else {
+                    window.open(CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+CustomBuilder.id);
+                }
+                return false;
+            })
+        }
         
         UserviewBuilder.initUserviewElements();
         
@@ -1621,5 +1632,12 @@ UserviewBuilder = {
         } else {
             elementObj.properties.id = CustomBuilder.uuid();
         }
-    }
+    },
+      
+    /*
+     * remove dynamically added items    
+     */            
+    unloadBuilder : function() {
+        $("#launch-btn").parent().remove();
+    } 
 }

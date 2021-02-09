@@ -1448,7 +1448,7 @@ public class ConsoleWebController {
         } else {
             String appId = StringEscapeUtils.escapeHtml(appDefinition.getId());
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/forms";
+            String url = contextPath + "/web/console/app/" + appId + "/builders";
             model.addAttribute("url", url);
             return "console/apps/dialogClose";
         }
@@ -1730,7 +1730,7 @@ public class ConsoleWebController {
         } else {
             String appId = appDef.getAppId();
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/forms";
+            String url = contextPath + "/web/console/app/" + appId + "/builders";
             map.addAttribute("url", url);
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
@@ -3713,24 +3713,17 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/forms")
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/forms") 
     public String consoleFormList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(map, appId, version);
-        if (result != null) {
-            return result;
+        if (version != null && !version.isEmpty()) {
+            version = "/" + version;
         }
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        checkAppPublishedVersion(appDef);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-        return "console/apps/formList";
+        return "redirect:/web/console/app/"+appId+version+"/builders";
     }
     
-    @RequestMapping("/console/app/(*:appId)/(~:version)/cbuilders")
-    public String consoleCustomBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/builders")
+    public String consoleBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
@@ -3741,7 +3734,7 @@ public class ConsoleWebController {
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        return "console/apps/cbuilderList";
+        return "console/apps/builders";
     }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
@@ -4240,7 +4233,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/delete", method = RequestMethod.POST)
-    public String consoleFormDelete(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId) {
+    public String consoleFormDelete(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "ids") String formId) {
         String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
@@ -5594,7 +5587,7 @@ public class ConsoleWebController {
         } else {
             String appId = appDef.getAppId();
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/forms";
+            String url = contextPath + "/web/console/app/" + appId + "/builders";
             map.addAttribute("url", url);
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
@@ -5686,6 +5679,7 @@ public class ConsoleWebController {
             elementsArr = new JSONArray();
             for (FormDefinition e : appDef.getFormDefinitionList()) {
                 obj = new HashMap();
+                obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/form/builder/" + e.getId());
                 obj.put("label", e.getName());
                 elementsArr.put(obj);
@@ -5703,6 +5697,7 @@ public class ConsoleWebController {
             elementsArr = new JSONArray();
             for (DatalistDefinition e : appDef.getDatalistDefinitionList()) {
                 obj = new HashMap();
+                obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/datalist/builder/" + e.getId());
                 obj.put("label", e.getName());
                 elementsArr.put(obj);
@@ -5720,6 +5715,7 @@ public class ConsoleWebController {
             elementsArr = new JSONArray();
             for (UserviewDefinition e : appDef.getUserviewDefinitionList()) {
                 obj = new HashMap();
+                obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/userview/builder/" + e.getId());
                 obj.put("label", e.getName());
                 elementsArr.put(obj);
@@ -5740,6 +5736,7 @@ public class ConsoleWebController {
             elementsArr = new JSONArray();
             for (WorkflowProcess p : processList) {
                 obj = new HashMap();
+                obj.put("id", p.getIdWithoutVersion());
                 obj.put("url", baseUrl + "/process/builder#" + p.getIdWithoutVersion());
                 obj.put("label", p.getName());
                 elementsArr.put(obj);
@@ -5759,6 +5756,7 @@ public class ConsoleWebController {
                 for (BuilderDefinition e : appDef.getBuilderDefinitionList()) {
                     if (cb.getObjectName().equals(e.getType())) {
                         obj = new HashMap();
+                        obj.put("id", e.getId());
                         obj.put("url", baseUrl + "/cbuilder/"+cb.getObjectName()+"/design/" + e.getId());
                         obj.put("label", e.getName());
                         elementsArr.put(obj);

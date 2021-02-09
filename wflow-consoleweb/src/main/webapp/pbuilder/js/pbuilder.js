@@ -6,6 +6,18 @@ ProcessBuilder = {
      * Intialize the builder, called from CustomBuilder.initBuilder
      */
     initBuilder: function (callback) {
+        if (CustomBuilder.appPublished === "true") {
+            $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("pbuilder.label.runProcess")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</span></button></div>');
+            $("#launch-btn").on("click", function(){
+                if(!CustomBuilder.isSaved()){
+                    alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
+                } else {
+                    var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + ProcessBuilder.currentProcessData.properties.id;
+                    JPopup.show("runProcessDialog", url, {}, "");
+                }
+                return false;
+            })
+        }
         
         CustomBuilder.Builder.init({
             "enableViewport" : false,
@@ -62,6 +74,7 @@ ProcessBuilder = {
             });
             CustomBuilder.Builder.bindEvent("nodeAdditionalSelected nodeAdditionalAdded nodeAdditionalRemoved nodeAdditionalModeChanged", ProcessBuilder.refreshConnections);
             
+            $(window).off('hashchange');
             $(window).on('hashchange', ProcessBuilder.viewProcess);
 
             var deferreds = [];
@@ -4090,5 +4103,14 @@ ProcessBuilder = {
         }
         
         callback();
+    } ,
+      
+    /*
+     * remove dynamically added items    
+     */            
+    unloadBuilder : function() {
+        $("#process-selector, .zoom-buttons, #listviewer-btn").remove();
+        $("#launch-btn").parent().remove();
+        $(window).off('hashchange');        
     }        
 };

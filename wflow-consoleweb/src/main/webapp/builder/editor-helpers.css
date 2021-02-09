@@ -10,7 +10,22 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.15);
     outline: 1px solid slategrey; }
-
+body:after{
+    content: "";
+    position: fixed;
+    display:none;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index: 999999999;
+    background: #fff;
+    opacity: 0.7;
+    transition: 0.5s display ease-in-out; 
+}
+body.initializing:after{
+    display: block;
+}
 body.is-dragging [data-cbuilder-droparea] {
     min-height: 50px; 
 }

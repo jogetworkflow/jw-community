@@ -54,6 +54,16 @@
                     listFilter($("#nv-unpublished h4"), $("#nv-unpublished ul")); 
                     listFilter($("#nv-published h4"), $("#nv-published ul")); 
                     $("#nv-published h4 input").focus();
+                    
+                    $(".nv-list li a").on("click", function(){
+                        if (window.parent && window.parent['CustomBuilder']) {
+                            window.parent['CustomBuilder'].ajaxRenderBuilder($(this).attr("href"));
+                            window.parent['AdminBar'].hideQuickOverlay();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    });
                 }); 
             }(jQuery)); 
         </script>
@@ -64,7 +74,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appPublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="fas fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders"><span class="nv-link-name"><i class="fas fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>
@@ -74,7 +84,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appUnpublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="far fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders"><span class="nv-link-name"><i class="far fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>

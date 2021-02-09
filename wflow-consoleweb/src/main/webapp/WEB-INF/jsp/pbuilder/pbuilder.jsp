@@ -57,6 +57,7 @@
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",
+                "unloadBuilder" : "ProcessBuilder.unloadBuilder",
                 "load" : "ProcessBuilder.load",
                 "beforeUpdate" : "ProcessBuilder.updateXpdl",
                 "zoomMinus" : "ProcessBuilder.zoomMinus",

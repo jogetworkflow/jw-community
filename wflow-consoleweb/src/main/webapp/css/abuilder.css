@@ -1,0 +1,153 @@
+body {--builder-left-panel-width: 0px !important;}
+#builder_canvas {overflow:scroll; background: #fff;}
+#builders {padding: 30px !important; min-height: calc(100% - 71px); white-space: nowrap; padding-top: 15px !important;}
+#builders > div {display: inline-block; width: 300px; padding: 0 !important; vertical-align: top; background: #f3f3f3; border-radius: 5px; overflow: hidden;}
+#builders > div + div {margin-left: 15px;}
+#builders > div:last-child{margin-right: 30px;}
+.builder-title {padding: 15px; color: #fff; font-weight: bold; position: relative}
+.builder-title .addnew {position: absolute; right: 15px; color: #fff; font-size: 120%; cursor: pointer;}
+.builder-type ul { list-style: none; margin: 0; padding: 15px; max-height: calc(100vh - 270px); overflow-y: auto; min-height: 50px; font-size: 13px;}
+.builder-type ul li {position: relative; border:1px solid #fff; border-radius: 3px; background: #fff;}
+.builder-type ul li a {padding: 10px; text-decoration: none; color: #000; display: block;}
+.builder-type ul li + li {margin-top: 5px;}
+.builder-type ul li:hover{border-color: #0069d9;}
+#builder_canvas .canvas-header {padding-bottom: 0 !important;}
+.builder-actions {display: none; position: absolute; right: 1px; top:6px;}
+.builder-type ul li .builder-actions a {color: #0069d9; font-size: 16px; padding-right: 2px; padding: 2px; border: 0; display: inline-block; cursor: pointer;}
+.builder-type ul li:hover .builder-actions {display:block;}
+#builder_canvas .search-container {display: inline-block; width: 300px}
+#builder_canvas #showTags {margin-left: 20px; cursor: pointer;}
+.builder-process .item .delete {display: none;}
+#builder-quick-nav {display:none !important;}
+.nv-tags {
+    font-size: 10px;
+    line-height: 14px; 
+    padding: 0px 10px 10px;
+}
+.nv-tags label {
+    display: inline;
+}
+.nv-tag, .nv-tag-plus {
+    display: inline-block;
+    color:#fff;
+    padding: 2px 6px;
+    margin-right: 4px;
+    margin-top: 3px;
+    border-radius:3px;
+}
+.nv-tag {
+    min-width: 30px;
+    height: 18px;
+    vertical-align: top;
+    cursor: pointer;
+}
+.nv-tag-plus{
+    background: #999797;
+    opacity: 0.7;
+}
+.nv-tag-plus:hover{
+    background: #999797;
+    opacity: 1;
+}
+.tag-red {
+    background:#eb5a46;
+}
+.tag-pink {
+    background:#ff78cb;
+}
+.tag-orange {
+    background:#ff9f1a;
+}
+.tag-yellow {
+    background:#f2d600;
+}
+.tag-green {
+    background:#61bd4f;
+}
+.tag-lime {
+    background:#51e898;
+}
+.tag-blue {
+    background:#0079bf;
+}
+.tag-sky {
+    background:#00c2e0;
+}
+.tag-purple {
+    background:#c377e0;
+}
+.tag-black {
+    background:#344563;
+}
+.tooltipster-shadow.tooltipster-right .tooltipster-box{
+    background: #fff;
+}
+#tooltip-tags {
+    width: 250px;
+    max-height: 90vh;
+    max-width: 480px;
+    font-size: 13px;
+}
+#tooltip-tags h4 {
+    margin: 10px 0;
+    color: #000;
+    border-bottom: 1px solid #e4e9e8;
+    padding-bottom: 10px;
+    position: relative;
+    font-size: 16px;
+}
+#tooltip-tags h4 a.close{
+    position: absolute;
+    right: 0px;
+}
+#tooltip-tags .tag-options .nv-tag {
+    width: calc(100% - 20px);
+    margin-bottom: 2px;
+    padding: 5px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    height: 30px;
+}
+#tooltip-tags .tag-options .nv-tag .check {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    visibility: hidden;
+}
+#tooltip-tags .tag-options .checked.nv-tag .check {
+    visibility: visible;
+}
+#tooltip-tags .tag-buttons{
+    border-top: 1px solid #e4e9e8;
+    margin-top: 10px;
+    padding: 10px 0;
+}
+#tooltip-tags .tag-buttons .delete{
+    color: red;
+}
+#tooltip-tags a {
+    cursor: pointer;
+    color: #007bff;
+}
+#tooltip-tags .tag-options a {
+    display: inline-block;
+    margin-top: 8px;
+}
+#tooltip-tags .field-row label{
+    display: block;
+    color: #535353;
+}
+#tooltip-tags .field-row input {
+    width: 100%;
+}
+#tooltip-tags .field-row .colors > div {
+    text-align: center;
+    cursor: pointer;
+}
+#tooltip-tags .field-row .colors > div i {
+    visibility: hidden;
+}
+#tooltip-tags .field-row .colors > div.checked i {
+    visibility: visible;
+}
