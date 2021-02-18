@@ -432,6 +432,6 @@ ul#databuilderContentFilters .builder-palette-column{
 #datalistbuilder .controls{
     margin-right: 15px;
 }
-#datalistbuilder #source{
+#datalistbuilder #tabpanels > #source{
     height: calc(100vh - 130px);
 }
