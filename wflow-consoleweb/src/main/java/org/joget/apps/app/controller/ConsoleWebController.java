@@ -2841,8 +2841,14 @@ public class ConsoleWebController {
             sort = "name";
             desc = false;
         }
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = null;
+        if (version == null || version.isEmpty()) {
+            Long appVersion = appService.getPublishedVersion(appId);
+            if (appVersion != null) {
+                version = appVersion.toString();
+            }
+        }    
+        appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
         } else {
@@ -2997,8 +3003,14 @@ public class ConsoleWebController {
             sort = "name";
             desc = false;
         }
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = null;
+        if (version == null || version.isEmpty()) {
+            Long appVersion = appService.getPublishedVersion(appId);
+            if (appVersion != null) {
+                version = appVersion.toString();
+            }
+        }
+        appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, sort, desc, start, rows);
         } else {

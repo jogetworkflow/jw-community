@@ -77,8 +77,12 @@
                         });
                     }
                 };
-                
-                ConnectionManager.get('<c:out value="${pageContext.request.contextPath}"/>/web/json/console/app/'+$(this).val()+'/datalist/options', populate);
+                if ($("#copyAppId").val()==='${appId}') {
+                    version ='/${appVersion}';
+                } else {
+                    version='';
+                }
+                ConnectionManager.get('<c:out value="${pageContext.request.contextPath}"/>/web/json/console/app/'+$(this).val()+version+'/datalist/options', populate);
             });
             $("#copyAppId").trigger("change");
         });    
