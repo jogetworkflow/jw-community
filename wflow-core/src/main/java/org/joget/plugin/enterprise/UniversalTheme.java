@@ -141,7 +141,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     public String getMetas(Map<String, Object> data) {
 
         String meta = super.getMetas(data) + "\n";
-        meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+        if ((Boolean) data.get("is_login_page")) {
+            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\">\n";
+        } else {
+            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+        }
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
         meta += getInternalMetas(data);
         return meta;
