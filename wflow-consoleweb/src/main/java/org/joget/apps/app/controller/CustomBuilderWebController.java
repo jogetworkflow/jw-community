@@ -139,8 +139,14 @@ public class CustomBuilderWebController {
             sort = "name";
             desc = false;
         }
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = null;
+        if (version == null || version.isEmpty()) {
+            Long appVersion = appService.getPublishedVersion(appId);
+            if (appVersion != null) {
+                version = appVersion.toString();
+            }
+        }
+        appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             builderDefinitionList = builderDefinitionDao.getBuilderDefinitionList(type, null, appDef, sort, desc, start, rows);
         } else {
