@@ -68,7 +68,7 @@ var AdminBar = {
     },
     togglePinQuickOverlay: function() {
         var pinActive =  $.cookie("pinModeActive");
-        if (pinActive === "true") {
+        if (pinActive === undefined || pinActive === null || pinActive === "true") {
             pinActive = "false";
         } else {
             pinActive = "true";
@@ -157,7 +157,7 @@ var AdminBar = {
     },
     initPinMode: function() {
         var pinActive =  $.cookie("pinModeActive");
-        if (pinActive === "true") {
+        if (pinActive === undefined || pinActive === null || pinActive === "true") {
             $("#quickOverlayContainer").addClass("pinned");
             $("#quickOverlayButton a.pin").removeClass("disabled");
         } else {
