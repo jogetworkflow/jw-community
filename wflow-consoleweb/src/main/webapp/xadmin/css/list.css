@@ -1,17 +1,17 @@
-body .dataList table {
+.dataList .table-wrapper {
     overflow-x: auto;
-    display: block;
 }
-body .dataList table::-webkit-scrollbar {
+
+.dataList .table-wrapper::-webkit-scrollbar {
     -webkit-appearance: none;
 }
-body .dataList table::-webkit-scrollbar:vertical {
+.dataList .table-wrapper::-webkit-scrollbar:vertical {
     width: 8px;
 }
-body .dataList table::-webkit-scrollbar:horizontal {
+.dataList .table-wrapper::-webkit-scrollbar:horizontal {
     height: 8px;
 }
-body .dataList table::-webkit-scrollbar-thumb {
+.dataList .table-wrapper::-webkit-scrollbar-thumb {
     border-radius: 4px;
     border: 0; 
     background-color: rgba(0, 0, 0, .3);
