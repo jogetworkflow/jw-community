@@ -15,32 +15,32 @@ AppBuilder = {
         $("#design-btn").after('<button class="btn btn-light" title="Version" id="versions-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="versions" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-list-ol"></i> <span>Versions</span></button>');
         
         $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" title="Export" id="export-btn" data-cbuilder-action="exportApp"><i class="las la-file-export"></i> <span>Export</span></button></div>');
-        $("#export-btn").on("click", function(){
-            
-            return false;
-        });
         
         $('#save-btn').hide();
         $('#save-btn').after(' <button class="btn btn-secondary btn-icon" style="display:none;" title="Unpublish" id="unpublish-btn" data-cbuilder-action="unpublishApp"><i class="las la-cloud-download-alt"></i> <span>Unpublish</span></button>\
             <button class="btn btn-primary btn-icon" style="display:none;" title="Publish" id="publish-btn" data-cbuilder-action="publishApp"><i class="las la-cloud-upload-alt"></i> <span>Publish</span></button>');
         
-        
+        $("#builder_canvas").off("click", " li.item a.item-link");
         $("#builder_canvas").on("click", " li.item a.item-link", function(){
             CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
             return false;
         });
+        $("#builder_canvas").off("click", " li.item a.delete");
         $("#builder_canvas").on("click", " li.item a.delete", function(){
             AppBuilder.deleteItem($(this).closest(".item"));
             return false;
         });
+        $("#builder_canvas").off("click", " li.item a.launch");
         $("#builder_canvas").on("click", " li.item a.launch", function(){
             window.open(CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+$(this).closest(".item").attr("data-id"));
             return false;
         });
+        $("#builder_canvas").off("click", " li.item a.runprocess");
         $("#builder_canvas").on("click", " li.item a.runprocess", function(){
             JPopup.show("runProcessDialog", url, {}, "");
             return false;
         });
+        $("#builder_canvas").off("click", ".addnew");
         $("#builder_canvas").on("click", ".addnew", function(){
             var type = $(this).data("builder-type");
             if (type === "process") {
@@ -56,6 +56,8 @@ AppBuilder = {
             }
             return false;
         });
+        
+        $("body").removeClass("quick-nav-shown");
         
         callback();
     },
@@ -178,8 +180,6 @@ AppBuilder = {
         }
         $("#builder_canvas").css("opacity", "1");
         
-        CustomBuilder.renderBuilderMenu(data);
-        
         Nav.refresh();
     },
     
@@ -237,6 +237,60 @@ AppBuilder = {
     
     saveBuilderProperties: function() {
         
+    },
+    
+    publishApp: function() {
+        var callback = {
+            success : function() {
+                $("#unpublish-btn").show();
+                $("#publish-btn").hide();
+                CustomBuilder.appPublished = "true";
+            }
+        };
+        ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
+    },
+    
+    unpublishApp: function() {
+        var callback = {
+            success : function() {
+                $("#publish-btn").show();
+                $("#unpublish-btn").hide();
+                CustomBuilder.appPublished = "false";
+            }
+        };
+        ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
+    },
+    
+    exportApp: function() {
+        JPopup.show("exportAppDialog", CustomBuilder.contextPath + "/web/console/app"+CustomBuilder.appPath+"/exportconfig?", {}, "");
+    },
+    
+    envVariablesViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/envVariable"></iframe>');
+    },
+    
+    resourcesViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/resources"></iframe>');
+    },
+    
+    pluginDefaultPropertiesViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/properties"></iframe>');
+    },
+    
+    performanceViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance"></iframe>');
+    },
+    
+    logViewerViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/logs"></iframe>');
+    },
+    
+    logViewerViewBeforeClosed: function(view) {
+        view.html("");
+    },
+    
+    versionsViewInit: function(view) {
+        view.html('<iframe src="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/versioning"></iframe>');
     },
     
     /*

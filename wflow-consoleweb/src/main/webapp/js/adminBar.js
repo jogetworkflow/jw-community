@@ -254,12 +254,6 @@ var AdminBar = {
         if (window === parent) {
             $("#adminControl").css("display", "block");
         }
-        
-        if (AdminBar.builderMode && window["CustomBuilder"] !== undefined) {
-            setTimeout(function(){
-                CustomBuilder.intBuilderMenu();
-            }, 100); //delay the loading to prevent it block the builder ajax call
-        }
     },
     showAdminBar: function() {
         $("body, html").addClass("adminBarShown");

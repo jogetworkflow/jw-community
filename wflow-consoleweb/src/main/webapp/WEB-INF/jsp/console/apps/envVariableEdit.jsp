@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader  bodyCssClass=" builder-popup"/>
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
     

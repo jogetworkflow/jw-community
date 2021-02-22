@@ -1490,22 +1490,6 @@ public class ConsoleWebController {
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
         
-        map.addAttribute("isGitDisabled", AppDevUtil.isGitDisabled());
-
-        Properties props = AppDevUtil.getAppDevProperties(appDef);
-        String properties = "{}";
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
-        jsonObject.accumulate(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
-        jsonObject.accumulate("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_URI, props.getProperty(AppDevUtil.PROPERTY_GIT_URI));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_USERNAME, props.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_PASSWORD, props.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
-        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
-        properties = jsonObject.toString(4);
-        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         return "console/apps/appVersion";
     }
 
@@ -3036,9 +3020,50 @@ public class ConsoleWebController {
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("protectedReadonly", protectedReadonly);
-
-        map.addAttribute("localeList", messageDao.getLocaleList(appDef));
+        
         return "console/apps/properties";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable")
+    public String consoleEnvVariable(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        String result = checkVersionExist(map, appId, version);
+        boolean protectedReadonly = false;
+        if (result != null) {
+            protectedReadonly = result.contains("status=invalidLicensor");
+            if (!protectedReadonly) {
+                return result;
+            }
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        map.addAttribute("protectedReadonly", protectedReadonly);
+        
+        return "console/apps/envVariable";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/resources")
+    public String consoleResources(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        String result = checkVersionExist(map, appId, version);
+        boolean protectedReadonly = false;
+        if (result != null) {
+            protectedReadonly = result.contains("status=invalidLicensor");
+            if (!protectedReadonly) {
+                return result;
+            }
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        map.addAttribute("protectedReadonly", protectedReadonly);
+        
+        return "console/apps/resources";
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/create")
@@ -3117,7 +3142,7 @@ public class ConsoleWebController {
             }
         } else {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=message";
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/message";
             map.addAttribute("url", url);
             return "console/dialogClose";
         }
@@ -3299,7 +3324,7 @@ public class ConsoleWebController {
         }
         
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=message";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/message";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }
@@ -3372,7 +3397,7 @@ public class ConsoleWebController {
             }
         } else {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=variable";
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/envVariable";
             map.addAttribute("url", url);
             return "console/dialogClose";
         }
@@ -3455,7 +3480,7 @@ public class ConsoleWebController {
             AppResourceUtil.storeFile(appDef, file, false);
             
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=resources";
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
             map.addAttribute("url", url);
             return "console/dialogClose";
         }
@@ -3495,7 +3520,7 @@ public class ConsoleWebController {
         appResourceDao.update(appResource);
         
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=resources";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }
@@ -3662,7 +3687,7 @@ public class ConsoleWebController {
             pluginDefaultPropertiesDao.update(pluginDefaultProperties);
         }
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=pluginDefault";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }

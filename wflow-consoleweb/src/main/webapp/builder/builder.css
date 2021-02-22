@@ -74,8 +74,8 @@ body:after{
 body.initializing:after{
     display: block;
 }
-html.adminBarShown {
-    padding-left: 40px;
+body.quick-nav-shown {
+    padding-left: 30px;
     transition: 0.35s padding-left ease-in-out;
 }
 
@@ -225,9 +225,9 @@ html.adminBarShown {
     font-size: 12px;
     padding: 5px 10px;
 }
-#cbuilder.adminBarShown #bottom-panel {
-    left: calc(15vw + 40px);
-    left: calc( var(--builder-left-panel-width) + var(--builder-canvas-margin) + 40px);
+#cbuilder.quick-nav-shown #bottom-panel {
+    left: calc(15vw + 30px);
+    left: calc( var(--builder-left-panel-width) + var(--builder-canvas-margin) + 30px);
 }
 #cbuilder #bottom-panel #vvveb-code-editor {
     width: 100%;
@@ -365,8 +365,8 @@ html.adminBarShown {
 #cbuilder.default-builder #builder_canvas {
     max-width: 1200px;
 }
-#cbuilder.adminBarShown #builder_canvas {
-    width: calc( 100vw - 40px - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+#cbuilder.quick-nav-shown #builder_canvas {
+    width: calc( 100vw - 30px - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
 }
 #cbuilder.default-builder #builder_canvas {
     overflow: hidden;
@@ -383,8 +383,8 @@ html.adminBarShown {
     left: calc(50% - ((768px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width))/2)); 
     background: #eee;
 }
-#cbuilder.adminBarShown #builder_canvas.tablet {
-    left: calc(50% - ((768px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 40px)/2)); 
+#cbuilder.quick-nav-shown #builder_canvas.tablet {
+    left: calc(50% - ((768px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 30px)/2)); 
 }
 #cbuilder #builder_canvas.mobile{
     width: 320px !important;
@@ -392,8 +392,8 @@ html.adminBarShown {
     left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width))/2)); 
     background: #eee;
 }
-#cbuilder.adminBarShown #builder_canvas.mobile {
-    left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 40px)/2)); 
+#cbuilder.quick-nav-shown #builder_canvas.mobile {
+    left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 30px)/2)); 
 }
 #cbuilder #builder_canvas > *:not(#iframe-wrapper) {
     padding: 30px;
@@ -1084,8 +1084,8 @@ div.section, .header > ol {
     z-index: 10;
     overflow: none;
 }
-#cbuilder.adminBarShown .builder-view {
-    left: 40px;
+#cbuilder.quick-nav-shown .builder-view {
+    left: 30px;
 }
 .builder-view-header h3 {
     font-size: 24px;
@@ -1099,9 +1099,20 @@ div.section, .header > ol {
     height: calc(100% - 57px);
     overflow-y: auto;
     padding:20px 20px 55px;
+    position: relative;
 }
 .builder-view-body h3{
     font-size: 16px;
+}
+.builder-view-body iframe{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 .ui-tooltip {
     padding: 5px 5px;
@@ -1677,28 +1688,26 @@ body.property-editor-right-panel table.boxy-wrapper x.property-editor-container{
 
 
 /* Quick Nav */
-#adminControl {
-    display: none !important;
+body #quick-nav-bar {
+    width:0px;
+    position: fixed;
+    top: 0px;
+    bottom:0;
+    left: 0;
+    text-align: left;
+    z-index: 2000;
+    transition: 0.35s all ease-in-out;
+    background: #ddd;
+    overflow: hidden;
 }
-body #builder-quick-nav {
-    display:none;
+body.quick-nav-shown #quick-nav-bar {
+    width:30px;
 }
-#adminBar:hover {
-    overflow: visible;
-}
-body.adminBarShown #builder-quick-nav {
-    width:40px;
-    margin: 25px 0;
-    padding-top: 15px;
+body.quick-nav-shown #builder-quick-nav {
+    width:30px;
     display:block;
-}
-body.adminBarShown #builder-quick-nav:before{
-    content: "";
+    top:calc(var(--builder-header-top-height) + 20px);
     position: absolute;
-    top: 63px;
-    border-top: 1px solid #fff;
-    left: 8px;
-    right: 8px;
 }
 #builder-quick-nav #builder-menu {
     display: block !important;
@@ -1706,7 +1715,15 @@ body.adminBarShown #builder-quick-nav:before{
 #builder-quick-nav #builder-menu-search{
     display: none;
 }
-#builder-quick-nav #builder-menu:hover #builder-menu-search{
+#quick-nav-bar.active{
+    overflow: visible;
+    width:40px !important;
+    background: #39505d;
+}
+#quick-nav-bar.active #builder-quick-nav {
+    width:40px;
+}
+#quick-nav-bar.active #builder-menu #builder-menu-search{
     display: block;
 }
 #builder-menu ul {
@@ -1717,26 +1734,36 @@ body.adminBarShown #builder-quick-nav:before{
 #builder-menu ul li {
     padding: 5px 4px;
 }
-#builder-menu ul li > span {
+#quick-nav-bar:not(.active) #builder-menu ul li {
+    padding: 5px 0px;
+}
+#builder-menu ul li.builder-icon > span {
     display: block;
     width: 30px;
     height: 30px;
     border-radius: 50%;
     opacity: 0.3;
+    text-align: center;
+    cursor: pointer;
 }
-#builder-quick-nav #builder-menu:hover ul li.active {
+#quick-nav-bar:not(.active) #builder-menu ul li > span {
+    background: transparent !important;
+}
+#quick-nav-bar.active #builder-menu:hover ul li.active {
     background: #455a65;
 }
+#quick-nav-bar.active #builder-menu ul li.active > span,
 #builder-quick-nav #builder-menu:hover ul li.active > span {
     opacity: 1;
 }
 #builder-menu ul li ul li{
     padding: 5px 15px;
     color: #fff;
+    position: relative;
 }
-#builder-menu ul li ul {
+#quick-nav-bar #builder-menu ul li ul {
     display: block;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 40px;
     height: 100%;
@@ -1744,22 +1771,23 @@ body.adminBarShown #builder-quick-nav:before{
     background: #455a65;
     color: #000;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
     width: 0px;
     font-size: 13px;
     padding: 60px 0 30px;
 }
-#builder-quick-nav #builder-menu:hover ul li.active ul {
+#quick-nav-bar.active #builder-menu ul li.active ul {
     width: 300px !important;
     min-width: var(--builder-logo-width);
     max-width: 100vw;
+    overflow: auto;
 }
-#builder-menu ul li > span i {
+#quick-nav-bar.active #builder-menu ul li > span i {
     font-size: 17px;
     padding: 6px 0px;
     width: 30px;
     text-align: center;
-    color:#fff;
+    color:#fff !important;
 }
 #builder-menu ul li ul li:hover:not(.header):not(.subheader) {
     background: #007bff;
@@ -1773,17 +1801,23 @@ body.adminBarShown #builder-quick-nav:before{
     color: #fff;
     text-decoration: none;
 }
-#builder-menu ul li ul li.header{
+#builder-menu ul li ul li.header span.header-label{
     font-size: 16px;
     font-weight: bold;
     text-decoration: underline;
+}
+#builder-menu ul li ul li.header span.addnew{
+    display: inline-block;
+    right: 15px;
+    position: absolute;
+    top: 0;
 }
 #builder-menu ul li ul li.subheader{
     font-weight: bold;
     margin-top: 15px;
     color:#ddd;
 }
-#builder-menu ul li ul li.addnew a i{
+#builder-menu ul li ul span.addnew a i{
     font-size: 13px;
     padding: 0px;
 }
@@ -1831,24 +1865,34 @@ body.adminBarShown #builder-quick-nav:before{
     font-size: 16px !important;
 }
 .backToApp a{
-    color: #CFD8DC;
-    font-size: 30px;
+    color: #000;
+    font-size: 20px;
     text-align: center;
-    width: 40px;
+    width: 30px;
     display: block;
+    margin-bottom: 15px;
 }
-.backToApp a:hover {
+#quick-nav-bar.active .backToApp a{
+    width: 40px;
+    font-size: 30px;
     color: #fff;
 }
-#quickEditModeOption {
-    display: none;
+.backToApp a:hover {
+    opacity: 0.7;
+}
+#quick-nav-bar.active #closeQuickNav{
+    display: block !important;
+    color: #ccc;
+    font-size: 25px;
+    padding: 10px 5px;
+    text-align: center;
 }
 
 /* Messages */
 #builder-message {
     position: fixed; 
-    top: 70px; 
-    left: calc(var(--builder-left-panel-width) + 10px);
+    top: 85px; 
+    right: calc(var(--builder-right-panel-width) + 15px);
     z-index: 1000;
 }
 #builder-message .toast{

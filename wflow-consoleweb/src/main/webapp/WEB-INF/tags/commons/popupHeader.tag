@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ tag import="org.joget.apps.app.service.AppUtil"%>
 <%@ attribute name="title" %>
+<%@ attribute name="bodyCssClass" required="false"%>
 
 <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
 
@@ -28,7 +29,7 @@
         </c:choose>    
         <script>
             $(function() {
-                if (window.self !== window.top) {
+                if (window.self !== window.top && $("#main-body-header").length > 0) {
                     var wh = $(window.self).height() - $("#main-body-header").outerHeight(true) - 40;
                     $("body.popupBody").css("width", "99.9%");
                     $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
@@ -45,4 +46,4 @@
             </c:if>
         </script>
     </head>
-    <body class="popupBody">
+    <body class="popupBody ${bodyCssClass}">

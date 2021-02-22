@@ -670,7 +670,7 @@ body .boxy-wrapper > tbody > tr > td:last-child{
 body .boxy-wrapper .boxy-inner .title-bar {
     
 }
-body.popupBody {
+body.popupBody:not(.no-header) {
     padding-top: 48px;
 }
 .boxy-content-header,
@@ -1949,4 +1949,42 @@ span.dot_yellow{
     body#webconsole #home-box .welcome-box + .welcome-box {
         margin-top: 35px;
     }
+}
+
+/* builder popup styling */
+body.builder-popup #main-body-header{
+    background: #0069d9;
+}
+body.builder-popup #main-body-content{
+    padding: 20px;
+}
+body.builder-popup .form-button, 
+body.builder-popup .btn,
+body.builder-popup button,
+body.builder-popup .input[type='button'],
+body.builder-popup .input[type='submit'],
+body.builder-popup .smallbutton{
+    background: #0069d9;
+}
+body.builder-popup .form-button:focus, 
+body.builder-popup button:focus, 
+body.builder-popup input[type='button']:focus, 
+body.builder-popup input[type='submit']:focus, 
+body.builder-popup .smallbutton:focus, 
+body.builder-popup .btn:focus{
+    background: #007bff !important;
+}
+body.builder-popup button:before, 
+body.builder-popup input[type='button']:before, 
+body.builder-popup input[type='submit']:before, 
+body.builder-popup .smallbutton:before, 
+body.builder-popup .btn:before{
+    background: #007bff;
+}
+body.builder-popup button:hover, 
+body.builder-popup input[type='button']:hover, 
+body.builder-popup input[type='submit']:hover, 
+body.builder-popup .smallbutton:hover, 
+body.builder-popup .btn:hover{
+    background-color: #007bff;
 }

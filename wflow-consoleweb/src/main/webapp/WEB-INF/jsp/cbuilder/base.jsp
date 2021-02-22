@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.app.service.AppDevUtil"%>
+
 <c:set var="isAjaxRender" scope="request" value="${pageContext.request.getHeader('_ajax-rendering')}"/>
 
 <c:choose>
@@ -40,6 +42,8 @@
         }
     </c:when>
     <c:otherwise>
+        <c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
+        
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
             <head>
@@ -278,6 +282,7 @@
                     </div>
                     <fmt:message key="console.builder.footer"/>
                 </div>
+                <div id="quick-nav-bar"></div>
 
                 <div id="builder-message"></div>
                 <div id="builder-screenshot"></div>
@@ -317,6 +322,7 @@
                             CustomBuilder.builderIcon = '<c:out value="${builderIcon}"/>';
                             CustomBuilder.id = '<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>';
                             CustomBuilder.buildNumber = '<fmt:message key="build.number"/>';
+                            CustomBuilder.isGitDisabled = '${isGitDisabled}';
 
                             CustomBuilder.initConfig(${builderConfig});
                             CustomBuilder.initPropertiesOptions(${builderProps});

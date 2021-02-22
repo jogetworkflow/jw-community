@@ -57,7 +57,17 @@
                 "unloadBuilder" : "AppBuilder.unloadBuilder",
                 "load" : "AppBuilder.load",
                 "getBuilderProperties" : "AppBuilder.getBuilderProperties",
-                "saveBuilderProperties" : "AppBuilder.saveBuilderProperties"
+                "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
+                "publishApp" : "AppBuilder.publishApp",
+                "unpublishApp" : "AppBuilder.unpublishApp",
+                "envVariablesViewInit" : "AppBuilder.envVariablesViewInit",
+                "resourcesViewInit" : "AppBuilder.resourcesViewInit",
+                "pluginDefaultPropertiesViewInit" : "AppBuilder.pluginDefaultPropertiesViewInit",
+                "performanceViewInit" : "AppBuilder.performanceViewInit",
+                "logViewerViewInit" : "AppBuilder.logViewerViewInit",
+                "logViewerViewBeforeClosed" : "AppBuilder.logViewerViewBeforeClosed",
+                "versionsViewInit" : "AppBuilder.versionsViewInit",
+                "exportApp" : "AppBuilder.exportApp"
             }
         },
         "advanced_tools" : {

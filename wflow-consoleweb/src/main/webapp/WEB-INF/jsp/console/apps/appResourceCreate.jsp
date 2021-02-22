@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader/>
+<commons:popupHeader bodyCssClass=" builder-popup"/>
     <div id="main-body-header">
         <fmt:message key="console.app.resources.create.label"/>
     </div>

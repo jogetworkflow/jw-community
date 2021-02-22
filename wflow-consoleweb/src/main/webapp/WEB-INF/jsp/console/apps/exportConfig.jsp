@@ -5,7 +5,7 @@
 
 <c:set var="isSecureMode" value="<%= SetupManager.isSecureMode() %>"/>
 
-<commons:popupHeader/>
+<commons:popupHeader bodyCssClass="builder-popup" />
     <div id="main-body-header">
         <fmt:message key="console.app.export.label.title"/>
     </div>
@@ -66,8 +66,8 @@
         $(function(){
             $("#exportform").on("submit", function(){
                 setTimeout(function(){
-                    if (parent && parent.closeDialog) {
-                        parent.closeDialog();
+                    if (parent && parent.CustomBuilder) {
+                        parent.JPopup.hide("exportAppDialog");
                     }
                 }, 100);
                 return true;

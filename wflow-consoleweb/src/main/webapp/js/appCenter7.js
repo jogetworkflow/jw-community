@@ -29,7 +29,7 @@ var AppCenter = {
         }
     },
     designApp: function(event,appId, appVersion, userviewId) {
-        AdminBar.showQuickOverlay(UI.base + "/web/console/app/" + appId + "/" + appVersion + "/forms");
+        window.open(UI.base + "/web/console/app/" + appId + "/" + appVersion + "/builders", "app-board-window");
         event.preventDefault();
         event.stopPropagation();
     }, 

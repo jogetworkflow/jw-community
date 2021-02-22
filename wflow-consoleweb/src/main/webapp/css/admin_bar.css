@@ -1,5 +1,13 @@
 html.adminBarShown {
-    padding-left: 40px;
+    padding-bottom: 30px;
+}
+@supports (-webkit-overflow-scrolling: touch) {
+    html.adminBarShown {
+        padding-bottom: 0px;
+    }
+    html.adminBarShown body {
+        padding-bottom: 30px;
+    }
 }
 #adminControl {
     display: none;
@@ -31,20 +39,23 @@ body #adminBar {
     display: block;
 }
 #adminBar {
-    display: block !important;
     position: fixed;
-    top: 0px;
-    bottom:0;
-    left: 0;
+    right: 0px;
+    bottom: 0;
+    width: 100%;
     background: #37474F;
-    width:0px;
-    text-align: left;
-    z-index: 999999999;
-    overflow: hidden;
-    transition: 0.35s width ease-in-out;
+    border-radius: 0px;
+    z-index: 10000;
+    opacity: 1;
+    height: 30px;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
 }
-html.adminBarShown #adminBar {
-    width:40px;
+body.rtl #adminBar {
+    transform-origin: 100% 50%;
+    left: 0;
+    right: auto;
 }
 body.embeded #adminBar {
     display: none;
@@ -52,28 +63,35 @@ body.embeded #adminBar {
 #adminBar.adminBarInactive {
     width: 0px;
 }
-#adminBar #appCenter{
-    color: #fff;
+#adminBar #appCenter {
+    position: absolute;
     display: block;
-    width: 40px;
+    background: #37474F;
+    bottom: 0px;
+    left: 10px;
+    width: 41px;
     height: 40px;
-    font-size: 30px;
-    padding: 4px;
-    margin-bottom: 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-size: auto 125%;
+}
+body.rtl #adminBar #appCenter {
+    left: auto;
+    right: 10px;
+}
+#adminBar #appCenter i{
+    font-size: 36px;
+    padding: 2px 3px;
+    color : #CFD8DC;
 }
 #adminBarButtons {
     vertical-align: top;
+    margin-left: 55px;
     display: inline-block;
-    position: relative;
-    padding-top: 15px;
 }
-#adminBarButtons:before{
-    content: "";
-    position: absolute;
-    top:0;
-    border-top: 1px solid #fff;
-    left: 8px;
-    right: 8px;
+body.rtl #adminBarButtons {
+    margin-left: 0px;
+    margin-right: 55px;
 }
 #quickEditModeOption > div,
 #adminBarButtons > div {
@@ -83,24 +101,28 @@ body.embeded #adminBar {
 #adminBarButtons > div > a {
     display: block;
     color: #CFD8DC;
-    padding: 8px;
+    padding: 8px 6px;
     text-decoration: none;
     font-size: 13px;
     line-height: 14px;
     height: 30px;
     box-sizing: border-box;
-    text-align: center;
-    width: 40px;
 }
-#quickEditModeOption > div > a > span,
-#adminBarButtons > div > a > span {
-    display: none;
+#quickEditModeOption > div > a > i,
+#adminBarButtons > div > a > i {
+    margin-right: 5px;
+}
+body.rtl #quickEditModeOption > div > a > i,
+body.rtl #adminBarButtons > div > a > i {
+    margin-right: 0;
+    margin-left: 5px;
 }
 #quickEditModeOption > div > a:not(.off),
 #adminBarButtons > div > a.current,
 #adminBarButtons > div > a:hover {
     color: #fff;
     background: #37474F;
+    border-bottom: 2px solid #fff;
 }
 #quickEditModeOption > div > a > .off {
     display: none;
@@ -217,9 +239,9 @@ body.rtl .quickOverlayButton {
 }
 #quickOverlayFrameDiv {
     position: fixed;
-    height: calc(100% - 1px);
-    width: calc(100% - 65px);
-    bottom: 1px;
+    height: calc(100% - 35px);
+    width: calc(100% - 50px);
+    bottom: 30px;
     right: 25px;
     z-index: 3000;
     border: none;
@@ -567,5 +589,4 @@ body.fixiosframe.stop-scrolling {
     #quickOverlayFrameDiv {
         height: calc(100% - 49px);
     }
-}        
-        
+}

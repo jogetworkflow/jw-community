@@ -5,6 +5,8 @@
         if (parent && parent.AdminBar.showQuickOverlay) {
             parent.PopupDialog.closeDialog();
             parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
+        } if (parent && parent.reloadTable) {
+            parent.reloadTable();
         } else {
             if (parent != self) {
                 parent.location.href="<c:out value="${url}"/>";
