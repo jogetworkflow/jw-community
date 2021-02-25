@@ -100,13 +100,12 @@ var Usages = {
                     $("#delete_usage_check").html("");
                 }
                 
-                $("#delete_usage_check").append('<h2>'+options.confirmMessage+' <a class="button confirm">'+options.confirmLabel+'</a><a class="button close">'+options.cancelLabel+'</a></h2><div id="usages"><ul class="item_usages_container"></ul></div></div>');
-                
-                $("#delete_usage_check a.confirm").on("click", function(){
+                $("#delete_usage_check").append('<h4>' + options.confirmMessage + ' <span><a class="btn btn-primary btn-sm confirm">' + options.confirmLabel + '</a> <a class="btn btn-secondary btn-sm closeBtn">' + options.cancelLabel + '</a></span></h4><div id="usages"><ul class="item_usages_container"></ul></div></div>');
+                $("#delete_usage_check a.confirm").on("click", function() {
                     Usages.dialog.hide();
                     deleteCallback();
                 });
-                $("#delete_usage_check a.close").on("click", function(){
+                $("#delete_usage_check a.closeBtn").on("click", function() {
                     Usages.dialog.hide();
                 });
                 

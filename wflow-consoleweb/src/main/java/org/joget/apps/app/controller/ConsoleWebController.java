@@ -3065,88 +3065,6 @@ public class ConsoleWebController {
         
         return "console/apps/resources";
     }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/message/create")
-    public String consoleAppMessageCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        map.addAttribute("localeList", getSortedLocalList());
-
-        Message message = new Message();
-        message.setLocale(AppUtil.getAppLocale());
-        map.addAttribute("message", message);
-        return "console/apps/messageCreate";
-    }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit")
-    public String consoleAppMessageEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        Message message = messageDao.loadById(id, appDef);
-        map.addAttribute("message", message);
-        return "console/apps/messageEdit";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleAppMessageSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("message") Message message, BindingResult result) {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        // validation
-        validator.validate(message, result);
-        message.setAppDefinition(appDef);
-        
-        boolean invalid = result.hasErrors();
-        if (invalid && result.getErrorCount() == 1 && result.hasFieldErrors("id")) {
-            invalid = false;
-        }
-        
-        if (!invalid) {
-            // check error
-            Collection<String> errors = new ArrayList<String>();
-
-            if ("create".equals(action)) {
-                // check exist
-                if (messageDao.loadById(message.getId(), appDef) != null) {
-                    errors.add("console.app.message.error.label.exists");
-                } else {
-                    invalid = !messageDao.add(message);
-                }
-            } else {
-                Message o = messageDao.loadById(message.getId(), appDef);
-                o.setMessage(message.getMessage());
-                invalid = !messageDao.update(o);
-            }
-
-            if (!errors.isEmpty()) {
-                map.addAttribute("errors", errors);
-                invalid = true;
-            }
-        }
-
-        if (invalid) {
-            map.addAttribute("message", message);
-            if ("create".equals(action)) {
-                map.addAttribute("localeList", getSortedLocalList());
-                return "console/apps/messageCreate";
-            } else {
-                return "console/apps/messageEdit";
-            }
-        } else {
-            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/message";
-            map.addAttribute("url", url);
-            return "console/dialogClose";
-        }
-    }
     
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
     public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
@@ -3182,6 +3100,21 @@ public class ConsoleWebController {
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());
         }
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/message/keys")
+    public void consoleMessageListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        Collection<String> messageKeys = null;
+        if (appDef != null) {
+            messageKeys = messageDao.getKeyList(appDef);
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", messageKeys);
+
+        AppUtil.writeJson(writer, jsonObject, callback);
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/message/list")
@@ -3229,7 +3162,7 @@ public class ConsoleWebController {
             String id = (String) strToken.nextElement();
             messageDao.delete(id, appDef);
         }
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo")
@@ -3277,17 +3210,20 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/importpo")
-    public String consoleAppMessageImportPO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+    public String consoleAppMessageImportPO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String containerId, @RequestParam(required = false) String columnId, @RequestParam(required = false) String lang) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-
+        map.addAttribute("containerId", containerId);
+        map.addAttribute("columnId", columnId);
+        map.addAttribute("lang", lang);
+        
         return "console/apps/messageImportPO";
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/importpo/submit", method = RequestMethod.POST)
-    public String consoleAppMessageInportPOUpload(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) throws Exception {
+    public String consoleAppMessageInportPOUpload(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String containerId, @RequestParam(required = false) String columnId, @RequestParam(required = false) String lang) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         Setting setting = setupManager.getSettingByProperty("systemLocale");
@@ -3319,14 +3255,20 @@ public class ConsoleWebController {
             map.addAttribute("appVersion", appDef.getVersion());
             map.addAttribute("appDefinition", appDef);
             map.addAttribute("errorMessage", errorMsg);
-
+            map.addAttribute("containerId", containerId);
+            map.addAttribute("columnId", columnId);
+            map.addAttribute("lang", lang);
+            
             return "console/apps/messageImportPO";
         }
-        
-        String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/message";
-        map.addAttribute("url", url);
-        return "console/dialogClose";
+        if (containerId != null && columnId != null && lang != null) {
+            map.addAttribute("script", "parent.JPopup.hide(\"importPoDialog\");parent.I18nEditor.loadLocale(\"#"+containerId+"\", \""+lang+"\", \""+columnId+"\");");
+        } else {
+            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/message";
+            map.addAttribute("url", url);
+        }
+        return "console/apps/dialogClose";
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable/create")
@@ -3399,7 +3341,7 @@ public class ConsoleWebController {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/envVariable";
             map.addAttribute("url", url);
-            return "console/dialogClose";
+            return "console/apps/dialogClose";
         }
     }
 
@@ -3442,7 +3384,7 @@ public class ConsoleWebController {
             String id = (String) strToken.nextElement();
             environmentVariableDao.delete(id, appDef);
         }
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/create")
@@ -3482,7 +3424,7 @@ public class ConsoleWebController {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
             map.addAttribute("url", url);
-            return "console/dialogClose";
+            return "console/apps/dialogClose";
         }
     }
 
@@ -3522,7 +3464,7 @@ public class ConsoleWebController {
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
         String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
         map.addAttribute("url", url);
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
 
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/resource/list")
@@ -3567,7 +3509,7 @@ public class ConsoleWebController {
             String id = (String) strToken.nextElement();
             appResourceDao.delete(id, appDef);
         }
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/pluginDefault/create")
@@ -3689,7 +3631,7 @@ public class ConsoleWebController {
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
         String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties";
         map.addAttribute("url", url);
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
 
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/pluginDefault/list")
@@ -3736,7 +3678,7 @@ public class ConsoleWebController {
             String id = (String) strToken.nextElement();
             pluginDefaultPropertiesDao.delete(id, appDef);
         }
-        return "console/dialogClose";
+        return "console/apps/dialogClose";
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/forms") 
@@ -3759,6 +3701,29 @@ public class ConsoleWebController {
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
+        
+        Properties props = AppDevUtil.getAppDevProperties(appDef);
+        String properties = "{}";
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", appDef.getAppId());
+            jsonObject.put("name", appDef.getName());
+            jsonObject.put("notes", appDef.getDescription());
+            jsonObject.put(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
+            jsonObject.put(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+            jsonObject.put("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_URI, props.getProperty(AppDevUtil.PROPERTY_GIT_URI));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_USERNAME, props.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_PASSWORD, props.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+            properties = jsonObject.toString(4);
+        } catch (Exception e) {
+            LogUtil.error(ConsoleWebController.class.getName(), e, "");
+        }
+        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+
         return "console/apps/builders";
     }
 
@@ -5832,36 +5797,66 @@ public class ConsoleWebController {
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
-    public String consoleDevSubmit(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String properties) throws JSONException, IOException {
+    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String json) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
         
-        String oldProperties = "{}";        
-        properties = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, properties);
-        Properties appProps = new Properties();
-        JSONObject jsonObject = new JSONObject(properties);
-        if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
-            appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
+        String oldProperties = "{}";  
+        Properties props = AppDevUtil.getAppDevProperties(appDef);
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", appDef.getAppId());
+            jsonObject.put("name", appDef.getName());
+            jsonObject.put("notes", appDef.getDescription());
+            jsonObject.put(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
+            jsonObject.put(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+            jsonObject.put("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_URI, props.getProperty(AppDevUtil.PROPERTY_GIT_URI));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_USERNAME, props.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_PASSWORD, props.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
+            jsonObject.put(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+            oldProperties = jsonObject.toString(4);
+        } catch (Exception e) {
+            LogUtil.error(ConsoleWebController.class.getName(), e, "");
         }
-        if (!jsonObject.isNull(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP)) {
-            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, jsonObject.getString(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
-        }
-        if (!jsonObject.isNull("orgId")) {
-            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.getString("orgId"));
-        }
-        if (!jsonObject.isNull(AppDevUtil.PROPERTY_GIT_URI)) {
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
-        }
-        AppDevUtil.setAppDevProperties(appDef, appProps);
         
-        return "console/dialogClose";
+        try {
+            json = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, json);
+            Properties appProps = new Properties();
+            JSONObject jsonObject = new JSONObject(json);
+
+            appDef.setName(jsonObject.getString("name"));
+            appDef.setDescription(jsonObject.getString("notes"));
+            appDefinitionDao.merge(appDef);
+
+            if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
+                appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
+            }
+            if (!jsonObject.isNull(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP)) {
+                appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, jsonObject.getString(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+            }
+            if (!jsonObject.isNull("orgId")) {
+                appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.getString("orgId"));
+            }
+            if (!jsonObject.isNull(AppDevUtil.PROPERTY_GIT_URI)) {
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+            }
+            AppDevUtil.setAppDevProperties(appDef, appProps);
+
+            JSONObject result = new JSONObject();
+            result.accumulate("success", true);
+            result.write(writer);
+        } catch (Exception e) {
+            JSONObject result = new JSONObject();
+            result.accumulate("error", e.getLocalizedMessage());
+            result.write(writer);
+        }
     }    
 
     @RequestMapping(value = "/console/profile/subscription", method = RequestMethod.POST)

@@ -13,4 +13,6 @@ public interface MessageDao extends AppVersionedObjectDao<Message> {
     public Long getMessageListCount(String filterString, String locale, AppDefinition appDefinition);
 
     public Collection<String> getLocaleList(AppDefinition appDefinition);
+    
+    public Collection<String> getKeyList(AppDefinition appDefinition);
 }

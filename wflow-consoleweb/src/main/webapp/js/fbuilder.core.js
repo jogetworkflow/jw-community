@@ -661,7 +661,7 @@ FormBuilder = {
     tooltipViewInit: function(view) {
         if ($(view).find(".i18n_table").length === 0) {
             $(view).html("");
-            $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+            $(view).prepend('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
             
             I18nEditor.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), $.extend(true, {
                 skip : function(key, obj) {

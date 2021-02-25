@@ -200,6 +200,7 @@ CustomBuilder = {
             }
         }
         
+        $(".builder-view").remove();
         $(".boxy-content:visible").each(function(){
             var id = $(this).attr("id");
             JPopup.hide(id);
@@ -415,7 +416,10 @@ CustomBuilder = {
             CustomBuilder.customAdvancedToolTabs();
             
             $(document).uitooltip({
-                position: { my: "left top+5", at: "left bottom", collision: "flipfit" }
+                position: { my: "left top+5", at: "left bottom", collision: "flipfit" },
+                close: function (event, ui) {
+                    $(".ui-helper-hidden-accessible").remove();
+                } 
             });
             
             CustomBuilder.builderFavIcon();
@@ -1470,6 +1474,18 @@ CustomBuilder = {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks[view+"ViewInit"], [$(viewDiv).find('.builder-view-body')]);
             } else if (CustomBuilder[view+"ViewInit"] !== undefined) {
                 CustomBuilder[view+"ViewInit"]($(viewDiv).find('.builder-view-body'));
+            } else if ($this.data("cbuilder-frameurl") !== undefined) {
+                if ($(viewDiv).find('.builder-view-body iframe').length === 0) {
+                    $(viewDiv).find('.builder-view-body').html('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i>');
+                    var iframe = document.createElement('iframe');
+                    iframe.onload = function() {
+                        $(viewDiv).find('.builder-view-body .dt-loading').remove();
+                        $(iframe).css('opacity', "1");
+                    }; 
+                    iframe.src = $this.data("cbuilder-frameurl"); 
+                    $(iframe).css('opacity', "0");
+                    $(viewDiv).find('.builder-view-body').append(iframe);
+                }
             }
     
             if ($this.data("hide-tool") !== undefined) {
@@ -1641,7 +1657,7 @@ CustomBuilder = {
     i18nViewInit : function(view) {
         if ($(view).find(".i18n_table").length === 0) {
             $(view).html("");
-            $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+            $(view).prepend('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
             
             var config = $.extend(true, CustomBuilder.config.advanced_tools.i18n.options, CustomBuilder.advancedToolsOptions);
             I18nEditor.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), config);

@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
+<%@ page import="org.joget.apps.app.service.AppDevUtil"%>
+<c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
 <c:set var="builderLabel" scope="request"><fmt:message key="abuilder.title"/></c:set>
@@ -47,7 +48,9 @@
 <c:set var="builderCode" scope="request" value="app"/>
 <c:set var="builderColor" scope="request" value="#6e9f4b"/>
 <c:set var="builderIcon" scope="request" value="fas fa-th"/>
-<c:set var="builderDefJson" scope="request" value=""/>
+<c:set var="builderDefJson" scope="request">
+    ${properties}
+</c:set>
 <c:set var="builderCanvas" scope="request" value=""/>
 <c:set var="builderConfig" scope="request">
     {
@@ -60,13 +63,8 @@
                 "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
-                "envVariablesViewInit" : "AppBuilder.envVariablesViewInit",
-                "resourcesViewInit" : "AppBuilder.resourcesViewInit",
-                "pluginDefaultPropertiesViewInit" : "AppBuilder.pluginDefaultPropertiesViewInit",
-                "performanceViewInit" : "AppBuilder.performanceViewInit",
-                "logViewerViewInit" : "AppBuilder.logViewerViewInit",
                 "logViewerViewBeforeClosed" : "AppBuilder.logViewerViewBeforeClosed",
-                "versionsViewInit" : "AppBuilder.versionsViewInit",
+                "i18nViewInit" : "AppBuilder.i18nViewInit",
                 "exportApp" : "AppBuilder.exportApp"
             }
         },
@@ -86,11 +84,130 @@
             "definition" : {
                 disabled : true
             }
+        },
+        "msg" : {
+            'envVariable':'<ui:msgEscJS key="console.app.envVariable.common.label"/>',
+            'pluginDefault':'<ui:msgEscJS key="console.app.pluginDefault.common.label"/>',
+            'performance':'<ui:msgEscJS key="apm.performance"/>',
+            'logs':'<ui:msgEscJS key="console.log.title"/>',
+            'versions':'<ui:msgEscJS key="console.app.common.label.versions"/>',
+            'export':'<ui:msgEscJS key="console.app.export.label"/>',
+            'publish':'<ui:msgEscJS key="console.app.version.label.publish"/>',
+            'unpublish':'<ui:msgEscJS key="console.app.version.label.unpublish"/>',
+            'showTag':'<ui:msgEscJS key="console.tag.show"/>',
+            'hideTag':'<ui:msgEscJS key="console.tag.hide"/>',
+            'launch':'<ui:msgEscJS key="console.run.launch"/>',
+            'runProcess':'<ui:msgEscJS key="client.app.run.process.label.start"/>'
         }
     }
 </c:set>
-<c:set var="builderProps" scope="request" value="AppBuilder.getPropertiesDefinition()" />
-<c:set var="saveUrl" scope="request" value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderSave/${datalist.id}"/>
+<c:set var="builderProps" scope="request">
+    [{
+        title: '<ui:msgEscJS key="ubuilder.properties"/>',
+        properties : [
+            {
+                label : '<ui:msgEscJS key="console.app.common.label.id"/>',
+                name  : 'id',
+                required : 'true',
+                type : 'readonly'
+            },
+            {
+                label : '<ui:msgEscJS key="console.app.common.label.name"/>',
+                name  : 'name',
+                required : 'true',
+                type : 'textfield'
+            },
+            {
+                label : '<ui:msgEscJS key="console.app.common.label.description"/>',
+                name  : 'notes',
+                type : 'codeeditor',
+                mode : 'text'
+            }
+        ]
+    },
+    {
+        title: '<ui:msgEscJS key="console.app.dev.admin.settings"/>',
+        properties : [
+            {
+                name: 'orgId',
+                label: '<ui:msgEscJS key="userview.userpermission.selectOrg"/>',
+                type: 'selectbox',
+                options_ajax: '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getOrgs'
+            },
+            {
+                name: 'ROLE_ADMIN',
+                label: '<ui:msgEscJS key="userview.userpermission.selectUsers"/>',
+                type: 'multiselect',
+                size: '10',
+                options_ajax_on_change: 'orgId',
+                options_ajax: '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getUsers'
+            },
+            {
+                name: 'ROLE_ADMIN_GROUP',
+                label: '<ui:msgEscJS key="userview.grouppermission.selectGroups"/>',
+                type: 'multiselect',
+                size: '10',
+                options_ajax_on_change: 'orgId',
+                options_ajax: '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.GroupPermission/service?action=getGroups'
+            }
+        ]
+    }
+    <c:if test="${!isGitDisabled}">
+    ,{
+        title: '<ui:msgEscJS key="console.app.dev.git.configuration"/>',
+        properties: [
+            {
+                name: 'gitUri',
+                label: '<ui:msgEscJS key="console.app.dev.git.uri"/>',
+                type: 'textfield'
+            },
+            {
+                name: 'gitUsername',
+                label: '<ui:msgEscJS key="console.app.dev.git.username"/>',
+                type: 'textfield'
+            },
+            {
+                name: 'gitPassword',
+                label: '<ui:msgEscJS key="console.app.dev.git.password"/>',
+                type: 'password'
+            },
+            {
+                label: '<ui:msgEscJS key="console.app.dev.git.deployment"/>',
+                type: 'header'
+            },
+            {
+                name: 'gitConfigExcludeCommit',
+                label: '<ui:msgEscJS key="console.app.dev.git.configExcludeCommit"/>',
+                type: 'checkbox',
+                options: [{
+                        value: 'true',
+                        label: ''
+                    }]
+            },
+            {
+                name: 'gitConfigPull',
+                label: '<ui:msgEscJS key="console.app.dev.git.configPull"/>',
+                type: 'checkbox',
+                options: [{
+                        value: 'true',
+                        label: ''
+                    }]
+            },
+            {
+                name : 'gitConfigAutoSync',
+                label : '<ui:msgEscJS key="console.app.dev.git.configAutoSync"/>',
+                type : 'checkbox',
+                options : [{
+                    value : 'true',
+                    label : ''
+                }]
+            }
+        ]
+    }    
+    </c:if>
+    ]
+</c:set>
+<c:set var="saveUrl" scope="request" value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit"/>
 <c:set var="previewUrl" scope="request" value=""/>
 
 <jsp:include page="../../cbuilder/base.jsp" flush="true" />

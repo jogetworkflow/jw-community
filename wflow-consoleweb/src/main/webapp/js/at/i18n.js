@@ -71,8 +71,14 @@ I18nEditor = {
     },
     renderTable : function (container, labels, options) {
         if (labels.length > 0) {
+            if ($(container).attr("id") === undefined) {
+                $(container).attr("id", "i18n_container" + (new Date).getTime());
+            }
+            
             $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
             var $table = $(container).find(".i18n_table");
+            
+            $table.data("options", options);
             
             $(container).find('.search-container input').off("keyup");
             $(container).find('.search-container input').on("keyup", function(){
@@ -81,6 +87,11 @@ I18nEditor = {
                     var match = false;
                     $(this).find('td.label > span').each(function(){
                         if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
+                            match = true;
+                        }
+                    });
+                    $(this).find('textarea').each(function(){
+                        if ($(this).val().toLowerCase().indexOf(searchText) > -1) {
                             match = true;
                         }
                     });
@@ -148,30 +159,43 @@ I18nEditor = {
         }
     },
     renderLocaleSelector : function(container, header, id, options) {
-        $(header).append('<select id="'+id+'" data-placeholder="'+get_advtool_msg('i18n.editor.chooseLocale')+'"><option></option></select>');
+        $(header).append('<select id="' + id + '" data-placeholder="' + get_advtool_msg('i18n.editor.chooseLocale') + '"><option></option></select>');
         var selector = $(header).find("select");
         for (var i in I18nEditor.languages) {
-            $(selector).append('<option>'+I18nEditor.languages[i]+'</option>');
+            $(selector).append('<option>' + I18nEditor.languages[i] + '</option>');
         }
-        
-        $(selector).chosen({width: "60%"}).change(function(){
+        $(selector).chosen({
+            width: "60%"
+        }).change(function() {
             var locale = $(this).val();
-            $(header).find("a.button").remove();
+            $(header).find("a.button, span.actions").remove();
             if (locale !== "") {
-                $(header).append('<a class="button btn btn-secondary btn-sm">'+get_advtool_msg('i18n.editor.save')+'</a>');
+                $(header).append('<a class="saveBtn button btn btn-secondary btn-sm">' + get_advtool_msg('i18n.editor.save') + '</a> <span class="actions" style="position:absolute; right:0px; top:16px; display:block; font-size:22px"><a class="downloadPoBtn btn-link" title="' + get_advtool_msg('i18n.editor.generate.po') + '"><i class="las la-file-download"></i></a> <a class="importPoBtn btn-link" title="' + get_advtool_msg('i18n.editor.import.po') + '"><i class="las la-file-upload"></i></a></span>');
             }
             I18nEditor.loadLocale(container, locale, id, options);
         });
-        
-        $(header).on("click", "a.button", function(){
+        $(header).off("click", "a.saveBtn");
+        $(header).on("click", "a.saveBtn", function() {
             I18nEditor.saveLocale(container, this, $(selector).val(), id, options);
+        });
+        $(header).off("click", "a.downloadPoBtn");
+        $(header).on("click", "a.downloadPoBtn", function() {
+            I18nEditor.downloadPo(container, this, $(selector).val(), id, options);
+        });
+        $(header).off("click", "a.importPoBtn");
+        $(header).on("click", "a.importPoBtn", function() {
+            I18nEditor.importPo(container, this, $(selector).val(), id, options);
         });
     },
     loadLocale : function (container, locale, id, options) {
+        if (options === undefined) {
+            options = $(container).find(".i18n_table").data("options");
+        }
+        
         if (locale === "") {
             $(container).find("td."+id).html("");
         } else {
-            $(container).find("tbody tr").each(function(i, tr){
+            $(container).find("tbody tr:not(.addnew)").each(function(i, tr){
                 var key = $(tr).find("td.label textarea").val() + "_" + locale;
                 $(tr).find("td."+id).html('<textarea></textarea>');
                 $(tr).find("td."+id+" textarea").attr("rel", key.toLowerCase());
@@ -231,5 +255,41 @@ I18nEditor = {
                 $(button).show();
             }, 3000);
         });
+    },
+    downloadPo: function(container, button, locale, id, options) {
+        var text = '# This file was generated by Joget DX\r\n\
+# http://www.joget.org\r\n\
+msgid ""\r\n\
+msgstr ""\r\n\
+"Content-Type: text/plain; charset=utf-8\\n"\r\n\
+"Project-Id-Version: '+options.appId+'\\n"\r\n\
+"POT-Creation-Date: \\n"\r\n\
+"PO-Revision-Date: \\n"\r\n\
+"Last-Translator: \\n"\r\n\
+"Language-Team: \\n"\r\n\
+"Language: '+locale+'\\n"\r\n\
+"MIME-Version: 1.0\\n"\r\n\r\n';
+        
+        $(container).find('td.' + id + ' textarea').each(function() {
+            var id = $(this).attr("rel");
+            var key = $(this).closest("tr").find("td.label textarea").val();
+            var val = $(this).val();
+            text += 'msgid "'+key+'"\r\nmsgstr "' + val + '"\r\n\r\n';
+        });
+        
+        var blob = new Blob([text], { type: 'text/x-gettext-translation' });
+
+        var a = document.createElement('a');
+        a.download = options.appId + "_" + options.appVersion + "_" + locale + ".po";
+        a.href = URL.createObjectURL(blob);
+        a.dataset.downloadurl = ['text/x-gettext-translation', a.download, a.href].join(':');
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+    },
+    importPo: function(container, button, locale, id, options) {
+        JPopup.show("importPoDialog", options.contextPath + "/web/console/app/"+options.appId+"/"+options.appVersion+"/message/importpo?containerId=" + $(container).attr("id") + "&columnId=" + id + "&lang=" + locale, {}, "");
     }
 };

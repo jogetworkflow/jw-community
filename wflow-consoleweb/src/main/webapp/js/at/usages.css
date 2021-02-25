@@ -10,7 +10,5 @@
 .item_usages_container .item a.found_toggle {display: inline-block; margin-left: 5px; cursor: pointer;}
 .item_usages_container pre { background: #efefef; border: 1px solid #ddd; padding: 3px; margin: 3px 0; width: 800px; display: block; font-family: monospace; white-space: pre; font-size: 12px;}
 .item_usages_container pre .keyword_highlight {background: yellow;}
-#delete_usage_check {height:500px; background: #fff;}
-#delete_usage_check h2 a.button { color: #fff; background: #777; border-radius: 18px; padding: 3px 5px; display: inline-block; margin: 0 5px; cursor: pointer; font-size: 16px; min-width: 35px; text-align: center;}
-#delete_usage_check h2 a.button.confirm { background: red;}
+#delete_usage_check {height:500px; background: #fff; padding:20px;}
 #delete_usage_check #usages {width:100%; height:430px; overflow: auto;}

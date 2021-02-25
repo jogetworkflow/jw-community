@@ -119,6 +119,28 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
         return q.list();
     }
+    
+    @Override
+    public Collection<String> getKeyList(AppDefinition appDefinition) {
+        final String condition = generateQueryCondition(appDefinition);
+        final Object[] params = generateQueryParams(appDefinition).toArray();
+
+        // execute query and return result
+        String query = "SELECT distinct e.messageKey FROM " + getEntityName() + " e " + condition + " ORDER BY e.messageKey";
+
+        Query q = findSession().createQuery(query);
+        q.setFirstResult(0);
+
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+
+        return q.list();
+    }
 
     @Override
     public boolean delete(String id, AppDefinition appDef) {

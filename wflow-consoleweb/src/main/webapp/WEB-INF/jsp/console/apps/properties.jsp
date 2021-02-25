@@ -48,7 +48,7 @@
                parent.UI.blockUI();
                var callback = {
                    success : function() {
-                       filter(JsonPluginDefaultDataTable, '&filter=', $('#JsonPluginDefaultDataTable_searchCondition').val());
+                       reloadTable();
                        JsonPluginDefaultDataTable.clearSelectedRows();
                        parent.UI.unblockUI();
                    }
@@ -59,6 +59,10 @@
         function closeDialog() {
             pluginDefaultCreateDialog.close();
         }
+        function reloadTable() {
+            closeDialog();
+            filter(JsonPluginDefaultDataTable, '&filter=', $('#JsonPluginDefaultDataTable_searchCondition').val());
+        }   
     </script>
 </div>  
 <commons:popupFooter />

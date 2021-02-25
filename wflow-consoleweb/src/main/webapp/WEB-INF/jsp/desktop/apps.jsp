@@ -74,7 +74,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appPublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders"><span class="nv-link-name"><i class="fas fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders" target="_blank"><span class="nv-link-name"><i class="fas fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>
@@ -84,7 +84,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appUnpublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders"><span class="nv-link-name"><i class="far fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/builders" target="_blank"><span class="nv-link-name"><i class="far fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>

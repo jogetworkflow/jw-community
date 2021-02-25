@@ -49,7 +49,7 @@
                parent.UI.blockUI();
                var callback = {
                    success : function() {
-                       filter(JsonVariableDataTable, '&filter=', $('#JsonVariableDataTable_searchCondition').val());
+                       reloadTable();
                        JsonVariableDataTable.clearSelectedRows();
                        parent.UI.unblockUI();
                    }
@@ -60,6 +60,11 @@
         
         function closeDialog() {
             variableCreateDialog.close();
+        }
+        
+        function reloadTable() {
+            closeDialog();
+            filter(JsonVariableDataTable, '&filter=', $('#JsonVariableDataTable_searchCondition').val());
         }
     </script>
 </div>  

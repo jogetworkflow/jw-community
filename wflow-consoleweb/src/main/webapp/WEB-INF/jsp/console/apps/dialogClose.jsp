@@ -2,7 +2,7 @@
 <script type="text/javascript">
 <c:choose>
     <c:when test="${!empty url}">
-        if (parent && parent.AdminBar.showQuickOverlay) {
+        if (parent && parent.AdminBar !== undefined && parent.AdminBar.isAdminBarOpen()) {
             parent.PopupDialog.closeDialog();
             parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
         } if (parent && parent.reloadTable) {
@@ -15,6 +15,9 @@
             }
         }
     </c:when>
+    <c:when test="${!empty script}">
+        ${script}
+    </c:when>   
     <c:otherwise>
         if (parent && parent.PopupDialog.closeDialog) {
             parent.PopupDialog.closeDialog();

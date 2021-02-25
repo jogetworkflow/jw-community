@@ -61,6 +61,10 @@
         function closeDialog() {
             resourceCreateDialog.close();
         }
+        function reloadTable() {
+            closeDialog();
+            filter(JsonResourcesDataTable, '&filter=', $('#JsonResourcesDataTable_searchCondition').val());
+        }
     </script>
 </div>  
 <commons:popupFooter />

@@ -3033,16 +3033,20 @@ public class AppServiceImpl implements AppService {
                 
                 if (key != null && translated != null) {
                     Message message = messageDao.loadByMessageKey(key, locale, appDef);
-                    if (message == null) {
+                    if (message == null && !translated.isEmpty()) {
                         message = new Message();
                         message.setLocale(locale);
                         message.setMessageKey(key);
                         message.setAppDefinition(appDef);
                         message.setMessage(translated);
                         messageDao.add(message);
-                    } else {
-                        message.setMessage(translated);
-                        messageDao.update(message);
+                    } else if (message != null) {
+                        if (!translated.isEmpty()) {
+                            message.setMessage(translated);
+                            messageDao.update(message);
+                        } else {
+                            messageDao.delete(key, appDef);
+                        }
                     }
                     key = null;
                     translated = null;
