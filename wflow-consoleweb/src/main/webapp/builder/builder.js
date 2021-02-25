@@ -2310,7 +2310,6 @@ CustomBuilder.Builder = {
                     <div id="element-select-box"> \
                         <div id="element-select-name"><div id="element-name"></div> \
                             <div id="element-actions">   \
-                                <a id="drag-btn" href="" title="'+get_cbuilder_msg("cbuilder.drag")+'"><i class="la la-arrows"></i></a> \
                                 <a id="parent-btn" href="" title="'+get_cbuilder_msg("cbuilder.selectParent")+'"><i class="las la-level-up-alt"></i></a> \
                                 <a id="up-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveUp")+'"><i class="la la-arrow-up"></i></a> \
                                 <a id="down-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveDown")+'"><i class="la la-arrow-down"></i></a> \
@@ -2960,7 +2959,7 @@ CustomBuilder.Builder = {
     /*
      * Select an element in canvas
      */
-    selectNode:  function(node) {
+    selectNode:  function(node, dragging) {
         var self = CustomBuilder.Builder;
         if (!node || $(node).is('[data-cbuilder-uneditable]'))
         {
@@ -3008,7 +3007,15 @@ CustomBuilder.Builder = {
             }
             
             self.selectedEl = target;
-
+            var data = target.data("data");
+            self.selectedElData = data;
+            var component = self.parseDataToComponent(data);
+            self.component = component;
+            
+            if (dragging) {
+                return;
+            }
+            
             try {
                 var box = self.getBox(node);
 
@@ -3020,20 +3027,11 @@ CustomBuilder.Builder = {
                         "height": box.height,
                         "display": "block"
                     });
-                
-                var data = target.data("data");
-                self.selectedElData = data;
-                var component = self.parseDataToComponent(data);
-                
+                  
                 if (!isSubSelect || (isSubSelect && component.builderTemplate.isSubSelectAllowActions(data, component))) {
                     $("#paste-element-btn").addClass("disabled");
                     if (component.builderTemplate.isPastable(data, component)) {
                         $("#paste-element-btn").removeClass("disabled");
-                    }
-
-                    $("#drag-btn").hide();
-                    if (component.builderTemplate.isDraggable(data, component)) {
-                        $("#drag-btn").show();
                     }
                     
                     $("#up-btn, #down-btn").hide();
@@ -3173,6 +3171,12 @@ CustomBuilder.Builder = {
             {
                 if (self.isDragging)
                 {
+                    if (self.dragElement.data("css-border") === undefined) {
+                        self.dragElement.data("css-border", self.dragElement.css("border"));
+                        self.dragElement.css("border", "1px dashed #4285f4");
+                        self.frameBody.addClass("is-dragging");
+                    }
+                    
                     try {
                         if (event.originalEvent)
                         {
@@ -3329,31 +3333,45 @@ CustomBuilder.Builder = {
                 self.handleDropEnd();
             }
         });
-//
-//        self.frameHtml.on("dblclick", function (event) {
-//
-//            if (Vvveb.Builder.isPreview == false)
-//            {
-//                self.texteditEl = target = $(event.target);
-//
-//                Vvveb.WysiwygEditor.edit(self.texteditEl);
-//
-//                self.texteditEl.attr({'contenteditable': true, 'spellcheckker': false});
-//
-//                self.texteditEl.on("blur keyup paste input", function (event) {
-//
-//                    $("#select-box").css({
-//                        "width": self.texteditEl.outerWidth(),
-//                        "height": self.texteditEl.outerHeight()
-//                    });
-//                });
-//
-//                $("#select-box").addClass("text-edit").find("#select-actions").hide();
-//                $("#highlight-box").hide();
-//            }
-//        });
+        
+        self.frameHtml.on("mousedown touchstart", function (event) {
+            var target = $(event.target);
+            if (!$(target).is("[data-cbuilder-classname]")) {
+                target = $(event.target).closest("[data-cbuilder-classname]");
+            }
+            if ($(target).is("[data-cbuilder-unselectable]")) {
+                return false;
+            }
+            if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
+                target = $(event.target).closest("[data-cbuilder-select]");
+            }
+            if ($(target).length > 0)
+            {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                
+                try {
+                    self.selectNode(target, true);
+                    if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
+                        $("#element-select-box").hide();
+                        self.dragElement = self.selectedEl;
+                        self.isDragging = true;
+                        self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+                        self.data = self.selectedElData;
 
+                        if (self.component.builderTemplate.dragStart)
+                            self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
+                        self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
+                    } else {
+                        self.selectNode(target);
+                    }
+                }catch (err){}
+            }
+            event.preventDefault();
+            return false;
+        });
+        
         self.frameHtml.on("click", function (event) {
             var target = $(event.target);
             if (!$(target).is("[data-cbuilder-classname]")) {
@@ -3369,12 +3387,10 @@ CustomBuilder.Builder = {
             {
                 event.stopPropagation();
                 event.stopImmediatePropagation();
-                self.selectNode(target);
             }
             event.preventDefault();
-            return false;
+            return false;    
         });
-
     },
     
     /*
@@ -3430,28 +3446,6 @@ CustomBuilder.Builder = {
      */
     _initBox: function () {
         var self = this;
-
-        $("#drag-btn").on("mousedown", function (event) {
-            $("#element-select-box").hide();
-            self.dragElement = self.selectedEl;
-            self.isDragging = true;
-            self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
-            self.component = self.parseDataToComponent($(self.selectedEl).data("data"));
-            self.data = $(self.selectedEl).data("data");
-
-            self.dragElement.data("css-border", self.dragElement.css("border"));
-            self.dragElement.css("border", "1px dashed #4285f4");
-
-            if (self.component.builderTemplate.dragStart)
-                self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
-
-            self.isDragging = true;
-            self.frameBody.addClass("is-dragging");
-            self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
-
-            event.preventDefault();
-            return false;
-        });
 
         $("#down-btn").on("click", function (event) {
             $("#element-select-box").hide();
@@ -3957,6 +3951,7 @@ CustomBuilder.Builder = {
             CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["moveElement"], [self.component, self.dragElement]);
         } else {
             self.dragElement.css("border", self.dragElement.data("css-border"));
+            self.dragElement.removeData("css-border");
         
             var elementObj = $(self.dragElement).data("data");
             var component = self.parseDataToComponent(elementObj);
@@ -3991,6 +3986,9 @@ CustomBuilder.Builder = {
             self.checkVisible(parent);
             self.checkVisible(newParent);
             self.checkVisible(self.selectedEl);
+            
+            self.selectNode(self.selectedEl);
+            
             self.triggerChange();
         }
     },
