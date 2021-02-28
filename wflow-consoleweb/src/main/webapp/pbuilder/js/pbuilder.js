@@ -2363,6 +2363,7 @@ ProcessBuilder = {
         } else {
             ProcessBuilder.jsPlumb.unbind();
             ProcessBuilder.jsPlumb.detachEveryConnection();
+            ProcessBuilder.jsPlumb.deleteEveryEndpoint();
             ProcessBuilder.jsPlumb.reset();
             ProcessBuilder.initJsPlumb();
 
@@ -2406,7 +2407,7 @@ ProcessBuilder = {
     renderParticipant : function(element, elementObj, component, callback) {
         element.html('<div class="participant_inner"><div class="participant_handle"><div class="participant_label">'+elementObj.properties.label+'</div></div><div class="activities-container" data-cbuilder-activities></div></div>');
         element.addClass("participant");
-        element.attr("id", elementObj.properties.id);
+        element.attr("id", "participant_" + elementObj.properties.id);
         
         callback(element);
     },
@@ -2862,7 +2863,7 @@ ProcessBuilder = {
             
             self.component = self.getComponent(nodeType);
             self.dragElement = $('<div></div>');
-            $(swimlane).find('> .activities-container').append(self.dragElement);
+            $(swimlane).find('.activities-container').append(self.dragElement);
             
             var containerOffset = $(swimlane).offset();
             var x_offset = (offsetLeft - (containerOffset.left + viewportLeft)) * self.zoom;
@@ -2995,7 +2996,8 @@ ProcessBuilder = {
             setTimeout(function(){
                 ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
                 ProcessBuilder.jsPlumb.repaintEverything();
-            }, 10);
+                ProcessBuilder.jsPlumb.repaintEverything(); //could be bug of the library, it had to repaint twice to draw in correct position
+            }, 30);
         }
     },
     
@@ -3957,7 +3959,17 @@ ProcessBuilder = {
         if (obj.className === "start") {
             id = "runProcess";
         }
-        dl.append('<dt><i class="las la-id-badge" title="'+get_cbuilder_msg('cbuilder.id')+'"></i></dt><dd>'+id+'</dd>');
+        
+        var label = "";
+        if (obj.properties.label !== undefined && obj.properties.label !== "") {
+            label = obj.properties.label + ' (' + id + ')';
+        } else if (obj.className === "start") {
+            label = get_cbuilder_msg("pbuilder.label.runProcess") + ' (' + id + ')';
+        } else {
+            label = id;
+        }
+        
+        dl.append('<dt class="header"></dt><dd><h6 class="header">'+label+'</h6></dd>');
         
         if (obj.properties.label !== undefined && obj.properties.label !== "") {
             dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label.name')+'"></i></dt><dd>'+obj.properties.label+'</dd>');
@@ -4109,6 +4121,11 @@ ProcessBuilder = {
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
+        ProcessBuilder.jsPlumb.unbind();
+        ProcessBuilder.jsPlumb.detachEveryConnection();
+        ProcessBuilder.jsPlumb.deleteEveryEndpoint();
+        ProcessBuilder.jsPlumb.reset();
+            
         $("#process-selector, .zoom-buttons, #listviewer-btn").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        

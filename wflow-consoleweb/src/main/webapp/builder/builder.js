@@ -3027,7 +3027,7 @@ CustomBuilder.Builder = {
                         "height": box.height,
                         "display": "block"
                     });
-                  
+                
                 if (!isSubSelect || (isSubSelect && component.builderTemplate.isSubSelectAllowActions(data, component))) {
                     $("#paste-element-btn").addClass("disabled");
                     if (component.builderTemplate.isPastable(data, component)) {
