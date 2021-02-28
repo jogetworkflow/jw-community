@@ -122,8 +122,9 @@ AppBuilder = {
                             }
                         });
                     }
-                    var hasTags = true;
+                    var hasTags = false;
                     if (tagsArr.length > 0) {
+                        hasTags = true;
                         for (var i in tagsArr) {
                             var found = false;
                             $(this).find('.nv-tag').each(function(){
@@ -137,6 +138,7 @@ AppBuilder = {
                             }
                         }
                     }
+                    
                     if (match || hasTags) {
                         $(this).show();
                     } else {
@@ -166,7 +168,7 @@ AppBuilder = {
             if (builder.value === "app") {
                 continue;
             }
-            var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div style="background: '+builder.color+'" class="builder-title"><i class="'+builder.icon+'"></i> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus-circle"></i></a></div><ul></ul></div>');
+            var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div style="background: '+builder.color+'" class="builder-title"><i class="'+builder.icon+'"></i> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus-circle"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
             if (builder.elements) {
                 for (var j in builder.elements) {
                     var action = "";
@@ -185,6 +187,10 @@ AppBuilder = {
         $("#builder_canvas").css("opacity", "1");
         
         Nav.refresh();
+        AppBuilder.resizeBuilders();
+        
+        $(window).off("resize.appbuilder");
+        $(window).on("resize.appbuilder",  AppBuilder.resizeBuilders);
     },
     
     /*
@@ -386,6 +392,23 @@ AppBuilder = {
         return CustomBuilder.config.msg[key];
     },
     
+    resizeBuilders: function(){
+        var builders = $('#builders')[0];
+        var rowHeight = parseInt(window.getComputedStyle(builders).getPropertyValue('grid-auto-rows'));
+        var rowGap = parseInt(window.getComputedStyle(builders).getPropertyValue('grid-row-gap'));
+        var maxHeight = $(window).height() - 270;
+        
+        $(builders).find("> .builder-type").each(function(){
+            var item = this;
+            var height = $(item).find('ul').outerHeight() + 54;
+            if (height > maxHeight) {
+                height = maxHeight;
+            }
+            var rowSpan = Math.ceil((height+rowGap)/(rowHeight+rowGap));
+            item.style.gridRowEnd = "span "+rowSpan;
+        });
+    },
+    
     /*
      * remove dynamically added items    
      */            
@@ -395,5 +418,6 @@ AppBuilder = {
         $("#export-btn").parent().remove();
         $('#save-btn, .btn-group.tool').show();
         $("#builder_canvas").css("opacity", "1");
+        $(window).off("resize.appbuilder");
     }
 };
