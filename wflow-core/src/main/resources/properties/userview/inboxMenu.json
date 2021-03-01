@@ -17,7 +17,7 @@
         label : '@@userview.inboxmenu.label@@',
         type : 'textfield',
         required : 'True',
-        value : 'List'
+        value : '@@org.joget.apps.userview.lib.InboxMenu.pluginLabel@@'
     },
     {
         name : '%s',
