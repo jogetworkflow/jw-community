@@ -834,7 +834,7 @@ UserviewBuilder = {
         //usermenu
         html += '<ul class="user-menu nav nav-tabs nav-stacked main-menu"><li class="mm-profile user-link toggled">';
         html += '<a class="dropdown" data-cbuilder-classname="userview-usermenu" ><img class="gravatar" alt="gravatar" width="30" height="30" src="//www.gravatar.com/avatar/default?d=identicon"><span>Admin</span><small>email@company.com</small></a>';
-        html += '<ul><li><a href=""><span><i class="fa fa-user"></i> '+get_cbuilder_msg('ubuilder.profile')+'</span></a></li><li><a href=""><span><i class="fa fa-power-off"></i> '+get_cbuilder_msg('ubuilder.logout')+'</span></a></li></ul></li></ul>';
+        html += '<ul><li><a href=""><span><i class="fa fa-user"></i> '+get_cbuilder_msg('ubuilder.profile')+'</span></a></li><li><a href=""><span><i class="fas fa-sign-out-alt"></i>'+get_cbuilder_msg('ubuilder.logout')+'</span></a></li></ul></li></ul>';
         
         //category container
         html += '<ul id="category-container" class="nav nav-tabs nav-stacked main-menu" data-cbuilder-classname="userview-categories" data-cbuilder-categories></ul></nav></div>';

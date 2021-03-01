@@ -768,7 +768,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                     }
                 }
                 
-                html += "    <li><a href=\"" + data.get("logout_link") + "\"><i class=\"fa fa-power-off\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</a></li>\n"
+                html += "    <li><a href=\"" + data.get("logout_link") + "\"><i class=\"fas fa-sign-out-alt\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</a></li>\n"
                       + "</ul>";
 
             } else {
@@ -855,7 +855,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
             }
             
-            html += "    <li><a href=\"" + data.get("logout_link") + "\"><span><i class=\"fa fa-power-off\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</span></a></li>\n";
+            html += "    <li><a href=\"" + data.get("logout_link") + "\"><span><i class=\"fas fa-sign-out-alt\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</span></a></li>\n";
             html += "</ul>";
 
         } else {
