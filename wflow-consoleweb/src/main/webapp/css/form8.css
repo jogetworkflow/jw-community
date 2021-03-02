@@ -60,7 +60,9 @@
 .subform-cell + .subform-cell{
     margin-top: 15px;
 }
-    
+body .subform-cell .subform-container.has-frame, .form-cell .subform-container.has-frame{
+    width: 100%;
+}
 .form-cell > label.label,
 .subform-cell > label.label{
     white-space: normal;
@@ -69,6 +71,7 @@
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
     min-height: 34px;
+    word-break: break-all;
 }
 .label-top.form-cell > label.label,
 .label-top.subform-cell > label.label{
@@ -200,7 +203,7 @@ textarea{
 .hasDatepicker + a{
     position: absolute;
     right: 20px;
-    bottom: 7px;
+    top: 9px;
     height: 18px;
     width: 18px;
     font-family: "Font Awesome 5 Free";
@@ -242,14 +245,17 @@ textarea{
     color: #ced4da;
 }
 .ui-datepicker td{
-    padding: 5px;
+    padding: 2px 4px;
+}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button{
+    font-size: 0.9em !important;
 }
 .ui-datepicker td span, .ui-datepicker td a{
     border: 0 !important;
     text-align: center;
     background: none !important;
-    padding: 6px;
     color: #495057 !important;
+    padding: .1em .3em;
 }
 .ui-datepicker td a:hover{
     color: #0075ff !important;
@@ -262,6 +268,9 @@ textarea{
     background: #0075ff !important;
     color: #fff !important;
     border-radius: 50%;
+}
+.ui-datepicker .ui-datepicker-title select{
+    padding: 0px 3px;
 }
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
     top:9px;
@@ -298,7 +307,7 @@ textarea{
 .ui-datepicker-calendar:not([style]) + .ui-timepicker-div {
     border-top: 1px solid #ced4da !important;
     margin-top: 15px;
-    padding: 15px 5px 0px;
+    padding: 5px 5px 0px;
 }
 .ui-timepicker-div select, .ui-timepicker-div input {
     display: inline-block !important;
@@ -308,6 +317,7 @@ textarea{
     outline: 0 !important;
     font-weight: bold !important;
     cursor: pointer !important;
+    width: 50%;
 }
 .ui-widget-header .ui-datepicker-title{
     color: #ced4da;
@@ -358,7 +368,7 @@ textarea{
 }
 .subform-section {
     position: relative;
-    padding-bottom: 20px;
+    padding: 20px 0px;
 }
 
 /* popup selectbox */
@@ -366,6 +376,7 @@ textarea{
     display: block;
     width: 100%;
     padding: 0px 10px 6px;
+    min-height: 34px;
     line-height: 1.5;
     color: #495057;
     background-color: #fff;
@@ -467,12 +478,12 @@ textarea{
     width: 100%;
 }
 .grid table th, .grid table td {
-    border-top: 1px solid #ced4da;
+    border-top: 1px solid #ced4da !important;
     border-bottom: 1px solid #ced4da;
     margin: 0px;
 }
 .grid table th {
-    border-bottom: 2px solid #ced4da;
+    border-bottom: 2px solid #ced4da !important;
 }
 .grid table tr:hover td {
     background: #e9ecef;
@@ -827,7 +838,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     .multiPagedForm .page-nav-panel.bottom{
         display:block;
     }
-    
+
     .multiPagedForm .page-nav-panel ul {
         padding:0;
         margin:0;
@@ -916,6 +927,9 @@ body.rtl .handsontable .htCore tr td:last-child {
         border-radius: 0.25rem;
         padding-bottom: 20px;
     }
+    .form-column, .subform-column{
+        width:100% !important;
+    }
 }
 
 /* advanced grid */
@@ -991,10 +1005,8 @@ body.rtl .handsontable .htCore tr td:last-child {
         position: relative;
         flex: 0 0 100%;
     }
-    
-    .form-column,
-    .subform-column{
-        width:100%;
+    .hasDatepicker + a{
+        top: unset;
+        bottom: 7px;
     }
-    
 }
