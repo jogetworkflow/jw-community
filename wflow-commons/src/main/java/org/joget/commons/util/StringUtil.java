@@ -44,6 +44,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -653,9 +654,9 @@ public class StringUtil {
     public static String stripAllHtmlTag(String content, boolean prettyPrint) {
         if (content != null && !content.isEmpty()) {
             if (prettyPrint) {
-                content = Jsoup.clean(content, Whitelist.none());
+                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().escapeMode(EscapeMode.xhtml));
             } else {
-                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().prettyPrint(false));
+                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().prettyPrint(false).escapeMode(EscapeMode.xhtml));
             }
         }
         return content;
