@@ -1548,7 +1548,7 @@ public class FormUtil implements ApplicationContextAware {
                     Collection<Element> children = parent.getChildren();
                     if (children != null) {
                         for (Element c : children) {
-                            if (c.equals(temp)) {
+                            if (c.equals(temp) || c.getPropertyString(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY).equals(temp.getPropertyString(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY))) {
                                 break;
                             }
                             position++;
