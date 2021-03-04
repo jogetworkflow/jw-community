@@ -917,7 +917,7 @@ a.guider_button:hover {
     height: 42px;
 }
 
-#main-action-help > i{
+.marketplaceAppHeader #main-action-help > i{
     left: calc(100% - 190px);
     position: fixed;
     color: #727272;
