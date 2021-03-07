@@ -66,6 +66,9 @@
             $(".nv-tags").hide();
             $(Nav.options.infoBtn).find("i").attr("class", "fas fa-tags");
             $(Nav.options.infoBtn).find("span").text(Nav.options.message.show);
+            if (AppBuilder) {
+                AppBuilder.resizeBuilders();
+            }
         },
         renderTags: function() {
             if (Nav.definition === null) {
@@ -111,6 +114,9 @@
                     
                 });
             });
+            if (AppBuilder) {
+                AppBuilder.resizeBuilders();
+            }
         },
         editTags: function(li) {
             if ($(".tooltipstered").length > 0) {

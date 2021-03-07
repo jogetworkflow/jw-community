@@ -273,7 +273,7 @@ CustomBuilder = {
                 $("#top-panel .responsive-buttons").hide();
                 $("#builderToolbar .copypaste").hide();
                 $("#style-properties-tab-link").hide();
-                $("#style-properties-tab-link a").html('<i class="las la-palette"></i> <span>'+get_cbuilder_msg("cbuilder.styles") + '/></span>');
+                $("#style-properties-tab-link a").html('<i class="las la-palette"></i> <span>'+get_cbuilder_msg("cbuilder.styles") + '</span>');
                 
                 if ($("body").hasClass("default-builder")) {
                     CustomBuilder.Builder.reset();
@@ -315,6 +315,11 @@ CustomBuilder = {
             
             CustomBuilder.isAjaxReady = true;
         }
+        
+        $("#top-panel").css("border-bottom-color", CustomBuilder.builderColor + " !important");
+        $("#left-panel").css("border-right-color", CustomBuilder.builderColor + " !important");
+        $("#right-panel").css("border-left-color", CustomBuilder.builderColor + " !important");
+        $("#bottom-panel").css("border-top-color", CustomBuilder.builderColor + " !important");
         
         CustomBuilder.advancedToolsOptions = {
             contextPath : CustomBuilder.contextPath,
@@ -2203,7 +2208,7 @@ CustomBuilder = {
         var container = $("#builder-menu > ul");
         
         $("#builder-quick-nav .backToApp").remove();
-        $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="fas fa-th"></i></a></div>');
+        $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="fas fa-pencil-ruler"></i></a></div>');
         
         for (var i in data) {
             var builder = data[i];
@@ -3135,6 +3140,8 @@ CustomBuilder.Builder = {
 
                 if (elementPropertiesHidden) {
                     $("#style-properties-tab-link a").trigger("click");
+                } else if (!supportStyle) {
+                    $("#element-properties-tab-link a").trigger("click");
                 }
             } else {
                 $("body").addClass("no-right-panel");
@@ -3185,37 +3192,53 @@ CustomBuilder.Builder = {
                             
                             $("#element-highlight-box").hide();
                             var parentContainerAttr = self.component.builderTemplate.getParentContainerAttr(self.data, self.component);
-                            var elementsContainer = $(event.target).closest("[data-cbuilder-"+parentContainerAttr+"]");
-                            
-                            if ($(event.target).is("[data-cbuilder-ignore-dragging]").length > 0 || $(event.target).closest("[data-cbuilder-ignore-dragging]").length > 0) {
+                                
+                            if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
                                 var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
-                                if (selement.length > 0) {
-                                    elementsContainer = $(selement);
+                                if (selement !== null && selement.length > 0) {
+                                    var elementsContainer = $(selement);
                                     if ($(selement).is('[data-cbuilder-alternative-drop]')) {
                                         target = $(selement).closest("[data-cbuilder-select]");
                                     } else {
                                         target = $(selement).closest("[data-cbuilder-classname]");
                                     }
+                                    if (elementsContainer.find(self.dragElement).length === 0) {
+                                        elementsContainer.append(self.dragElement);
+                                    }
+                                    var cursorPos = self.dragElement.data("cursorPosition");
+                                    if (!cursorPos) {
+                                        cursorPos = {x: 10, y : 10};
+                                    }
+                                    
+                                    var containerOffset = elementsContainer.offset();
+                                    var x_offset = ((x - containerOffset.left + $(self.frameDoc).scrollLeft()) / self.zoom) - cursorPos.x;
+                                    var y_offset = ((y - containerOffset.top + $(self.frameDoc).scrollTop()) /self.zoom) - cursorPos.y;
+
+                                    self.dragElement.css({
+                                       "top" : y_offset + "px",
+                                       "left" : x_offset + "px",
+                                       "position" : "absolute"
+                                    });
                                 } else {
                                     return;
                                 }
-                            }
-                                
-                            if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
-                                if (elementsContainer.find(self.dragElement).length === 0) {
-                                    elementsContainer.append(self.dragElement);
-                                }
-                                
-                                var containerOffset = elementsContainer.offset();
-                                var x_offset = (x - containerOffset.left - ((self.dragElement.outerWidth() * self.zoom) / 2) + $(self.frameDoc).scrollLeft()) / self.zoom;
-                                var y_offset = (y - containerOffset.top + 10 + $(self.frameDoc).scrollTop()) /self.zoom;
-                                
-                                self.dragElement.css({
-                                   "top" : y_offset + "px",
-                                   "left" : x_offset + "px",
-                                   "position" : "absolute"
-                                });
                             } else {
+                                var elementsContainer = $(event.target).closest("[data-cbuilder-"+parentContainerAttr+"]");
+
+                                if ($(event.target).is("[data-cbuilder-ignore-dragging]").length > 0 || $(event.target).closest("[data-cbuilder-ignore-dragging]").length > 0) {
+                                    var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
+                                    if (selement.length > 0) {
+                                        elementsContainer = $(selement);
+                                        if ($(selement).is('[data-cbuilder-alternative-drop]')) {
+                                            target = $(selement).closest("[data-cbuilder-select]");
+                                        } else {
+                                            target = $(selement).closest("[data-cbuilder-classname]");
+                                        }
+                                    } else {
+                                        return;
+                                    }
+                                }
+                            
                                 if (target.parent().length > 0 && target.parent().is(elementsContainer)) {
                                     //not container
                                     var offset = target.offset();
@@ -3361,6 +3384,15 @@ CustomBuilder.Builder = {
 
                         if (self.component.builderTemplate.dragStart)
                             self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
+
+                        if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component) && event.originalEvent) {
+                            var x = (event.clientX || event.originalEvent.clientX);
+                            var y = (event.clientY || event.originalEvent.clientY);
+                            var elementOffset = self.dragElement.offset();
+                            var xDiff = x - elementOffset.left;
+                            var yDiff = y - elementOffset.top;
+                            self.dragElement.data("cursorPosition", {"x" : xDiff, "y" : yDiff});
+                        }    
 
                         self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
                     } else {

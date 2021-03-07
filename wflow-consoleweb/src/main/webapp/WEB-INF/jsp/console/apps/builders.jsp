@@ -47,7 +47,7 @@
 </c:set>
 <c:set var="builderCode" scope="request" value="app"/>
 <c:set var="builderColor" scope="request" value="#6e9f4b"/>
-<c:set var="builderIcon" scope="request" value="fas fa-th"/>
+<c:set var="builderIcon" scope="request" value="fas fa-pencil-ruler"/>
 <c:set var="builderDefJson" scope="request">
     ${properties}
 </c:set>

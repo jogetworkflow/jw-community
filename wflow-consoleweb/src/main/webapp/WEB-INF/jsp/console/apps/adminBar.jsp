@@ -14,19 +14,27 @@
         <div id="adminBar" class="adminBarInactive">
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
+            <c:set var="key" value="0" />    
+            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId}">
+                <c:set var="key" value="1" />    
+                <div class="separator"></div>
+                <div>
+                    <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/builders" target="_blank"><i class="fas fa-pencil-ruler"></i><span><fmt:message key='abuilder.title'/></span></a>
+                </div>
+            </c:if>    
                 <div class="separator"></div>
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <div>
-                    <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-th"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 1}"/>: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-th"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" title="CTRL-2: <ui:msgEscHTML key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fas fa-users"></i><span><fmt:message key='adminBar.label.users'/></span></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 2}"/>: <ui:msgEscHTML key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fas fa-users"></i><span><fmt:message key='adminBar.label.users'/></span></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" title="CTRL-3: <ui:msgEscHTML key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fas fa-tachometer-alt"></i><span><fmt:message key='adminBar.label.monitor'/></span></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 3}"/>: <ui:msgEscHTML key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fas fa-tachometer-alt"></i><span><fmt:message key='adminBar.label.monitor'/></span></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" title="CTRL-4: <ui:msgEscHTML key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fas fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 4}"/>: <ui:msgEscHTML key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fas fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
                 </div>
             </c:if>
             </div>

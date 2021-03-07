@@ -1,7 +1,7 @@
 body {--builder-left-panel-width: 0px !important;}
 #builder_canvas {overflow:scroll; background: #fff;}
 #builders {padding: 30px !important; min-height: calc(100% - 71px); padding-top: 15px !important; width:100%; display: grid; grid-gap: 10px; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); grid-auto-rows: 5px;}
-#builders > div {padding: 0 !important; background: #f3f3f3; border-radius: 5px; overflow: hidden;}
+#builders > div {padding: 0 !important; border-radius: 5px; overflow: hidden; box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.63);}
 .builder-title {padding: 15px; color: #fff; font-weight: bold; position: relative}
 .builder-title .addnew {position: absolute; right: 15px; color: #fff; font-size: 120%; cursor: pointer;}
 .builder-type .ul-wrapper {max-height: calc(100% - 54px); overflow-y: auto; min-height: 50px;}

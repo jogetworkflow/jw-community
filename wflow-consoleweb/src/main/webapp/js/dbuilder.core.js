@@ -304,7 +304,7 @@ DatalistBuilder = {
         
         if (data.className !== undefined) {
             return self.getComponent(data.className);
-        } else if (data.columns !== undefined) {
+        } else if (data.columns !== undefined && data.binder !== undefined) {
             return self.getComponent("org.joget.apps.datalist.model.DataList");
         } else {
             return self.getComponent(data.name);
