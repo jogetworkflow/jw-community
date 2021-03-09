@@ -13,12 +13,12 @@
         <tag>HEAD</tag>
     </scm>
     <modules>
-        <!--module>../wflow-jdbc</module>
+        <module>../wflow-jdbc</module>
         <module>../wflow-plugin-base</module>
         <module>../wflow-plugin-archetype</module>
         <module>../wflow-directory</module>
 		<module>../wflow-commons</module>
-        <module>../wflow-wfengine</module-->
+        <module>../wflow-wfengine</module>
         <module>../wflow-core</module>
         <module>../wflow-consoleweb</module>
 		
