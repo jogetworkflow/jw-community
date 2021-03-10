@@ -24,6 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import com.lowagie.text.pdf.ITextCustomFontResolver;
 import com.lowagie.text.pdf.ITextCustomOutputDevice;
+import javax.servlet.http.HttpServletRequest;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
@@ -347,7 +348,7 @@ public class FormPdfUtil {
      * @return 
      */
     public static String cleanFormHtml(String html, Boolean showAllSelectOptions) {
-        
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         //remove hidden field
         html = html.replaceAll("<input[^>]*type=\"hidden\"[^>]*>", "");
 
@@ -479,18 +480,17 @@ public class FormPdfUtil {
                 html = html.replaceAll(StringUtil.escapeRegex(inputString), "");
             } else if (type.equalsIgnoreCase("checkbox") || type.equalsIgnoreCase("radio")) {
                 if (showAllSelectOptions) {
-                    String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images";
                     if (inputString.contains("checked")) {
-                        if (contextPath.isEmpty()) {
+                        if (request != null) {
+                            replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick.png\"/>";
+                        }else{
                             replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + getResourceURL("/images/black_tick.png") + "\"/>";
-                        } else {
-                            replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + contextPath + "/black_tick.png\"/>";
                         }
                     } else {
-                        if (contextPath.isEmpty()) {
+                        if (request != null) {
+                            replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick_n.png\"/>";
+                        }else{
                             replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + getResourceURL("/images/black_tick_n.png") + "\"/>";
-                        } else {
-                            replace = "<img style=\"padding-left:20px\" alt=\"\" src=\""+contextPath+"/black_tick_n.png\"/>";
                         }
                     }
                     html = html.replaceAll(StringUtil.escapeRegex(inputString), StringUtil.escapeRegex(replace));
@@ -517,18 +517,17 @@ public class FormPdfUtil {
                 String optionString = matcherOption.group(0);
                 String label = matcherOption.group(1);
                 if (showAllSelectOptions) {
-                    String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images";
                     if (optionString.contains("selected")) {
-                        if (contextPath.isEmpty()) {
-                            replace += "<img style=\"padding-left:20px\" alt=\"\" class=\"black_tick\" src=\"" + getResourceURL("/images/black_tick.png") + "\"/>";
+                        if (request != null) {
+                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick.png\"/>";
                         } else {
-                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + contextPath + "/black_tick.png\"/>";
+                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + getResourceURL("/images/black_tick.png") + "\"/>";
                         }
                     } else {
-                        if (contextPath.isEmpty()) {
-                            replace += "<img style=\"padding-left:20px\" alt=\"\" class=\"black_tick\" src=\"" + getResourceURL("/images/black_tick_n.png") + "\"/>";
+                        if (request != null) {
+                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick_n.png\"/>";
                         } else {
-                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + contextPath + "/black_tick_n.png\"/>";
+                            replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + getResourceURL("/images/black_tick_n.png") + "\"/>";
                         }
                     }
                     replace += label;
