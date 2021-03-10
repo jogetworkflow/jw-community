@@ -3,6 +3,16 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.15
+=================
+b22250df Fixed: wflow-core - Datalist PDF export - Traditional Chinese characters not render when there is other language in same string. @7.0-SNAPSHOT
+bdc82431 Fixed: wflow-core - Report Builder - "Show Unselected Options for Multi Options Field" property is not working. @7.0-SNAPSHOT.
+8b7ba22c Fixed: wflow-core - Form Builder - OSGI plugin having extra properties added in multi tenant environment. @7.0-SNAPSHOT
+5feba799 Fixed: wflow-consoleweb - Tooltip icon is blocking main header text. @7.0-SNAPSHOT
+56cfd7e7 Fixed: wflow-commons - Nested Datalist Formatter - non-alphabetic foreign characters unable to display properly. @7.0-SNAPSHOT
+940732e6 Modified: wflow-core - Update jackson-databind to 2.9.10.8 for CVE-2021-20190. @7.0-SNAPSHOT
+9922e0c2 Fixed: wflow-core - TimeZone - Temporary setting of default timezone may result in permanently change to GMT 0. #8852 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.14
 =================
 cd6ab1ce Fixed: wflow-consoleweb - Correction of 3a1b3590, apply the same implementation on addon builder. @7.0-SNAPSHOT
