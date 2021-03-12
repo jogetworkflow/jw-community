@@ -337,6 +337,7 @@ public class FormPdfUtil {
         style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
         style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
+        style += ".richtexteditor { float:left;}";
         return style;
     }
     
@@ -351,7 +352,11 @@ public class FormPdfUtil {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         //remove hidden field
         html = html.replaceAll("<input[^>]*type=\"hidden\"[^>]*>", "");
-
+        html = html.replaceAll("<input[^>]*type=\'hidden\'[^>]*>", "");
+        
+        //remove <br>
+        html = html.replaceAll("<br>", "<br/>");
+        
         //remove form tag
         html = html.replaceAll("<form[^>]*>", "");
         html = html.replaceAll("</\\s?form>", "");
@@ -389,6 +394,15 @@ public class FormPdfUtil {
                     html = html.replaceAll(StringUtil.escapeRegex(replace), "");
                 }
             }
+        }
+        
+        //convert Image if image doesnt end with />
+        Pattern ImagePattern = Pattern.compile("<img[^>]*[^\\/]>");
+        Matcher ImageMatcher = ImagePattern.matcher(html);
+        while (ImageMatcher.find()) {
+            String image = ImageMatcher.group(0);
+            String replace = image.replaceAll(StringUtil.escapeRegex(">"), StringUtil.escapeRegex("/>"));
+            html = html.replaceAll(StringUtil.escapeRegex(image), StringUtil.escapeRegex(replace));
         }
         
         //convert label for checkbox and radio
