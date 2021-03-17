@@ -1,0 +1,39 @@
+{
+    "optionGroup" : {
+        "@@assist.CurrentUser@@" : [
+            {
+                "value" : "#currentUser.fullName#",
+                "label" : "@@assist.CurrentUser.fullName@@"
+            },
+            {
+                "value" : "#currentUser.firstName#",
+                "label" : "@@assist.CurrentUser.firstName@@"
+            },
+            {
+                "value" : "#currentUser.lastName#",
+                "label" : "@@assist.CurrentUser.lastName@@"
+            },
+            {
+                "value" : "#currentUser.email#",
+                "label" : "@@assist.CurrentUser.email@@"
+            },
+            {
+                "value" : "#currentUser.active#",
+                "label" : "@@assist.CurrentUser.active@@"
+            },
+            {
+                "value" : "#currentUser.timeZone#",
+                "label" : "@@assist.CurrentUser.timeZone@@"
+            },
+            {
+                "value" : "#currentUser.locale#",
+                "label" : "@@assist.CurrentUser.locale@@"
+            },
+            {
+                "value" : "#currentUser.roles#",
+                "label" : "@@assist.CurrentUser.roles@@"
+            }
+        ]
+    }
+}
+

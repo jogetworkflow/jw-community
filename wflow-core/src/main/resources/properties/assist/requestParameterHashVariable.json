@@ -1,0 +1,18 @@
+{
+    "optionGroup" : {
+        "@@assist.HTTPRequest@@" : [
+            {
+                "value" : "#requestParam.NAME#",
+                "label" : "@@assist.request.param@@",
+                "syntax" : [
+                    "#requestParam.",
+                    {
+                        "placeholder" : "NAME",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            }
+        ]
+    }
+}

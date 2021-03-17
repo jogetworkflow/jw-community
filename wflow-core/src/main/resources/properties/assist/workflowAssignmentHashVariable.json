@@ -1,0 +1,53 @@
+{
+    "optionGroup" : {
+        "@@assist.workflowAss@@" : [
+            {
+                "value" : "#assignment.processId#",
+                "label" : "@@assist.ass.processId@@"
+            },
+            {
+                "value" : "#assignment.processDefId#",
+                "label" : "@@assist.ass.processDefId@@"
+            },
+            {
+                "value" : "#assignment.processDefIdWithoutVersion#",
+                "label" : "@@assist.ass.processDefIdWithoutVersion@@"
+            },
+            {
+                "value" : "#assignment.processName#",
+                "label" : "@@assist.ass.processName@@"
+            },
+            {
+                "value" : "#assignment.processVersion#",
+                "label" : "@@assist.ass.processVersion@@"
+            },
+            {
+                "value" : "#assignment.processRequesterId#",
+                "label" : "@@assist.ass.processRequesterId@@"
+            },
+            {
+                "value" : "#assignment.activityId#",
+                "label" : "@@assist.ass.activityId@@"
+            },
+            {
+                "value" : "#assignment.activityName#",
+                "label" : "@@assist.ass.activityName@@"
+            },
+            {
+                "value" : "#assignment.activityDefId#",
+                "label" : "@@assist.ass.activityDefId@@"
+            },
+            {
+                "value" : "#assignment.appId#",
+                "label" : "@@assist.ass.appId@@"
+            },
+            {
+                "value" : "#assignment.assigneeId#",
+                "label" : "@@assist.ass.assigneeId@@"
+            }
+        ]
+    }
+}
+
+
+

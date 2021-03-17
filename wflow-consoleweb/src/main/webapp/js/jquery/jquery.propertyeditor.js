@@ -1794,7 +1794,6 @@ PropertyEditor.Model.Page.prototype = {
 
         this.buttonPanel.initScripting();
         this.attachDescriptionEvent();
-        this.attachHashVariableAssistant();
     },
     show: function(scroll, changeFocus) {
         var page = $(this.editor).find("#" + this.id);
@@ -1920,9 +1919,6 @@ PropertyEditor.Model.Page.prototype = {
                 });
             }
         });
-    },
-    attachHashVariableAssistant: function() {
-        $(this.editor).find("#" + this.id).hashVariableAssitant(this.options.contextPath);
     }
 };
 
@@ -9135,6 +9131,774 @@ PropertyEditor.Type.Custom.prototype = {
 };
 PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Custom.prototype);
 
+PropertyAssistant = {
+    initialized : false,
+    options : null,
+    dialog : null,
+    data : {},
+    cachedAjaxCalls: {},
+    
+    /*
+     * Attach property assistant event to the property editor and prepare a dialog for it
+     */
+    init : function(element, options) {
+        PropertyAssistant.options = options;
+        
+        if (!PropertyAssistant.initialized) {
+            PropertyAssistant.initialized = true;
+            PropertyAssistant.getDialog();
+        }
+        
+        var keys = {};
+        $(element).keydown(function(e) {
+            if (!(e.ctrlKey && e.altKey)) {
+                keys[e.which] = true;
+                if (keys[17] === true && keys[16] === true && keys[18] !== true && keys[51] === true) {
+                    var field = $(element).find(":focus");
+                    if ($(field).length > 0) {
+                        PropertyAssistant.currentField = field[0];
+                        PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
+                        PropertyAssistant.showDialog();
+                    }
+                    keys = {};
+                }
+            }
+        }).keyup(function(e) {
+            delete keys[e.which];
+        });
+        
+        $(element).on("focus", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor", function() {
+            var field = $(this);
+            $(element).find(".assist_icon").remove();
+            var container = $(field).parent();
+            var position = container.css("position");
+            if (position === "static") {
+                container.css("position", "relative");
+            }
+            var display = container.css("display");
+            if (display === "inline") {
+                container.css("display", "block");
+            }
+            
+            $(container).append('<i class="assist_icon la la-user-astronaut" title="'+get_peditor_msg('peditor.assit')+'"></i>');
+            
+            $(container).find(".assist_icon").on("click", function(){
+                PropertyAssistant.currentField = field[0];
+                PropertyAssistant.currentCaretPosition = null;
+                PropertyAssistant.showDialog();
+            });
+            
+            $(field).off("focusout.assit");
+            $(field).on("focusout.assit", function() {
+                setTimeout(function(){
+                    $(field).off("focusout.assit");
+                    $(container).find(".assist_icon").remove();
+                    
+                    if (position === "static") {
+                        container.css("position", position);
+                    }
+                    if (display === "inline") {
+                        container.css("display", display);
+                    }
+                }, 500);
+            });
+        });
+    },
+    
+    /*
+     * Get the definition of the property assistant and create the dialog for editing
+     */
+    getDialog : function(callback) {
+        if (PropertyAssistant.dialog === null) {
+            PropertyAssistant.cachedAjax({
+                type: "POST",
+                url: PropertyAssistant.options.contextPath + '/web/property/json' + PropertyAssistant.options.appPath + '/getPropertyAssistants',
+                dataType : "json",
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    if (response) {
+                        for (var i in response) {
+                            var d = eval('['+ response[i].definition + ']')[0];
+                            var t = response[i].type;
+                            var newData = {};
+                            newData[t] = d;
+                            PropertyAssistant.data = $.extend(true, PropertyAssistant.data, newData);
+                        }
+                        
+                        PropertyAssistant.dialog = new Boxy(
+                            '<div id="propertyAssistant"></div>',
+                            {
+                                title: '<i class="la la-user-astronaut"></i> '+get_peditor_msg('peditor.assit'),
+                                closeable: true,
+                                draggable: true,
+                                show: false,
+                                fixed: true,
+                                modal: true,
+                                afterHide: function() {
+                                    $(PropertyAssistant.currentField).trigger("focus");
+                                }
+                            }
+                        );
+                
+                        $("#propertyAssistant").html('<div class="typeSelectorWrapper"><select id="assistantTypeSelector"></select></div><div class="inputWrapper"><div class="inputResultWrapper"><quote class="inputResult" contenteditable="false" placeholder="'+get_peditor_msg('peditor.emptyValue')+'"></quote></div><div class="inputResultActions"><button class="insertBtn btn btn-primary btn-sm">'+get_peditor_msg('peditor.insert')+'</button> <button class="clearBtn btn btn-secondary btn-sm">'+get_peditor_msg('peditor.clear')+'</button></div></div><div class="inputOptionsWrapper"></div>');
+                        
+                        $("#propertyAssistant .inputResultWrapper").append('<div class="traveller"><i class="up las la-caret-up"></i><i class="down las la-caret-down"></i></div>');
+                        
+                        $("#propertyAssistant .traveller .up").on("click", function() {
+                            PropertyAssistant.travelUp();
+                        });
+                        $("#propertyAssistant .traveller .down").on("click", function() {
+                            PropertyAssistant.travelDown();
+                        });
+                        
+                        for (var key in PropertyAssistant.data) {
+                            if (PropertyAssistant.data.hasOwnProperty(key)) {
+                                $("#assistantTypeSelector").append('<option value="'+key+'">'+get_peditor_msg('peditor.'+key)+'</option>');
+                            }
+                        }
+                        
+                        $("#assistantTypeSelector").chosen({ width: "54%", placeholder_text: '' });
+                        
+                        $("#assistantTypeSelector").on("change", function(){
+                            PropertyAssistant.changeType();
+                        });
+                        
+                        $('#propertyAssistant .inputWrapper').on('click', '[contenteditable]',  function(e) {
+                            $("#propertyAssistant .inputOptionsWrapper .subOptionField").hide();
+                            $('#propertyAssistant .inputWrapper [contenteditable]').prop("contenteditable", false);
+                            $('#propertyAssistant .inputResult [contenteditable]').removeClass("editing");
+                            $(this).prop("contenteditable", true);
+                            if ($(this).hasClass("chunk")) {
+                                $(this).addClass("editing");
+                            }
+                            
+                            $(this).on("focusout", function(){
+                                $(this).prop("contenteditable", false);
+                                $(this).off("focusout");
+                            });
+                            
+                            $(this).trigger("focus");
+                            
+                            if (typeof window.getSelection != "undefined"
+                                    && typeof document.createRange != "undefined") {
+                                var range = document.createRange();
+                                range.selectNodeContents($(this)[0]);
+                                range.collapse(false);
+                                var sel = window.getSelection();
+                                sel.removeAllRanges();
+                                sel.addRange(range);
+                            } else if (typeof document.body.createTextRange != "undefined") {
+                                var textRange = document.body.createTextRange();
+                                textRange.moveToElementText($(this)[0]);
+                                textRange.collapse(false);
+                                textRange.select();
+                            }
+                            
+                            PropertyAssistant.updateOptionField($(this));
+                            
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                        });
+                        
+                        $('#propertyAssistant .clearBtn').on("click", function() {
+                            if ($('#propertyAssistant .inputResult').find(".editing").length > 0) {
+                                if ($('#propertyAssistant .inputResult .editing').is("[placeholder]")) {
+                                    $('#propertyAssistant .inputResult .editing').html("");
+                                } else {
+                                    $('#propertyAssistant .inputResult .editing').remove();
+                                }
+                            } else {
+                                $('#propertyAssistant .inputResult').html("");
+                            }
+                            return false;
+                        });
+                        
+                        $('#propertyAssistant .insertBtn').on("click", function() {
+                            //check all require chunk are filled
+                            if ($('#propertyAssistant [contenteditable][data-required]:empty').length > 0) {
+                                return false;
+                            }
+                            PropertyAssistant.insertValue();
+                            return false;
+                        });
+                    }
+                }
+            });
+        } else {
+            if (callback) {
+                callback(PropertyAssistant.dialog);
+            }
+        }
+    },
+    
+    /*
+     * Show the dialog
+     */
+    showDialog: function() {
+        PropertyAssistant.getDialog(function(){
+            var width = 800;
+            var height = 700;
+            
+            width = UI.getPopUpWidth(width);
+            height = UI.getPopUpHeight(height);
+            
+            $("#propertyAssistant").css("width", width + "px");
+            $("#propertyAssistant").css("height", height + "px");
+            $("#propertyAssistant").closest(".boxy-wrapper").attr("id", "propertyAssistantDialog");
+            
+            PropertyAssistant.dialog.show();
+            PropertyAssistant.dialog.center('x');
+            PropertyAssistant.dialog.center('y');
+            
+            $("#assistantTypeSelector").val("HASH_VARIABLE");
+            $("#assistantTypeSelector").trigger("change");
+            
+            $(".boxy-modal-blackout").off("click.propertyAssistant");
+            $(".boxy-modal-blackout").on("click.propertyAssistant", function(){
+                PropertyAssistant.dialog.hide();
+                $(".boxy-modal-blackout").off("click.propertyAssistant");
+            });
+        });
+    },
+    
+    /*
+     * Insert the value to field
+     */
+    insertValue: function() {
+        var temp = $('#propertyAssistant .inputResult').clone();
+        $(temp).find("[contenteditable]:empty").remove();
+        $(temp).find("[contenteditable][data-prefix]").each(function(){
+            $(this).prepend($(this).data("prefix"));
+        });
+        $(temp).find("[contenteditable][data-postfix]").each(function(){
+            $(this).append($(this).data("postfix"));
+        });
+        
+        var value = $(temp).text();
+        if (value.trim() !== "") {
+            if ($(PropertyAssistant.currentField).hasClass("ace_text-input")) {
+                var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
+                var codeeditor = ace.edit(id);
+                codeeditor.insert(value);
+            } else {
+                var org = $(PropertyAssistant.currentField).val();
+                var output = "";
+                if (PropertyAssistant.currentCaretPosition !== null) {
+                    output = [org.slice(0, PropertyAssistant.currentCaretPosition), value, org.slice(PropertyAssistant.currentCaretPosition)].join('');
+                } else {
+                    output = org;
+                    if (output !== "") {
+                        output += ' ';
+                    }
+                    output += value;
+                }
+                $(PropertyAssistant.currentField).val(output);
+            }
+        }
+        
+        PropertyAssistant.dialog.hide();
+    },
+    
+    /*
+     * Change the property value type
+     */
+    changeType: function() {
+        var type = $("#assistantTypeSelector").val();
+        $("#propertyAssistant .inputOptionsWrapper .inputOptionsFieldContainer").hide();
+        PropertyAssistant.showOptionsField(type);
+        
+        $('#propertyAssistant .inputResult').html("");
+    },
+    
+    /*
+     * Check to show chunk option field 
+     */
+    updateOptionField: function(chunk){ 
+        if ($(chunk).data("option-field")) {
+            var fields = $(chunk).data("option-field").split(";");
+            for (var i in fields) {
+                PropertyAssistant.showOptionsField($("#assistantTypeSelector").val(), fields[i]);
+            }
+        }
+    },
+    
+    /*
+     * Show options field based on editing chunk
+     */
+    showOptionsField: function(type, name) {
+        if (name === undefined) {
+            if ($("#propertyAssistant .inputOptionsWrapper #"+type+"_input").length === 0) {
+                PropertyAssistant.createOptionsField({
+                    name : type,
+                    label : get_peditor_msg('peditor.'+type),
+                    options : PropertyAssistant.data[type].optionGroup,
+                    showValues : true,
+                    type : "selectbox"
+                });
+            } else {
+                $("#propertyAssistant #"+type).val("");
+                $("#propertyAssistant #"+type).trigger("chosen:updated");
+                $("#propertyAssistant .inputOptionsWrapper #"+type+"_input").show();
+            }
+        } else {
+            if ($("#propertyAssistant .inputOptionsWrapper #"+type+"_" + name + "_input").length === 0) {
+                if (PropertyAssistant.data[type].optionField[name] !== undefined) {
+                    PropertyAssistant.createOptionsField(PropertyAssistant.data[type].optionField[name], type);
+                }
+            } else {
+                if (PropertyAssistant.data[type].optionField[name] !== undefined && PropertyAssistant.data[type].optionField[name].options_ajax) {
+                    PropertyAssistant.renderAjaxOptions($("#propertyAssistant #"+type+"_" + name), PropertyAssistant.data[type].optionField[name]);
+                }
+                
+                $("#propertyAssistant #"+type).val("");
+                $("#propertyAssistant #"+type).trigger("chosen:updated");
+                $("#propertyAssistant #"+type+"_" + name).val("");
+                $("#propertyAssistant #"+type+"_" + name).trigger("chosen:updated");
+                $("#propertyAssistant .inputOptionsWrapper #"+type+"_" + name + "_input").show();
+            }
+        }
+    },
+    
+    /*
+     * Create options field for chunk editing
+     */
+    createOptionsField : function(field, prefix) {
+        var isSubOptionsField = "";
+        if (prefix) {
+            prefix = prefix + "_";
+            isSubOptionsField = " subOptionField";
+        } else {
+            prefix = "";
+        }
+        
+        var container = $('<div id="'+prefix+field.name+'_input" class="inputOptionsFieldContainer '+isSubOptionsField+'"><label>'+field.label+'</label><div class="inputOptionsField"></div></div>');
+        
+        if (field.type.toLowerCase() === "selectbox") {
+            $(container).find('.inputOptionsField').append('<select id="'+prefix+field.name+'"><option><option></select>');
+            
+            if (field.options) {
+                PropertyAssistant.renderOptions($(container).find('select'), field.options, field);
+            } else if (field.options_ajax) {
+                PropertyAssistant.renderAjaxOptions($(container).find('select'), field);
+            }
+            
+            $(container).find('select').chosen({ width: "100%", placeholder_text: get_peditor_msg('peditor.selectOption') });
+            
+            if (field.showValues) {
+                PropertyAssistant.showOptionValue($(container).find('select'));
+            }
+        } else if (field.type.toLowerCase() === "number") {
+            $(container).find('.inputOptionsField').append('<input id="'+prefix+field.name+'" type="number" value=""/>');
+        }
+        
+        $(container).find('#'+prefix+field.name).on('change', function(){
+            var value = $(container).find('#'+prefix+field.name).val();
+            var option = null;
+            
+            if ($(container).find('#'+prefix+field.name).is("select")) {
+                option = $(container).find('#'+prefix+field.name + ' option:selected');
+            }
+            
+            if (value !== "") {
+                PropertyAssistant.useValue(value, option);
+            }
+            
+            $(container).find('#'+prefix+field.name).val("");
+            $(container).find('#'+prefix+field.name).trigger("chosen:updated");
+        });
+        
+        $("#propertyAssistant .inputOptionsWrapper").append(container);
+    },
+    
+    /*
+     * Render options for options field
+     */
+    renderOptions : function(select, options, field) {
+        if ($.isArray(options)) {
+            for (var i in options) {
+                var opt = options[i];
+                var optionEl = $('<option></option>');
+                optionEl.attr('value', opt.value);
+                
+                var label = opt.label;
+                if (field.showValues) {
+                    label = opt.value + ' ::: ' + label;
+                }
+                optionEl.text(label);
+                
+                if (opt.syntax) {
+                    optionEl.data("syntax", opt.syntax);
+                }
+                
+                $(select).append(optionEl);
+            }
+        } else {
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    var optGroup = $('<optgroup></optgroup>');
+                    optGroup.attr("label", key);
+                    PropertyAssistant.renderOptions(optGroup, options[key], field);
+                    $(select).append(optGroup);
+                }
+            }
+        }
+    },
+    
+    /*
+     * Retrieve option by AJAX and render it
+     */
+    renderAjaxOptions : function(select, field) {
+        var url = field.options_ajax;
+        if (url.indexOf('[CONTEXT_PATH]') !== -1) {
+            url = url.replace('[CONTEXT_PATH]', PropertyAssistant.options.contextPath);
+        }
+        if (url.indexOf('[APP_PATH]') !== -1) {
+            url = url.replace('[APP_PATH]', PropertyAssistant.options.appPath);
+        }
+        if (field.options_ajax_on_change) {
+            var temp = field.options_ajax_on_change.split(";");
+            for (var s in temp) {
+                var temp2 = temp[s].split(":");
+                if (url.indexOf('?') !== -1) {
+                    url += "&";
+                } else {
+                    url += "?";
+                }
+
+                if (temp2[1] !== undefined) {
+                    url += temp2[1];
+                } else {
+                    url += temp2[0];
+                }
+
+                var targetValue = $('#propertyAssistant .inputResult .editing').parent().find('> [data-option-field="'+temp2[0]+'"]').text();
+                url += "=" + encodeURIComponent(targetValue);
+            }
+        }
+        if ($(select).data("url") && $(select).data("url") === url) {
+            return;
+        } else {
+            $(select).html('<option></option>');
+        }
+        
+        $(select).data("url", url);
+
+        var method = "POST";
+        if (field.options_ajax_method) {
+            method = field.options_ajax_method;
+        }
+
+        PropertyAssistant.cachedAjax({
+            type: method,
+            url: url,
+            dataType: "JSON",
+            beforeSend: function (request) {
+               request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+            },
+            success: function(options) {
+                var tempOptions = options;
+                if (field.options_ajax_mapping !== undefined) {
+                    if (field.options_ajax_mapping.arrayObj !== undefined) {
+                        tempOptions = PropertyEditor.Util.getValueFromObject(tempOptions, field.options_ajax_mapping.arrayObj);
+                    }
+
+                    var newOptions = [];
+                    for (var o in tempOptions) {
+                        if (field.options_ajax_mapping.value !== undefined && field.options_ajax_mapping.label !== undefined) {
+                            newOptions.push({
+                                value: PropertyEditor.Util.getValueFromObject(tempOptions[o], field.options_ajax_mapping.value),
+                                label: PropertyEditor.Util.getValueFromObject(tempOptions[o], field.options_ajax_mapping.label)
+                            });
+                        } else {
+                            newOptions.push(tempOptions[o]);
+                        }
+                    }
+                    tempOptions = newOptions;
+                }
+                PropertyAssistant.renderOptions(select, tempOptions, field);
+
+                $(select).trigger("change");
+                $(select).trigger("chosen:updated");
+            }
+        });
+    },
+    
+    /*
+     * Make the selectbox show the value and label together
+     */
+    showOptionValue : function(select) {
+        $(select).on("chosen:showing_dropdown", function(evt, chosen) {
+            PropertyAssistant.updateOptionLabel(chosen.chosen);
+        });
+        $(select).on("chosen:hiding_dropdown", function(evt, chosen) {
+            PropertyAssistant.updateOptionLabel(chosen.chosen);
+        });
+        $(select).on("chosen:ready", function(evt) {
+            PropertyAssistant.updateOptionLabel($(select).data("chosen"));
+        });
+        $(select).on("chosen:updated", function(evt) {
+            PropertyAssistant.updateOptionLabel($(select).data("chosen"));
+        });
+        $(select).on("change", function() {
+            PropertyAssistant.updateOptionLabel($(select).data("chosen"));
+        });
+        setTimeout(function() {
+            $($(select).data("chosen").container).find(".chosen-search input").on("keydown", function() {
+                setTimeout(function() { PropertyAssistant.updateOptionLabel($(select).data("chosen")); }, 5);
+            });
+        }, 1000);
+        PropertyAssistant.updateOptionLabel($(select).data("chosen"));
+    },
+    
+    /*
+     * Use by showOptionValue to style & format the value & label
+     */
+    updateOptionLabel : function(chosen) {
+        $(chosen.container).find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
+            var html = $(this).html() + ' ';
+            var regex = new RegExp("\\[(.*)<em>(.*)\\]", "g");
+            html = html.replace(regex, "[$1$2]");
+            regex = new RegExp("\\[(.*)</em>(.*)\\]", "g");
+            html = html.replace(regex, "[$1$2]");
+            
+            if (/ ::: /.test(html)) {
+                html = '<cite class="option_value">' + html.replace(' ::: ', '</cite> <span class="option_desc">') + '</span>';
+            }
+            $(this).html(html);
+        });
+    },
+    
+    /*
+     * Use a value of an option field
+     */
+    useValue : function(value, option) {
+        var result = $('#propertyAssistant .inputResult');
+        
+        if ($(result).find(".editing").length > 0) {
+            result = $(result).find(".editing");
+        }
+        
+        var nestedHash = false;
+        if ($("#assistantTypeSelector").val() === "HASH_VARIABLE" && $(result).parent().hasClass("chunk")) {
+            nestedHash = true;
+        }
+        
+        var output = $('<span contenteditable="false" class="chunk"></span>');
+        
+        if (option && $(option).data("syntax")) {
+            var syntax = $(option).data("syntax");
+            for (var i in syntax) {
+                if( Object.prototype.toString.call(syntax[i]) == '[object String]' ) {
+                    $(output).append(syntax[i]);
+                } else {
+                    var editable = $('<span contenteditable="false" class="chunk" placeholder="'+syntax[i].placeholder+'" ></span>');
+                    if (syntax[i].option) {
+                        $(editable).attr("data-option-field", syntax[i].option);
+                    }
+                    if (syntax[i].required) {
+                        $(editable).attr("data-required", "");
+                    }
+                    if (syntax[i].prefix) {
+                        $(editable).attr("data-prefix", syntax[i].prefix);
+                    }
+                    if (syntax[i].postfix) {
+                        $(editable).attr("data-postfix", syntax[i].postfix);
+                        $(editable).attr("placeholder", syntax[i].placeholder+syntax[i].postfix);
+                    }
+                    if (syntax[i].multiple) {
+                        $(editable).attr("data-multiple", syntax[i].multiple);
+                    }
+                    $(output).append(editable);
+                }
+            }
+            
+            var temp = $(output).html();
+            if (nestedHash && value.indexOf("#") === 0 && temp.lastIndexOf("#") === temp.length - 1) {
+                temp = "{" + temp.substring(1, temp.length - 1) + "}";
+                $(output).html(temp);
+            }
+        } else {
+            value = UI.escapeHTML(value);
+            if (nestedHash && value.indexOf("#") === 0 && value.lastIndexOf("#") === value.length - 1) {
+                value = "{" + value.substring(1, value.length - 1) + "}";
+            }
+            $(output).html(value);
+        }
+        
+        if ($(result).hasClass("chunk")) {
+            if ($(result).is('[data-multiple]')) {
+                var newEditable = $('<span contenteditable="false" class="chunk"></span>');
+                if ($(result).is('[data-option-field]')){
+                    newEditable.attr('data-option-field', $(result).attr('data-option-field'));
+                }
+                $(newEditable).html(output.html());
+                if ($(result).text() !== "") {
+                    var prefix = $(result).attr("data-multiple");
+                    $(newEditable).attr("data-prefix", prefix);
+                }
+                $(result).append(newEditable);
+                
+                $(result).removeClass("editing");
+                $(newEditable).addClass("editing");
+            } else {
+                $(result).html(output.html());
+            }
+        } else {
+            if ($(result).text() !== "") {
+                $(result).append(" ");
+            }
+            $(result).append(output);
+            $(output).addClass("editing");
+        }
+    },
+    
+    /*
+     * Utility method to cache ajax call, this is for better performance when frequently retrieving ajax data
+     */
+    cachedAjax: function(ajaxObj) {
+        var json = "";
+        if (ajaxObj.data !== null && ajaxObj.data !== undefined) {
+            json = JSON.encode(ajaxObj.data);
+        }
+        var key = (ajaxObj.type?ajaxObj.type:"") + "::" + ajaxObj.url + "::" + PropertyAssistant.hashCode(json);
+        
+        if (PropertyAssistant.cachedAjaxCalls[key] !== undefined) {
+            //cache for 60sec
+            if (((new Date().getTime()) - PropertyAssistant.cachedAjaxCalls[key].time) < 60000) {
+                if (ajaxObj.success) {
+                    ajaxObj.success(PropertyAssistant.cachedAjaxCalls[key].data);
+                }
+                return;
+            } else {
+                delete PropertyAssistant.cachedAjaxCalls[key];
+            }
+        }
+        
+        var orgSuccess = ajaxObj.success;
+        ajaxObj.success = function(response) {
+            PropertyAssistant.cachedAjaxCalls[key] = {
+                time : (new Date().getTime()),
+                data : response
+            };
+
+            if (orgSuccess) {
+                orgSuccess(response);
+            }
+        };
+        
+        $.ajax(ajaxObj);
+    },
+    
+    /*
+     * Travelling to previous chunk
+     */
+    travelUp : function() {
+        var result = $('#propertyAssistant .inputResult .editing');
+        $("#propertyAssistant .inputOptionsWrapper .subOptionField").hide();
+        
+        if ($(result).length === 0) {
+            PropertyAssistant.updateOptionField($('#propertyAssistant .inputResult'));
+            return;
+        }
+        $(result).removeClass('editing');
+        
+        if ($(result).prev('.chunk').length > 0) {
+            var prev = $(result).prev('.chunk');
+            while ($(prev).find('> .chunk').length > 0) {
+                //find inner last
+                prev = $(prev).find('> .chunk:last-child')[0];
+            }
+            
+            $(prev).addClass("editing");
+            PropertyAssistant.updateOptionField($(prev));
+            return;
+        }
+        
+        if ($(result).parent().closest('.chunk').length > 0) {
+            $(result).parent().closest('.chunk').addClass("editing");
+            PropertyAssistant.updateOptionField($(result).parent().closest('.chunk'));
+        }
+    },
+    
+    /*
+     * Travelling to next chunk
+     */
+    travelDown : function() {
+        var result = $('#propertyAssistant .inputResult .editing');
+        $("#propertyAssistant .inputOptionsWrapper .subOptionField").hide();
+        
+        if ($(result).length === 0) {
+            $('#propertyAssistant .inputResult > .chunk:first-child').addClass("editing");
+            PropertyAssistant.updateOptionField($('#propertyAssistant .inputResult > .chunk:first-child'));
+            return;
+        }
+        $(result).removeClass('editing');
+        
+        if ($(result).find('> .chunk').length > 0) {
+            $(result).find('> .chunk:first-child').addClass("editing");
+            return;
+        }
+        
+        var next = null;
+        
+        if ($(result).next('.chunk').length > 0) {
+            next = $(result).next('.chunk');
+        } else {
+            var current = $(result);
+            do {
+                current = $(current).parent('.chunk');
+                next = $(current).next('.chunk');
+            } while ($(next).length === 0 && $(current).length > 0);
+        }
+        
+        if (next !== null && $(next).length > 0) {
+            $(next).addClass("editing");
+            PropertyAssistant.updateOptionField($(next));
+            return;
+        }
+        
+        $(result).addClass('editing');
+        PropertyAssistant.updateOptionField($(result));
+    },
+    
+    /*
+     * Generate an unique hash code for a string
+     */
+    hashCode : function(s) {
+        var h = 0, l = s.length, i = 0;
+        if ( l > 0 )
+          while (i < l)
+            h = (h << 5) - h + s.charCodeAt(i++) | 0;
+        return h;
+    },
+    
+    /*
+     * Get the caret position of a field
+     */
+    doGetCaretPosition : function(oField) {
+        // Initialize
+        var iCaretPos = 0;
+
+        // IE Support
+        if (document.selection) {
+            // Set focus on the element
+            oField.focus();
+            // To get cursor position, get empty selection range
+            var oSel = document.selection.createRange();
+            // Move selection start to 0 position
+            oSel.moveStart('character', -oField.value.length);
+            // The caret position is selection length
+            iCaretPos = oSel.text.length;
+        } else if (oField.selectionStart || oField.selectionStart === '0') // Firefox support
+            iCaretPos = oField.selectionStart;
+
+        // Return results
+        return (iCaretPos);
+    }
+};
+
 (function($) {
     $.fn.extend({
         propertyEditor: function(options) {
@@ -9170,117 +9934,16 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
             } else {
                 element = $(this[0]);
             }
-
+            
             return element.each(function() {
                 var editor = new PropertyEditor.Model.Editor(this, o);
+                
+                PropertyAssistant.init($(element).find(".property-editor-container"), o);
+                
                 editor.render();
                 $(element).data("editor", editor);
+                
                 return false;
-            });
-        },
-        hashVariableAssitant: function(contextPath) {
-            var container = this;
-
-            var showHashVariableAssit = function(field, caret, syntax) {
-                var html = "<div class=\"property_editor_hashassit\">";
-                html += "<input type=\"text\" id=\"property_editor_hashassit_input\" class=\"hashassit_input\" style=\"width:90%\"/>";
-                html += "</div>";
-
-                var object = $(html);
-                $(object).dialog({
-                    autoOpen: false,
-                    modal: true,
-                    height: 85,
-                    closeText: '',
-                    close: function(event, ui) {
-                        $(object).dialog("destroy");
-                        $(object).remove();
-                        $(field).focus();
-                    }
-                });
-
-                $.ajax({
-                    url: contextPath + '/web/json/hash/options',
-                    dataType: "text",
-                    success: function(data) {
-                        if (data !== undefined && data !== null) {
-                            var options = $.parseJSON(data);
-                            $(object).find(".hashassit_input").autocomplete({
-                                source: options,
-                                minLength: 0,
-                                open: function() {
-                                    $(this).autocomplete('widget').css('z-index', 99999);
-                                    return false;
-                                }
-                            }).focus(function() {
-                                $(this).data("uiAutocomplete").search($(this).val());
-                            }).keydown(function(e) {
-                                var autocomplete = $(this).autocomplete("widget");
-                                if (e.which === 13 && $(autocomplete).is(":hidden")) {
-                                    var text = $(this).val();
-                                    if (text.length > 0) {
-                                        if (syntax === "#") {
-                                            text = "#" + text + "#";
-                                        } else {
-                                            text = "{" + text + "}";
-                                        }
-                                        if ($(field).hasClass("ace_text-input")) {
-                                            var id = $(field).closest(".ace_editor").attr("id");
-                                            var codeeditor = ace.edit(id);
-                                            codeeditor.insert(text);
-                                        } else {
-                                            var org = $(field).val();
-                                            var output = [org.slice(0, caret), text, org.slice(caret)].join('');
-                                            $(field).val(output);
-                                        }
-                                    }
-                                    $(object).dialog("close");
-                                }
-                            });
-                            $(object).dialog("open");
-                            $(object).find(".hashassit_input").val("").focus();
-                        } else {
-                            $(object).dialog("destroy");
-                            $(object).remove();
-                            $(field).focus();
-                        }
-                    }
-                });
-            };
-
-            var doGetCaretPosition = function(oField) {
-                // Initialize
-                var iCaretPos = 0;
-
-                // IE Support
-                if (document.selection) {
-                    // Set focus on the element
-                    oField.focus();
-                    // To get cursor position, get empty selection range
-                    var oSel = document.selection.createRange();
-                    // Move selection start to 0 position
-                    oSel.moveStart('character', -oField.value.length);
-                    // The caret position is selection length
-                    iCaretPos = oSel.text.length;
-                } else if (oField.selectionStart || oField.selectionStart === '0') // Firefox support
-                    iCaretPos = oField.selectionStart;
-
-                // Return results
-                return (iCaretPos);
-            };
-
-            var keys = {};
-            $(container).keydown(function(e) {
-                if (!(e.ctrlKey && e.altKey)) {
-                    keys[e.which] = true;
-                    if ((keys[17] === true && keys[16] === true && keys[18] !== true) && (keys[51] === true || keys[219] === true)) {
-                        var element = $(container).find(":focus");
-                        showHashVariableAssit(element, doGetCaretPosition(element[0]), (keys[51] === true) ? "#" : "{");
-                        keys = {};
-                    }
-                }
-            }).keyup(function(e) {
-                delete keys[e.which];
             });
         }
     });

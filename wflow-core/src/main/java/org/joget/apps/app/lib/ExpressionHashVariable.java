@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -98,5 +99,10 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
     
     public static Boolean isParsed(String input) {
         return !((input.startsWith("#") && input.endsWith("#")) || (input.startsWith("{") && input.endsWith("}")));
+    }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/expressionHashVariable.json", null, true, null);
     }
 }

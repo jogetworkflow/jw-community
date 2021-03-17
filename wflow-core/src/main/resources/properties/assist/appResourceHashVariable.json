@@ -1,0 +1,28 @@
+{
+    "optionGroup" : {
+        "@@assist.appResource@@" : [
+            {
+                "value" : "#appResource.NAME#",
+                "label" : "@@assist.appResource.hash@@",
+                "syntax" : [
+                    "#appResource.",
+                    {
+                        "placeholder" : "Name",
+                        "option" : "appResource",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "appResource" : {
+            "name" : "appResource",
+            "label" : "@@assist.appResource@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/appResource/options",
+            "type" : "selectbox"
+        }
+    }
+}
+

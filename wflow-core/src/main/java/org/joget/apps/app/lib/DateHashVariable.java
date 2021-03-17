@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import static org.joget.commons.util.TimeZoneUtil.getTimeZoneByGMT;
@@ -150,5 +151,10 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
         syntax.add("date.MONTH+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
         syntax.add("date.YEAR+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
         return syntax;
+    }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/dateHashVariable.json", null, true, null);
     }
 }

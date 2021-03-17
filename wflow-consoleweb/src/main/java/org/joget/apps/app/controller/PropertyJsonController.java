@@ -19,11 +19,10 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.app.model.PropertyAssistant;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.FormBinder;
-import org.joget.apps.form.model.FormLoadBinder;
-import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.PwaOfflineReadonly;
@@ -240,6 +239,32 @@ public class PropertyJsonController {
             jsonArray.write(writer);
         } catch (Exception ex) {
             LogUtil.error(this.getClass().getName(), ex, "getAppResources Error!");
+        }
+    }
+    
+    @RequestMapping("/property/json/(*:appId)/(~:version)/getPropertyAssistants")
+    public void getPropertyAssistantPlugins(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            Collection<Plugin> list = pluginManager.list(PropertyAssistant.class);
+            
+            if (list != null) {
+                for (Plugin p : list) {
+                    PropertyAssistant pa = (PropertyAssistant) p;
+                    JSONObject obj = new JSONObject();
+                    String definition = pa.getPropertyAssistantDefinition();
+                    if (definition != null && !definition.isEmpty()) {
+                        obj.put("type", pa.getPropertyAssistantType().toString());
+                        obj.put("definition", definition);
+                        jsonArray.put(obj);
+                    }
+                }
+            }
+            
+            jsonArray.write(writer);
+        } catch (Exception ex) {
+            LogUtil.error(this.getClass().getName(), ex, "getPropertyAssistantPlugins Error!");
         }
     }
     

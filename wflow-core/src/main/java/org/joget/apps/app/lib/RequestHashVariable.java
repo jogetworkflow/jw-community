@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -138,5 +139,10 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
 
     public String getPropertyOptions() {
         return "";
+    }
+
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/requestHashVariable.json", null, true, null);
     }
 }

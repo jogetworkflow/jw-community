@@ -82,4 +82,9 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
         syntax.add("platform.setting.systemTimeZone");
         return syntax;
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/platformHashVariable.json", null, true, null);
+    }
 }

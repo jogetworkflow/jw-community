@@ -1,0 +1,105 @@
+{
+    "optionGroup" : {
+        "@@assist.ProcessActivityPerformer@@" : [
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.id#",
+                "label" : "@@assist.pap.id@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".id#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.username#",
+                "label" : "@@assist.pap.username@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".username#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.firstName#",
+                "label" : "@@assist.pap.firstName@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".firstName#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.lastName#",
+                "label" : "@@assist.pap.lastName@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".lastName#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.email#",
+                "label" : "@@assist.pap.email@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".email#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.active#",
+                "label" : "@@assist.pap.active@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".active#"
+                ]
+            },
+            {
+                "value" : "#performer.ACTIVITY_DEF_ID.timeZone#",
+                "label" : "@@assist.pap.timeZone@@",
+                "syntax" : [
+                    "#performer.",
+                    {
+                        "placeholder" : "ACTIVITY_DEF_ID",
+                        "option" : "processActivity",
+                        "required" : true
+                    },
+                    ".timeZone#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "processActivity" : {
+            "name" : "processActivity",
+            "label" : "@@assist.ProcessActivity@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/processActivity/options",
+            "type" : "selectbox"
+        }
+    }
+}

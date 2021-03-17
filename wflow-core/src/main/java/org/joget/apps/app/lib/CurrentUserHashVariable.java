@@ -119,4 +119,9 @@ public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
         
         return syntax;
     }
+
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/currentUserHashVariable.json", null, true, null);
+    }
 }

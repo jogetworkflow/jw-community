@@ -98,4 +98,9 @@ public class UserVariableHashVariable extends DefaultHashVariablePlugin {
     public Collection<String> availableSyntax() {
         return null;
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return null;
+    }
 }

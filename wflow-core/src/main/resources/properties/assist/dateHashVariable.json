@@ -1,0 +1,405 @@
+{
+    "optionGroup" : {
+        "@@assist.Date@@" : [
+            {
+                "value" : "#date.FORMAT|TIMEZONE#",
+                "label" : "@@assist.Date.format@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "#"
+                ]
+            },
+            {
+                "value" : "#date.UNIT+INTEGER.FORMAT|TIMEZONE#",
+                "label" : "@@assist.Date.formatPlus@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "UNIT",
+                        "option" : "dateUnit",
+                        "required" : true
+                    },
+                    "+",
+                    {
+                        "placeholder" : "INTEGER",
+                        "option" : "number",
+                        "required" : true
+                    },
+                    ".",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "#"
+                ]
+            },
+            {
+                "value" : "#date.UNIT-INTEGER.FORMAT|TIMEZONE#",
+                "label" : "@@assist.Date.formatMinus@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "UNIT",
+                        "option" : "dateUnit",
+                        "required" : true
+                    },
+                    "-",
+                    {
+                        "placeholder" : "INTEGER",
+                        "option" : "number",
+                        "required" : true
+                    },
+                    ".",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "#"
+                ]
+            },
+            {
+                "value" : "#date.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "label" : "@@assist.Date.value@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "[",
+                    {
+                        "placeholder" : "DATE_VALUE",
+                        "required" : true
+                    },
+                    "|",
+                    {
+                        "placeholder" : "DATE_VALUE_FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "DATE_VALUE_TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "]#"
+                ]
+            },
+            {
+                "value" : "#date.UNIT+INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "label" : "@@assist.Date.valuePlus@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "UNIT",
+                        "option" : "dateUnit",
+                        "required" : true
+                    },
+                    "+",
+                    {
+                        "placeholder" : "INTEGER",
+                        "option" : "number",
+                        "required" : true
+                    },
+                    ".",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "[",
+                    {
+                        "placeholder" : "DATE_VALUE",
+                        "required" : true
+                    },
+                    "|",
+                    {
+                        "placeholder" : "DATE_VALUE_FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "DATE_VALUE_TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "]#"
+                ]
+            },
+            {
+                "value" : "#date.UNIT-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "label" : "@@assist.Date.valueMinus@@",
+                "syntax" : [
+                    "#date.",
+                    {
+                        "placeholder" : "UNIT",
+                        "option" : "dateUnit",
+                        "required" : true
+                    },
+                    "-",
+                    {
+                        "placeholder" : "INTEGER",
+                        "option" : "number",
+                        "required" : true
+                    },
+                    ".",
+                    {
+                        "placeholder" : "FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    "[",
+                    {
+                        "placeholder" : "DATE_VALUE",
+                        "required" : true
+                    },
+                    "|",
+                    {
+                        "placeholder" : "DATE_VALUE_FORMAT",
+                        "option" : "dateFormat",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "DATE_VALUE_TIMEZONE",
+                        "option" : "timezone",
+                        "prefix" : "|"
+                    },
+                    "]#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "dateUnit" : {
+            "name" : "dateUnit",
+            "label" : "@@assist.DateUnit@@",
+            "options" : [
+                {
+                    "value" : "DAY",
+                    "label" : "Day"
+                },
+                {
+                    "value" : "MONTH",
+                    "label" : "Month"
+                },
+                {
+                    "value" : "YEAR",
+                    "label" : "Year"
+                }
+            ],
+            "type" : "selectbox"
+        },
+        "dateFormat" : {
+            "name" : "dateFormat",
+            "label" : "@@assist.DateFormat@@",
+            "options" : [
+                {
+                    "value" : "dd-MM-yy",
+                    "label" : "@@assist.eg@@ 31-01-12"
+                },
+                {
+                    "value" : "dd-MM-yyyy",
+                    "label" : "@@assist.eg@@ 31-01-2012"
+                },
+                {
+                    "value" : "MM-dd-yyyy",
+                    "label" : "@@assist.eg@@ 01-31-2012"
+                },
+                {
+                    "value" : "yyyy-MM-dd",
+                    "label" : "@@assist.eg@@ 2012-01-31"
+                },
+                {
+                    "value" : "dd-MM-yy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31-01-12 23:59:59"
+                },
+                {
+                    "value" : "dd-MM-yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31-01-2012 23:59:59"
+                },
+                {
+                    "value" : "MM-dd-yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 01-31-2012 23:59:59"
+                },
+                {
+                    "value" : "yyyy-MM-dd HH:mm:ss",
+                    "label" : "@@assist.eg@@ 2012-01-31 23:59:59"
+                },
+                {
+                    "value" : "dd-MM-yy h:mm a",
+                    "label" : "@@assist.eg@@ 31-01-12 12:08 PM"
+                },
+                {
+                    "value" : "dd-MM-yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 31-01-2012 12:08 PM"
+                },
+                {
+                    "value" : "yyyy-MM-dd h:mm a",
+                    "label" : "@@assist.eg@@ 2012-01-31 12:08 PM"
+                },
+                {
+                    "value" : "MM-dd-yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 01-31-2012 12:08 PM"
+                },
+                {
+                    "value" : "dd/MM/yy",
+                    "label" : "@@assist.eg@@ 31/01/12"
+                },
+                {
+                    "value" : "dd/MM/yyyy",
+                    "label" : "@@assist.eg@@ 31/01/2012"
+                },
+                {
+                    "value" : "MM/dd/yyyy",
+                    "label" : "@@assist.eg@@ 01/31/2012"
+                },
+                {
+                    "value" : "yyyy/MM/dd",
+                    "label" : "@@assist.eg@@ 2012/01/31"
+                },
+                {
+                    "value" : "dd/MM/yy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31/01/12 23:59:59"
+                },
+                {
+                    "value" : "dd/MM/yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31/01/2012 23:59:59"
+                },
+                {
+                    "value" : "MM/dd/yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 01/31/2012 23:59:59"
+                },
+                {
+                    "value" : "yyyy/MM/dd HH:mm:ss",
+                    "label" : "@@assist.eg@@ 2012/01/31 23:59:59"
+                },
+                {
+                    "value" : "dd/MM/yy h:mm a",
+                    "label" : "@@assist.eg@@ 31/01/12 12:08 PM"
+                },
+                {
+                    "value" : "dd/MM/yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 31/01/2012 12:08 PM"
+                },
+                {
+                    "value" : "MM/dd/yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 01/31/2012 12:08 PM"
+                },
+                {
+                    "value" : "yyyy/MM/dd h:mm a",
+                    "label" : "@@assist.eg@@ 2012/01/31 12:08 PM"
+                },
+                {
+                    "value" : "dd.MM.yy",
+                    "label" : "@@assist.eg@@ 31.01.12"
+                },
+                {
+                    "value" : "dd.MM.yyyy",
+                    "label" : "@@assist.eg@@ 31.01.2012"
+                },
+                {
+                    "value" : "MM.dd.yyyy",
+                    "label" : "@@assist.eg@@ 01.31.2012"
+                },
+                {
+                    "value" : "yyyy.MM.dd",
+                    "label" : "@@assist.eg@@ 2012.01.31"
+                },
+                {
+                    "value" : "dd.MM.yy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31.01.12 23:59:59"
+                },
+                {
+                    "value" : "dd.MM.yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31.01.2012 23:59:59"
+                },
+                {
+                    "value" : "MM.dd.yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 01.31.2012 23:59:59"
+                },
+                {
+                    "value" : "yyyy.MM.dd HH:mm:ss",
+                    "label" : "@@assist.eg@@ 2012.01.31 23:59:59"
+                },
+                {
+                    "value" : "dd.MM.yy h:mm a",
+                    "label" : "@@assist.eg@@ 31.01.12 12:08 PM"
+                },
+                {
+                    "value" : "dd.MM.yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 31.01.2012 12:08 PM"
+                },
+                {
+                    "value" : "MM.dd.yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 01.31.2012 12:08 PM"
+                },
+                {
+                    "value" : "yyyy.MM.dd h:mm a",
+                    "label" : "@@assist.eg@@ 2012.01.31 12:08 PM"
+                },
+                {
+                    "value" : "d MMM yyyy",
+                    "label" : "@@assist.eg@@ 31 Jan 2012"
+                },
+                {
+                    "value" : "d MMM yyyy HH:mm:ss",
+                    "label" : "@@assist.eg@@ 31 Jan 2012 23:59:59"
+                },
+                {
+                    "value" : "d MMM yyyy h:mm a",
+                    "label" : "@@assist.eg@@ 31 Jan 2012 12:08 PM"
+                },
+                {
+                    "value" : "EEE, d MMM yyyy HH:mm:ss Z",
+                    "label" : "@@assist.eg@@ Sat, 31 Jan 2012 10:45:42 +0100"
+                }
+            ],
+            "type" : "selectbox",
+            "showValues" : true
+        },
+        "timezone" : {
+            "name" : "timezone",
+            "label" : "@@assist.Timezone@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/timezone/options",
+            "type" : "selectbox"
+        },
+        "number" : {
+            "name" : "number",
+            "label" : "@@assist.Number@@",
+            "type" : "number"
+        }
+    }
+}

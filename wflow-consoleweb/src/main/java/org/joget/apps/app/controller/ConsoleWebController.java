@@ -3765,7 +3765,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/forms/options")
-    public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
 
         Collection<FormDefinition> formDefinitionList = null;
 
@@ -3774,7 +3774,13 @@ public class ConsoleWebController {
             desc = false;
         }
 
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = null;
+        if (customAppId != null && !customAppId.isEmpty()) {
+            appDef = appService.getPublishedAppDefinition(customAppId);
+        } else {
+            appDef = appService.getAppDefinition(appId, version);
+        }
+        
         if (appDef != null) {
             formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
         } else {
@@ -3866,8 +3872,13 @@ public class ConsoleWebController {
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/columns/options")
-    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tableName", required = false) String formTable, @RequestParam(value = "tables", required = false) String tables, @RequestParam(value = "fields", required = false) String fields) throws IOException, JSONException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tableName", required = false) String formTable, @RequestParam(value = "tables", required = false) String tables, @RequestParam(value = "fields", required = false) String fields, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
+        AppDefinition appDef = null;
+        if (customAppId != null && !customAppId.isEmpty()) {
+            appDef = appService.getPublishedAppDefinition(customAppId);
+        } else {
+            appDef = appService.getAppDefinition(appId, version);
+        }
         
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
@@ -4052,6 +4063,126 @@ public class ConsoleWebController {
             //ignore
         }
         jsonArray = sortJSONArray(jsonArray, "label", false);
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/appResource/options")
+    public void consoleAppResourceOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            if (appDef != null) {
+                Collection<AppResource> list = appDef.getResourceList();
+                if (list != null) {
+                    for (AppResource r : list) {
+                        Map op = new HashMap();
+                        op.put("value", r.getId());
+                        op.put("label", r.getId());
+                        jsonArray.put(op);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/processActivity/options")
+    public void consoleProcessActivityOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONObject jsonObject = new JSONObject();
+        
+        try {
+            if (appDef != null) {
+                PackageDefinition packageDefinition = appDef.getPackageDefinition();
+                if (packageDefinition != null) {
+                    Long packageVersion = packageDefinition.getVersion();
+                    Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
+                    for (WorkflowProcess wp : processList) {
+                        JSONArray arr = new JSONArray();
+                        
+                        JSONObject runprocess = new JSONObject();
+                        runprocess.put("value", WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+                        runprocess.put("label", ResourceBundleUtil.getMessage("console.process.config.label.startProcess"));
+                        arr.put(runprocess);
+                        
+                        //get activity list
+                        Collection<WorkflowActivity> activityList = workflowManager.getProcessActivityDefinitionList(wp.getId());
+                        if (activityList != null) {
+                            for (WorkflowActivity act : activityList) {
+                                if (act.getType().equals(WorkflowActivity.TYPE_NORMAL)) {
+                                    JSONObject temp = new JSONObject();
+                                    temp.put("value", act.getId());
+                                    temp.put("label", act.getName());
+                                    arr.put(temp);
+                                }
+                            }
+                        } 
+        
+                        jsonObject.put(wp.getName(), arr);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    @RequestMapping("/json/console/app/options")
+    public void consoleAppOptionsJson(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            Collection<AppDefinition> appDefinitionList = appService.getUnprotectedAppList();
+            if (appDefinitionList != null) {
+                for (AppDefinition a : appDefinitionList) {
+                    Map op = new HashMap();
+                    op.put("value", a.getAppId());
+                    op.put("label", a.getName());
+                    jsonArray.put(op);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/timezone/options")
+    public void consoleTimezoneOptionsJson(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            Map<String, String> list = TimeZoneUtil.getList();
+            if (list != null) {
+                for (Map.Entry e : list.entrySet()) {
+                    Map op = new HashMap();
+                    op.put("value", e.getKey());
+                    op.put("label", e.getValue());
+                    jsonArray.put(op);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     

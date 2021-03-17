@@ -116,4 +116,9 @@ public class PerformerHashVariable extends DefaultHashVariablePlugin {
         
         return syntax;
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/performerHashVariable.json", null, true, null);
+    }
 }

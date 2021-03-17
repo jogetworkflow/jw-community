@@ -127,4 +127,9 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
         
         return syntax;
     }
+
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/userHashVariable.json", null, true, null);
+    }
 }

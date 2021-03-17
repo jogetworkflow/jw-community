@@ -1,0 +1,34 @@
+{
+    "optionGroup" : {
+        "@@assist.appMessage@@" : [
+            {
+                "value" : "#i18n.KEY#",
+                "label" : "@@assist.appMessage.hash@@",
+                "syntax" : [
+                    "#i18n.",
+                    {
+                        "placeholder" : "KEY",
+                        "option" : "appMessage",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "appMessage" : {
+            "name" : "appMessage",
+            "label" : "@@assist.appMessage@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/message/keys",
+            "options_ajax_mapping" : {
+                "arrayObj" : "data",
+                "value" : "",
+                "label" : ""
+            },
+            "type" : "selectbox"
+        }
+    }
+}
+
+

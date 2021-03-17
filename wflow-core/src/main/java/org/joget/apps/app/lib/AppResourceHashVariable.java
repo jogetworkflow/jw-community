@@ -51,4 +51,9 @@ public class AppResourceHashVariable extends DefaultHashVariablePlugin {
     public String getPropertyOptions() {
         return "";
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/appResourceHashVariable.json", null, true, null);
+    }
 }

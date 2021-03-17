@@ -1,0 +1,86 @@
+{
+    "optionGroup" : {
+        "@@assist.HTTPRequest@@" : [
+            {
+                "value" : "#request.characterEncoding#",
+                "label" : "@@assist.request.characterEncoding@@"
+            },
+            {
+                "value" : "#request.contextPath#",
+                "label" : "@@assist.request.contextPath@@"
+            },
+            {
+                "value" : "#request.header.NAME#",
+                "label" : "@@assist.request.header@@",
+                "syntax" : [
+                    "#request.header.",
+                    {
+                        "placeholder" : "NAME",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            },
+            {
+                "value" : "#request.locale#",
+                "label" : "@@assist.request.locale@@"
+            },
+            {
+                "value" : "#request.method#",
+                "label" : "@@assist.request.method@@"
+            },
+            {
+                "value" : "#request.pathInfo#",
+                "label" : "@@assist.request.pathInfo@@"
+            },
+            {
+                "value" : "#request.protocol#",
+                "label" : "@@assist.request.protocol@@"
+            },
+            {
+                "value" : "#request.queryString#",
+                "label" : "@@assist.request.queryString@@"
+            },
+            {
+                "value" : "#request.remoteAddr#",
+                "label" : "@@assist.request.remoteAddr@@"
+            },
+            {
+                "value" : "#request.requestURI#",
+                "label" : "@@assist.request.requestURI@@"
+            },
+            {
+                "value" : "#request.requestURL#",
+                "label" : "@@assist.request.requestURL@@"
+            },
+            {
+                "value" : "#request.requestedSessionId#",
+                "label" : "@@assist.request.requestedSessionId@@"
+            },
+            {
+                "value" : "#request.scheme#",
+                "label" : "@@assist.request.scheme@@"
+            },
+            {
+                "value" : "#request.serverName#",
+                "label" : "@@assist.request.serverName@@"
+            },
+            {
+                "value" : "#request.serverPort#",
+                "label" : "@@assist.request.serverPort@@"
+            },
+            {
+                "value" : "#request.servletPath#",
+                "label" : "@@assist.request.servletPath@@"
+            },
+            {
+                "value" : "#request.baseURL#",
+                "label" : "@@assist.request.baseURL@@"
+            },
+            {
+                "value" : "#request.domainURL#",
+                "label" : "@@assist.request.domainURL@@"
+            }
+        ]
+    }
+}

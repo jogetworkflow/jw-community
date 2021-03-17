@@ -1,0 +1,27 @@
+{
+    "optionGroup" : {
+        "@@assist.WorkflowVariable@@" : [
+            {
+                "value" : "#variable.KEY#",
+                "label" : "@@assist.WorkflowVariable.value@@",
+                "syntax" : [
+                    "#variable.",
+                    {
+                        "placeholder" : "KEY",
+                        "option" : "workflowVariable",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "workflowVariable" : {
+            "name" : "workflowVariable",
+            "label" : "@@assist.WorkflowVariable@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options",
+            "type" : "selectbox"
+        }
+    }
+}

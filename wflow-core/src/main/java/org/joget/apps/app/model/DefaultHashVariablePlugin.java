@@ -2,6 +2,7 @@ package org.joget.apps.app.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
 
@@ -9,7 +10,7 @@ import org.joget.plugin.base.ExtDefaultPlugin;
  * A base abstract class to develop a Hash Variable plugin. 
  * 
  */
-public abstract class DefaultHashVariablePlugin extends ExtDefaultPlugin implements HashVariablePlugin {
+public abstract class DefaultHashVariablePlugin extends ExtDefaultPlugin implements HashVariablePlugin, PropertyAssistant {
     
     /**
      * Escape special character in the value.
@@ -36,5 +37,25 @@ public abstract class DefaultHashVariablePlugin extends ExtDefaultPlugin impleme
         list.add(getPrefix() + ".KEY");
         
         return list;
+    }
+    
+    @Override
+    public Type getPropertyAssistantType() {
+        return Type.HASH_VARIABLE;
+    }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        String json = "";
+        Collection<String> syntax = availableSyntax();
+        if (syntax != null) {
+            for (String s : syntax) {
+                if (!json.isEmpty()) {
+                    json += ",";
+                }
+                json += "{\"value\" : \"#"+s+"#\", \"label\" : \"\"}";
+            }
+        }
+        return "{\"optionGroup\" : {\"" + this.getI18nLabel() + "\" : [" + json + "]}}";
     }
 }

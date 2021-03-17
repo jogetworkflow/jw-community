@@ -1,0 +1,118 @@
+{
+    "optionGroup" : {
+        "@@assist.User@@" : [
+            {
+                "value" : "#user.USERNAME.fullName#",
+                "label" : "@@assist.user.fullName@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".fullName#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.firstName#",
+                "label" : "@@assist.user.firstName@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".firstName#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.lastName#",
+                "label" : "@@assist.user.lastName@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".lastName#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.email#",
+                "label" : "@@assist.user.email@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".email#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.active#",
+                "label" : "@@assist.user.active@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".active#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.timeZone#",
+                "label" : "@@assist.user.timeZone@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".timeZone#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.locale#",
+                "label" : "@@assist.user.locale@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".locale#"
+                ]
+            },
+            {
+                "value" : "#user.USERNAME.roles#",
+                "label" : "@@assist.user.roles@@",
+                "syntax" : [
+                    "#user.",
+                    {
+                        "placeholder" : "USERNAME",
+                        "option" : "username",
+                        "required" : true
+                    },
+                    ".roles#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "username" : {
+            "name" : "username",
+            "label" : "@@assist.User@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/directory/user/options",
+            "type" : "selectbox"
+        }
+    }
+}

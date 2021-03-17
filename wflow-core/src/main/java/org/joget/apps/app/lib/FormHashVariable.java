@@ -124,4 +124,9 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         
         return syntax;
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/formHashVariable.json", null, true, null);
+    }
 }

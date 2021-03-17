@@ -1,0 +1,46 @@
+{
+    "optionGroup" : {
+        "@@assist.FormField@@" : [
+            {
+                "value" : "#form.TABLE.ID[RECORD_ID]#",
+                "label" : "@@assist.FormField.hashWithId@@",
+                "syntax" : [
+                    "#form.",
+                    {
+                        "placeholder" : "TABLE",
+                        "option" : "formDataTable",
+                        "required" : true
+                    },
+                    ".",
+                    {
+                        "placeholder" : "ID",
+                        "option" : "formTableFieldId",
+                        "required" : true
+                    },
+                    {
+                        "placeholder" : "RECORD_ID",
+                        "prefix" : "[",
+                        "postfix" : "]"
+                    },
+                    "#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "formDataTable" : {
+            "name" : "formDataTable",
+            "label" : "@@assist.FormDataTable@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/tableName/options",
+            "type" : "selectbox"
+        },
+        "formTableFieldId" : {
+            "name" : "formTableFieldId",
+            "label" : "@@assist.FormField@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options",
+            "options_ajax_on_change" : "formDataTable:tableName",
+            "type" : "selectbox"
+        }
+    }
+}
+

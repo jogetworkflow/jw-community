@@ -51,4 +51,9 @@ public class WorkflowVariableHashVariable extends DefaultHashVariablePlugin {
     public String getPropertyOptions() {
         return "";
     }
+
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/workflowVariableHashVariable.json", null, true, null);
+    }
 }

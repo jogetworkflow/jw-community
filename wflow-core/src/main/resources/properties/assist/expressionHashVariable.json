@@ -1,0 +1,1249 @@
+{
+    "optionGroup" : {
+        "@@assist.Expression@@" : [
+            {
+                "value" : "#exp.EXPRESSION#",
+                "label" : "@@assist.Expression.hash@@",
+                "syntax" : [
+                    "#exp.",
+                    {
+                        "placeholder" : "EXPRESSION",
+                        "option" : "expressionFunction",
+                        "required" : true,
+                        "multiple" : " "
+                    },
+                    "#"
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "expressionFunction" : {
+            "name" : "expressionFunction",
+            "label" : "@@assist.expressionFunction@@",
+            "options" : {
+                "@@assist.exp.operator@@" : [
+                    {
+                        "value" : "NUM1 + NUM2",
+                        "label" : "@@assist.exp.plus@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " + ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 - NUM2",
+                        "label" : "@@assist.exp.minus@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " - ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 * NUM2",
+                        "label" : "@@assist.exp.multiply@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " * ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 / NUM2",
+                        "label" : "@@assist.exp.divide@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " / ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 % NUM2",
+                        "label" : "@@assist.exp.divideRemaining@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " % ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 ^ NUM2",
+                        "label" : "@@assist.exp.exponent@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " % ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    }
+                ],
+                "@@assist.exp.logical@@" : [
+                    {
+                        "value" : "(EXPRESSION1) and (EXPRESSION2)",
+                        "label" : "@@assist.exp.and@@",
+                        "syntax" : [
+                            "(",
+                            {
+                                "placeholder" : "EXPRESSION1",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ") and (",
+                            {
+                                "placeholder" : "EXPRESSION2",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "(EXPRESSION1) or (EXPRESSION2)",
+                        "label" : "@@assist.exp.or@@",
+                        "syntax" : [
+                            "(",
+                            {
+                                "placeholder" : "EXPRESSION1",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ") or (",
+                            {
+                                "placeholder" : "EXPRESSION2",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "!(EXPRESSION)",
+                        "label" : "@@assist.exp.not@@",
+                        "syntax" : [
+                            "!(",
+                            {
+                                "placeholder" : "EXPRESSION",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "(EXPRESSION)",
+                        "label" : "@@assist.exp.bracket@@",
+                        "syntax" : [
+                            "(",
+                            {
+                                "placeholder" : "EXPRESSION",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "(EXPRESSION)?(IF_EXPRESSION):(ELSE_EXPRESSION)",
+                        "label" : "@@assist.exp.ifelse@@",
+                        "syntax" : [
+                            "(",
+                            {
+                                "placeholder" : "EXPRESSION",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")?(",
+                            {
+                                "placeholder" : "IF_EXPRESSION",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            "):(",
+                            {
+                                "placeholder" : "ELSE_EXPRESSION",
+                                "option" : "expressionFunction",
+                                "required" : true,
+                                "multiple" : " "
+                            },
+                            ")"
+                        ]
+                    }
+                ],
+                "@@assist.exp.relational@@" : [
+                    {
+                        "value" : "NUM1 gt NUM2",
+                        "label" : "@@assist.exp.gt@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " gt ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 ge NUM2",
+                        "label" : "@@assist.exp.ge@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " ge ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 lt NUM2",
+                        "label" : "@@assist.exp.lt@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " lt ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 le NUM2",
+                        "label" : "@@assist.exp.le@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " le ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 eq NUM2",
+                        "label" : "@@assist.exp.eq@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " eq ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    },
+                    {
+                        "value" : "NUM1 ne NUM2",
+                        "label" : "@@assist.exp.ne@@",
+                        "syntax" : [
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            " ne ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            }
+                        ]
+                    }
+                ],
+                "@@assist.exp.math@@" : [
+                    {
+                        "value" : "$sin(NUM)",
+                        "label" : "@@assist.exp.sin@@",
+                        "syntax" : [
+                            "$sin(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$cos(NUM)",
+                        "label" : "@@assist.exp.cos@@",
+                        "syntax" : [
+                            "$cos(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$tan(NUM)",
+                        "label" : "@@assist.exp.tan@@",
+                        "syntax" : [
+                            "$tan(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$asin(NUM)",
+                        "label" : "@@assist.exp.asin@@",
+                        "syntax" : [
+                            "$asin(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$acos(NUM)",
+                        "label" : "@@assist.exp.acos@@",
+                        "syntax" : [
+                            "$acos(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$atan(NUM)",
+                        "label" : "@@assist.exp.atan@@",
+                        "syntax" : [
+                            "$atan(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$sinh(NUM)",
+                        "label" : "@@assist.exp.sinh@@",
+                        "syntax" : [
+                            "$sinh(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$cosh(NUM)",
+                        "label" : "@@assist.exp.cosh@@",
+                        "syntax" : [
+                            "$cosh(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$tanh(NUM)",
+                        "label" : "@@assist.exp.tanh@@",
+                        "syntax" : [
+                            "$tanh(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$abs(NUM)",
+                        "label" : "@@assist.exp.abs@@",
+                        "syntax" : [
+                            "$abs(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$max(NUM1, NUM2)",
+                        "label" : "@@assist.exp.max@@",
+                        "syntax" : [
+                            "$max(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$min(NUM1, NUM2)",
+                        "label" : "@@assist.exp.min@@",
+                        "syntax" : [
+                            "$min(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$round(NUM)",
+                        "label" : "@@assist.exp.round@@",
+                        "syntax" : [
+                            "$round(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$sqrt(NUM)",
+                        "label" : "@@assist.exp.sqrt@@",
+                        "syntax" : [
+                            "$sqrt(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$cbrt(NUM)",
+                        "label" : "@@assist.exp.cbrt@@",
+                        "syntax" : [
+                            "$cbrt(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$pow(NUM1, NUM2)",
+                        "label" : "@@assist.exp.pow@@",
+                        "syntax" : [
+                            "$pow(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$signum(NUM)",
+                        "label" : "@@assist.exp.signum@@",
+                        "syntax" : [
+                            "$signum(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$ceil(NUM)",
+                        "label" : "@@assist.exp.ceil@@",
+                        "syntax" : [
+                            "$ceil(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$copySign(NUM1, NUM2)",
+                        "label" : "@@assist.exp.copySign@@",
+                        "syntax" : [
+                            "$copySign(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$nextAfter(NUM1, NUM2)",
+                        "label" : "@@assist.exp.nextAfter@@",
+                        "syntax" : [
+                            "$nextAfter(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$nextUp(NUM)",
+                        "label" : "@@assist.exp.nextUp@@",
+                        "syntax" : [
+                            "$nextUp(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$nextDown(NUM)",
+                        "label" : "@@assist.exp.nextDown@@",
+                        "syntax" : [
+                            "$nextDown(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$floor(NUM)",
+                        "label" : "@@assist.exp.floor@@",
+                        "syntax" : [
+                            "$floor(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$floorDiv(NUM1, NUM2)",
+                        "label" : "@@assist.exp.floorDiv@@",
+                        "syntax" : [
+                            "$floorDiv(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$random()",
+                        "label" : "@@assist.exp.random@@"
+                    },
+                    {
+                        "value" : "$rint(NUM)",
+                        "label" : "@@assist.exp.rint@@",
+                        "syntax" : [
+                            "$rint(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$hypot(NUM1, NUM2)",
+                        "label" : "@@assist.exp.hypot@@",
+                        "syntax" : [
+                            "$hypot(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$ulp(NUM)",
+                        "label" : "@@assist.exp.ulp@@",
+                        "syntax" : [
+                            "$ulp(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$getExponent(NUM)",
+                        "label" : "@@assist.exp.getExponent@@",
+                        "syntax" : [
+                            "$getExponent(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$IEEEremainder(NUM1, NUM2)",
+                        "label" : "@@assist.exp.IEEEremainder@@",
+                        "syntax" : [
+                            "$IEEEremainder(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$addExact(NUM1, NUM2)",
+                        "label" : "@@assist.exp.addExact@@",
+                        "syntax" : [
+                            "$addExact(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$subtractExact(NUM1, NUM2)",
+                        "label" : "@@assist.exp.subtractExact@@",
+                        "syntax" : [
+                            "$subtractExact(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$multiplyExact(NUM1, NUM2)",
+                        "label" : "@@assist.exp.multiplyExact@@",
+                        "syntax" : [
+                            "$multiplyExact(",
+                            {
+                                "placeholder" : "NUM1",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ", ",
+                            {
+                                "placeholder" : "NUM2",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$incrementExact(NUM)",
+                        "label" : "@@assist.exp.incrementExact@@",
+                        "syntax" : [
+                            "$incrementExact(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$decrementExact(NUM)",
+                        "label" : "@@assist.exp.decrementExact@@",
+                        "syntax" : [
+                            "$decrementExact(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$negateExact(NUM)",
+                        "label" : "@@assist.exp.negateExact@@",
+                        "syntax" : [
+                            "$negateExact(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$toIntExact(NUM)",
+                        "label" : "@@assist.exp.toIntExact@@",
+                        "syntax" : [
+                            "$toIntExact(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$log(NUM)",
+                        "label" : "@@assist.exp.log@@",
+                        "syntax" : [
+                            "$log(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$log10(NUM)",
+                        "label" : "@@assist.exp.log10@@",
+                        "syntax" : [
+                            "$log10(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$log1p(NUM)",
+                        "label" : "@@assist.exp.log1p@@",
+                        "syntax" : [
+                            "$log1p(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$exp(NUM)",
+                        "label" : "@@assist.exp.exp@@",
+                        "syntax" : [
+                            "$exp(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$expm1(NUM)",
+                        "label" : "@@assist.exp.expm1@@",
+                        "syntax" : [
+                            "$expm1(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$toDegrees(NUM)",
+                        "label" : "@@assist.exp.toDegrees@@",
+                        "syntax" : [
+                            "$toDegrees(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "$toRadians(NUM)",
+                        "label" : "@@assist.exp.toRadians@@",
+                        "syntax" : [
+                            "$toRadians(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    }
+                ],
+                "@@assist.exp.string@@" : [
+                    {
+                        "value" : "'STRING1' + 'STRING2'",
+                        "label" : "@@assist.exp.concat@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING1",
+                                "required" : true
+                            },
+                            "' + '",
+                            {
+                                "placeholder" : "STRING2",
+                                "required" : true
+                            },
+                            "'"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.substring(START_INDEX, END_INDEX)",
+                        "label" : "@@assist.exp.concat@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.substring(",
+                            {
+                                "placeholder" : "START_INDEX",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            {
+                                "placeholder" : "END_INDEX",
+                                "option" : "expressionFunction;number",
+                                "prefix" : ", "
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.toLowerCase()",
+                        "label" : "@@assist.exp.toLowerCase@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.toLowerCase()"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.toUpperCase()",
+                        "label" : "@@assist.exp.toUpperCase@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.toUpperCase()"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.replace('OLD_CHAR', 'NEW_CHAR')",
+                        "label" : "@@assist.exp.replace@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.replace('",
+                            {
+                                "placeholder" : "OLD_CHAR",
+                                "required" : true
+                            },
+                            "', '",
+                            {
+                                "placeholder" : "NEW_CHAR",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.replaceFirst('OLD_STRING', 'NEW_STRING')",
+                        "label" : "@@assist.exp.replaceFirst@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.replaceFirst('",
+                            {
+                                "placeholder" : "OLD_STRING",
+                                "required" : true
+                            },
+                            "', '",
+                            {
+                                "placeholder" : "NEW_STRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.replaceAll('OLD_STRING', 'NEW_STRING')",
+                        "label" : "@@assist.exp.replaceAll@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.replaceAll('",
+                            {
+                                "placeholder" : "OLD_STRING",
+                                "required" : true
+                            },
+                            "', '",
+                            {
+                                "placeholder" : "NEW_STRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.charAt(NUM)",
+                        "label" : "@@assist.exp.charAt@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.charAt(",
+                            {
+                                "placeholder" : "NUM",
+                                "option" : "expressionFunction;number",
+                                "required" : true
+                            },
+                            ")"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.contains('SUBSTRING')",
+                        "label" : "@@assist.exp.contains@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.contains('",
+                            {
+                                "placeholder" : "SUBSTRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING1'.equalsIgnoreCase('STRING2')",
+                        "label" : "@@assist.exp.equalsIgnoreCase@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING1",
+                                "required" : true
+                            },
+                            "'.equalsIgnoreCase('",
+                            {
+                                "placeholder" : "STRING2",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.isEmpty()",
+                        "label" : "@@assist.exp.isEmpty@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.isEmpty()"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.indexOf('SUBSTRING')",
+                        "label" : "@@assist.exp.indexOf@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.indexOf('",
+                            {
+                                "placeholder" : "SUBSTRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.lastIndexOf('SUBSTRING')",
+                        "label" : "@@assist.exp.lastIndexOf@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.lastIndexOf('",
+                            {
+                                "placeholder" : "SUBSTRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.startsWith('SUBSTRING')",
+                        "label" : "@@assist.exp.startsWith@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.startsWith('",
+                            {
+                                "placeholder" : "SUBSTRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    },
+                    {
+                        "value" : "'STRING'.endsWith('SUBSTRING')",
+                        "label" : "@@assist.exp.endsWith@@",
+                        "syntax" : [
+                            "'",
+                            {
+                                "placeholder" : "STRING",
+                                "required" : true
+                            },
+                            "'.endsWith('",
+                            {
+                                "placeholder" : "SUBSTRING",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    }
+                ],
+                "@@assist.exp.other@@" : [
+                    {
+                        "value" : "$isParsed('HASH_VARIABLE')",
+                        "label" : "@@assist.exp.isParsed@@",
+                        "syntax" : [
+                            "$isParsed('",
+                            {
+                                "placeholder" : "HASH_VARIABLE",
+                                "required" : true
+                            },
+                            "')"
+                        ]
+                    }
+                ]
+            },
+            "showValues" : true,
+            "type" : "selectbox"
+        }
+    }
+}
+
+

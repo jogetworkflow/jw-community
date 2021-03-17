@@ -1,0 +1,231 @@
+{
+    "optionGroup" : {
+        "@@assist.regex.CharacterClasses@@" : [
+            {
+                "value" : "[abc]",
+                "label" : "@@assist.regex.abc@@",
+                "syntax" : [
+                    "[",
+                    {
+                        "placeholder" : "abc",
+                        "required" : true
+                    },
+                    "]"
+                ]
+            },
+            {
+                "value" : "[^abc]",
+                "label" : "@@assist.regex.notabc@@",
+                "syntax" : [
+                    "[^",
+                    {
+                        "placeholder" : "abc",
+                        "required" : true
+                    },
+                    "]"
+                ]
+            },
+            {
+                "value" : "[a-z]",
+                "label" : "@@assist.regex.a2z@@"
+            },
+            {
+                "value" : "[A-Z]",
+                "label" : "@@assist.regex.A2Z@@"
+            },
+            {
+                "value" : "[a-zA-Z]",
+                "label" : "@@assist.regex.letter@@"
+            },
+            {
+                "value" : "[a-zA-Z0-9]",
+                "label" : "@@assist.regex.chars@@"
+            },
+            {
+                "value" : "[0-9]",
+                "label" : "@@assist.regex.digit@@"
+            },
+            {
+                "value" : "[[:ascii:]]",
+                "label" : "@@assist.regex.ascii@@"
+            },
+            {
+                "value" : "[[:blank:]]",
+                "label" : "@@assist.regex.blank@@"
+            },
+            {
+                "value" : "[[:cntrl:]]",
+                "label" : "@@assist.regex.cntrl@@"
+            },
+            {
+                "value" : "[[:punct:]]",
+                "label" : "@@assist.regex.punct@@"
+            }
+        ],
+        "@@assist.regex.Token@@" : [
+            {
+                "value" : "^",
+                "label" : "@@assist.regex.start@@"
+            },
+            {
+                "value" : "$",
+                "label" : "@@assist.regex.end@@"
+            },{
+                "value" : "\\n",
+                "label" : "@@assist.regex.n@@"
+            },
+            {
+                "value" : "\\r",
+                "label" : "@@assist.regex.r@@"
+            },
+            {
+                "value" : "\\t",
+                "label" : "@@assist.regex.t@@"
+            },
+            {
+                "value" : "\\s",
+                "label" : "@@assist.regex.s@@"
+            },
+            {
+                "value" : "\\S",
+                "label" : "@@assist.regex.S@@"
+            },
+            {
+                "value" : "\\d",
+                "label" : "@@assist.regex.d@@"
+            },
+            {
+                "value" : "\\D",
+                "label" : "@@assist.regex.D@@"
+            },
+            {
+                "value" : "\\w",
+                "label" : "@@assist.regex.w@@"
+            },
+            {
+                "value" : "\\W",
+                "label" : "@@assist.regex.W@@"
+            },
+            {
+                "value" : "\\X",
+                "label" : "@@assist.regex.X@@"
+            },
+            {
+                "value" : ".",
+                "label" : "@@assist.regex.any@@"
+            },
+            {
+                "value" : "a|b",
+                "label" : "@@assist.regex.or@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "|",
+                    {
+                        "placeholder" : "b",
+                        "required" : true
+                    }
+                ]
+            }
+        ],
+        "@@assist.regex.Quantifiers@@" : [
+            {
+                "value" : "a?",
+                "label" : "@@assist.regex.1or0@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "?"
+                ]
+            },
+            {
+                "value" : "a*",
+                "label" : "@@assist.regex.0orMore@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "*"
+                ]
+            },
+            {
+                "value" : "a+",
+                "label" : "@@assist.regex.1orMore@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "+"
+                ]
+            },
+            {
+                "value" : "a{3}",
+                "label" : "@@assist.regex.3@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "{",
+                    {
+                        "placeholder" : "3",
+                        "required" : true
+                    },
+                    "}"
+                ]
+            },
+            {
+                "value" : "a{3,}",
+                "label" : "@@assist.regex.atLeast3@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "{",
+                    {
+                        "placeholder" : "3",
+                        "required" : true
+                    },
+                    ",}"
+                ]
+            },
+            {
+                "value" : "a{3,6}",
+                "label" : "@@assist.regex.3to6@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "a",
+                        "required" : true
+                    },
+                    "{",
+                    {
+                        "placeholder" : "3",
+                        "required" : true
+                    },
+                    ",",
+                    {
+                        "placeholder" : "6"
+                    },
+                    "}"
+                ]
+            }
+        ],
+        "@@assist.regex.CommonUsed@@" : [
+            {
+                "value" : "^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6})*$",
+                "label" : "@@assist.regex.email@@"
+            },
+            {
+                "value" : "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#()?&//=]*)$",
+                "label" : "@@assist.regex.url@@"
+            }
+        ]
+    }
+}

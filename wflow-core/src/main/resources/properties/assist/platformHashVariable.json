@@ -1,0 +1,48 @@
+{
+    "optionGroup" : {
+        "@@assist.platform@@" : [
+            {
+                "value" : "#platform.name#",
+                "label" : "@@assist.platform.name@@"
+            },
+            {
+                "value" : "#platform.version#",
+                "label" : "@@assist.platform.version@@"
+            },
+            {
+                "value" : "#platform.jdbcDriver#",
+                "label" : "@@assist.platform.jdbcDriver@@"
+            },
+            {
+                "value" : "#platform.setting.dataFileBasePath#",
+                "label" : "@@assist.platform.dataFileBasePath@@"
+            },
+            {
+                "value" : "#platform.setting.deadlineCheckerInterval#",
+                "label" : "@@assist.platform.deadlineCheckerInterval@@"
+            },
+            {
+                "value" : "#platform.setting.fileSizeLimit#",
+                "label" : "@@assist.platform.fileSizeLimit@@"
+            },
+            {
+                "value" : "#platform.setting.landingPage#",
+                "label" : "@@assist.platform.landingPage@@"
+            },
+            {
+                "value" : "#platform.setting.systemDateFormat#",
+                "label" : "@@assist.platform.systemDateFormat@@"
+            },
+            {
+                "value" : "#platform.setting.systemLocale#",
+                "label" : "@@assist.platform.systemLocale@@"
+            },
+            {
+                "value" : "#platform.setting.systemTimeZone#",
+                "label" : "@@assist.platform.systemTimeZone@@"
+            }
+        ]
+    }
+}
+
+

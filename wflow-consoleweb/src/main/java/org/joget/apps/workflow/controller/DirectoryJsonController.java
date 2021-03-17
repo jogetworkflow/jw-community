@@ -30,10 +30,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.stereotype.Controller;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -748,5 +750,130 @@ public class DirectoryJsonController {
         jsonObject.accumulate("tokenValue", SecurityUtil.getCsrfTokenValue(httpRequest));
 
         AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    @RequestMapping("/json/directory/user/options")
+    public void directoryUserOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "orgId", required = false) String orgId, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Collection<User> userList = directoryManager.getUsers(null, orgId, null, null, null, null, null, "firstName", false, null, null);
+
+        for (User u : userList) {
+            Map<String, String> option = new HashMap<String, String>();
+            option.put("value", u.getUsername());
+            option.put("label", DirectoryUtil.getUserFullName(u) + "(" + u.getUsername() + ")");
+            jsonArray.put(option);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/directory/group/options")
+    public void directoryGroupOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "orgId", required = false) String orgId, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Collection<Group> groupList = directoryManager.getGroupsByOrganizationId(null, orgId, "name", false, null, null);
+
+        for (Group g : groupList) {
+            Map<String, String> option = new HashMap<String, String>();
+            option.put("value", g.getId());
+            option.put("label", g.getName());
+            jsonArray.put(option);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/directory/grade/options")
+    public void directoryGradeOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "orgId", required = false) String orgId, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Collection<Grade> gradeList = directoryManager.getGradesByOrganizationId(null, orgId, "name", false, null, null);
+
+        for (Grade g : gradeList) {
+            Map<String, String> option = new HashMap<String, String>();
+            option.put("value", g.getId());
+            option.put("label", g.getName());
+            jsonArray.put(option);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/directory/department/options")
+    public void directoryDeaprtmentOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "orgId", required = false) String orgId, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Collection<Department> deptList = directoryManager.getDepartmentsByOrganizationId(null, orgId, "name", false, null, null);
+
+        for (Department d : deptList) {
+            Map<String, String> option = new HashMap<String, String>();
+            option.put("value", d.getId());
+            option.put("label", ((d.getTreeStructure() != null) ? d.getTreeStructure() + " " : "") + d.getName());
+            jsonArray.put(option);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/directory/organization/options")
+    public void directoryOrganizationOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+
+        for (Organization o : orgList) {
+            Map<String, String> option = new HashMap<String, String>();
+            option.put("value", o.getId());
+            option.put("label", o.getName());
+            jsonArray.put(option);
+        }
+        
+        AppUtil.writeJson(writer, jsonArray, callback);
     }
 }

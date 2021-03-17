@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
@@ -81,5 +82,10 @@ public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
         syntax.add("assignment.assigneeId");
         
         return syntax;
+    }
+
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/workflowAssignmentHashVariable.json", null, true, null);
     }
 }

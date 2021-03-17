@@ -41,4 +41,9 @@ public class AppMessageHashVariable extends DefaultHashVariablePlugin {
     public String getPropertyOptions() {
         return "";
     }
+    
+    @Override
+    public String getPropertyAssistantDefinition() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/i18n.json", null, true, null);
+    }
 }

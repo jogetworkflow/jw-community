@@ -1570,3 +1570,157 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-page-errors {
     padding: 5px 10px;
 }
+
+/* property assistant */
+#propertyAssistantDialog .title-bar{
+    height: auto;
+    padding: 10px;
+    background: #000051;
+    color: #fff;
+}
+#propertyAssistantDialog .title-bar h2 {
+    font-size: 16px;
+    font-weight: 500;
+}
+#propertyAssistant {
+    padding: 20px;
+    overflow: auto;
+}
+#propertyAssistant .typeSelectorWrapper{
+    margin-bottom: 15px;
+}
+#propertyAssistant .inputWrapper {
+    margin-bottom: 15px;
+}
+#propertyAssistant [contenteditable] {
+    cursor: text;
+    outline: 0;
+}
+#propertyAssistant [contenteditable][data-prefix]:before{
+    content: attr(data-prefix);
+    pointer-events: none;
+    display: inline-block;
+    white-space: pre;
+}
+#propertyAssistant [contenteditable][data-prefix]:empty:before{
+    color: #333;
+    opacity: 0.3;
+    font-style: italic;
+}
+#propertyAssistant [contenteditable][data-multiple]:not(:empty):after {
+    content: " + ";
+    pointer-events: none;
+    display: inline-block;
+    font-style: italic;
+    color: blue;
+    opacity: 0.3;
+    white-space: pre;
+    font-size: 70%;
+}
+#propertyAssistant [contenteditable]:empty:after{
+    content: attr(placeholder);
+    pointer-events: none;
+    display: inline-block;
+    font-style: italic;
+    color: #333;
+    opacity: 0.3;
+}
+#propertyAssistant [contenteditable][data-postfix]:not(:empty):after{
+    content: attr(data-postfix);
+    opacity: 1;
+}
+#propertyAssistant [contenteditable][data-prefix][data-required]:empty:before,
+#propertyAssistant [contenteditable][data-required]:empty:after{
+    color:red;
+}
+#propertyAssistant [contenteditable=true]:focus,
+#propertyAssistant [contenteditable=false].editing {
+    border:2px solid #007bff;
+    border-radius: 3px;
+}
+#propertyAssistant .inputResultWrapper{
+    display: inline-block;
+    width: 80%;
+    padding-right: 20px;
+    position: relative;
+}
+#propertyAssistant .inputResultWrapper .traveller{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 18px;
+}
+#propertyAssistant .inputResultWrapper .traveller i{
+    opacity: 0.5;
+    cursor: pointer;
+}
+#propertyAssistant .inputResultWrapper .traveller i:hover {
+    opacity: 1;
+}
+#propertyAssistant .inputResult {
+    display: block;
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 50px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 20px;
+    font-family: monospace;
+    width: 100%;
+    word-break: break-all;
+}
+#propertyAssistant .inputResultActions {
+    text-align: right;
+    display: inline-block;
+    width: 20%;
+}
+#propertyAssistant .inputOptionsWrapper {
+    border-top: 2px solid #000051;
+    padding-top: 15px;
+}
+#propertyAssistant .inputOptionsFieldContainer label{
+    font-size: 13px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+}
+#propertyAssistant .inputOptionsFieldContainer + .inputOptionsFieldContainer {
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
+}
+#propertyAssistant .inputOptionsField {
+    width: 70%;
+    display: inline-block;
+    margin-right: 5px;
+}
+#propertyAssistant .inputOptionsField input,
+#propertyAssistant .inputOptionsField textarea{
+    width: 100%;
+}
+#propertyAssistant cite.option_value {
+    font-family: monospace;
+    font-style: normal;
+    background: #eee;
+    padding: 3px 5px;
+    color: #000;
+    line-height: 18px;
+}
+#propertyAssistant span.option_desc {
+    display: block;
+    margin-top: 2px;
+    font-size: 80%;
+}
+.assist_icon{
+    position: absolute;
+    top: 6px;
+    font-size: 20px;
+    right: 5px;
+    opacity: 0.3;
+    color: #007bff;
+    cursor: pointer;
+}
+.assist_icon:hover {
+    opacity: 1;
+}
