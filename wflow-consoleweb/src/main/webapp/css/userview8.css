@@ -255,6 +255,9 @@ header.navbar .dropdown-menu a span.time{
     position: relative;
     list-style-type: none;
     display: none;
+    background: #00000008;
+    border-top:1px solid #00000015;
+    border-bottom:1px solid #00000015;
 }
 #sidebar .nav > li.toggled > ul {
     display: block; 
