@@ -228,6 +228,18 @@ if ((typeof _customFooTableArgs) === "undefined") {
             textareaAutoHeight(this);
         });
     }
+    
+    function reloadImages() {
+        $('img[data-lazysrc]').each(function () {
+            $(this).attr('src', $(this).attr('data-lazysrc'));
+        });
+    }
+
+    document.addEventListener('readystatechange', event => {
+        if (event.target.readyState === "complete") {
+            reloadImages();
+        }
+    });
 
     function textareaAutoHeight(e) {
         var scrollLeft = window.pageXOffset ||
