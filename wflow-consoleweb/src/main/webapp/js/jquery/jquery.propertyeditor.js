@@ -9227,6 +9227,111 @@ PropertyAssistant = {
                             PropertyAssistant.data = $.extend(true, PropertyAssistant.data, newData);
                         }
                         
+                        PropertyAssistant.data['HASH_VARIABLE'].optionField['hashEscapeType'] = {
+                            "name" : "hashEscapeType",
+                            "label" : get_peditor_msg('peditor.hashVariableEscapeType'),
+                            "options" : [
+                                {
+                                    "value" : "?expression",
+                                    "label" : get_peditor_msg('peditor.escape.expression'),
+                                    "syntax" : [
+                                        "expression"
+                                    ]
+                                },
+                                {
+                                    "value" : "?html",
+                                    "label" : get_peditor_msg('peditor.escape.html'),
+                                    "syntax" : [
+                                        "html"
+                                    ]
+                                },
+                                {
+                                    "value" : "?java",
+                                    "label" : get_peditor_msg('peditor.escape.java'),
+                                    "syntax" : [
+                                        "java"
+                                    ]
+                                },
+                                {
+                                    "value" : "?javascript",
+                                    "label" : get_peditor_msg('peditor.escape.javascript'),
+                                    "syntax" : [
+                                        "javascript"
+                                    ]
+                                },
+                                {
+                                    "value" : "?json",
+                                    "label" : get_peditor_msg('peditor.escape.json'),
+                                    "syntax" : [
+                                        "expression"
+                                    ]
+                                },
+                                {
+                                    "value" : "?img2base64",
+                                    "label" : get_peditor_msg('peditor.escape.img2base64'),
+                                    "syntax" : [
+                                        "img2base64"
+                                    ]
+                                },
+                                {
+                                    "value" : "?noescape",
+                                    "label" : get_peditor_msg('peditor.escape.noescape'),
+                                    "syntax" : [
+                                        "noescape"
+                                    ]
+                                },
+                                {
+                                    "value" : "?nl2br",
+                                    "label" : get_peditor_msg('peditor.escape.nl2br'),
+                                    "syntax" : [
+                                        "nl2br"
+                                    ]
+                                },
+                                {
+                                    "value" : "?regex",
+                                    "label" : get_peditor_msg('peditor.escape.regex'),
+                                    "syntax" : [
+                                        "regex"
+                                    ]
+                                },
+                                {
+                                    "value" : "?separator(SEPARATOR_CHARS)",
+                                    "label" : get_peditor_msg('peditor.escape.separator'),
+                                    "syntax" : [
+                                        "separator(",
+                                        {
+                                            "placeholder" : "SEPARATOR_CHARS",
+                                            "required" : true
+                                        },
+                                        ")"
+                                    ]
+                                },
+                                {
+                                    "value" : "?sql",
+                                    "label" : get_peditor_msg('peditor.escape.sql'),
+                                    "syntax" : [
+                                        "sql"
+                                    ]
+                                },
+                                {
+                                    "value" : "?url",
+                                    "label" : get_peditor_msg('peditor.escape.url'),
+                                    "syntax" : [
+                                        "url"
+                                    ]
+                                },
+                                {
+                                    "value" : "?xml",
+                                    "label" : get_peditor_msg('peditor.escape.xml'),
+                                    "syntax" : [
+                                        "xml"
+                                    ]
+                                }
+                            ],
+                            "type" : "selectbox",
+                            "showValues" : true
+                        };
+                        
                         PropertyAssistant.dialog = new Boxy(
                             '<div id="propertyAssistant"></div>',
                             {
@@ -9715,12 +9820,19 @@ PropertyAssistant = {
             }
             
             var temp = $(output).html();
-            if (nestedHash && value.indexOf("#") === 0 && temp.lastIndexOf("#") === temp.length - 1) {
+            if ($("#assistantTypeSelector").val() === "HASH_VARIABLE" && value.indexOf("#") === 0 && value.lastIndexOf("#") === value.length - 1) { //support escape syntax
+                temp = temp.substring(0, temp.length - 1) + '<span contenteditable="false" class="chunk" data-prefix="?" placeholder="" data-option-field="hashEscapeType"></span>#';
+                $(output).html(temp);
+            }
+            if (nestedHash && value.indexOf("#") === 0 && value.lastIndexOf("#") === value.length - 1) {
                 temp = "{" + temp.substring(1, temp.length - 1) + "}";
                 $(output).html(temp);
             }
         } else {
             value = UI.escapeHTML(value);
+            if ($("#assistantTypeSelector").val() === "HASH_VARIABLE" && value.indexOf("#") === 0 && value.lastIndexOf("#") === value.length - 1) { //support escape syntax
+                value = value.substring(0, value.length - 1) + '<span contenteditable="false" class="chunk" data-prefix="?" placeholder="" data-option-field="hashEscapeType"></span>#';
+            }
             if (nestedHash && value.indexOf("#") === 0 && value.lastIndexOf("#") === value.length - 1) {
                 value = "{" + value.substring(1, value.length - 1) + "}";
             }
