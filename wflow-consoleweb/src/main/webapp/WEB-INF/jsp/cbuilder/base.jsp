@@ -213,12 +213,10 @@
                     <div id="right-panel-content" class="element-properties ">
                         <div class="element-properties-header-actions">
                             <div class="float-left">
-                                <button id="apply-btn" title="<fmt:message key="cbuilder.apply"/>" class="btn btn-primary btn-sm" data-cbuilder-action="applyElementProperties">
-                                    <i class="las la-check"></i>
-                                </button>
-                                <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.cancel"/>" class="btn btn-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
+                                <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.close"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
                                     <i class="las la-times"></i>
                                 </button>
+                                <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
                             <div class="float-right">
                                 <button id="properties-max-button" title="<fmt:message key="cbuilder.maximize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
@@ -226,9 +224,6 @@
                                 </button>
                                 <button id="properties-min-button" title="<fmt:message key="cbuilder.minimize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
                                     <i class="lar la-window-minimize"></i>
-                                </button>
-                                <button id="properties-close-button" title="<fmt:message key="cbuilder.close"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="closePropertiesWindow" style="display:none">
-                                    <i class="las la-window-close"></i>
                                 </button>
                             </div> 
                             <div class="clear"></div>        
@@ -261,6 +256,11 @@
 
                             </div>
                         </div>
+                        <div class="element-properties-footer-actions">
+                            <button id="apply-btn" class="btn btn-primary" data-cbuilder-action="applyElementProperties">
+                                <i class="las la-check"></i> <span><fmt:message key="cbuilder.apply"/></span>
+                            </button>
+                        </div>    
                     </div>    
                     <button id="right-panel-toogle" data-cbuilder-action="toogleRightPanel" >
                         <i class="las la-angle-right"></i>

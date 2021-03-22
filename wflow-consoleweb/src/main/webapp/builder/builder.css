@@ -1179,7 +1179,16 @@ div.section, .header > ol {
     background: #ddd;
     color: #000;
 }
-
+.auto-apply-changes{
+    font-size: 24px;
+    vertical-align: middle;
+    line-height: 24px !important;
+    cursor: pointer;
+    color: #bbb;
+}
+.auto-apply-changes.toggle-enabled{
+    color: #007bff;
+}
 .ui-sortable-placeholder {
     border: 1px solid #ccc;
     visibility: visible !important;
@@ -1441,11 +1450,21 @@ div.section, .header > ol {
     font-size: 60%;
 }
 .element-properties .tab-content {
-    height : calc(100% - 105px);
+    height : calc(100% - 150px);
     padding-top: 32px;
 }
 .element-properties .tab-content > div {
     height: 100%;
+}
+#apply-btn {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 0;
+}
+#cancel-properties-btn{
+    font-size: 18px;
+    line-height: 18px;
+    padding: 2px;
 }
 .viewport-icon {
     font-size: 20px;
@@ -2016,4 +2035,12 @@ table.diff tbody th{
 }
 #i18nView .builder-view-body{
     padding: 20px 20px 0px;
+}
+
+/* admin bar*/
+#adminControl {
+    display: none !important;
+}
+#adminBar.adminBarInactive {
+    width: 100% !important;
 }
