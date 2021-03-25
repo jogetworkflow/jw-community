@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.enhydra.shark.client.utilities.LimitStruct;
 import org.enhydra.shark.utilities.MiscUtilities;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.springframework.context.i18n.LocaleContext;
@@ -139,10 +140,19 @@ public class DeadlineChecker extends Thread {
 
     protected void runMe() {
         try {
+            HostManager.setCurrentProfile(profile);
+
+            // verify datasource
+            if (DynamicDataSourceManager.getProperties().isEmpty()) {
+                // datasource is no longer available, stop the deadline checker
+                stopChecker();
+                LogUtil.info(getClass().getName(), "Datasource not available, deadline checker stopped for profile " + profile);
+                return;
+            }
+            
             LogUtil.debug(getClass().getName(), "Checking deadlines for profile " + profile);
             long start = System.currentTimeMillis();
 
-            HostManager.setCurrentProfile(profile);
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
             
             LocaleContextResolver localeResolver = (LocaleContextResolver) WorkflowUtil.getApplicationContext().getBean("localeResolver");
