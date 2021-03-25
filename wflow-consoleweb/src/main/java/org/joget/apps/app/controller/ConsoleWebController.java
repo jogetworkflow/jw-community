@@ -4965,12 +4965,14 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/monitor/running/process/abort/(*:id)", method = RequestMethod.POST)
     public String consoleMonitorRunningProcessAbort(ModelMap map, @RequestParam("id") String processId) {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         workflowManager.processAbort(processId);
         return "console/dialogClose";
     }
 
     @RequestMapping(value = "/console/monitor/running/process/reevaluate/(*:id)", method = RequestMethod.POST)
     public String consoleMonitorRunningProcessReevaluate(ModelMap map, @RequestParam("id") String processId) {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         workflowManager.reevaluateAssignmentsForProcess(processId);
         return "console/dialogClose";
     }
@@ -5061,7 +5063,12 @@ public class ConsoleWebController {
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String id = (String) strToken.nextElement();
-            workflowManager.removeProcessInstance(id);
+            try {
+                appService.getAppDefinitionForWorkflowProcess(id);
+                workflowManager.removeProcessInstance(id);
+            } finally {
+                AppUtil.resetAppDefinition();
+            }
         }
         return "console/dialogClose";
     }
