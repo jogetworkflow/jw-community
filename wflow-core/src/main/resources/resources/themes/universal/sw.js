@@ -26,6 +26,7 @@ var urlsToCache = [
     contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
+var serviceWorkerList = [];
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -258,42 +259,36 @@ self.addEventListener('push', function (event) {
         }
     };
     
-    const promiseChain = clients.matchAll({
-        type: 'worker',
-        includeUncontrolled: true
-    }).then((windowClients) => {
-        var show = false;
-        
-        if (windowClients.length <= 1) {
+    var show = false;
+    if (serviceWorkerList.length <= 1) {
+        show = true;
+    } else if (url.indexOf('/web/userview/') !== -1) {
+        if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
             show = true;
-        } else if (url.indexOf('/web/userview/') !== -1) {
-            if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
-                show = true;
-            }
-        } else {
-            if (appUserviewId.indexOf('appcenter-') !== -1) {
-                show = true;
+        }
+    } else {
+        if (appUserviewId.indexOf('appcenter-') !== -1) {
+            show = true;
+        }
+    }
+
+    if (!show) {
+        var found = false;
+        for (let i = 0; i < serviceWorkerList.length; i++) {
+            const sw = serviceWorkerList[i];
+            if (url.indexOf(sw) !== -1) {
+                found = true;
+                break;
             }
         }
-        
-        if (!show) {
-            var found = false;
-            for (let i = 0; i < windowClients.length; i++) {
-                const windowClient = windowClients[i];
-                if (url.indexOf(windowClient.url) !== -1) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found && windowClients[i].url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
-                show = true; //can't found the service worker for current url, use the first 1 to show
-            }
+        if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
+            show = true; //can't found the service worker for current url, use the first 1 to show
         }
-        
-        if (show) {
-            self.registration.showNotification(title, options);
-        }
-    });
+    }
+
+    if (show) {
+        self.registration.showNotification(title, options);
+    }
 });
 
 self.addEventListener('notificationclick', function (event) {
@@ -663,6 +658,11 @@ self.addEventListener('message', function(event) {
         formData = event.data.formData;
         formUserviewAppId = event.data.formUserviewAppId;
         formUsername = event.data.formUsername;
+    }
+    
+    if (event.data.hasOwnProperty('serviceWorkerList')) {
+        console.log("serviceWorkerList received");
+        serviceWorkerList =  event.data.serviceWorkerList;
     }
 });
 
