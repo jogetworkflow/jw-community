@@ -430,7 +430,11 @@ PwaUtil = {
             for (let i = 1; i < registrations.length; i++) {
                 list.push(registrations[i].scope);
             }
-            navigator.serviceWorker.controller.postMessage({"serviceWorkerList" : list});
+            for (let i = 1; i < registrations.length; i++) {
+                registrations[i].active.postMessage({
+                    "serviceWorkerList": list
+                });
+            }
         });
     }
 }
