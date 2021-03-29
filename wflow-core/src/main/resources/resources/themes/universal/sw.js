@@ -26,7 +26,6 @@ var urlsToCache = [
     contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
-var serviceWorkerList = [];
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -43,7 +42,9 @@ var formData = null;
 var formDb = null;
 
 var FORM_DB_NAME         = 'joget' + '_' + appUserviewId;
+var CACHE_DB_NAME         = 'joget-shared-cache';
 var FORM_DB_STORE_NAME   = 'offline_post';
+var CACHE_DB_STORE_NAME   = 'cache_data';
 var STATUS_PENDING       = 0;
 var STATUS_SUCCESS       = 1;
 var STATUS_FAILED        = 2;
@@ -250,45 +251,49 @@ self.addEventListener('push', function (event) {
     if (typeof badge === "undefined") {
         badge = contextPath + '/images/v3/logo.png';
     }
-    var options = {
-        body: text,
-        icon: icon,
-        badge: badge,
-        data: {
-            url: url
-        }
-    };
     
-    var show = false;
-    if (serviceWorkerList.length <= 1) {
-        show = true;
-    } else if (url.indexOf('/web/userview/') !== -1) {
-        if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
-            show = true;
-        }
-    } else {
-        if (appUserviewId.indexOf('appcenter-') !== -1) {
-            show = true;
-        }
-    }
+    connectCacheDB(function(store){
+        var request = store.get("serviceWorkerList");
+        request.onsuccess = function(){
+            var serviceWorkerList = this.result.serviceWorkerList;
+            
+            var options = {
+                body: text,
+                icon: icon,
+                badge: badge,
+                data: {
+                    url: url
+                }
+            };
 
-    if (!show) {
-        var found = false;
-        for (let i = 0; i < serviceWorkerList.length; i++) {
-            const sw = serviceWorkerList[i];
-            if (url.indexOf(sw) !== -1) {
-                found = true;
-                break;
+            var show = false;
+            if (serviceWorkerList.length <= 1) {
+                show = true;
+            } else if (url.indexOf('/web/userview/') !== -1) {
+                if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
+                    show = true;
+                }
             }
-        }
-        if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
-            show = true; //can't found the service worker for current url, use the first 1 to show
-        }
-    }
 
-    if (show) {
-        self.registration.showNotification(title, options);
-    }
+            if (!show) {
+                var found = false;
+                for (let i = 0; i < serviceWorkerList.length; i++) {
+                    const sw = serviceWorkerList[i];
+                    if (url.indexOf(sw) !== -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
+                    show = true; //can't found the service worker for current url, use the first 1 to show
+                }
+            }
+
+            if (show) {
+                self.registration.showNotification(title, options);
+            }
+        };
+    }, 'readonly');
 });
 
 self.addEventListener('notificationclick', function (event) {
@@ -639,6 +644,26 @@ function processStoredFormData() {
         
 }
 
+function connectCacheDB(f, mode) {
+    var request = indexedDB.open(CACHE_DB_NAME, 1);
+    request.onerror = function (error) {
+        console.error('IndexedDB error:', error);
+    };
+    request.onsuccess = function(){
+        var db = request.result;
+        var store = db.transaction(CACHE_DB_STORE_NAME, mode).objectStore(CACHE_DB_STORE_NAME);
+        f(store);
+    };
+    request.onupgradeneeded = function(e){
+        var db = e.currentTarget.result;
+        
+        if(!db.objectStoreNames.contains(CACHE_DB_STORE_NAME)) {
+            db.createObjectStore(CACHE_DB_STORE_NAME, {keyPath: "name"});  
+        }
+        connectCacheDB(f, mode);
+    };
+}
+
 self.addEventListener('message', function(event) {
     if (event.data.hasOwnProperty('sync')) {
         console.log('sync received');
@@ -662,7 +687,12 @@ self.addEventListener('message', function(event) {
     
     if (event.data.hasOwnProperty('serviceWorkerList')) {
         console.log("serviceWorkerList received");
-        serviceWorkerList =  event.data.serviceWorkerList;
+        connectCacheDB(function(store){
+            store.put({
+                name: "serviceWorkerList",
+                serviceWorkerList: event.data.serviceWorkerList
+            });
+        }, 'readwrite');
     }
 });
 
