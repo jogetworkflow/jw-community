@@ -237,10 +237,8 @@ if ((typeof _customFooTableArgs) === "undefined") {
         });
     }
 
-    document.addEventListener('readystatechange', event => {
-        if (event.target.readyState === "complete") {
-            reloadImages();
-        }
+    $(window).load(function() {
+        reloadImages();
     });
 
     function textareaAutoHeight(e) {
