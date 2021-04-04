@@ -187,7 +187,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="components" role="tabpanel" aria-labelledby="components-tab">
                                     <div class="search">
-                                        <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.search"/>" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup">
+                                        <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.searchProperties"/>" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup">
                                         <button class="clear-backspace"  data-cbuilder-action="clearTabSearch">
                                             <i class="la la-close"></i>
                                         </button>

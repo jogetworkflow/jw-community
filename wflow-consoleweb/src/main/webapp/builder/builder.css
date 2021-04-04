@@ -348,15 +348,15 @@ body.quick-nav-shown {
     margin-right: 15vw;
     margin-left: 15vw;
     margin-right: var(--builder-right-panel-width);
-    margin-left: var(--builder-left-panel-width);
+    margin-left: calc(var(--builder-left-panel-width) + 5px);
     width: 100%;
     height: 100%;
     width: calc( 100vw - 600px);
     height: calc( 100vh - 85px);
-    top: 65px;
+    top: 70px;
     width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
     height: calc( 100vh - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
-    top: var(--builder-header-top-height);
+    top: calc(var(--builder-header-top-height) + 5px);
     position: fixed;
     transition: width 0.35s ease-in-out, left 0.35s ease-in-out; 
     max-width: inherit;

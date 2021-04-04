@@ -73,6 +73,17 @@
 .dataList .actions .btn {
     margin: 0 2px;
 }
+.search_filter_popup{
+    width:60vw;
+    padding: 15px !important;
+}
+.search_filter_popup .filter-cell{
+    margin-bottom: 10px;
+    display: block;
+}
+.search_filter_popup .filter-cell .btn{
+    width: 100%;
+}
 .dataList .filter-cell.hidden-filter,
 .search_filter_popup .filter-cell.hidden-filter{
     display:none !important;
@@ -88,6 +99,29 @@
 }
 .dataList .actions.bottom{
     margin-top:15px;
+}
+.dataList .row_action a:not(.btn){
+    display: inline-block;
+    font-weight: 400 !important;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 10px 15px;
+    font-size: 13px !important;
+    line-height: 0.6;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+    background-image: none;
+    text-shadow:none;
+    box-shadow: none;
+    outline: 0;
 }
 .dataList .column-hidden {
     display: none;

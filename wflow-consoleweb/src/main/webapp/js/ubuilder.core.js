@@ -974,6 +974,25 @@ UserviewBuilder = {
                 }
                 css += "}</style>";
                 element.append(css);
+                
+                //retrieve from theme generated style
+                var jsonStr = JSON.encode(CustomBuilder.data.setting.properties.theme);
+                CustomBuilder.cachedAjax({
+                    type: "POST",
+                    data: {"json": jsonStr },
+                    url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/theme/css',
+                    dataType : "text",
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success: function(response) {
+                        if (response !== undefined && response !== "") {
+                            element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+                            var css = "<style data-cbuilder-style='calculatedThemeStyle'>" + response + "</style>";
+                            element.append(css);
+                        }
+                    }
+                });
             }
         }
     },

@@ -246,6 +246,7 @@ header.navbar .dropdown-menu a span.time{
     font-size: 17px;
     top:0;
 }
+#sidebar .nav > li.active > a > span > i:first-child,
 #sidebar .nav > li > a:hover > span > i:first-child{
     color: var(--theme-sidebar-active-icon, #03a9f4);
 }
@@ -664,6 +665,32 @@ body.horizontal_menu #header-info{
 
 
 /* button and ripple effect */
+#content main button,
+#content main input[type=button]{
+    display: inline-block;
+    font-weight: 400 !important;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 13px !important;
+    line-height: 0.6;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+    background-image: none;
+    text-shadow:none;
+    box-shadow: none;
+    outline: 0;
+}
+#content main button,
+#content main input[type=button],
 #sidebar a,
 .btn{
     --ripple-color: rgba(0, 0, 0, 0.1);
@@ -671,10 +698,17 @@ body.horizontal_menu #header-info{
     --ripple-fuzz: 5px;
     border-color: transparent !important;
 }
+#content main button:focus:not(:disabled):not(.disabled),
+#content main button:active:not(:disabled):not(.disabled),
+#content main button:hover:not(:disabled):not(.disabled),
+#content main input[type=button]:focus:not(:disabled):not(.disabled),
+#content main input[type=button]:active:not(:disabled):not(.disabled),
+#content main input[type=button]:hover:not(:disabled):not(.disabled),
 #sidebar a:focus,
 #sidebar a:active,
 .btn:focus:not(:disabled):not(.disabled),
-.btn:active:not(:disabled):not(.disabled){
+.btn:active:not(:disabled):not(.disabled),
+.btn:hover:not(:disabled):not(.disabled){
     background-image: radial-gradient(circle closest-side at center, var(--ripple-color) 0%, var(--ripple-color) calc(100% - var(--ripple-fuzz, 0px)), transparent 100%), -webkit-gradient(linear, left top, left bottom, color-stop(10%, var(--ripple-color)), color-stop(90%, transparent));
     background-image: radial-gradient(circle closest-side at center, var(--ripple-color) 0%, var(--ripple-color) calc(100% - var(--ripple-fuzz, 0px)), transparent 100%), linear-gradient(180deg, var(--ripple-color) 10%, transparent 90%);
     background-size: 0% 0%, 0% 0%;
@@ -822,6 +856,18 @@ body#login #loginForm table td input[type='submit'] {
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+.dropdown-menu.notifications li{
+    padding: 5px 15px;
+    position: relative;
+    font-size: 13px;
+    
+}
+.dropdown-menu.notifications .refresh{
+    position: absolute;
+    top:5px;
+    right: 15px;
+}
+
 /* USERVIEW MENUS */
 
 /* userview profile */
@@ -915,6 +961,12 @@ form.form .btn {
     color: var(--theme-font-color, #72777a);
     font-weight: 400;
 }
+#content .main-body-content.Dashboard .reset_position{
+    color: var(--theme-link, #007bff);
+}
+#content .main-body-content.Dashboard .reset_position:hover{
+    color: var(--theme-link-active, #0f9aee);
+}
 
 /* quick edit & analyzer */
 body.quickEditModeActive fieldset#form-canvas, 
@@ -965,4 +1017,25 @@ body.quickEditModeActive #category-container:before{
     right: 0;
     bottom: 0;
     content: "";
+}
+
+main .fc button .fc-icon{
+    top: 1px;
+}
+#content main .fc-button-group button{
+    border-radius: 0px !important;
+    border-left-color:  rgba(0,0,0,.3)!important;
+}
+#content main .fc-button-group button:first-child{
+    border-top-left-radius: 3px !important;
+    border-bottom-left-radius: 3px !important;
+    border-left: 0px;
+}
+#content main .fc-button-group button:last-child{
+    border-top-right-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
+}
+#content main .fc-state-active, #content main .fc-state-down {
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 20%), 0 1px 2px rgb(0 0 0 / 10%);
+    opacity: 0.8;
 }

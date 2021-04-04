@@ -583,7 +583,7 @@ CustomBuilder = {
                 
                 var tabPane = $('<div class="tab-pane fade" id="'+tabs[i].name+'" role="tabpanel" aria-labelledby="'+tabs[i].name+'-tab"> \
                         <div class="search"> \
-                            <input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg("cbuilder.search")+'" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup"> \
+                            <input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg("cbuilder.searchPalette")+'" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup"> \
                             <button class="clear-backspace"  data-cbuilder-action="clearTabSearch"> \
                                 <i class="la la-close"></i> \
                             </button> \

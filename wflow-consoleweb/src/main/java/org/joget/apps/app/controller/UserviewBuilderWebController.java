@@ -18,6 +18,7 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.lib.DefaultTheme;
 import org.joget.apps.userview.model.PageComponent;
 import org.joget.apps.userview.model.SimplePageComponent;
+import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
@@ -35,6 +36,7 @@ import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.enterprise.UniversalTheme;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONException;
@@ -352,6 +354,40 @@ public class UserviewBuilderWebController {
                 html = html.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
 
                 writer.write(html);
+            }
+        } catch (Exception e) {
+            LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");
+        }
+    }
+    
+    @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/theme/css")
+    public void themeCss(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        String tempJson = json;
+        
+        tempJson = AppUtil.replaceAppMessages(tempJson, StringUtil.TYPE_JSON);
+        tempJson = AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null, appDef);
+        
+        response.addHeader("X-XSS-Protection", "0");
+
+        try {
+            JSONObject jObj = new JSONObject(tempJson);
+            UniversalTheme theme = (UniversalTheme) pluginManager.getPlugin(jObj.getString("className"));
+            
+            if (theme != null && theme instanceof SupportBuilderColorConfig) {
+                theme.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
+            
+                Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+                requestParameters.put("contextPath", request.getContextPath());
+                requestParameters.put("isPreview", "true");
+                requestParameters.put("isBuilder", "true");
+                requestParameters.put("appId", appDef.getAppId());
+                requestParameters.put("appVersion", appDef.getVersion().toString());
+                theme.setRequestParameters(requestParameters);
+                
+                String css = ((SupportBuilderColorConfig) theme).builderThemeCss();
+                writer.write(css);
             }
         } catch (Exception e) {
             LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");

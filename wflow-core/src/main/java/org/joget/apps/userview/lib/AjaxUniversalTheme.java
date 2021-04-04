@@ -16,7 +16,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getName() {
-        return "AJAX Universal Theme";
+        return "DX8 Plain Theme";
     }
 
     @Override
@@ -299,5 +299,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/ajaxUniversalTheme.json", null, true, null);
+    }
+    
+    @Override
+    public String builderThemeCss() {
+        return generateLessCss();
     }
 }

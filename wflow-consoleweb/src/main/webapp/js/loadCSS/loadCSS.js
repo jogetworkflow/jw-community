@@ -3,6 +3,9 @@
 	"use strict";
 	/* exported loadCSS */
 	var loadCSS = function( href, before, media ){
+                if ($('link[href="'+href+'"]').length> 0) {
+                    return;
+                }
 		// Arguments explained:
 		// `href` [REQUIRED] is the URL for your CSS file.
 		// `before` [OPTIONAL] is the element the script should use as a reference for injecting our stylesheet <link> before

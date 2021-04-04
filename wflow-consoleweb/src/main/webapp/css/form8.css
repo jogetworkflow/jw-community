@@ -22,6 +22,9 @@
     flex: 0 0 100%;
     margin-bottom: 20px;
 }
+.form-section-empty{
+    display: none !important;
+}
 .no_label > .form-section-title,
 .no_label > .subform-section-title{
     display:none;
@@ -72,6 +75,7 @@ body .subform-cell .subform-container.has-frame, .form-cell .subform-container.h
     padding: 8px 10px 0 0;
     min-height: 34px;
     word-break: break-all;
+    font-weight: bold;
 }
 .label-top.form-cell > label.label,
 .label-top.subform-cell > label.label{

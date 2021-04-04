@@ -5,4 +5,5 @@ package org.joget.apps.userview.model;
  */
 public interface SupportBuilderColorConfig {
     
+    public String builderThemeCss();
 }
