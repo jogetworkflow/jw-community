@@ -1384,9 +1384,11 @@ UserviewBuilder = {
         var screenshotKey = UserviewBuilder.selectedMenu.properties.id + "_" + CustomBuilder.hashCode(json);
         
         var renderScreenshot = function(screenshot) {
-            self.frameBody.find(".userview-body-content img.screenshot").remove();
-            self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
-            self.frameBody.find(".userview-body-content").addClass("has-screenshot");
+            if (screenshot !== null && screenshot !== undefined && screenshot.length > 6) {
+                self.frameBody.find(".userview-body-content img.screenshot").remove();
+                self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
+                self.frameBody.find(".userview-body-content").addClass("has-screenshot");
+            }
         };
         
         self.frameBody.find("#btn_container").show();
