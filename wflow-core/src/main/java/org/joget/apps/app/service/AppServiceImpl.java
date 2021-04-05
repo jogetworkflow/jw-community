@@ -1522,16 +1522,19 @@ public class AppServiceImpl implements AppService {
     protected Form loadFormByFormDefId(String appId, String version, String formDefId, FormData formData, WorkflowAssignment wfAssignment) {
         Form form = null;
         try {
+            AppUtil.setCurrentAssignment(wfAssignment);
+            
             AppDefinition appDef = getAppDefinition(appId, version);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
             
             if (formDef != null && formDef.getJson() != null) {
                 String formJson = formDef.getJson();
-                formJson = AppUtil.processHashVariable(formJson, wfAssignment, StringUtil.TYPE_JSON, null);
                 form = (Form) formService.loadFormFromJson(formJson, formData);
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, e.getMessage());
+        } finally {
+            AppUtil.setCurrentAssignment(null);
         }
         return form;
     }

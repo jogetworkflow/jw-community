@@ -37,6 +37,8 @@ public class ListOrderedHash extends SimpleHash {
             Map newMap = new SequencedHashMap();
             newMap.putAll(map);
             return newMap;
+        } else if (map instanceof HashVariableSupportedMap || map.getClass().getName().equals(HashVariableSupportedMap.class.getName())) {
+            return (Map)((HashVariableSupportedMap) map).clone();
         } else {
             return super.copyMap(map);
         }

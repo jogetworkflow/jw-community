@@ -28,6 +28,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.json.JSONObject;
 import org.joget.workflow.util.WorkflowUtil;
@@ -95,13 +96,11 @@ public class FormServiceImpl implements FormService {
      */
     @Override
     public Element createElementFromJson(String elementJson, boolean processHashVariable) {
+        if (!processHashVariable) {
+            PropertyUtil.setDisableHashVariable(true);
+        }
         try {
             String processedJson = elementJson;
-            // process hash variable
-            if (processHashVariable) {
-                processedJson = AppUtil.processHashVariable(elementJson, null, StringUtil.TYPE_JSON, null);
-            }
-            
             processedJson = processedJson.replaceAll("\\\"\\{\\}\\\"", "{}");
 
             // instantiate element
@@ -110,6 +109,8 @@ public class FormServiceImpl implements FormService {
         } catch (Exception ex) {
             LogUtil.error(FormService.class.getName(), ex, null);
             throw new RuntimeException(ex);
+        } finally {
+            PropertyUtil.setDisableHashVariable(false);
         }
     }
 

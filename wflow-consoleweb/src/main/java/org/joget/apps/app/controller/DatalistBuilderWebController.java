@@ -155,7 +155,7 @@ public class DatalistBuilderWebController {
                     }
                 }
                 
-                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null));
+                dataList = dataListService.fromJson(tempJson);
                 dataList.setUseSession(false);
                 map.addAttribute("json", json);
             } else {
@@ -345,7 +345,6 @@ public class DatalistBuilderWebController {
                 }
 
                 if (binderJson != null && binderJson.length() > 2) {
-                    binderJson = AppUtil.processHashVariable(binderJson, null, null, null);
                     binder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderJson));
                 }
             }
@@ -372,7 +371,7 @@ public class DatalistBuilderWebController {
                     }
                 }
                 
-                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, null, null));
+                dataList = dataListService.fromJson(tempJson);
                 dataList.setId(id);
             } catch (Exception ex) {
                 map.addAttribute("dataListError", ex.toString());

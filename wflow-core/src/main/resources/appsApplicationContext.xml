@@ -253,6 +253,9 @@
 
     <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
     </bean>
+    
+    <bean id="pluginHashVariableHelper" class="org.joget.apps.app.service.PluginHashVariableHelperImpl">
+    </bean>
 
     <bean id="appPluginUtil" class="org.joget.apps.app.service.AppPluginUtil">
     </bean>

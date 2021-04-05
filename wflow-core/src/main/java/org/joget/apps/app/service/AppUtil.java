@@ -96,6 +96,7 @@ public class AppUtil implements ApplicationContextAware {
     private static final String HASH_NO_ESCAPE = "noescape";
     
     static ApplicationContext appContext;
+    static ThreadLocal currentAssignment = new ThreadLocal();
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static ThreadLocal processAppDefinition = new ThreadLocal();
@@ -133,6 +134,24 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static String getDesignerContextPath() {
         return designerContextPath;
+    }
+    
+    /**
+     * Ties an Assignment to the current thread.
+     * @param assignment
+     * @throws BeansException
+     */
+    public static void setCurrentAssignment(WorkflowAssignment assignment) throws BeansException {
+        currentAssignment.set(assignment);
+    }
+
+    /**
+     * Retrieve the WorkflowAssignment for the current thread.
+     * @return null if there is no WorkflowAssignment tied to the current thread.
+     */
+    public static WorkflowAssignment getCurrentAssignment() {
+        WorkflowAssignment assignment = (WorkflowAssignment) currentAssignment.get();
+        return assignment;
     }
     
     /**

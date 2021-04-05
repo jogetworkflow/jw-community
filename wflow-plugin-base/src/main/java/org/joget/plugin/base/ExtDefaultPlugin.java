@@ -2,6 +2,7 @@ package org.joget.plugin.base;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.plugin.property.service.PropertyUtil;
 
 /**
  * A base abstract class that must be extended by every plugins
@@ -23,7 +24,7 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
      * @param properties 
      */
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
     }
     
     /**

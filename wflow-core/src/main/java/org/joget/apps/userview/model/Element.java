@@ -3,6 +3,7 @@ package org.joget.apps.userview.model;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.property.service.PropertyUtil;
 
 public abstract class Element implements PropertyEditable {
 
@@ -13,7 +14,7 @@ public abstract class Element implements PropertyEditable {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
     }
 
     /**

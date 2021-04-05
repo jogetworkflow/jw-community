@@ -722,9 +722,6 @@ public class AppWorkflowHelper implements WorkflowHelper {
                             propertiesMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
                         } else {
                             String json = pluginDefaultProperties.getPluginProperties();
-
-                            //process basic hash variable
-                            json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
                             propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
                         }
 

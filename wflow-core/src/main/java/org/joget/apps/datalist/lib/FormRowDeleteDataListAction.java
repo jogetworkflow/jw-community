@@ -135,7 +135,6 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
         
         if (formDef != null && formDef.getJson() != null) {
             String formJson = formDef.getJson();
-            formJson = AppUtil.processHashVariable(formJson, null, StringUtil.TYPE_JSON, null);
             form = (Form) formService.createElementFromJson(formJson);
         }
         

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.plugin.property.service.PropertyUtil;
 
 /**
  * Contains meta data regarding a data list column
@@ -16,7 +17,7 @@ public class DataListColumn {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
     }
     
     public Object getProperty(String property) {

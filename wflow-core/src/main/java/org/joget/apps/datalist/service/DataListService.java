@@ -20,7 +20,6 @@ import org.joget.apps.userview.model.PwaOfflineReadonly;
 import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
@@ -43,8 +42,6 @@ public class DataListService {
      * @return
      */
     public DataList fromJson(String json) {
-        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
-
         DataList dataList = JsonUtil.fromJson(json, DataList.class);
         return dataList;
     }

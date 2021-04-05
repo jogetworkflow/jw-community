@@ -154,9 +154,6 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                                     } catch (IOException e) {}
                                 } else {
                                     String json = prop.getPluginProperties();
-
-                                    //process basic hash variable
-                                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
                                     propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
                                 }
 

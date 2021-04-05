@@ -1778,8 +1778,13 @@ public class FormUtil implements ApplicationContextAware {
             if (formDef != null) {
                 String formJson = formDef.getJson();
                 if (formJson != null) {
-                    formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null);
-                    form = (Form) formService.loadFormFromJson(formJson, formData);
+                    WorkflowAssignment ass = AppUtil.getCurrentAssignment();
+                    try {
+                        AppUtil.setCurrentAssignment(assignment);
+                        form = (Form) formService.loadFormFromJson(formJson, formData);
+                    } finally {
+                        AppUtil.setCurrentAssignment(ass);
+                    }
                 }
 
                 // load data
@@ -2479,7 +2484,6 @@ public class FormUtil implements ApplicationContextAware {
 
                 if (formDef != null && formDef.getJson() != null) {
                     String formJson = formDef.getJson();
-                    formJson = AppUtil.processHashVariable(formJson, null, StringUtil.TYPE_JSON, null);
                     form = (Form) formService.loadFormFromJson(formJson, formData);
                 }
                 return pwaOfflineValidation(form, checkingType, formData);

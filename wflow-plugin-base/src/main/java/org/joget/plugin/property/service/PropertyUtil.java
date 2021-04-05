@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class PropertyUtil implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
+    private static PluginHashVariableHelper helper;
     
     public final static String PASSWORD_PROTECTED_VALUE = "****SECURE_VALUE****-";
     public final static String TYPE_PASSWORD = "password";
@@ -318,6 +319,21 @@ public class PropertyUtil implements ApplicationContextAware {
             } catch (Exception e) {}
         }
         return json;
+    }
+    
+    public static void setDisableHashVariable(Boolean disable) {
+        getHelper().setDisableHashVariable(disable);
+    }
+    
+    public static Map<String, Object> getHashVariableSupportedMap(Map<String, Object> properties) {
+        return getHelper().getHashVariableSupportedMap(properties);
+    }
+    
+    private static PluginHashVariableHelper getHelper() {
+        if (helper == null) {
+            helper = (PluginHashVariableHelper) applicationContext.getBean("pluginHashVariableHelper");
+        }
+        return helper;
     }
 
     @Override
