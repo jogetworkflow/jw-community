@@ -91,7 +91,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                         if (appPlugin instanceof PropertyEditable) {
                                             ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                                         }
-
+                                        AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
                                         appPlugin.execute(propertiesMap);
                                     }
                                 }
@@ -120,6 +120,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                 if (runInMultiThread) {
                                     newThread = new PluginThread(new Runnable() {
                                         public void run() {
+                                            AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
                                             workflowUserManager.setCurrentThreadUser(currentUser);
                                             appPlugin.execute(propertiesMap);
                                         }
