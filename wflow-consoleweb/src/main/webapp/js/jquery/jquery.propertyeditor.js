@@ -9349,7 +9349,7 @@ PropertyAssistant = {
                 
                         $("#propertyAssistant").html('<div class="typeSelectorWrapper"><select id="assistantTypeSelector"></select></div><div class="inputWrapper"><div class="inputResultWrapper"><quote class="inputResult" contenteditable="false" placeholder="'+get_peditor_msg('peditor.emptyValue')+'"></quote></div><div class="inputResultActions"><button class="insertBtn btn btn-primary btn-sm">'+get_peditor_msg('peditor.insert')+'</button> <button class="clearBtn btn btn-secondary btn-sm">'+get_peditor_msg('peditor.clear')+'</button></div></div><div class="inputOptionsWrapper"></div>');
                         
-                        $("#propertyAssistant .inputResultWrapper").append('<div class="traveller"><i class="up las la-caret-up"></i><i class="down las la-caret-down"></i></div>');
+                        $("#propertyAssistant .inputResultWrapper").append('<div class="traveller"><i class="up las la-caret-up"></i><i class="down las la-caret-down"></i><a class="optional_btn show" title="'+get_peditor_msg('peditor.showOptionalField')+'"><i class="las la-toggle-off"></i></a><a class="optional_btn hide" title="'+get_peditor_msg('peditor.hideOptionalField')+'"><i class="las la-toggle-on"></i></a></div>');
                         
                         $("#propertyAssistant .traveller .up").on("click", function() {
                             PropertyAssistant.travelUp();
@@ -9357,6 +9357,15 @@ PropertyAssistant = {
                         $("#propertyAssistant .traveller .down").on("click", function() {
                             PropertyAssistant.travelDown();
                         });
+                        
+                        $("#propertyAssistant .optional_btn").on("click", function() {
+                            PropertyAssistant.toogleOptionalField();
+                        });
+                        
+                        var show = $.localStorage.getItem("propertyAssitant.showOptionalField");
+                        if (show !== undefined && show === "true") {
+                            $('#propertyAssistant .inputResultWrapper').addClass("showOptionalField");
+                        }
                         
                         for (var key in PropertyAssistant.data) {
                             if (PropertyAssistant.data.hasOwnProperty(key)) {
@@ -10008,6 +10017,21 @@ PropertyAssistant = {
 
         // Return results
         return (iCaretPos);
+    },
+    
+    /*
+     * toogle to show/hide optional fields
+     */
+    toogleOptionalField : function() {
+        var show = $.localStorage.getItem("propertyAssitant.showOptionalField");
+        if (show !== undefined && show === "true") {
+            show = false;
+            $('#propertyAssistant .inputResultWrapper').removeClass("showOptionalField");
+        } else {
+            show = true;
+            $('#propertyAssistant .inputResultWrapper').addClass("showOptionalField");
+        }
+        $.localStorage.setItem("propertyAssitant.showOptionalField", show);
     }
 };
 

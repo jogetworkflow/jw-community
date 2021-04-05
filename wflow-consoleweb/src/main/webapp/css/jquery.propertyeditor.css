@@ -1638,6 +1638,12 @@ body .ui-dialog .button_form.ui-dialog-content{
     border:2px solid #007bff;
     border-radius: 3px;
 }
+#propertyAssistant .inputResult [placeholder][contenteditable]:not([data-required]){
+    display: none
+}
+#propertyAssistant .showOptionalField .inputResult [placeholder][contenteditable]:not([data-required]){
+    display: inline-block;
+}
 #propertyAssistant .inputResultWrapper{
     display: inline-block;
     width: 80%;
@@ -1657,11 +1663,21 @@ body .ui-dialog .button_form.ui-dialog-content{
 #propertyAssistant .inputResultWrapper .traveller i:hover {
     opacity: 1;
 }
+#propertyAssistant .optional_btn{
+    font-size: 120%;
+}
+#propertyAssistant .optional_btn.hide,
+#propertyAssistant .showOptionalField .optional_btn.show{
+    display:none;
+}
+#propertyAssistant .showOptionalField .optional_btn.hide{
+    display: inline-block;
+}
 #propertyAssistant .inputResult {
     display: block;
     border: 1px solid #ccc;
     padding: 10px;
-    min-height: 50px;
+    min-height: 70px;
     border-radius: 5px;
     margin-bottom: 10px;
     font-size: 16px;
@@ -1674,6 +1690,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     text-align: right;
     display: inline-block;
     width: 20%;
+    vertical-align: top;
 }
 #propertyAssistant .inputOptionsWrapper {
     border-top: 2px solid #000051;
