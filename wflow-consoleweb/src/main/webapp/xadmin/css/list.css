@@ -1,6 +1,22 @@
-body .dataList {
+.dataList .table-wrapper {
     overflow-x: auto;
 }
+
+.dataList .table-wrapper::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+.dataList .table-wrapper::-webkit-scrollbar:vertical {
+    width: 8px;
+}
+.dataList .table-wrapper::-webkit-scrollbar:horizontal {
+    height: 8px;
+}
+.dataList .table-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    border: 0; 
+    background-color: rgba(0, 0, 0, .3);
+}
+
 body .dataList .filters {
     text-align: left;
 }

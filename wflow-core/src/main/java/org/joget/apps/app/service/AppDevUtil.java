@@ -1099,9 +1099,6 @@ public class AppDevUtil {
         String appDefinitionXml = null;
         ByteArrayOutputStream baos = null;
 
-        TimeZone current = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
-        
         AppDefinition appDef = appDefinition;
         if (appDef instanceof HibernateProxy) {
             appDef = (AppDefinition)((HibernateProxy)appDef).getHibernateLazyInitializer().getImplementation();
@@ -1160,7 +1157,6 @@ public class AppDevUtil {
                     // ignore
                 }
             }
-            TimeZone.setDefault(current);
             appDef.setFormDefinitionList(formDefinitionList);
             appDef.setDatalistDefinitionList(datalistDefinitionList);
             appDef.setUserviewDefinitionList(userviewDefinitionList);
@@ -1182,9 +1178,6 @@ public class AppDevUtil {
     public static String getAppConfigXml(AppDefinition appDefinition) {
         String appDefinitionXml = null;
         ByteArrayOutputStream baos = null;
-
-        TimeZone current = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
         
         AppDefinition appDef = appDefinition;
         if (appDef instanceof HibernateProxy) {
@@ -1231,7 +1224,6 @@ public class AppDevUtil {
                     // ignore
                 }
             }
-            TimeZone.setDefault(current);
             appDef.setFormDefinitionList(formDefinitionList);
             appDef.setDatalistDefinitionList(datalistDefinitionList);
             appDef.setUserviewDefinitionList(userviewDefinitionList);
@@ -1509,6 +1501,19 @@ public class AppDevUtil {
             LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
             // sync app
             updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
+            String sourcePath = SetupManager.getBaseDirectory() + File.separator + "app_src" + File.separator + appDef.getAppId() + File.separator + appDef.getAppId() + "_" + appDef.getVersion() + File.separator + "resources" + File.separator;
+            String targetDirName = AppResourceUtil.getBaseDirectory() + appDef.getAppId() + File.separator + appDef.getVersion();
+
+            File sourceDir = new File(sourcePath);
+            if (sourceDir.exists()) {
+                File targetDir = new File(targetDirName);
+                // remove existing directory
+                FileUtils.deleteDirectory(targetDir);
+                // copy directory
+                targetDir.mkdirs();
+                FileUtils.copyDirectory(sourceDir, targetDir, true);
+            }
+           
             LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
         }
         return updatedAppDef;

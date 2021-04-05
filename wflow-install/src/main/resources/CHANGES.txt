@@ -3,6 +3,28 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.14
+=================
+cd6ab1ce Fixed: wflow-consoleweb - Correction of 3a1b3590, apply the same implementation on addon builder. @7.0-SNAPSHOT
+5a29865c Fixed: wflow-consoleweb - Correction of 3a1b3590, apply the same implementation on datalist and userview. @7.0-SNAPSHOT
+e3d94be3 Modified: wflow-core - Universal/Progressive Theme - Disable zoom in effect of login form in Safari mobile. #8768 @7.0-SNAPSHOT
+53d69fe7 Modified: wflow-consoleweb - Admin bar - Changed overlay mode to pinned by default. @7.0-SNAPSHOT
+9f1af340 Fixed: wflow-consoleweb - Process Enhancement Plugin - Problem with placement of dropdown. @7.0-SNAPSHOT
+e8789521 Fixed: wflow-consoleweb - Datalist Builder Column Selection Height Problem When ID is source. @7.0-SNAPSHOT
+3afc47f7 Fixed: wflow-consoleweb - Regression of 32637483 Nested form grid UI issue when using X-Admin theme. #8746 @7.0-SNAPSHOT
+3a1b3590 Fixed: wflow-consoleweb - Create new form existing form listing to clone wrong. @7.0-SNAPSHOT
+cfe8c7a5 Fixed: wflow-core - Form Builder - using JDBC Binder with hashvar in custom datasource generate false SQLNestedException error. @7.0-SNAPSHOT
+71e0bff8 Fixed: wflow-core - Email Tool - ics file timezone wrong for windows calendar app. @7.0-SNAPSHOT
+a569ea64 Fixed: wflow-consoleweb - App Center - Marketplace popup - popup header height too high ; overlapping slightly the nav bar. @7.0-SNAPSHOT
+
+CHANGES IN 7.0.13
+=================
+21cd2f86 Fixed: wflow-core - Git to Joget sync failed for Resources files to wflow folder. #8674 @7.0-SNAPSHOT
+1f8a2ce6 Fixed: wflow-core - Form Menu - If form menu have URL params, as anonymous user, after login, all URL params will be stripped away. @7.0-SNAPSHOT
+5869c313 Fixed: wflow-core - Resource filename in Chinese characters displayed as underscore after upload.#8637 @7.0-SNAPSHOT
+66a64665 Fixed: wflow-core - Universal/Progressive/Xadmin theme - Gravatar image not showing when email is empty. @7.0-SNAPSHOT
+714b8e7c Fixed: wflow-wfengine - WorkflowManager - Can't show next assignment in main process when subflow is completed. #8223 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.12
 =================
 31aaca03 Fixed: wflow-core - Import App - Process tool is not included in Git plugin sync. #8574 @7.0-SNAPSHOT

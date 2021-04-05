@@ -110,6 +110,13 @@ public class TimeZoneUtil {
 
         return serverTimeZoneId;
     }
+    
+    /**
+     * Reset the default timezone back to its initial value
+     */
+    public static void resetDefaultTimeZone() {
+        TimeZone.setDefault(TimeZone.getTimeZone(getServerTimeZoneID()));
+    }
 
     /**
      * Convert Date to String based on GMT/Timezone ID and Date Format

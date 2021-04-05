@@ -19,9 +19,6 @@
         body {
             overflow: hidden;
         }
-        #main-action-help {
-            display: none;
-        }
         #marketplaceAppFrame {
             position: absolute;
             top: 34px;
@@ -29,12 +26,14 @@
             width: 100%;
             height: calc(100% - 34px);
             border: 0;
+            margin-top: 7px
         }
     </style>
     <script>
         var verifyApp = function(downloadUrl) {
             if (typeof downloadUrl === "undefined" || downloadUrl === null || downloadUrl === "") {
-                $("#installApp").hide();                
+                $("#installApp").hide();
+                $("#main-action-help").hide(); 
                 return;
             }
             var verifyUrl = "${pageContext.request.contextPath}/web/json/apps/verify?url=" + encodeURIComponent(downloadUrl);
@@ -43,6 +42,7 @@
                 url: verifyUrl,
                 success: function(data) {
                     $("#installApp").show();
+                    $("#main-action-help").show(); 
                     HelpGuide.key = "help.web.desktop.marketplace";
                     HelpGuide.show();
                 },

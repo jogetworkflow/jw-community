@@ -194,7 +194,7 @@ public class FormPdfUtil {
             
             if (form != null) {
                 //set form to readonly
-                FormUtil.setReadOnlyProperty(form, true, true);
+                    FormUtil.setReadOnlyProperty(form, true, false);
 
                 if (hideEmpty != null && hideEmpty) {
                     form = (Form) removeEmptyValueChild(form, form, formData);
@@ -440,13 +440,25 @@ public class FormPdfUtil {
             while (matcherOption.find()) {
                 String optionString = matcherOption.group(0);
                 String label = matcherOption.group(1);
-
-                if (optionString.contains("selected")) {
+                if (showAllSelectOptions) {
                     if (counter > 0) {
                         replace += ", ";
                     }
+                    if (optionString.contains("selected")) {
+                        replace += " <img alt=\"\" src=\"" + getResourceURL("/images/black_tick.png") + "\"/>";
+                    } else {
+                        replace += "<img alt=\"\" src=\"" + getResourceURL("/images/black_tick_n.png") + "\"/>";
+                    }
                     replace += label;
+                } else {
+                    if (optionString.contains("selected")) {
+                        if (counter > 0) {
+                            replace += ", ";
+                        }
+                        replace += label;
+                    }
                 }
+                counter += 1;
             }
 
             if (counter > 0) {

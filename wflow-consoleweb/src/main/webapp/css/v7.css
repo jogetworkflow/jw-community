@@ -916,6 +916,13 @@ a.guider_button:hover {
     background: #f0f0f0 !important;
     height: 42px;
 }
+
+.marketplaceAppHeader #main-action-help > i{
+    left: calc(100% - 190px);
+    position: fixed;
+    color: #727272;
+}
+
 #license-link {
     font-weight:bold;
 }

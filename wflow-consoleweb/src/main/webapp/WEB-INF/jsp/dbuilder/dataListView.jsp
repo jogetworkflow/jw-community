@@ -150,7 +150,8 @@
                             <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
                             <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
                             <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
-                        </div>    
+                        </div>
+                        <div class="table-wrapper">
                         <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed ${fn:replace(dataList.properties.card_layout_display, ';', ' ')} ${ataList.properties.card_layout_label}" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                             <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                                 <c:choose>
@@ -221,7 +222,7 @@
                                 </c:choose>
                             </c:if>
                         </display:table>
-
+                        </div>
                         <!-- Display Buttons -->
                         <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                             <c:if test="${!empty dataList.actions}">
