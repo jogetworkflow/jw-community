@@ -665,8 +665,8 @@ body.horizontal_menu #header-info{
 
 
 /* button and ripple effect */
-#content main button,
-#content main input[type=button]{
+#content main button[class*=button],
+#content main input[type=button][class*=button]{
     display: inline-block;
     font-weight: 400 !important;
     text-align: center;
@@ -678,19 +678,19 @@ body.horizontal_menu #header-info{
     border: 1px solid transparent;
     padding: .375rem .75rem;
     font-size: 13px !important;
-    line-height: 0.6;
+    line-height: 1.5;
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     color: #fff;
-    background-color: #2196f3;
-    border-color: #2196f3;
+    background-color: var(--theme-button-bg, #007bff);
+    border-color: var(--theme-button-bg, #007bff);
     background-image: none;
     text-shadow:none;
     box-shadow: none;
     outline: 0;
 }
-#content main button,
-#content main input[type=button],
+#content main button[class*=button],
+#content main input[type=button][class*=button],
 #sidebar a,
 .btn{
     --ripple-color: rgba(0, 0, 0, 0.1);
@@ -698,12 +698,12 @@ body.horizontal_menu #header-info{
     --ripple-fuzz: 5px;
     border-color: transparent !important;
 }
-#content main button:focus:not(:disabled):not(.disabled),
-#content main button:active:not(:disabled):not(.disabled),
-#content main button:hover:not(:disabled):not(.disabled),
-#content main input[type=button]:focus:not(:disabled):not(.disabled),
-#content main input[type=button]:active:not(:disabled):not(.disabled),
-#content main input[type=button]:hover:not(:disabled):not(.disabled),
+#content main button[class*=button]:focus:not(:disabled):not(.disabled),
+#content main button[class*=button]:active:not(:disabled):not(.disabled),
+#content main button[class*=button]:hover:not(:disabled):not(.disabled),
+#content main input[type=button][class*=button]:focus:not(:disabled):not(.disabled),
+#content main input[type=button][class*=button]:active:not(:disabled):not(.disabled),
+#content main input[type=button][class*=button]:hover:not(:disabled):not(.disabled),
 #sidebar a:focus,
 #sidebar a:active,
 .btn:focus:not(:disabled):not(.disabled),
@@ -1018,9 +1018,11 @@ body.quickEditModeActive #category-container:before{
     bottom: 0;
     content: "";
 }
-
+main .fc button{
+    height: auto;
+}
 main .fc button .fc-icon{
-    top: 1px;
+    top: -2px;
 }
 #content main .fc-button-group button{
     border-radius: 0px !important;

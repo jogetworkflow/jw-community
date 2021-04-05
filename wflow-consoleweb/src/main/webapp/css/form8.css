@@ -189,8 +189,8 @@ textarea{
 /* form button */
 .form-cell .btn:not([class*="btn-"]){
     color: #fff;
-    background-color: #2196f3;
-    border-color: #2196f3;
+    background-color: var(--theme-button-bg, #007bff);
+    border-color: var(--theme-button-bg, #007bff);
 }
 #section-actions .form-cell{
     padding-left: 2px;
@@ -372,7 +372,6 @@ textarea{
 }
 .subform-section {
     position: relative;
-    padding: 20px 0px;
 }
 
 /* popup selectbox */

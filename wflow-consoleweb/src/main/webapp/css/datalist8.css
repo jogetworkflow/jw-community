@@ -67,8 +67,8 @@
 }
 .dataList .actions .btn:not([class*="btn-"]){
     color: #fff;
-    background-color: #2196f3;
-    border-color: #2196f3;
+    background-color: var(--theme-button-bg, #007bff);
+    border-color: var(--theme-button-bg, #007bff);
 }
 .dataList .actions .btn {
     margin: 0 2px;
@@ -116,8 +116,8 @@
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     color: #fff;
-    background-color: #2196f3;
-    border-color: #2196f3;
+    background-color: var(--theme-button-bg, #007bff);
+    border-color: var(--theme-button-bg, #007bff);
     background-image: none;
     text-shadow:none;
     box-shadow: none;

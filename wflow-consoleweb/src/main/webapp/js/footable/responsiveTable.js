@@ -62,7 +62,7 @@ function responsiveTable(table) {
         });
     }
     
-    if ($(respButtons).data("responsiveclass").trim() !== "") {
+    if ($(respButtons).data("responsiveclass") !== undefined && $(respButtons).data("responsiveclass").trim() !== "") {
         table.closest(".dataList").addClass($(respButtons).data("responsiveclass"));
         
         if (table.closest(".dataList").hasClass("card-label")) {
