@@ -2428,11 +2428,14 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getUserviewDefinitionList() != null) {
                 for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    String name = StringUtil.stripAllHtmlTag(o.getName());
-                    if (name.length() > 255) {
-                        name = name.substring(0, 255);
+                    String name = "";
+                    if (o.getName() != null) {
+                        name = StringUtil.stripAllHtmlTag(o.getName());
+                        if (name.length() > 255) {
+                            name = name.substring(0, 255);
+                        }
+                        name = StringUtil.unescapeString(name, StringUtil.TYPE_HTML, null);
                     }
-                    name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
                     o.setName(name);
                     o.setAppDefinition(newAppDef);
 
