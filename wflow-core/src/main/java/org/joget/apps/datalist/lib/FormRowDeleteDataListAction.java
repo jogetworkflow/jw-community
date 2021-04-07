@@ -13,6 +13,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +68,7 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     public String getConfirmation() {
         String confirm = getPropertyString("confirmation");
         if (confirm == null || confirm.isEmpty()) {
-            confirm = "Please Confirm";
+            confirm = ResourceBundleUtil.getMessage("datalist.formrowdeletedatalistaction.pleaseConfirm");
         }
         return confirm;
     }

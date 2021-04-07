@@ -39,7 +39,7 @@
             var index = layer.open({
                 type: 2,
                 area: [width+'px', height +'px'],
-                fix: false, //不固定
+                fix: false, //not fix
                 maxmin: true,
                 shadeClose: true,
                 shade:0.4,
@@ -197,7 +197,19 @@
             return v.toString(16);
         });
     }
-        
+    
+    function reloadImages() {
+        $('img[data-lazysrc]').each(function () {
+            $(this).attr('src', $(this).attr('data-lazysrc'));
+        });
+    }
+
+    document.addEventListener('readystatechange', event => {
+        if (event.target.readyState === "complete") {
+            reloadImages();
+        }
+    });
+    
     $(function(){
         $(".form-cell-validator, .subform-cell-validator").each(function(){
             $(this).parent().prepend($(this));

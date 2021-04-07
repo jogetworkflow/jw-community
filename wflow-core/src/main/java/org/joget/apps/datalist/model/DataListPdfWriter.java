@@ -47,8 +47,8 @@ public class DataListPdfWriter {
         
         selector = new FontSelector();
         selector.addFont(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         
@@ -163,7 +163,6 @@ public class DataListPdfWriter {
         if (ITextCustomOutputDevice.textIsRTL(value)) {
             value = ITextCustomOutputDevice.transformRTL(value);
         }
-        
         PdfPCell cell = new PdfPCell(this.selector.process(value));
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setLeading(8, 0);

@@ -731,7 +731,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                             .setStandardDefaultImage(DefaultImage.IDENTICON)
                             .getUrl(email)
                         : "//www.gravatar.com/avatar/default?d=identicon";
-                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
+                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" data-lazysrc=\""+url+"\" onError=\"this.onerror = '';this.style.display='none';\"/> ";
                 } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                     String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
@@ -813,7 +813,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                         .setStandardDefaultImage(DefaultImage.IDENTICON)
                         .getUrl(email)
                     : "//www.gravatar.com/avatar/default?d=identicon";
-                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
+                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" width=\"30\" height=\"30\" data-lazysrc=\""+url+"\" onError=\"this.onerror = '';this.style.display='none';\"/> ";
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {

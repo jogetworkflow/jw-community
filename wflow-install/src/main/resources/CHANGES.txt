@@ -3,6 +3,27 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.16
+=================
+467af6a3 Fixed: wflow-core - PWA - Push notification shows multiple times. #T00006 @7.0-SNAPSHOT
+40287b68 Fixed: wflow-consoleweb - Monitoring - Reevaluating running process send user notification from wrong app. #8946 @6.0-SNAPSHOT
+ea69c304 Fixed: wflow-wfengine - Deadlines - DeadlineChecker throws NullPointerException after a tenant is removed #8944 @7.0-SNAPSHOT
+b9640064 Fixed: wflow-consoleweb - Universal/Progressive Theme - JS error in popup dialog. #8936 @7.0-SNAPSHOT
+3ae33ad8 Fixed: wflow-consoleweb - Process Builder - Fail to deploy due to cannot resolve XML schema. @7.0-SNAPSHOT
+f6dae04f Added: wflow-consoleweb/wflow-core - Feature request - able to configure crud delete confirmation in order to support i18n. @7.0-SNAPSHOT
+c72df663 Fixed: wflow-consoleweb - Blocked user avatar affecting Joget loading of userview and forms. @7.0-SNAPSHOT
+2b664ceb Fixed: wflow-core - FormPdfUtil - Download to PDF failed. @7.0-SNAPSHOT
+
+CHANGES IN 7.0.15
+=================
+b22250df Fixed: wflow-core - Datalist PDF export - Traditional Chinese characters not render when there is other language in same string. @7.0-SNAPSHOT
+bdc82431 Fixed: wflow-core - Report Builder - "Show Unselected Options for Multi Options Field" property is not working. @7.0-SNAPSHOT.
+8b7ba22c Fixed: wflow-core - Form Builder - OSGI plugin having extra properties added in multi tenant environment. @7.0-SNAPSHOT
+5feba799 Fixed: wflow-consoleweb - Tooltip icon is blocking main header text. @7.0-SNAPSHOT
+56cfd7e7 Fixed: wflow-commons - Nested Datalist Formatter - non-alphabetic foreign characters unable to display properly. @7.0-SNAPSHOT
+940732e6 Modified: wflow-core - Update jackson-databind to 2.9.10.8 for CVE-2021-20190. @7.0-SNAPSHOT
+9922e0c2 Fixed: wflow-core - TimeZone - Temporary setting of default timezone may result in permanently change to GMT 0. #8852 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.14
 =================
 cd6ab1ce Fixed: wflow-consoleweb - Correction of 3a1b3590, apply the same implementation on addon builder. @7.0-SNAPSHOT

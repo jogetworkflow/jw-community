@@ -285,5 +285,20 @@ AdminBar.hideQuickOverlay = function() {
     }, 100);
 };
 
+function reloadImages() {
+    $('img[data-lazysrc]').each(function () {
+        $(this).attr('src', $(this).attr('data-lazysrc'));
+    });
+}
+
+document.addEventListener('readystatechange', event => {
+    if (event.target.readyState === "complete") {
+        reloadImages();
+        $('body').on('DOMSubtreeModified', '#presence', function () {
+            reloadImages();
+        });
+    }
+});
+
 PresenceUtil.init();
 

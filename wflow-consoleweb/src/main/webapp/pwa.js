@@ -219,6 +219,8 @@ PwaUtil = {
                                 userviewKey: PwaUtil.userviewKey,
                                 homePageLink: PwaUtil.homePageLink
                             });
+                            
+                            PwaUtil.updateServiceWorkerList();
                         }
                         
                         if (serviceWorker && serviceWorker.state === "installing") {
@@ -420,8 +422,19 @@ PwaUtil = {
             PwaUtil.isOnline = false;
         }
         */
-    }
+    },
 
+    updateServiceWorkerList : function() {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            var list = [];
+            for (let i = 1; i < registrations.length; i++) {
+                list.push(registrations[i].scope);
+            }
+            navigator.serviceWorker.controller.postMessage({
+                "serviceWorkerList": list
+            });
+        });
+    }
 }
 
 $.fn.serializeObject = function() {
