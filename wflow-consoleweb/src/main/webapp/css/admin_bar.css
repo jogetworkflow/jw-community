@@ -180,6 +180,7 @@ body.rtl div#quickEditModeOption:before {
     width: 100%; 
     position: fixed; 
     top: 0px; 
+    left:0px;
     background: black; 
     z-index: 2000; 
     opacity: 0.5;
