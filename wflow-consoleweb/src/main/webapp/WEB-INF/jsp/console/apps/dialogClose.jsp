@@ -6,6 +6,9 @@
             parent.PopupDialog.closeDialog();
             parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
         } if (parent && parent.reloadTable) {
+            if(parent.PopupDialog) {
+                parent.PopupDialog.closeDialog();
+            }
             parent.reloadTable();
         } else {
             if (parent != self) {
