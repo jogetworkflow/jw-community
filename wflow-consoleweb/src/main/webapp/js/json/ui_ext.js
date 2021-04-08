@@ -61,13 +61,18 @@ JPopup = {
         
         UI.adjustPopUpDialog(JPopup.dialogboxes[id]);
         
+        if (url.indexOf('?') === -1) {
+            url += "?";
+        } else {
+            url += "&";
+        }
+        url += JPopup.tokenName + "="+ JPopup.tokenValue;
+        
         if (action !== undefined && action.toLowerCase() === "get") {
             $.each(params, function (key, data) {
                 url += "&" + key + "=" + encodeURIComponent(data);
             });
         }
-        
-        url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
         var form = $('<form method="post" data-ajax="false" style="display:none;" target="'+id+'" action="'+url+'"></form>'); 
         $(document.body).append(form); 
         

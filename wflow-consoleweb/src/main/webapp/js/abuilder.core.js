@@ -39,6 +39,7 @@ AppBuilder = {
         });
         $("#builder_canvas").off("click", " li.item a.runprocess");
         $("#builder_canvas").on("click", " li.item a.runprocess", function(){
+            var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
             JPopup.show("runProcessDialog", url, {}, "");
             return false;
         });
