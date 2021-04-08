@@ -60,8 +60,6 @@ AppBuilder = {
             return false;
         });
         
-        $("body").removeClass("quick-nav-shown");
-        
         callback();
     },
     

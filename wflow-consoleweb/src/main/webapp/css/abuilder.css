@@ -17,7 +17,6 @@ body {--builder-left-panel-width: 0px !important;}
 #builder_canvas .search-container {display: inline-block; width: 300px}
 #builder_canvas #showTags {margin-left: 20px; cursor: pointer;}
 .builder-process .item .delete {display: none;}
-#builder-quick-nav {display:none !important;}
 .nv-tags {
     font-size: 10px;
     line-height: 14px; 
@@ -149,4 +148,7 @@ body {--builder-left-panel-width: 0px !important;}
 }
 #tooltip-tags .field-row .colors > div.checked i {
     visibility: visible;
+}
+#left-panel{
+    border-right-color: transparent !important;
 }

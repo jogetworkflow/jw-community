@@ -438,9 +438,7 @@ CustomBuilder = {
             
             $("body").removeClass("initializing");
             
-            if (CustomBuilder.builderType !== "app") {
-                CustomBuilder.intBuilderMenu();
-            }
+            CustomBuilder.intBuilderMenu();
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
