@@ -1725,10 +1725,11 @@ body.quick-nav-shown #quick-nav-bar {
 body.quick-nav-shown #builder-quick-nav {
     width:30px;
     display:block;
-    top:calc(var(--builder-header-top-height) + 20px);
+    top:20px;
     position: absolute;
 }
 #builder-quick-nav #builder-menu {
+    margin-top: 80px;
     display: block !important;
 }
 #builder-quick-nav #builder-menu-search{
@@ -1901,10 +1902,13 @@ body.quick-nav-shown #builder-quick-nav {
 }
 #quick-nav-bar.active #closeQuickNav{
     display: block !important;
-    color: #ccc;
-    font-size: 25px;
-    padding: 10px 5px;
-    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 40px;
+    right: 0;
+    bottom: 0;
+    background: #000;
+    opacity: 0.1;
 }
 
 /* Messages */

@@ -2214,7 +2214,7 @@ CustomBuilder = {
      */
     intBuilderMenu : function() {
         if ($("#quick-nav-bar").find("#builder-quick-nav").length === 0) {
-            $("#quick-nav-bar").append('<i id="closeQuickNav" class="las la-times" style="display:none;" title="'+get_cbuilder_msg("cbuilder.close")+'"></i>');
+            $("#quick-nav-bar").append('<div id="closeQuickNav"></div>');
             $("#quick-nav-bar").append('<div id="builder-quick-nav">\
                 <div id="builder-menu" style="display: none;">\
                     <div id="builder-menu-search">\
@@ -2241,6 +2241,13 @@ CustomBuilder = {
             
             $("#closeQuickNav").on("click", function(){
                 $("#quick-nav-bar").removeClass("active");
+            });
+            
+            $(document).on("keydown.quicknav", function(e) {
+                // ESCAPE key pressed
+                if ($("#quick-nav-bar").hasClass("active") && e.keyCode == 27) {
+                    $("#quick-nav-bar").removeClass("active");
+                }
             });
 
             $("#builder-menu-search .clear-backspace").on("click", function(){
@@ -2304,8 +2311,8 @@ CustomBuilder = {
 
         $("#builder-menu > ul > li.menu-" + CustomBuilder.builderType).addClass("active");
 
-        $("#builder-menu > ul > li.builder-icon").off("mouseover touch");
-        $("#builder-menu > ul > li.builder-icon").on("mouseover touch", function(){
+        $("#builder-menu > ul > li.builder-icon").off("click touch");
+        $("#builder-menu > ul > li.builder-icon").on("click touch", function(){
             $("#builder-menu > ul > li.builder-icon").removeClass("active");
             $(this).addClass("active");
         });
