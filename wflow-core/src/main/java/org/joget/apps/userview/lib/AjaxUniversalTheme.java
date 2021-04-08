@@ -16,7 +16,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getName() {
-        return "DX8 Plain Theme";
+        return "DX 8 Plain Theme";
     }
 
     @Override

@@ -187,7 +187,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="components" role="tabpanel" aria-labelledby="components-tab">
                                     <div class="search">
-                                        <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.searchProperties"/>" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup">
+                                        <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.searchPalette"/>" type="text" data-cbuilder-action="tabSearch" data-cbuilder-on="keyup">
                                         <button class="clear-backspace"  data-cbuilder-action="clearTabSearch">
                                             <i class="la la-close"></i>
                                         </button>
@@ -219,18 +219,18 @@
                                 <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
                             <div class="float-right">
-                                <button id="properties-max-button" title="<fmt:message key="cbuilder.maximize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
-                                    <i class="lar la-window-maximize"></i>
+                                <button id="properties-max-button" title="<fmt:message key="cbuilder.expand"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
+                                    <i class="las la-expand"></i>
                                 </button>
-                                <button id="properties-min-button" title="<fmt:message key="cbuilder.minimize"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
-                                    <i class="lar la-window-minimize"></i>
+                                <button id="properties-min-button" title="<fmt:message key="cbuilder.dock"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
+                                    <i class="las la-thumbtack"></i>
                                 </button>
                             </div> 
                             <div class="clear"></div>        
                         </div>
                         <div class="element-properties-header">
                             <div class="search">
-                                <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.search"/>" type="text" data-cbuilder-action="propertySearch" data-cbuilder-on="keyup">
+                                <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.searchProperties"/>" type="text" data-cbuilder-action="propertySearch" data-cbuilder-on="keyup">
                                 <button class="clear-backspace"  data-cbuilder-action="clearPropertySearch">
                                     <i class="la la-close"></i>
                                 </button>
