@@ -101,6 +101,10 @@ body .filter-cell select:not([multiple]).emptyValue {
     color: #B6B6B6 !important;
 }
 
+body select[size]:not([class^=ui]){
+    height: auto;
+}
+
 /* Text inputs */
 body input:not([type]),
 body input[type=text],
@@ -221,7 +225,7 @@ body .editor-cell input[type=number]:focus:not([readonly]),
 body .editor-cell input[type=search]:focus:not([readonly]),
 body .editor-cell textarea:focus:not([readonly]),
 body .editor-cell select:focus:not([readonly]):not([class^=ui]),
-body .editor-cell input.focus,{
+body .editor-cell input.focus{
   border-bottom: 1px solid #727272;
   box-shadow: 0 1px 0 0 #727272;
 }

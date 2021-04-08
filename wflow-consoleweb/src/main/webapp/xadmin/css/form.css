@@ -220,6 +220,10 @@ body #form-canvas .form-message.form-errors{
     -moz-osx-font-smoothing: grayscale;
 }
 
+body select[size]:not([class^=ui]){
+    height: auto;
+}
+
 /* Text inputs */
 body input:not([type]),
 body input[type=text],

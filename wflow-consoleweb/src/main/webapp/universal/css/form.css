@@ -101,6 +101,10 @@ body .filter-cell select:not([multiple]).emptyValue {
     color: #B6B6B6 !important;
 }
 
+body select[size]:not([class^=ui]){
+    height: auto;
+}
+
 /* Text inputs */
 body input:not([type]),
 body input[type=text],
