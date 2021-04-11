@@ -37,8 +37,8 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     protected String getInternalJsCssLib(Map<String, Object> data) {
         String jscss = "";
-        if (!isAjaxContent(data) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
-            jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\"></script>";
+        if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
+            jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" async></script>";
         }
         jscss += super.getInternalJsCssLib(data);
         return jscss;
