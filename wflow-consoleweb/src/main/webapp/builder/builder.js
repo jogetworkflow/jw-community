@@ -249,6 +249,7 @@ CustomBuilder = {
                     CustomBuilder.Builder.highlightEl = null;
                 }
                 CustomBuilder.loadJson($("#cbuilder-json").val());
+                CustomBuilder.intBuilderMenu();
             } else {
                 
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
@@ -428,6 +429,14 @@ CustomBuilder = {
             
             $(document).uitooltip({
                 position: { my: "left top+5", at: "left bottom", collision: "flipfit" },
+                open: function (event, ui) {
+                    var position = $(event.originalEvent.target).attr('tooltip-position');
+                    if (position === "right") {
+                        var offset = $(event.originalEvent.target).offset();
+                        $(ui.tooltip).css("left", (offset.left + $(event.originalEvent.target).width() + 5) + "px");
+                        $(ui.tooltip).css("top", (offset.top + 5) + "px");
+                    }
+                },
                 close: function (event, ui) {
                     $(".ui-helper-hidden-accessible").remove();
                 } 
@@ -437,7 +446,6 @@ CustomBuilder = {
             CustomBuilder.updateBuilderBasedOnSettings();
             
             $("body").removeClass("initializing");
-            
             CustomBuilder.intBuilderMenu();
         };
         
@@ -953,10 +961,10 @@ CustomBuilder = {
     showMessage: function(message, type) {
         if (message && message !== "") {
             var id = "toast-" + (new Date()).getTime();
-            var delay = 1500;
+            var delay = 3000;
             if (type === undefined) {
                 type = "secondary";
-                delay = 500;
+                delay = 1500;
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
@@ -1462,33 +1470,42 @@ CustomBuilder = {
         var button = $(this);
         var panel = $("#right-panel");
         
+        $(panel).addClass("resizing");
+        
         var stopResize = function() {
-            $("body").off("mousemove.resize");
-            $("body").off("mouseup.resize");
+            $("body").off("mousemove.resize touchmove.resize");
+            $("body").off("mouseup.resize touchend.resize");
             
             if ($("body").hasClass("default-builder")) {
-                CustomBuilder.Builder.frameHtml.off("mousemove.resize");
-                CustomBuilder.Builder.frameHtml.off("mouseup.resize");
+                CustomBuilder.Builder.frameHtml.off("mousemove.resize touchmove.resize");
+                CustomBuilder.Builder.frameHtml.off("mouseup.resize touchend.resize");
             }
+            $(panel).removeClass("resizing");
         };
         
         var resize = function(e) {
-            var x = e.pageX;
+            var x = (e.clientX || e.originalEvent.clientX);
+            if (e.type === "touchmove") {
+                x = (e.touches[0].clientX || e.touches[0].originalEvent.clientX);
+            }
             if (!$(e.currentTarget).is("#cbuilder")) {
                 x += $(CustomBuilder.Builder.iframe).offset().left;
             }
+            if (x < 60) {
+                x = 60;
+            }
             var newWidth = $(panel).offset().left - x + $(panel).outerWidth();
             $(panel).css("width", newWidth + "px");
-            CustomBuilder.setBuilderSetting("right-panel-width", newWidth + "px");
+            CustomBuilder.setBuilderSetting("right-panel-width", newWidth);
         };
         
         if ($("body").hasClass("default-builder")) {
             CustomBuilder.Builder.frameHtml.on("mousemove.resize touchmove.resize", resize);
-            CustomBuilder.Builder.frameHtml.on("mouseup.resize", stopResize);
+            CustomBuilder.Builder.frameHtml.on("mouseup.resize touchend.resize", stopResize);
         }
         
         $("body").on("mousemove.resize touchmove.resize", resize);
-        $("body").on("mouseup.resize", stopResize);
+        $("body").on("mouseup.resize touchend.resize", stopResize);
     },
     
     /*
@@ -1986,7 +2003,13 @@ CustomBuilder = {
         $("#right-panel .property-editor-container").removeClass("narrow");
         
         var width = CustomBuilder.getBuilderSetting("right-panel-width");
-        $("#right-panel").css("width", width);
+        if (!isNaN(width)) {
+            var winWidth = $("body").width() - 60;
+            if (width > winWidth) {
+                width = winWidth;
+            }
+            $("#right-panel").css("width", width + 'px');
+        }
     },
     
     /*
@@ -2283,8 +2306,12 @@ CustomBuilder = {
         $("#quick-nav-bar").removeClass("active");
         
         setTimeout(function(){
-            CustomBuilder.getBuilderItems(CustomBuilder.renderBuilderMenu);
+            CustomBuilder.reloadBuilderMenu();
         }, 100); //delay the loading to prevent it block the builder ajax call
+    },
+    
+    reloadBuilderMenu : function() {
+        CustomBuilder.getBuilderItems(CustomBuilder.renderBuilderMenu);
     },
     
     renderBuilderMenu : function(data) {
@@ -2293,11 +2320,11 @@ CustomBuilder = {
         var container = $("#builder-menu > ul");
         
         $("#builder-quick-nav .backToApp").remove();
-        $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="fas fa-pencil-ruler"></i></a></div>');
+        $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="far fa-edit"></i></a></div>');
         
         for (var i in data) {
             var builder = data[i];
-            var li = $('<li class="builder-icon menu-'+builder.value+'"><span title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
+            var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
             $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             if (builder.elements) {
                 for (var j in builder.elements) {

@@ -98,6 +98,9 @@ body.quick-nav-shown {
     z-index: 10; 
     transition: 0.35s width ease-in-out;
 }
+#cbuilder.max-property-editor #right-panel.resizing {
+    transition: none;
+}
 #cbuilder #left-panel {
     float: left;
     border-right-width: 1px;
@@ -1412,7 +1415,7 @@ div.section, .header > ol {
 .element-properties-actions button:hover{
     opacity: 1;
 }
-.max-property-editor #right-panel {
+.max-property-editor #right-panel{
     position: fixed;
     top:65px;
     right: 0;
@@ -1920,11 +1923,12 @@ body.quick-nav-shown #builder-quick-nav {
 }
 #builder-message .toast{
     position: relative;
-    padding: 10px 35px 10px 10px;
-    min-width: 250px;
+    padding: 15px 35px 15px 15px;
+    min-width: 300px;
+    font-size: 16px;
 }
 #builder-message .toast .close{
-    padding: 7px 10px;
+    padding: 10px 10px;
 }
 #builder-message .toast-secondary{
     color: #383d41;
