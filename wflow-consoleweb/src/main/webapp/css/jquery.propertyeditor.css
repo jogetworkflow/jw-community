@@ -1264,6 +1264,8 @@ html .property-editor-container input[disabled] {
 }
 .property-editor-container select[multiple]:not([class^=ui]){
     height: auto;
+    display: unset;
+    min-height: 230px;
 }
 .property-editor-container select[multiple]:not([class^=ui]) option{
     padding: 5px 2px;
