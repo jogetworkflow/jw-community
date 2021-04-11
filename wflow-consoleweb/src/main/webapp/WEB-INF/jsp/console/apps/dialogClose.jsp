@@ -2,10 +2,18 @@
 <script type="text/javascript">
 <c:choose>
     <c:when test="${!empty url}">
-        if (parent && parent.AdminBar !== undefined && parent.AdminBar.isAdminBarOpen()) {
+        if ('<c:out value="${url}"/>'.indexOf('/builders')) {
+            if (top.CustomBuilder !== undefined) {
+                top.CustomBuilder.ajaxRenderBuilder('<c:out value="${url}"/>');
+                top.AdminBar.hideQuickOverlay();
+            } else {
+                parent.PopupDialog.closeDialog();
+                window.open('<c:out value="${url}"/>');
+            }
+        } else if (parent && parent.AdminBar !== undefined && parent.AdminBar.isAdminBarOpen()) {
             parent.PopupDialog.closeDialog();
             parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
-        } if (parent && parent.reloadTable) {
+        } else if (parent && parent.reloadTable) {
             if(parent.PopupDialog) {
                 parent.PopupDialog.closeDialog();
             }
