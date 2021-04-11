@@ -228,12 +228,18 @@ header.navbar .dropdown-menu a span.time{
     color: var(--theme-sidebar-active-link, #313435);
     background: var(--theme-sidebar-active-link-bg, transparent);
 }
-#sidebar .nav > li > a > span {
+#sidebar .nav > li > a > span:not(.badge) {
     min-height: 35px;
     padding: 6px 0 6px 49px;
     position: relative;
     display: block;
     white-space: pre-line;
+}
+#sidebar .nav > li > a.menu-link > span:not(.badge) {
+    display: inline-block;
+}
+#sidebar .nav > li > a.menu-link > span.badge {
+    margin-top: 8px;
 }
 #sidebar .nav > li > a > span > i:first-child{
     position: absolute;
