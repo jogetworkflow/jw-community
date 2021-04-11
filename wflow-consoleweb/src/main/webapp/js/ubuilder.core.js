@@ -543,6 +543,9 @@ UserviewBuilder = {
             delete data.setting.properties['loginPageBottom'];
             
             CustomBuilder.update(false);
+            
+            //update original json as well
+            $('#cbuilder-json-original').val(CustomBuilder.json);
         }
         if (data.setting.properties['mobileViewDisabled'] !== undefined) {
             data.setting.properties['theme']['properties']['mobileViewDisabled'] = data.setting.properties['mobileViewDisabled'];
@@ -571,6 +574,9 @@ UserviewBuilder = {
             delete data.setting.properties['mobileViewCustomCss'];
             
             CustomBuilder.update(false);
+            
+            //update original json as well
+            $('#cbuilder-json-original').val(CustomBuilder.json);
         }
     },
     
