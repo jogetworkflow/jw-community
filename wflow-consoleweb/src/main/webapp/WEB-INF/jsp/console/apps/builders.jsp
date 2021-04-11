@@ -97,7 +97,10 @@
             'showTag':'<ui:msgEscJS key="console.tag.show"/>',
             'hideTag':'<ui:msgEscJS key="console.tag.hide"/>',
             'launch':'<ui:msgEscJS key="console.run.launch"/>',
-            'runProcess':'<ui:msgEscJS key="client.app.run.process.label.start"/>'
+            'runProcess':'<ui:msgEscJS key="client.app.run.process.label.start"/>',
+            'addNewMessage':'<ui:msgEscJS key="console.app.common.label.addnew"/>',
+            'publishConfirm':'<ui:msgEscJS key="console.app.publish.label.confirm"/>',
+            'unpublishConfirm':'<ui:msgEscJS key="console.app.unpublish.label.confirm"/>'
         }
     }
 </c:set>

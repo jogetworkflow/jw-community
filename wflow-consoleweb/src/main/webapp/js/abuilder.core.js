@@ -168,7 +168,7 @@ AppBuilder = {
                 continue;
             }
             var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div style="background: '+builder.color+'" class="builder-title"><i class="'+builder.icon+'"></i> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus-circle"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
-            if (builder.elements) {
+            if (builder.elements && builder.elements.length > 0) {
                 for (var j in builder.elements) {
                     var action = "";
                     if (CustomBuilder.appPublished === "true" && (builder.value === "userview" || builder.value === "process")) {
@@ -180,6 +180,8 @@ AppBuilder = {
                     }
                     $(builderDiv).find("ul").append('<li class="item" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span></a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }
+            } else {
+                $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
             }
             container.append(builderDiv);
         }
@@ -254,28 +256,34 @@ AppBuilder = {
      * Action implementation of top panel to publish the app
      */
     publishApp: function() {
-        var callback = {
-            success : function() {
-                $("#unpublish-btn").show();
-                $("#publish-btn").hide();
-                CustomBuilder.appPublished = "true";
-            }
-        };
-        ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
+        if (confirm(AppBuilder.msg('publishConfirm'))) {
+            var callback = {
+                success : function() {
+                    $("#unpublish-btn").show();
+                    $("#publish-btn").hide();
+                    CustomBuilder.appPublished = "true";
+                    AppBuilder.renderBuilders(CustomBuilder.builderItems);
+                }
+            };
+            ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
+        }
     },
     
     /*
      * Action implementation of top panel to unpublish the app
      */
     unpublishApp: function() {
-        var callback = {
-            success : function() {
-                $("#publish-btn").show();
-                $("#unpublish-btn").hide();
-                CustomBuilder.appPublished = "false";
-            }
-        };
-        ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
+        if (confirm(AppBuilder.msg('unpublishConfirm'))) {
+            var callback = {
+                success : function() {
+                    $("#publish-btn").show();
+                    $("#unpublish-btn").hide();
+                    CustomBuilder.appPublished = "false";
+                    AppBuilder.renderBuilders(CustomBuilder.builderItems);
+                }
+            };
+            ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
+        }
     },
     
     /*
