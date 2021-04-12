@@ -2,6 +2,7 @@
     min-height: 150px;
     border-top: solid 1px gray;
     border-bottom: solid 1px gray;
+    border-right: solid 1px gray;
     margin-top: -1px;
     min-width: 100%;
     position: relative;
