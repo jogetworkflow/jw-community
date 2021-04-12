@@ -31,6 +31,14 @@ public interface HashVariablePlugin extends PropertyEditable {
     public String escapeHashVariable(String variable);
     
     /**
+     * Escape special character in the value.
+     * 
+     * 
+     * @return 
+     */
+    public String escapeHashVariableValue(String value);
+    
+    /**
      * List the possible syntax combination to populate in Hash Variable Assistants
      * in Property Editor
      * 

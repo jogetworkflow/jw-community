@@ -199,6 +199,9 @@ PresenceUtil = {
             // Define what to do when server sent new event
             PresenceUtil.source.addEventListener(window.location.pathname, function(e) {
                 $("#presence").html(e.data);
+                $('img[data-lazysrc]').each(function () {
+                    $(this).attr('src', $(this).attr('data-lazysrc'));
+                });
             }, false);
         } else {
             $("#presence").html("Your browser does not support EventSource");
@@ -284,21 +287,6 @@ AdminBar.hideQuickOverlay = function() {
         AdminBar.origHideQuickOverlay();
     }, 100);
 };
-
-function reloadImages() {
-    $('img[data-lazysrc]').each(function () {
-        $(this).attr('src', $(this).attr('data-lazysrc'));
-    });
-}
-
-document.addEventListener('readystatechange', event => {
-    if (event.target.readyState === "complete") {
-        reloadImages();
-        $('body').on('DOMSubtreeModified', '#presence', function () {
-            reloadImages();
-        });
-    }
-});
 
 PresenceUtil.init();
 

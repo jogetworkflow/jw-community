@@ -636,10 +636,11 @@ public class AppUtil implements ApplicationContextAware {
                                         if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
                                             value = StringUtil.escapeRegex(value);
                                         }
-
+                                                 
                                         //escape special char in HashVariable
                                         var = cachedPlugin.escapeHashVariable(var);
-
+                                        value = cachedPlugin.escapeHashVariableValue(value);
+                                        
                                         content = content.replaceAll(var, value);
                                     }
                                 } catch (Exception e) {}
