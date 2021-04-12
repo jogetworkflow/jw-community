@@ -227,7 +227,11 @@ CustomBuilder = {
             data = eval("[" + data.trim() + "]")[0];
             
             $("#design-btn").trigger("click");
-            $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(data.builderDefJson);
+            
+            //to standardize formatting
+            var jsonData = JSON.decode(data.builderDefJson);
+            $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(JSON.encode(jsonData));
+            
             CustomBuilder.id = data.id;
             $("head title").text(data.title);
             $("#builderElementName").html(data.name);
@@ -385,6 +389,9 @@ CustomBuilder = {
         }
         
         var builderCallback = function(){
+            var jsonData = JSON.decode($("#cbuilder-json").val());
+            $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(JSON.encode(jsonData));
+            
             if (callback) {
                 callback();
             }
@@ -783,7 +790,7 @@ CustomBuilder = {
      * Update JSON data
      */
     updateJson : function (json, addToUndo) {
-        if (CustomBuilder.json !== null && addToUndo !== false) {
+        if (CustomBuilder.json !== null && addToUndo !== false && CustomBuilder.json !== json) {
             CustomBuilder.addToUndo();
         }
         
@@ -4131,7 +4138,7 @@ CustomBuilder.Builder = {
                 parentDataArray.splice(oldIndex, 1);
             }
 
-            var newParent = $(self.dragElement).closest("[data-cbuilder-classname]");
+            var newParent = $(self.dragElement).parent().closest("[data-cbuilder-classname]");
             var newParentDataArray = $(newParent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
             if (newParentDataArray === undefined) {
                 newParentDataArray = [];
@@ -4142,7 +4149,7 @@ CustomBuilder.Builder = {
             if ($(prev).length > 0) {
                 newIndex = $.inArray($(prev).data("data"), newParentDataArray) + 1;
             }
-            parentDataArray.splice(newIndex, 0, elementObj);
+            newParentDataArray.splice(newIndex, 0, elementObj);
 
             self.checkVisible(parent);
             self.checkVisible(newParent);
