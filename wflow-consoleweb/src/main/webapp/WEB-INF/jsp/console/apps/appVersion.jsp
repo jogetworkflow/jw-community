@@ -81,6 +81,9 @@
             function adjustPropertySize(height) {
                 return height - 60;
             }
+            function reloadTable() {
+                filter(JsonDataTable, '&filter=', $('#JsonDataTable_searchCondition').val());
+            }
         </script>                
     </div>
 </div>                

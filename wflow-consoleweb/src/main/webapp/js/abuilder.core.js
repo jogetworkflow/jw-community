@@ -262,6 +262,7 @@ AppBuilder = {
                     $("#unpublish-btn").show();
                     $("#publish-btn").hide();
                     CustomBuilder.appPublished = "true";
+                    AppBuilder.reloadVersions();
                     AppBuilder.renderBuilders(CustomBuilder.builderItems);
                 }
             };
@@ -279,10 +280,20 @@ AppBuilder = {
                     $("#publish-btn").show();
                     $("#unpublish-btn").hide();
                     CustomBuilder.appPublished = "false";
+                    AppBuilder.reloadVersions();
                     AppBuilder.renderBuilders(CustomBuilder.builderItems);
                 }
             };
             ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
+        }
+    },
+    
+    /*
+     * reload the versions view after publish/unpublish App
+     */
+    reloadVersions: function() {
+        if ($("#versionsView").length > 0) {
+            $("#versionsView iframe")[0].contentWindow.reloadTable();
         }
     },
     
