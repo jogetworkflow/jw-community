@@ -644,6 +644,13 @@ UserviewBuilder = {
             component.builderTemplate.getParentDataHolder = function(elementObj, component) {
                 return "categories";
             };
+            component.builderTemplate.afterRemoved = function(parent, elementObj, component) {
+                var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+                if (parentDataArray.length === 0) {
+                    CustomBuilder.Builder.selectedEl = parent;
+                    UserviewBuilder.addCategory(true, true);
+                }
+            };
             component.builderTemplate.supportStyle = false;
         } else if (component.className.indexOf("userview-") === 0) {
             
@@ -1356,6 +1363,18 @@ UserviewBuilder = {
             $("#category-btn").on("click", function(event) {
                 $("#element-select-box").hide();
                 
+                UserviewBuilder.addCategory(true);
+                
+                event.preventDefault();
+                return false;
+            });
+        } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+            $("#element-select-box #element-bottom-actions").append('<a id="add-category-btn" href="" title="'+get_cbuilder_msg("ubuilder.addCategory")+'"><i class="las la-plus"></i></a>');
+            
+            $("#add-category-btn").off("click");
+            $("#add-category-btn").on("click", function(event) {
+                $("#element-select-box").hide();
+                
                 UserviewBuilder.addCategory();
                 
                 event.preventDefault();
@@ -1445,7 +1464,7 @@ UserviewBuilder = {
     /*
      * Add category when add action button pressed on navigator
      */
-    addCategory : function() {
+    addCategory : function(isCategories, noUpdate) {
         var self = CustomBuilder.Builder;
         
         self.component = self.getComponent("org.joget.apps.userview.model.UserviewCategory");
@@ -1458,17 +1477,26 @@ UserviewBuilder = {
             menus : []
         };
         self.updateElementId(elementObj);
-        
-        var parent = self.selectedEl;
-        var parentDataArray = CustomBuilder.data.categories;
-        parentDataArray.push(elementObj);
-        
         var temp = $('<div></div>');
-        self.selectedEl.append(temp);
+            
+        if (isCategories) {
+            var parent = self.selectedEl;
+            var parentDataArray = CustomBuilder.data.categories;
+            parentDataArray.push(elementObj);
+            self.selectedEl.append(temp);
+        } else {
+            var parentDataArray = CustomBuilder.data.categories;
+            
+            var newIndex = $.inArray($(self.selectedEl).data("data"), parentDataArray) + 1;
+            parentDataArray.splice(newIndex, 0, elementObj);
+            self.selectedEl.after(temp);
+        }
         
         self.renderElement(elementObj, temp, self.component, true);
         
-        CustomBuilder.update();
+        if (noUpdate === undefined || !noUpdate) {
+            CustomBuilder.update();
+        }
     },
     
     /*
