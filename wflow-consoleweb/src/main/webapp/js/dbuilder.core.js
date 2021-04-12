@@ -2439,6 +2439,20 @@ DatalistBuilder = {
             }, 100);
         }
     },
+    
+    /*
+     * Utility method to get all column id and label to populate field selection
+     */
+    getColumnOptions : function() {
+        //populate list items
+        var tempArray = [{'label':'','value':''}];
+        for(var ee in DatalistBuilder.availableColumns){
+            var temp = {'label' : UI.escapeHTML(DatalistBuilder.availableColumns[ee].label),
+                         'value' : DatalistBuilder.availableColumns[ee].id};
+            tempArray.push(temp);
+        }
+        return tempArray;
+    },
       
     /*
      * remove dynamically added items    
