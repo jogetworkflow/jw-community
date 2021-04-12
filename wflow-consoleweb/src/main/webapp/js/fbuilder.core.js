@@ -137,6 +137,7 @@ FormBuilder = {
                     self.selectedEl = parent;
                     FormBuilder.addColumn(true);
                 }
+                FormBuilder.recalculateColumnWidth($(parent));
             };
         } else {
             component.builderTemplate.stylePropertiesDefinition.push({
