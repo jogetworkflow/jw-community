@@ -205,6 +205,7 @@ header.navbar .dropdown-menu a span.time{
 }
 #sidebar .nav {
     list-style-type: none;
+    background: var(--theme-sidebar-link-bg, transparent);
 }
 #sidebar .nav li {
     position: relative;
@@ -218,7 +219,6 @@ header.navbar .dropdown-menu a span.time{
     padding: 5px 15px;
     position: relative;
     color: var(--theme-sidebar-link, #72777a);
-    background: var(--theme-sidebar-link-bg, transparent);
     -webkit-transition: all .3s ease;
     -o-transition: all .3s ease;
     transition: all .3s ease;
@@ -287,7 +287,6 @@ header.navbar .dropdown-menu a span.time{
     display: block;
     padding: 10px 15px 10px 65px;
     color: var(--theme-sidebar-link, #72777a);
-    background: var(--theme-sidebar-link-bg, transparent);
     -webkit-transition: all .3s ease;
     -o-transition: all .3s ease;
     transition: all .3s ease;
