@@ -437,10 +437,11 @@ CustomBuilder = {
             $(document).uitooltip({
                 position: { my: "left top+5", at: "left bottom", collision: "flipfit" },
                 open: function (event, ui) {
-                    var position = $(event.originalEvent.target).attr('tooltip-position');
+                    var el = $(event.originalEvent.target).closest('[title]');
+                    var position = el.attr('tooltip-position');
                     if (position === "right") {
-                        var offset = $(event.originalEvent.target).offset();
-                        $(ui.tooltip).css("left", (offset.left + $(event.originalEvent.target).width() + 5) + "px");
+                        var offset = el.offset();
+                        $(ui.tooltip).css("left", (offset.left + el.width() + 5) + "px");
                         $(ui.tooltip).css("top", (offset.top + 5) + "px");
                     }
                 },
@@ -4122,6 +4123,7 @@ CustomBuilder.Builder = {
             self.dragElement.removeData("css-border");
         
             var elementObj = $(self.dragElement).data("data");
+            
             var component = self.parseDataToComponent(elementObj);
 
             var parent = self.currentParent;
