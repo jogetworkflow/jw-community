@@ -71,7 +71,7 @@
     border-color: var(--theme-button-bg, #007bff);
 }
 .dataList .actions .btn {
-    margin: 0 2px;
+    margin: 0 2px 5px;
 }
 .search_filter_popup{
     width:60vw;
