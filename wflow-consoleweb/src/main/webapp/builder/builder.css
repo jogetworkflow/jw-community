@@ -1765,7 +1765,7 @@ body.quick-nav-shown #builder-quick-nav {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    opacity: 0.3;
+    opacity: 0.5;
     text-align: center;
     cursor: pointer;
 }
@@ -1776,7 +1776,7 @@ body.quick-nav-shown #builder-quick-nav {
     background: #455a65;
 }
 #quick-nav-bar.active #builder-menu ul li.active > span,
-#builder-quick-nav #builder-menu:hover ul li.active > span {
+#builder-quick-nav #builder-menu:hover ul li:hover > span {
     opacity: 1;
 }
 #builder-menu ul li ul li{
