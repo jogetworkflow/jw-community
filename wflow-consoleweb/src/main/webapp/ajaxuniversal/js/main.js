@@ -167,6 +167,10 @@ if ((typeof _customFooTableArgs) === "undefined") {
     $(window).on("load", function() {
         setTimeout(function() {
             loadInbox();
+            
+            $('img[data-lazysrc]').each(function () {
+                $(this).attr('src', $(this).attr('data-lazysrc'));
+            });
         }, 0);
     });
 
@@ -181,7 +185,8 @@ if ((typeof _customFooTableArgs) === "undefined") {
             });
         }
     }
-
+    
+    let inboxReloadTimeout = null;
     function loadInboxData() {
         $(".inbox-notification .loading").show();
         var url = $(".inbox-notification").data("url");
@@ -208,6 +213,12 @@ if ((typeof _customFooTableArgs) === "undefined") {
                 }
 
                 $(".inbox-notification .loading").hide();
+                
+                //reload every 5mins
+                clearTimeout(inboxReloadTimeout);
+                inboxReloadTimeout = setTimeout(function(){
+                    loadInboxData();
+                }, 300000);
             }
         );
     }
