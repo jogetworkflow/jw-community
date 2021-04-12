@@ -218,12 +218,16 @@ CustomBuilder = {
             headers: headers
         };
         
+        PresenceUtil.message("leave");
+        
         fetch(url, args)
         .then(function (response) {
             history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
             return response.text();
         })
         .then(data => {
+            CustomBuilder.updatePresenceIndicator();
+            
             data = eval("[" + data.trim() + "]")[0];
             
             $("#design-btn").trigger("click");
@@ -2351,6 +2355,17 @@ CustomBuilder = {
         });
         
         $("body").addClass("quick-nav-shown");
+    },
+    
+    /*
+     * Store previous Presence Indicator and start with new url
+     */
+    updatePresenceIndicator : function() {
+        if (PresenceUtil.source !== null) {
+            PresenceUtil.source.close();
+            PresenceUtil.source = null;
+        }
+        PresenceUtil.createEventSource();
     }
 };
 

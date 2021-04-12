@@ -202,6 +202,9 @@ PresenceUtil = {
                 $('img[data-lazysrc]').each(function () {
                     $(this).attr('src', $(this).attr('data-lazysrc'));
                 });
+                $("#presence li").each(function(i, li){
+                    $(li).css("right", (i * 5) + "px");
+                });
             }, false);
         } else {
             $("#presence").html("Your browser does not support EventSource");
@@ -234,8 +237,10 @@ PresenceUtil = {
             
             document.addEventListener(visibilityChange, function(){
                 if (document[hidden]) {
-                    PresenceUtil.source.close();
-                    PresenceUtil.source = null;
+                    if (PresenceUtil.source !== null) {
+                        PresenceUtil.source.close();
+                        PresenceUtil.source = null;
+                    }
                 } else {
                     //refresh ConnectionManager token
                     $.ajax({

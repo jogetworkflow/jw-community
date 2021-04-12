@@ -2,7 +2,7 @@
     position: fixed;
     right: 5px;
     top: 1px;
-    width: 30px;
+    width: auto;
     z-index: 500;
     margin: 0px;
     padding: 0px;
@@ -13,47 +13,55 @@ body.rtl #presence{
     right: auto;
     left: 5px;
 }
-#formbuilder #presence, #datalistbuilder #presence, #userviewbuilder #presence, #pbuilder #presence {
-    width: auto;
-    max-width: 50%;
-}
 #presence img.gravatar {
-    width: 20px;
+    width: 30px;
+    height: 30px;
 }
 #presence li {
     background: white;
     border: solid 1px black;
     box-shadow: #555 1px 1px 1px;
-    float: right;
     margin: 2px;
-    padding: 5px;
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
+    padding: 0px;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
     text-align: center;
     overflow: hidden;
     -webkit-box-sizing: unset;
     box-sizing: unset;
+    position: absolute;
+    right: 0;
+    opacity: 0.5;
 }
-#presence li:hover {
+#presence li:last-child{
+    opacity: 1;
+}
+#presence:hover li {
+    display: inline-block;
+    position: relative;
+    right: auto !important;
     transition: ease-in-out;
     transform:scale(1.5);
     transform-origin:top right;
     margin-bottom: 15px;
     margin-left: 15px;
+    margin-right: 3px;
+    opacity: 1;
 }
 body.rtl #presence li {
     float: left;
 }
-body.rtl #presence li:hover {
+body.rtl #presence:hover li {
     transform-origin:top left;
     margin-right: 15px;
-    margin-left: 2px;
+    margin-left: 3px;
 }
 #presence span.username {
     position: relative;
-    top: -8px;
-    left: -5px;
+    top: -10px;
+    left: 15px;
+    transform:translateX(-50%);
     font-size: 8px;
     line-height: 10px;
     background: black;
