@@ -38,6 +38,9 @@
                         <#if element.properties.datePickerType! != ''>
                         ,datePickerType: "${element.properties.datePickerType}"
                         </#if>
+                        <#if element.properties.firstday! != ''>
+                        ,firstDay: "${element.properties.firstday}"
+                        </#if>
         });
     });
 </script>

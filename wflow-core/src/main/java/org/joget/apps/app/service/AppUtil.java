@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -321,6 +323,26 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static String getAppLocale() {
         return LocaleContextHolder.getLocale().toString();
+    }
+    
+    /**
+     * Read firstDayifWeek from locale
+     * @return fdow
+     */
+    public static String getAppFirstDayOfWeek() {
+        String fdow = "0";
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        if ("true".equalsIgnoreCase(setupManager.getSettingValue("datepickerFollowLocale"))) {
+            Locale locale = LocaleContextHolder.getLocale();
+            DayOfWeek firstDayOfWeek = WeekFields.of(locale).getFirstDayOfWeek();
+
+            if (firstDayOfWeek.toString().equalsIgnoreCase("Saturday")) {
+                fdow = "6";
+            } else if (firstDayOfWeek.toString().equalsIgnoreCase("Monday")) {
+                fdow = "1";
+            }
+        }
+        return fdow;
     }
 
     /**
