@@ -1364,12 +1364,15 @@ CustomBuilder = {
                         }
                     }
                     CustomBuilder.update();
+                    CustomBuilder.showMessage(get_cbuilder_msg("cbuilder.newChangesApplied"), "success");
                 } else {
                     if (callback && $.isFunction(callback)) {
                         callback();
                     }
                 }
-            } 
+            } else {
+                CustomBuilder.showMessage(get_cbuilder_msg("cbuilder.pleaseCorrectErrors"), "danger");
+            }
             button.removeAttr("disabled");
         });
     },
