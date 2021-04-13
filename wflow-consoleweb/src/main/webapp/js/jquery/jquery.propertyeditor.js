@@ -1256,7 +1256,7 @@ PropertyEditor.Model.Editor.prototype = {
         }
         html += '<div class="property-editor-page-buffer"></div>';
         $(this.editor).find(".property-editor-pages").append(html);
-
+        
         this.initScripting();
     },
     renderNoPropertyPage: function() {
@@ -1334,7 +1334,24 @@ PropertyEditor.Model.Editor.prototype = {
                 }
                 $(thisObject.editor).removeClass("pediting");
             });
+        } else if ($(this.editor).hasClass("editor-panel-mode")) {
+            $(this.editor).on("change", "*", function() {
+                //dynamic styling class
+                setTimeout(function() {
+                     thisObject.updateStylingClass();
+                }, 50);
+            });
+            thisObject.updateStylingClass();
         }
+    },
+    updateStylingClass: function() {
+        $(this.editor).find('.property-editor-property').removeClass("property-last");
+        $(this.editor).find('.property-type-header').each(function(){
+            $(this).prevUntil('.property-type-header, .property-type-elementselect', ":not(.hidden):first").addClass("property-last");
+        });
+        $(this.editor).find('.property-editor-property-container').each(function(){
+            $(this).find('> .property-editor-property:not(.hidden):last').addClass("property-last");
+        });
     },
     adjustSize: function() {
         if (this.options.isPopupDialog) {
@@ -2275,6 +2292,9 @@ PropertyEditor.Model.Type = function(page, number, prefix, properties, value, de
     this.editor = this.page.editor;
     this.editorId = this.page.editorId;
     this.parentId = this.page.parentId;
+    if (properties.name === undefined) {
+        properties.name = PropertyEditor.Util.uuid();
+    }
     this.id = this.editorId + this.parentId + this.prefix + '_' + properties.name;
     this.properties = properties;
     this.value = value;
@@ -2424,7 +2444,7 @@ PropertyEditor.Model.Type.prototype = {
             parentId = parentId.substring(1);
         }
 
-        var html = '<div id="property_' + this.number + '" property-parentid="'+parentId+'" property-name="'+this.properties.name+'" class="property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
+        var html = '<div id="property_' + this.number + '" property-parentid="'+parentId+'" property-name="'+this.properties.name+'" class="'+this.getContainerClass()+' property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
 
         html += this.renderLabel();
         html += this.renderFieldWrapper();
@@ -2432,6 +2452,9 @@ PropertyEditor.Model.Type.prototype = {
         html += '<div style="clear:both;"></div></div>';
 
         return html;
+    },
+    getContainerClass: function() {
+        return "";
     },
     renderLabel: function() {
         var html = "";
@@ -6051,6 +6074,16 @@ PropertyEditor.Type.CheckBox.prototype = {
         PropertyEditor.Util.retrieveHashFieldValue(this, data);
         return data;
     },
+    getContainerClass: function() {
+        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+        if (this.properties.options !== undefined && this.properties.options !== null) {
+            if (this.properties.options.length === 1 && this.properties.options[0].label === "") {
+                this.isTrueFalseField = true;
+            }
+            return "property-type-checkbox-truefalse";
+        }
+        return "";
+    },
     renderField: function() {
         var thisObj = this;
         var html = '';
@@ -6058,8 +6091,6 @@ PropertyEditor.Type.CheckBox.prototype = {
         if (this.value === null) {
             this.value = "";
         }
-
-        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
         if (this.properties.options !== undefined && this.properties.options !== null) {
             $.each(this.properties.options, function(i, option) {
@@ -6069,7 +6100,11 @@ PropertyEditor.Type.CheckBox.prototype = {
                         checked = " checked";
                     }
                 });
-                html += '<span class="multiple_option"><label><input type="checkbox" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</label></span>';
+                var label = PropertyEditor.Util.escapeHtmlTag(option.label);
+                if (thisObj.isTrueFalseField) {
+                    label = '<span class="hidden_label" style="display:none">' + PropertyEditor.Util.escapeHtmlTag(thisObj.properties.label) + '</span>';
+                }
+                html += '<span class="multiple_option"><label><input type="checkbox" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/>' + label + '</label></span>';
             });
         }
         return html;
@@ -8249,6 +8284,12 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var value = $(field).filter(":not(.hidden)").val();
         var currentPage = $(this.editor).find("#" + this.page.id);
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + this.id + "\"]");
+        
+        if (value !== "") {
+            $(field).closest(".property-type-elementselect").addClass("has_value");
+        } else {
+            $(field).closest(".property-type-elementselect").removeClass("has_value");
+        }
 
         var data = null;
         if (this.properties.keep_value_on_change !== undefined && this.properties.keep_value_on_change.toLowerCase() === "true") {
@@ -8331,7 +8372,6 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     
                     if ($(anchor).parent(".element-pages").length > 0 && $(anchor).parent(".element-pages").find(".property-page-show").length > 0) {
                         $(anchor).parent(".element-pages").show();
-                        $(anchor).parent(".element-pages").find(".property-page-show").addClass("collapsed");
                     }
                 }
                 thisObj.editorObject.refresh();
@@ -8521,7 +8561,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
         
-        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container elementmultiselect"></div><div style="text-align:right; margin-bottom: 10px;"><a class="pebutton addrow"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container elementmultiselect"></div><div class="pebutton_container"><a class="pebutton addrow"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
         
         return html;
     },
@@ -8796,7 +8836,6 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     
                     if ($(anchor).parent(".element-pages").length > 0 && $(anchor).parent(".element-pages").find(".property-page-show").length > 0) {
                         $(anchor).parent(".element-pages").show();
-                        $(anchor).parent(".element-pages").find(".property-page-show").addClass("collapsed");
                     }
                 }
                 thisObj.editorObject.refresh();
@@ -8909,12 +8948,6 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     },
     updateRows: function() {
         var thisObj = this;
-        var i = 1;
-        $("#" + this.id + "_input .property-label").each(function(){
-            $(this).text(thisObj.properties.label + " " + i);
-            $(this).next().text(i);
-            i++;
-        });
         thisObj.editorObject.refresh();
     }
 };

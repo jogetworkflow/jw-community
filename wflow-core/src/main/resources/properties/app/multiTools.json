@@ -12,6 +12,10 @@
                 "required" : "true"
             },
             {
+                "label" : "@@form.checkbox.advancedOptions@@",
+                "type" : "header"
+            },
+            {
                 "name" : "runInMultiThread",
                 "label" : "@@app.multitools.runMode@@",
                 "type" : "selectbox",

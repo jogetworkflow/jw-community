@@ -936,6 +936,10 @@ td.error .chosen-container, td.error input {
     border: 1px solid #ddd;
     float: left;
 }
+.pebutton_container {
+    margin-bottom: 10px;
+    text-align: right;
+}
 .pebutton {
     margin-bottom:3px; 
     display:inline-block; 
@@ -1372,33 +1376,43 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode  .property-editor-pages{
     height: 100%;
     top: 0px;
+    padding-top: 15px;
 }
 .editor-panel-mode .property-editor-page{
-    border-bottom: 1px solid #ddd;
     min-height: 0;
 }
 .editor-panel-mode .property-editor-page-title {
     background: transparent;
     color: #007bff;
     cursor: pointer;
-    padding: 8px 15px;
+    padding: 0px 25px;
     margin-bottom: 0;
 }
 .editor-panel-mode .property-editor-page-title:after {
-    padding: 0.7rem;
+    padding: 0px;
     cursor: pointer;
     position: absolute;
-    right: 15px;
+    right: 20px;
+    top: 10px;
     -webkit-font-smoothing: antialiased;
     display: inline-block;
     font-style: normal;
     font-variant: normal;
     text-rendering: auto;
-    line-height: 1;
-    font-family: 'Line Awesome Free';
+    font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    content : '\f107';
+    content: '\f107';
     font-size: 11px;
+    background: #bbcfe0;
+    color: #000;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
+    border-radius: 7px;
+}
+.editor-panel-mode .property-page-show + .property-page-show {
+    margin-top: 15px;
 }
 .editor-panel-mode .property-editor-page-title h1 {
     display: none;
@@ -1410,16 +1424,55 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode .property-editor-property-container{
     padding: 0px;
+    margin: 0 10px;
 }
 .editor-panel-mode .property-editor-page.collapsed .property-editor-property-container{
     display: none;
 }
 .editor-panel-mode .property-editor-property {
-    padding: 0 15px;
+    padding: 0 15px 15px;
+    margin-bottom: 0px;
+    background: #e2f1ff;
+}
+#element-properties-tab .editor-panel-mode > .property-editor-pages .property-editor-page:first-child > .property-editor-property-container > .property-editor-property{
+    background: #e1e7ff;
+}
+.editor-panel-mode .property-editor-property-container > .property-editor-property:first-child {
+    padding-top: 15px;
+    border-radius: 5px 5px 0 0;
+}
+.editor-panel-mode .property-editor-property-container > .property-editor-property.property-last,
+.editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2) {
+    border-radius: 0 0 5px 5px;
+}
+.editor-panel-mode .property-editor-property.property-type-header{
+    margin: 0px;
+    padding: 0 !important;
+}
+.editor-panel-mode .property-editor-property + .property-type-header{
+    margin-top: 10px;
+}
+.editor-panel-mode .property-editor-property.property-type-header .property-label-container{
+    padding: 0 !important;
+    margin: 0 !important;
 }
 .editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-label{
-    padding: 0;
-    background: none;
+    background: #394249;
+    color: #fff;
+    border-radius: 5px 5px 0 0;
+    padding: 10px 15px !important;
+    margin: 0 !important;
+    font-weight: 500;
+}
+.editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-description{
+    margin: 0;
+    padding: 10px 15px 0px;
+}
+.editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-description:empty{
+    display: none !important;
+}
+.editor-panel-mode .property-type-header + .property-editor-property {
+    padding-top: 15px;
 }
 .editor-panel-mode.property-editor-container.narrow .property-label-container {
     margin-bottom: 5px
@@ -1427,27 +1480,164 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-property-container .property-editor-page-buffer {
     display:none;
 }
-.editor-panel-mode .element-pages {
-    border-radius: 0.25rem;
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect{
+    padding: 0px !important; 
+    border-radius: 0px !important;
+    background: transparent;
 }
-.editor-panel-mode .element-pages{
-    border:1px solid #ced4da;
-    border-radius: 0.25rem;
-    background: #ced4da21;
-    margin-top: 5px;
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-elementmultiselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-elementselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-header,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-elementmultiselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-elementselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-header{
+    margin-top: 10px;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect > .property-label-container,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect > .property-label-container{
+    background: #394249;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 0px;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect > .property-input,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect > .property-input{
+    padding: 15px;
+    background: #e2f1ff;
+    border-radius: 0 0 5px 5px;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect.has_value > .property-input{
+    border-radius: 0;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-header + .property-type-elementselect{
+    padding: 0px !important; 
+    border-radius: 0px !important;
+    background: #e2f1ff;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-header + .property-type-elementselect > .property-label-container{
+    background: transparent;
+    color: #212529;
+    padding: 15px 15px 5px;
+    border-radius: 0;
+    margin-bottom: 0px;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-header + .property-type-elementselect > .property-input{
+    padding: 0px 15px 15px;
+    background: transparent;
+    border-radius: 0px;
 }
 .editor-panel-mode .element-pages .property-editor-page-title {
-    padding: 0px 10px 3px;
+    background: #718595;
+    color:#fff;
+    padding: 10px 40px 10px 15px;
+    border-radius: 0;
+    line-height: 16px;
+}
+.editor-panel-mode .element-pages > .collapsed:nth-child(2) {
+    border-radius: 0 0 5px 5px;
+    padding-bottom: 15px;
+    background: #e2f1ff;
+}
+.editor-panel-mode .element-pages > .collapsed:nth-child(2) > .property-editor-property-container,
+.editor-panel-mode .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-page-title,
+.editor-panel-mode .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-property-container {
+    display: none !important;
 }
 .editor-panel-mode .element-pages .property-editor-page-title span{
     line-height: 14px;
 }
-.editor-panel-mode .element-pages .property-editor-page-title:after{
-    right: 0px;
-    margin-top: -5px;
+.editor-panel-mode .element-pages > .property-editor-page > .property-editor-page-title:after{
+    display: none;
+}
+.editor-panel-mode .element-pages > :nth-child(2) > .property-editor-page-title:after{
+    display: inline-block;
+    top: 50%;
+    right: 15px;
+    background: transparent;
+    color: #fff;
+    content: '\f07c';
+    font-weight: 400;
+    font-size: 16px;
+    transform: translateY(-50%);
+}
+.editor-panel-mode .element-pages > :nth-child(2).collapsed > .property-editor-page-title:after{
+    content: '\f07b';
+}
+.editor-panel-mode .element-pages .property-editor-property-container{
+    margin: 0px;
+}
+.editor-panel-mode .element-pages .property-editor-property-container > .property-editor-property:first-child{
+    border-radius: 0;
+    padding-top: 15px !important;
 }
 .editor-panel-mode .element-pages .property-editor-property{
-    padding: 0 10px;
+    padding: 0 15px 15px;
+}
+.editor-panel-mode .element-pages .property-editor-property + .property-type-header{
+    margin-top: 0px;
+}
+.editor-panel-mode .element-pages .property-type-header + .property-editor-property{
+    padding-top: 15px;
+}
+.editor-panel-mode .element-pages .property-editor-property.property-type-header .property-label-container .property-label{
+    background: #718595;
+    border-radius: 0;
+}
+.editor-panel-mode .element-pages .property-editor-property-container > .property-editor-property.property-before-header{
+    border-radius: 0;
+}
+.editor-panel-mode .element-pages .property-editor-property.property-type-elementselect{
+    padding: 0 !important;
+}
+.editor-panel-mode .element-pages .property-editor-property.property-type-elementselect > .property-label-container{
+    padding: 0 15px;
+}
+.editor-panel-mode .element-pages .property-editor-property.property-type-elementselect > .property-input{
+    padding: 0 15px 10px;
+}
+.editor-panel-mode .element-pages .helplink{
+    color: #eee !important;
+}
+.editor-panel-mode .element-pages .element-pages .property-editor-page-title,
+.editor-panel-mode .element-pages .element-pages .property-editor-property.property-type-header .property-label-container .property-label{
+    background: #9eadba;
+    border-radius: 0;
+    cursor: default;
+}
+.editor-panel-mode .element-pages .element-pages .property-editor-page-title:after{
+    display: none;
+}
+.editor-panel-mode .element-pages .property-editor-page.collapsed .property-editor-property-container{
+    display: block;
+}
+.editor-panel-mode .inputs > .element-pages{
+    margin: 15px -23px 0px -15px;
+    z-index: 10;
+    position: relative;
+}
+.editor-panel-mode .inputs > .element-pages > .collapsed:nth-child(2) {
+    padding-bottom: 0;
+}
+.editor-panel-mode .property-type-checkbox-truefalse .property-label-container{
+    display: none;
+}
+.editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option{
+    padding: 0px;
+}
+.editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label {
+    margin-bottom: 0px;
+    position: relative;
+}
+.editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label input {
+    position: absolute;
+    top: 2px;
+}
+.editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label .hidden_label {
+    display: inline-block !important;
+    vertical-align: text-bottom;
+    padding-left: 20px;
 }
 .property-search-hide {
     display: none;
@@ -1526,7 +1716,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-bottom: 0;
 }
 .editor-panel-mode .elementmultiselect > .repeater-row + .repeater-row {
-    margin-top: 5px;
+    margin-top: 15px;
 }
 .editor-panel-mode .elementmultiselect > .repeater-row  > .property-label-container {
     display: none;
@@ -1561,7 +1751,10 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .elementmultiselect > .repeater-row > .inputs > .element-pages > .property-page-show > .property-editor-property-container > .property-editor-property{
     min-width: 0;
     width: 100%;
-    margin-bottom: 15px;
+}
+.editor-panel-mode .pebutton_container{
+    margin-bottom: 0;
+    margin-top: 15px;
 }
 .editor-panel-mode .helplink{
     font-size: 60%;
@@ -1571,6 +1764,9 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode .property-editor-page-errors {
     padding: 5px 10px;
+}
+.editor-panel-mode .property-type-codeeditor pre{
+    margin-bottom: 0;
 }
 
 /* property assistant */

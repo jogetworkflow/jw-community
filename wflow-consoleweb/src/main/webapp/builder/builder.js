@@ -2012,7 +2012,6 @@ CustomBuilder = {
      */
     maxPropertiesWindow : function () {
         $("body").addClass("max-property-editor");
-        $("#right-panel .property-editor-container").removeClass("narrow");
         
         var width = CustomBuilder.getBuilderSetting("right-panel-width");
         if (!isNaN(width)) {
@@ -2029,7 +2028,6 @@ CustomBuilder = {
      */
     minPropertiesWindow : function () {
         $("body").removeClass("max-property-editor");
-        $("#right-panel .property-editor-container").addClass("narrow");
     },
     
     /*
