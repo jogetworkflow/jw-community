@@ -1445,6 +1445,10 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2) {
     border-radius: 0 0 5px 5px;
 }
+.editor-panel-mode .property-editor-property-container > .property-editor-property.property-last:first-child,
+.editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2):first-child {
+    border-radius: 5px;
+}
 .editor-panel-mode .property-editor-property.property-type-header{
     margin: 0px;
     padding: 0 !important;
