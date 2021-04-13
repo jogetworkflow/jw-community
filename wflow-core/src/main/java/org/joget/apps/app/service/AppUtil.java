@@ -314,8 +314,7 @@ public class AppUtil implements ApplicationContextAware {
         String fdow = "0";
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
         if ("true".equalsIgnoreCase(setupManager.getSettingValue("datepickerFollowLocale"))) {
-            Locale tempLocale = LocaleContextHolder.getLocale();
-            Locale locale = new Locale(tempLocale.getLanguage(), tempLocale.getCountry());
+            Locale locale = LocaleContextHolder.getLocale();
             DayOfWeek firstDayOfWeek = WeekFields.of(locale).getFirstDayOfWeek();
 
             if (firstDayOfWeek.toString().equalsIgnoreCase("Saturday")) {
