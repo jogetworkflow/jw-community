@@ -2,6 +2,8 @@ package org.joget.apps.form.lib;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -68,6 +70,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         } else {
             value = formattedValue(value, displayFormat, formData);
         }
+        
+        setProperty("firstday", AppUtil.getAppFirstDayOfWeek());
         
         dataModel.put("displayFormat", displayFormat.toUpperCase());
         if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {

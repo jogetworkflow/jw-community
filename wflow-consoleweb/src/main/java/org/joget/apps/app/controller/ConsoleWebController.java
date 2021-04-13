@@ -4367,6 +4367,7 @@ public class ConsoleWebController {
         booleanSettingsList.add("rightToLeft");
         booleanSettingsList.add("enableUserLocale");
         booleanSettingsList.add("dateFormatFollowLocale");
+        booleanSettingsList.add("datepickerFollowLocale");
         booleanSettingsList.add("disableAdminBar");
         booleanSettingsList.add("disableWebConsole");
         booleanSettingsList.add("disablePerformanceAnalyzer");
