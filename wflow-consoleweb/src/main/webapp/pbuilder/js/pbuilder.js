@@ -1005,6 +1005,9 @@ ProcessBuilder = {
                 CustomBuilder.data['activityForms'][id] = formMapping;
             }
             formMapping.type = activity.properties['mapping_type'];
+            if (formMapping.type === undefined) {
+                formMapping.type = "SINGLE";
+            }
             if (formMapping.type === "SINGLE") {
                 formMapping.formId = (activity.properties['mapping_formId'] !== undefined)?activity.properties['mapping_formId']:"";
                 formMapping.disableSaveAsDraft = (activity.properties['mapping_disableSaveAsDraft'] === "true");

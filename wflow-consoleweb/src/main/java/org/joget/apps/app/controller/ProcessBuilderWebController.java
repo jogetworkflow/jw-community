@@ -333,6 +333,10 @@ public class ProcessBuilderWebController {
                     }
                 }
                 jsonDef.put("participants", participants);
+            } else {
+                jsonDef.put("activityForms", new JSONObject());
+                jsonDef.put("activityPlugins", new JSONObject());
+                jsonDef.put("participants", new JSONObject());
             }
             
         } catch (Exception e) {
