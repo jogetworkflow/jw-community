@@ -7,7 +7,7 @@ $(document).ready(function() {
 });
 /* ---------- Responsive Table -------------- */
 function responsiveTable(table) {
-    var respButtons = table.parent().find(".footable-buttons");
+    var respButtons = table.closest(".dataList").find(".footable-buttons");
     if ($(respButtons).data("disableresponsive") === true) {
         return;
     }
@@ -116,8 +116,8 @@ function responsiveTable(table) {
         event.detail.find(".footable-row-detail-cell").append(actions);
     });
     
-    var buttons = table.parent().find(".footable-buttons");
-    var filters = table.parent().parent().find(".filters");
+    var buttons = table.closest(".dataList").find(".footable-buttons");
+    var filters = table.closest(".dataList").find(".filters");
     
     table.on("footable_breakpoint", function (event) {
         if($(this).hasClass("breakpoint")) {
@@ -159,13 +159,13 @@ function responsiveTable(table) {
                 },
                 afterHide : function() {
                     $("#"+tableId+"_filterpopup").find("form .filters").hide();
-                    $("#"+tableId).parent().parent().find("form").before($("#"+tableId+"_filterpopup").find("form"));
+                    $("#"+tableId).closest(".dataList").find("form").before($("#"+tableId+"_filterpopup").find("form"));
                 }
             }
         );
         
         buttons.find(".search_trigger").click(function(){
-            $("#"+tableId+"_filterpopup").append($("#"+tableId).parent().parent().find(".filter_form"));
+            $("#"+tableId+"_filterpopup").append($("#"+tableId).closest(".dataList").find(".filter_form"));
             $("#"+tableId+"_filterpopup").find("form .filters").show();
             searchPopup.show();
             searchPopup.center('x');
