@@ -1346,8 +1346,8 @@ PropertyEditor.Model.Editor.prototype = {
     },
     updateStylingClass: function() {
         $(this.editor).find('.property-editor-property').removeClass("property-last");
-        $(this.editor).find('.property-type-header').each(function(){
-            $(this).prevUntil('.property-type-header, .property-type-elementselect', ":not(.hidden):first").addClass("property-last");
+        $(this.editor).find('.property-type-header, .property-type-elementselect, .property-type-elementmultiselect').each(function(){
+            $(this).prevUntil('.property-type-header, .property-type-elementselect, .property-type-elementmultiselect', ":not(.hidden):first").addClass("property-last");
         });
         $(this.editor).find('.property-editor-property-container').each(function(){
             $(this).find('> .property-editor-property:not(.hidden):last').addClass("property-last");
@@ -1390,9 +1390,9 @@ PropertyEditor.Model.Editor.prototype = {
                 var currentOffset = $(pageContainer).find('.current').offset().top;
                 var nextOffset = currentOffset + $(pageContainer).find('.current').height();
                 if (nextOffset < pageLine) {
-                    $thisObject.nextPage(false);
+                    $thisObject.nextPage(false, false);
                 } else if (currentOffset > pageLine) {
-                    $thisObject.prevPage(false);
+                    $thisObject.prevPage(false, false);
                 }
             }
         });
@@ -1438,7 +1438,7 @@ PropertyEditor.Model.Editor.prototype = {
     isSinglePageDisplay: function() {
         return $(this.editor).hasClass("single-page");
     },
-    nextPage: function(scroll) {
+    nextPage: function(scroll, changeFocus) {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var next = $(current).next();
@@ -1446,11 +1446,11 @@ PropertyEditor.Model.Editor.prototype = {
                 next = $(next).next();
             }
             if ($(next).hasClass("property-editor-page")) {
-                this.changePage($(current).attr('id'), $(next).attr('id'), scroll);
+                this.changePage($(current).attr('id'), $(next).attr('id'), scroll, changeFocus);
             }
         }
     },
-    prevPage: function(scroll) {
+    prevPage: function(scroll, changeFocus) {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var prev = $(current).prev();
@@ -1458,24 +1458,24 @@ PropertyEditor.Model.Editor.prototype = {
                 prev = $(prev).prev();
             }
             if ($(prev).hasClass("property-editor-page")) {
-                this.changePage($(current).attr('id'), $(prev).attr('id'), scroll);
+                this.changePage($(current).attr('id'), $(prev).attr('id'), scroll, changeFocus);
             }
         }
     },
-    changePage: function(currentPageId, pageId, scroll) {
+    changePage: function(currentPageId, pageId, scroll, changeFocus) {
         var thisObject = this;
         if (!this.isSinglePageDisplay() && currentPageId !== null && currentPageId !== undefined) {
             this.pages[currentPageId].validation(function(data) {
-                thisObject.changePageCallback(pageId, scroll);
+                thisObject.changePageCallback(pageId, scroll, changeFocus);
             }, thisObject.alertValidationErrors);
         } else {
-            this.changePageCallback(pageId, scroll);
+            this.changePageCallback(pageId, scroll, changeFocus);
         }
     },
-    changePageCallback: function(pageId, scroll) {
+    changePageCallback: function(pageId, scroll, changeFocus) {
         $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show').hide();
         $(this.editor).find('.property-page-show').removeClass("current");
-        this.pages[pageId].show(scroll);
+        this.pages[pageId].show(scroll, changeFocus);
     },
     refresh: function() {
         $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show:not(.current)').hide();
