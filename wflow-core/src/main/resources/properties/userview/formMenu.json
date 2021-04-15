@@ -239,7 +239,7 @@
         type : 'checkbox',
         options : [{
             value : 'Yes',
-            label : 'Yes'
+            label : ''
         }]
     }]
 }]

@@ -5,6 +5,7 @@
     padding: 0px;
     position: relative;
     font-size: 13px;
+    font-weight: 500;
 }
 .property-editor-container a:not([class^=chosen]) {
     color:#6c757d;
@@ -19,7 +20,23 @@
     top: 1px;
     z-index: 100;
 }
-
+.property-editor-container input:not([type]),
+.property-editor-container input[type=text],
+.property-editor-container input[type=password],
+.property-editor-container input[type=email],
+.property-editor-container input[type=url],
+.property-editor-container input[type=time],
+.property-editor-container input[type=date],
+.property-editor-container input[type=datetime],
+.property-editor-container input[type=datetime-local],
+.property-editor-container input[type=tel],
+.property-editor-container input[type=number],
+.property-editor-container input[type=search],
+.property-editor-container input[type=file],
+.property-editor-container .property-input select,
+.property-editor-container .property-input textarea{
+    font-weight: 500;
+}
 .single-page .property-editor-display {
     top: 5px;
 }
@@ -244,7 +261,7 @@
 .property-label{
     padding-right:10px;
     padding-top: 8px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .property-label-description {
@@ -571,7 +588,7 @@
     float: none;
 }
 .property-editor-property.property-type-header .property-label-container .property-label{
-    font-weight: bold;
+    font-weight: 600;
     background: #f7f9f9;
     padding: 10px;
 }
@@ -1026,7 +1043,7 @@ td.error .chosen-container, td.error input {
     display: none;
     position: absolute;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: 600;
     transform: translateX(-100%);
 }
 .pewrapper input, .pewrapper select {
@@ -1160,7 +1177,7 @@ html .property-editor-container input[disabled] {
     overflow: auto;
 }
 .property-editor-container optgroup {
-    font-weight: bold;
+    font-weight: 600;
 }
 .property-editor-container .no-select, .property-editor-container input[type=range],
 .property-editor-container input[type=range] + .thumb {
@@ -1373,13 +1390,23 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-display .compress{
     display: none;
 }
-.editor-panel-mode  .property-editor-pages{
+.editor-panel-mode .property-editor-pages{
     height: 100%;
     top: 0px;
     padding-top: 15px;
 }
 .editor-panel-mode .property-editor-page{
     min-height: 0;
+}
+.editor-panel-mode > .property-editor-pages > .property-editor-page{
+    margin: 0 3px;
+    background: #fafafa;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    border: 1px solid #f0f0f0;
+}
+.editor-panel-mode > .property-editor-pages > .property-editor-page.collapsed{
+    padding-bottom: 0px;
 }
 .editor-panel-mode .property-editor-page-title {
     background: transparent;
@@ -1388,6 +1415,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     padding: 0px 25px;
     margin-bottom: 0;
 }
+.editor-panel-mode:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
 .editor-panel-mode .property-editor-page-title:after {
     padding: 0px;
     cursor: pointer;
@@ -1434,9 +1462,14 @@ body .ui-dialog .button_form.ui-dialog-content{
     margin-bottom: 0px;
     background: #e2f1ff;
 }
-#element-properties-tab .editor-panel-mode > .property-editor-pages .property-editor-page:first-child > .property-editor-property-container > .property-editor-property{
-    background: #e1e7ff;
+.editor-panel-mode .property-type-label .property-input label {
+    background: #edf1f5;
+    border: 1px solid #ced4da;
+    padding: 6px 12px !important;
+    border-radius: 0.35rem;
+    margin-bottom: 0;
 }
+.editor-panel-mode .property-editor-property-container > .property-editor-property.property-first,
 .editor-panel-mode .property-editor-property-container > .property-editor-property:first-child {
     padding-top: 15px;
     border-radius: 5px 5px 0 0;
@@ -1445,6 +1478,8 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2) {
     border-radius: 0 0 5px 5px;
 }
+.editor-panel-mode .property-editor-property-container > .property-editor-property.property-last.property-first,
+.editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2).property-first,
 .editor-panel-mode .property-editor-property-container > .property-editor-property.property-last:first-child,
 .editor-panel-mode .property-editor-property-container > .property-editor-property:nth-last-child(2):first-child {
     border-radius: 5px;
@@ -1488,29 +1523,43 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect{
     padding: 0px !important; 
     border-radius: 0px !important;
-    background: transparent;
+    background: transparent !important;
 }
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-elementmultiselect,
-.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-elementselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-plugin-selection.property-type-elementselect,
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect + .property-type-header,
-.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-elementmultiselect,
-.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-elementselect,
-.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect + .property-type-header{
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-plugin-selection.property-type-elementselect + .property-type-elementmultiselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-plugin-selection.property-type-elementselect + .property-plugin-selection.property-type-elementselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-plugin-selection.property-type-elementselect + .property-type-header,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-last + .property-type-elementmultiselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-last + .property-plugin-selection.property-type-elementselect,
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-last + .property-type-header{
     margin-top: 10px;
 }
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-last {
+    margin-bottom: 10px;
+}
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect > .property-label-container,
-.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect > .property-label-container{
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-plugin-selection.property-type-elementselect > .property-label-container{
     background: #394249;
     color: #fff;
     padding: 10px 15px;
     border-radius: 5px 5px 0 0;
     margin-bottom: 0px;
 }
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect:not(.property-plugin-selection) > .property-label-container{
+    padding: 0px 15px 5px;
+    background: #e2f1ff;
+    margin-bottom: 0;
+}
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementmultiselect > .property-input,
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect > .property-input{
     padding: 15px;
     background: #e2f1ff;
     border-radius: 0 0 5px 5px;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect:not(.property-plugin-selection) > .property-input{
+    padding-top: 0px;
 }
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect.has_value > .property-input{
     border-radius: 0;
@@ -1519,6 +1568,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     padding: 0px !important; 
     border-radius: 0px !important;
     background: #e2f1ff;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-header + .property-type-elementselect {
+    background: #e2f1ff !important;
 }
 .editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-header + .property-type-elementselect > .property-label-container{
     background: transparent;
@@ -1539,15 +1591,19 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-radius: 0;
     line-height: 16px;
 }
-.editor-panel-mode .element-pages > .collapsed:nth-child(2) {
+.editor-panel-mode .property-plugin-selection .element-pages > .collapsed:nth-child(2) {
     border-radius: 0 0 5px 5px;
     padding-bottom: 15px;
     background: #e2f1ff;
 }
-.editor-panel-mode .element-pages > .collapsed:nth-child(2) > .property-editor-property-container,
-.editor-panel-mode .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-page-title,
-.editor-panel-mode .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-property-container {
+.editor-panel-mode .property-type-elementselect:not(.property-plugin-selection) .element-pages > .collapsed > .property-editor-property-container,
+.editor-panel-mode .property-plugin-selection .element-pages > .collapsed:nth-child(2) > .property-editor-property-container,
+.editor-panel-mode .property-plugin-selection .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-page-title,
+.editor-panel-mode .property-plugin-selection .element-pages > .collapsed:nth-child(2) ~ .property-editor-page > .property-editor-property-container {
     display: none !important;
+}
+.editor-panel-mode .property-editor-pages > .property-editor-page > .property-editor-property-container > .property-type-elementselect:not(.property-plugin-selection) .element-pages{
+    background: #e2f1ff;
 }
 .editor-panel-mode .element-pages .property-editor-page-title span{
     line-height: 14px;
@@ -1555,6 +1611,8 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .element-pages > .property-editor-page > .property-editor-page-title:after{
     display: none;
 }
+.editor-panel-mode:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
+.editor-panel-mode .property-type-elementselect:not(.property-plugin-selection) .element-pages > .property-editor-page > .property-editor-page-title:after,
 .editor-panel-mode .element-pages > :nth-child(2) > .property-editor-page-title:after{
     display: inline-block;
     top: 50%;
@@ -1566,12 +1624,15 @@ body .ui-dialog .button_form.ui-dialog-content{
     font-size: 16px;
     transform: translateY(-50%);
 }
+.editor-panel-mode:not(.wider) .property-grid .property-input .property-type-grid-row-header.collapsed:after,
+.editor-panel-mode .property-type-elementselect:not(.property-plugin-selection) .element-pages > .collapsed > .property-editor-page-title:after,
 .editor-panel-mode .element-pages > :nth-child(2).collapsed > .property-editor-page-title:after{
     content: '\f07b';
 }
 .editor-panel-mode .element-pages .property-editor-property-container{
     margin: 0px;
 }
+.editor-panel-mode .element-pages .property-editor-property-container > .property-editor-property.property-first,
 .editor-panel-mode .element-pages .property-editor-property-container > .property-editor-property:first-child{
     border-radius: 0;
     padding-top: 15px !important;
@@ -1586,7 +1647,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     padding-top: 15px;
 }
 .editor-panel-mode .element-pages .property-editor-property.property-type-header .property-label-container .property-label{
-    background: #718595;
+    background: #9eadba;
     border-radius: 0;
 }
 .editor-panel-mode .element-pages .property-editor-property-container > .property-editor-property.property-before-header{
@@ -1649,67 +1710,66 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode table.grid tr td > span.label {
     display: none;
 }
-.editor-panel-mode.narrow table.grid,
-.editor-panel-mode.narrow table.grid tbody,
-.editor-panel-mode.narrow table.grid tr{
+.editor-panel-mode.narrow:not(.wider) table.grid,
+.editor-panel-mode.narrow:not(.wider) table.grid tbody,
+.editor-panel-mode.narrow:not(.wider) table.grid tr{
     display: block;
     width: 100%;
 }
-.editor-panel-mode.narrow table.grid tr:not(.grid_model) {
+.editor-panel-mode.narrow:not(.wider) table.grid tr:not(.grid_model) {
     display: block;
-    border: 1px solid #ddd;
 }
-.editor-panel-mode.narrow table.grid tr td > span.label {
+.editor-panel-mode.narrow:not(.wider) table.grid tr td > span.label {
     display: block;
     font-weight: 500;
     margin-bottom: 5px;
 }
-.editor-panel-mode.narrow table.grid .property-type-grid-action-column{
+.editor-panel-mode.narrow:not(.wider) table.grid .property-type-grid-action-column{
     text-align: right;
 }
-.editor-panel-mode.narrow table.grid tr:not(.grid_model) td{
+.editor-panel-mode.narrow:not(.wider) table.grid tr:not(.grid_model) td{
     display: block;
     width: 100%;
     border: 0;
     background: transparent !important;
 }
-.editor-panel-mode.narrow table.grid .grid_header {
+.editor-panel-mode.narrow:not(.wider) table.grid .grid_header {
     display: none !important;
 }
 .editor-panel-mode.single-page .property-page-show.property-search-hide {
     display:none !important;
 }
-.editor-panel-mode.narrow .mce-top-part .mce-menubar,
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(1),
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(2),
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(3),
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(6),
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(7),
-.editor-panel-mode.narrow .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(8){
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-menubar,
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(1),
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(2),
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(3),
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(6),
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(7),
+.editor-panel-mode.narrow:not(.wider) .mce-top-part .mce-toolbar-grp .mce-container-body.mce-flow-layout > div.mce-container:nth-child(8){
     display:none;
 }
-.editor-panel-mode.narrow .property-type-repeater .collapseAll,
-.editor-panel-mode.narrow .property-type-repeater .expandAll{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .collapseAll,
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .expandAll{
     display:none !important;
 }
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .actions{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .actions{
     padding: 2px;
     width: 20px;
 }
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .actions.sort{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .actions.sort{
     left: 20px;
 }
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs{
     padding: 0px 19px 0px 40px;
     font-size: 80%;     
 }
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property{
     max-width: 100%;
     min-width: 100%;
 }
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property input,
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property select,
-.editor-panel-mode.narrow .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property input,
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property select,
+.editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
 }
 .editor-panel-mode .elementmultiselect {
@@ -1771,6 +1831,114 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode .property-type-codeeditor pre{
     margin-bottom: 0;
+}
+.editor-panel-mode .repeater-row .inputs .property-editor-property{
+    background:transparent;
+}
+.editor-panel-mode .property-input .multiple_option{
+    padding: 2px 0 0;
+}
+.editor-panel-mode .property-input .multiple_option label {
+    margin-bottom: 0;
+}
+.editor-panel-mode .property-input .multiple_option input {
+    vertical-align: middle;
+}
+.editor-panel-mode .property-grid .property-input table{
+    border-collapse: separate;
+    border-spacing: 3px;
+    margin: 0 -3px;
+}
+.editor-panel-mode .property-grid .property-input tr{
+    background: transparent;
+}
+.editor-panel-mode .property-grid .property-input th,
+.editor-panel-mode .property-grid .property-input td{
+    background: #fff;
+    border-color: transparent;
+}
+.editor-panel-mode .property-grid .property-input .property-type-grid-row-header{
+    display: none !important;
+}
+.editor-panel-mode .property-grid .property-input .property-type-grid-action-column{
+    background: transparent !important;
+}
+.editor-panel-mode .property-grid .hidden_label {
+    display:none;
+}
+.editor-panel-mode:not(.wider) .property-grid {
+    padding-left: 0;
+    padding-right: 0;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-label-container{
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 15px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input .property-type-grid-row-header{
+    display: block !important;
+    background: #718595;
+    color: #fff;
+    padding: 10px 40px 10px 15px;
+    border-radius: 0;
+    line-height: 16px;
+    width: 100%;
+    position: relative;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input .property-type-grid-row-header + td {
+    padding-top: 15px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input table{
+    border-collapse: collapse;
+    border-spacing: 0px;
+    border: 0px !important;
+    margin: 0px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input tr{
+    background: transparent;
+    border: 0px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input th,
+.editor-panel-mode:not(.wider) .property-grid .property-input td{
+    background: transparent;
+    border: 0px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-input td{
+    padding: 0 15px 15px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-type-grid-action-add{
+    margin-left: 15px;
+    width: auto;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-type-grid-action-add span {
+    display: inline-block;
+    padding-left: 5px;
+}
+.editor-panel-mode:not(.wider) .property-grid td.truefalse > span.label{
+    display: none !important;
+}
+.editor-panel-mode:not(.wider) .property-grid td.truefalse label {
+    position: relative;
+    margin-bottom: 0;
+}
+.editor-panel-mode:not(.wider) .property-grid td.truefalse input {
+    width: auto;
+    position: absolute;
+    top: 2px;
+}
+.editor-panel-mode:not(.wider) .property-grid td.truefalse .hidden_label{
+    display: inline-block !important;
+    vertical-align: text-bottom;
+    padding-left: 20px;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-type-grid-row-header.collapsed ~ td {
+    display: none !important;
+}
+.editor-panel-mode:not(.wider) .property-grid .property-type-grid-row-header.collapsed{
+    margin-bottom: 15px;
+}
+.editor-panel-mode:not(.wider) .element-pages .property-grid .property-input .property-type-grid-row-header{
+    background: #9eadba;
 }
 
 /* property assistant */

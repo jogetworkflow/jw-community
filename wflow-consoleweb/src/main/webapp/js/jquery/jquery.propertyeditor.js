@@ -1345,13 +1345,21 @@ PropertyEditor.Model.Editor.prototype = {
         }
     },
     updateStylingClass: function() {
-        $(this.editor).find('.property-editor-property').removeClass("property-last");
-        $(this.editor).find('.property-type-header, .property-type-elementselect, .property-type-elementmultiselect').each(function(){
-            $(this).prevUntil('.property-type-header, .property-type-elementselect, .property-type-elementmultiselect', ":not(.hidden):first").addClass("property-last");
-        });
-        $(this.editor).find('.property-editor-property-container').each(function(){
-            $(this).find('> .property-editor-property:not(.hidden):last').addClass("property-last");
-        });
+        if ($(this.editor).hasClass('editor-panel-mode')) {
+            $(this.editor).find('.property-editor-property').removeClass("property-last");
+            $(this.editor).find('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect').each(function(){
+                $(this).prevUntil('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect', ":not(.hidden):first").addClass("property-last");
+            });
+            $(this.editor).find('.property-plugin-selection').each(function(){
+                if ($(this).prev().is('.property-type-header') && ($(this).next().length === 0 || $(this).next().is('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect'))) {
+                    $(this).prev().remove(); //remove the additional label
+                }
+            });
+            $(this.editor).find('.property-editor-property-container').each(function(){
+                $(this).find('> .property-editor-property:not(.hidden):not(.property-type-hidden):first').addClass("property-first");
+                $(this).find('> .property-editor-property:not(.hidden):not(.property-type-hidden):last').addClass("property-last");
+            });
+        }
     },
     adjustSize: function() {
         if (this.options.isPopupDialog) {
@@ -6079,8 +6087,8 @@ PropertyEditor.Type.CheckBox.prototype = {
         if (this.properties.options !== undefined && this.properties.options !== null) {
             if (this.properties.options.length === 1 && this.properties.options[0].label === "") {
                 this.isTrueFalseField = true;
+                return "property-type-checkbox-truefalse";
             }
-            return "property-type-checkbox-truefalse";
         }
         return "";
     },
@@ -6803,6 +6811,7 @@ PropertyEditor.Type.Grid.prototype = {
     renderField: function() {
         var thisObj = this;
         var html = '<table id="' + this.id + '" class="grid"><tr class="grid_header">';
+        html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
         //render header
         $.each(this.properties.columns, function(i, column) {
             var required = "";
@@ -6815,18 +6824,23 @@ PropertyEditor.Type.Grid.prototype = {
 
         //render model
         html += '<tr class="grid_model" style="display:none">';
+        html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
         $.each(this.properties.columns, function(i, column) {
             var required = "";
             if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
-            html += '<td><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
+            var tdclass = column.type;
+            if (tdclass === undefined) {
+                tdclass = "";
+            }
+            html += '<td class="'+tdclass+'"><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
 
             PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
 
             if (column.type === "truefalse") {
                 column.true_value = (column.true_value !== undefined) ? column.true_value : 'true';
-                html += '<input name="' + column.key + '" type="checkbox" value="' + column.true_value + '"/>';
+                html += '<label><input name="' + column.key + '" type="checkbox" value="' + column.true_value + '"/><span class="hidden_label">'+column.label+'</span></label>';
             } else if (column.options !== undefined || column.options_ajax !== undefined) {
                 if (column.type === "autocomplete") {
                     thisObj.updateSource(column.key, column.options);
@@ -6857,6 +6871,7 @@ PropertyEditor.Type.Grid.prototype = {
         if (this.value !== null) {
             $.each(this.value, function(i, row) {
                 html += '<tr>';
+                html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
                 $.each(thisObj.properties.columns, function(i, column) {
                     var columnValue = "";
                     if (row[column.key] !== undefined) {
@@ -6867,14 +6882,19 @@ PropertyEditor.Type.Grid.prototype = {
                     if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                         required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
                     }
-                    html += '<td><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
+                    var tdclass = column.type;
+                    if (tdclass === undefined) {
+                        tdclass = "";
+                    }
+                    
+                    html += '<td class="'+tdclass+'"><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
 
                     if (column.type === "truefalse") {
                         var checked = "";
                         if (columnValue === column.true_value) {
                             checked = "checked";
                         }
-                        html += '<input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/>';
+                        html += '<label><input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/><span class="hidden_label">'+column.label+'</span></label>';
                     } else if (column.options !== undefined || column.options_ajax !== undefined) {
                         if (column.type === "autocomplete") {
                             html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
@@ -6939,6 +6959,9 @@ PropertyEditor.Type.Grid.prototype = {
         }
         return defaultValueText;
     },
+    getContainerClass: function() {
+        return "property-grid";
+    },
     initScripting: function() {
         var table = $("#" + this.id);
         var grid = this;
@@ -6987,6 +7010,10 @@ PropertyEditor.Type.Grid.prototype = {
             grid.gridActionMoveDown(this);
             table.trigger("change");
             return false;
+        });
+        
+        $(table).on("click", ".property-type-grid-row-header", function(){
+            $(this).toggleClass("collapsed");
         });
 
         grid.gridDisabledMoveAction(table);
@@ -7344,6 +7371,7 @@ PropertyEditor.Type.GridCombine.prototype = {
     renderField: function() {
         var thisObj = this;
         var html = '<table id="' + this.id + '" class="grid"><tr class="grid_header">';
+        html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
         //render header
         $.each(this.properties.columns, function(i, column) {
             var required = "";
@@ -7356,18 +7384,23 @@ PropertyEditor.Type.GridCombine.prototype = {
 
         //render model
         html += '<tr class="grid_model" style="display:none">';
+        html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
         $.each(this.properties.columns, function(i, column) {
             var required = "";
             if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
-            html += '<td><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
+            var tdclass = column.type;
+            if (tdclass === undefined) {
+                tdclass = "";
+            }
+            html += '<td class="'+tdclass+'"><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
 
             PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
 
             if (column.type === "truefalse") {
                 column.true_value = (column.true_value !== undefined) ? column.true_value : 'true';
-                html += '<input name="' + column.key + '" type="checkbox" value="' + column.true_value + '"/>';
+                html += '<label><input name="' + column.key + '" type="checkbox" value="' + column.true_value + '"/><span class="hidden_label">'+column.label+'</span></label>';
             } else if (column.options !== undefined || column.options_ajax !== undefined) {
                 if (column.type === "autocomplete") {
                     thisObj.updateSource(column.key, column.options);
@@ -7429,6 +7462,7 @@ PropertyEditor.Type.GridCombine.prototype = {
         if (values.length > 0) {
             $.each(values, function(i, row) {
                 html += '<tr>';
+                html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
                 $.each(thisObj.properties.columns, function(i, column) {
                     var columnValue = "";
                     if (row[column.key] !== undefined) {
@@ -7439,14 +7473,18 @@ PropertyEditor.Type.GridCombine.prototype = {
                     if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                         required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
                     }
-                    html += '<td><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
+                    var tdclass = column.type;
+                    if (tdclass === undefined) {
+                        tdclass = "";
+                    }
+                    html += '<td class="'+tdclass+'"><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
 
                     if (column.type === "truefalse") {
                         var checked = "";
                         if ((columnValue === column.true_value)) {
                             checked = "checked";
                         }
-                        html += '<input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/>';
+                        html += '<label><input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/><span class="hidden_label">'+column.label+'</span></label>';
                     } else if (column.options !== undefined || column.options_ajax !== undefined) {
                         if (column.type === "autocomplete") {
                             html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
@@ -7529,6 +7567,9 @@ PropertyEditor.Type.GridCombine.prototype = {
         }
         return defaultValueText;
     },
+    getContainerClass: function() {
+        return "property-grid";
+    },
     initScripting: PropertyEditor.Type.Grid.prototype.initScripting,
     gridActionAdd: PropertyEditor.Type.Grid.prototype.gridActionAdd,
     gridActionDelete: PropertyEditor.Type.Grid.prototype.gridActionDelete,
@@ -7584,6 +7625,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
     renderField: function() {
         var thisObj = this;
         var html = '<table id="' + this.id + '" class="grid"><tr class="grid_header">';
+        html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
         //render header
         $.each(this.properties.columns, function(i, column) {
             var required = "";
@@ -7598,6 +7640,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         if (thisObj.properties.rows !== null) {
             $.each(thisObj.properties.rows, function(i, row) {
                 html += '<tr>';
+                html += '<th class="property-type-grid-row-header">'+thisObj.properties.label+'</th>';
                 $.each(thisObj.properties.columns, function(j, column) {
                     if (j === 0) { //first column to display Row label
                         var required = "";
@@ -7621,7 +7664,11 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                         if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                             required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
                         }
-                        html += '<td><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
+                        var tdclass = column.type;
+                        if (tdclass === undefined) {
+                            tdclass = "";
+                        }
+                        html += '<td class="'+tdclass+'"><span class="label"><span>'+column.label+'</span> '+required+'</span><span>';
 
                         if (column.type === "truefalse") {
                             var checked = "";
@@ -7629,7 +7676,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                             if (columnValue === column.true_value) {
                                 checked = "checked";
                             }
-                            html += '<input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/>';
+                            html += '<label><input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + column.true_value + '"/><span class="hidden_label">'+column.label+'</span></label>';
                         } else if (column.options !== undefined || column.options_ajax !== undefined) {
                             if (column.type === "autocomplete") {
                                 if (i === 0) {
@@ -7688,12 +7735,19 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                 }
             });
         });
+        
+        $(table).on("click", ".property-type-grid-row-header", function(){
+            $(this).toggleClass("collapsed");
+        });
 
         $.each(grid.properties.columns, function(i, column) {
             if ((column.options_ajax !== undefined && column.options_ajax !== null) || (column.options_callback_on_change !== undefined && column.options_callback_on_change !== null)) {
                 PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method, column.options_extra);
             }
         });
+    },
+    getContainerClass: function() {
+        return "property-grid";
     },
     pageShown: PropertyEditor.Type.Grid.prototype.pageShown,
     handleAjaxOptions: PropertyEditor.Type.Grid.prototype.handleAjaxOptions,
@@ -8277,6 +8331,12 @@ PropertyEditor.Type.ElementSelect.prototype = {
         $(field).change(function() {
             thisObj.renderPages();
         });
+    },
+    getContainerClass: function() {
+        if (this.properties.url.indexOf('/getPropertyOptions')  !== -1) {
+            return "property-plugin-selection";
+        }
+        return "";
     },
     renderPages: function() {
         var thisObj = this;
