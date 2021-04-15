@@ -5,13 +5,13 @@ $(document).ready(function() {
 });
 /* ---------- Responsive Table -------------- */
 function responsiveTable(table) {
-    var respButtons = table.parent().find(".footable-buttons");
+    var respButtons = table.closest(".dataList").find(".footable-buttons");
     if ($(respButtons).data("disableresponsive") === true) {
         return;
     }
     if ($(respButtons).data("searchpopup") === true) {
         $(respButtons).find(".search_trigger i").remove();
-        var filters = $(table).parent().parent().find(".filters");
+        var filters = table.closest(".dataList").find(".filters");
         $(filters).hide();
         
         var tableId = $(table).attr("id");
@@ -33,20 +33,20 @@ function responsiveTable(table) {
                 },
                 afterHide : function() {
                     $("#"+tableId+"_filterpopup").find("form .filters").hide();
-                    $("#"+tableId).parent().parent().find("form").before($("#"+tableId+"_filterpopup").find("form"));
+                    $("#"+tableId).closest(".dataList").find("form").before($("#"+tableId+"_filterpopup").find("form"));
                 }
             }
         );
         $(respButtons).find(".search_trigger").off("click");
         $(respButtons).find(".search_trigger").on("click", function(){
-            $("#"+tableId+"_filterpopup").append($("#"+tableId).parent().parent().find(".filter_form"));
+            $("#"+tableId+"_filterpopup").append($("#"+tableId).closest(".dataList").find(".filter_form"));
             $("#"+tableId+"_filterpopup").find("form .filters").show();
             searchPopup.show();
             searchPopup.center('x');
             searchPopup.center('y');
         });
     } else {
-        var filters = $(table).parent().parent().find(".filters");
+        var filters = $(table).closest(".dataList").find(".filters");
         $(filters).hide();
         
         $(respButtons).find(".search_trigger").off("click");
@@ -310,8 +310,8 @@ function initFooTable(table, respButtons, responsiveSetting) {
         $(event.detail).find(".footable-row-detail-cell").append(actions);
     });
     
-    var buttons = $(table).parent().find(".footable-buttons");
-    var filters = $(table).parent().parent().find(".filters");
+    var buttons = table.closest(".dataList").find(".footable-buttons");
+    var filters = table.closest(".dataList").find(".filters");
     
     $(table).off("footable_breakpoint");
     $(table).on("footable_breakpoint", function (event) {
