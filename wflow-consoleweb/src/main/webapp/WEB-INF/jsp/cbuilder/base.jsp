@@ -24,7 +24,7 @@
         {
             id : "<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>",
             name : "<ui:escape value="${name}" format="json" />",
-            title : "<c:out value="${builderLabel}"/> <c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if>",
+            title : "<c:out value="${builderLabel}"/> <c:choose><c:when test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:when><c:otherwise>: <c:out value="${appDefinition.name}"/></c:otherwise></c:choose>",
             appId : "<c:out value="${appDefinition.id}"/>",
             appVersion : "<c:out value="${appDefinition.version}"/>",
             appPublished : "${appDefinition.published}",
@@ -49,7 +49,7 @@
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-                <title><c:out value="${builderLabel}"/> <c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if></title>
+                <title><c:out value="${builderLabel}"/> <c:choose><c:when test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:when><c:otherwise>: <c:out value="${appDefinition.name}"/></c:otherwise></c:choose></title>
 
                 <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
                 <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
