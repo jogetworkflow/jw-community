@@ -14,7 +14,7 @@
         <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
 
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist.css?build=<fmt:message key="build.number"/>" />
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist8.css?build=<fmt:message key="build.number"/>" />
         <style>
             html, body
             {

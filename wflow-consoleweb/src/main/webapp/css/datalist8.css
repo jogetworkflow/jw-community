@@ -248,8 +248,7 @@ body.rtl .dataList span.pagelinks{
 .card-layout.card-layout-active table td,
 .card-layout.card-layout-active table th{
     display: block;
-    border-top:0;
-    border-bottom:0;
+    border:0 !important;
 }
 .card-layout.card-layout-active tr.even{
     background-color: transparent;
@@ -268,7 +267,7 @@ body.rtl .dataList span.pagelinks{
     display: none !important;
 }
 .card-layout.card-layout-active td {
-    padding: 2px 10px 0;
+    padding: 2px 10px 0 !important;
 }
 .card-layout.card-layout-active td.row_action{
     display: inline-block;
@@ -294,7 +293,7 @@ body.rtl .dataList span.pagelinks{
 .card-layout.card-layout-active.card-label .column_header{
     font-weight: bold;
 }
-.card-layout.card-layout-active.card-label .column_header:after{
+.card-layout.card-layout-active.card-label .column_header:not(:empty):after{
     content: " :";
 }
 .card-layout.card-layout-active.card-label .column_body {
