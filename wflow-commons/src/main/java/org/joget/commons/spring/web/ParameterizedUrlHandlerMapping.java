@@ -88,7 +88,7 @@ public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapp
         // Pattern match?
         Map<String, String> bestParameters = parameterCache.get(urlPath);
         String bestPathMatch = pathCache.get(urlPath);
-        if (bestPathMatch == null) {
+        if (bestPathMatch == null || bestParameters == null) {
             for (Iterator it = handlerMap.keySet().iterator(); it.hasNext();) {
                 String registeredPath = (String) it.next();
                 Map<String, String> parameters = pathMatcher.namedParameters(registeredPath, urlPath);
