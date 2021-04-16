@@ -11,6 +11,7 @@ public class ProgressiveTheme extends UniversalTheme {
         DEEP_PURPLE("#673AB7", "#512DA8", ""),
         INDIGO("#3F51B5", "", ""),
         BLUE("#1976D2", "", ""),
+        SKY_BLUE("#0D6EFD", "", ""),
         LIGHT_BLUE("#03A9F4", "#0288D1", ""),
         CYAN("#00BCD4", "#0097A7", ""),
         TEAL("#009688", "#00796B", ""),
@@ -22,6 +23,7 @@ public class ProgressiveTheme extends UniversalTheme {
         ORANGE("#FF9800", "#F57C00", ""),
         DEEP_ORANGE("#FF5722", "#E64A19", ""),
         BROWN("#795548", "#795548", ""),
+        DARKGREY("#6c757D", "#616161", ""),
         GREY("#9E9E9E", "#616161", ""),
         BLUE_GREY("#607D8B", "#455A64", ""),
         DEEP_GREY("#2B343A", "#1E262B", "#222c32"),
@@ -65,10 +67,10 @@ public class ProgressiveTheme extends UniversalTheme {
             defaultColor = "INDIGO";
         }
         else if (defaultColor.equals("accent")) {
-            defaultColor = "#1976D2";
+            defaultColor = "#0D6EFD";
         }
         else if (defaultColor.equals("button")) {
-            defaultColor = "#FF9800";
+            defaultColor = "#6c757D";
         }
         else if (defaultColor.equals("buttonText")) {
             defaultColor = "#FFFFFF";

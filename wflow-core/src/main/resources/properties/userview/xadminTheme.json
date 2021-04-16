@@ -71,7 +71,7 @@
         name : 'xlinkColor',
         label : '@@theme.xadmin.linkColor@@',
         type : 'color',
-        value : '#2196f3'
+        value : '#0d6efd'
     },
     {
         name : 'xlinkActiveColor',

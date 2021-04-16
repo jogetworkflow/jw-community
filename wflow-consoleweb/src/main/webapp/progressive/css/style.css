@@ -1677,12 +1677,16 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     color: inherit;
 }
 .btn-danger {
-    color: #d9534f !important;
+    color: #D43F3A !important;
     background-color: transparent !important;
     border-color: transparent !important;
 }
 .btn.btn-danger {
     color: #fff !important;
-    background-color: #d9534f !important;
-    border-color: #d43f3a !important;
+    background-color: #D43F3A !important;
+    border-color: #D43F3A !important;
+}
+
+.fc td, .fc th{
+    background: #ffffff;
 }
