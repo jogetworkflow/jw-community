@@ -291,13 +291,12 @@ PropertyEditor.Util = {
                         (o1[propName] === undefined && o2[propName].length === 0))) {
                     //to handle empty grid
                     returnFalse = false;
-                } else if (o1[propName] === "" && o2[propName] === null) {
+                } else if ((o1[propName] === "" || o1[propName]["className"] === "") && o2[propName] === null) {
                     //to handle null original value
                     returnFalse = false;
                 } else if (o1[propName] !== undefined && o2[propName] !== undefined && PropertyEditor.Util.deepEquals(editor, o1[propName], o2[propName], propName)) {
                     returnFalse = false;
                 }
-                
                 if (returnFalse) {
                     return false;
                 }
@@ -1345,6 +1344,8 @@ PropertyEditor.Model.Editor.prototype = {
             });
             thisObject.updateStylingClass();
         }
+        
+        this.initialValues = this.getData();
     },
     updateStylingClass: function() {
         if ($(this.editor).hasClass('editor-panel-mode')) {
@@ -1507,7 +1508,8 @@ PropertyEditor.Model.Editor.prototype = {
         alert(errorMsg);
     },
     isChange: function() {
-        return !PropertyEditor.Util.deepEquals(this, this.getData(), this.options.propertyValues);
+        var test =  !PropertyEditor.Util.deepEquals(this, this.getData(), this.initialValues);
+        return test;
     },
     save: function() {
         var thisObj = this;
