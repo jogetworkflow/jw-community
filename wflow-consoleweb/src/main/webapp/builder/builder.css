@@ -358,7 +358,7 @@ body.quick-nav-shown {
     height: calc( 100vh - 85px);
     top: 70px;
     width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
-    height: calc( 100vh - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
+    height: calc( 100vh - 5px - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
     top: calc(var(--builder-header-top-height) + 5px);
     position: fixed;
     transition: width 0.35s ease-in-out, left 0.35s ease-in-out; 
