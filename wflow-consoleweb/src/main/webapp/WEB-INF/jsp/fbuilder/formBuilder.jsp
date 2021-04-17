@@ -73,7 +73,9 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appDefinition.version}/form/${formId}/json"
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appDefinition.version}/form/${formId}/json",
+                "rightPropertyPanel" : true,
+                "defaultBuilder" : true
             },
             "callbacks" : {
                 "initBuilder" : "FormBuilder.initBuilder",

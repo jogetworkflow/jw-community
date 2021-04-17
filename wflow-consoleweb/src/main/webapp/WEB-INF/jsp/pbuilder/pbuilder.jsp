@@ -54,7 +54,9 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json"
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json",
+                "rightPropertyPanel" : true,
+                "defaultBuilder" : true
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",

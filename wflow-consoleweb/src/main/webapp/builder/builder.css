@@ -369,7 +369,7 @@ body.quick-nav-shown {
     max-width: 1200px;
 }
 #cbuilder.quick-nav-shown #builder_canvas {
-    width: calc( 100vw - 30px - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+    width: calc( 100vw - 35px - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
 }
 #cbuilder.default-builder #builder_canvas {
     overflow: hidden;
@@ -398,9 +398,14 @@ body.quick-nav-shown {
 #cbuilder.quick-nav-shown #builder_canvas.mobile {
     left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 30px)/2)); 
 }
-#cbuilder #builder_canvas > *:not(#iframe-wrapper) {
-    padding: 30px;
+#cbuilder:not(.default-builder) #builder_canvas {
+    top: 90px;
+    top: calc(var(--builder-header-top-height) + 25px);
+    overflow: visible;
+}
+#cbuilder #builder_canvas > div:not(#iframe-wrapper) {
     overflow: auto;
+    position: relative;
 }
 #cbuilder.preview #builder_canvas {
     width: 100%;
@@ -1209,27 +1214,32 @@ div.section, .header > ol {
     text-align: right;
     background: none;
     z-index: 100;
-    top: 0px !important;
-    right: 0px !important;
-    font-size: 0;
+    top: 0px;
+    right: 0px;
 }
 .element-options button {
     text-decoration: none;
-    color: #fff;
-    font-size: 16px;
-    height: 22px;
-    width: 26px;
-    line-height: 16px;
+    color: black;
+    font-size: 13px;
+    height: 20px;
+    width: 20px;
+    line-height: 15px;
     padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
     cursor: pointer;
-    border: solid 1px #007bff;
+    border: solid 1px #666666;
+    opacity: .6;
+    -moz-opacity: .6;
+    filter: alpha(opacity=60);
     z-index: 300;
-    background: #007bff;
-    text-align: center;
-}
-.element-options button i {
-    font-family: 'Line Awesome Free';
-    font-weight: 900;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
 }
 .element-options button span{
     width:0px;
@@ -1237,6 +1247,9 @@ div.section, .header > ol {
     display:none;
 }
 .element-options button:hover span {
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
     display: block;
     margin-top: 2px;
     padding: 5px;
@@ -1246,11 +1259,18 @@ div.section, .header > ol {
     white-space: nowrap;
 }
 .element-options button:hover {
-    background: #0069d9;
-    border-color: #0069d9;
+    padding: 0 4px;
+    background: lightgreen;
 }
-.element-options i.fas.fa-times:before {
-    content: "\f2ed";
+.element-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+.element-options button.element-delete:hover{
+    background: #FA7390;
 }
 .element-options button.disabled, .element-options button.disabled:hover{
     color:#fff;
@@ -1968,9 +1988,10 @@ body.quick-nav-shown #builder-quick-nav {
     display:none;
 }
 .boxy-wrapper .title-bar {
-    height: 0;
-    position: relative;
-    padding: 0;
+    height: auto;
+    padding: 8px 8px 5px;
+    background: #007bff;
+    color: #fff;
 }
 .boxy-wrapper .title-bar .close {
     position: absolute;

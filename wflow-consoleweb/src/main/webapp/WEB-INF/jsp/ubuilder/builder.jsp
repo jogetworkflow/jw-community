@@ -79,7 +79,9 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/userview/builder/${userview.id}/json"
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/userview/builder/${userview.id}/json",
+                "rightPropertyPanel" : true,
+                "defaultBuilder" : true
             },
             "callbacks" : {
                 "initBuilder" : "UserviewBuilder.initBuilder",

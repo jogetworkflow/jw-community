@@ -18,7 +18,9 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/datalist/${datalist.id}/json"
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/datalist/${datalist.id}/json",
+                "rightPropertyPanel" : true,
+                "defaultBuilder" : true
             },
             "callbacks" : {
                 "initBuilder" : "DatalistBuilder.initBuilder",

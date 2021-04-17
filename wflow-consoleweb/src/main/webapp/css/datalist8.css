@@ -267,7 +267,7 @@ body.rtl .dataList span.pagelinks{
     display: none !important;
 }
 .card-layout.card-layout-active td {
-    padding: 2px 10px 0 !important;
+    padding: 2px 10px 0;
 }
 .card-layout.card-layout-active td.row_action{
     display: inline-block;
