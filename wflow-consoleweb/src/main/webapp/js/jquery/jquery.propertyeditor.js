@@ -5,9 +5,11 @@ PropertyEditor.Validator = {};
 
 PropertyEditor.SimpleMode = {
     render : function(container, options) {
-        options["simpleMode"] = true;
-        options["closeAfterSaved"] = false;
-        $(container).propertyEditor(options);
+        setTimeout(function(){
+            options["simpleMode"] = true;
+            options["closeAfterSaved"] = false;
+            $(container).propertyEditor(options);
+        }, 10);
     }
 };
 

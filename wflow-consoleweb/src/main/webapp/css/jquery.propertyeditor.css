@@ -1332,6 +1332,7 @@ body .boxy-wrapper .autosave input {
 .property-editor-container.simple,
 .property-editor-container.simple .property-editor-property-container{
     height:auto !important;
+    overflow: visible !important;
 }
 .property-editor-container.simple .property-editor-display,
 .property-editor-container.simple .property-editor-nav,

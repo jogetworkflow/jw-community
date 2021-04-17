@@ -401,7 +401,8 @@ body.quick-nav-shown {
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
     top: calc(var(--builder-header-top-height) + 25px);
-    overflow: visible;
+    overflow: auto;
+    height: calc( 100vh - 25px - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
 }
 #cbuilder #builder_canvas > div:not(#iframe-wrapper) {
     overflow: auto;
