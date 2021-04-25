@@ -1,0 +1,45 @@
+.serverName {width: 50%; display: inline-block; min-width: 300px;}
+.check_interval_container {text-align: right;width: 50%; display: inline-block; float: right; padding: 11px 0; box-sizing: border-box; min-width: 300px;}
+table {border: 1px solid #ccc; border-left:0; border-collapse: collapse; width: 100%;}
+th {border-bottom: 1px solid #ccc;}
+td, th  {border-left: 1px solid #ccc; padding:10px; position: relative;}
+.category th {text-align: left; background: #ecf0f1;}
+tr + .category th {border-top: 1px solid #ccc;}
+tr.even { background: #f8f8f8;}
+.status, .timestamp {text-align: center;}
+.status {font-weight: bold;}
+.status .pass {color: #28a745;}
+.status .fail {color: #dc3545;}
+.status .info {color: #007bff;}
+.status .warn {color: #ffc107;}
+.status .progress_cont {width: 25px; height: 25px; margin: 0 auto;}
+.status .progress_svg {width: 25px; height: 25px;}
+.status .progress_cont:after{font-size: 10px;}
+.details ul {padding-left: 20px;}
+.details li {list-style: disc; line-height: 20px;}
+.details li .detail {display: block;}
+.details li a.btn {padding: 2px 5px; font-size: 80%; display: inline-block; vertical-align: top; margin-top: 5px; margin-right: 5px; line-height: 14px; background: #535353;}
+.details li + li {margin-top: 5px;}
+.status .noData, .timestamp .noData {font-weight: normal; color: #6c757d;}
+.name .plugin_label {font-weigth:bold;}
+.name .actions {display: block; font-size: 80%; margin-top: 8px;}
+.name .actions a + a:before {content:"|"; display: inline-block; padding: 0 5px;}
+.name .actions a.deactivateBtn .activate, .name .actions a.deactivateBtn.deactivated .deactivate {display: none;}
+.name .actions a.deactivateBtn.deactivated .activate {display: inline;}
+.progress_svg {width: 120px; height: 120px;}
+.progress_svg circle {transition: stroke-dashoffset 1s linear;}
+.progress_svg .bar {stroke: #28a745;}
+[data-status="fail"] .progress_svg .bar {stroke: #dc3545;}
+[data-status="warn"] .progress_svg .bar {stroke: #ffc107;}
+.progress_cont {display: block; height: 120px; width: 120px; border-radius: 100%; position: relative; margin: 0 15px;}
+.progress_cont:after {color: #28a745; position: absolute; display: block; left: 50%; top: 50%; content: attr(data-pct); font-weight: bold; font-size: 3.5em; transform: translate(-50%, -50%);}
+[data-status="fail"] .progress_cont:after {color: #dc3545;}
+[data-status="warn"] .progress_cont:after {color: #ffc107;}
+.governance_charts {display: flex; justify-content: center; align-items: flex-start; }
+.category_chart {cursor: pointer; display: block; width: 150px; margin: 0 30px 30px;}
+.category_chart .progress_label {text-align: center; font-size: 16px; margin: 10px 0;}
+.moreInfo {margin-top: 10px;}
+.moreInfo .moreInfoBtn .hide, .moreInfo.show .moreInfoBtn .show {display: none;}
+.moreInfo.show .moreInfoBtn .hide, .moreInfo.show .infoContent {display: block;}
+.moreInfo .infoContent {padding: 10px; border: 1px solid #ccc; margin-top: 5px; border-radius: 8px; background: #fefefe; display: none;}
+.moreInfo .infoContent h1, .moreInfo .infoContent h2, .moreInfo .infoContent h3, .moreInfo .infoContent h4, .moreInfo .infoContent h5, .moreInfo .infoContent h6 {margin: 0 0 10px;}

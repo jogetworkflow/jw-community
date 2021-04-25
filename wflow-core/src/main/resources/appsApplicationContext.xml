@@ -277,6 +277,19 @@
     <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
     </bean>
+    
+    <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl">
+    </bean>
+    
+    <bean id="govHealthCheckScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="false" />
+    </bean>
+    
+    <bean id="govHealthCheckManager" class="org.joget.governance.service.GovHealthCheckManager" depends-on="govHealthCheckScheduler, setupManager">
+        <constructor-arg><ref bean="govHealthCheckScheduler" /></constructor-arg>
+        <constructor-arg><ref bean="setupManager" /></constructor-arg>
+    </bean>
    
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />

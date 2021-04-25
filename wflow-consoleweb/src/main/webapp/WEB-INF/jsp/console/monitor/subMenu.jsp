@@ -12,6 +12,7 @@
     <li id="nav-monitor-log"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/logs"><span class="nav-steps"><i class="fas fa-scroll"></i></span><fmt:message key="console.header.submenu.label.logs"/></a></li>
 </c:if>
 <li id="nav-monitor-slog"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/slogs"><span class="nav-steps"><i class="fas fa-scroll"></i></span><fmt:message key="console.log.mtitle"/></a></li>
+<li id="nav-governance"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/governance"><span class="nav-steps"><i class="fas fa-check-circle"></i></span><fmt:message key="console.governance.healthCheck"/></a></li>
 <%--<li id="nav-monitor-sla"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/sla"><span class="nav-steps">&nbsp;</span><fmt:message key="wflowAdmin.sla.list.label.title"/></a></li>--%>
 <c:set var="isGlowrootAvailable" value="<%= APMUtil.isGlowrootAvailable() %>"/>
 <c:if test="${isGlowrootAvailable}">

@@ -125,9 +125,13 @@
     <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
     </bean>
+    
+    <bean id="setupManagerHelper" class="org.joget.commons.util.SetupManagerHelperImpl">
+    </bean>
 
     <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="setupDao" ref="setupDao"/>
+        <property name="setupManagerHelper" ref="setupManagerHelper"/>
         <property name="cache">
             <ref local="setupManagerCache" />
         </property>

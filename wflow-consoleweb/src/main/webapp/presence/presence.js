@@ -281,6 +281,7 @@ PresenceUtil = {
             },
             error: function(request, status, error) {
                 console.warn("Presence error", error);
+                 document.location.href = document.location;
             }
         });
     }

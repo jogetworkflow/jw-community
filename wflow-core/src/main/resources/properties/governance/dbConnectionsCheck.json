@@ -1,0 +1,14 @@
+[
+    {
+        "title" : "@@dbConnectionsCheck.edit@@",
+        "properties" : [
+            {
+                "name" : "maxActiveAlert",
+                "label" : "@@dbConnectionsCheck.maxActiveAlert@@",
+                "type" : "number",
+                "value" : "20",
+                "required" : "true"
+            }
+        ]
+    }
+]

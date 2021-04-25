@@ -46,6 +46,26 @@ public class ServerUtil {
         return serverName;
     }
     
+    public static String[] getServerList() {
+        Set<String> servers = new HashSet<String>();
+        Gson gson = new Gson();
+        
+        String serverFilePath = SetupManager.getBaseSharedDirectory() + "/servers.json";
+        
+        try {
+            String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
+            servers = gson.fromJson(serverJson, new TypeToken<Set<String>>(){}.getType());
+        } catch (Exception e) {
+            LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
+        }
+        
+        if (servers == null) {
+            servers = new HashSet<String>();
+        }
+        
+        return servers.toArray(new String[0]);
+    }
+    
     protected static void writeServer() {
         Set<String> servers = new HashSet<String>();
         Gson gson = new Gson();
@@ -53,7 +73,7 @@ public class ServerUtil {
         String serverFilePath = SetupManager.getBaseSharedDirectory() + "/servers.json";
         
         try {
-            String serverJson = FileUtils.readFileToString(new File(serverFilePath));
+            String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
             servers = gson.fromJson(serverJson, new TypeToken<Set<String>>(){}.getType());
         } catch (Exception e) {
             LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
