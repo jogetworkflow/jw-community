@@ -108,6 +108,15 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

@@ -977,6 +977,15 @@
         control_value: 'custom',
         control_use_regex: 'false',
         required : 'true'
+    },
+    {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }],
 },
 {

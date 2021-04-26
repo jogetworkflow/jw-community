@@ -593,8 +593,12 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         } else {
             data.put("content_classes", "span10");
         }
-
-        data.put("content_inner_before", getBreadcrumb(data));
+        
+        String ContentInnerBefore = getBreadcrumb(data);
+        if (getPropertyString("fontControl").equalsIgnoreCase("true")) {
+            ContentInnerBefore += getFontSizeController(data);
+        }
+        data.put("content_inner_before", ContentInnerBefore);
         return super.getContentContainer(data);
     }
     
@@ -935,6 +939,25 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         breadcrumb += "</ul>";
 
         return breadcrumb;
+    }
+
+    protected String getFontSizeController(Map<String, Object> data) {
+        String fontController = "<div class=\"adjustfontSize\">\n"
+                + "      <div style=\"float:right\">\n"
+                + "            <span> "+ ResourceBundleUtil.getMessage("theme.universal.fontSize") +":</span>\n"
+                + "            <div class=\"btn-group\" role=\"group\" aria-label=\"Basic example\">\n"
+                + "                  <button id=\"smallFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:13px\"></i></button>\n"
+                + "                  <button id=\"mediumFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:17px\"></i></button>\n"
+                + "                  <button id=\"bigFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:20px\"></i></button>\n"
+                + "            </div>\n"
+                + "      </div>\n"
+                + "      <div style=\"clear:both\"></div>\n"
+                + "</div>";
+        if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
+            return "";
+        } else {
+            return fontController;
+        }
     }
     
     protected String getCategoryLink(UserviewCategory category, Map<String, Object> data) {

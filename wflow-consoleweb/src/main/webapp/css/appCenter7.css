@@ -194,6 +194,11 @@ div#banner h1 a {
 body#home ul.breadcrumb {
     display: none;
 }
+
+body#home div.adjustfontSize {
+    display: none;
+}
+
 body > #page > footer {
     position: fixed;
     bottom: 0;
@@ -356,6 +361,6 @@ body #clock {
         box-shadow: none;
     }
     div #appcenter_admin a {
-        font-size: 12px;
+        font-size: 12px !important;
     }
 }
