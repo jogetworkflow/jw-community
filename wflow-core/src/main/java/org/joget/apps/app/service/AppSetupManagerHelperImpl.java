@@ -6,6 +6,7 @@ import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManagerHelper;
+import org.joget.governance.service.GovHealthCheckManager;
 import org.joget.plugin.base.ProfilePluginCache;
 import org.joget.workflow.model.service.WorkflowManager;
 
@@ -13,6 +14,7 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
     
     private Map<String, Map<String, String>> settings = new HashMap<String, Map<String, String>>();
     private WorkflowManager workflowManager;
+    private GovHealthCheckManager govHealthCheckManager;
     
     private Map<String, String> getOldSettings() {
         String profile = null;
@@ -44,6 +46,13 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
                     oldSettings.put("deadlineCheckerInterval", deadline.getValue());
                     getWorkflowManager().internalUpdateDeadlineChecker();
                 }
+                
+                //check health check interval
+                Setting healthCheck = settingMaps.get(GovHealthCheckManager.SETTING);
+                if (getGovHealthCheckManager() != null && healthCheck != null && healthCheck.getValue() != null && !healthCheck.getValue().equals(oldSettings.get(GovHealthCheckManager.SETTING))) {
+                    oldSettings.put(GovHealthCheckManager.SETTING, healthCheck.getValue());
+                    getGovHealthCheckManager().updateCheckInterval(healthCheck.getValue());
+                }
             }
         } catch (Exception e) {
             LogUtil.error(AppSetupManagerHelperImpl.class.getName(), e, "");
@@ -57,5 +66,14 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
             } catch (Exception e) {}
         }
         return workflowManager;
+    }
+    
+    private GovHealthCheckManager getGovHealthCheckManager() {
+        if (govHealthCheckManager == null) {
+            try {
+                govHealthCheckManager = (GovHealthCheckManager) AppUtil.getApplicationContext().getBean("govHealthCheckManager");
+            } catch (Exception e) {}
+        }
+        return govHealthCheckManager;
     }
 }

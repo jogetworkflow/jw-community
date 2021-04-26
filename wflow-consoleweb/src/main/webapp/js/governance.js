@@ -1,7 +1,7 @@
 GovernanceUtil = {
     getResultTimeout : null,
     interval : 30000,
-    lastResult : null,
+    lastResult : {},
     popup : new PopupDialog("", " "),
 
     msg : null,
@@ -9,7 +9,7 @@ GovernanceUtil = {
     init : function(interval, msg) {
         GovernanceUtil.msg = msg;
 
-        $("#check_interval").val('${interval}');
+        $("#check_interval").val(interval);
 
         $('.updateBtn').on("click", function(){
             GovernanceUtil.updateInterval();
@@ -160,7 +160,7 @@ GovernanceUtil = {
                 result = JSON.decode(result);
             }
             GovernanceUtil.lastResult = result;
-        } 
+        }
 
         var now = (new Date()).getTime();
 
