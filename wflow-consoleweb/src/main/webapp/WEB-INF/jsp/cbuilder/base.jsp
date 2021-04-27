@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
-                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="save" data-v-cbuilder-shortcut="ctrl+s">
+                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-v-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
                                 </button>
                             </div>  
