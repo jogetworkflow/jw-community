@@ -1127,7 +1127,14 @@ _CustomBuilder = {
      * Merge remote change and save
      */
     mergeAndSave: function() {
-        CustomBuilder.merge(CustomBuilder.save);
+        if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
+            CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
+                $("body").addClass("no-right-panel");
+                CustomBuilder.merge(CustomBuilder.save);
+            });
+        } else {
+            CustomBuilder.merge(CustomBuilder.save);
+        }
     }, 
     
     /*
@@ -2234,7 +2241,18 @@ _CustomBuilder = {
      * Utility method to check is there an unsaved changes
      */
     isSaved : function(){
-        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val()){
+        var hasChange = false;
+        
+        if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
+            $(".element-properties .property-editor-container").each(function() {
+                var editor = $(this).parent().data("editor");
+                if (editor !== undefined && !editor.saved && editor.isChange()) {
+                    hasChange = true;
+                }
+            });
+        }
+        
+        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val() && !hasChange){
             return true;
         }else{
             return false;
