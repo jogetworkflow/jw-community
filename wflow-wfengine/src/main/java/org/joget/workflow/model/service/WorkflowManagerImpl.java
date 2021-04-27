@@ -5609,4 +5609,66 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         return nextAss;
     }
+    
+    /**
+     * Check participant has human activities
+     * 
+     * @param processDefId
+     * @param participantId
+     * @return 
+     */
+    @Override
+    public boolean participantHasActivities(String processDefId, String participantId) {
+        boolean hasActivities = false;
+
+        SharkConnection sc = null;
+
+        try {
+
+            sc = connect();
+
+            Shark shark = Shark.getInstance();
+            AdminMisc admin = shark.getAdminMisc();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+            getSharkPackageAdmin(sessionHandle); // invoke this to clear xpdl cache
+
+            WMEntity ent = admin.getProcessDefinitionInfoByUniqueProcessDefinitionName(sessionHandle, processDefId);
+            XPDLBrowser xpdlBrowser = shark.getXPDLBrowser();
+            
+            WMEntity[] activities = WMEntityUtilities.getAllActivities(sessionHandle, xpdlBrowser, ent);
+            for (int i = 0; i < activities.length; i++) {
+                WMEntity entity = activities[i];
+                
+                String performer = WMEntityUtilities.getAttributeValue(sessionHandle, xpdlBrowser, entity, "Performer");
+                if (performer == null || !performer.equals(participantId)) {
+                    continue;
+                }
+                
+                //check activity type
+                WMEntityIterator activityEntityIterator = xpdlBrowser.listEntities(sessionHandle, entity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity actEnt = (WMEntity) activityEntityIterator.next();
+                    if (actEnt.getType().equalsIgnoreCase("tool") || actEnt.getType().equalsIgnoreCase("route")) {
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("subflow") || actEnt.getType().equalsIgnoreCase("no")) {
+                        hasActivities = true;
+                        break;
+                    }
+                }
+                if (hasActivities) {
+                    return hasActivities;
+                }
+            }
+
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return hasActivities;
+    }
 }

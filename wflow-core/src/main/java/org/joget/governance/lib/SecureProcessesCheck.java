@@ -54,7 +54,7 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract {
     public String getSortPriority() {
         return "3";
     }
-
+    
     @Override
     public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs) {
         GovHealthCheckResult result = new GovHealthCheckResult();
@@ -80,8 +80,10 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract {
                     Collection<WorkflowParticipant> participantList = workflowManager.getProcessParticipantDefinitionList(wp.getId());
                     for (WorkflowParticipant p : participantList) {
                         if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), p.getId()) == null) {
-                            hasNotMapped = true;
-                            result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), p.getName(), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null);
+                            if (workflowManager.participantHasActivities(wp.getId(), p.getId())) {
+                                hasNotMapped = true;
+                                result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), p.getName(), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null);
+                            }
                         }
                     }
                 }

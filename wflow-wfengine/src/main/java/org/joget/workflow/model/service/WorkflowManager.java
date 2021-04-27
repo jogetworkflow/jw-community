@@ -1046,4 +1046,13 @@ public interface WorkflowManager {
      * @return 
      */
     public WorkflowAssignment getNextAssignmentByCurrentAssignment(WorkflowAssignment assignment);
+    
+    /**
+     * Check participant has activities
+     * 
+     * @param processDefId
+     * @param participantId
+     * @return 
+     */
+    public boolean participantHasActivities(String processDefId, String participantId);
 }
