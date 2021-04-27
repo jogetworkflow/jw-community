@@ -73,7 +73,7 @@
                                 <tr class="<c:if test="${loop.index % 2 eq 1}">even</c:if>" plugin-class="${element.className}">
                                     <td class="name">
                                         <span class="plugin_label">${element.i18nLabel}</span>
-                                        <span class="actions"><a class="deactivateBtn <c:if test="${element.properties.deactivated eq 'true'}">deactivated</c:if>"><span class="activate"><fmt:message key="console.governance.activate"/></span><span class="deactivate"><fmt:message key="console.governance.deactivate"/></span></a><c:if test="${element.configurable}"><a class="configBtn"><fmt:message key="console.governance.configure"/></a></span></c:if>
+                                        <span class="actions"><a class="deactivateBtn <c:if test="${element.properties.deactivated eq 'true'}">deactivated</c:if>"><span class="activate"><fmt:message key="console.governance.activate"/></span><span class="deactivate"><fmt:message key="console.governance.deactivate"/></span></a><c:if test="${element.configurable}"><a class="configBtn"><fmt:message key="console.governance.configure"/></a></c:if><c:if test="${!empty element.infoLink}"><a href="${element.infoLink}" target="_blank"><i class="fas fa-question-circle"></i></a></c:if></span>
                                     </td>
                                     <td class="status"></td>
                                     <td class="timestamp"></td>

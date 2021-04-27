@@ -10,6 +10,8 @@ public interface GovHealthCheck extends Plugin, PropertyEditable {
 
     String getSortPriority();
     
+    String getInfoLink();
+    
     GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs);
     
     boolean isConfigurable();

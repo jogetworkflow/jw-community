@@ -9,4 +9,9 @@ public abstract class GovHealthCheckAbstract extends ExtDefaultPlugin implements
         String options = getPropertyOptions();
         return options != null && !options.isEmpty();
     }
+    
+    @Override
+    public String getInfoLink() {
+        return null;
+    }
 }
