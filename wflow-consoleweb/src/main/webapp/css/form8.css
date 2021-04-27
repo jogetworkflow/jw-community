@@ -997,7 +997,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     border-color: #6c757d;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 768px) {
     .form-cell > label.label,
     .subform-cell > label.label,
     .form-cell > label.label + *:not(.ui-screen-hidden),

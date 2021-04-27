@@ -31,7 +31,7 @@ body {
 @media (min-width: 1200px) {
     body {
         --builder-left-panel-width: 13.5vw;
-        --builder-right-panel-width: 14.5vw; 
+        --builder-right-panel-width: 20vw; 
         --builder-logo-width: 13.5vw;
     } 
 }
