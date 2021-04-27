@@ -251,7 +251,7 @@ public class GovHealthCheckManager {
     
     public final void initChecker() {
         String checkerInterval = setupManager.getSettingValue(SETTING);
-        startChecker(checkerInterval);
+        startChecker(checkerInterval, 30000l); //set a 30sec delay to wait for application context ready
         
         try {
             String lastResultJson = readResultsByServer(null);
@@ -332,7 +332,7 @@ public class GovHealthCheckManager {
         setting.setValue(interval);
         
         setupManager.saveSetting(setting);
-        startChecker(interval);
+        startChecker(interval, null);
     }
     
     public final void stopChecker() {
@@ -343,7 +343,7 @@ public class GovHealthCheckManager {
         }
     }
     
-    public final void startChecker(String intervalStr) {
+    public final void startChecker(String intervalStr, Long delay) {
         long interval = 0;
         if (intervalStr != null && intervalStr.trim().length() > 0) {
             try {
@@ -365,8 +365,13 @@ public class GovHealthCheckManager {
                 if (task == null) {
                     task = new GovHealthCheckTask(getProfile(), interval);
                 }
-                ScheduledFuture scheduledFuture = govHealthCheckScheduler.scheduleAtFixedRate(task, interval * 1000);
-                task.setScheduledFuture(scheduledFuture);
+                if (delay != null) {
+                    ScheduledFuture scheduledFuture = govHealthCheckScheduler.scheduleAtFixedRate(task, new Date(((new Date()).getTime() + delay)), interval * 1000);
+                    task.setScheduledFuture(scheduledFuture);
+                } else {
+                    ScheduledFuture scheduledFuture = govHealthCheckScheduler.scheduleAtFixedRate(task, interval * 1000);
+                    task.setScheduledFuture(scheduledFuture);
+                }
                 LogUtil.info(GovHealthCheckManager.class.getName(), "Gov Health Checker started");
             }
         } else {
