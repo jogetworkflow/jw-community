@@ -75,26 +75,6 @@
                     <div id="top-panel-main">
                         <div id="builderElementName" style="color:${builderColor};"><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                         <div id="builderToolbar">
-                            <div class="btn-group tool copypaste mr-1" style="display:none;"  role="group">
-                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
-                                    <i class="las la-copy"></i>
-                                </button>
-
-                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.paste"/> (Ctrl + V)" id="paste-element-btn" data-cbuilder-action="pasteElement" data-cbuilder-shortcut="ctrl+v">
-                                    <i class="las la-paste"></i>
-                                </button>
-                            </div>
-
-                            <div class="btn-group tool mr-3" role="group">
-                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.undo"/> (Ctrl + Z)" id="undo-btn" data-cbuilder-action="undo" data-cbuilder-shortcut="ctrl+z">
-                                    <i class="la la-undo"></i>
-                                </button>
-
-                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.redo"/> (Ctrl + Shift + Z)" id="redo-btn" data-cbuilder-action="redo" data-cbuilder-shortcut="ctrl+shift+z">
-                                    <i class="la la-undo la-flip-horizontal"></i>
-                                </button>
-                            </div>
-
                             <div class="btn-group mr-3" role="group">
                                 <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
                                     <i class="las la-pencil-ruler"></i> <span><fmt:message key="ubuilder.design"/></span>
@@ -171,6 +151,26 @@
 
                                 <button id="desktop-view"  data-view="desktop" class="btn btn-light active"  title="<fmt:message key="cbuilder.desktopView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-laptop"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="btn-group tool mr-3 float-right" role="group">
+                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.undo"/> (Ctrl + Z)" id="undo-btn" data-cbuilder-action="undo" data-cbuilder-shortcut="ctrl+z">
+                                    <i class="la la-undo"></i>
+                                </button>
+
+                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.redo"/> (Ctrl + Shift + Z)" id="redo-btn" data-cbuilder-action="redo" data-cbuilder-shortcut="ctrl+shift+z">
+                                    <i class="la la-undo la-flip-horizontal"></i>
+                                </button>
+                            </div>
+                                    
+                            <div class="btn-group tool copypaste mr-1  float-right" style="display:none;"  role="group">
+                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
+                                    <i class="las la-copy"></i>
+                                </button>
+
+                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.paste"/> (Ctrl + V)" id="paste-element-btn" data-cbuilder-action="pasteElement" data-cbuilder-shortcut="ctrl+v">
+                                    <i class="las la-paste"></i>
                                 </button>
                             </div>
                         </div>
