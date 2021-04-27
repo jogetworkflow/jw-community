@@ -86,13 +86,16 @@ public class SecureUserviewsCheck extends GovHealthCheckAbstract {
             //has userview permission
             JSONObject userviewObj = new JSONObject(userviewDef.getJson());
             JSONObject settingObj = userviewObj.getJSONObject("setting");
-            JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-            if (permissionObj != null && permissionObj.has("className") && !permissionObj.getString("className").isEmpty()) {
-                return true;
+            JSONObject settingPropsObj = settingObj.getJSONObject("properties");
+            if (settingPropsObj.has("permission")) {
+                JSONObject permissionObj = settingPropsObj.getJSONObject("permission");
+                if (permissionObj != null && permissionObj.has("className") && !permissionObj.getString("className").isEmpty()) {
+                    return true;
+                }
             }
             
             //has permission rules
-            if (settingObj.getJSONObject("properties").has("permission_rules")) {
+            if (settingPropsObj.has("permission_rules")) {
                 JSONArray permissionRules = settingObj.getJSONObject("properties").getJSONArray("permission_rules");
                 if (permissionRules != null && permissionRules.length() > 0) {
                     for (int i = 0; i < permissionRules.length(); i++) {
@@ -111,9 +114,12 @@ public class SecureUserviewsCheck extends GovHealthCheckAbstract {
             JSONArray categoriesArray = userviewObj.getJSONArray("categories");
             for (int i = 0; i < categoriesArray.length(); i++) {
                 JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
-                JSONObject cpermissionObj = categoryObj.getJSONObject("properties").getJSONObject("permission");
-                if (cpermissionObj != null && cpermissionObj.has("className") && !cpermissionObj.getString("className").isEmpty()) {
-                    return true;
+                JSONObject catPropsObj = categoryObj.getJSONObject("properties");
+                if (catPropsObj.has("permission")) {
+                    JSONObject cpermissionObj = catPropsObj.getJSONObject("permission");
+                    if (cpermissionObj != null && cpermissionObj.has("className") && !cpermissionObj.getString("className").isEmpty()) {
+                        return true;
+                    }
                 }
             }
         } catch (Exception e) {
