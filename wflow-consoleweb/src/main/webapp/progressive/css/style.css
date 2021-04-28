@@ -1020,6 +1020,7 @@ body#login #page > footer {
 
 .dataList .table-wrapper {
     overflow-x: auto;
+    width: 100%;
 }
 
 .dataList .table-wrapper::-webkit-scrollbar {
@@ -1677,12 +1678,58 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     color: inherit;
 }
 .btn-danger {
-    color: #d9534f !important;
+    color: #D43F3A !important;
     background-color: transparent !important;
     border-color: transparent !important;
 }
 .btn.btn-danger {
     color: #fff !important;
-    background-color: #d9534f !important;
-    border-color: #d43f3a !important;
+    background-color: #D43F3A !important;
+    border-color: #D43F3A !important;
+}
+
+.fc td, .fc th{
+    background: #ffffff;
+}
+.adjustfontSize{
+    position: relative;
+    height: 50px;
+    display: block;
+    padding: 10px !important;
+    padding-right: 20px;
+}
+.buttonFontSize {
+    font-size: 20px !important;
+    color: #6c757d !important;
+    background-color: #ffffff !important;
+    margin-left: 1px !important;
+    padding: 3px 9px;
+    outline:none !important;
+    border: none !important;
+}
+.footable-buttons > button{
+    margin-bottom: 5px;
+}
+@media screen and (max-width: 480px) {
+    main .form-row label {
+        width: 100%;
+    }
+}
+
+.largeFontSize #form-canvas *,
+.largeFontSize .fc-view-container *,
+.largeFontSize .userProfile-body-content *,
+.largeFontSize .dataList *,
+.largeFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5){
+    font-size: 20px !important;
+    line-height: 25px !important;
+}
+
+.mediumFontSize #form-canvas *,
+.mediumFontSize .fc-view-container *,
+.mediumFontSize .userProfile-body-content *,
+.mediumFontSize .dataList *,
+.mediumFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5){
+    font-size: 17px !important;
+    line-height: 20px !important;
 }

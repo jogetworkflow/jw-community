@@ -208,6 +208,61 @@
         reloadImages();
     });
     
+    $(document).ready(function () {
+        checkCookie();
+        $('#smallFont').click(function () {
+            setFontSize("13");
+            setCookie("13");
+        });
+
+        $('#mediumFont').click(function () {
+            setFontSize("17");
+            setCookie("17");
+        });
+
+        $('#bigFont').click(function () {
+            setFontSize("20");
+            setCookie("20");
+        });
+    });
+    
+    function setCookie(cvalue) {
+        $.cookie("fontsize", cvalue);
+    }
+
+    function checkCookie() {
+        if ($('.adjustfontSize').length > 0) {
+            var fontSize = $.cookie("fontsize");
+            if (fontSize !== "" && fontSize !== null) {
+                setFontSize(fontSize);
+            } else {
+                setFontSize('13');
+            }
+        }
+    }
+
+    function setFontSize(size) {
+        var fontClass = "";
+        $(".buttonFontSize").removeClass("activeFont");
+        if (size === '13') {
+            $('#smallFont').addClass("activeFont");
+        } else if (size === '17') {
+            fontClass = "mediumFontSize";
+            $('#mediumFont').addClass("activeFont");
+        } else {
+            fontClass = "largeFontSize";
+            $('#bigFont').addClass("activeFont");
+        }
+        
+        $('body').removeClass("largeLabel");
+        if (size !== '13') {
+            $('body').addClass("largeLabel");
+        }
+
+        $('body').removeClass("smallFontSize mediumFontSize largeFontSize");
+        $('body').addClass(fontClass);
+    }
+    
     $(function(){
         $(".form-cell-validator, .subform-cell-validator").each(function(){
             $(this).parent().prepend($(this));

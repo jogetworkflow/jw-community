@@ -465,13 +465,37 @@ public class XadminTheme extends UniversalTheme {
             return UserviewUtil.getTemplate(this, data, "/templates/xadmin/content.ftl");
         } else {
             if (!((Boolean) data.get("embed"))) {
-                data.put("content_before", getBreadcrumb(data) + "<div class=\"layui-fluid\">");
+                String ContentInnerBefore = getBreadcrumb(data);
+                if (getPropertyString("fontControl").equalsIgnoreCase("true")) {
+                    ContentInnerBefore += getFontSizeController(data);
+                }
+                data.put("content_before", ContentInnerBefore + "<div class=\"layui-fluid\">");
                 data.put("content_after", "</div>");
                 data.put("content_classes", "layui-row layui-col-space15");
-                
+
                 data.put("main_container_after", getMenuScript(data));
             }
             return UserviewUtil.getTemplate(this, data, "/templates/userview/contentContainer.ftl");
+        }
+    }
+    
+    @Override
+    protected String getFontSizeController(Map<String, Object> data) {
+        String fontController = "<div class=\"adjustfontSize\">\n"
+                + "      <div style=\"float:right\">\n"
+                + "            <div class=\"btn-group\" role=\"group\" aria-label=\"Basic example\">\n"
+                + "            <span> "+ ResourceBundleUtil.getMessage("theme.universal.fontSize") +":</span>\n"
+                + "                  <button id=\"smallFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:13px\"></i></button>\n"
+                + "                  <button id=\"mediumFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:17px\"></i></button>\n"
+                + "                  <button id=\"bigFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:20px\"></i></button>\n"
+                + "            </div>\n"
+                + "      </div>\n"
+                + "      <div style=\"clear:both\"></div>\n"
+                + "</div>";
+        if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
+            return "";
+        } else {
+            return fontController;
         }
     }
     

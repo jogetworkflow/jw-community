@@ -267,6 +267,9 @@
     .form-container textarea[cols]{
         width: 90%;
     }
+    .form-cell-value label, .subform-cell-value label{
+        width: 100%;
+    }
 }
 .form-cell .tablesaw thead tr:first-child th,
 .subform-cell .tablesaw thead tr:first-child th {

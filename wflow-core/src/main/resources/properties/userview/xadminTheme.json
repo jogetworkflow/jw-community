@@ -71,7 +71,7 @@
         name : 'xlinkColor',
         label : '@@theme.xadmin.linkColor@@',
         type : 'color',
-        value : '#2196f3'
+        value : '#0d6efd'
     },
     {
         name : 'xlinkActiveColor',
@@ -103,6 +103,15 @@
     {
         name : 'reopenTab',
         label : '@@theme.xadmin.reopenTab@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
         type : 'checkbox',
         options : [{
             value : 'true',

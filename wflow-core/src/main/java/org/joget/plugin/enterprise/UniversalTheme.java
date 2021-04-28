@@ -55,6 +55,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         DEEP_PURPLE("#673AB7", "#512DA8", ""),
         INDIGO("#3F51B5", "#303F9F", ""),
         BLUE("#2196F3", "#1976D2", ""),
+        SKY_BLUE("#0D6EFD", "#1976D2", ""),
         LIGHT_BLUE("#03A9F4", "#0288D1", ""),
         CYAN("#00BCD4", "#0097A7", ""),
         TEAL("#009688", "#00796B", ""),
@@ -66,6 +67,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         ORANGE("#FF9800", "#F57C00", ""),
         DEEP_ORANGE("#FF5722", "#E64A19", ""),
         BROWN("#795548", "#795548", ""),
+        DARKGREY("#6c757D", "#616161", ""),
         GREY("#9E9E9E", "#616161", ""),
         BLUE_GREY("#607D8B", "#455A64", ""),
         DEEP_GREY("#2B343A", "#1E262B", "#222c32"),
@@ -400,10 +402,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             defaultColor = "DARKROYALBLUE";
         }
         else if (defaultColor.equals("accent")) {
-            defaultColor = "#2196F3";
+            defaultColor = "#0D6EFD";
         }
         else if (defaultColor.equals("button")) {
-            defaultColor = "#9E9E9E";
+            defaultColor = "#6c757D";
         }
         else if (defaultColor.equals("buttonText")) {
             defaultColor = "#FFFFFF";
@@ -666,8 +668,12 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         } else {
             data.put("content_classes", "span10");
         }
-
-        data.put("content_inner_before", getBreadcrumb(data));
+        
+        String ContentInnerBefore = getBreadcrumb(data);
+        if (getPropertyString("fontControl").equalsIgnoreCase("true")) {
+            ContentInnerBefore += getFontSizeController(data);
+        }
+        data.put("content_inner_before", ContentInnerBefore);
         return super.getContentContainer(data);
     }
     
@@ -1008,6 +1014,25 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         breadcrumb += "</ul>";
 
         return breadcrumb;
+    }
+
+    protected String getFontSizeController(Map<String, Object> data) {
+        String fontController = "<div class=\"adjustfontSize\">\n"
+                + "      <div style=\"float:right\">\n"
+                + "            <span> "+ ResourceBundleUtil.getMessage("theme.universal.fontSize") +":</span>\n"
+                + "            <div class=\"btn-group\" role=\"group\" aria-label=\"Basic example\">\n"
+                + "                  <button id=\"smallFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:13px\"></i></button>\n"
+                + "                  <button id=\"mediumFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:17px\"></i></button>\n"
+                + "                  <button id=\"bigFont\" type=\"button\" class=\"buttonFontSize\"><i class=\"fas fa-font\" style=\"font-size:20px\"></i></button>\n"
+                + "            </div>\n"
+                + "      </div>\n"
+                + "      <div style=\"clear:both\"></div>\n"
+                + "</div>";
+        if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
+            return "";
+        } else {
+            return fontController;
+        }
     }
     
     protected String getCategoryLink(UserviewCategory category, Map<String, Object> data) {

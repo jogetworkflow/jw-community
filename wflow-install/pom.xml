@@ -189,6 +189,8 @@
                                     <tarfileset dir="target" prefix="joget-linux-${project.version}">
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
+                                        <exclude name="apache-ant-${apache-ant.version}/bin/ant" />
+                                        <exclude name="apache-tomcat-${tomcat.version}/bin/*.sh" />
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />
@@ -198,8 +200,6 @@
                                         <include name="NOTICE.txt" />
                                         <include name="README.txt" />
                                         <include name="CHANGES.txt" />
-                                        <include name="setup.sh" />
-                                        <include name="tomcat8.sh" />
                                         <include name="VERSION.txt" />
                                     </tarfileset>
                                     <tarfileset dir="target" filemode="755" prefix="joget-linux-${project.version}">

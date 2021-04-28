@@ -205,7 +205,7 @@
         label : '@@theme.progressive.accentColor@@',
         type : 'selectbox',
         options_label_processor : 'color',
-        value: 'BLUE',
+        value: 'SKY_BLUE',
         options : [{
             value : '',
             label : ''
@@ -242,6 +242,9 @@
         },{
             value : 'BLUE',
             label : '@@theme.progressive.colorScheme.blue@@'
+        },{
+            value : 'SKY_BLUE',
+            label : '@@theme.progressive.colorScheme.skyBlue@@'
         },{
             value : 'LIGHT_BLUE',
             label : '@@theme.progressive.colorScheme.lightBlue@@'
@@ -365,7 +368,7 @@
         label : '@@theme.progressive.buttonColor@@',
         type : 'selectbox',
         options_label_processor : 'color',
-        value: 'GREY',
+        value: 'DARKGREY',
         options : [{
             value : '',
             label : ''
@@ -480,6 +483,9 @@
         },{
             value : 'LIGHTGREY',
             label : '@@theme.progressive.colorScheme.lightGrey@@'
+        },{
+            value : 'DARKGREY',
+            label : '@@theme.progressive.colorScheme.darkGrey@@'
         },{
             value : 'GREY',
             label : '@@theme.progressive.colorScheme.grey@@'
@@ -971,6 +977,15 @@
         control_value: 'custom',
         control_use_regex: 'false',
         required : 'true'
+    },
+    {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }],
 },
 {
