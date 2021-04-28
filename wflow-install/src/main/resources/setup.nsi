@@ -13,7 +13,7 @@
 
   ;Default installation folder
   ;InstallDir "$PROGRAMFILES\Joget"
-  InstallDir "C:\Joget-DX7"
+  InstallDir "C:\Joget-DX8"
 
   ;Get installation folder from registry if available
   ;InstallDirRegKey HKCU "Software\Joget"
@@ -256,11 +256,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget DX 7"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Joget DX 8"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -352,7 +352,7 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget DX 7"
+  RMDir /r "$SMPROGRAMS\Joget DX 8"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre11.0.2"

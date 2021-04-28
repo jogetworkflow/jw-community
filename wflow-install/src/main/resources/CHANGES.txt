@@ -1,7 +1,6 @@
-Joget DX 7 COMMUNITY
+Joget DX COMMUNITY
 ====================
-For more information, please refer to 
-https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
+For more information, please refer to https://community.joget.org
 
 CHANGES IN 7.0.16
 =================
