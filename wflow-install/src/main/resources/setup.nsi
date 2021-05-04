@@ -13,7 +13,7 @@
 
   ;Default installation folder
   ;InstallDir "$PROGRAMFILES\Joget"
-  InstallDir "C:\Joget-DX7"
+  InstallDir "C:\Joget-DX8"
 
   ;Get installation folder from registry if available
   ;InstallDirRegKey HKCU "Software\Joget"
@@ -167,7 +167,7 @@ Section "Joget DX" SecJoget
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.58\webapps\jw.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.65\webapps\jw.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -182,8 +182,8 @@ Section "Joget DX" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-8.5.58\webapps"
-  File /oname=apache-tomcat-8.5.58\webapps\jw.war apache-tomcat-8.5.58\webapps\jw.war
+  CreateDirectory "$INSTDIR\apache-tomcat-8.5.65\webapps"
+  File /oname=apache-tomcat-8.5.65\webapps\jw.war apache-tomcat-8.5.65\webapps\jw.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -214,7 +214,7 @@ Section "Apache Tomcat 8" SecTomcat
 
 ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-8.5.58
+  File /r /x *.war apache-tomcat-8.5.65
   File tomcat8-run.bat
   File tomcat8-stop.bat
   File joget-start.bat
@@ -256,11 +256,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget DX 7"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Joget DX 8"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 8\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -282,6 +282,9 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.65\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+    StrCpy $EXISTING_TOMCAT_VERSION "8.5.65"  
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.58\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "8.5.58"  
@@ -349,12 +352,12 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget DX 7"
+  RMDir /r "$SMPROGRAMS\Joget DX 8"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre11.0.2"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.58\webapps\jw"
-  Delete "$INSTDIR\apache-tomcat-8.5.58\webapps\jw.war"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.65\webapps\jw"
+  Delete "$INSTDIR\apache-tomcat-8.5.65\webapps\jw.war"
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\NOTICE.txt"

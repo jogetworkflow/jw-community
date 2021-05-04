@@ -193,7 +193,7 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             FormRowSet rowSet = new FormRowSet();
 
-            if (multirowBaseObjectName != null && multirowBaseObjectName.trim().length() > 0) {
+            if (multirowBaseObjectName != null && multirowBaseObjectName.trim().length() > 0 && getObjectFromMap(multirowBaseObjectName, object) != null && getObjectFromMap(multirowBaseObjectName, object).getClass().isArray()) {
                 Object[] baseObjectArray = (Object[]) getObjectFromMap(multirowBaseObjectName, object);
                 if (baseObjectArray != null && baseObjectArray.length > 0) {
                     rowSet.setMultiRow(true);

@@ -237,6 +237,7 @@ body .dataList .select_checkbox label{
     position: absolute;
     overflow: hidden;
     top:9px;
+    padding: 1px;
     left:50%;
     transform: translateX(-50%);
     margin-top: -5px;
