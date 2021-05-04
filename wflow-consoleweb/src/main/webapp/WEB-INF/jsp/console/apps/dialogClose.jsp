@@ -2,7 +2,7 @@
 <script type="text/javascript">
 <c:choose>
     <c:when test="${!empty url}">
-        if ('<c:out value="${url}"/>'.indexOf('/builders')) {
+        if ('<c:out value="${url}"/>'.indexOf('/builders') !== -1) {
             if (top.CustomBuilder !== undefined) {
                 top.CustomBuilder.ajaxRenderBuilder('<c:out value="${url}"/>');
                 top.AdminBar.hideQuickOverlay();
