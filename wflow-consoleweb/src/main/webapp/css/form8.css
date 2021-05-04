@@ -12,6 +12,14 @@
     border-radius: 0.25rem;
     padding-bottom: 20px;
 }
+.subform-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    padding-bottom: 20px;
+}
 .form-section-title,
 .subform-section-title{
     padding: 0.75rem 1.25rem;
@@ -63,7 +71,7 @@
 .subform-cell + .subform-cell{
     margin-top: 15px;
 }
-body .subform-cell .subform-container.has-frame, .form-cell .subform-container.has-frame{
+body .subform-cell > .subform-container.has-frame, .form-cell > .subform-container.has-frame{
     width: 100%;
 }
 .form-cell > label.label,
@@ -348,6 +356,10 @@ textarea{
 .form-section.no_label > .form-column > .form-cell > .subform-container.no-frame,
 .subform-section.no_label > .subform-column > .subform-cell > .subform-container.no-frame {
     margin-top:-20px;
+}
+.subform-container.has-frame{
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
 }
 .subform-container.no-frame {
     margin-left: -15px;
@@ -1011,5 +1023,16 @@ body.rtl .handsontable .htCore tr td:last-child {
     .hasDatepicker + a{
         top: unset;
         bottom: 7px;
+    }
+}
+@media screen and (max-width: 39.9375em) {
+    .grid table td,
+    .grid table tr.grid-row + tr.grid-row {
+        border-top:0 !important;
+    }
+    .grid table td .tablesaw-cell-label,
+    .grid table td .tablesaw-cell-content{
+        display: block;
+        width: 100%;
     }
 }
