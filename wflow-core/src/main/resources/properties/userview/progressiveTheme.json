@@ -205,7 +205,7 @@
         label : '@@theme.progressive.accentColor@@',
         type : 'selectbox',
         options_label_processor : 'color',
-        value: 'SKY_BLUE',
+        value: 'BLUE',
         options : [{
             value : '',
             label : ''
@@ -242,9 +242,6 @@
         },{
             value : 'BLUE',
             label : '@@theme.progressive.colorScheme.blue@@'
-        },{
-            value : 'SKY_BLUE',
-            label : '@@theme.progressive.colorScheme.skyBlue@@'
         },{
             value : 'LIGHT_BLUE',
             label : '@@theme.progressive.colorScheme.lightBlue@@'
@@ -368,7 +365,7 @@
         label : '@@theme.progressive.buttonColor@@',
         type : 'selectbox',
         options_label_processor : 'color',
-        value: 'DARKGREY',
+        value: 'GREY',
         options : [{
             value : '',
             label : ''
@@ -483,9 +480,6 @@
         },{
             value : 'LIGHTGREY',
             label : '@@theme.progressive.colorScheme.lightGrey@@'
-        },{
-            value : 'DARKGREY',
-            label : '@@theme.progressive.colorScheme.darkGrey@@'
         },{
             value : 'GREY',
             label : '@@theme.progressive.colorScheme.grey@@'
