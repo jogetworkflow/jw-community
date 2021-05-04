@@ -447,11 +447,11 @@ _CustomBuilder = {
                 $(this).on(on, buttonAction);
                 if (this.dataset.cbuilderShortcut)
                 {
-                    $(document).unbind('keydown', this.dataset.cbuilderShortcut);
-                    $(document).bind('keydown', this.dataset.cbuilderShortcut, buttonAction);
+                    $(document).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
+                    $(document).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
                     if (window.FrameDocument) {
-                        $(window.FrameDocument).unbind('keydown', this.dataset.cbuilderShortcut);
-                        $(window.FrameDocument).bind('keydown', this.dataset.cbuilderShortcut, buttonAction);
+                        $(window.FrameDocument).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
+                        $(window.FrameDocument).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
                     }
                 }
             });
@@ -2327,6 +2327,10 @@ _CustomBuilder = {
                 // ESCAPE key pressed
                 if ($("#quick-nav-bar").hasClass("active") && e.keyCode == 27) {
                     $("#quick-nav-bar").removeClass("active");
+                } else if ($("body").hasClass('max-property-editor')) {
+                    CustomBuilder.minPropertiesWindow();
+                } else if ($("body").hasClass('property-editor-right-panel') && !$("body").hasClass('no-right-panel')) {
+                    CustomBuilder.closePropertiesWindow();
                 }
             });
 

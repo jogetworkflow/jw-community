@@ -135,7 +135,7 @@
                             </div>
 
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
-                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-v-cbuilder-shortcut="ctrl+s">
+                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
                                 </button>
                             </div>  
@@ -222,7 +222,7 @@
                                 <button id="properties-max-button" title="<fmt:message key="cbuilder.expand"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
                                     <i class="las la-expand"></i>
                                 </button>
-                                <button id="properties-min-button" title="<fmt:message key="cbuilder.dock"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" data-cbuilder-shortcut="esc" style="display:none" >
+                                <button id="properties-min-button" title="<fmt:message key="cbuilder.dock"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" style="display:none" >
                                     <i class="las la-thumbtack"></i>
                                 </button>
                             </div> 
