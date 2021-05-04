@@ -700,11 +700,13 @@ public class AppDevUtil {
     
     public static String formatJson(String json) {
         String formattedJson = json;
-        try {
-            int jsonIndentFactor = 4;
-            formattedJson = new JSONObject(json).toString(jsonIndentFactor);
-        } catch (JSONException e) {
-            // ignore
+        if (formattedJson != null && !formattedJson.isEmpty()) {
+            try {
+                int jsonIndentFactor = 4;
+                formattedJson = new JSONObject(json).toString(jsonIndentFactor);
+            } catch (Exception e) {
+                // ignore
+            }
         }
         return formattedJson;
     }
