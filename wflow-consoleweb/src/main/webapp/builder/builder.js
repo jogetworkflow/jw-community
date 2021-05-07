@@ -2325,12 +2325,14 @@ _CustomBuilder = {
             $(document).off("keydown.quicknav");
             $(document).on("keydown.quicknav", function(e) {
                 // ESCAPE key pressed
-                if ($("#quick-nav-bar").hasClass("active") && e.keyCode == 27) {
-                    $("#quick-nav-bar").removeClass("active");
-                } else if ($("body").hasClass('max-property-editor')) {
-                    CustomBuilder.minPropertiesWindow();
-                } else if ($("body").hasClass('property-editor-right-panel') && !$("body").hasClass('no-right-panel')) {
-                    CustomBuilder.closePropertiesWindow();
+                if (e.keyCode === 27) {
+                    if ($("#quick-nav-bar").hasClass("active")) {
+                        $("#quick-nav-bar").removeClass("active");
+                    } else if ($("body").hasClass('max-property-editor')) {
+                        CustomBuilder.minPropertiesWindow();
+                    } else if ($("body").hasClass('property-editor-right-panel') && !$("body").hasClass('no-right-panel')) {
+                        CustomBuilder.closePropertiesWindow();
+                    }
                 }
             });
 
