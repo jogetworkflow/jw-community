@@ -1,9 +1,12 @@
 package org.joget.workflow.shark.model;
 
+import org.joget.workflow.model.WorkflowProcessLink;
+
 public class SharkAssignment{
     private long id;
     private SharkActivity activity;
     private SharkProcess process;
+    private WorkflowProcessLink link;
     private String assigneeName;
     private boolean isValid;
     private boolean isAccepted;
@@ -54,5 +57,13 @@ public class SharkAssignment{
 
     public void setIsAccepted(boolean isAccepted) {
         this.isAccepted = isAccepted;
+    }
+
+    public WorkflowProcessLink getLink() {
+        return link;
+    }
+
+    public void setLink(WorkflowProcessLink link) {
+        this.link = link;
     }
 }

@@ -19,6 +19,7 @@ import org.joget.apps.datalist.model.DataListBinderDefault;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
+import org.joget.apps.datalist.model.InboxOptimization;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.PasswordField;
 import org.joget.apps.form.model.Element;
@@ -32,8 +33,10 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 
-public class FormRowDataListBinder extends DataListBinderDefault {
+public class FormRowDataListBinder extends DataListBinderDefault implements InboxOptimization {
 
     private Form cachedForm = null;
     private String cachedTableName = null;
@@ -317,5 +320,134 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             queryObject.setValues((String[]) params.toArray(new String[0]));
         }
         return queryObject;
+    }
+
+    @Override
+    public boolean isOptimizationSupported() {
+        return true;
+    }
+    
+    protected DataListFilterQueryObject getInboxCriteria(DataListFilterQueryObject criteria, String filterType, String processDefId, String activityDefId) {
+        Collection<String> params = new ArrayList<String>();
+        String condition = "";
+        
+        condition = criteria.getQuery();
+        if (criteria.getValues() != null) {
+            params.addAll(Arrays.asList(criteria.getValues()));
+        }
+        
+        if (condition == null || condition.isEmpty()) {
+            condition = " WHERE ";
+        } else {
+            condition += " AND ";
+        }
+        
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        
+        String username = wum.getCurrentUsername();
+        Map<String, Collection<String>> replacementUsers = WorkflowUtil.getReplacementUsers(username);
+        
+        if (replacementUsers == null || replacementUsers.isEmpty()) {
+            condition += " ass.assigneeName = ?";
+            params.add(username);
+        } else {
+            condition += " (ass.assigneeName = ?";
+            params.add(username);
+            
+            for (String u : replacementUsers.keySet()) {
+                Collection<String> processes = replacementUsers.get(u);
+                condition += " OR (ass.assigneeName = ?";
+                params.add(u);
+                
+                if (processes != null && !processes.isEmpty()) {
+                    condition += " AND (";
+                    String processCond = "";
+                    for (String p : processes) {
+                        String[] temp = p.split(":");
+                        if (temp.length > 0 && !temp[0].isEmpty()) {
+                            String tempProcessDefId = temp[0] + "#%";
+                            if (temp.length > 1 && !temp[1].isEmpty()) {
+                                tempProcessDefId += "#" + temp[1];
+                            }
+                            if (!processCond.isEmpty()) {
+                                processCond += " or ";
+                            }
+                            
+                            processCond += "ass.process.processDefId LIKE ?";
+                            params.add(tempProcessDefId);                            
+                        }
+                    }
+                    condition += processCond + ")";
+                }
+                
+                condition += ")";
+            }
+
+            condition += ")";
+        }
+        
+        if ("all".equalsIgnoreCase(filterType)) {
+            condition += " AND ass.process.processDefId LIKE ?";
+            params.add(appDef.getAppId() + "#%");
+        } else if ("process".equalsIgnoreCase(filterType)) {
+            condition += " AND ass.process.processDefId LIKE ?";
+            params.add(appDef.getAppId() + "#%#" + processDefId);
+        } else if ("activity".equalsIgnoreCase(filterType)) {
+            condition += " AND ass.process.processDefId LIKE ? AND (";
+            params.add(appDef.getAppId() + "#%#" + processDefId);
+            
+            String[] activities = activityDefId.split(";");
+            for (int i = 0; i < activities.length; i++) {
+                if (i != 0) {
+                    condition += " OR ";
+                }
+                condition += "ass.activity.activityId LIKE ?";
+                params.add("%_"+processDefId+"_"+activities[i]);
+            }
+        }
+        
+        criteria.setQuery(condition);
+        criteria.setValues(params.toArray(new String[0]));
+        
+        return criteria;
+    }
+
+    @Override
+    public DataListCollection getInboxData(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String filterType, String processDefId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        alterOracleSession();
+        DataListCollection resultList = new DataListCollection();
+
+        String formDefId = getPropertyString("formDefId");
+        String tableName = getTableName(formDefId);
+        if (tableName != null) {
+            FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+
+            DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
+            criteria = getInboxCriteria(criteria, filterType, processDefId, activityDefId);
+
+            List<Map<String, Object>> rowSet = formDataDao.findCustomInboxQuery(formDefId, tableName, null, null, null, criteria.getQuery(), criteria.getValues(), null, null, null, getColumnName(sort), desc, start, rows);
+            resultList.addAll(rowSet);
+        }
+
+        return resultList;
+    }
+
+    @Override
+    public int getInboxDataTotalRowCount(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String filterType, String processDefId, String activityDefId) {
+        alterOracleSession();
+        int count = 0;
+        
+        String formDefId = getPropertyString("formDefId");
+        String tableName = getTableName(formDefId);
+        if (tableName != null) {
+            FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+            DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
+            criteria = getInboxCriteria(criteria, filterType, processDefId, activityDefId);
+
+            Long rowCount = formDataDao.countCustomInboxQuery(formDefId, tableName, null, criteria.getQuery(), criteria.getValues(), null, null, null);
+            count = rowCount.intValue();
+        }
+        return count;
     }
 }

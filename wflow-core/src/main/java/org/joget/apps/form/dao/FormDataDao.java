@@ -184,6 +184,72 @@ public interface FormDataDao {
     public Long countCustomQuery(String formDefId, String tableName, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams);
     
     /**
+     * Custom Select Query to find a list of matching form rows.
+     * @param form
+     * @param fields
+     * @param alias
+     * @param joins
+     * @param condition
+     * @param params
+     * @param groupBys
+     * @param havingCondition
+     * @param sort
+     * @param havingParams
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public List<Map<String, Object>> findCustomInboxQuery(Form form, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows);
+
+    /**
+     * Custom Select Query to find a list of matching form rows.
+     * @param formDefId
+     * @param tableName
+     * @param fields
+     * @param alias
+     * @param joins
+     * @param condition
+     * @param params
+     * @param groupBys
+     * @param havingCondition
+     * @param sort
+     * @param havingParams
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public List<Map<String, Object>> findCustomInboxQuery(String formDefId, String tableName, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows);
+
+    /**
+     * Query total row count of a Custom Select Query for a form.
+     * @param form
+     * @param joins
+     * @param condition
+     * @param params
+     * @param groupBys
+     * @param havingCondition
+     * @param havingParams
+     * @return
+     */
+    public Long countCustomInboxQuery(Form form, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams);
+
+    /**
+     * Query total row count of a Custom Select Query for a form.
+     * @param formDefId
+     * @param tableName
+     * @param joins
+     * @param condition
+     * @param params
+     * @param groupBys
+     * @param havingCondition
+     * @param havingParams
+     * @return
+     */
+    public Long countCustomInboxQuery(String formDefId, String tableName, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams);
+    
+    /**
      * Query to find find primary key based on a field name and it's value.
      * @param form
      * @param fieldName

@@ -14,6 +14,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,6 +80,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final String FORM_PREFIX_TABLE_NAME = "app_fd_";
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
     public static final String FORM_PREFIX_COLUMN = "c_";
+    public static final String WORKFLOW_ASSIGNMENT = "WORKFLOW_ASSIGNMENT";
     public static final int ACTION_TYPE_LOAD = 0;
     public static final int ACTION_TYPE_STORE = 1;
     
@@ -799,7 +801,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (joinsTables != null) {
             int i = 1;
             for (String e : joinsTables) {
-                if (!e.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                if (!e.startsWith(FORM_PREFIX_TABLE_NAME) && !WORKFLOW_ASSIGNMENT.equals(e)) {
                     e = FORM_PREFIX_TABLE_NAME + e;
                 }
                 entities[i] = e;
@@ -964,7 +966,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         } else {
             //check and refreash each mapping file for each entity
             for (String e : entities) {
-                findSessionFactory(e, e, null, ACTION_TYPE_LOAD);
+                if (!WORKFLOW_ASSIGNMENT.equals(e)) {
+                    findSessionFactory(e, e, null, ACTION_TYPE_LOAD);
+                }
             }
 
             // lookup cache
@@ -1099,10 +1103,19 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         String path = getFormMappingPath();
         for (String e : entities) {
-            String filename = e + ".hbm.xml";
-            File mappingFile = new File(path, filename);
-            
-            configuration.addFile(mappingFile);
+            if (WORKFLOW_ASSIGNMENT.equals(e)){
+                configuration.addResource("/org/joget/workflow/model/WorkflowProcessLink.hbm.xml");
+                configuration.addResource("/org/joget/workflow/shark/model/SharkAssignment.hbm.xml");
+                configuration.addResource("/org/joget/workflow/shark/model/SharkActivity.hbm.xml");
+                configuration.addResource("/org/joget/workflow/shark/model/SharkProcess.hbm.xml");
+                configuration.addResource("/org/joget/workflow/shark/model/SharkActivityState.hbm.xml");
+                configuration.addResource("/org/joget/workflow/shark/model/SharkProcessState.hbm.xml");
+            } else {
+                String filename = e + ".hbm.xml";
+                File mappingFile = new File(path, filename);
+
+                configuration.addFile(mappingFile);
+            }
         }
         
         String cacheKey = getJoinSessionFactoryCacheKey(entities);
@@ -1470,6 +1483,20 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         return internalFindCustom(entityName, newTableName, fields, alias, joins, condition, params, groupBys, havingCondition, havingParams, sort, desc, start, rows);
     }
+    
+    public List<Map<String, Object>> findCustomInboxQuery(Form form, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        final String entityName = getFormEntityName(form);
+        final String newTableName = getFormTableName(form);
+
+        return internalFindCustomInbox(entityName, newTableName, fields, alias, joins, condition, params, groupBys, havingCondition, havingParams, sort, desc, start, rows);
+    }
+
+    public List<Map<String, Object>> findCustomInboxQuery(String formDefId, String tableName, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFindCustomInbox(entityName, newTableName, fields, alias, joins, condition, params, groupBys, havingCondition, havingParams, sort, desc, start, rows);
+    }
 
     public Long countCustomQuery(Form form, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
         final String entityName = getFormEntityName(form);
@@ -1483,6 +1510,20 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String newTableName = getFormTableName(formDefId, tableName);
 
         return internalCountCustom(entityName, newTableName, joins, condition, params, groupBys, havingCondition, havingParams);
+    }
+    
+    public Long countCustomInboxQuery(Form form, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        final String entityName = getFormEntityName(form);
+        final String newTableName = getFormTableName(form);
+
+        return internalCountCustomInbox(entityName, newTableName, joins, condition, params, groupBys, havingCondition, havingParams);
+    }
+
+    public Long countCustomInboxQuery(String formDefId, String tableName, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalCountCustomInbox(entityName, newTableName, joins, condition, params, groupBys, havingCondition, havingParams);
     }
     
     /**
@@ -1667,6 +1708,246 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         t = t.substring(FORM_PREFIX_TABLE_NAME.length());
                     }
                     joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
+                }
+                joinQuery += " ";
+            }
+            
+            String query = "SELECT COUNT("+selectField+") FROM " + tableName + " e " + joinQuery + conditionQuery + groupByQuery;
+            
+            Query q = session.createQuery(processQuery(query));
+
+            int i = 0;
+            if (params != null) {
+                for (Object param : params) {
+                    q.setParameter(i, param);
+                    i++;
+                }
+            }
+            if (groupBys != null && groupBys.length > 0 && havingParams != null) {
+                for (BigDecimal param : havingParams) {
+                    q.setBigDecimal(i, param);
+                    i++;
+                }
+            }
+
+            if (groupBys != null && groupBys.length > 0) {
+                return ((long) q.list().size());
+            } else {
+                return ((Long) q.iterate().next());
+            }
+        } finally {
+            closeSession(session);
+        }
+    }
+    
+    /**
+     * Query to find a list of matching form rows.
+     * @param entityName
+     * @param tableName
+     * @param fields
+     * @param alias
+     * @param joinTableNames
+     * @param condition
+     * @param params
+     * @param sort
+     * @param havingCondition
+     * @param groupBys
+     * @param havingParams
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    protected List<Map<String, Object>> internalFindCustomInbox(final String entityName, final String tableName, final String[] fields, final String[] alias, final String[] joinTableNames, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        // get hibernate template
+        Collection<String> joinTableNamesList = new ArrayList<String>();
+        if (joinTableNames != null && joinTableNames.length > 0) {
+            joinTableNamesList.addAll(Arrays.asList(joinTableNames));
+        }
+        joinTableNamesList.add(WORKFLOW_ASSIGNMENT);
+        
+        Session session = getJoinHibernateSession(tableName, joinTableNamesList.toArray(new String[0]));
+
+        try {
+            
+            String fieldsQuery = "e";
+            if (fields != null && fields.length > 0) {
+                fieldsQuery = "";
+                for (String f : fields) {
+                    if (!fieldsQuery.isEmpty()) {
+                        fieldsQuery += ", ";
+                    }
+                    fieldsQuery += f;
+                }
+            }
+            
+            String conditionQuery = "";
+            if (condition != null && !condition.isEmpty()) {
+                conditionQuery = " " + condition + " AND (l.originProcessId = e.id or ass.process.processId = e.id)";
+            } else {
+                conditionQuery = " WHERE (l.originProcessId = e.id or ass.process.processId = e.id)";
+            }
+            
+            String havingConditionQuery = "";
+            if (havingCondition != null && !havingCondition.isEmpty()) {
+                havingConditionQuery = " HAVING " + havingCondition;
+            }
+            
+            String joinQuery = "";
+            if (joinTableNamesList != null && joinTableNamesList.size() > 0) {
+                for (String t : joinTableNamesList) {
+                    joinQuery += ", ";
+                    if (t.equals(WORKFLOW_ASSIGNMENT)) {
+                        joinQuery += "SharkAssignment AS ass left join ass.link l";
+                    } else {
+                        if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                            t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                        }
+                        joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
+                    }
+                }
+                joinQuery += " ";
+            }
+            
+            String query = "SELECT " + fieldsQuery + " FROM " + tableName + " e " + joinQuery + conditionQuery;
+            
+            if (groupBys != null && groupBys.length > 0) {
+                String groupByQuery = "";
+                for (String f : groupBys) {
+                    if (!groupByQuery.isEmpty()) {
+                        groupByQuery += ", ";
+                    }
+                    groupByQuery += f;
+                }
+                query += " GROUP BY " + groupByQuery + havingConditionQuery;
+            }
+
+            if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
+                String sortQuery = sort;
+                query += " ORDER BY " + sortQuery;
+
+                if (desc) {
+                    query += " DESC";
+                }
+            }
+            Query q = session.createQuery(processQuery(query));
+
+            int s = (start == null) ? 0 : start;
+            q.setFirstResult(s);
+
+            if (rows != null && rows > 0) {
+                q.setMaxResults(rows);
+            }
+
+            int i = 0;
+            if (params != null) {
+                for (Object param : params) {
+                    q.setParameter(i, param);
+                    i++;
+                }
+            }
+            if (groupBys != null && groupBys.length > 0 && havingParams != null) {
+                for (BigDecimal param : havingParams) {
+                    q.setBigDecimal(i, param);
+                    i++;
+                }
+            }
+
+            Collection result = q.list();
+
+            List<Map<String, Object>> rowSet = new ArrayList<Map<String, Object>>();
+            for (Object o : result) {
+                Object[] arr = (o instanceof String) ? new Object[] { o } : (Object[]) o;
+                Map<String, Object> r = new HashMap<String, Object>();
+                for (int j = 0; j < alias.length; j++) {
+                    Object tempValue = arr[j];
+                    if (tempValue == null) {
+                        tempValue = "";
+                    } else if (!(tempValue instanceof Date)) {
+                        tempValue = tempValue.toString();
+                    }
+                    
+                    if (alias[j].contains(".")) {
+                        String prefix = alias[j].substring(0, alias[j].indexOf("."));
+                        String name = alias[j].substring(alias[j].indexOf(".") + 1);
+                        
+                        Map<String, Object> sub = (Map<String, Object>) r.get(prefix);
+                        if (sub == null) {
+                            sub = new HashMap<String, Object>();
+                        }
+                        sub.put(name, tempValue);
+                        r.put(prefix, sub);
+                    }
+                    r.put(alias[j], tempValue);
+                }
+                rowSet.add(r);
+            }
+            return rowSet;
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    /**
+     * Query total row count for a form.
+     * @param entityName
+     * @param tableName
+     * @param joinTableNames
+     * @param condition
+     * @param params
+     * @param havingCondition
+     * @param havingParams
+     * @param groupBys
+     * @return
+     */
+    protected Long internalCountCustomInbox(final String entityName, final String tableName, final String[] joinTableNames, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        // get hibernate template
+        Collection<String> joinTableNamesList = new ArrayList<String>();
+        if (joinTableNames != null && joinTableNames.length > 0) {
+            joinTableNamesList.addAll(Arrays.asList(joinTableNames));
+        }
+        joinTableNamesList.add(WORKFLOW_ASSIGNMENT);
+        
+        Session session = getJoinHibernateSession(tableName,  joinTableNamesList.toArray(new String[0]));
+        try {
+            String selectField = "*"; 
+            String groupByQuery = "";
+            
+            String conditionQuery = "";
+            if (condition != null && !condition.isEmpty()) {
+                conditionQuery = " " + condition + " AND (l.originProcessId = e.id or ass.process.processId = e.id)";
+            } else {
+                conditionQuery = " WHERE (l.originProcessId = e.id or ass.process.processId = e.id)";
+            }
+            
+            String havingConditionQuery = "";
+            if (havingCondition != null && !havingCondition.isEmpty()) {
+                havingConditionQuery = " HAVING " + havingCondition;
+            }
+            
+            if (groupBys != null && groupBys.length > 0) {
+                selectField = groupBys[0];
+                for (String f : groupBys) {
+                    if (!groupByQuery.isEmpty()) {
+                        groupByQuery += ", ";
+                    }
+                    groupByQuery += f;
+                }
+                groupByQuery = " GROUP BY " + groupByQuery + havingConditionQuery;
+            }
+            
+            String joinQuery = "";
+            if (joinTableNamesList != null && joinTableNamesList.size() > 0) {
+                for (String t : joinTableNamesList) {
+                    joinQuery += ", ";
+                    if (t.equals(WORKFLOW_ASSIGNMENT)) {
+                        joinQuery += "SharkAssignment AS ass left join ass.link l";
+                    } else {
+                        if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                            t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                        }
+                        joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
+                    }
                 }
                 joinQuery += " ";
             }

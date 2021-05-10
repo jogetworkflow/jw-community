@@ -439,6 +439,39 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return transformToWorkflowAssignment(shAss);
     }
     
+    public Collection<WorkflowAssignment> getAssignmentsByRecordId(String id, String username, String packageId, String processId, Collection<String> activityDefIds) {
+        //required to disable lazy loading 
+        String condition = "join fetch e.process p join fetch e.activity a join fetch a.state s left join e.link l";
+        Collection<String> params = new ArrayList<String>();
+        
+        condition += " where e.isValid is true ";
+        if (username != null && !username.isEmpty()) {
+            condition += getUserFilter(params, username);
+        }
+        if (packageId != null && processId != null) {
+            condition += " and p.processDefId like ?";
+            params.add(packageId + "#%#" + processId);
+        } else if (packageId != null) {
+            condition += " and p.processDefId like ?";
+            params.add(packageId + "#%");
+        }
+        if (activityDefIds != null && !activityDefIds.isEmpty()) {
+            condition += " and a.activityDefId in (?";
+            for (int i = 1; i < activityDefIds.size(); i++) {
+                condition += ",?";
+            }
+            condition += ")";
+            params.addAll(activityDefIds);
+        }
+        condition += " and (l.originProcessId = ? or p.processId = ?)";
+        params.add(id);
+        params.add(id);
+        
+        Collection<SharkAssignment> shAss = find(ENTITY_NAME, condition, params.toArray(new String[0]), null, null, null, null);
+        
+        return transformToWorkflowAssignment(shAss);
+    }
+    
     public Collection<WorkflowAssignment> getAssignments(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
         //sorting
         if (sort != null && !sort.isEmpty()) {
