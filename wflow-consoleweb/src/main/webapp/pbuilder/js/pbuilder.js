@@ -140,24 +140,6 @@ ProcessBuilder = {
             }
             return true;
         });
-        
-        // bind event handling to new or moved connections
-        ProcessBuilder.jsPlumb.unbind("connection");
-        ProcessBuilder.jsPlumb.bind("connection", function(info) {
-            var connection = info.connection;
-            ProcessBuilder.addConnection(connection);
-        });
-        
-        // bind event handling to detached connections
-        ProcessBuilder.jsPlumb.unbind("connectionDetached");
-        ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
-            var connection = info.connection;
-            if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
-                ProcessBuilder.showConnectionDialog(connection);
-            } else {
-                ProcessBuilder.removeConnection(connection);
-            }
-        });
     },
     
     /*
@@ -2364,12 +2346,14 @@ ProcessBuilder = {
             $('#process-selector select').trigger("chosen:updated");
             callback(element);
         } else {
+            ProcessBuilder.jsPlumb.unbind("connection");
+            ProcessBuilder.jsPlumb.unbind("connectionDetached");
             ProcessBuilder.jsPlumb.unbind();
             ProcessBuilder.jsPlumb.detachEveryConnection();
             ProcessBuilder.jsPlumb.deleteEveryEndpoint();
             ProcessBuilder.jsPlumb.reset();
             ProcessBuilder.initJsPlumb();
-
+            
             element.addClass("process");
             element.attr("id", elementObj.properties.id);
             element.html("");
@@ -2401,6 +2385,23 @@ ProcessBuilder = {
                     $(element).append(temp);
                     self.renderElement(elementObj.transitions[i], temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
                 }
+                
+                
+                // bind event handling to new or moved connections
+                ProcessBuilder.jsPlumb.bind("connection", function(info) {
+                    var connection = info.connection;
+                    ProcessBuilder.addConnection(connection);
+                });
+
+                // bind event handling to detached connections
+                ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
+                    var connection = info.connection;
+                    if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
+                        ProcessBuilder.showConnectionDialog(connection);
+                    } else {
+                        ProcessBuilder.removeConnection(connection);
+                    }
+                });
                 callback(element);
             });
         }

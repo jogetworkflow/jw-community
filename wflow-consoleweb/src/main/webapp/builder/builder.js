@@ -3216,6 +3216,10 @@ _CustomBuilder.Builder = {
             if (dragging) {
                 return;
             }
+            if (component === null || component.builderTemplate === undefined) {
+                self.component = undefined;
+                return;
+            }
             
             try {
                 var box = self.getBox(node);
