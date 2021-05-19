@@ -405,6 +405,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Inbo
                 condition += "ass.activity.activityId LIKE ?";
                 params.add("%_"+processDefId+"_"+activities[i]);
             }
+            condition += ") ";
         }
         
         criteria.setQuery(condition);
