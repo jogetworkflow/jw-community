@@ -32,7 +32,9 @@ public class WorkflowEventAuditManager implements EventAuditManagerInterface {
     }
 
     public void persist(WMSessionHandle arg0, StateEventAuditPersistenceObject arg1) throws EventAuditException {
-        ((WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager")).internalRemoveProcessOnComplete(arg1.getProcessId());
+        if ("processStateChanged".equalsIgnoreCase(arg1.getType()) && !arg1.getNewState().equals(arg1.getOldState()) && arg1.getNewState().startsWith("closed") && !arg1.getNewState().equals("closed.aborted")) {
+            ((WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager")).internalRemoveProcessOnComplete(arg1.getProcessId());
+        }
     }
 
     public boolean restore(WMSessionHandle arg0, AssignmentEventAuditPersistenceObject arg1) throws EventAuditException {

@@ -1,10 +1,12 @@
 package org.joget.workflow.shark.model.dao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.hibernate.Query;
@@ -15,15 +17,19 @@ import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateAssignment;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
 import org.joget.workflow.shark.migrate.model.MigrateProcessDefinition;
+import org.joget.workflow.shark.model.SharkActivityHistory;
 import org.joget.workflow.shark.model.SharkAssignment;
 import org.joget.workflow.shark.model.SharkProcess;
+import org.joget.workflow.shark.model.SharkProcessHistory;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONObject;
 
 public class WorkflowAssignmentDao extends AbstractSpringDao {
     
@@ -31,8 +37,13 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     public final static String ENTITY_NAME="SharkAssignment";
     public final static String PROCESS_ENTITY_NAME="SharkProcess";
     public final static String ACTIVITY_ENTITY_NAME="SharkActivity";
+    public final static String PROCESS_HISTORY_ENTITY_NAME="SharkProcessHistory";
+    public final static String ACTIVITY_HISTORY_ENTITY_NAME="SharkActivityHistory";
     
     public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        if (state != null && state.startsWith("close")) {
+            return this.getProcessHistories(packageId, processDefId, processId, processName, version, recordId, username, sort, desc, start, rows);
+        }
         
         String customField = ", (select link.originProcessId from WorkflowProcessLink as link where e.processId = link.processId) as recordId";
         
@@ -109,6 +120,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     }
     
     public long getProcessesSize(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state) {
+        if (state != null && state.startsWith("close")) {
+            return getProcessHistoriesSize(packageId, processDefId, processId, processName, version, recordId, username);
+        }
+
         //required to disable lazy loading 
         String condition = "";
         String where = "";
@@ -912,5 +927,417 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         }
         
         return false;
+    }
+    
+    public void saveProcessHistory(SharkProcessHistory history) {
+        super.saveOrUpdate(PROCESS_HISTORY_ENTITY_NAME, history);
+    }
+    
+    public void saveActivityHistory(SharkActivityHistory history) {
+        super.saveOrUpdate(ACTIVITY_HISTORY_ENTITY_NAME, history);
+    }
+    
+    public Collection<WorkflowProcess> getProcessHistories(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String sort, Boolean desc, Integer start, Integer rows) {
+        //required to disable lazy loading 
+        String condition = "join fetch e.link link";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equals("id")) {
+                sort = "e.processId";
+            } else if (sort.equals("Started") || sort.equals("startedTime") || sort.equals("dateStarted")) {
+                sort = "e.started";
+            } else if (sort.equals("Created") || sort.equals("createdTime") || sort.equals("dateCreated")) {
+                sort = "e.created";
+            } else if (sort.equals("name")) {
+                sort = "e.processName";
+            } else if (sort.equals("requesterId")) {
+                sort = "e.resourceRequesterId";
+            }
+        }
+        
+        condition += " where 1=1";
+        
+        if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null) {
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                params.add(packageId + "#%");
+            }
+            
+            if (version != null && !version.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                params.add("%#"+version+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and e.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and e.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (processName != null && !processName.isEmpty()) {
+                condition += " and e.processName like ?";
+                params.add("%" + processName + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.resourceRequesterId = ?";
+                params.add(username);
+            }
+            
+            if (recordId != null && !recordId.isEmpty()) {
+                condition += " and (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
+            }
+        }
+        Collection<SharkProcessHistory> shProcess = find(PROCESS_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        return transformHistoryToWorkflowProcess(shProcess);
+    }
+    
+    public long getProcessHistoriesSize(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username) {
+        String condition = "";
+        String where = "";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (packageId != null || processDefId != null || processId != null || processName != null || version != null || recordId != null || username != null) {
+            
+            if (recordId != null && !recordId.isEmpty()) {
+                condition += " join e.link link";
+                where += " where (link.originProcessId like ? or e.processId like ?)";
+                params.add("%" + recordId + "%");
+                params.add("%" + recordId + "%");
+            } else {
+                where += " where 1 = 1";
+            }
+            
+            if (packageId != null && !packageId.isEmpty()) {
+                where += " and e.processDefId like ?";
+                params.add(packageId + "#%");
+            }
+            
+            if (version != null && !version.isEmpty()) {
+                where += " and e.processDefId like ?";
+                params.add("%#"+version+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                where += " and e.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                where += " and e.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (processName != null && !processName.isEmpty()) {
+                where += " and e.processName like ?";
+                params.add("%" + processName + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                where += " and e.resourceRequesterId = ?";
+                params.add(username);
+            }
+        }
+        return count(PROCESS_HISTORY_ENTITY_NAME, condition+where, params.toArray(new String[0]));
+    }
+    
+    public Collection<WorkflowActivity> getActivityHistories(String processId, String actDefId, String username, String sort, Boolean desc, Integer start, Integer rows) {
+        String condition = " join fetch e.process p";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equals("id")) {
+                sort = "e.activityId";
+            } else if (sort.equals("Started") || sort.equals("startedTime") || sort.equals("dateStarted")) {
+                sort = "e.accepted";
+            } else if (sort.equals("Created") || sort.equals("createdTime") || sort.equals("dateCreated")) {
+                sort = "e.activated";
+            } else if (sort.equals("name")) {
+                sort = "e.activityName";
+            } else if (sort.equals("performer")) {
+                sort = "e.performer";
+            }
+        }
+        
+        condition += " where 1=1";
+        
+        if (processId != null || actDefId != null || username != null) {
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and p.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (actDefId != null && !actDefId.isEmpty()) {
+                condition += " and e.activityDefId like ?";
+                params.add("%" + actDefId + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.performer = ?";
+                params.add(username);
+            }
+        }
+        Collection<SharkActivityHistory> shAct = find(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        return transformHistoryToWorkflowActivity(shAct);
+    }
+    
+    public long getActivityHistoriesSize(String processId, String actDefId, String username) {
+        String condition = " join e.process p where 1=1";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (processId != null || actDefId != null || username != null) {
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and p.processId like ?";
+                params.add("%" + processId + "%");
+            }
+            
+            if (actDefId != null && !actDefId.isEmpty()) {
+                condition += " and e.activityDefId like ?";
+                params.add("%" + actDefId + "%");
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.performer = ?";
+                params.add(username);
+            }
+        }
+        return count(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]));
+    }
+    
+    public WorkflowProcess getProcessHistoryById(String processId) {
+        SharkProcessHistory shProcess = (SharkProcessHistory) find(PROCESS_HISTORY_ENTITY_NAME, processId);
+        if (shProcess != null) {
+            return transformHistoryToWorkflowProcess(shProcess);
+        }
+        return null;
+    }
+    
+    public WorkflowActivity getActivityHistoryById(String activityId) {
+        SharkActivityHistory shAct = (SharkActivityHistory) find(ACTIVITY_HISTORY_ENTITY_NAME, activityId);
+        if (shAct != null) {
+            return transformHistoryToWorkflowActivity(shAct);
+        }
+        return null;
+    }
+    
+    public void deleteProcessHistory(String processId) {
+        String condition = " join e.process p";
+        Collection<String> params = new ArrayList<String>();
+        condition += " where p.processId = ?";
+        params.add(processId);
+        Collection<SharkActivityHistory> shAct = find(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]), null, null, null, null);
+        for (SharkActivityHistory a : shAct) {
+            delete(ACTIVITY_HISTORY_ENTITY_NAME, a);
+        }
+        
+        SharkProcessHistory shProcess = (SharkProcessHistory) find(PROCESS_HISTORY_ENTITY_NAME, processId);
+        delete(PROCESS_HISTORY_ENTITY_NAME, shProcess);
+    }
+    
+    protected Collection<WorkflowProcess> transformHistoryToWorkflowProcess(Collection<SharkProcessHistory> shProcess) {
+        Collection<WorkflowProcess> processes = new ArrayList<WorkflowProcess>();
+        
+        if (shProcess != null && !shProcess.isEmpty()) {
+            for (SharkProcessHistory o : shProcess) {
+                processes.add(transformHistoryToWorkflowProcess(o));
+            }
+        }
+        
+        return processes;
+    }
+    
+    protected WorkflowProcess transformHistoryToWorkflowProcess(SharkProcessHistory shProcess) {
+        WorkflowProcess workflowProcess = new WorkflowProcess();
+        workflowProcess.setRecordId((shProcess.getLink() != null)? shProcess.getLink().getOriginProcessId():shProcess.getProcessId());
+        workflowProcess.setId(shProcess.getProcessDefId());
+        workflowProcess.setInstanceId(shProcess.getProcessId());
+        workflowProcess.setName(shProcess.getProcessName());
+        workflowProcess.setState(shProcess.getState());
+        workflowProcess.setPackageId(WorkflowUtil.getProcessDefPackageId(shProcess.getProcessDefId()));
+        workflowProcess.setVersion(WorkflowUtil.getProcessDefVersion(shProcess.getProcessDefId()));
+        workflowProcess.setRequesterId(shProcess.getResourceRequesterId());
+        workflowProcess.setLimit(shProcess.getLimit());
+        workflowProcess.setDue(shProcess.getDue());
+        
+        Calendar startedCal = Calendar.getInstance();
+        startedCal.setTimeInMillis(shProcess.getStarted());
+        workflowProcess.setStartedTime(startedCal.getTime());
+        
+        Calendar createdCal = Calendar.getInstance();
+        createdCal.setTimeInMillis(shProcess.getCreated());
+        workflowProcess.setCreatedTime(createdCal.getTime());
+        
+        Calendar completionCal = Calendar.getInstance();
+        completionCal.setTimeInMillis(shProcess.getLastStateTime());
+        workflowProcess.setFinishTime(completionCal.getTime());
+        
+        workflowProcess.setLimit(shProcess.getLimit());
+        workflowProcess.setDue(shProcess.getDue());
+        
+        if (workflowProcess.getDue() != null && workflowProcess.getFinishTime().after(workflowProcess.getDue())) {
+            Calendar dueCal = Calendar.getInstance();
+            dueCal.setTime(workflowProcess.getDue());
+            long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
+            long delayInSeconds = (long) delayInMilliseconds / 1000;
+            workflowProcess.setDelayInSeconds(delayInSeconds);
+            workflowProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
+        }
+        
+        //time taken for completion from date started
+        long timeTakenInMilliSeconds = (workflowProcess.getFinishTime() != null && workflowProcess.getStartedTime() != null) ? workflowProcess.getFinishTime().getTime() - workflowProcess.getStartedTime().getTime() : 0;
+        long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+        workflowProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+        workflowProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
+
+        //time taken for completion from date created
+        timeTakenInMilliSeconds = (workflowProcess.getFinishTime() != null && workflowProcess.getCreatedTime() != null) ? workflowProcess.getFinishTime().getTime() - workflowProcess.getCreatedTime().getTime() : 0;
+        timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+        workflowProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
+        workflowProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
+        
+        //workflow variable
+        Collection<WorkflowVariable> workflowVariable = new ArrayList<WorkflowVariable>();
+        if (shProcess.getVariables() != null && !shProcess.getVariables().isEmpty()) {
+            try {
+                JSONObject obj = new JSONObject(shProcess.getVariables());
+                Iterator keys = obj.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    WorkflowVariable v = new WorkflowVariable();
+                    v.setId(key);
+                    v.setName(key);
+                    v.setVal(obj.getString(key));
+                    workflowVariable.add(v);
+                }
+            } catch (Exception e) {
+                LogUtil.error(WorkflowAssignmentDao.class.getName(), e, "");
+            }
+        }
+        workflowProcess.setVariableList(workflowVariable);
+        
+        return workflowProcess;
+    }
+    
+    protected Collection<WorkflowActivity> transformHistoryToWorkflowActivity(Collection<SharkActivityHistory> shAct) {
+        Collection<WorkflowActivity> activities = new ArrayList<WorkflowActivity>();
+        
+        if (shAct != null && !shAct.isEmpty()) {
+            for (SharkActivityHistory o : shAct) {
+                activities.add(transformHistoryToWorkflowActivity(o));
+            }
+        }
+        
+        return activities;
+    }
+    
+    protected WorkflowActivity transformHistoryToWorkflowActivity(SharkActivityHistory shAct) {
+        WorkflowActivity workflowActivity = new WorkflowActivity();
+        
+        workflowActivity.setId(shAct.getActivityId());
+        workflowActivity.setActivityDefId(shAct.getActivityDefId());
+        workflowActivity.setName(shAct.getActivityName());
+        workflowActivity.setState(shAct.getState());
+        workflowActivity.setProcessDefId(shAct.getProcess().getProcessDefId());
+        workflowActivity.setProcessId(shAct.getProcess().getProcessId());
+        workflowActivity.setProcessName(shAct.getProcess().getProcessName());
+        workflowActivity.setProcessVersion(shAct.getProcess().getVersion());
+        workflowActivity.setProcessStatus(shAct.getProcess().getState());
+        workflowActivity.setType(shAct.getType());
+        workflowActivity.setNameOfAcceptedUser(shAct.getPerformer());
+        workflowActivity.setPerformer(shAct.getParticipantId());
+        if (shAct.getAssignmentUsers() != null) {
+            workflowActivity.setAssignmentUsers(shAct.getAssignmentUsers().split(";"));
+        }
+        
+        Calendar startedCal = Calendar.getInstance();
+        startedCal.setTimeInMillis(shAct.getAccepted());
+        workflowActivity.setStartedTime(startedCal.getTime());
+        
+        Calendar createdCal = Calendar.getInstance();
+        createdCal.setTimeInMillis(shAct.getActivated());
+        workflowActivity.setCreatedTime(createdCal.getTime());
+        
+        Calendar completionCal = Calendar.getInstance();
+        completionCal.setTimeInMillis(shAct.getLastStateTime());
+        workflowActivity.setFinishTime(completionCal.getTime());
+        
+        workflowActivity.setLimit(shAct.getLimit());
+        workflowActivity.setDue(shAct.getDue());
+        
+        if (workflowActivity.getDue() != null && workflowActivity.getFinishTime().after(workflowActivity.getDue())) {
+            Calendar dueCal = Calendar.getInstance();
+            dueCal.setTime(workflowActivity.getDue());
+            long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
+            long delayInSeconds = (long) delayInMilliseconds / 1000;
+            workflowActivity.setDelayInSeconds(delayInSeconds);
+            workflowActivity.setDelay(convertTimeInSecondsToString(delayInSeconds));
+        }
+        
+        //time taken for completion from date started
+        long timeTakenInMilliSeconds = (workflowActivity.getFinishTime() != null && workflowActivity.getStartedTime() != null) ? workflowActivity.getFinishTime().getTime() - workflowActivity.getStartedTime().getTime() : 0;
+        long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+        workflowActivity.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+        workflowActivity.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
+
+        //time taken for completion from date created
+        timeTakenInMilliSeconds = (workflowActivity.getFinishTime() != null && workflowActivity.getCreatedTime() != null) ? workflowActivity.getFinishTime().getTime() - workflowActivity.getCreatedTime().getTime() : 0;
+        timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+        workflowActivity.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
+        workflowActivity.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
+        
+        //workflow variable
+        Collection<WorkflowVariable> workflowVariable = new ArrayList<WorkflowVariable>();
+        if (shAct.getVariables() != null && !shAct.getVariables().isEmpty()) {
+            try {
+                JSONObject obj = new JSONObject(shAct.getVariables());
+                Iterator keys = obj.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    WorkflowVariable v = new WorkflowVariable();
+                    v.setId(key);
+                    v.setName(key);
+                    v.setVal(obj.getString(key));
+                    workflowVariable.add(v);
+                }
+            } catch (Exception e) {
+                LogUtil.error(WorkflowAssignmentDao.class.getName(), e, "");
+            }
+        }
+        workflowActivity.setVariableList(workflowVariable);
+        
+        return workflowActivity;
+    }
+    
+    protected String convertTimeInSecondsToString(long timeInSeconds) {
+        long timeInMinutes = (long) timeInSeconds / 60;
+        long timeInHours = (long) timeInMinutes / 60;
+        long timeInDays = (long) timeInHours / 24;
+                    
+        String temp = "";
+        
+        if (timeInSeconds < 60) {
+            temp = timeInSeconds + " second(s)";
+        } else if (timeInSeconds >= 60 && timeInMinutes < 60) {
+            temp = timeInMinutes + " minutes(s) " + (timeInSeconds % 60) + " second(s)";
+        } else if (timeInMinutes >= 60 && timeInHours < 24) {
+            temp = timeInHours + " hour(s) " + (timeInMinutes % 60) + " minute(s) " + (timeInSeconds % 60) + " second(s)";
+        } else if (timeInHours >= 24) {
+            temp = timeInDays + " day(s) " + (timeInHours % 24) + " hour(s) " + (timeInMinutes % 60) + " minutes(s) " + (timeInSeconds % 60) + " second(s)";
+        }
+        
+        return temp;
     }
 }

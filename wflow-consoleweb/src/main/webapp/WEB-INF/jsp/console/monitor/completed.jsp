@@ -17,20 +17,27 @@
     <div id="main-action">
     </div>
     <div id="main-body">
-        <div id="main-body-content-filter">
-            <form>
-            <fmt:message key="console.monitoring.common.label.filterByApp"/>
-            <select id="JsonDataTable_filterbyApp"  onchange="filter(JsonDataTable, '&appId=', this.options[this.selectedIndex].value)">
-                <option></option>
-            <c:forEach items="${appDefinitionList}" var="app">
-                <c:set var="selected"><c:if test="${app.id == param.appId}"> selected</c:if></c:set>
-                <option value="<c:out value="${app.id}"/>" ${selected}><c:out value="${app.name}"/></option>
-            </c:forEach>
-            </select>
-            </form>
-        </div>
+        <c:choose>
+            <c:when test="${migrationStatus ne 'done'}">
+                <div class="alert alert-warning">
+                    <fmt:message key="console.monitoring.migrationInProgress"/>
+                </div>    
+            </c:when>
+            <c:otherwise>
+                <div id="main-body-content-filter">
+                    <form>
+                    <fmt:message key="console.monitoring.common.label.filterByApp"/>
+                    <select id="JsonDataTable_filterbyApp"  onchange="filter(JsonDataTable, '&appId=', this.options[this.selectedIndex].value)">
+                        <option></option>
+                    <c:forEach items="${appDefinitionList}" var="app">
+                        <c:set var="selected"><c:if test="${app.id == param.appId}"> selected</c:if></c:set>
+                        <option value="<c:out value="${app.id}"/>" ${selected}><c:out value="${app.name}"/></option>
+                    </c:forEach>
+                    </select>
+                    </form>
+                </div>
 
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/completed/list?${pageContext.request.queryString}"
+                <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/completed/list?${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="processList"
                        jsonData="data"
@@ -60,6 +67,11 @@
                        column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
                        column9="{key: 'recordId', label: 'console.app.process.common.label.recordId', sortable: false}"
                        />
+            </c:otherwise>
+        </c:choose>
+        
+        
+        
     </div>
 </div>
 

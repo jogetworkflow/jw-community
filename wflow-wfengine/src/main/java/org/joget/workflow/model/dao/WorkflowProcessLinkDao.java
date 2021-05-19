@@ -10,6 +10,7 @@ import org.joget.workflow.model.WorkflowProcessLink;
 public class WorkflowProcessLinkDao extends AbstractSpringDao {
 
     public final static String ENTITY_NAME="WorkflowProcessLink";
+    public final static String HISTORY_ENTITY_NAME="WorkflowProcessLinkHistory";
     
     public void addWorkflowProcessLink(String parentProcessId, String processInstanceId){
         WorkflowProcessLink wfProcessLink = new WorkflowProcessLink();
@@ -29,6 +30,26 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
 
     public void addWorkflowProcessLink(WorkflowProcessLink wfProcessLink){
         saveOrUpdate(ENTITY_NAME, wfProcessLink);
+    }
+    
+    public void addWorkflowProcessLinkHistory(WorkflowProcessLink wfProcessLink){
+        if (getWorkflowProcessLinkHistory(wfProcessLink.getProcessId()) == null) {
+            WorkflowProcessLink history = new WorkflowProcessLink();
+            history.setProcessId(wfProcessLink.getProcessId());
+            history.setOriginProcessId(wfProcessLink.getOriginProcessId());
+            history.setParentProcessId(wfProcessLink.getParentProcessId());
+
+            saveOrUpdate(HISTORY_ENTITY_NAME, history);
+
+            try {
+                wfProcessLink = getWorkflowProcessLink(wfProcessLink.getProcessId());
+                if (wfProcessLink != null) {
+                    delete(wfProcessLink);
+                }
+            } catch (Exception e) {
+                //ignore
+            }
+        }
     }
 
     public WorkflowProcessLink getWorkflowProcessLink(String processId){
@@ -99,6 +120,9 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     public Collection<WorkflowProcessLink> getLinks(String processId) {
         Collection<WorkflowProcessLink> links = new ArrayList<WorkflowProcessLink>();
         WorkflowProcessLink processLink = getWorkflowProcessLink(processId);
+        if (processLink == null) {
+            processLink = getWorkflowProcessLinkHistory(processId);
+        }
         String conditions = "where e.originProcessId = ?";
         if (processLink != null) {
             processId = processLink.getOriginProcessId();
@@ -114,5 +138,41 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
             links.addAll(temp);
         }
         return links;
+    }
+    
+    public WorkflowProcessLink getWorkflowProcessLinkHistory(String processId){
+        return (WorkflowProcessLink) find(HISTORY_ENTITY_NAME, processId);
+    }
+
+    public void deleteHistory(WorkflowProcessLink wfProcessLink) {
+        super.delete(HISTORY_ENTITY_NAME, wfProcessLink);
+    }
+    
+    public Collection<WorkflowProcessLink> getHistoryLinks(String processId) {
+        Collection<WorkflowProcessLink> links = new ArrayList<WorkflowProcessLink>();
+        WorkflowProcessLink processLink = getWorkflowProcessLinkHistory(processId);
+        String conditions = "where e.originProcessId = ?";
+        if (processLink != null) {
+            processId = processLink.getOriginProcessId();
+        }
+        WorkflowProcessLink origin = new WorkflowProcessLink();
+        origin.setProcessId(processId);
+        origin.setParentProcessId(processId);
+        origin.setOriginProcessId(processId);
+        links.add(origin);
+        
+        Collection<WorkflowProcessLink> temp = super.find(HISTORY_ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
+        if (temp != null && !temp.isEmpty()) {
+            links.addAll(temp);
+        }
+        return links;
+    }
+    
+    public void migrateCompletedProcessLinks() {
+        String conditions = " where e.processId not in (select p.processId from SharkProcess as p join p.state s where s.name like ?)";
+        Collection<WorkflowProcessLink> temp = super.find(ENTITY_NAME, conditions, new String[]{"open.%"}, null, null, null, null);
+        for (WorkflowProcessLink l : temp) {
+            addWorkflowProcessLinkHistory(l);
+        }
     }
 }

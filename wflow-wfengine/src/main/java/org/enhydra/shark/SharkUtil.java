@@ -58,6 +58,14 @@ public class SharkUtil {
         return null;
     }
     
+    public static CustomWfProcessImpl getProcess(WMSessionHandle shandle, String processId) {
+        try {
+            return (CustomWfProcessImpl) SharkUtilities.getProcess(shandle, processId, 0);
+        } catch (Exception e) {}
+        
+        return null;
+    }
+    
     public static WMEntity createBasicEntity(XMLComplexElement el) throws Exception {
         return SharkUtilities.createBasicEntity(el);
     }

@@ -52,7 +52,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.transaction.TransactionManager;
@@ -70,15 +72,21 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
+import org.joget.workflow.shark.model.SharkActivityHistory;
+import org.joget.workflow.shark.model.SharkProcessHistory;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.DeadlineThreadManager;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -121,6 +129,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public void setSetupManager(SetupManager setupManager) {
         this.setupManager = setupManager;
         DeadlineThreadManager.initThreads(this);
+        runProcessHistoryMigrationForProfiles();
     }
 
     public WorkflowProcessLinkDao getWorkflowProcessLinkDao() {
@@ -1188,7 +1197,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows) {
-        return workflowAssignmentDao.getProcesses(packageId, null, processId, processName, version, recordId, requester, "closed", sort, desc, start, rows);
+        return workflowAssignmentDao.getProcessHistories(packageId, null, processId, processName, version, recordId, requester, sort, desc, start, rows);
     }
 
     /**
@@ -1214,7 +1223,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getCompletedProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
-        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, requester, "closed")).intValue();
+        return ((Long) workflowAssignmentDao.getProcessHistoriesSize(packageId, null, processId, processName, version, recordId, requester)).intValue();
     }
 
     /**
@@ -1270,6 +1279,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     
                     workflowProcess.setName(WorkflowUtil.processVariable(workflowProcess.getName(), null, ass));
                 }
+            } else {
+                //fallback to completed process
+                WorkflowProcess completedWorkflowProcess = getCompletedProcessById(processId);
+                if (completedWorkflowProcess != null) {
+                    workflowProcess = completedWorkflowProcess;
+                }
             }
 
 
@@ -1304,7 +1319,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         try {
             activitySize = getActivitySize(processId);
-
+            if (activitySize == 0) {
+                WorkflowProcess p = workflowAssignmentDao.getProcessHistoryById(processId);
+                if (p != null) {
+                    return getCompletedProcessActivityList(processId, start, rows, sort, desc);
+                }
+            }
 
             sc = connect();
 
@@ -1414,6 +1434,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        
+        if (size == 0) {
+            WorkflowProcess p = workflowAssignmentDao.getProcessHistoryById(processId);
+            if (p != null) {
+                return getCompletedProcessActivitySize(processId);
+            }
+        }
+        
         return size;
     }
 
@@ -1504,6 +1532,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     //process activity name variable
                     workflowActivity.setName(WorkflowUtil.processVariable(workflowActivity.getName(), null, ass));
                     workflowActivity.setProcessName(WorkflowUtil.processVariable(workflowActivity.getProcessName(), null, ass));
+                }
+            } else {
+                //fallback to completed process activity
+                WorkflowActivity temp = getCompletedProcessActivityById(activityId);
+                if (temp != null) {
+                    workflowActivity = temp;
                 }
             }
 
@@ -1696,8 +1730,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     wv.setVal(val);
                     variableList.add(wv);
                 }
+            } else {
+                //fallback to completed process activity
+                WorkflowActivity act = this.getCompletedProcessActivityById(activityId);
+                if (act != null) {
+                    variableList = act.getVariableList();
+                }
             }
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -1737,6 +1776,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     wv.setName(key);
                     wv.setVal(val);
                     variableList.add(wv);
+                }
+            } else {
+                //fallback to completed process
+                WorkflowProcess process = this.getCompletedProcessById(processId);
+                if (process != null) {
+                    variableList = process.getVariableList();
                 }
             }
 
@@ -1812,83 +1857,82 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WfProcess[] wfProcessArray = pi.get_next_n_sequence(0);
             WorkflowProcess wfProcess = new WorkflowProcess();
 
+            if (wfProcessArray != null && wfProcessArray.length > 0) {
 
-            double limit = -1;
+                double limit = -1;
 
-            //get process limit
-            AdminMisc admin = shark.getAdminMisc();
-            WMEntity processLimitEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
+                //get process limit
+                AdminMisc admin = shark.getAdminMisc();
+                WMEntity processLimitEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
 
 
-            filter = new WMFilter();
-            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-            filter.setAttributeName("Type");
-            filter.setFilterString("ProcessHeader");
-
-            WMEntityIterator processLimitEntityIterator = xpdl.listEntities(sessionHandle, processLimitEnt, filter, true);
-            WMEntity[] processLimitEntityList = null;
-            if (processLimitEntityIterator != null) {
-                processLimitEntityList = processLimitEntityIterator.getArray();
-            }
-
-            if (processLimitEntityList != null) {
-                WMEntity processLimitEntity = processLimitEntityList[0];
-
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Name");
-                filter.setFilterString("Limit");
-
-                WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, processLimitEntity, filter, true);
-                WMAttribute[] procAttributeList = null;
-                if (procAttributeIterator != null) {
-                    procAttributeList = procAttributeIterator.getArray();
-                }
-
-                if (procAttributeList != null && procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
-                    try {
-                        limit = Double.parseDouble((String) procAttributeList[0].getValue());
-                    } catch (Exception e) {}
-                }
-            }
-
-            String durationUnit = "";
-            if (limit != -1) {
-                //get duration unit
                 filter = new WMFilter();
                 filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
                 filter.setAttributeName("Type");
                 filter.setFilterString("ProcessHeader");
 
-                WMEntity processDurationEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
-                WMEntityIterator processDurationEntityIterator = xpdl.listEntities(sessionHandle, processDurationEnt, filter, true);
-                WMEntity[] processDurationEntityList = null;
-                if (processDurationEntityIterator != null) {
-                    processDurationEntityList = processDurationEntityIterator.getArray();
+                WMEntityIterator processLimitEntityIterator = xpdl.listEntities(sessionHandle, processLimitEnt, filter, true);
+                WMEntity[] processLimitEntityList = null;
+                if (processLimitEntityIterator != null) {
+                    processLimitEntityList = processLimitEntityIterator.getArray();
                 }
 
-                if (processDurationEntityList != null) {
-                    WMEntity entity = processDurationEntityList[0];
+                if (processLimitEntityList != null) {
+                    WMEntity processLimitEntity = processLimitEntityList[0];
 
-                    filter = new WMFilter();
                     filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
                     filter.setAttributeName("Name");
-                    filter.setFilterString("DurationUnit");
+                    filter.setFilterString("Limit");
 
-                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, entity, filter, true);
+                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, processLimitEntity, filter, true);
                     WMAttribute[] procAttributeList = null;
                     if (procAttributeIterator != null) {
                         procAttributeList = procAttributeIterator.getArray();
                     }
 
-                    if (procAttributeList != null) {
-                        durationUnit = (String) procAttributeList[0].getValue();
+                    if (procAttributeList != null && procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
+                        try {
+                            limit = Double.parseDouble((String) procAttributeList[0].getValue());
+                        } catch (Exception e) {}
                     }
                 }
-            }
 
-            Calendar startedTimeCal = Calendar.getInstance();
+                String durationUnit = "";
+                if (limit != -1) {
+                    //get duration unit
+                    filter = new WMFilter();
+                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                    filter.setAttributeName("Type");
+                    filter.setFilterString("ProcessHeader");
 
-            if (wfProcessArray != null && wfProcessArray.length > 0) {
+                    WMEntity processDurationEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
+                    WMEntityIterator processDurationEntityIterator = xpdl.listEntities(sessionHandle, processDurationEnt, filter, true);
+                    WMEntity[] processDurationEntityList = null;
+                    if (processDurationEntityIterator != null) {
+                        processDurationEntityList = processDurationEntityIterator.getArray();
+                    }
+
+                    if (processDurationEntityList != null) {
+                        WMEntity entity = processDurationEntityList[0];
+
+                        filter = new WMFilter();
+                        filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                        filter.setAttributeName("Name");
+                        filter.setFilterString("DurationUnit");
+
+                        WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, entity, filter, true);
+                        WMAttribute[] procAttributeList = null;
+                        if (procAttributeIterator != null) {
+                            procAttributeList = procAttributeIterator.getArray();
+                        }
+
+                        if (procAttributeList != null) {
+                            durationUnit = (String) procAttributeList[0].getValue();
+                        }
+                    }
+                }
+
+                Calendar startedTimeCal = Calendar.getInstance();
 
                 long startedTime = admin.getProcessStartedTime(sessionHandle, processInstanceId);
 
@@ -1916,50 +1960,56 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         wfProcess.setDue(getDueDateProceedByPlugin(processInstanceId, "", limitInSecond, startedTimeCal.getTime(), startedTimeCal.getTime()));
                     }
                 }
-            }
 
-            Date currentDate = new Date();
+                Date currentDate = new Date();
 
-            if (wfProcessArray[0].state().equals(SharkConstants.STATE_CLOSED_COMPLETED)) {
-                Calendar completionCal = Calendar.getInstance();
-                Calendar dueCal = Calendar.getInstance();
+                if (wfProcessArray[0].state().equals(SharkConstants.STATE_CLOSED_COMPLETED)) {
+                    Calendar completionCal = Calendar.getInstance();
+                    Calendar dueCal = Calendar.getInstance();
 
-                long finishTime = admin.getProcessFinishTime(sessionHandle, processInstanceId);
+                    long finishTime = admin.getProcessFinishTime(sessionHandle, processInstanceId);
 
-                completionCal.setTimeInMillis(finishTime);
-                wfProcess.setFinishTime(completionCal.getTime());
-                //completion minus due if completion date is after due date, vice versa otherwise
-                if (wfProcess.getDue() != null && wfProcess.getFinishTime().after(wfProcess.getDue())) {
-                    dueCal.setTime(wfProcess.getDue());
-                    long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
+                    completionCal.setTimeInMillis(finishTime);
+                    wfProcess.setFinishTime(completionCal.getTime());
+                    //completion minus due if completion date is after due date, vice versa otherwise
+                    if (wfProcess.getDue() != null && wfProcess.getFinishTime().after(wfProcess.getDue())) {
+                        dueCal.setTime(wfProcess.getDue());
+                        long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
+                        long delayInSeconds = (long) delayInMilliseconds / 1000;
+
+                        wfProcess.setDelayInSeconds(delayInSeconds);
+                        wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
+                    }
+
+
+                    //time taken for completion from date started
+                    long timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getStartedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getStartedTime().getTime() : 0;
+                    long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+                    wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+                    wfProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
+
+                    //time taken for completion from date created
+                    timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getCreatedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getCreatedTime().getTime() : 0;
+                    timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+                    wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
+                    wfProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
+
+                } else if (wfProcess.getDue() != null && currentDate.after(wfProcess.getDue())) {
+                    long delayInMilliseconds = ((wfProcess != null && wfProcess.getDue() != null) ? currentDate.getTime() - wfProcess.getDue().getTime() : 0);
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
-                    
+
                     wfProcess.setDelayInSeconds(delayInSeconds);
                     wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
                 }
-
-
-                //time taken for completion from date started
-                long timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getStartedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getStartedTime().getTime() : 0;
-                long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-
-                wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
-                wfProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
-
-                //time taken for completion from date created
-                timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getCreatedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getCreatedTime().getTime() : 0;
-                timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                
-                wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
-                wfProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
-
-            } else if (wfProcess.getDue() != null && currentDate.after(wfProcess.getDue())) {
-                long delayInMilliseconds = ((wfProcess != null && wfProcess.getDue() != null) ? currentDate.getTime() - wfProcess.getDue().getTime() : 0);
-                long delayInSeconds = (long) delayInMilliseconds / 1000;
-
-                wfProcess.setDelayInSeconds(delayInSeconds);
-                wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
-            }
+            } else {
+                //fallback to completed process
+                WorkflowProcess temp = getCompletedProcessInfo(processInstanceId);
+                if (temp != null) {
+                    wfProcess = temp;
+                }
+            }   
 
             return wfProcess;
         } catch (Exception ex) {
@@ -1982,7 +2032,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public WorkflowActivity getRunningActivityInfo(String activityInstanceId) {
         SharkConnection sc = null;
 
-        WorkflowActivity wfAct = new WorkflowActivity();
+        WorkflowActivity wfAct = null;
 
         try {
 
@@ -2007,15 +2057,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
             ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
             WfActivity[] wfActivityArray = ai.get_next_n_sequence(0);
 
-            if (wfActivityArray.length == 0) {
-                return null;
+            if (wfActivityArray.length > 0) {
+                //to get participant mapping
+                WfActivity wfActivity = wfActivityArray[0];
+
+                wfAct = getRunningActivityInfo(sc, wfActivity, true);
+            } else {
+                //fallback to completed process activity
+                WorkflowActivity temp = getCompletedProcessActivityById(activityInstanceId);
+                if (temp != null) {
+                    wfAct = temp;
+                }
             }
-
-            //to get participant mapping
-            WfActivity wfActivity = wfActivityArray[0];
-
-            wfAct = getRunningActivityInfo(sc, wfActivity, true);
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -2708,16 +2761,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WfProcess wfProcess = null;
             if (wfProcessList != null && wfProcessList.length > 0) {
                 wfProcess = wfProcessList[0];
+                
+                if (wfProcess != null && !wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
+                    WAPI wapi = Shark.getInstance().getWAPIConnection();
+                    wapi.terminateProcessInstance(sessionHandle, procInstanceId);
+                }
+
+                ea.deleteProcessesWithFiltering(sessionHandle, filter);
+            } else {
+                //fallback to completed process
+                removeCompletedProcessInstance(procInstanceId);
             }
-
-            if (wfProcess != null && !wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
-                WAPI wapi = Shark.getInstance().getWAPIConnection();
-                wapi.terminateProcessInstance(sessionHandle, procInstanceId);
-            }
-
-            ea.deleteProcessesWithFiltering(sessionHandle, filter);
-
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -2764,6 +2818,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        
+        internalRemoveProcessOnComplete(processId);
+        
         return aborted;
     }
 
@@ -5081,9 +5138,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public void internalRemoveProcessOnComplete(String procInstanceId) {
         SharkConnection sc = null;
-
         try {
-
             sc = connect();
 
             WMSessionHandle sessionHandle = sc.getSessionHandle();
@@ -5105,15 +5160,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             if (wfProcess != null && wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "processCompleted", procInstanceId, new Class[]{procInstanceId.getClass()}, new Object[]{procInstanceId}, null);
-                
-                Boolean deleteProcessOnCompletion = Boolean.valueOf(WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion"));
-                if (deleteProcessOnCompletion != null && deleteProcessOnCompletion) {
-                    ea.deleteProcessesWithFiltering(sessionHandle, filter);
-                }
-            }
 
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
+                //save process link history
+                WorkflowProcessLink link = getWorkflowProcessLink(procInstanceId);
+                if (link != null) {
+                    workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
+                }
+
+                Boolean deleteProcessOnCompletion = Boolean.valueOf(WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion"));
+                if (!(deleteProcessOnCompletion != null && deleteProcessOnCompletion)) {
+                    saveProcessHistory(wfProcess, sessionHandle, null);
+                }
+                ea.deleteProcessesWithFiltering(sessionHandle, filter);
+            }
+        } catch (Exception e) {
+            LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
         } finally {
             try {
                 disconnect(sc);
@@ -5670,5 +5731,445 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return hasActivities;
+    }
+
+    @Override
+    public WorkflowActivity getCompletedProcessActivityById(String activityId) {
+        return workflowAssignmentDao.getActivityHistoryById(activityId);
+    }
+
+    @Override
+    public Collection<WorkflowActivity> getCompletedProcessActivityList(String processId, Integer start, Integer rows, String sort, Boolean desc) {
+        return workflowAssignmentDao.getActivityHistories(processId, null, null, sort, desc, start, rows);
+    }
+
+    @Override
+    public int getCompletedProcessActivitySize(String processId) {
+        return ((Long) workflowAssignmentDao.getActivityHistoriesSize(processId, null, null)).intValue();
+    }
+
+    @Override
+    public WorkflowProcess getCompletedProcessById(String processId) {
+        return getCompletedProcessInfo(processId);
+    }
+
+    @Override
+    public void removeCompletedProcessInstance(String processId) {
+        workflowAssignmentDao.deleteProcessHistory(processId);
+    }
+
+    @Override
+    public WorkflowProcess getCompletedProcessInfo(String processId) {
+        return workflowAssignmentDao.getProcessHistoryById(processId);
+    }
+    
+    protected void saveProcessHistory(WfProcess wfProcess, WMSessionHandle sessionHandle, Map<String, Object> tempCache) throws Exception {
+        if (tempCache == null) {
+            tempCache = new HashMap<String, Object>();
+        }
+        
+        SharkProcessHistory history = new SharkProcessHistory();
+        CustomWfProcessImpl process = SharkUtil.getProcess(sessionHandle, wfProcess.key());
+        WfProcessMgr manager = wfProcess.manager();
+
+        history.setProcessDefId(manager.name());
+        history.setProcessId(wfProcess.key());
+        history.setProcessName(wfProcess.name());
+        history.setState(wfProcess.state());
+        history.setVersion(manager.version());
+        history.setResourceRequesterId(process.getResourceRequesterId(sessionHandle));
+        history.setProcessRequesterId(process.getActivityRequesterProcessId(sessionHandle));
+        history.setCreated(process.getCreationTime(sessionHandle));
+        history.setStarted(process.getStartTime(sessionHandle));
+        history.setLastStateTime(process.last_state_time(sessionHandle).getTime());
+        
+        WorkflowProcessLink link = workflowProcessLinkDao.getWorkflowProcessLinkHistory(history.getProcessId());
+        if (link == null) {
+            link = new WorkflowProcessLink();
+            link.setProcessId(history.getProcessId());
+            link.setParentProcessId(history.getProcessId());
+            link.setOriginProcessId(history.getProcessId());
+            
+            workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
+        }
+        history.setLink(link);
+
+        long limitInSecond = 0;
+        String limitStr = "";
+        String durationUnit = "";
+        if (tempCache.containsKey("LIMIT::"+history.getProcessDefId())) {
+            limitInSecond = (long) tempCache.get("LIMIT::"+history.getProcessDefId());
+            limitStr = (String) tempCache.get("LIMIT_STR::"+history.getProcessDefId());
+            durationUnit = (String) tempCache.get("UNIT::"+history.getProcessDefId());
+        } else {
+            double limit = -1;
+            Shark shark = Shark.getInstance();
+            XPDLBrowser xpdl = shark.getXPDLBrowser();
+            AdminMisc admin = shark.getAdminMisc();
+            WMEntity processEnt = admin.getProcessDefinitionInfoByUniqueProcessDefinitionName(sessionHandle, history.getProcessDefId());
+            
+            WMFilter filter = new WMFilter();
+            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+            filter.setAttributeName("Type");
+            filter.setFilterString("ProcessHeader");
+
+            WMEntityIterator processLimitEntityIterator = xpdl.listEntities(sessionHandle, processEnt, filter, true);
+            WMEntity[] processLimitEntityList = null;
+            if (processLimitEntityIterator != null) {
+                processLimitEntityList = processLimitEntityIterator.getArray();
+            }
+
+            if (processLimitEntityList != null) {
+                WMEntity processLimitEntity = processLimitEntityList[0];
+
+                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                filter.setAttributeName("Name");
+                filter.setFilterString("Limit");
+
+                WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, processLimitEntity, filter, true);
+                WMAttribute[] procAttributeList = null;
+                if (procAttributeIterator != null) {
+                    procAttributeList = procAttributeIterator.getArray();
+                }
+
+                if (procAttributeList != null && procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
+                    try {
+                        limit = Double.parseDouble((String) procAttributeList[0].getValue());
+                    } catch (Exception e) {}
+                }
+            }
+            
+            if (limit != -1) {
+                //get duration unit
+                filter = new WMFilter();
+                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                filter.setAttributeName("Type");
+                filter.setFilterString("ProcessHeader");
+
+                WMEntityIterator processDurationEntityIterator = xpdl.listEntities(sessionHandle, processEnt, filter, true);
+                WMEntity[] processDurationEntityList = null;
+                if (processDurationEntityIterator != null) {
+                    processDurationEntityList = processDurationEntityIterator.getArray();
+                }
+
+                if (processDurationEntityList != null) {
+                    WMEntity entity = processDurationEntityList[0];
+
+                    filter = new WMFilter();
+                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                    filter.setAttributeName("Name");
+                    filter.setFilterString("DurationUnit");
+
+                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, entity, filter, true);
+                    WMAttribute[] procAttributeList = null;
+                    if (procAttributeIterator != null) {
+                        procAttributeList = procAttributeIterator.getArray();
+                    }
+
+                    if (procAttributeList != null) {
+                        durationUnit = (String) procAttributeList[0].getValue();
+                    }
+                }
+            }
+            
+            if (!durationUnit.equals("")) {
+                if (durationUnit.equals("D")) {
+                    limitInSecond = Math.round(limit * 24 * 60 * 60);
+                    limitStr = limit + " day";
+                } else if (durationUnit.equals("h")) {
+                    limitInSecond = Math.round(limit * 60 * 60);
+                    limitStr = limit + " hour(s)";
+                } else if (durationUnit.equals("m")) {
+                    limitInSecond = Math.round(limit * 60);
+                    limitStr = limit + " minute(s)";
+                } else if (durationUnit.equals("s")) {
+                    limitInSecond = Math.round(limit);
+                    limitStr = limit + " second(s)";
+                }
+            }
+            
+            tempCache.put("LIMIT::"+history.getProcessDefId(), limitInSecond);
+            tempCache.put("LIMIT_STR::"+history.getProcessDefId(), limitStr);
+            tempCache.put("UNIT::"+history.getProcessDefId(), durationUnit);
+        }
+        
+        if (limitInSecond > 0) {
+            history.setLimit(limitStr);
+            
+            Calendar startedTimeCal = Calendar.getInstance();
+            startedTimeCal.setTimeInMillis(history.getStarted());
+            history.setDue(getDueDateProceedByPlugin(history.getProcessId(), "", limitInSecond, startedTimeCal.getTime(), startedTimeCal.getTime()));
+        }
+
+        Map varMap = wfProcess.process_context();
+        JSONObject var = new JSONObject();
+        for (Iterator j = varMap.keySet().iterator(); j.hasNext();) {
+            String key = (String) j.next();
+            String val = varMap.get(key).toString();
+            var.put(key, val);
+        }
+        history.setVariables(var.toString());
+
+        WorkflowAssignment ass = new WorkflowAssignment();
+        ass.setProcessId(history.getProcessId());
+        ass.setProcessDefId(history.getProcessDefId());
+        ass.setProcessName(history.getProcessName());
+        ass.setProcessVersion(history.getVersion());
+        ass.setProcessRequesterId(history.getResourceRequesterId());
+
+        // check for hash variable
+        if (WorkflowUtil.containsHashVariable(history.getProcessName())) {
+            history.setProcessName(WorkflowUtil.processVariable(history.getProcessName(), null, ass));
+        }
+
+        workflowAssignmentDao.saveProcessHistory(history);
+
+        List activitiesList = process.getAllActivities(sessionHandle);
+        for (int k = 0; k < activitiesList.size(); ++k) {
+            CustomWfActivityImpl activity = (CustomWfActivityImpl) activitiesList.get(k);
+            SharkActivityHistory aHistory = new SharkActivityHistory();
+            aHistory.setProcess(history);
+            aHistory.setActivityId(activity.key(sessionHandle));
+            aHistory.setActivityDefId(activity.activity_definition_id(sessionHandle));
+            aHistory.setActivityName(activity.activity_definition_name(sessionHandle));
+            aHistory.setAccepted(activity.getCreationTime(sessionHandle));
+            aHistory.setActivated(activity.getCreationTime(sessionHandle));
+            aHistory.setLastStateTime(activity.last_state_time(sessionHandle).getTime());
+            aHistory.setState(activity.state(sessionHandle));
+            aHistory.setPerformer(activity.getResourceUsername(sessionHandle));
+            aHistory.setProcessId(history.getProcessId());
+            
+            long alimitInSecond = 0;
+            String alimitStr = "";
+            String type = WorkflowActivity.TYPE_NORMAL;
+            String subflowId = "";
+            String participantId = "";
+            if (tempCache.containsKey("LIMIT::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId())) {
+                alimitInSecond = (long) tempCache.get("LIMIT::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId());
+                alimitStr = (String) tempCache.get("LIMIT_STR::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId());
+                type = (String) tempCache.get("TYPE::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId());
+                subflowId = (String) tempCache.get("SUBFLOW::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId());
+                participantId = (String) tempCache.get("PARTICIPANT::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId());
+            } else {
+                double limit = -1;
+                Shark shark = Shark.getInstance();
+                XPDLBrowser xpdl = shark.getXPDLBrowser();
+                AdminMisc admin = shark.getAdminMisc();
+                WMEntity actEntity = admin.getActivityDefinitionInfo(sessionHandle, history.getProcessId(), aHistory.getActivityId());
+                
+                //check activity type
+                WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, actEntity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity actEnt = (WMEntity) activityEntityIterator.next();
+                    if (actEnt.getType().equalsIgnoreCase("tool")) {
+                        type = WorkflowActivity.TYPE_TOOL;
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("route")) {
+                        type = WorkflowActivity.TYPE_ROUTE;
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("subflow")) {
+                        type = WorkflowActivity.TYPE_SUBFLOW;
+                        subflowId = actEnt.getId();
+                        break;
+                    }
+                }
+                
+                WMFilter filter = new WMFilter();
+                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                filter.setAttributeName("Name");
+                filter.setFilterString("Limit");
+
+                WMAttributeIterator actAttributeIterator = xpdl.listAttributes(sessionHandle, actEntity, filter, true);
+                WMAttribute[] actAttributeList = null;
+                if (actAttributeIterator != null) {
+                    actAttributeList = actAttributeIterator.getArray();
+                }
+                
+                if (actAttributeList != null) {
+                    if (actAttributeList[0].getValue() != null && !actAttributeList[0].getValue().equals("")) {
+                        try {
+                            limit = Double.parseDouble((String) actAttributeList[0].getValue());
+                        } catch (Exception e) {}
+                    }
+                }
+                
+                if (limit != -1) {
+                    if (!durationUnit.equals("")) {
+                        if (durationUnit.equals("D")) {
+                            alimitInSecond = Math.round(limit * 24 * 60 * 60);
+                            alimitStr = limit + " day";
+                        } else if (durationUnit.equals("h")) {
+                            alimitInSecond = Math.round(limit * 60 * 60);
+                            alimitStr = limit + " hour(s)";
+                        } else if (durationUnit.equals("m")) {
+                            alimitInSecond = Math.round(limit * 60);
+                            alimitStr = limit + " minute(s)";
+                        } else if (durationUnit.equals("s")) {
+                            alimitInSecond = Math.round(limit);
+                            alimitStr = limit + " second(s)";
+                        }
+                    }
+                }
+                
+                filter = new WMFilter();
+                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
+                filter.setAttributeName("Name");
+                filter.setFilterString("Performer");
+
+                actAttributeIterator = xpdl.listAttributes(sessionHandle, actEntity, filter, true);
+                actAttributeList = null;
+                if (actAttributeIterator != null) {
+                    actAttributeList = actAttributeIterator.getArray();
+                }
+
+                if (actAttributeList != null) {
+                    participantId = (String) actAttributeList[0].getValue();
+                }
+                
+                tempCache.put("LIMIT::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId(), alimitInSecond);
+                tempCache.put("LIMIT_STR::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId(), alimitStr);
+                tempCache.put("TYPE::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId(), type);
+                tempCache.put("SUBFLOW::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId(), subflowId);
+                tempCache.put("PARTICIPANT::"+history.getProcessDefId()+"::"+aHistory.getActivityDefId(), participantId);
+            }
+            
+            if (!subflowId.isEmpty()) {
+                aHistory.setPerformer(subflowId);
+            }
+            aHistory.setType(type);
+            aHistory.setParticipantId(participantId);
+            
+            List<String> users = activity.getAssignmentResourceIds(sessionHandle);
+            Collections.sort(users);
+            if (users != null) {
+                aHistory.setAssignmentUsers(String.join(";", users));
+            }
+            
+            if (alimitInSecond > 0) {
+                aHistory.setLimit(alimitStr);
+
+                Calendar startedTimeCal = Calendar.getInstance();
+                startedTimeCal.setTimeInMillis(aHistory.getActivated());
+                aHistory.setDue(getDueDateProceedByPlugin(history.getProcessId(), "", limitInSecond, startedTimeCal.getTime(), startedTimeCal.getTime()));
+            }
+            aHistory.setLimit(null);
+            
+            Map avarMap = activity.getContext(sessionHandle);
+            JSONObject avar = new JSONObject();
+            for (Iterator j = avarMap.keySet().iterator(); j.hasNext();) {
+                String key = (String) j.next();
+                String val = avarMap.get(key).toString();
+                avar.put(key, val);
+            }
+            aHistory.setVariables(avar.toString());
+            
+            // check for hash variable
+            if (WorkflowUtil.containsHashVariable(aHistory.getActivityName())) {
+                ass.setActivityId(aHistory.getActivityId());
+                ass.setActivityName(aHistory.getActivityName());
+                ass.setActivityDefId(aHistory.getActivityDefId());
+                aHistory.setActivityName(WorkflowUtil.processVariable(aHistory.getActivityName(), null, ass));
+            }
+            
+            workflowAssignmentDao.saveActivityHistory(aHistory);
+        }
+    }
+    
+    protected void migrateProcessHistories() {
+        String migrationStatus = setupManager.getSettingValue("processHistoryMigrationStatus");
+        if (migrationStatus == null || migrationStatus.isEmpty()) {
+            Setting setting = new Setting();
+            setting.setProperty("processHistoryMigrationStatus");
+            setting.setValue("running");
+            setupManager.saveSetting(setting);
+            
+            //migrate all process links
+            workflowProcessLinkDao.migrateCompletedProcessLinks();
+            
+            //retrieve all completed process
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    SharkConnection sc = null;
+                    Map<String, Object> tempCache = new HashMap<String, Object>();
+                    try {
+                        sc = connect();
+
+                        Shark shark = Shark.getInstance();
+                        WfProcessIterator pi = sc.get_iterator_process();
+                        ProcessFilterBuilder pieb = shark.getProcessFilterBuilder();
+                        WMSessionHandle sessionHandle = sc.getSessionHandle();
+                        ExecutionAdministration ea = shark.getExecutionAdministration();
+
+                        WMFilter filter = new WMFilter();
+                        filter = pieb.addStateStartsWith(sessionHandle, "closed");
+
+                        pi.set_query_expression(pieb.toIteratorExpression(sessionHandle, filter));
+                        WfProcess[] wfProcessList = pi.get_next_n_sequence(0);
+                        if (wfProcessList.length > 0) {
+                            Collection<String> pIds = new ArrayList<String>();
+
+                            for (int i = 0; i < wfProcessList.length; ++i) {
+                                saveProcessHistory(wfProcessList[i], sessionHandle, tempCache);
+                                pIds.add(wfProcessList[i].key());
+                            }
+
+                            ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
+                        }
+                    } catch (Exception e) {
+                        LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
+                    } finally {
+                        try {
+                            disconnect(sc);
+                        } catch (Exception e) {
+                            LogUtil.error(getClass().getName(), e, "");
+                        }
+                    }
+                }
+            });
+            
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration done.");
+            setting.setValue("done");
+            setupManager.saveSetting(setting);
+        }
+    }
+    
+    protected void runProcessHistoryMigrationForProfiles() {
+        if (HostManager.isVirtualHostEnabled()) {
+            // find all profiles and start threads
+            Properties profiles = DynamicDataSourceManager.getProfileProperties();
+            Set<String> profileSet = new HashSet(profiles.values());
+            for (String profile : profileSet) {
+                if (profile.contains(",")) {
+                    continue;
+                }
+                final String p = profile;
+                HostManager.setCurrentProfile(profile);
+                
+                Thread task = new PluginThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        migrateProcessHistories();
+                    }
+                });
+                task.setDaemon(true);
+                task.start();
+                
+                HostManager.resetProfile();
+            }
+            HostManager.setCurrentProfile(null);
+        } else {
+            Thread task = new PluginThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    migrateProcessHistories();
+                }
+            });
+            task.setDaemon(true);
+            task.start();
+        }
     }
 }

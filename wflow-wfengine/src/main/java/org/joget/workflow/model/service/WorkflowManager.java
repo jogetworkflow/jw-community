@@ -203,6 +203,13 @@ public interface WorkflowManager {
     WorkflowActivity getActivityById(String activityId);
     
     /**
+     * Returns an completed process activity instance based on the activity instance ID.
+     * @param activityId
+     * @return 
+     */
+    WorkflowActivity getCompletedProcessActivityById(String activityId);
+    
+    /**
      * Returns latest activity instance based on the process instance ID and activity definition id.
      * @param processId
      * @param actDefId
@@ -227,6 +234,24 @@ public interface WorkflowManager {
      * @return 
      */
     int getActivitySize(String processId);
+    
+    /**
+     * Returns a list of activities for a completed process instance ID.
+     * @param processId
+     * @param start
+     * @param rows
+     * @param sort
+     * @param desc
+     * @return 
+     */
+    Collection<WorkflowActivity> getCompletedProcessActivityList(String processId, Integer start, Integer rows, String sort, Boolean desc);
+
+    /**
+     * Returns the number of activities for a completed process instance ID.
+     * @param processId
+     * @return 
+     */
+    int getCompletedProcessActivitySize(String processId);
 
     /**
      * Returns a list of workflow variables for the specified activity instance ID (for any user)
@@ -584,6 +609,13 @@ public interface WorkflowManager {
     WorkflowProcess getRunningProcessById(String processId);
     
     /**
+     * Returns a completed process by process instance ID.
+     * @param processId
+     * @return
+     */
+    WorkflowProcess getCompletedProcessById(String processId);
+    
+    /**
      * Returns all the id of running process instances
      * @return 
      */
@@ -854,6 +886,12 @@ public interface WorkflowManager {
      * @param procInstanceId
      */
     void removeProcessInstance(String procInstanceId);
+    
+    /**
+     * Deletes a completed process instance.
+     * @param procInstanceId
+     */
+    void removeCompletedProcessInstance(String processId);
 
     /**
      * Internal method used to delete a process instance only if it is completed.
@@ -894,6 +932,13 @@ public interface WorkflowManager {
      * @return
      */
     WorkflowProcess getRunningProcessInfo(String processInstanceId);
+    
+    /**
+     * Returns process monitoring info (eg date creation, due dates, etc) for a process instance ID.
+     * @param processInstanceId
+     * @return
+     */
+    WorkflowProcess getCompletedProcessInfo(String processId);
 
     /**
      * Returns a list of usernames that are assigned to a specific activity instance.

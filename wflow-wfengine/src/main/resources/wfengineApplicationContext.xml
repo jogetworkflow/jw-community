@@ -52,6 +52,9 @@
                 <value>/org/joget/workflow/shark/migrate/model/MigrateAssignment.hbm.xml</value>
                 <value>/org/joget/workflow/shark/migrate/model/MigrateProcess.hbm.xml</value>
                 <value>/org/joget/workflow/shark/migrate/model/MigrateProcessDefinition.hbm.xml</value>
+                <value>/org/joget/workflow/model/WorkflowProcessLinkHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessHistory.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">

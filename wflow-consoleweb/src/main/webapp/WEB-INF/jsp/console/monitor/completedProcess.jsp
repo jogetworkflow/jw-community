@@ -58,7 +58,7 @@
         <div id="main-body-content-subheader">
             <fmt:message key="console.monitoring.common.label.activityList"/>
         </div>
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/activity/list?processId=${wfProcess.instanceId}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/completed/process/activity/list?processId=${wfProcess.instanceId}"
                        var="JsonDataTable"
                        divToUpdate="activityList"
                        jsonData="data"
@@ -92,12 +92,12 @@
                     document.location = '${pageContext.request.contextPath}/web/console/monitor/completed';
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/completed/process/delete', callback, 'ids=${wfProcess.instanceId}');
         }
     }
 
     function viewGraph(){
-        var url = '${pageContext.request.contextPath}/web/console/monitor/process/graph/${wfProcess.instanceId}';
+        var url = '${pageContext.request.contextPath}/web/console/monitor/completed/process/graph/${wfProcess.instanceId}';
         window.open(url);
     }
     

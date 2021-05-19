@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="SharkActivityHistory" lazy="false" name="org.joget.workflow.shark.model.SharkActivityHistory" table="app_activity_history">
+        <id column="activityId" name="activityId" type="string"/>
+        <property column="activityName" name="activityName" type="string"/>
+        <property column="activityDefId" name="activityDefId" type="string"/>
+        <property column="activated" name="activated" type="long"/>
+        <property column="accepted" name="accepted" type="long"/>
+        <property column="lastStateTime" name="lastStateTime" type="long"/>
+        <property column="limitDuration" name="limit" type="string"/>
+        <property column="participantId" name="participantId" type="string"/>
+        <property column="assignmentUsers" name="assignmentUsers" type="string"/>
+        <property column="performer" name="performer" type="string"/>
+        <property column="state" name="state" type="string"/>
+        <property column="type" name="type" type="string"/>
+        <property column="due" name="due" type="timestamp"/>
+        <property column="variables" name="variables" type="string"/>
+        <property column="processId" name="processId" type="string"/>
+        
+        <many-to-one entity-name="SharkProcessHistory" insert="false" fetch="join" lazy="false" update="false" name="process" column="processId"/>
+    </class>
+</hibernate-mapping>
+

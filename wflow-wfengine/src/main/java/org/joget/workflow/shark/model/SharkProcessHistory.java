@@ -1,6 +1,11 @@
 package org.joget.workflow.shark.model;
 
-public class SharkProcess {
+import java.util.Date;
+import org.joget.workflow.model.WorkflowProcessLink;
+
+public class SharkProcessHistory {
+    
+    //SHKProcesses data
     private String processId;
     private String processName;
     private String processRequesterId;
@@ -9,8 +14,17 @@ public class SharkProcess {
     private String processDefId;
     private Long started;
     private Long created;
+    private Long lastStateTime;
+    private String limit;
+    private String state;
+    private Date due;
     
-    private SharkProcessState state;
+    //process link history
+    private WorkflowProcessLink link;
+    
+    //SHKProcessData data
+    private String variables;
+
 
     public String getProcessId() {
         return processId;
@@ -44,10 +58,6 @@ public class SharkProcess {
         this.resourceRequesterId = resourceRequesterId;
     }
 
-    public String getProcessVersion() {
-        return processDefId.split("#")[1];
-    }
-    
     public String getVersion() {
         return version;
     }
@@ -64,14 +74,6 @@ public class SharkProcess {
         this.processDefId = processDefId;
     }
 
-    public SharkProcessState getState() {
-        return state;
-    }
-
-    public void setState(SharkProcessState state) {
-        this.state = state;
-    }
-
     public Long getStarted() {
         return started;
     }
@@ -86,5 +88,52 @@ public class SharkProcess {
 
     public void setCreated(Long created) {
         this.created = created;
+    }
+
+    public Long getLastStateTime() {
+        return lastStateTime;
+    }
+
+    public void setLastStateTime(Long lastStateTime) {
+        this.lastStateTime = lastStateTime;
+    }
+
+    public String getLimit() {
+        return limit;
+    }
+
+    public void setLimit(String limit) {
+        this.limit = limit;
+    }
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getVariables() {
+        return variables;
+    }
+
+    public void setVariables(String variables) {
+        this.variables = variables;
+    }
+
+    public WorkflowProcessLink getLink() {
+        return link;
+    }
+
+    public void setLink(WorkflowProcessLink link) {
+        this.link = link;
+    }
+
+    public Date getDue() {
+        return due;
+    }
+
+    public void setDue(Date due) {
+        this.due = due;
     }
 }

@@ -3,7 +3,9 @@ package org.joget.workflow.model;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Date;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class WorkflowProcess implements Serializable {
@@ -31,6 +33,7 @@ public class WorkflowProcess implements Serializable {
     private String state;
     private String requesterId;
     boolean latest;
+    private Collection<WorkflowVariable> variableList;
 
     public String getRecordId() {
         return recordId;
@@ -230,5 +233,18 @@ public class WorkflowProcess implements Serializable {
 
     public void setTimeConsumingFromDateStartedInSeconds(long timeConsumingFromDateStartedInSeconds) {
         this.timeConsumingFromDateStartedInSeconds = timeConsumingFromDateStartedInSeconds;
+    }
+    
+    /* Added for completed process*/
+    public Collection<WorkflowVariable> getVariableList() {
+        if (variableList == null) {
+            WorkflowManager wm = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            variableList = wm.getProcessVariableList(instanceId);
+        }
+        return variableList;
+    }
+
+    public void setVariableList(Collection<WorkflowVariable> variableList) {
+        this.variableList = variableList;
     }
 }

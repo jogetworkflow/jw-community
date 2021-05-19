@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="SharkProcessHistory" lazy="false" name="org.joget.workflow.shark.model.SharkProcessHistory" table="app_process_history">
+        <id column="processId" name="processId" type="string"/>
+        <property column="processName" name="processName" type="string"/>
+        <property column="processRequesterId" name="processRequesterId" type="string"/>
+        <property column="resourceRequesterId" name="resourceRequesterId" type="string"/>
+        <property column="version" name="version" type="string"/>
+        <property column="processDefId" name="processDefId" type="string"/>
+        <property column="started" name="started" type="long"/>
+        <property column="created" name="created" type="long"/>
+        <property column="lastStateTime" name="lastStateTime" type="long"/>
+        <property column="limitDuration" name="limit" type="string"/>
+        <property column="due" name="due" type="timestamp"/>
+        <property column="state" name="state" type="string"/>
+        
+        <property column="variables" name="variables" type="string"/>
+        
+        <many-to-one entity-name="WorkflowProcessLinkHistory" cascade="refresh" not-found="ignore" insert="false" fetch="join" lazy="no-proxy" update="false" name="link" column="processId"/>
+    </class>
+</hibernate-mapping>
+
