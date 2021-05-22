@@ -41,6 +41,10 @@ AjaxUniversalTheme = {
         AjaxComponent.overrideFormEvent($("#category-container"));
         AjaxComponent.initContent($("#content main"));
 
+        if ($(".ma-backdrop").is(":visible")) {
+            $("body").trigger("click.sidebar-toggled");
+        }
+
         setTimeout(function(){
             $(window).trigger('resize'); //inorder for datalist to render in correct viewport
         }, 5);
