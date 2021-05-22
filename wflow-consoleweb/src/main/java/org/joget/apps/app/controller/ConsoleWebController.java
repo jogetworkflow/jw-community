@@ -4476,7 +4476,6 @@ public class ConsoleWebController {
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
-        booleanSettingsList.add("deleteProcessOnCompletion");
         booleanSettingsList.add("enableNtlm");
         booleanSettingsList.add("rightToLeft");
         booleanSettingsList.add("enableUserLocale");
@@ -4502,6 +4501,10 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty(paramName);
+            }
+            
+            if ("deleteProcessOnCompletion".equals(paramName) && "archive".equals(paramValue) && !"archive".equals(setting.getValue())) {
+                workflowManager.internalMigrateProcessHistories();
             }
             
             if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName)) {
@@ -5096,9 +5099,23 @@ public class ConsoleWebController {
     public String consoleMonitorCompleted(ModelMap map) {
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", false, null, null);
         map.addAttribute("appDefinitionList", appDefinitionList);
-        String status = setupManager.getSettingValue("processHistoryMigrationStatus");
-        map.addAttribute("migrationStatus", (status != null)?status:"");
+        String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
+        map.addAttribute("completedProcessMode", (mode != null)?mode:"");
         return "console/monitor/completed";
+    }
+    
+    @RequestMapping(value = "/console/monitor/completed/process/archive", method = RequestMethod.POST)
+    public String consoleMonitorCompletedProcessArchive() {
+        Setting setting = setupManager.getSettingByProperty("deleteProcessOnCompletion");
+        if (setting == null) {
+            setting = new Setting();
+            setting.setProperty("deleteProcessOnCompletion");
+        }
+        setting.setValue("archive");
+        setupManager.saveSetting(setting);
+        workflowManager.internalMigrateProcessHistories();
+        
+        return "console/dialogClose";
     }
 
     @RequestMapping("/json/console/monitor/completed/list")
@@ -5139,15 +5156,21 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/monitor/completed/process/view/(*:id)")
     public String consoleMonitorCompletedProcess(ModelMap map, @RequestParam("id") String processId) {
-        WorkflowProcess wfProcess = workflowManager.getCompletedProcessById(processId);
-        double serviceLevelMonitor = workflowManager.getServiceLevelValue(wfProcess.getStartedTime(), wfProcess.getFinishTime(), wfProcess.getDue());
+        WorkflowProcess wfProcess = workflowManager.getRunningProcessById(processId);
+        double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(processId);
 
         map.addAttribute("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
+        WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
         map.addAttribute("wfProcess", wfProcess);
-        map.addAttribute("trackWflowProcess", wfProcess);
+        map.addAttribute("trackWflowProcess", trackWflowProcess);
         
-        map.addAttribute("recordId", wfProcess.getRecordId());
+        String recordId = wfProcess.getInstanceId();
+        WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(recordId);
+        if (link != null) {
+            recordId = link.getOriginProcessId();
+        }
+        map.addAttribute("recordId", recordId);
 
         AppDefinition appDef = appService.getAppDefinitionWithProcessDefId(wfProcess.getId());
         if (appDef == null) {
@@ -5182,36 +5205,16 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
-    
-    @RequestMapping(value = "/console/monitor/completed/process/delete", method = RequestMethod.POST)
-    public String consoleMonitorCompletedProcessDelete(@RequestParam(value = "ids") String ids) {
-        StringTokenizer strToken = new StringTokenizer(ids, ",");
-        while (strToken.hasMoreTokens()) {
-            String id = (String) strToken.nextElement();
-            try {
-                appService.getAppDefinitionForCompletedWorkflowProcess(id);
-                workflowManager.removeCompletedProcessInstance(id);
-            } finally {
-                AppUtil.resetAppDefinition();
-            }
-        }
-        return "console/dialogClose";
-    }
 
-    @RequestMapping("/console/monitor/(~:completed)/process/viewGraph/(*:id)")
-    public String consoleMonitorProcessViewGraph(ModelMap map, @RequestParam("id") String processId, @RequestParam(value = "completed", required = false) String completed) {
-        return consoleMonitorProcessGraph(map, processId, true, completed);
+    @RequestMapping("/console/monitor/process/viewGraph/(*:id)")
+    public String consoleMonitorProcessViewGraph(ModelMap map, @RequestParam("id") String processId) {
+        return consoleMonitorProcessGraph(map, processId, true);
     }
     
-    @RequestMapping("/console/monitor/(~:completed)/process/graph/(*:id)")
-    public String consoleMonitorProcessGraph(ModelMap map, @RequestParam("id") String processId, Boolean useOldViewer, @RequestParam(value = "completed", required = false) String completed) {
+    @RequestMapping("/console/monitor/process/graph/(*:id)")
+    public String consoleMonitorProcessGraph(ModelMap map, @RequestParam("id") String processId, Boolean useOldViewer) {
         // get process info
-        WorkflowProcess wfProcess = null;
-        if (completed != null && "completed".equals(completed)) {
-            wfProcess = workflowManager.getCompletedProcessById(processId);
-        } else {
-            wfProcess = workflowManager.getRunningProcessById(processId);
-        }
+        WorkflowProcess wfProcess = workflowManager.getRunningProcessById(processId);
 
         if (wfProcess != null) {
             // get process xpdl
@@ -5227,14 +5230,11 @@ public class ConsoleWebController {
                 
                 // get running activities
                 Collection<String> runningActivityIdList = new ArrayList<String>();
-                List<WorkflowActivity> activityList = null;
-                if (!(completed != null && "completed".equals(completed))) {
-                    activityList = (List<WorkflowActivity>) workflowManager.getActivityList(processId, 0, -1, "id", false);
-                    if (activityList != null) {
-                        for (WorkflowActivity wa : activityList) {
-                            if (wa.getState().indexOf("open") >= 0) {
-                                runningActivityIdList.add(wa.getActivityDefId());
-                            }
+                List<WorkflowActivity> activityList = (List<WorkflowActivity>) workflowManager.getActivityList(processId, 0, -1, "id", false);
+                if (activityList != null) {
+                    for (WorkflowActivity wa : activityList) {
+                        if (wa.getState().indexOf("open") >= 0) {
+                            runningActivityIdList.add(wa.getActivityDefId());
                         }
                     }
                 }
@@ -5276,49 +5276,13 @@ public class ConsoleWebController {
         jsonObject.accumulate("desc", desc);
         jsonObject.write(writer);
     }
-    
-    @RequestMapping("/json/console/monitor/completed/process/activity/list")
-    public void completedProcessActivityList(Writer writer, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
-
-        List<WorkflowActivity> activityList = (List<WorkflowActivity>) workflowManager.getCompletedProcessActivityList(processId, start, rows, sort, desc);
-
-        Integer total = workflowManager.getCompletedProcessActivitySize(processId);
-        JSONObject jsonObject = new JSONObject();
-        for (WorkflowActivity workflowActivity : activityList) {
-            double serviceLevelMonitor = workflowManager.getServiceLevelValue(workflowActivity.getStartedTime(), workflowActivity.getFinishTime(), workflowActivity.getDue());
-            Map data = new HashMap();
-            data.put("id", workflowActivity.getId());
-            data.put("name", workflowActivity.getName());
-            data.put("state", workflowActivity.getState());
-            data.put("dateCreated", TimeZoneUtil.convertToTimeZone(workflowActivity.getCreatedTime(), null, AppUtil.getAppDateFormat()));
-            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
-
-            jsonObject.accumulate("data", data);
-        }
-
-        jsonObject.accumulate("total", total);
-        jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
-        jsonObject.accumulate("desc", desc);
-        jsonObject.write(writer);
-    }
 
     @RequestMapping(value = "/console/monitor/(*:processStatus)/process/activity/view/(*:id)")
     public String consoleMonitorActivityView(ModelMap map, @RequestParam("processStatus") String processStatus, @RequestParam("id") String activityId) {
-        WorkflowActivity wflowActivity = null;
-        WorkflowActivity trackWflowActivity = null;
-        Collection<WorkflowVariable> variableList = null;
-        
-        if (("completed").equals(processStatus)) {
-            wflowActivity = workflowManager.getCompletedProcessActivityById(activityId);
-            trackWflowActivity = wflowActivity;
-            variableList = wflowActivity.getVariableList();
-        } else {
-            wflowActivity = workflowManager.getActivityById(activityId);
-            trackWflowActivity = workflowManager.getRunningActivityInfo(activityId);
-            variableList = workflowManager.getActivityVariableList(activityId);
-        }
-        double serviceLevelMonitor = workflowManager.getServiceLevelValue(trackWflowActivity.getStartedTime(), trackWflowActivity.getFinishTime(), trackWflowActivity.getDue());
+        WorkflowActivity wflowActivity = workflowManager.getActivityById(activityId);
+        Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(activityId);
+        double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(activityId);
+        WorkflowActivity trackWflowActivity = workflowManager.getRunningActivityInfo(activityId);
 
         map.addAttribute("activity", wflowActivity);
         map.addAttribute("variableList", variableList);

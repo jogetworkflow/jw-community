@@ -248,29 +248,6 @@ public class AppServiceImpl implements AppService {
     }
     
     /**
-     * Retrieves the app definition for a specific workflow process.
-     * @param processId
-     * @return
-     */
-    @Override
-    public AppDefinition getAppDefinitionForCompletedWorkflowProcess(String processId) {
-        AppDefinition appDef = null;
-
-        WorkflowProcess process = workflowManager.getCompletedProcessById(processId);
-        if (process != null) {
-            String packageId = process.getPackageId();
-            Long packageVersion = Long.parseLong(process.getVersion());
-            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-            if (packageDef != null) {
-                appDef = packageDef.getAppDefinition();
-            }
-        }
-        // set into thread
-        AppUtil.setCurrentAppDefinition(appDef);
-        return appDef;
-    }
-    
-    /**
      * Retrieves the app definition for a specific workflow process definition id.
      * @param processDefId
      * @return

@@ -41,10 +41,6 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     public final static String ACTIVITY_HISTORY_ENTITY_NAME="SharkActivityHistory";
     
     public Collection<WorkflowProcess> getProcesses(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
-        if (state != null && state.startsWith("close")) {
-            return this.getProcessHistories(packageId, processDefId, processId, processName, version, recordId, username, sort, desc, start, rows);
-        }
-        
         String customField = ", (select link.originProcessId from WorkflowProcessLink as link where e.processId = link.processId) as recordId";
         
         //required to disable lazy loading 
@@ -116,7 +112,12 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         Collection shProcess = find(PROCESS_ENTITY_NAME, customField, condition, params.toArray(new String[0]), sort, desc, start, rows);
-        return transformToWorkflowProcess(shProcess);
+        
+        if ((shProcess == null || shProcess.isEmpty()) && state != null && state.startsWith("close")) {
+            return getProcessHistories(packageId, processDefId, processId, processName, version, recordId, username, sort, desc, start, rows);
+        } else {
+            return transformToWorkflowProcess(shProcess);
+        }
     }
     
     public long getProcessesSize(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state) {
@@ -181,7 +182,12 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 }
             }
         }
-        return count(PROCESS_ENTITY_NAME, condition+where, params.toArray(new String[0]));
+        long result = count(PROCESS_ENTITY_NAME, condition+where, params.toArray(new String[0]));
+        if (result == 0 && state != null && state.startsWith("close")) {
+            return getProcessHistoriesSize(packageId, processDefId, processId, processName, version, recordId, username);
+        } else {
+            return result;
+        }
     }
     
     /**

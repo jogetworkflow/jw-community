@@ -137,6 +137,11 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         if (temp != null && !temp.isEmpty()) {
             links.addAll(temp);
         }
+        Collection<WorkflowProcessLink> tempHistory = super.find(HISTORY_ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
+        if (tempHistory != null && !tempHistory.isEmpty()) {
+            links.addAll(tempHistory);
+        }
+        
         return links;
     }
     

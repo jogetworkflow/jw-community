@@ -1,8 +1,8 @@
--- MariaDB dump 10.17  Distrib 10.4.11-MariaDB, for osx10.14 (x86_64)
+-- MariaDB dump 10.18  Distrib 10.5.8-MariaDB, for osx10.15 (x86_64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	10.4.11-MariaDB
+-- Server version	10.5.8-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -2063,6 +2063,41 @@ LOCK TABLES `SHKXPDLS` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `app_activity_history`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_activity_history` (
+  `activityId` varchar(255) NOT NULL,
+  `activityName` varchar(255) DEFAULT NULL,
+  `activityDefId` varchar(255) DEFAULT NULL,
+  `activated` bigint(20) DEFAULT NULL,
+  `accepted` bigint(20) DEFAULT NULL,
+  `lastStateTime` bigint(20) DEFAULT NULL,
+  `limitDuration` varchar(255) DEFAULT NULL,
+  `participantId` varchar(255) DEFAULT NULL,
+  `assignmentUsers` varchar(255) DEFAULT NULL,
+  `performer` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `due` datetime DEFAULT NULL,
+  `variables` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`activityId`),
+  KEY `FK_7mmrnb28ugrdxpf0dpw35y73u` (`processId`),
+  CONSTRAINT `FK_7mmrnb28ugrdxpf0dpw35y73u` FOREIGN KEY (`processId`) REFERENCES `app_process_history` (`processId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_activity_history`
+--
+
+/*!40000 ALTER TABLE `app_activity_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_activity_history` ENABLE KEYS */;
+
+--
 -- Table structure for table `app_app`
 --
 
@@ -2442,6 +2477,38 @@ LOCK TABLES `app_plugin_default` WRITE;
 /*!40000 ALTER TABLE `app_plugin_default` DISABLE KEYS */;
 /*!40000 ALTER TABLE `app_plugin_default` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `app_process_history`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_process_history` (
+  `processId` varchar(255) NOT NULL,
+  `processName` varchar(255) DEFAULT NULL,
+  `processRequesterId` varchar(255) DEFAULT NULL,
+  `resourceRequesterId` varchar(255) DEFAULT NULL,
+  `version` varchar(255) DEFAULT NULL,
+  `processDefId` varchar(255) DEFAULT NULL,
+  `started` bigint(20) DEFAULT NULL,
+  `created` bigint(20) DEFAULT NULL,
+  `lastStateTime` bigint(20) DEFAULT NULL,
+  `limitDuration` varchar(255) DEFAULT NULL,
+  `due` datetime DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `variables` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`processId`),
+  CONSTRAINT `FK_prxyxtqy6byfrq3l5qght53l6` FOREIGN KEY (`processId`) REFERENCES `wf_process_link_history` (`processId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_process_history`
+--
+
+/*!40000 ALTER TABLE `app_process_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_process_history` ENABLE KEYS */;
 
 --
 -- Table structure for table `app_report_activity`
@@ -3133,6 +3200,27 @@ LOCK TABLES `wf_process_link` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `wf_process_link_history`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wf_process_link_history` (
+  `processId` varchar(255) NOT NULL,
+  `parentProcessId` varchar(255) DEFAULT NULL,
+  `originProcessId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`processId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `wf_process_link_history`
+--
+
+/*!40000 ALTER TABLE `wf_process_link_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `wf_process_link_history` ENABLE KEYS */;
+
+--
 -- Table structure for table `wf_report`
 --
 
@@ -3293,6 +3381,7 @@ CREATE TABLE `wf_setup` (
 
 LOCK TABLES `wf_setup` WRITE;
 /*!40000 ALTER TABLE `wf_setup` DISABLE KEYS */;
+INSERT INTO `wf_setup` VALUES ('4028c4ea79850c7c0179850cc3880001','processHistoryMigrationStatus','archive',NULL);
 /*!40000 ALTER TABLE `wf_setup` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -3305,4 +3394,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-12 13:19:19
+-- Dump completed on 2021-05-21 16:28:16

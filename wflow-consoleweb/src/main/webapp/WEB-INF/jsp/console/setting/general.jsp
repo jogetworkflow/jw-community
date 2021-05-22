@@ -320,12 +320,14 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
-                        <label for="deleteProcessOnCompletion"><fmt:message key="console.setting.general.label.deleteProcessOnCompletion"/></label>
-                        <c:set var="checked"></c:set>
-                        <c:if test="${settingMap['deleteProcessOnCompletion'] == 'true'}">
-                            <c:set var="checked">checked</c:set>
-                        </c:if>
-                        <input type="checkbox" id="deleteProcessOnCompletion" name="deleteProcessOnCompletion" ${checked} />
+                        <label for="deleteProcessOnCompletion"><fmt:message key="console.setting.general.label.processCompletionDataHandling"/></label>
+                        <span class="form-input">
+                            <select id="deleteProcessOnCompletion" name="deleteProcessOnCompletion">
+                                <option value=""><fmt:message key="console.setting.general.label.retainProcessOnCompletion"/></option>
+                                <option value="true" <c:if test="${'true' eq settingMap['deleteProcessOnCompletion']}"> selected</c:if>><fmt:message key="console.setting.general.label.deleteProcessOnCompletion"/></option>
+                                <option value="archive" <c:if test="${'archive' eq settingMap['deleteProcessOnCompletion']}"> selected</c:if>><fmt:message key="console.setting.general.label.archiveProcessOnCompletion"/></option>
+                            </select>
+                        </span>
                     </div>
                 </span>
             </div>

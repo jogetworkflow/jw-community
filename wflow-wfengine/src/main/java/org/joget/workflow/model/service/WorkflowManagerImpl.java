@@ -129,7 +129,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public void setSetupManager(SetupManager setupManager) {
         this.setupManager = setupManager;
         DeadlineThreadManager.initThreads(this);
-        runProcessHistoryMigrationForProfiles();
     }
 
     public WorkflowProcessLinkDao getWorkflowProcessLinkDao() {
@@ -1197,7 +1196,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowProcess> getCompletedProcessList(String packageId, String processId, String processName, String version, String recordId, String requester, String sort, Boolean desc, Integer start, Integer rows) {
-        return workflowAssignmentDao.getProcessHistories(packageId, null, processId, processName, version, recordId, requester, sort, desc, start, rows);
+        return workflowAssignmentDao.getProcesses(packageId, null, processId, processName, version, recordId, requester, "closed", sort, desc, start, rows);
     }
 
     /**
@@ -1223,7 +1222,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getCompletedProcessSize(String packageId, String processId, String processName, String version, String recordId, String requester) {
-        return ((Long) workflowAssignmentDao.getProcessHistoriesSize(packageId, null, processId, processName, version, recordId, requester)).intValue();
+        return ((Long) workflowAssignmentDao.getProcessesSize(packageId, null, processId, processName, version, recordId, requester, "closed")).intValue();
     }
 
     /**
@@ -1281,7 +1280,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             } else {
                 //fallback to completed process
-                WorkflowProcess completedWorkflowProcess = getCompletedProcessById(processId);
+                WorkflowProcess completedWorkflowProcess = workflowAssignmentDao.getProcessHistoryById(processId);
                 if (completedWorkflowProcess != null) {
                     workflowProcess = completedWorkflowProcess;
                 }
@@ -1318,11 +1317,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
         int activitySize = 0;
 
         try {
-            activitySize = getActivitySize(processId);
+            activitySize = internalGetActivitySize(processId);
             if (activitySize == 0) {
                 WorkflowProcess p = workflowAssignmentDao.getProcessHistoryById(processId);
                 if (p != null) {
-                    return getCompletedProcessActivityList(processId, start, rows, sort, desc);
+                    return workflowAssignmentDao.getActivityHistories(processId, null, null, sort, desc, start, rows);
                 }
             }
 
@@ -1403,7 +1402,20 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getActivitySize(String processId) {
-
+        int size = internalGetActivitySize(processId);
+        
+        //fallback for completed process
+        if (size == 0) {
+            WorkflowProcess p = workflowAssignmentDao.getProcessHistoryById(processId);
+            if (p != null) {
+                return ((Long)workflowAssignmentDao.getActivityHistoriesSize(processId, null, null)).intValue();
+            }
+        }
+        
+        return size;
+    }
+    
+    protected int internalGetActivitySize(String processId) {
         SharkConnection sc = null;
         int size = 0;
         try {
@@ -1432,13 +1444,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 disconnect(sc);
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        
-        if (size == 0) {
-            WorkflowProcess p = workflowAssignmentDao.getProcessHistoryById(processId);
-            if (p != null) {
-                return getCompletedProcessActivitySize(processId);
             }
         }
         
@@ -1535,7 +1540,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             } else {
                 //fallback to completed process activity
-                WorkflowActivity temp = getCompletedProcessActivityById(activityId);
+                WorkflowActivity temp = workflowAssignmentDao.getActivityHistoryById(activityId);
                 if (temp != null) {
                     workflowActivity = temp;
                 }
@@ -1732,7 +1737,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             } else {
                 //fallback to completed process activity
-                WorkflowActivity act = this.getCompletedProcessActivityById(activityId);
+                WorkflowActivity act =  workflowAssignmentDao.getActivityHistoryById(activityId);
                 if (act != null) {
                     variableList = act.getVariableList();
                 }
@@ -1779,7 +1784,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             } else {
                 //fallback to completed process
-                WorkflowProcess process = this.getCompletedProcessById(processId);
+                WorkflowProcess process =  workflowAssignmentDao.getProcessHistoryById(processId);
                 if (process != null) {
                     variableList = process.getVariableList();
                 }
@@ -2005,7 +2010,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
             } else {
                 //fallback to completed process
-                WorkflowProcess temp = getCompletedProcessInfo(processInstanceId);
+                WorkflowProcess temp = workflowAssignmentDao.getProcessHistoryById(processInstanceId);
                 if (temp != null) {
                     wfProcess = temp;
                 }
@@ -2064,7 +2069,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 wfAct = getRunningActivityInfo(sc, wfActivity, true);
             } else {
                 //fallback to completed process activity
-                WorkflowActivity temp = getCompletedProcessActivityById(activityInstanceId);
+                WorkflowActivity temp = workflowAssignmentDao.getActivityHistoryById(activityInstanceId);
                 if (temp != null) {
                     wfAct = temp;
                 }
@@ -2770,7 +2775,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ea.deleteProcessesWithFiltering(sessionHandle, filter);
             } else {
                 //fallback to completed process
-                removeCompletedProcessInstance(procInstanceId);
+                workflowAssignmentDao.deleteProcessHistory(procInstanceId);
             }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -5161,17 +5166,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (wfProcess != null && wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "processCompleted", procInstanceId, new Class[]{procInstanceId.getClass()}, new Object[]{procInstanceId}, null);
 
-                //save process link history
-                WorkflowProcessLink link = getWorkflowProcessLink(procInstanceId);
-                if (link != null) {
-                    workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
+                String processOnCompletion = WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion");
+                if ("true".equalsIgnoreCase(processOnCompletion) || "archive".equalsIgnoreCase(processOnCompletion)) {
+                    
+                    if ("archive".equalsIgnoreCase(processOnCompletion)) {
+                        //save process link history
+                        WorkflowProcessLink link = getWorkflowProcessLink(procInstanceId);
+                        if (link != null) {
+                            workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
+                        }
+                        
+                        saveProcessHistory(wfProcess, sessionHandle, null);
+                    }
+                    
+                    ea.deleteProcessesWithFiltering(sessionHandle, filter);
                 }
-
-                Boolean deleteProcessOnCompletion = Boolean.valueOf(WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion"));
-                if (!(deleteProcessOnCompletion != null && deleteProcessOnCompletion)) {
-                    saveProcessHistory(wfProcess, sessionHandle, null);
-                }
-                ea.deleteProcessesWithFiltering(sessionHandle, filter);
             }
         } catch (Exception e) {
             LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
@@ -5732,36 +5741,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         return hasActivities;
     }
-
-    @Override
-    public WorkflowActivity getCompletedProcessActivityById(String activityId) {
-        return workflowAssignmentDao.getActivityHistoryById(activityId);
-    }
-
-    @Override
-    public Collection<WorkflowActivity> getCompletedProcessActivityList(String processId, Integer start, Integer rows, String sort, Boolean desc) {
-        return workflowAssignmentDao.getActivityHistories(processId, null, null, sort, desc, start, rows);
-    }
-
-    @Override
-    public int getCompletedProcessActivitySize(String processId) {
-        return ((Long) workflowAssignmentDao.getActivityHistoriesSize(processId, null, null)).intValue();
-    }
-
-    @Override
-    public WorkflowProcess getCompletedProcessById(String processId) {
-        return getCompletedProcessInfo(processId);
-    }
-
-    @Override
-    public void removeCompletedProcessInstance(String processId) {
-        workflowAssignmentDao.deleteProcessHistory(processId);
-    }
-
-    @Override
-    public WorkflowProcess getCompletedProcessInfo(String processId) {
-        return workflowAssignmentDao.getProcessHistoryById(processId);
-    }
     
     protected void saveProcessHistory(WfProcess wfProcess, WMSessionHandle sessionHandle, Map<String, Object> tempCache) throws Exception {
         if (tempCache == null) {
@@ -6075,14 +6054,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
     
-    protected void migrateProcessHistories() {
-        String migrationStatus = setupManager.getSettingValue("processHistoryMigrationStatus");
-        if (migrationStatus == null || migrationStatus.isEmpty()) {
-            Setting setting = new Setting();
-            setting.setProperty("processHistoryMigrationStatus");
-            setting.setValue("running");
-            setupManager.saveSetting(setting);
-            
+    public void internalMigrateProcessHistories() {
+        String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
+        if ("archive".equals(mode)) {
             //migrate all process links
             workflowProcessLinkDao.migrateCompletedProcessLinks();
             
@@ -6130,46 +6104,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
             });
             
             LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration done.");
-            setting.setValue("done");
-            setupManager.saveSetting(setting);
-        }
-    }
-    
-    protected void runProcessHistoryMigrationForProfiles() {
-        if (HostManager.isVirtualHostEnabled()) {
-            // find all profiles and start threads
-            Properties profiles = DynamicDataSourceManager.getProfileProperties();
-            Set<String> profileSet = new HashSet(profiles.values());
-            for (String profile : profileSet) {
-                if (profile.contains(",")) {
-                    continue;
-                }
-                final String p = profile;
-                HostManager.setCurrentProfile(profile);
-                
-                Thread task = new PluginThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        migrateProcessHistories();
-                    }
-                });
-                task.setDaemon(true);
-                task.start();
-                
-                HostManager.resetProfile();
-            }
-            HostManager.setCurrentProfile(null);
-        } else {
-            Thread task = new PluginThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    migrateProcessHistories();
-                }
-            });
-            task.setDaemon(true);
-            task.start();
         }
     }
 }

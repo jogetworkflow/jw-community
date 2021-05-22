@@ -171,13 +171,6 @@ public interface AppService {
     AppDefinition getAppDefinitionForWorkflowProcess(String processId);
     
     /**
-     * Retrieves the app definition for a specific workflow process.
-     * @param processId
-     * @return
-     */
-    AppDefinition getAppDefinitionForCompletedWorkflowProcess(String processId);
-
-    /**
      * Retrieves the app definition for a specific workflow process definition id.
      * @param processDefId
      * @return
