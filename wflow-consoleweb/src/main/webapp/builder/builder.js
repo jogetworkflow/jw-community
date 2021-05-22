@@ -3162,6 +3162,11 @@ _CustomBuilder.Builder = {
      * Select an element in canvas
      */
     selectNode:  function(node, dragging) {
+        CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, true);
+    },
+    
+    selectNodeAndShowProperties: function(node, dragging, show = true) {
+        
         var self = CustomBuilder.Builder;
         if (!node || $(node).is('[data-cbuilder-uneditable]'))
         {
@@ -3264,7 +3269,9 @@ _CustomBuilder.Builder = {
                     $("#element-select-box #element-actions").hide();
                 }
                 
-                self._showPropertiesPanel(target, data, component);
+                if (show) {
+                    self._showPropertiesPanel(target, data, component);
+                }
                 
                 $("#element-select-name #element-name").html(this._getElementType(data, component));
                 
@@ -3380,6 +3387,7 @@ _CustomBuilder.Builder = {
             {
                 if (self.isDragging)
                 {
+                    self.isMoved = true;
                     if (self.dragElement.data("css-border") === undefined) {
                         self.dragElement.data("css-border", self.dragElement.css("border"));
                         self.dragElement.css("border", "1px dashed #4285f4");
@@ -3587,6 +3595,7 @@ _CustomBuilder.Builder = {
                                 $("#element-select-box").hide();
                                 self.dragElement = self.selectedEl;
                                 self.isDragging = true;
+                                self.isMoved = false;
                                 self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
                                 self.data = self.selectedElData;
 
@@ -4007,6 +4016,7 @@ _CustomBuilder.Builder = {
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
             self.isDragging = true;
+            self.isMoved = false;
             self.frameBody.addClass("is-dragging");
             self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
             
@@ -4098,13 +4108,17 @@ _CustomBuilder.Builder = {
         if (self.component.builderTemplate.dropEnd)
             self.dragElement = self.component.builderTemplate.dropEnd(self.dragElement);
         
-        if (self.dragElement.data("cbuilder-classname") === undefined && self.dragElement.data("cbuilder-select") === undefined) {
-            self.addElement();
+        if (self.isMoved) {
+            if (self.dragElement.data("cbuilder-classname") === undefined && self.dragElement.data("cbuilder-select") === undefined) {
+                self.addElement();
+            } else {
+                self.moveElement();
+            }
+
+            CustomBuilder.update();
         } else {
-            self.moveElement();
+            self.selectNode(self.selectedEl);
         }
-        
-        CustomBuilder.update();
     },
     
     /*
@@ -4249,7 +4263,7 @@ _CustomBuilder.Builder = {
             self.checkVisible(newParent);
             self.checkVisible(self.selectedEl);
             
-            self.selectNode(self.selectedEl);
+            self.selectNodeAndShowProperties(self.selectedEl, false, (!$("body").hasClass("no-right-panel")));
             
             self.triggerChange();
         }
