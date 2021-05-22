@@ -257,6 +257,7 @@ _CustomBuilder = {
                     CustomBuilder.Builder.selectedEl = null;
                     CustomBuilder.Builder.highlightEl = null;
                 }
+                CustomBuilder.initConfig(JSON.decode(data.builderConfig));
                 CustomBuilder.loadJson($("#cbuilder-json").val());
                 CustomBuilder.intBuilderMenu();
             } else {

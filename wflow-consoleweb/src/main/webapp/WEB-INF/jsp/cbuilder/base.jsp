@@ -20,7 +20,7 @@
                     });
                 });
             </script>
-        </c:set>
+        </c:set>    
         {
             id : "<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>",
             name : "<ui:escape value="${name}" format="json" />",
@@ -38,7 +38,8 @@
             builderCSS : "<ui:escape value="${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}" format="json" />",
             builderJS : "<ui:escape value="${script}" format="json" />",
             builderCanvas : "<ui:escape value="${builderCanvas}" format="json" />",
-            builderDefJson : "<ui:escape value="${builderDefJson}" format="json" />"
+            builderDefJson : "<ui:escape value="${builderDefJson}" format="json" />",
+            builderConfig : "<ui:escape value="${builderConfig}" format="json" />"
         }
     </c:when>
     <c:otherwise>
