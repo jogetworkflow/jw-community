@@ -80,6 +80,9 @@ header.navbar .container-fluid{
     color: var(--theme-header-font, #72777a);
     text-decoration: none;
 }
+#header-welcome-message{
+    color: var(--theme-header-font, #72777a);
+}
 .header-nav .user-link > a {
     padding-left: 50px;
 }
@@ -761,13 +764,13 @@ body.horizontal_menu #header-info{
 
 /* scrollbar */
 * {
-    scrollbar-color: rgba(0, 0, 0, 0.1) #fff;
+    scrollbar-color: rgba(0, 0, 0, 0.15) #fff;
     scrollbar-width: thin; 
 }
 *::-webkit-scrollbar {
     width: 6px;
     height:6px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #fff;
     -webkit-box-shadow: none; 
 }
 *::-webkit-scrollbar-track {
@@ -776,6 +779,15 @@ body.horizontal_menu #header-info{
 *::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.15);
     outline: 1px solid slategrey; 
+}
+#navigation {
+    scrollbar-color: var(--theme-nav-scrollbar-thumb, rgba(0, 0, 0, 0.15)) var(--theme-nav-scrollbar-track, #fff);
+}
+#navigation::-webkit-scrollbar {
+    background-color: var(--theme-nav-scrollbar-track, #fff);
+}
+#navigation::-webkit-scrollbar-thumb {
+    background-color: var(--theme-nav-scrollbar-thumb, rgba(0, 0, 0, 0.15));
 }
 
 /* Popup dialog */

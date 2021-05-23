@@ -961,6 +961,12 @@ UserviewBuilder = {
                 if (props.dx8navActiveIconColor !== undefined  && props.dx8navActiveIconColor !== "") {
                     css += "--theme-sidebar-active-icon:"+props.dx8navActiveIconColor+";";
                 }
+                if (props.dx8navScrollbarTrack !== undefined  && props.dx8navScrollbarTrack !== "") {
+                    css += "--theme-nav-scrollbar-track:"+props.dx8navScrollbarTrack+";";
+                }
+                if (props.dx8navScrollbarThumb !== undefined  && props.dx8navScrollbarThumb !== "") {
+                    css += "--theme-nav-scrollbar-thumb:"+props.dx8navScrollbarThumb+";";
+                }
                 if (props.dx8buttonBackground !== undefined  && props.dx8buttonBackground !== "") {
                     css += "--theme-button-bg:"+props.dx8buttonBackground+";";
                 }
