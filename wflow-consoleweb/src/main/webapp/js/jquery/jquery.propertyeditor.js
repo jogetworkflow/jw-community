@@ -1345,7 +1345,11 @@ PropertyEditor.Model.Editor.prototype = {
             thisObject.updateStylingClass();
         }
         
-        this.initialValues = this.getData();
+        try {
+            this.initialValues = this.getData();
+        } catch (err) {
+            this.initialValues = this.options.propertyValues;
+        }
     },
     updateStylingClass: function() {
         if ($(this.editor).hasClass('editor-panel-mode')) {
