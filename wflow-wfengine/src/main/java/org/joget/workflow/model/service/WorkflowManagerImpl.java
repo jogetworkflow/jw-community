@@ -6057,6 +6057,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public void internalMigrateProcessHistories() {
         String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
         if ("archive".equals(mode)) {
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration started.");
+            
             //migrate all process links
             workflowProcessLinkDao.migrateCompletedProcessLinks();
             
@@ -6090,6 +6092,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                             }
 
                             ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
+                            LogUtil.info(WorkflowManagerImpl.class.getName(), "Migrated " + pIds.size() + " processes.");
+                            LogUtil.info(WorkflowManagerImpl.class.getName(), pIds);
                         }
                     } catch (Exception e) {
                         LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");

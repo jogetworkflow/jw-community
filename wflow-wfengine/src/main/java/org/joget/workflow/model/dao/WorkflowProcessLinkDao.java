@@ -3,8 +3,11 @@ package org.joget.workflow.model.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
 
 public class WorkflowProcessLinkDao extends AbstractSpringDao {
@@ -174,10 +177,14 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     }
     
     public void migrateCompletedProcessLinks() {
+        Set<String> ids = new HashSet<String>();
         String conditions = " where e.processId not in (select p.processId from SharkProcess as p join p.state s where s.name like ?)";
         Collection<WorkflowProcessLink> temp = super.find(ENTITY_NAME, conditions, new String[]{"open.%"}, null, null, null, null);
         for (WorkflowProcessLink l : temp) {
             addWorkflowProcessLinkHistory(l);
+            ids.add(l.getProcessId());
         }
+        LogUtil.info(WorkflowProcessLinkDao.class.getName(), "Migrated " + ids.size() + " records in wf_process_link tables.");
+        LogUtil.info(WorkflowProcessLinkDao.class.getName(), ids);
     }
 }
