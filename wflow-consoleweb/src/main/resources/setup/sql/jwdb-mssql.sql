@@ -1,3 +1,30 @@
+/****** Object:  Table [wf_history_activity]     ******/
+SET ANSI_NULLS ON
+;
+SET QUOTED_IDENTIFIER ON
+;
+CREATE TABLE [wf_history_activity](
+        [activityId] [nvarchar](255) NOT NULL,
+	[activityName] [nvarchar](255) NULL,
+	[activityDefId] [nvarchar](255) NULL,
+	[activated] [numeric](19, 0) NULL,
+	[accepted] [numeric](19, 0) NULL,
+	[lastStateTime] [numeric](19, 0) NULL,
+	[limitDuration] [nvarchar](255) NULL,
+	[participantId] [nvarchar](255) NULL,
+	[assignmentUsers] [nvarchar](255) NULL,
+	[performer] [nvarchar](255) NULL,
+	[state] [nvarchar](255) NULL,
+	[type] [nvarchar](255) NULL,
+	[due] [datetime] NULL,
+	[variables] [ntext] NULL,
+	[processId] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[activityId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+;
 /****** Object:  Table [app_app]    Script Date: 05/29/2019 10:16:22 ******/
 SET ANSI_NULLS ON
 ;
@@ -271,6 +298,31 @@ PRIMARY KEY CLUSTERED
 	[appId] ASC,
 	[appVersion] ASC,
 	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+;
+/****** Object:  Table [wf_history_process]    ******/
+SET ANSI_NULLS ON
+;
+SET QUOTED_IDENTIFIER ON
+;
+CREATE TABLE [wf_history_process](
+	[processId] [nvarchar](255) NOT NULL,
+	[processName] [nvarchar](255) NULL,
+	[processRequesterId] [nvarchar](255) NULL,
+	[resourceRequesterId] [nvarchar](255) NULL,
+	[version] [nvarchar](255) NULL,
+	[processDefId] [nvarchar](255) NULL,
+	[started] [numeric](19, 0) NULL,
+	[created] [numeric](19, 0) NULL,
+	[lastStateTime] [numeric](19, 0) NULL,
+	[limitDuration] [nvarchar](255) NULL,
+	[due] [datetime] NULL,
+	[state] [nvarchar](255) NULL,
+	[variables] [ntext] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[processId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ;
@@ -2015,6 +2067,21 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 ;
+/****** Object:  Table [wf_process_link_history]    ******/
+SET ANSI_NULLS ON
+;
+SET QUOTED_IDENTIFIER ON
+;
+CREATE TABLE [wf_process_link_history](
+	[processId] [nvarchar](255) NOT NULL,
+	[parentProcessId] [nvarchar](255) NULL,
+	[originProcessId] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[processId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+;
 /****** Object:  Table [wf_resource_bundle_message]    Script Date: 05/29/2019 10:16:22 ******/
 SET ANSI_NULLS ON
 ;
@@ -2064,6 +2131,7 @@ INSERT [SHKProcessStates] ([KeyValue], [Name], [oid], [version]) VALUES (N'open.
 INSERT [SHKProcessStates] ([KeyValue], [Name], [oid], [version]) VALUES (N'closed.completed', N'closed.completed', CAST(1000006 AS Decimal(19, 0)), 0)
 INSERT [SHKProcessStates] ([KeyValue], [Name], [oid], [version]) VALUES (N'closed.terminated', N'closed.terminated', CAST(1000008 AS Decimal(19, 0)), 0)
 INSERT [SHKProcessStates] ([KeyValue], [Name], [oid], [version]) VALUES (N'closed.aborted', N'closed.aborted', CAST(1000010 AS Decimal(19, 0)), 0)
+INSERT [wf_setup] ([id], [property], [value]) VALUES (N'4028c4ea79850c7c0179850cc3880001', N'deleteProcessOnCompletion', N'archive')
 SET ANSI_PADDING ON
 ;
 /****** Object:  Index [idx_name]    Script Date: 05/29/2019 10:16:23 ******/
@@ -2861,6 +2929,11 @@ CREATE UNIQUE NONCLUSTERED INDEX [I1_SHKXPDLS] ON [SHKXPDLS]
 	[XPDLVersion] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ;
+ALTER TABLE [wf_history_activity]  WITH CHECK ADD  CONSTRAINT [FK5E33D79C918F94E] FOREIGN KEY([processId])
+REFERENCES [wf_history_process] ([processId])
+;
+ALTER TABLE [wf_history_activity] CHECK CONSTRAINT [FK5E33D79C918F94E]
+;
 ALTER TABLE [app_builder]  WITH CHECK ADD  CONSTRAINT [FK5F9347A6462EF4C7] FOREIGN KEY([appId], [appVersion])
 REFERENCES [app_app] ([appId], [appVersion])
 ;
@@ -2910,6 +2983,11 @@ ALTER TABLE [app_plugin_default]  WITH CHECK ADD  CONSTRAINT [FK7A835713462EF4C7
 REFERENCES [app_app] ([appId], [appVersion])
 ;
 ALTER TABLE [app_plugin_default] CHECK CONSTRAINT [FK7A835713462EF4C7]
+;
+ALTER TABLE [wf_history_process]  WITH CHECK ADD  CONSTRAINT [FK5E33D79C918F93E] FOREIGN KEY([processId])
+REFERENCES [wf_process_link_history] ([processId])
+;
+ALTER TABLE [wf_history_process] CHECK CONSTRAINT [FK5E33D79C918F93E]
 ;
 ALTER TABLE [app_report_activity]  WITH CHECK ADD  CONSTRAINT [FK5E33D79C918F93D] FOREIGN KEY([processUid])
 REFERENCES [app_report_process] ([uuid])

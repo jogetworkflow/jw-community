@@ -2063,12 +2063,12 @@ LOCK TABLES `SHKXPDLS` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `app_activity_history`
+-- Table structure for table `wf_history_activity`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `app_activity_history` (
+CREATE TABLE `wf_history_activity` (
   `activityId` varchar(255) NOT NULL,
   `activityName` varchar(255) DEFAULT NULL,
   `activityDefId` varchar(255) DEFAULT NULL,
@@ -2086,16 +2086,16 @@ CREATE TABLE `app_activity_history` (
   `processId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`activityId`),
   KEY `FK_7mmrnb28ugrdxpf0dpw35y73u` (`processId`),
-  CONSTRAINT `FK_7mmrnb28ugrdxpf0dpw35y73u` FOREIGN KEY (`processId`) REFERENCES `app_process_history` (`processId`)
+  CONSTRAINT `FK_7mmrnb28ugrdxpf0dpw35y73u` FOREIGN KEY (`processId`) REFERENCES `wf_history_process` (`processId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `app_activity_history`
+-- Dumping data for table `wf_history_activity`
 --
 
-/*!40000 ALTER TABLE `app_activity_history` DISABLE KEYS */;
-/*!40000 ALTER TABLE `app_activity_history` ENABLE KEYS */;
+/*!40000 ALTER TABLE `wf_history_activity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `wf_history_activity` ENABLE KEYS */;
 
 --
 -- Table structure for table `app_app`
@@ -2479,12 +2479,12 @@ LOCK TABLES `app_plugin_default` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `app_process_history`
+-- Table structure for table `wf_history_process`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `app_process_history` (
+CREATE TABLE `wf_history_process` (
   `processId` varchar(255) NOT NULL,
   `processName` varchar(255) DEFAULT NULL,
   `processRequesterId` varchar(255) DEFAULT NULL,
@@ -2504,11 +2504,11 @@ CREATE TABLE `app_process_history` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `app_process_history`
+-- Dumping data for table `wf_history_process`
 --
 
-/*!40000 ALTER TABLE `app_process_history` DISABLE KEYS */;
-/*!40000 ALTER TABLE `app_process_history` ENABLE KEYS */;
+/*!40000 ALTER TABLE `wf_history_process` DISABLE KEYS */;
+/*!40000 ALTER TABLE `wf_history_process` ENABLE KEYS */;
 
 --
 -- Table structure for table `app_report_activity`

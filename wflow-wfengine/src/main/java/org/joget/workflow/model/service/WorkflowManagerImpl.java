@@ -6093,7 +6093,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                             ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
                             LogUtil.info(WorkflowManagerImpl.class.getName(), "Migrated " + pIds.size() + " processes.");
-                            LogUtil.info(WorkflowManagerImpl.class.getName(), pIds);
+                            LogUtil.info(WorkflowManagerImpl.class.getName(), pIds.toString());
                         }
                     } catch (Exception e) {
                         LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");

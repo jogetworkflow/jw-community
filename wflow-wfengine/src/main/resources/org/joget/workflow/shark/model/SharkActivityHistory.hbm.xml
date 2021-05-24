@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class entity-name="SharkActivityHistory" lazy="false" name="org.joget.workflow.shark.model.SharkActivityHistory" table="app_activity_history">
+    <class entity-name="SharkActivityHistory" lazy="false" name="org.joget.workflow.shark.model.SharkActivityHistory" table="wf_history_activity">
         <id column="activityId" name="activityId" type="string"/>
         <property column="activityName" name="activityName" type="string"/>
         <property column="activityDefId" name="activityDefId" type="string"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class entity-name="SharkProcessHistory" lazy="false" name="org.joget.workflow.shark.model.SharkProcessHistory" table="app_process_history">
+    <class entity-name="SharkProcessHistory" lazy="false" name="org.joget.workflow.shark.model.SharkProcessHistory" table="wf_history_process">
         <id column="processId" name="processId" type="string"/>
         <property column="processName" name="processName" type="string"/>
         <property column="processRequesterId" name="processRequesterId" type="string"/>

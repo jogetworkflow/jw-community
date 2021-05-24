@@ -185,6 +185,6 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
             ids.add(l.getProcessId());
         }
         LogUtil.info(WorkflowProcessLinkDao.class.getName(), "Migrated " + ids.size() + " records in wf_process_link tables.");
-        LogUtil.info(WorkflowProcessLinkDao.class.getName(), ids);
+        LogUtil.info(WorkflowProcessLinkDao.class.getName(), ids.toString());
     }
 }

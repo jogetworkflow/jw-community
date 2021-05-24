@@ -1377,7 +1377,55 @@
 	"VALUE" CLOB, 
 	"ORDERING" NUMBER(10,0)
    ) ;
+--------------------------------------------------------
+--  DDL for Table WF_HISTORY_ACTIVITY
+--------------------------------------------------------
 
+  CREATE TABLE "WF_HISTORY_ACTIVITY" 
+   (	"ACTIVITYID" VARCHAR2(255 CHAR), 
+	"ACTIVITYNAME" VARCHAR2(255 CHAR), 
+	"ACTIVITYDEFID" VARCHAR2(255 CHAR), 
+	"ACTIVATED" NUMBER(19,0), 
+	"ACCEPTED" NUMBER(19,0), 
+	"LASTSTATETIME" NUMBER(19,0), 
+	"LIMITDURATION" VARCHAR2(255 CHAR), 
+	"PARTICIPANTID" VARCHAR2(255 CHAR), 
+	"ASSIGNMENTUSERS" VARCHAR2(255 CHAR), 
+	"PERFORMER" VARCHAR2(255 CHAR), 
+	"STATE" VARCHAR2(255 CHAR), 
+	"TYPE" VARCHAR2(255 CHAR), 
+	"DUE" TIMESTAMP (6), 
+	"VARIABLES" CLOB, 
+	"PROCESSID" VARCHAR2(255 CHAR)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table WF_HISTORY_PROCESS
+--------------------------------------------------------
+
+  CREATE TABLE "WF_HISTORY_PROCESS" 
+   (	"PROCESSID" VARCHAR2(255 CHAR), 
+	"PROCESSNAME" VARCHAR2(255 CHAR), 
+	"PROCESSREQUESTERID" VARCHAR2(255 CHAR), 
+	"RESOURCEREQUESTERID" VARCHAR2(255 CHAR), 
+	"VERSION" VARCHAR2(255 CHAR), 
+	"PROCESSDEFID" VARCHAR2(255 CHAR), 
+	"STARTED" NUMBER(19,0), 
+	"CREATED" NUMBER(19,0), 
+	"LASTSTATETIME" NUMBER(19,0), 
+	"LIMITDURATION" VARCHAR2(255 CHAR), 
+	"DUE" TIMESTAMP (6), 
+	"STATE" VARCHAR2(255 CHAR), 
+	"VARIABLES" CLOB
+   ) ;
+--------------------------------------------------------
+--  DDL for Table WF_PROCESS_LINK_HISTORY
+--------------------------------------------------------
+
+  CREATE TABLE "WF_PROCESS_LINK_HISTORY" 
+   (	"PROCESSID" VARCHAR2(255 CHAR), 
+	"PARENTPROCESSID" VARCHAR2(255 CHAR), 
+	"ORIGINPROCESSID" VARCHAR2(255 CHAR)
+   ) ;
 ---------------------------------------------------
 --   DATA FOR TABLE SHKUSERTABLE
 --   FILTER = none used
@@ -1854,6 +1902,7 @@ Insert into DIR_ROLE (ID,NAME,DESCRIPTION) values ('ROLE_USER','User','Normal Us
 --   FILTER = none used
 ---------------------------------------------------
 
+Insert into WF_SETUP (ID,PROPERTY,VALUE,ORDERING) values ('4028c4ea79850c7c0179850cc3880001','deleteProcessOnCompletion','archive',NULL);
 ---------------------------------------------------
 --   END DATA FOR TABLE WF_SETUP
 ---------------------------------------------------
@@ -3716,6 +3765,27 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
 
   ALTER TABLE "DIR_USER_REPLACEMENT" ADD PRIMARY KEY ("ID") ENABLE;
 --------------------------------------------------------
+--  Constraints for Table WF_HISTORY_ACTIVITY
+--------------------------------------------------------
+
+  ALTER TABLE "WF_HISTORY_ACTIVITY" ADD PRIMARY KEY ("ACTIVITYID");
+
+  ALTER TABLE "WF_HISTORY_ACTIVITY" MODIFY ("ACTIVITYID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table WF_HISTORY_PROCESS
+--------------------------------------------------------
+
+  ALTER TABLE "WF_HISTORY_PROCESS" ADD PRIMARY KEY ("PROCESSID");
+
+  ALTER TABLE "WF_HISTORY_PROCESS" MODIFY ("PROCESSID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table WF_PROCESS_LINK_HISTORY
+--------------------------------------------------------
+
+  ALTER TABLE "WF_PROCESS_LINK_HISTORY" ADD PRIMARY KEY ("PROCESSID");
+
+  ALTER TABLE "WF_PROCESS_LINK_HISTORY" MODIFY ("PROCESSID" NOT NULL ENABLE);
+--------------------------------------------------------
 --  DDL for Index I1_SHKACTIVITIES
 --------------------------------------------------------
 
@@ -4305,6 +4375,27 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
   ;
 
 --------------------------------------------------------
+--  DDL for Index I6_WF_HISTORY_ACTIVITY
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "I6_WF_HISTORY_ACTIVITY" ON "WF_HISTORY_ACTIVITY" ("ACTIVITYID") 
+  ;
+  
+--------------------------------------------------------
+--  DDL for Index I6_WF_HISTORY_PROCESS
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "I6_WF_HISTORY_PROCESS" ON "WF_HISTORY_PROCESS" ("PROCESSID") 
+  ;
+  
+--------------------------------------------------------
+--  DDL for Index I6_WF_PROCESS_LINK_HISTORY
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "I6_WF_PROCESS_LINK_HISTORY" ON "WF_PROCESS_LINK_HISTORY" ("PROCESSID") 
+  ;
+
+--------------------------------------------------------
 --  Ref Constraints for Table APP_BUILDER
 --------------------------------------------------------
 
@@ -4876,8 +4967,18 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
 
   ALTER TABLE "APP_RESOURCE" ADD CONSTRAINT "FK_NNVKG0H6YY8O3F4YJHD20URY0" FOREIGN KEY ("APPID", "APPVERSION")
 	  REFERENCES "APP_APP" ("APPID", "APPVERSION") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table WF_HISTORY_ACTIVITY
+--------------------------------------------------------
 
+  ALTER TABLE "WF_HISTORY_ACTIVITY" ADD CONSTRAINT "FK_7MMRNB28UGRDXPF0DPW35Y73U" FOREIGN KEY ("PROCESSID")
+	  REFERENCES "WF_HISTORY_PROCESS" ("PROCESSID") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table WF_HISTORY_PROCESS
+--------------------------------------------------------
 
+  ALTER TABLE "WF_HISTORY_PROCESS" ADD CONSTRAINT "FK_PRXYXTQY6BYFRQ3L5QGHT53L6" FOREIGN KEY ("PROCESSID")
+	  REFERENCES "WF_PROCESS_LINK_HISTORY" ("PROCESSID") ENABLE;
 
 
 
