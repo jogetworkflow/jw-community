@@ -121,10 +121,6 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     }
     
     public long getProcessesSize(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String state) {
-        if (state != null && state.startsWith("close")) {
-            return getProcessHistoriesSize(packageId, processDefId, processId, processName, version, recordId, username);
-        }
-
         //required to disable lazy loading 
         String condition = "";
         String where = "";
