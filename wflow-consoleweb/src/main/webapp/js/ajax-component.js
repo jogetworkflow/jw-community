@@ -158,6 +158,10 @@ AjaxComponent = {
      * Ajax call to retrieve the component html
      */
     call : function(element, url, method, formData) {
+        if ($(".ma-backdrop").is(":visible")) {
+            $("body").trigger("click.sidebar-toggled");
+        }
+        
         var isAjaxComponent = false;
         if (method === "POST") {
             url = UrlUtil.updateUrlParam(url, ConnectionManager.tokenName, ConnectionManager.tokenValue);
