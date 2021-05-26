@@ -1,6 +1,7 @@
 package org.joget.apps.app.controller;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import com.github.underscore.lodash.U;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -5228,22 +5229,30 @@ public class ConsoleWebController {
                     LogUtil.debug(ConsoleWebController.class.getName(), "XPDL cannot load");
                 }
                 
-                // get running activities
-                Collection<String> runningActivityIdList = new ArrayList<String>();
-                List<WorkflowActivity> activityList = (List<WorkflowActivity>) workflowManager.getActivityList(processId, 0, -1, "id", false);
-                if (activityList != null) {
-                    for (WorkflowActivity wa : activityList) {
-                        if (wa.getState().indexOf("open") >= 0) {
-                            runningActivityIdList.add(wa.getActivityDefId());
+                try {
+                    JSONObject jsonDef = new JSONObject();
+                    String xpdlJson = U.xmlToJson(xpdl);
+                    jsonDef.put("xpdl", new JSONObject(xpdlJson));
+                
+                    // get running activities
+                    Collection<String> runningActivityIdList = new ArrayList<String>();
+                    List<WorkflowActivity> activityList = (List<WorkflowActivity>) workflowManager.getActivityList(processId, 0, -1, "id", false);
+                    if (activityList != null) {
+                        for (WorkflowActivity wa : activityList) {
+                            if (wa.getState().indexOf("open") >= 0) {
+                                runningActivityIdList.add(wa.getActivityDefId());
+                            }
                         }
                     }
-                }
-                
-                String[] runningActivityIds = (String[]) runningActivityIdList.toArray(new String[0]);
 
-                map.addAttribute("wfProcess", wfProcess);
-                map.addAttribute("xpdl", xpdl);
-                map.addAttribute("runningActivityIds", runningActivityIds);
+                    String[] runningActivityIds = (String[]) runningActivityIdList.toArray(new String[0]);
+
+                    map.addAttribute("wfProcess", wfProcess);
+                    map.addAttribute("json", jsonDef.toString());
+                    map.addAttribute("runningActivityIds", runningActivityIds);
+                } catch (Exception e) {
+                    LogUtil.error(ConsoleWebController.class.getName(), e, "");
+                }
             }
         }
 

@@ -212,3 +212,16 @@
 .show-node-details.show-node-details-single{
     padding-top: 70px !important;
 }
+body.readonly .endpoint{
+    display:none !important;
+}
+body.readonly .endpoint_hover svg circle{
+    fill : #EBEBEB;
+}
+body.readonly *{
+    cursor: default;
+}
+body.readonly .running_activity{
+    background: yellow;
+    border: solid 3px #555;
+}

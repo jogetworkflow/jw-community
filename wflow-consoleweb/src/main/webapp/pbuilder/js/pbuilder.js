@@ -1,6 +1,7 @@
 ProcessBuilder = {
     currentProcessData : {},
     jsPlumb: null,
+    readonly: false,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -273,6 +274,17 @@ ProcessBuilder = {
     viewProcess : function() {
         var id = window.location.hash.replace("#", "");
         
+        ProcessBuilder.generateProcessData(id);
+        
+        CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+            ProcessBuilder.validate();
+        });
+    },
+    
+    /*
+     * Generate process model from XPDL
+     */
+    generateProcessData : function(id) {
         var xpdlProcess = null;
         var xpdl = CustomBuilder.data.xpdl['Package'];
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
@@ -283,15 +295,17 @@ ProcessBuilder = {
             }
         }
         
-        if (xpdlProcess === null) {
-            xpdlProcess = xpdlProcesses[0];
-            id = xpdlProcess['-Id'];
-            window.location.hash = id;
-            return;
+        if (!ProcessBuilder.readonly) {
+            if (xpdlProcess === null) {
+                xpdlProcess = xpdlProcesses[0];
+                id = xpdlProcess['-Id'];
+                window.location.hash = id;
+                return;
+            }
+
+            $('#process-selector select').val(id);
+            $('#process-selector select').trigger("chosen:updated");
         }
-        
-        $('#process-selector select').val(id);
-        $('#process-selector select').trigger("chosen:updated");
         
         var process = {
             className : 'process',
@@ -363,8 +377,10 @@ ProcessBuilder = {
                     if (participants[orders[o]] !== undefined) {
                         ProcessBuilder.currentProcessData['participants'].push(participants[orders[o]]);
                         
-                        //find mapping
-                        ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
+                        if (!ProcessBuilder.readonly) {
+                            //find mapping
+                            ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
+                        }
                     }
                 }
                 break;
@@ -513,8 +529,10 @@ ProcessBuilder = {
                 }
             }
             
-            //find mapping
-            ProcessBuilder.populateActivityMapping(obj);
+            if (!ProcessBuilder.readonly) {
+                //find mapping
+                ProcessBuilder.populateActivityMapping(obj);
+            }
             
             participants[participantId]['activities'].push(obj);
         }
@@ -563,8 +581,10 @@ ProcessBuilder = {
                     }
                 }
                 
-                //find mapping
-                ProcessBuilder.populateActivityMapping(obj);
+                if (!ProcessBuilder.readonly) {
+                    //find mapping
+                    ProcessBuilder.populateActivityMapping(obj);
+                }
             }
         }
         
@@ -616,12 +636,10 @@ ProcessBuilder = {
             process['transitions'].push(transition);
         }
         
-        //find whitelist mapping
-        ProcessBuilder.populateParticipantMapping(ProcessBuilder.currentProcessData);
-        
-        CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
-            ProcessBuilder.validate();
-        });
+        if (!ProcessBuilder.readonly) {
+            //find whitelist mapping
+            ProcessBuilder.populateParticipantMapping(ProcessBuilder.currentProcessData);
+        }
     },
     
     /*
@@ -4133,5 +4151,80 @@ ProcessBuilder = {
         $("#process-selector, .zoom-buttons, #listviewer-btn").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        
+    },
+    
+    /*
+     * Render process graph for monitoring feature
+     */
+    loadGraph : function(json, processId, runningActivities) {
+        CustomBuilder.data = JSON.decode(json);
+        
+        ProcessBuilder.readonly = true;
+        
+        CustomBuilder.Builder.init({
+            "enableViewport" : false,
+            callbacks : {
+                "initComponent" : "ProcessBuilder.initComponent",
+                "renderElement" : "ProcessBuilder.renderElement"
+            }
+        }, function() {
+            ProcessBuilder.initComponents();
+            CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<script data-jsPlumb-script src="' + CustomBuilder.contextPath + '/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>');
+
+            //wait for jsplumb available
+            while (!ProcessBuilder.jsPlumb) {
+                ProcessBuilder.jsPlumb = CustomBuilder.Builder.iframe.contentWindow.jsPlumb;
+            }
+            
+            // init jsPlumb
+            ProcessBuilder.jsPlumb.importDefaults({
+                Container: "canvas",
+                Anchor: "Continuous",
+                Endpoint: ["Dot", {radius: 4}],
+                Connector: ["StateMachine", {curviness:0.1}],
+                PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
+                ConnectionOverlays: [
+                    ["Arrow", {
+                        location: 0.99,
+                        id: "arrow",
+                        length: 10,
+                        width: 10,
+                        foldback: 0.8
+                    }]
+                ],
+                ConnectionsDetachable: true
+            });
+            
+            var deferreds = [];
+            
+            var wait = $.Deferred();
+            deferreds.push(wait);
+            
+            var jsPlumbReady = $.Deferred();
+            deferreds.push(jsPlumbReady);
+            ProcessBuilder.jsPlumb.ready(function() {
+                //make some delay for css to load
+                setTimeout(function(){
+                    jsPlumbReady.resolve();
+                }, 20);
+                
+            });
+            
+            wait.resolve();
+            
+            $.when.apply($, deferreds).then(function() {
+                ProcessBuilder.generateProcessData(processId);
+        
+                CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+                    CustomBuilder.Builder.frameBody.addClass("readonly");
+                    CustomBuilder.Builder.frameBody.find('[data-cbuilder-classname]').attr('data-cbuilder-uneditable', "");
+                    
+                    for (var i in runningActivities) {
+                        CustomBuilder.Builder.frameBody.find('#'+runningActivities[i]).addClass("running_activity");
+                    }
+                });
+            });
+        });
     }        
 };
