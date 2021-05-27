@@ -3,6 +3,27 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.17
+=================
+7c08e4a1 Fixed: wflow-core - File Upload - Progress bar not working when PWA enabled. @7.0-SNAPSHOT
+878ac31e Fixed: jw-community - SSLHandshakeException when sending email using TLS 1.2 in latest OpenJDK @7.0-SNAPSHOT
+7a40f9b6 Fixed: wflow-core - AppDevUtil - NPE when format JSON. #9047 @7.0-SNAPSHOT
+94e6e091 Fixed: wflow-core, wflow-consoleweb - import from latest build will cause error & color variances. @7.0-SNAPSHOT
+b3c36c33 Modified: jw-community - Updated commons-io to 2.7 for CVE-2021-29425 @7.0-SNAPSHOT
+951284de Modified: wflow-install - Upgraded to Apache Tomcat 8.5.65 @7.0-SNAPSHOT
+582ed0c5 Fixed: wflow-install - Duplicate shell scripts in installer bundle @7.0-SNAPSHOT
+8631b4ba Added: wflow-consoleweb - Provide a new form control to have the ability to have font size variations (A A A). @7.0-SNAPSHOT
+b993ee9c Fixed: wflow-core - JSON Tool/SOAP Tool - storeToForm() method throw cast exception when response only return single row. #8999 @7.0-SNAPSHOT
+4e12a882 Modified: wflow-core/wflow-consoleweb - Review all the current themes on Joget to maintain the color contrast ratios specified by WCAG. 7.0-SNAPSHOT
+f44a1550 Fixed: wflow-consoleweb - regression bug of 67f8f291, datalist - footable buttons missing on mobile/tablet view. @7.0-SNAPSHOT.
+dfd7e21a Added: wflow-core - Date Picker  - Support changing "Starting day of week" based on locale. @7.0-SNAPSHOT
+d9aec593 Fixed: wflow-core - Datalist Hash Variable will display parsed hash variables if hash variables were inserted in input fields during runtime. @7.0-SNAPSHOT
+22ab527e Fixed: wflow-consoleweb - Select Box form element - "Size (Rows)" property not working in runtime. @7.0-SNAPSHOT
+adf1ca22 Fixed: wflow-core - Userview Name: if empty or blank will caused an error during import/app clone. @7.0-SNAPSHOT
+b8a2b3ff Fixed: wflow-core - email content containing # will hit error when using multi tools with mode that creates new thread. @7.0-SNAPSHOT
+861306b2 Fixed: wflow-consoleweb - Regression of c72df663, default appcenter IE Windows 10 stuck at spinning wheel. @7.0-SNAPSHOT
+ce686e73 Modified: wflow-core, wflow-consoleweb - Upgraded guava library to 30.1-jre for CVE-2020-8908 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.16
 =================
 467af6a3 Fixed: wflow-core - PWA - Push notification shows multiple times. #T00006 @7.0-SNAPSHOT
