@@ -339,6 +339,10 @@
                     <jsp:param name="webConsole" value="true"/>
                     <jsp:param name="builderMode" value="true"/>
                 </jsp:include>
+                <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none;">
+                    <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
+                    <i class="${builderIcon} fa-stack-1x"></i>
+                </span>
             </body>
         </html>
     </c:otherwise>

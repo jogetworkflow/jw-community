@@ -78,6 +78,19 @@ body.quick-nav-shown {
     padding-left: 30px;
     transition: 0.35s padding-left ease-in-out;
 }
+#builder_loader {
+    position: fixed;
+    top:50vh;
+    left:50vw;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+}
+#builder_loader .fa-stack-1x{
+    font-size: 60%;
+}
+body.initializing #builder_loader{
+    display: block !important;
+}
 
 /* builder style */
 #cbuilder {
