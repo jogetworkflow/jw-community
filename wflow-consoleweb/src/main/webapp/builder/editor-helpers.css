@@ -32,8 +32,16 @@ body.is-dragging [data-cbuilder-droparea] {
 body.is-dragging *{
     cursor: move !important;
 }
-body.is-dragging div[data-cbuilder-droparea] {
-    background: rgba(0, 123, 255, 0.05);
+body.is-dragging [data-cbuilder-droparea]:after {
+    content: "";
+    position: absolute;
+    top:0;
+    left:0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    background: rgba(0, 123, 255, 0.1);
+    display: block;
 }
 body.screenshot-in-progress .screenshot-hidden{
     display:none;
