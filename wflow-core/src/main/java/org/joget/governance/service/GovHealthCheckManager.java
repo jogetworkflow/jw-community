@@ -364,6 +364,7 @@ public class GovHealthCheckManager {
                 
                 if (task == null) {
                     task = new GovHealthCheckTask(getProfile(), interval);
+                    setTask(task);
                 }
                 if (delay != null) {
                     ScheduledFuture scheduledFuture = govHealthCheckScheduler.scheduleAtFixedRate(task, new Date(((new Date()).getTime() + delay)), interval * 1000);
