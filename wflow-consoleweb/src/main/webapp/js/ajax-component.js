@@ -4,7 +4,6 @@ AjaxComponent = {
      * Intialize the content to found ajax supported component and event listening component
      */
     initAjax : function(element) {
-        AjaxComponent.initEventsListening(element);
         $(element).find("[data-ajax-component]").each(function() {
             AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
@@ -18,13 +17,9 @@ AjaxComponent = {
         AjaxComponent.overrideButtonEvent(element);
         AjaxComponent.overrideDatalistButtonEvent(element);
         AjaxComponent.overrideFormEvent(element);
-        AjaxComponent.initEventsListening(element);
-        $(element).find("[data-events-triggering]").each(function() {
+        $("[data-events-triggering]").each(function() {
             AjaxComponent.triggerEvents($(this), window.location.href);
         });
-        if ($(element).is("[data-events-triggering]")) {
-            AjaxComponent.triggerEvents($(element), window.location.href);
-        }
     },
     
     /*
@@ -158,6 +153,11 @@ AjaxComponent = {
      * Ajax call to retrieve the component html
      */
     call : function(element, url, method, formData) {
+        if (url.indexOf("http") !== 0 && url.indexOf("/") !== 0) {
+            var currentUrl = window.location.href;
+            url = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + url;
+        }
+        
         if ($(".ma-backdrop").is(":visible")) {
             $("body").trigger("click.sidebar-toggled");
         }
@@ -173,7 +173,7 @@ AjaxComponent = {
         
         var contentConatiner = $("#content");
         
-        if ($(element).closest("[data-ajax-component]").length > 0) {
+        if ($(element).closest("[data-ajax-component]").length > 0 && AjaxComponent.isCurrentUserviewPage(url)) {
             isAjaxComponent = true;
             contentConatiner = $(element).closest("[data-ajax-component]");
             headers.append("__ajax_component", $(contentConatiner).attr("id"));
@@ -299,6 +299,21 @@ AjaxComponent = {
                                     matched = false;
                                 }
                             }
+                        } else if (op === "empty" || op === "notEmpty") {
+                            var isEmpty = true;
+                            if (values !== null && values !== undefined && values.length > 0) {
+                                for (var v in values) {
+                                    if (values[v].trim().length > 0) {
+                                        isEmpty = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (op === "notEmpty") {
+                                matched = !isEmpty;
+                            } else {
+                                matched = isEmpty;
+                            }
                         } else {
                             var temp = false;
                             if (op === "contains") {
@@ -330,90 +345,18 @@ AjaxComponent = {
                 }
                 
                 if (matched) {
-                    AjaxComponent.triggerEvent(events[i].name, events[i].eventParameters, urlParams);
+                    AjaxComponent.handleEventAction(element, events[i].action, events[i], urlParams);
+                } else if (events[i].elseAction !== "") {
+                    AjaxComponent.handleEventAction(element, events[i].elseAction, events[i], urlParams);
                 }
             }
-        }
-    },
-    
-    /*
-     * Trigger an event with parameters
-     */
-    triggerEvent : function(name, eventParameters, urlParams) {
-        var args = {};
-        
-        if (eventParameters !== undefined && eventParameters.length > 0) {
-            for (var i in eventParameters) {
-                var value = eventParameters[i].value;
-                if (value.indexOf("{") !== -1 && value.indexOf("}") !== -1) {
-                    value = AjaxComponent.replaceParams(value, urlParams);
-                }
-                
-                args[eventParameters[i].name] = value;
-            }
-        }
-        
-        var e = $.Event(name, args);
-        $("body").trigger(e);
-    },
-    
-    /*
-     * For datalist hyperlink usage
-     */
-    triggerUrlEvent: function(url) {
-        var urlPart = url.split("?");
-        var args = {};
-        if (urlPart.length === 2) {
-            $.extend(args, UrlUtil.getUrlParams(urlPart[1]));
-        }
-        var e = $.Event(urlPart[0], args);
-        $("body").trigger(e);
-    },
-    
-    /*
-     * Based on the event listening config, listen to the event and do the action based on event
-     */
-    initEventsListening : function(element) {
-        var listen = function(component) {
-            if ($(component).is("[data-events-listening]") && !$(component).is("[data-events-listening-initialled]")) {
-                var events = $(component).data("events-listening");
-                var id = $(component).attr("id");
-                for (var i in events) {
-                    var eventName = events[i].name;
-                    if (eventName.indexOf(" ") !== -1) {
-                        var temp = eventName.split(" ");
-                        eventName = "";
-                        for (var t in temp) {
-                            if (temp[t].trim() !== "") {
-                                eventName += temp[t] + "." + id + "-" + i + " ";
-                            }
-                        }
-                    } else {
-                        eventName = eventName + "." + id + "-" + i;
-                    }
-
-                    $("body").off(eventName);
-                    $("body").on(eventName, "", {element: component, eventObj : events[i]}, function(event){
-                        AjaxComponent.handleEventListening(event.data.element, event.data.eventObj, event);
-                    });
-                }
-                $(component).attr("data-events-listening-initialled", "");
-            }
-        };
-        
-        $(element).find("[data-events-listening]").each(function() {
-            listen($(this));
-        });
-        if ($(element).is("[data-events-listening]")) {
-            listen($(element));
         }
     },
     
     /*
      * Handle the event action when the listened event triggered
      */
-    handleEventListening : function(element, eventObj, event) {
-        var action = eventObj.action;
+    handleEventAction : function(element, action, eventObj, urlParams) {
         if (action === "refresh") {
             AjaxComponent.call(element, window.location.href, "GET", null);
         } else if (action === "hide") {
@@ -421,10 +364,10 @@ AjaxComponent = {
         } else if (action === "show") {
             $(element).show();
         } else if (action === "parameters") {
-            var newUrl = AjaxComponent.updateUrlParams(eventObj.parameters, event);
+            var newUrl = AjaxComponent.updateUrlParams(eventObj.parameters);
             AjaxComponent.call(element, newUrl, "GET", null);
         } else if (action === "redirectComponent") {
-            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, event);
+            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             AjaxComponent.call(element, url, "GET", null);
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
@@ -433,7 +376,7 @@ AjaxComponent = {
                 window.location.reload(true);
             }
         } else if (action === "redirectPage") {
-            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, event);
+            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             if (AjaxUniversalTheme !== undefined) {
                 AjaxUniversalTheme.call(window.location.href, "GET", null);
             } else {
@@ -445,11 +388,7 @@ AjaxComponent = {
     /*
      * Update url parameters value based on event parameters
      */
-    updateUrlParams : function(parameters, event) {
-        var queryStr = window.location.search;
-        
-        var urlParams = UrlUtil.getUrlParams(queryStr);
-        
+    updateUrlParams : function(parameters, urlParams) {      
         var params = "";
         for (var i in parameters) {
             if (parameters[i].value !== "") {
@@ -461,8 +400,7 @@ AjaxComponent = {
                 delete urlParams[parameters[i].name];
             }
         }
-        params = AjaxComponent.getEventRedirectURL(params, event);
-        
+        params = AjaxComponent.getEventRedirectURL(params, urlParams);
         urlParams = $.extend(urlParams, UrlUtil.getUrlParams(params));
         
         var newUrl = window.location.pathname + "?" + UrlUtil.constructUrlQueryString(urlParams);
@@ -472,9 +410,9 @@ AjaxComponent = {
     /*
      * Get config redirection url
      */
-    getEventRedirectURL : function(url, event) {
+    getEventRedirectURL : function(url, urlParams) {
         if (url.indexOf("{") !== -1 && url.indexOf("}") !== -1) {
-            url = AjaxComponent.replaceParams(url, event);
+            url = AjaxComponent.replaceParams(url, urlParams);
         }
         return url;
     },
