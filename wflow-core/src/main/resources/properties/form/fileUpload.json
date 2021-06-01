@@ -161,7 +161,7 @@
         name : 'attachment',
         label : '@@form.fileupload.download@@',
         type : 'checkbox',
-        value : 'False',
+        value : 'true',
         options : [{
             value : 'true',
             label : ''
