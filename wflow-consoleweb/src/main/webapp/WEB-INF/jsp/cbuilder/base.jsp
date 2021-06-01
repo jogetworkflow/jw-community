@@ -84,7 +84,7 @@
                                     <i class="la la-cog"></i> <span><fmt:message key="ubuilder.properties"/></span>
                                 </button>
                                 <button style="display:none" class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
-                                    <i class="la la-eye"></i> <span><fmt:message key="ubuilder.preview"/></span>
+                                    <i class="fa-stack" style="vertical-align: text-top;font-size: 50%;"><i class="las la-file-alt fa-stack-2x"></i><i class="las la-search fa-stack-2x" style="transform: rotate(270deg); position: absolute; top: 2px; left: 4px;"></i></i> <span><fmt:message key="ubuilder.preview"/></span>
                                 </button>
                             </div> 
 
