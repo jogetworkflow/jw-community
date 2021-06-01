@@ -28,6 +28,7 @@ body.initializing:after{
 }
 body.is-dragging [data-cbuilder-droparea] {
     min-height: 50px; 
+    position: relative;
 }
 body.is-dragging *{
     cursor: move !important;
@@ -40,7 +41,8 @@ body.is-dragging [data-cbuilder-droparea]:after {
     bottom: 0;
     right: 0;
     pointer-events: none;
-    background: rgba(0, 123, 255, 0.1);
+    background: repeating-linear-gradient( 45deg, #606dbc, #606dbc 10px, #fff 10px, #fff 20px);
+    opacity: 0.1;
     display: block;
 }
 body.screenshot-in-progress .screenshot-hidden{
