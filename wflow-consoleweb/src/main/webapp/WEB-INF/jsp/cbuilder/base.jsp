@@ -67,7 +67,7 @@
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
-            <body id="cbuilder" class="no-right-panel initializing">
+            <body id="cbuilder" class="no-right-panel initializing max-property-editor">
                 <div id="top-panel">
                     <a id="builderIcon" class="reload" style="background-color:${builderColor};" onclick="location.reload(true);">
                         <i class="fa-2x ${builderIcon}"></i>
@@ -219,14 +219,6 @@
                                 </button>
                                 <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
-                            <div class="float-right">
-                                <button id="properties-max-button" title="<fmt:message key="cbuilder.expand"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="maxPropertiesWindow">
-                                    <i class="las la-expand"></i>
-                                </button>
-                                <button id="properties-min-button" title="<fmt:message key="cbuilder.dock"/>" class="btn btn-secondary btn-sm"  data-cbuilder-action="minPropertiesWindow" style="display:none" >
-                                    <i class="las la-thumbtack"></i>
-                                </button>
-                            </div> 
                             <div class="clear"></div>        
                         </div>
                         <div class="element-properties-header">
@@ -262,10 +254,7 @@
                                 <i class="las la-check"></i> <span><fmt:message key="cbuilder.apply"/></span>
                             </button>
                         </div>    
-                    </div>    
-                    <button id="right-panel-toogle" data-cbuilder-action="toogleRightPanel" >
-                        <i class="las la-angle-right"></i>
-                    </button>
+                    </div>
                     <button id="right-panel-resize" data-cbuilder-action="resizeRightPanel" data-cbuilder-on="mousedown touchstart" style="display:none">
                         <i class="las la-grip-lines-vertical"></i>
                     </button>

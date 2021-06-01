@@ -24,21 +24,21 @@ body {
 @media (min-width: 992px) {
     body {
         --builder-left-panel-width: 20vw;
-        --builder-right-panel-width: 20vw; 
+        --builder-right-panel-width: 25vw; 
         --builder-logo-width: 20vw;
     } 
 }
 @media (min-width: 1200px) {
     body {
         --builder-left-panel-width: 13.5vw;
-        --builder-right-panel-width: 20vw; 
+        --builder-right-panel-width: 25vw; 
         --builder-logo-width: 13.5vw;
     } 
 }
 @media (min-width: 1600px) {
     body {
         --builder-left-panel-width: 12vw;
-        --builder-right-panel-width: 20vw; 
+        --builder-right-panel-width: 25vw; 
         --builder-logo-width: 12vw;
     } 
 }
@@ -182,9 +182,6 @@ body.initializing #builder_loader{
     box-shadow: 1px -2px 2px #f3f3f3 inset;
     width: 15vw;
     width: var(--builder-right-panel-width) !important; 
-}
-#cbuilder #right-panel .components-list, #cbuilder #right-panel .blocks-list, #cbuilder #right-panel .component-properties {
-    width: var(--builder-right-panel-width); 
 }
 #cbuilder #top-panel {
     height: 65px;
@@ -361,16 +358,14 @@ body.initializing #builder_loader{
     background: #fff; 
 }
 #cbuilder #builder_canvas {
-    margin-right: 15vw;
     margin-left: 15vw;
-    margin-right: var(--builder-right-panel-width);
     margin-left: calc(var(--builder-left-panel-width) + 5px);
     width: 100%;
     height: 100%;
     width: calc( 100vw - 600px);
     height: calc( 100vh - 85px);
     top: 70px;
-    width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+    width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
     height: calc( 100vh - 5px - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
     top: calc(var(--builder-header-top-height) + 5px);
     position: fixed;
@@ -382,7 +377,7 @@ body.initializing #builder_loader{
     max-width: 1200px;
 }
 #cbuilder.quick-nav-shown #builder_canvas {
-    width: calc( 100vw - 35px - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
+    width: calc( 100vw - 35px - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
 }
 #cbuilder.default-builder #builder_canvas {
     overflow: hidden;
@@ -393,23 +388,16 @@ body.initializing #builder_loader{
     border: none; 
     overflow: hidden;
 }
+#cbuilder #builder_canvas.desktop {
+    width: 1000px;
+}
 #cbuilder #builder_canvas.tablet {
     width: 768px !important;
-    left: calc(50% - 399vw);
-    left: calc(50% - ((768px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width))/2)); 
     background: #eee;
-}
-#cbuilder.quick-nav-shown #builder_canvas.tablet {
-    left: calc(50% - ((768px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 30px)/2)); 
 }
 #cbuilder #builder_canvas.mobile{
     width: 320px !important;
-    left: calc(50% - 175vw);
-    left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width))/2)); 
     background: #eee;
-}
-#cbuilder.quick-nav-shown #builder_canvas.mobile {
-    left: calc(50% - ((320px / 2) + var(--builder-left-panel-width)) - ((var(--builder-right-panel-width) - var(--builder-left-panel-width) + 30px)/2)); 
 }
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
@@ -1167,7 +1155,6 @@ div.section, .header > ol {
     width: 30px;
 }
 #right-panel-resize,
-#right-panel-toogle,
 #left-panel-toogle{
     position: absolute;
     top: 50%;
@@ -1185,18 +1172,15 @@ div.section, .header > ol {
     overflow: hidden;
     outline: 0;
 }
-#right-panel-resize,
-#right-panel-toogle{
+#right-panel-resize{
     left: -1px;
     right: auto;
 }
 #right-panel-resize i,
-#right-panel-toogle i,
 #left-panel-toogle i {
     position: relative;
     left: -1px;
 }
-.right-panel-closed #right-panel-toogle,
 .left-panel-closed #left-panel-toogle{
     background: #ddd;
     color: #000;
@@ -1454,8 +1438,8 @@ div.section, .header > ol {
     top:65px;
     right: 0;
     bottom: 30px;
-    width: 35vw;
-    min-width: 35vw;
+    width: var(--builder-right-panel-width);
+    min-width: var(--builder-right-panel-width);
     z-index: 1000000;
     background: #fff;
     border-left: 2px solid #ccc !important;
@@ -1689,15 +1673,6 @@ body .property-editor-page-button-panel input[type=button]:hover{
 }
 body.stop-scrolling {
     overflow: hidden;
-}
-body.property-editor-right-panel xtable.boxy-wrapper{
-    top: 65px !important;
-    left: auto !important;
-    right: 0px !important;
-}
-body.property-editor-right-panel table.boxy-wrapper x.property-editor-container{
-    width: calc(15vw - 30px) !important;
-    width: calc(var(--builder-right-panel-width) - 30px) !important; 
 }
 #adminBar {
     display:none;

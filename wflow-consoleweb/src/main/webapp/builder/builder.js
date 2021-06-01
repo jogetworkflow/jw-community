@@ -274,6 +274,8 @@ _CustomBuilder = {
                 CustomBuilder.intBuilderMenu();
             } else {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
+                $("body").attr("class", "no-right-panel initializing max-property-editor");
+                $("#builder_canvas").attr("class", "");
                 
                 CustomBuilder = $.extend(true, {}, _CustomBuilder); //reset everything
                 
@@ -1313,7 +1315,7 @@ _CustomBuilder = {
             
             $("#right-panel #element-properties-tab").propertyEditor(options);
             if ($("body").hasClass("max-property-editor")) {
-                $("#right-panel .property-editor-container").addClass("wider");
+                CustomBuilder.adjustPropertyPanelSize();
             }
             
             $("#element-properties-tab-link").show();
@@ -1549,6 +1551,8 @@ _CustomBuilder = {
             var newWidth = $(panel).offset().left - x + $(panel).outerWidth();
             $(panel).css("width", newWidth + "px");
             CustomBuilder.setBuilderSetting("right-panel-width", newWidth);
+            
+            CustomBuilder.adjustPropertyPanelSize();
         };
         
         if ($("body").hasClass("default-builder")) {
@@ -2054,11 +2058,10 @@ _CustomBuilder = {
     },
     
     /*
-     * Maximised the right panel
+     * adjust the right panel size
      */
-    maxPropertiesWindow : function () {
+    adjustPropertyPanelSize : function () {
         $("body").addClass("max-property-editor");
-        $("#right-panel .property-editor-container").addClass("wider");
         
         var width = CustomBuilder.getBuilderSetting("right-panel-width");
         if (!isNaN(width)) {
@@ -2068,14 +2071,13 @@ _CustomBuilder = {
             }
             $("#right-panel").css("width", width + 'px');
         }
-    },
-    
-    /*
-     * Minimised the right panel
-     */
-    minPropertiesWindow : function () {
-        $("body").removeClass("max-property-editor");
-        $("#right-panel .property-editor-container").removeClass("wider");
+        
+        var width = $("#right-panel").width();
+        if (width > 450) {
+            $("#right-panel .property-editor-container").addClass("wider");
+        } else {
+            $("#right-panel .property-editor-container").removeClass("wider");
+        }
     },
     
     /*
@@ -2341,8 +2343,6 @@ _CustomBuilder = {
                 if (e.keyCode === 27) {
                     if ($("#quick-nav-bar").hasClass("active")) {
                         $("#quick-nav-bar").removeClass("active");
-                    } else if ($("body").hasClass('max-property-editor')) {
-                        CustomBuilder.minPropertiesWindow();
                     } else if ($("body").hasClass('property-editor-right-panel') && !$("body").hasClass('no-right-panel')) {
                         CustomBuilder.closePropertiesWindow();
                     }
@@ -5413,7 +5413,7 @@ _CustomBuilder.Builder = {
         $("#right-panel #style-properties-tab").propertyEditor(options);
         
         if ($("body").hasClass("max-property-editor")) {
-            $("#right-panel .property-editor-container").addClass("wider");
+            CustomBuilder.adjustPropertyPanelSize();
         }
     },
     
