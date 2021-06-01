@@ -34,13 +34,17 @@ AppBuilder = {
         });
         $("#builder_canvas").off("click", " li.item a.launch");
         $("#builder_canvas").on("click", " li.item a.launch", function(){
-            window.open(CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+$(this).closest(".item").attr("data-id"));
+            if (!$(this).hasClass("disabled")) {
+                window.open(CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+$(this).closest(".item").attr("data-id"));
+            }
             return false;
         });
         $("#builder_canvas").off("click", " li.item a.runprocess");
         $("#builder_canvas").on("click", " li.item a.runprocess", function(){
-            var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
-            JPopup.show("runProcessDialog", url, {}, "");
+            if (!$(this).hasClass("disabled")) {
+                var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
+                JPopup.show("runProcessDialog", url, {}, "");
+            }
             return false;
         });
         $("#builder_canvas").off("click", ".addnew");
@@ -171,12 +175,16 @@ AppBuilder = {
             if (builder.elements && builder.elements.length > 0) {
                 for (var j in builder.elements) {
                     var action = "";
-                    if (CustomBuilder.appPublished === "true" && (builder.value === "userview" || builder.value === "process")) {
-                        if (builder.value === "userview") {
-                            action = '<a class="launch" title="'+self.msg('launch')+'"><i class="las la-play"></i></a>';
-                        } else {
-                            action = '<a class="runprocess" title="'+self.msg('runProcess')+'"><i class="las la-play"></i></a>';
-                        }
+                    var actionClass= "";
+                    var actionTitle= "";
+                    if (CustomBuilder.appPublished !== "true") {
+                        actionClass = "not_publish disabled";
+                        actionTitle = ' ' +get_cbuilder_msg('abuilder.appNotPublished');
+                    }
+                    if (builder.value === "userview") {
+                        action = '<a class="launch '+actionClass+'" title="'+self.msg('launch')+actionTitle+'"><i class="fas fa-play"></i></a>';
+                    } else if (builder.value === "process") {
+                        action = '<a class="runprocess '+actionClass+'" title="'+self.msg('runProcess')+actionTitle+'"><i class="fas fa-play"></i></a>';
                     }
                     $(builderDiv).find("ul").append('<li class="item" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span></a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }

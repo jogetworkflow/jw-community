@@ -12,9 +12,11 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
 .builder-type ul li.message{color: #888; font-style: italic;}
 #builder_canvas .canvas-header {padding-bottom: 0 !important;}
-.builder-actions {display: none; position: absolute; right: 1px; top:6px;}
+.builder-actions {visibility: hidden; position: absolute; right: 1px; top:6px; display:block;}
 .builder-type ul li .builder-actions a {color: #0069d9; font-size: 16px; padding-right: 2px; padding: 2px; border: 0; display: inline-block; cursor: pointer;}
-.builder-type ul li:hover .builder-actions {display:block;}
+.builder-type ul li .builder-actions a.disabled {color:#ccc; cursor: default;}
+.builder-type ul li .builder-actions a.launch {visibility: visible;}
+.builder-type ul li:hover .builder-actions {visibility: visible;}
 #builder_canvas .search-container {display: inline-block; width: 300px}
 #builder_canvas #showTags {margin-left: 20px; cursor: pointer;}
 .builder-process .item .delete {display: none;}

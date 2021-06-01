@@ -2363,6 +2363,12 @@ _CustomBuilder = {
                 return false;
             });
 
+            $("#builder-quick-nav").off("click", "a.launch");
+            $("#builder-quick-nav").on("click", "a.launch", function(){
+                window.open($(this).attr('href'));
+                return false;
+            });
+            
             $("#builder-quick-nav").off("click", "a.builder-link");
             $("#builder-quick-nav").on("click", "a.builder-link", function(){
                 CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
@@ -2411,7 +2417,11 @@ _CustomBuilder = {
             $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             if (builder.elements) {
                 for (var j in builder.elements) {
-                    $(li).find("ul").append('<li class="item" data-id="'+builder.elements[j].id+'" ><a class="builder-link" href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a></li>');
+                    var extra = '';
+                    if (builder.value === "userview" && CustomBuilder.appPublished === "true") {
+                        extra = '<a class="launch" title="'+get_cbuilder_msg('launch')+'" href="'+CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+builder.elements[j].id+'" target="_blank"><i class="fas fa-play"></i></a>';
+                    }
+                    $(li).find("ul").append('<li class="item" data-id="'+builder.elements[j].id+'" ><a class="builder-link" href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a>'+extra+'</li>');
                 }
             }
             container.append(li);

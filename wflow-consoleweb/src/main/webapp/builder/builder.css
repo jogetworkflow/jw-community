@@ -1833,6 +1833,15 @@ body.quick-nav-shown #builder-quick-nav {
     color: #fff;
     text-decoration: none;
 }
+#builder-menu ul li.menu-userview ul li a.builder-link{
+    padding-right: 30px;
+}
+#builder-menu ul li ul li a.launch{
+    position: absolute;
+    padding: 5px;
+    top: 0;
+    right: 15px;
+}
 #builder-menu ul li ul li.header span.header-label{
     font-size: 16px;
     font-weight: bold;
