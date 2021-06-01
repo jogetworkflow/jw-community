@@ -1159,10 +1159,6 @@ UserviewBuilder = {
                             label : get_cbuilder_msg("ubuilder.eventAction"),
                             type : 'selectbox',
                             options : [{
-                                value : 'refresh',
-                                label : get_cbuilder_msg("ubuilder.event.action.refresh")
-                            },
-                            {
                                 value : 'hide',
                                 label : get_cbuilder_msg("ubuilder.event.action.hide")
                             },
@@ -1173,10 +1169,6 @@ UserviewBuilder = {
                             {
                                 value : 'parameters',
                                 label : get_cbuilder_msg("ubuilder.event.action.parameters")
-                            },
-                            {
-                                value : 'redirectComponent',
-                                label : get_cbuilder_msg("ubuilder.event.action.redirectComponent")
                             },
                             {
                                 value : 'reloadPage',
@@ -1221,6 +1213,10 @@ UserviewBuilder = {
                             label : get_cbuilder_msg("ubuilder.elseEventAction"),
                             type : 'selectbox',
                             options : [{
+                                value : '',
+                                label : ''
+                            },
+                            {
                                 value : 'hide',
                                 label : get_cbuilder_msg("ubuilder.event.action.hide")
                             },
@@ -1343,6 +1339,10 @@ UserviewBuilder = {
                             label : get_cbuilder_msg("ubuilder.elseEventAction"),
                             type : 'selectbox',
                             options : [{
+                                value : '',
+                                label : ''
+                            },
+                            {
                                 value : 'hide',
                                 label : get_cbuilder_msg("ubuilder.event.action.hide")
                             },

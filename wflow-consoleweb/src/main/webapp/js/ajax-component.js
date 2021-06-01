@@ -18,7 +18,9 @@ AjaxComponent = {
         AjaxComponent.overrideDatalistButtonEvent(element);
         AjaxComponent.overrideFormEvent(element);
         $("[data-events-triggering]").each(function() {
-            AjaxComponent.triggerEvents($(this), window.location.href);
+            if (!$(this).is(element)) {
+                AjaxComponent.triggerEvents($(this), window.location.href);
+            }
         });
     },
     
@@ -176,6 +178,12 @@ AjaxComponent = {
         if ($(element).closest("[data-ajax-component]").length > 0 && AjaxComponent.isCurrentUserviewPage(url)) {
             isAjaxComponent = true;
             contentConatiner = $(element).closest("[data-ajax-component]");
+            
+            var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
+            if (url === currentAjaxUrl) {
+                return;
+            }
+            
             headers.append("__ajax_component", $(contentConatiner).attr("id"));
         }
         
@@ -238,6 +246,7 @@ AjaxComponent = {
     callback : function(element, data, url) {
         var newTarget = $(data);
         $(element).replaceWith(newTarget);
+        $(element).data("ajax-url", url);
         AjaxComponent.initContent($(newTarget));
 
         setTimeout(function(){
@@ -357,18 +366,19 @@ AjaxComponent = {
      * Handle the event action when the listened event triggered
      */
     handleEventAction : function(element, action, eventObj, urlParams) {
-        if (action === "refresh") {
-            AjaxComponent.call(element, window.location.href, "GET", null);
-        } else if (action === "hide") {
+        if (action === "hide") {
             $(element).hide();
         } else if (action === "show") {
+            if ($(element).closest("[data-ajax-component]").length > 0) {
+                var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
+                if (window.location.href !== currentAjaxUrl) {
+                    AjaxComponent.call(element, window.location.href, "GET", null);
+                }
+            }
             $(element).show();
         } else if (action === "parameters") {
             var newUrl = AjaxComponent.updateUrlParams(eventObj.parameters);
             AjaxComponent.call(element, newUrl, "GET", null);
-        } else if (action === "redirectComponent") {
-            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
-            AjaxComponent.call(element, url, "GET", null);
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
                 AjaxUniversalTheme.call(window.location.href, "GET", null);
@@ -378,9 +388,9 @@ AjaxComponent = {
         } else if (action === "redirectPage") {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             if (AjaxUniversalTheme !== undefined) {
-                AjaxUniversalTheme.call(window.location.href, "GET", null);
+                AjaxUniversalTheme.call(url, "GET", null);
             } else {
-                window.location.reload(true);
+                window.location.href = url;
             }
         }
     },
@@ -484,7 +494,11 @@ AjaxComponent = {
         if (url.startsWith("/")) {
             return window.location.pathname.indexOf(url) !== -1;
         } else if (url.startsWith("http")) {
-            return window.location.href === url;
+            var currentUrl = window.location.href;
+            if (currentUrl.indexOf("?") !== -1) {
+                currentUrl = currentUrl.substring(0, currentUrl.indexOf("?"));
+            }
+            return currentUrl === url;
         } else {
             var path = window.location.pathname;
             return path.substring(path.lastIndexOf("/")+1) === url;
