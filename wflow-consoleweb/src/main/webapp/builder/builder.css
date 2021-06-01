@@ -347,7 +347,7 @@ body.initializing #builder_loader{
     height: 100%;
     overflow-x: hidden;
     list-style: none;
-    background: #fafbfc;
+    background: #eee;
     overflow-y: hidden; 
     padding-bottom: 35px;
 }
@@ -1042,6 +1042,7 @@ div.section, .header > ol {
     background-size: 11px 11px;
     background-repeat: no-repeat;
     background-position: center;
+    font-size: 11px;
 }
 .tree ol li.tree-viewer-item label > svg,
 .builder-palette-element > svg{
@@ -1077,6 +1078,8 @@ div.section, .header > ol {
     display: block;
     white-space: break-spaces;
     word-wrap: break-word;
+    font-size: 12px;
+    font-weight: 500;
 }
 .builder-palette-element.ui-draggable-dragging a, .builder-palette-element.ui-sortable-helper a {
     display: none;
