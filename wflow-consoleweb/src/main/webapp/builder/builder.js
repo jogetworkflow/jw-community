@@ -457,6 +457,7 @@ _CustomBuilder = {
                     if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
                         action.call(this, event);
                     }
+                    return false;
                 };
                 $(this).off(on);
                 $(this).on(on, buttonAction);
@@ -1619,7 +1620,7 @@ _CustomBuilder = {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks[view+"ViewInit"], [$(viewDiv).find('.builder-view-body')]);
             } else if (CustomBuilder[view+"ViewInit"] !== undefined) {
                 CustomBuilder[view+"ViewInit"]($(viewDiv).find('.builder-view-body'));
-            } else if ($this.data("cbuilder-frameurl") !== undefined) {
+            } else if ($this.attr("href") !== undefined) {
                 if ($(viewDiv).find('.builder-view-body iframe').length === 0) {
                     $(viewDiv).find('.builder-view-body').html('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i>');
                     var iframe = document.createElement('iframe');
@@ -1627,7 +1628,7 @@ _CustomBuilder = {
                         $(viewDiv).find('.builder-view-body .dt-loading').remove();
                         $(iframe).css('opacity', "1");
                     }; 
-                    iframe.src = $this.data("cbuilder-frameurl"); 
+                    iframe.src = $this.attr("href"); 
                     $(iframe).css('opacity', "0");
                     $(viewDiv).find('.builder-view-body').append(iframe);
                 }
