@@ -3388,22 +3388,43 @@ _CustomBuilder.Builder = {
 
         var self = CustomBuilder.Builder;
 
-        self.frameHtml.off("mousemove touchmove");
-        self.frameHtml.on("mousemove touchmove", function (event) {
-            var target = $(event.target);
-            var isAlternativeDrop = false;
+        self.frameHtml.off("mousemove touchmove", "*");
+        self.frameHtml.on("mousemove touchmove", "*", function (event, parentEvent) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            var x = 0;
+            var y = 0;
             
+            var eventTarget = $(event.target);
+            if (event.type === "touchmove") {
+                if (event.touches === undefined) {
+                    var frameOffset = $(self.iframe).offset();
+                    x = (parentEvent.touches[0].clientX || parentEvent.touches[0].originalEvent.clientX) - frameOffset.left;
+                    y = (parentEvent.touches[0].clientY || parentEvent.touches[0].originalEvent.clientY) - frameOffset.top;
+                } else {
+                    x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
+                    y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                }
+                
+                eventTarget = self.iframe.contentWindow.document.elementFromPoint(x, y);
+            } else {
+                x = (event.clientX || event.originalEvent.clientX);
+                y = (event.clientY || event.originalEvent.clientY);
+            }
+            var target = $(eventTarget);
+            
+            var isAlternativeDrop = false;
             if ($(target).closest("[data-cbuilder-alternative-drop]").length > 0) {
                 isAlternativeDrop = true;
                 if (!$(target).is("[data-cbuilder-select]")) {
-                    target = $(event.target).closest("[data-cbuilder-select]");
+                    target = $(eventTarget).closest("[data-cbuilder-select]");
                 }
             } else {
                 if (!$(target).is("[data-cbuilder-classname]")) {
-                    target = $(event.target).closest("[data-cbuilder-classname]");
+                    target = $(eventTarget).closest("[data-cbuilder-classname]");
                 }
                 if ($(target).length === 0 && self.component !== undefined) {
-                    target = $(event.target).closest("body[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]");
+                    target = $(eventTarget).closest("body[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]");
                 }
             }
             if ($(target).length > 0)
@@ -3418,156 +3439,150 @@ _CustomBuilder.Builder = {
                     }
                     
                     try {
-                        if (event.originalEvent)
-                        {
-                            var x = (event.clientX || event.originalEvent.clientX);
-                            var y = (event.clientY || event.originalEvent.clientY);
-                            
-                            $("#element-highlight-box").hide();
-                            var parentContainerAttr = self.component.builderTemplate.getParentContainerAttr(self.data, self.component);
-                                
-                            if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
+                        $("#element-highlight-box").hide();
+                        var parentContainerAttr = self.component.builderTemplate.getParentContainerAttr(self.data, self.component);
+
+                        if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
+                            var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
+                            if (selement !== null && selement.length > 0) {
+                                var elementsContainer = $(selement);
+                                if ($(selement).is('[data-cbuilder-alternative-drop]')) {
+                                    target = $(selement).closest("[data-cbuilder-select]");
+                                } else {
+                                    target = $(selement).closest("[data-cbuilder-classname]");
+                                }
+                                if (elementsContainer.find(self.dragElement).length === 0) {
+                                    elementsContainer.append(self.dragElement);
+                                }
+                                var cursorPos = self.dragElement.data("cursorPosition");
+                                if (!cursorPos) {
+                                    cursorPos = {x: 10, y : 10};
+                                }
+
+                                var containerOffset = elementsContainer.offset();
+                                var x_offset = ((x - containerOffset.left) / self.zoom) - cursorPos.x;
+                                var y_offset = ((y - containerOffset.top) /self.zoom) - cursorPos.y;
+
+                                self.dragElement.css({
+                                   "top" : y_offset + "px",
+                                   "left" : x_offset + "px",
+                                   "position" : "absolute"
+                                });
+                            } else {
+                                return;
+                            }
+                        } else {
+                            var elementsContainer = $(eventTarget).closest("[data-cbuilder-"+parentContainerAttr+"]");
+
+                            if ($(eventTarget).is("[data-cbuilder-ignore-dragging]").length > 0 || $(eventTarget).closest("[data-cbuilder-ignore-dragging]").length > 0) {
                                 var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
-                                if (selement !== null && selement.length > 0) {
-                                    var elementsContainer = $(selement);
+                                if (selement.length > 0) {
+                                    elementsContainer = $(selement);
                                     if ($(selement).is('[data-cbuilder-alternative-drop]')) {
                                         target = $(selement).closest("[data-cbuilder-select]");
                                     } else {
                                         target = $(selement).closest("[data-cbuilder-classname]");
                                     }
-                                    if (elementsContainer.find(self.dragElement).length === 0) {
-                                        elementsContainer.append(self.dragElement);
-                                    }
-                                    var cursorPos = self.dragElement.data("cursorPosition");
-                                    if (!cursorPos) {
-                                        cursorPos = {x: 10, y : 10};
-                                    }
-                                    
-                                    var containerOffset = elementsContainer.offset();
-                                    var x_offset = ((x - containerOffset.left) / self.zoom) - cursorPos.x;
-                                    var y_offset = ((y - containerOffset.top) /self.zoom) - cursorPos.y;
-
-                                    self.dragElement.css({
-                                       "top" : y_offset + "px",
-                                       "left" : x_offset + "px",
-                                       "position" : "absolute"
-                                    });
                                 } else {
                                     return;
                                 }
-                            } else {
-                                var elementsContainer = $(event.target).closest("[data-cbuilder-"+parentContainerAttr+"]");
+                            }
 
-                                if ($(event.target).is("[data-cbuilder-ignore-dragging]").length > 0 || $(event.target).closest("[data-cbuilder-ignore-dragging]").length > 0) {
-                                    var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
-                                    if (selement.length > 0) {
-                                        elementsContainer = $(selement);
-                                        if ($(selement).is('[data-cbuilder-alternative-drop]')) {
-                                            target = $(selement).closest("[data-cbuilder-select]");
-                                        } else {
-                                            target = $(selement).closest("[data-cbuilder-classname]");
-                                        }
-                                    } else {
-                                        return;
-                                    }
-                                }
-                            
-                                if (target.parent().length > 0 && target.parent().is(elementsContainer)) {
-                                    //not container
-                                    var offset = target.offset();
-                                    var top = offset.top - $(self.frameDoc).scrollTop();
-                                    var dY = ((target.outerHeight() * self.zoom) / 4);
-                                    var left = offset.left - $(self.frameDoc).scrollLeft();
-                                    var dX = ((target.outerWidth() * self.zoom) / 4);
+                            if ($(target).parent().length > 0 && $(target).parent().is(elementsContainer)) {
+                                //not container
+                                var offset = $(target).offset();
+                                var top = offset.top - $(self.frameDoc).scrollTop();
+                                var dY = (($(target).outerHeight() * self.zoom) / 4);
+                                var left = offset.left - $(self.frameDoc).scrollLeft();
+                                var dX = (($(target).outerWidth() * self.zoom) / 4);
 
-                                    if (target.parent().is("[data-cbuilder-sort-horizontal]")) {
-                                        if (x < (left + dX*2)) {
-                                            target.before(self.dragElement);
-                                        } else { 
-                                            target.after(self.dragElement);
-                                        }
-                                    } else {
-                                        if (y < (top + dY) || (y < (top + dY * 2) && x < (left + dX*3)) || (y < (top + dY * 3) && x < (left + dX))) {
-                                            target.before(self.dragElement);
-                                        } else { 
-                                            target.after(self.dragElement);
-                                        }
+                                if ($(target).parent().is("[data-cbuilder-sort-horizontal]")) {
+                                    if (x < (left + dX*2)) {
+                                        $(target).before(self.dragElement);
+                                    } else { 
+                                        $(target).after(self.dragElement);
                                     }
                                 } else {
-                                    //is container
-                                    var childs = elementsContainer.find('> [data-cbuilder-classname]');
-                                    if (isAlternativeDrop) {
-                                        childs = elementsContainer.find('> [data-cbuilder-select]:visible');
+                                    if (y < (top + dY) || (y < (top + dY * 2) && x < (left + dX*3)) || (y < (top + dY * 3) && x < (left + dX))) {
+                                        $(target).before(self.dragElement);
+                                    } else { 
+                                        $(target).after(self.dragElement);
                                     }
-                                    
-                                    if (childs.length > 0) {
-                                        //when has childs, find child at x,y
-                                        var child = null;
-                                        var offset = null;
-                                        var top = null;
-                                        var left =  null;
+                                }
+                            } else {
+                                //is container
+                                var childs = elementsContainer.find('> [data-cbuilder-classname]');
+                                if (isAlternativeDrop) {
+                                    childs = elementsContainer.find('> [data-cbuilder-select]:visible');
+                                }
 
-                                        childs.each(function(){
-                                            if (child === null) {
-                                                offset = $(this).offset();
-                                                top = offset.top - $(self.frameDoc).scrollTop();
-                                                left = offset.left  - $(self.frameDoc).scrollLeft();
+                                if (childs.length > 0) {
+                                    //when has childs, find child at x,y
+                                    var child = null;
+                                    var offset = null;
+                                    var top = null;
+                                    var left =  null;
 
-                                                if (y < top + ($(this).outerHeight() * self.zoom) && x < left + ($(this).outerWidth() * self.zoom)) {
-                                                    child = $(this);
-                                                }
+                                    childs.each(function(){
+                                        if (child === null) {
+                                            offset = $(this).offset();
+                                            top = offset.top - $(self.frameDoc).scrollTop();
+                                            left = offset.left  - $(self.frameDoc).scrollLeft();
+
+                                            if (y < top + ($(this).outerHeight() * self.zoom) && x < left + ($(this).outerWidth() * self.zoom)) {
+                                                child = $(this);
                                             }
-                                        });
+                                        }
+                                    });
 
-                                        if (child !== null) {
-                                            var dY = ((child.outerHeight() * self.zoom) / 4);
-                                            var dX = ((child.outerWidth() * self.zoom) / 4);
+                                    if (child !== null) {
+                                        var dY = ((child.outerHeight() * self.zoom) / 4);
+                                        var dX = ((child.outerWidth() * self.zoom) / 4);
 
-                                            if (elementsContainer.is("[data-cbuilder-sort-horizontal]")) {
-                                                if (x < (left + dX*2)) {
-                                                    child.before(self.dragElement);
-                                                } else { 
-                                                    child.after(self.dragElement);
-                                                }
-                                            } else {
-                                                if (y < (top + dY) || (y < (top + dY * 2) && x < (left + dX*3)) || (y < (top + dY * 3) && x < (left + dX))) {
-                                                    child.before(self.dragElement);
-                                                } else { 
-                                                    child.after(self.dragElement);
-                                                }
+                                        if (elementsContainer.is("[data-cbuilder-sort-horizontal]")) {
+                                            if (x < (left + dX*2)) {
+                                                child.before(self.dragElement);
+                                            } else { 
+                                                child.after(self.dragElement);
                                             }
                                         } else {
-                                            if (elementsContainer.is('[data-cbuilder-prepend]')) {
-                                                elementsContainer.prepend(self.dragElement);
-                                            } else {
-                                                elementsContainer.append(self.dragElement);
+                                            if (y < (top + dY) || (y < (top + dY * 2) && x < (left + dX*3)) || (y < (top + dY * 3) && x < (left + dX))) {
+                                                child.before(self.dragElement);
+                                            } else { 
+                                                child.after(self.dragElement);
                                             }
                                         }
                                     } else {
-                                        //when empty
                                         if (elementsContainer.is('[data-cbuilder-prepend]')) {
                                             elementsContainer.prepend(self.dragElement);
                                         } else {
                                             elementsContainer.append(self.dragElement);
                                         }
                                     }
+                                } else {
+                                    //when empty
+                                    if (elementsContainer.is('[data-cbuilder-prepend]')) {
+                                        elementsContainer.prepend(self.dragElement);
+                                    } else {
+                                        elementsContainer.append(self.dragElement);
+                                    }
                                 }
                             }
-                            if (self.component.builderTemplate.dragging) {
-                                self.dragElement = self.component.builderTemplate.dragging(self.dragElement, self.component);
-                                self.dragElement.css("border", "1px dashed #4285f4");
-                            }
-                            
-                            if (self.iconDrag)
-                                self.iconDrag.css({'left': x + 238, 'top': y + 20});
                         }
+                        if (self.component.builderTemplate.dragging) {
+                            self.dragElement = self.component.builderTemplate.dragging(self.dragElement, self.component);
+                            self.dragElement.css("border", "1px dashed #4285f4");
+                        }
+
+                        if (self.iconDrag)
+                            self.iconDrag.css({'left': x + 238, 'top': y + 20});
                     } catch (err) {
                         console.log(err);
                         return false;
                     }
                 } else if (!$(target).is(self.frameBody))
                 {
-                    self.highlight(target, event);
+                    self.highlight($(target), event);
                 } else {
                     $("#element-highlight-box").hide();
                 }
@@ -3587,7 +3602,7 @@ _CustomBuilder.Builder = {
                     self.iconDrag.remove();
                     self.iconDrag = null;
                 }
-
+         
                 self.handleDropEnd();
             }
         });
@@ -3625,9 +3640,16 @@ _CustomBuilder.Builder = {
                                 if (self.component.builderTemplate.dragStart)
                                     self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
-                                if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component) && event.originalEvent) {
-                                    var x = (event.clientX || event.originalEvent.clientX);
-                                    var y = (event.clientY || event.originalEvent.clientY);
+                                if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
+                                    var x = 0;
+                                    var y = 0;
+                                    if (event.type === "touchstart") {
+                                        x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
+                                        y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                                    } else {
+                                        x = (event.clientX || event.originalEvent.clientX);
+                                        y = (event.clientY || event.originalEvent.clientY);
+                                    }
                                     var elementOffset = self.dragElement.offset();
                                     var xDiff = x - elementOffset.left;
                                     var yDiff = y - elementOffset.top;
@@ -4048,17 +4070,23 @@ _CustomBuilder.Builder = {
 
             $('body').append(self.iconDrag);
             
-            var x = (event.clientX || event.originalEvent.clientX);
-            var y = (event.clientY || event.originalEvent.clientY);
-
+            var x = 0;
+            var y = 0;
+            if (event.type === "touchstart") {
+                x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
+                y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+            } else {
+                x = (event.clientX || event.originalEvent.clientX);
+                y = (event.clientY || event.originalEvent.clientY);
+            }
             self.iconDrag.css({'left': x - 50, 'top': y - 45});
 
             event.preventDefault();
             return false;
         });
         
-        $('.drag-elements-sidepane').off("mouseup touchend", "ul > li > ol > li");
-        $('.drag-elements-sidepane').on("mouseup touchend", "ul > li > ol > li", function (event) {
+        $('.drag-elements-sidepane').off("mouseup", "ul > li > ol > li");
+        $('.drag-elements-sidepane').on("mouseup", "ul > li > ol > li", function (event) {
             self.isDragging = false;
             self.frameBody.removeClass("is-dragging");
             self.frameBody.find("[data-cbuilder-droparea]").removeAttr("data-cbuilder-droparea");
@@ -4086,8 +4114,15 @@ _CustomBuilder.Builder = {
                     self.iconDrag = null;
                 }
                 
-                var x = (event.clientX || event.originalEvent.clientX);
-                var y = (event.clientY || event.originalEvent.clientY);
+                var x = 0;
+                var y = 0;
+                if (event.type === "touchend") {
+                    x = (event.changedTouches[0].clientX || event.changedTouches[0].originalEvent.clientX);
+                    y = (event.changedTouches[0].clientY || event.changedTouches[0].originalEvent.clientY);
+                } else {
+                    x = (event.clientX || event.originalEvent.clientX);
+                    y = (event.clientY || event.originalEvent.clientY);
+                }
                 
                 var elementMouseIsOver = document.elementFromPoint(x, y);
                 
@@ -4102,19 +4137,32 @@ _CustomBuilder.Builder = {
 
         $('body').off('mousemove touchmove');
         $('body').on('mousemove touchmove', function (event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+                
             if (self.iconDrag && self.isDragging == true)
             {
-                var x = (event.clientX || event.originalEvent.clientX);
-                var y = (event.clientY || event.originalEvent.clientY);
-
+                var x = 0;
+                var y = 0;
+                if (event.type === "touchmove") {
+                    x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
+                    y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                } else {
+                    x = (event.clientX || event.originalEvent.clientX);
+                    y = (event.clientY || event.originalEvent.clientY);
+                }
                 self.iconDrag.css({'left': x - 50, 'top': y - 45});
-
+                
                 var elementMouseIsOver = document.elementFromPoint(x, y);
 
                 //if drag elements hovers over iframe switch to iframe mouseover handler	
                 if (elementMouseIsOver && elementMouseIsOver.tagName == 'IFRAME')
                 {
-                    self.frameBody.trigger("mousemove", event);
+                    if (event.type === "touchmove") {
+                        self.frameBody.trigger("touchmove", event);
+                    } else {
+                        self.frameBody.trigger("mousemove", event);
+                    }
                     event.stopPropagation();
                     self.selectNode(false);
                 }
