@@ -6019,8 +6019,8 @@ _CustomBuilder.Builder = {
         var id = CustomBuilder.id;
         
         if (self.frameBody.find('> *:eq(0)').length > 0) {
-            var tempId = self.frameBody.find('> *:eq(0)').attr("id");
-            if (tempId === undefined || tempId === "") {
+            var tempId = self.frameBody.find('> *:eq(0)').attr("data-cbuilder-id");
+            if (tempId !== undefined && tempId !== "") {
                 id = tempId;
             }
         }
@@ -6030,7 +6030,7 @@ _CustomBuilder.Builder = {
                 $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
                 
                 var link = document.createElement('a');
-                link.download = id+'.png';
+                link.download = CustomBuilder.appId + '-' + CustomBuilder.builderType + '-' + id+'.png';
                 link.href = image;
                 $(link).addClass("btn button btn-secondary");  
                 $(link).html(get_cbuilder_msg('cbuilder.download'));
