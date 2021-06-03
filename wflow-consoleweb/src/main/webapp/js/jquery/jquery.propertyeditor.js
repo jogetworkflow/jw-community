@@ -1424,6 +1424,7 @@ PropertyEditor.Model.Editor.prototype = {
             var single = $.localStorage.getItem("propertyEditor.singlePageDisplay");
             if (single === "true" || ($thisObject.options.editorPanelMode !== undefined && $thisObject.options.editorPanelMode === true)) {
                 this.toggleSinglePageDisplay(true);
+                $(this.editor).find(".property-page-show").filter(":eq(1)").addClass("collapsed");
             }
 
             $(this.editor).find('.property-editor-display a').click(function() {

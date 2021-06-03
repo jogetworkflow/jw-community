@@ -2112,7 +2112,7 @@ _CustomBuilder = {
             }
             
             if ($(page).find(".property-editor-property:not(.property-search-hide)").length > 0) {
-                $(page).removeClass("property-search-hide");
+                $(page).removeClass("property-search-hide collapsed");
             } else {
                 $(page).addClass("property-search-hide");
             }
