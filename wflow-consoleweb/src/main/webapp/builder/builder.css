@@ -1457,6 +1457,7 @@ div.section, .header > ol {
     z-index: 1000000;
     background: #fff;
     border-left: 2px solid #ccc !important;
+    box-shadow: -12px 0px 31px -8px rgba(0,0,0,0.75);
 }
 .max-property-editor #right-panel-toogle{
     display:none;
