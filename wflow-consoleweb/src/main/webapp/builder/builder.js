@@ -1524,8 +1524,8 @@ _CustomBuilder = {
     resizeRightPanel : function(event) {
         var button = $(this);
         var panel = $("#right-panel");
-        
         $(panel).addClass("resizing");
+        $("body").addClass("right-panel-resizing");
         
         var stopResize = function() {
             $("body").off("mousemove.resize touchmove.resize");
@@ -1536,6 +1536,7 @@ _CustomBuilder = {
                 CustomBuilder.Builder.frameHtml.off("mouseup.resize touchend.resize");
             }
             $(panel).removeClass("resizing");
+            $("body").removeClass("right-panel-resizing");
         };
         
         var resize = function(e) {
@@ -4137,11 +4138,11 @@ _CustomBuilder.Builder = {
 
         $('body').off('mousemove touchmove');
         $('body').on('mousemove touchmove', function (event) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-                
             if (self.iconDrag && self.isDragging == true)
             {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                
                 var x = 0;
                 var y = 0;
                 if (event.type === "touchmove") {

@@ -210,6 +210,7 @@
                 <div id="builder_canvas">
                     ${builderCanvas}
                 </div>
+                <div id="right-panel-resize-block"></div>
                 <div id="right-panel">
                     <div id="right-panel-content" class="element-properties ">
                         <div class="element-properties-header-actions">

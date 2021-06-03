@@ -114,6 +114,17 @@ body.initializing #builder_loader{
 #cbuilder.max-property-editor #right-panel.resizing {
     transition: none;
 }
+#right-panel-resize-block{
+    display:none;
+}
+body.right-panel-resizing #right-panel-resize-block{
+    display: block;
+    position: fixed;
+    top:0;
+    left:0;
+    right: 0;
+    bottom: 0;
+}
 #cbuilder #left-panel {
     float: left;
     border-right-width: 1px;
