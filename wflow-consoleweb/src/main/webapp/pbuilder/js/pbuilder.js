@@ -2332,6 +2332,7 @@ ProcessBuilder = {
             'supportStyle' : false,
             'parentDataHolder' : 'transitions',
             'render' : ProcessBuilder.renderTransition,
+            'unload' : ProcessBuilder.unloadTransition,
             'customTreeMenu' : ProcessBuilder.renderTransitionTreeMenu,
             'nodeDetailContainerColorNumber' : function() {
                 return 9;
@@ -2627,6 +2628,11 @@ ProcessBuilder = {
         ProcessBuilder.removeNode($(element));
     },
     
+    //to remove transition                
+    unloadTransition : function(element, elementObj, component) {
+        ProcessBuilder.jsPlumb.detach(elementObj.connection);
+    },
+    
     //Handling for node deleted
     removeNode : function (node) {
         var data = $(node).data("data");
@@ -2766,6 +2772,14 @@ ProcessBuilder = {
                     }
                 }
             }
+            endpoints = ProcessBuilder.jsPlumb.getEndpoints($(target));
+            if (endpoints.length > 0) {
+                for (var i=0; i<endpoints.length; i++) {
+                    if (endpoints[i].connections.length === 0) {
+                        ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                    }
+                }
+            }
 
             CustomBuilder.update();
             self._updateBoxes();
@@ -2817,6 +2831,24 @@ ProcessBuilder = {
             }
         } else {
             targetData.properties.join = "";
+        }
+        
+        // remove unused endpoints
+        var endpoints = ProcessBuilder.jsPlumb.getEndpoints($(source));
+        if (endpoints.length > 0) {
+            for (var i=0; i<endpoints.length; i++) {
+                if (endpoints[i].connections.length === 0) {
+                    ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                }
+            }
+        }
+        endpoints = ProcessBuilder.jsPlumb.getEndpoints($(target));
+        if (endpoints.length > 0) {
+            for (var i=0; i<endpoints.length; i++) {
+                if (endpoints[i].connections.length === 0) {
+                    ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                }
+            }
         }
         
         CustomBuilder.update();

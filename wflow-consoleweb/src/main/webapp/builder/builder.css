@@ -1492,11 +1492,16 @@ div.section, .header > ol {
 .element-properties .tab-content > div {
     height: 100%;
 }
+.element-properties-footer-actions{
+    padding-top: 10px;
+    background: #9bb1c1;
+}
 #apply-btn {
-    margin-top: 10px;
     width: 100%;
     border-radius: 0;
 }
+#expand-all-props-btn,
+#collapse-all-props-btn,
 #cancel-properties-btn{
     font-size: 18px;
     line-height: 18px;

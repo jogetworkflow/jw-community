@@ -68,6 +68,10 @@
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
             <body id="cbuilder" class="no-right-panel initializing max-property-editor">
+                <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none; z-index:9999;">
+                    <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
+                    <i class="${builderIcon} fa-stack-1x"></i>
+                </span>
                 <div id="top-panel">
                     <a id="builderIcon" class="reload" style="background-color:${builderColor};" onclick="location.reload(true);">
                         <i class="fa-2x ${builderIcon}"></i>
@@ -220,6 +224,14 @@
                                 </button>
                                 <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
+                            <div class="float-right">
+                                <button id="expand-all-props-btn" title="<fmt:message key="cbuilder.expandAll"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="expandAllProperties">
+                                    <i class="las la-expand"></i>
+                                </button>
+                                <button id="collapse-all-props-btn" title="<fmt:message key="cbuilder.collapseAll"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="collapseAllProperties" style="display:none;">
+                                    <i class="las la-compress"></i>
+                                </button>
+                            </div>    
                             <div class="clear"></div>        
                         </div>
                         <div class="element-properties-header">
@@ -329,10 +341,6 @@
                     <jsp:param name="webConsole" value="true"/>
                     <jsp:param name="builderMode" value="true"/>
                 </jsp:include>
-                <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none;">
-                    <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
-                    <i class="${builderIcon} fa-stack-1x"></i>
-                </span>
             </body>
         </html>
     </c:otherwise>

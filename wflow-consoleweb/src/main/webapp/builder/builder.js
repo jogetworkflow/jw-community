@@ -2092,6 +2092,24 @@ _CustomBuilder = {
     },
     
     /*
+     * Expand all sections in properties panel
+     */
+    expandAllProperties : function() {
+        $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").removeClass("collapsed");
+        $("#expand-all-props-btn").hide();
+        $("#collapse-all-props-btn").show();
+    },
+    
+    /*
+     * Collapse all sections in properties panel
+     */
+    collapseAllProperties : function() {
+        $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").addClass("collapsed");
+        $("#expand-all-props-btn").show();
+        $("#collapse-all-props-btn").hide();
+    },
+    
+    /*
      * Search property on right panel when search field keyup event
      */
     propertySearch : function() {
@@ -3389,10 +3407,8 @@ _CustomBuilder.Builder = {
 
         var self = CustomBuilder.Builder;
 
-        self.frameHtml.off("mousemove touchmove", "*");
-        self.frameHtml.on("mousemove touchmove", "*", function (event, parentEvent) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
+        self.frameHtml.off("mousemove touchmove");
+        self.frameHtml.on("mousemove touchmove", function (event, parentEvent) {
             var x = 0;
             var y = 0;
             
@@ -3414,6 +3430,10 @@ _CustomBuilder.Builder = {
             }
             var target = $(eventTarget);
             
+            if ($(target).closest(".ui-draggable-handle").length > 0) {
+                return;
+            }
+            
             var isAlternativeDrop = false;
             if ($(target).closest("[data-cbuilder-alternative-drop]").length > 0) {
                 isAlternativeDrop = true;
@@ -3430,7 +3450,7 @@ _CustomBuilder.Builder = {
             }
             if ($(target).length > 0)
             {
-                if (self.isDragging)
+                if (self.isDragging && self.dragElement)
                 {
                     self.isMoved = true;
                     if (self.dragElement.data("css-border") === undefined) {
@@ -3623,9 +3643,6 @@ _CustomBuilder.Builder = {
             }
             if ($(target).length > 0)
             {
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-                
                 try {
                     CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
                         if (!hasChange && self.mousedown) {
@@ -3673,7 +3690,6 @@ _CustomBuilder.Builder = {
                     });
                 }catch (err){}
             }
-            event.preventDefault();
             return false;
         });
         
