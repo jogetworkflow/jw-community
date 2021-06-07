@@ -144,6 +144,9 @@ AjaxComponent = {
             } else {
                  var formData = new FormData($(form)[0]);
                  var btn = $(this).find("input[type=submit][name]:focus, input[type=button][name]:focus, button[name]:focus" );
+                 if ($(btn).length === 0) {
+                     btn = $(this).find("input[type=submit][name], input[type=button][name], button[name]").eq(0);
+                 }
                  if ($(btn).length > 0) {
                      $(btn).each(function(){
                          formData.append($(this).attr("name"), $(this).val());
