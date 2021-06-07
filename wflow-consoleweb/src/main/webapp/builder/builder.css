@@ -198,7 +198,7 @@ body.right-panel-resizing #right-panel-resize-block{
     height: 65px;
     border-bottom: 1px solid #ccc;
     text-align: left;
-    background-color: #fafafa;
+    background-color: #9bb1c1;
     overflow: hidden;
     width: 100%; 
     position: relative;
@@ -890,14 +890,14 @@ div.section, .header > ol {
     margin-left: -15px;
     margin-bottom: 0.1rem;
     list-style: none;
-    color: #555;
+    color: #fff;
     overflow: hidden; 
 }
 .tree ol li:hover {
-    color: #54c5fd; 
+    color: #fffc8a; 
 }
 .tree ol li.active > label > span, .tree ol li.active > a > span {
-    color: #007bff; 
+    color: #86f9ff; 
 }
 .tree ol li.file > label {
     background: url(../js/line-awesome-1.3.0/svg/file.svg) 12px 0px no-repeat;
@@ -915,8 +915,10 @@ div.section, .header > ol {
     padding-left: 38px; 
 }
 .tree ol li.tree-viewer-item label {
-    background: none;
     padding-left: 30px;
+}
+.tree ol li.tree-viewer-item label:before{
+    display: none;
 }
 .tree ol li input {
     position: absolute;
@@ -930,12 +932,32 @@ div.section, .header > ol {
     top: 3px; 
 }
 .tree ol li input + ol {
-    background: url(../js/line-awesome-1.3.0/svg/angle-down-solid.svg) 42px 2px no-repeat;
-    background-size: 10px 10px;
+    position: relative;
     margin: -16px 0 0 -42px;
-    /* 15px */
     padding: 0.7rem 0rem;
     height: 0em; 
+}
+.tree ol li input + ol:before,
+.tree ol li label:before,
+.tree ol li input:checked + ol:before{
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-family: 'Line Awesome Free';
+    font-weight: 900;
+    color:#fff;
+    position: absolute;
+    pointer-events: none;
+    top: -1px;
+    left: 50px;
+}
+.tree ol li input + ol:before {
+    content:'\f107';
+    left: 40px;
+    top: 0px;
 }
 .tree ol li input + ol > li {
     display: none;
@@ -943,20 +965,24 @@ div.section, .header > ol {
     padding-left: 1px; 
 }
 .tree ol li label {
-    background: url(../js/line-awesome-1.3.0/svg/folder-open.svg) 15px 1px no-repeat;
-    background-size: 18px 18px;
+    position: relative;
     cursor: pointer;
     display: block;
     padding-left: 35px;
     margin: 0px;
     font-size: 12px; 
 }
+.tree ol li label:before {
+    content:'\f07c';
+}
 .tree ol li input:checked + ol {
-    background: url(../js/line-awesome-1.3.0/svg/angle-right-solid.svg) 54px 0px no-repeat;
-    background-size: 10px 10px;
+    position: relative;
     margin: -1.1em 0 10px -53px;
     padding: 2.1em 0 0 80px;
     height: auto; 
+}
+.tree ol li input:checked + ol:before {
+    content:'\f105';
 }
 .tree ol li input:checked + ol > li {
     display: block;
@@ -968,7 +994,7 @@ div.section, .header > ol {
     /* 1px */ 
 }
 .tree-viewer-item.active {
-    color: #4285f4 !important;
+    color: #26fdf4 !important;
 }
 
 /* Joget */
@@ -1028,10 +1054,31 @@ div.section, .header > ol {
 #builderElementName{
     font-weight: bold;
     padding-top: 2px;
+    color: #394249 !important;
 }
 #builderToolbar {
     padding-right: 60px;
     padding-top: 3px;
+}
+.toolbar-group {
+    border-radius: 5px;
+}
+.toolbar-group .btn-light:not(.active-view) {
+    color: #FFF;
+    background-color: transparent;
+    border-color: transparent;
+}
+#node-details-toggle {
+    background: #6c757d;
+}
+#main-button-group {
+    background: #394249;
+}
+.advanced-tools-toogle, .advanced-tools, .secondary-tools {
+    background: #718595;
+}
+.toolbar-group.tool {
+    background: #4e6475;
 }
 .builder-palette-element {
     text-align: center;
@@ -1072,7 +1119,7 @@ div.section, .header > ol {
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
     top: 1px;
-    color: #ccc;
+    color: #ddd;
 }
 .tree ol li.tree-viewer-item label > svg{
     transform: scale(1);
@@ -1337,13 +1384,16 @@ div.section, .header > ol {
 }
 .panel-header {
     position: relative;
-    background: #ffffff;
+    background: #394249;
     z-index: 1;
+}
+.panel-header * {
+    color: #fff !important;
 }
 #treeViewerView .builder-view-body,
 #xrayView .builder-view-body,
 #permissionView .builder-view-body {
-    background: #ffffff;
+    background: #718595;
 }
 .permission-builder-view #element-select-name,
 .permission-builder-view #element-bottom-actions,
@@ -1372,7 +1422,7 @@ div.section, .header > ol {
 }
 .permission-rules-container {
     padding: 20px;
-    background:#fafbfc;
+    background:#718595;
     font-size: 11px;
 }
 .permission_rule {
@@ -1406,6 +1456,7 @@ div.section, .header > ol {
 .permission_rule.active{
     background:#0069d9;
     color:#fff;
+    border: 1px solid #0069d9;
 }
 
 /* properties editor */

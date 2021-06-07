@@ -353,8 +353,6 @@ _CustomBuilder = {
             CustomBuilder.isAjaxReady = true;
         }
         
-        $("#top-panel").css("border-bottom-color", CustomBuilder.builderColor + " !important");
-        
         CustomBuilder.advancedToolsOptions = {
             contextPath : CustomBuilder.contextPath,
             appId : CustomBuilder.appId,
