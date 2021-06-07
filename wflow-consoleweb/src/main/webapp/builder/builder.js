@@ -4550,7 +4550,7 @@ _CustomBuilder.Builder = {
                 if ($(oldElement).is($(self.selectedEl))) {
                     self.selectedEl = element;
                 } else {
-                    self.selectNode(element);
+                    self.selectNodeAndShowProperties(element, false, (!$("body").hasClass("no-right-panel")));
                 }
             }
 
