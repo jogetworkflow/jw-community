@@ -1496,6 +1496,10 @@ div.section, .header > ol {
 .element-properties .tab-content > div {
     height: 100%;
 }
+.element-properties-footer-actions{
+    padding-top: 10px;
+    background: #9bb1c1;
+}
 #apply-btn {
     width: 100%;
     border-radius: 0;
