@@ -3658,6 +3658,11 @@ _CustomBuilder.Builder = {
                 target = $(event.target).closest("[data-cbuilder-classname]");
             }
             if ($(target).is("[data-cbuilder-unselectable]")) {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
+                    if (!hasChange) {
+                        self.selectNode(false);
+                    }
+                });
                 return false;
             }
             if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
@@ -3719,6 +3724,12 @@ _CustomBuilder.Builder = {
                         }
                     });
                 }catch (err){}
+            } else {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
+                    if (!hasChange) {
+                        self.selectNode(false);
+                    }
+                });
             }
             return false;
         });
