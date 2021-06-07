@@ -400,14 +400,17 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #builder_canvas.desktop {
     width: 1000px;
+    max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.tablet {
     width: 768px !important;
     background: #eee;
+    max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.mobile{
     width: 320px !important;
     background: #eee;
+    max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
