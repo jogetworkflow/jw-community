@@ -823,7 +823,9 @@ input.header_check:checked + div.section,
 li.header > input.header_check:checked + ol {
     display: block;
     opacity: 1;
-    height: auto; }
+    height: auto; 
+    padding-top: 10px;
+}
 
 div.section, .header > ol {
     display: block;
