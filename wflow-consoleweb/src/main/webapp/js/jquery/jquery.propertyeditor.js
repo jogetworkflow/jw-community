@@ -5807,10 +5807,12 @@ PropertyEditor.Type.IconTextField.prototype = {
                     }
                     
                     $(i).find("input.text_value").val($(icon).find("span.value i").attr("class"));
-                    var color = $(icon).find("span.value i")[0].style.color;
-                    if (color !== undefined) {
-                        $(i).find("input.color_value").val(color);
-                        $(i).find(".value_holder .color").css("background", color);
+                    if ($(icon).find("span.value i").length > 0) {
+                        var color = $(icon).find("span.value i")[0].style.color;
+                        if (color !== undefined) {
+                            $(i).find("input.color_value").val(color);
+                            $(i).find(".value_holder .color").css("background", color);
+                        }
                     }
                     
                     $(i).find("input.search").on("keyup", function() {
