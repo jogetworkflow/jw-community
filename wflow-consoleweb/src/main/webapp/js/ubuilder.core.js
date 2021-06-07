@@ -601,6 +601,14 @@ UserviewBuilder = {
                     
                     var id = UserviewBuilder.selectedMenu.properties.id;
                     self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
+                } else {
+                    var params = UrlUtil.getUrlParams(window.location.search);
+                    if (params !== undefined && params["menuId"] !== undefined) {
+                        var self = CustomBuilder.Builder;
+                    
+                        var id = params["menuId"][0];
+                        self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
+                    }
                 }
             });
         }
