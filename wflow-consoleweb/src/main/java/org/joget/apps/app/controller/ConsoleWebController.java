@@ -5862,6 +5862,7 @@ public class ConsoleWebController {
                 obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/form/builder/" + e.getId());
                 obj.put("label", e.getName());
+                obj.put("subLabel", e.getTableName());
                 elementsArr.put(obj);
             }
             data.put("elements", elementsArr);

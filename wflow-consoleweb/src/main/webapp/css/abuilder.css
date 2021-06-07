@@ -9,6 +9,7 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li {position: relative; border:1px solid #fff; border-radius: 3px; background: #fff;}
 .builder-type ul li a {padding: 10px; text-decoration: none; color: #000; display: block;}
 .builder-type ul li + li {margin-top: 5px;}
+.builder-type ul li a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
 .builder-type ul li.message{color: #888; font-style: italic;}
 #builder_canvas .canvas-header {padding-bottom: 0 !important;}

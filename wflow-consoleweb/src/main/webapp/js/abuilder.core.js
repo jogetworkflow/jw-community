@@ -124,6 +124,11 @@ AppBuilder = {
                                 match = true;
                             }
                         });
+                        $(this).find('span.item-sublabel').each(function(){
+                            if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
+                                match = true;
+                            }
+                        });
                     }
                     var hasTags = false;
                     if (tagsArr.length > 0) {
@@ -177,6 +182,7 @@ AppBuilder = {
                     var action = "";
                     var actionClass= "";
                     var actionTitle= "";
+                    var subLabel = "";
                     if (CustomBuilder.appPublished !== "true") {
                         actionClass = "not_publish disabled";
                         actionTitle = ' ' +get_cbuilder_msg('abuilder.appNotPublished');
@@ -186,7 +192,10 @@ AppBuilder = {
                     } else if (builder.value === "process") {
                         action = '<a class="runprocess '+actionClass+'" title="'+self.msg('runProcess')+actionTitle+'"><i class="fas fa-play"></i></a>';
                     }
-                    $(builderDiv).find("ul").append('<li class="item" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span></a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
+                    if (builder.elements[j].subLabel !== undefined) {
+                        subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
+                    }
+                    $(builderDiv).find("ul").append('<li class="item" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
