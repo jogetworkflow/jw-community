@@ -472,6 +472,10 @@ _CustomBuilder = {
             $(document).uitooltip({
                 position: { my: "left top+5", at: "left bottom", collision: "flipfit" },
                 open: function (event, ui) {
+                    if ($(event.originalEvent.target).is("iframe")) {
+                        $(ui.tooltip).hide();
+                        return false;
+                    }
                     var el = $(event.originalEvent.target).closest('[title]');
                     var position = el.attr('tooltip-position');
                     if (position === "right") {
