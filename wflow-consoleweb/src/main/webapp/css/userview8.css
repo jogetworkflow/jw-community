@@ -958,6 +958,21 @@ form.form .btn {
     background-color: #2196f3;
     border-color: #2196f3;
 }
+.form-errors {
+    border: 1px solid transparent;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: .25rem;
+}
+.form-error-message{
+    color: #dc3847;
+    display: block;
+    font-size: 80%;
+}
 
 /* dashboard */
 #content .main-body-content.Dashboard {
