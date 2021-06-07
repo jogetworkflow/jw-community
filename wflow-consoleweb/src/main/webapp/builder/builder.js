@@ -1537,9 +1537,15 @@ _CustomBuilder = {
         };
         
         var resize = function(e) {
-            var x = (e.clientX || e.originalEvent.clientX);
+            var x = e.clientX;
+            if (e.originalEvent) {
+                x = e.originalEvent.clientX;
+            }
             if (e.type === "touchmove") {
-                x = (e.touches[0].clientX || e.touches[0].originalEvent.clientX);
+                x = e.touches[0].clientX;
+                if (e.touches[0].originalEvent) {
+                    x= e.touches[0].originalEvent.clientX;
+                }
             }
             if (!$(e.currentTarget).is("#cbuilder")) {
                 x += $(CustomBuilder.Builder.iframe).offset().left;
@@ -3413,17 +3419,31 @@ _CustomBuilder.Builder = {
             if (event.type === "touchmove") {
                 if (event.touches === undefined) {
                     var frameOffset = $(self.iframe).offset();
-                    x = (parentEvent.touches[0].clientX || parentEvent.touches[0].originalEvent.clientX) - frameOffset.left;
-                    y = (parentEvent.touches[0].clientY || parentEvent.touches[0].originalEvent.clientY) - frameOffset.top;
+                    x = parentEvent.touches[0].clientX;
+                    y = parentEvent.touches[0].clientY;
+                    if (parentEvent.touches[0].originalEvent) {
+                        x = parentEvent.touches[0].originalEvent.clientX;
+                        y = parentEvent.touches[0].originalEvent.clientY;
+                    }
+                    x = x - frameOffset.left;
+                    y = y - frameOffset.top;
                 } else {
-                    x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
-                    y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                    x = event.touches[0].clientX;
+                    y = event.touches[0].clientY;
+                    if (event.touches[0].originalEvent) {
+                        x = event.touches[0].originalEvent.clientX;
+                        y = event.touches[0].originalEvent.clientY;
+                    }
                 }
                 
                 eventTarget = self.iframe.contentWindow.document.elementFromPoint(x, y);
             } else {
-                x = (event.clientX || event.originalEvent.clientX);
-                y = (event.clientY || event.originalEvent.clientY);
+                x = event.clientX;
+                y = event.clientY;
+                if (event.originalEvent) {
+                    x = event.originalEvent.clientX;
+                    y = event.originalEvent.clientY;
+                }
             }
             var target = $(eventTarget);
             
@@ -3659,11 +3679,19 @@ _CustomBuilder.Builder = {
                                     var x = 0;
                                     var y = 0;
                                     if (event.type === "touchstart") {
-                                        x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
-                                        y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                                        x = event.touches[0].clientX;
+                                        y = event.touches[0].clientY;
+                                        if (event.touches[0].originalEvent) {
+                                            x = event.touches[0].originalEvent.clientX;
+                                            y = event.touches[0].originalEvent.clientY;
+                                        }
                                     } else {
-                                        x = (event.clientX || event.originalEvent.clientX);
-                                        y = (event.clientY || event.originalEvent.clientY);
+                                        x = event.clientX;
+                                        y = event.clientY;
+                                        if (event.originalEvent) {
+                                            x = event.originalEvent.clientX;
+                                            y = event.originalEvent.clientY;
+                                        }
                                     }
                                     var elementOffset = self.dragElement.offset();
                                     var xDiff = x - elementOffset.left;
@@ -4087,11 +4115,19 @@ _CustomBuilder.Builder = {
             var x = 0;
             var y = 0;
             if (event.type === "touchstart") {
-                x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
-                y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                x = event.touches[0].clientX;
+                y = event.touches[0].clientY;
+                if (event.touches[0].originalEvent) {
+                    x = event.touches[0].originalEvent.clientX;
+                    y = event.touches[0].originalEvent.clientY;
+                }
             } else {
-                x = (event.clientX || event.originalEvent.clientX);
-                y = (event.clientY || event.originalEvent.clientY);
+                x = event.clientX;
+                y = event.clientY;
+                if (event.originalEvent) {
+                    x = event.originalEvent.clientX;
+                    y = event.originalEvent.clientY;
+                }
             }
             self.iconDrag.css({'left': x - 50, 'top': y - 45});
 
@@ -4131,11 +4167,19 @@ _CustomBuilder.Builder = {
                 var x = 0;
                 var y = 0;
                 if (event.type === "touchend") {
-                    x = (event.changedTouches[0].clientX || event.changedTouches[0].originalEvent.clientX);
-                    y = (event.changedTouches[0].clientY || event.changedTouches[0].originalEvent.clientY);
+                    x = event.changedTouches[0].clientX;
+                    y = event.changedTouches[0].clientY;
+                    if (event.changedTouches[0].originalEvent) {
+                        x = event.changedTouches[0].originalEvent.clientX;
+                        y = event.changedTouches[0].originalEvent.clientY;
+                    }
                 } else {
-                    x = (event.clientX || event.originalEvent.clientX);
-                    y = (event.clientY || event.originalEvent.clientY);
+                    x = event.clientX;
+                    y = event.clientY;
+                    if (event.originalEvent) {
+                        x = event.originalEvent.clientX;
+                        y = event.originalEvent.clientY;
+                    }
                 }
                 
                 var elementMouseIsOver = document.elementFromPoint(x, y);
@@ -4159,11 +4203,19 @@ _CustomBuilder.Builder = {
                 var x = 0;
                 var y = 0;
                 if (event.type === "touchmove") {
-                    x = (event.touches[0].clientX || event.touches[0].originalEvent.clientX);
-                    y = (event.touches[0].clientY || event.touches[0].originalEvent.clientY);
+                    x = event.touches[0].clientX;
+                    y = event.touches[0].clientY;
+                    if (event.touches[0].originalEvent) {
+                        x = event.touches[0].originalEvent.clientX;
+                        y = event.touches[0].originalEvent.clientY;
+                    }
                 } else {
-                    x = (event.clientX || event.originalEvent.clientX);
-                    y = (event.clientY || event.originalEvent.clientY);
+                    x = event.clientX;
+                    y = event.clientY;
+                    if (event.originalEvent) {
+                       x = event.originalEvent.clientX;
+                       y = event.originalEvent.clientY;
+                    }
                 }
                 self.iconDrag.css({'left': x - 50, 'top': y - 45});
                 
