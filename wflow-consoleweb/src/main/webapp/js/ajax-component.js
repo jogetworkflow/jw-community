@@ -1,4 +1,5 @@
 AjaxComponent = {
+    url : null,
     
     /*
      * Intialize the content to found ajax supported component and event listening component
@@ -17,11 +18,16 @@ AjaxComponent = {
         AjaxComponent.overrideButtonEvent(element);
         AjaxComponent.overrideDatalistButtonEvent(element);
         AjaxComponent.overrideFormEvent(element);
-        $("[data-events-triggering]").each(function() {
-            if (!$(this).is(element)) {
-                AjaxComponent.triggerEvents($(this), window.location.href);
-            }
-        });
+        
+        var url = window.location.href;
+        if (url !== AjaxComponent.url) {
+            $("[data-events-triggering]").each(function() {
+                if (!$(this).is(element)) {
+                    AjaxComponent.triggerEvents($(this), window.location.href);
+                }
+            });
+            AjaxComponent.url = url;
+        }
         
         if (window["AdminBar"] !== undefined) {
             AdminBar.initQuickEditMode();
@@ -391,14 +397,14 @@ AjaxComponent = {
             AjaxComponent.call(element, newUrl, "GET", null);
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
-                AjaxUniversalTheme.call(window.location.href, "GET", null);
+                AjaxComponent.call($("#content"), window.location.href, "GET", null);
             } else {
                 window.location.reload(true);
             }
         } else if (action === "redirectPage") {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             if (AjaxUniversalTheme !== undefined) {
-                AjaxUniversalTheme.call(url, "GET", null);
+               AjaxComponent.call($("#content"), url, "GET", null);
             } else {
                 window.location.href = url;
             }
