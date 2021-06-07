@@ -4778,7 +4778,7 @@ _CustomBuilder.Builder = {
                         scrollTop: $(node).offset().top - 25
                     }, 1000);
 
-                    node.click();
+                    node.trigger("mousedown").trigger("mouseup");
                 }
             });
         }
