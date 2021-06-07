@@ -4451,8 +4451,9 @@ _CustomBuilder.Builder = {
         deferreds.push(d);
         
         var html = component.builderTemplate.getHtml(elementObj, component);
+        var temp;
         if (html !== undefined) {
-            var temp = $(html);
+            temp = $(html);
             
             //if properties has tagName
             var props = self.parseElementProps(elementObj);
@@ -4467,7 +4468,8 @@ _CustomBuilder.Builder = {
             
             //loop properties for css class, style & attribute 
             self.handleStylingProperties(temp, props);
-            
+        }
+        if (temp !== undefined && $("<div></div>").append($(temp).clone()).html().indexOf("#") === -1) {
             element.replaceWith(temp);
             element = temp;
             

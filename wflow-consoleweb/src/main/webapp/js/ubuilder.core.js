@@ -751,26 +751,22 @@ UserviewBuilder = {
      * A callback method called from the default component.builderTemplate.render method
      */
     renderElement : function(element, elementObj, component, callback) {
-        if (component.builderTemplate.getHtml() === undefined) {
-            if (UserviewBuilder.mode === "userview") {
-                if (elementObj.className === "org.joget.apps.userview.model.Userview") {
-                    UserviewBuilder.renderUserview(element, elementObj, component, callback);
-                } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
-                    UserviewBuilder.renderCategory(element, elementObj, component, callback);
-                } else {
-                    UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
-                }
+        if (UserviewBuilder.mode === "userview") {
+            if (elementObj.className === "org.joget.apps.userview.model.Userview") {
+                UserviewBuilder.renderUserview(element, elementObj, component, callback);
+            } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                UserviewBuilder.renderCategory(element, elementObj, component, callback);
             } else {
-                if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
-                    UserviewBuilder.renderUserviewPage(element, elementObj, component, callback);
-                } else if (elementObj.className === "menu-component") {
-                    UserviewBuilder.renderMenuComponent(element, elementObj, component, callback);
-                } else {
-                    UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "component");
-                }
+                UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
             }
         } else {
-            callback(element);
+            if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
+                UserviewBuilder.renderUserviewPage(element, elementObj, component, callback);
+            } else if (elementObj.className === "menu-component") {
+                UserviewBuilder.renderMenuComponent(element, elementObj, component, callback);
+            } else {
+                UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "component");
+            }
         }
     },
     
