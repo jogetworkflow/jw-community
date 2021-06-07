@@ -827,6 +827,12 @@ _CustomBuilder = {
         
         CustomBuilder.json = json;
         CustomBuilder.adjustJson();
+        
+        //update save button
+        $("#save-btn").removeClass("unsaved");
+        if (!CustomBuilder.isSaved()) {
+            $("#save-btn").addClass("unsaved");
+        }
     },
     
     /*
@@ -854,6 +860,7 @@ _CustomBuilder = {
             $.post(CustomBuilder.saveUrl, {json : json} , function(data) {
                 var d = JSON.decode(data);
                 if(d.success == true){
+                    $("#save-btn").removeClass("unsaved");
                     $('#cbuilder-json-original').val(json);
                     CustomBuilder.updateSaveStatus("0");
                     CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");

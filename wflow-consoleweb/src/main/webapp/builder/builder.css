@@ -2091,3 +2091,22 @@ table.diff tbody th{
 #adminBar.adminBarInactive {
     width: 100% !important;
 }
+
+/* save btn*/
+#save-btn.unsaved {
+    animation: save-glowing 1300ms infinite;
+}
+@keyframes save-glowing {
+  0% {
+    background-color: #007bff;
+    box-shadow: 0 0 3px #007bff;
+  }
+  50% {
+    background-color: #1d8aff;
+    box-shadow: 0 0 15px #1d8aff;
+  }
+  100% {
+    background-color: #007bff;
+    box-shadow: 0 0 3px #007bff;
+  }
+}
