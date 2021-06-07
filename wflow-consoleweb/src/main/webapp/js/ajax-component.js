@@ -155,7 +155,13 @@ AjaxComponent = {
      * Ajax call to retrieve the component html
      */
     call : function(element, url, method, formData) {
-        if (url.indexOf("http") !== 0 && url.indexOf("/") !== 0) {
+        if (url.indexOf("?") === 0) {
+            var currentUrl = window.location.href;
+            if (currentUrl.indexOf("?") > 0) {
+                currentUrl = currentUrl.substring(0, currentUrl.indexOf('?'));
+            }
+            url = currentUrl + url;
+        } else if (url.indexOf("http") !== 0 && url.indexOf("/") !== 0) {
             var currentUrl = window.location.href;
             url = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + url;
         }
