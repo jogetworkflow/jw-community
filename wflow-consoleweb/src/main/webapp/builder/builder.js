@@ -354,9 +354,6 @@ _CustomBuilder = {
         }
         
         $("#top-panel").css("border-bottom-color", CustomBuilder.builderColor + " !important");
-        $("#left-panel").css("border-right-color", CustomBuilder.builderColor + " !important");
-        $("#right-panel").css("border-left-color", CustomBuilder.builderColor + " !important");
-        $("#bottom-panel").css("border-top-color", CustomBuilder.builderColor + " !important");
         
         CustomBuilder.advancedToolsOptions = {
             contextPath : CustomBuilder.contextPath,

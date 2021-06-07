@@ -358,7 +358,6 @@ body.right-panel-resizing #right-panel-resize-block{
     height: 100%;
     overflow-x: hidden;
     list-style: none;
-    background: #eee;
     overflow-y: hidden; 
     padding-bottom: 35px;
 }
@@ -667,6 +666,7 @@ li[data-type] a {
     width: 100%;
     height: calc(100vh - 96px);
     width: 100%; 
+    background: #9bb1c1;
 }
 .has-file-manager .drag-elements-sidepane {
     height: calc(100vh - 96px - var(--builder-filemanager-height));
@@ -694,12 +694,17 @@ li[data-type] a {
     width: 100%;
     position: relative; 
 }
+.drag-elements-sidepane ul > li.header + li.header{
+    border-top: 1px solid #eee;
+}
 .drag-elements-sidepane ul > li.header label {
     font-size: 11px;
     font-weight: 600;
     line-height: 32px;
     text-align: left;
     padding: 0.5rem 0rem 0.5rem 1rem; 
+    background: #394249;
+    color: #fff;
 }
 .drag-elements-sidepane ul > li.header label > a {
     padding-left: 1rem;
@@ -765,14 +770,11 @@ li[data-type] a {
     opacity: 0.75;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
     -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
-    background-color: #fff; 
+    background-color: #e6ebef; 
 }
 .components-list li ol li:hover{
     box-shadow: 0px 0px 1px 0px #4285f4;
     background-color: rgba(66, 133, 244, 0.1); 
-}
-.components-list li.header{
-    border-bottom: 1px solid #ddd;
 }
 
 /*
@@ -1457,7 +1459,7 @@ div.section, .header > ol {
     z-index: 1000000;
     background: #fff;
     border-left: 2px solid #ccc !important;
-    box-shadow: -12px 0px 31px -8px rgba(0,0,0,0.75);
+    box-shadow: -1px 1px 6px -1px rgb(0 0 0 / 20%);
 }
 .max-property-editor #right-panel-toogle{
     display:none;
@@ -1491,10 +1493,6 @@ div.section, .header > ol {
 }
 .element-properties .tab-content > div {
     height: 100%;
-}
-.element-properties-footer-actions{
-    padding-top: 10px;
-    background: #9bb1c1;
 }
 #apply-btn {
     width: 100%;
