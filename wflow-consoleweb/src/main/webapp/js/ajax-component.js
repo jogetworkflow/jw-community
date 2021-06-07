@@ -22,6 +22,10 @@ AjaxComponent = {
                 AjaxComponent.triggerEvents($(this), window.location.href);
             }
         });
+        
+        if (window["AdminBar"] !== undefined) {
+            AdminBar.initQuickEditMode();
+        }
     },
     
     /*
