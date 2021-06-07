@@ -23,7 +23,7 @@
             },
             {
                 "name" : "attr-width",
-                "label" : "@@userview.page.image.wifth@@",
+                "label" : "@@userview.page.image.width@@",
                 "type" : "textfield",
                 "required" : "True",
                 "value" : "128"
