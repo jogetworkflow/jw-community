@@ -7962,7 +7962,7 @@ PropertyEditor.Type.Repeater.prototype = {
             });
         }
         
-        $(row.editor).find(".property-label-description").each(function(){
+        $(row).find(".property-label-description").each(function(){
             if (!$(this).hasClass("tooltipstered")) {
                 $(this).tooltipster({
                     contentCloning: false,
