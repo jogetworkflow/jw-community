@@ -841,7 +841,7 @@ td.error .chosen-container, td.error input {
     padding: 5px;
     margin-bottom: 0px;
     width: 45%;
-    min-width: 300px;
+    min-width: 250px;
     display: inline-block;
     vertical-align: top;
 }
@@ -946,6 +946,12 @@ td.error .chosen-container, td.error input {
 }
 .repeater-row.error {
     border: 1px solid red;
+}
+.repeater-rows-container.css-styles .repeater-row .inputs {
+    padding: 0px 30px 0px 0px;
+}
+.repeater-rows-container.css-styles .repeater-row .inputs .property-editor-property{
+    width: 100%;
 }
 .btn.pebutton {
     display: inline-block;

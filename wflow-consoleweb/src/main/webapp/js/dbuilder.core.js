@@ -2266,7 +2266,7 @@ DatalistBuilder = {
                     header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
                     for (var j in header.properties) {
                         if (header.properties[j].name) {
-                            header.properties[j].name = header.properties[j].name.replace('style-', type+'-header-style-');
+                            header.properties[j].name = header.properties[j].name.replace('style', type+'-header-style');
                         }
                     }
                     self[type + 'StylePropertiesDefinitionObj'].push(header);
@@ -2275,7 +2275,7 @@ DatalistBuilder = {
                     tablebody.title = tablebody.title + " ("+get_cbuilder_msg('dbuilder.body')+")";
                     for (var j in tablebody.properties) {
                         if (tablebody.properties[j].name) {
-                            tablebody.properties[j].name = tablebody.properties[j].name.replace('style-', type+'-style-');
+                            tablebody.properties[j].name = tablebody.properties[j].name.replace('style', type+'-style');
                         }
                     }
                     self[type + 'StylePropertiesDefinitionObj'].push(tablebody);
@@ -2283,7 +2283,7 @@ DatalistBuilder = {
                     var header = $.extend(true, {}, orig[i]);
                     for (var j in header.properties) {
                         if (header.properties[j].name) {
-                            header.properties[j].name = header.properties[j].name.replace('style-', type+'-style-');
+                            header.properties[j].name = header.properties[j].name.replace('style', type+'-style');
                         }
                     }
 
@@ -2311,7 +2311,7 @@ DatalistBuilder = {
                 header.title = header.title + " (Header)";
                 for (var j in header.properties) {
                     if (header.properties[j].name) {
-                        header.properties[j].name = header.properties[j].name.replace('style-', 'header-style-');
+                        header.properties[j].name = header.properties[j].name.replace('style', 'header-style');
                     }
                 }
 

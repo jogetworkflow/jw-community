@@ -9239,6 +9239,330 @@ PropertyEditor.Type.Custom.prototype = {
 };
 PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Custom.prototype);
 
+PropertyEditor.Type.CssStyle = function() {};
+PropertyEditor.Type.CssStyle.prototype = {
+    shortname: "cssstyle",
+    styleOptions : {
+        "display" : {"field" : "display", "label" : get_peditor_msg("style.display")},
+        "position" : {"field" : "position", "label" : get_peditor_msg("style.position")},
+        "top" : {"field" : "unit", "label" : get_peditor_msg("style.top")},
+        "left" : {"field" : "unit", "label" : get_peditor_msg("style.left")},
+        "right" : {"field" : "unit", "label" : get_peditor_msg("style.right")},
+        "bottom" : {"field" : "unit", "label" : get_peditor_msg("style.bottom")},
+        "float" : {"field" : "float", "label" : get_peditor_msg("style.float")},
+        "background-color" : {"field" : "color", "label" : get_peditor_msg("style.backgroundColor")},
+        "color" : {"field" : "color", "label" : get_peditor_msg("style.color")},
+        "font-size" : {"field" : "unit", "label" : get_peditor_msg("style.fontSize")},
+        "font-family" : {"field" : "font-family", "label" : get_peditor_msg("style.fontFamily")},
+        "font-weight" : {"field" : "font-weight", "label" : get_peditor_msg("style.fontWeight")},
+        "text-align" : {"field" : "text-align", "label" : get_peditor_msg("style.textAlign")},
+        "line-height" : {"field" : "unit", "label" : get_peditor_msg("style.lineHeight")},
+        "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing")},
+        "text-decoration" : {"field" : "text-decoration", "label" : get_peditor_msg("style.textDecoration")},
+        "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor")},
+        "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle")},
+        "width" : {"field" : "unit", "label" : get_peditor_msg("style.width")},
+        "height" : {"field" : "unit", "label" : get_peditor_msg("style.height")},
+        "min-width" : {"field" : "unit", "label" : get_peditor_msg("style.minWidth")},
+        "min-height" : {"field" : "unit", "label" : get_peditor_msg("style.minHeight")},
+        "max-width" : {"field" : "unit", "label" : get_peditor_msg("style.maxWidth")},
+        "max-height" : {"field" : "unit", "label" : get_peditor_msg("style.maxHeight")},
+        "margin-top" : {"field" : "unit", "label" : get_peditor_msg("style.marginTop")},
+        "margin-left" : {"field" : "unit", "label" : get_peditor_msg("style.marginLeft")},
+        "margin-right" : {"field" : "unit", "label" : get_peditor_msg("style.marginRight")},
+        "margin-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.marginBottom")},
+        "padding-top" : {"field" : "unit", "label" : get_peditor_msg("style.paddingTop")},
+        "padding-left" : {"field" : "unit", "label" : get_peditor_msg("style.paddingLeft")},
+        "padding-right" : {"field" : "unit", "label" : get_peditor_msg("style.paddingRight")},
+        "padding-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.paddingBottom")},
+        "border-style" : {"field" : "border-style", "label" : get_peditor_msg("style.style")},
+        "border-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderWidth")},
+        "border-radius" : {"field" : "unit", "label" : get_peditor_msg("style.borderRadius")},
+        "border-color" : {"field" : "color", "label" : get_peditor_msg("style.borderColor")},
+        "border-top-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderTop")},
+        "border-left-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderLeft")},
+        "border-right-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderRight")},
+        "border-bottom-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderBottom")},
+        "background-image" : {"field" : "image", "label" : get_peditor_msg("style.backgroundImage")},
+        "background-repeat" : {"field" : "background-repeat", "label" : get_peditor_msg("style.repeat")},
+        "background-size" : {"field" : "background-size", "label" : get_peditor_msg("style.backgroundSize")},
+        "background-position-x" : {"field" : "unit", "label" : get_peditor_msg("style.positionX")},
+        "background-position-y" : {"field" : "unit", "label" : get_peditor_msg("style.positionY")}
+    },
+    styleFields : {
+        'display' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'block', label : get_peditor_msg("style.block")},
+                {value : 'inline', label : get_peditor_msg("style.inline")},
+                {value : 'inline-block', label : get_peditor_msg("style.inlineBlock")},
+                {value : 'none', label : get_peditor_msg("style.none")}
+            ]
+        },
+        'position' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'static', label : get_peditor_msg("style.static")},
+                {value : 'fixed', label : get_peditor_msg("style.fixed")},
+                {value : 'relative', label : get_peditor_msg("style.relative")},
+                {value : 'absolute', label : get_peditor_msg("style.absolute")}
+            ]
+        },
+        'unit' : {
+            type : 'number',
+            mode : 'css_unit'
+        },
+        'float' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.none")},
+                {value : 'left', label : get_peditor_msg("style.left")},
+                {value : 'right', label : get_peditor_msg("style.right")}
+            ]
+        },
+        'color' : {
+            type : 'color'
+        },
+        'font-family' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : 'Default'},
+                {value : 'Arial, Helvetica, sans-serif', label : 'Arial'},
+                {value : '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', label : 'Lucida Grande'},
+                {value : '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif', label : 'Palatino Linotype'},
+                {value : '\'Times New Roman\', Times, serif', label : 'Times New Roman'},
+                {value : 'Georgia, serif', label : 'Georgia, serif'},
+                {value : 'Tahoma, Geneva, sans-serif', label : 'Tahoma'},
+                {value : '\'Comic Sans MS\', cursive, sans-serif', label : 'Comic Sans'},
+                {value : 'Verdana, Geneva, sans-serif', label : 'Verdana'},
+                {value : 'Impact, Charcoal, sans-serif', label : 'Impact'},
+                {value : '\'Arial Black\', Gadget, sans-serif', label : 'Arial Black'},
+                {value : '\'Trebuchet MS\', Helvetica, sans-serif', label : 'Trebuchet'},
+                {value : '\'Courier New\', Courier, monospace', label : 'Courier New'},
+                {value : '\'Brush Script MT\', sans-serif', label : 'Brush Script'}
+            ]
+        },
+        'font-weight' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : '100', label : get_peditor_msg("style.thin")},
+                {value : '200', label : get_peditor_msg("style.extraLight")},
+                {value : '300', label : get_peditor_msg("style.light")},
+                {value : '400', label : get_peditor_msg("style.normal")},
+                {value : '500', label : get_peditor_msg("style.medium")},
+                {value : '600', label : get_peditor_msg("style.semiBold")},
+                {value : '700', label : get_peditor_msg("style.bold")},
+                {value : '800', label : get_peditor_msg("style.extraBold")},
+                {value : '900', label : get_peditor_msg("style.ultraBold")}
+            ]
+        },
+        'text-align' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'left', label : get_peditor_msg("style.left")},
+                {value : 'center', label : get_peditor_msg("style.center")},
+                {value : 'right', label : get_peditor_msg("style.right")},
+                {value : 'justify', label : get_peditor_msg("style.justify")}
+            ]
+        },
+        'text-decoration' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'none', label : get_peditor_msg("style.none")},
+                {value : 'underline', label : get_peditor_msg("style.underline")},
+                {value : 'overline', label : get_peditor_msg("style.overline")},
+                {value : 'line-through', label : get_peditor_msg("style.lineThrough")},
+                {value : 'underline overline', label : get_peditor_msg("style.underlineOverline")}
+            ]
+        },
+        'text-decoration-style' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'solid', label : get_peditor_msg("style.solid")},
+                {value : 'wavy', label : get_peditor_msg("style.wavy")},
+                {value : 'dotted', label : get_peditor_msg("style.dotted")},
+                {value : 'dashed', label : get_peditor_msg("style.dashed")},
+                {value : 'double', label : get_peditor_msg("style.double")}
+            ]
+        },
+        'border-style' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'solid', label : get_peditor_msg("style.solid")},
+                {value : 'dotted', label : get_peditor_msg("style.dotted")},
+                {value : 'dashed', label : get_peditor_msg("style.dashed")},
+                {value : 'double', label : get_peditor_msg("style.double")}
+            ]
+        },
+        'image' : {
+            type: 'image',
+            appPath: '',
+            allowInput : 'true',
+            isPublic : 'true',
+            imageSize : 'width:100px;height:100px;'
+        },
+        'background-repeat' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'repeat-x', label : get_peditor_msg("style.repeatX")},
+                {value : 'repeat-y', label : get_peditor_msg("style.repeatY")},
+                {value : 'no-repeat', label : get_peditor_msg("style.noRepeat")}
+            ]
+        },
+        'background-size' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'contain', label : get_peditor_msg("style.contain")},
+                {value : 'cover', label : get_peditor_msg("style.cover")}
+            ]
+        }
+    },
+    getData: function(useDefault) {
+        var field = this;
+        var properties = new Object();
+        var prefix = field.properties.name;
+        if (this.isDataReady) {
+            //set empty for all styles
+            for (var property in field.styleOptions) {
+                properties[prefix + "-" + property] = "";
+            }
+            
+            $("#" + field.id + "_input .repeater-row").each(function(){
+                var fields = $(this).data("fields");
+                if (fields !== undefined) {
+                    $.each(fields, function(i, property) {
+                        var type = property.propertyEditorObject;
+                        var data = type.getData(false);
+                        if (data !== null) {
+                            properties[prefix + "-" + property.name] = data[property.name];
+                        }
+                    });
+                }
+            });
+        }
+        
+        return properties;
+    },
+    renderField : function() {
+        var thisObj = this;
+        
+        var options = '<option value=""></option>';
+        for (var property in thisObj.styleOptions) {
+            options += '<option value="'+property+'" >'+thisObj.styleOptions[property].label+'</label>';
+        }
+        
+        var html = '<div id="'+thisObj.id+'" name="'+thisObj.id+'"><div class="repeater-rows-container css-styles"></div><div style="text-align:left; margin-bottom: 10px;"><select class="add_new_style initChosen">'+options+'</select> <a class="pebutton addrow" style="float:none;"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        
+        return html;
+    },
+    initScripting : function() {
+        var thisObj = this;
+        
+        $("#" + this.id).find(".add_new_style").chosen({ width: "54%", placeholder_text: "Add new style" });
+
+        thisObj.loadValues();
+        
+        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
+            var style = $("#" + thisObj.id).find(".add_new_style").val();
+            if (style !== "") {
+                thisObj.addRow(style, "");
+                $("#" + thisObj.id).find(".add_new_style").val("").trigger("change").trigger("chosen:updated");
+            }
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
+            thisObj.deleteRow(this);
+        });
+    },
+    loadValues : function() {
+        var thisObj = this;
+        
+        if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
+            for (var property in thisObj.styleOptions) {
+                if (thisObj.options.propertyValues[thisObj.properties.name + "-" + property] !== undefined) {
+                    thisObj.addRow(property, thisObj.options.propertyValues[thisObj.properties.name + "-" + property]);
+                }
+            }
+        }
+    },
+    addRow : function(name, value) {
+        var thisObj = this;
+        
+        if ($("#" + thisObj.id + "_input").find(".repeater-rows-container .repeater-row[data-property='"+name+"']").length > 0) {
+            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append($("#" + thisObj.id + "_input").find(".repeater-rows-container .repeater-row[data-property='"+name+"']"));
+            return;
+        }
+        
+        var row = $('<div class="repeater-row" data-property="'+name+'"><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
+        var fields = [];
+        var values = {};
+        values[name] = value;
+        
+        var field = $.extend(true, {}, thisObj.styleFields[thisObj.styleOptions[name].field]);
+        field['name'] = name;
+        field['label'] = thisObj.styleOptions[name].label;
+        if (field['appPath'] !== undefined) {
+            field['appPath'] = thisObj.options.appPath;
+        }
+        fields.push(field);
+        
+        var html = "";
+        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                html += thisObj.renderProperty(i, cId, property, values);
+            });
+        }
+        $(row).find(".inputs .inputs-container").append(html);
+        
+        $(row).data("fields", fields);
+        
+        $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+        
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                var type = property.propertyEditorObject;
+                type.initScripting();
+                type.initDefaultScripting();
+            });
+        }
+    },
+    renderProperty: function(i, prefix, property, values) {
+        var type = property.propertyEditorObject;
+
+        if (type === undefined) {
+            var value = null;
+            if (values !== null && values !== undefined && values[property.name] !== undefined) {
+                value = values[property.name];
+            } else if (property.value !== undefined && property.value !== null) {
+                value = property.value;
+            }
+
+            type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, null);
+            property.propertyEditorObject = type;
+        }
+
+        if (type !== null) {
+            return type.render();
+        }
+        return "";
+    },
+    deleteRow : function(button) {
+        var thisObj = this;
+        $(button).closest(".repeater-row").remove();
+    }
+};
+PropertyEditor.Type.CssStyle = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CssStyle.prototype);
+
 PropertyAssistant = {
     initialized : false,
     options : null,
