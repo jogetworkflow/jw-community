@@ -7543,11 +7543,11 @@ PropertyEditor.Type.GridCombine.prototype = {
         if (thisObj.options.defaultPropertyValues !== null && thisObj.options.defaultPropertyValues !== undefined) {
             $.each(thisObj.properties.columns, function(i, column) {
                 var temp = thisObj.options.defaultPropertyValues[column.key];
-                if (temp !== undefined) {
+                if (temp !== undefined && temp !== '') {
                     var temp_arr = temp.split(";");
 
                     $.each(temp_arr, function(i, row) {
-                        if (defaultValues[i] === null) {
+                        if (defaultValues[i] === null || defaultValues[i] === undefined) {
                             defaultValues[i] = new Object();
                         }
                         defaultValues[i][column.key] = row;
