@@ -3,6 +3,13 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.18
+=================
+7e8e9a0a Modified: jw-community - Upgrade httpclient for CVE-2020-13956. @7.0-SNAPSHOT
+064d2a71 Fixed: wflow-consoleweb - "gridCombine" property options used with Plugin Default Properties will throw JS error. #9131. @7.0-SNAPSHOT
+855cfe90 Fixed: wflow-commons - hr tag is stripped off by jsoup whitelist in hash variable. @7.0-SNAPSHOT
+fc4e10e1 Fixed: wflow-consoleweb - MultiSelectElement will not render multiselectbox in builder. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.17
 =================
 7c08e4a1 Fixed: wflow-core - File Upload - Progress bar not working when PWA enabled. @7.0-SNAPSHOT
