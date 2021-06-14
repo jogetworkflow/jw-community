@@ -24,9 +24,9 @@
         <div class="row-content">
         <dl>
             <dt><fmt:message key="adminBar.label.app"/></dt>
-            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${appDef.appId}"/>/<c:out value="${appDef.version}"/>/forms"><c:out value="${appDef.name}"/> v<c:out value="${appDef.version}"/></a></dd>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${appDef.appId}"/>/<c:out value="${appDef.version}"/>/builders"><c:out value="${appDef.name}"/> v<c:out value="${appDef.version}"/></a></dd>
             <dt><fmt:message key="console.app.process.common.label.name"/></dt>
-            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${wfProcess.packageId}"/>/<c:out value="${appDef.version}"/>/processes/<c:out value="${wfProcess.idWithoutVersion}"/>"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${wfProcess.packageId}"/>/<c:out value="${appDef.version}"/>/process/builder#<c:out value="${wfProcess.idWithoutVersion}"/>"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.recordId"/></dt>
             <dd><c:out value="${recordId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.id"/></dt>
