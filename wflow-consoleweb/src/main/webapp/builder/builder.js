@@ -252,7 +252,7 @@ _CustomBuilder = {
             $("#builder_loader").css("color", data.builderColor);
             $("#builder_loader i.fa-stack-1x").attr("class", data.builderIcon + " fa-stack-1x");
             
-            if (CustomBuilder.builderType === data.builderType) {
+            if (CustomBuilder.builderType === data.builderType && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
                 CustomBuilder.appVersion = data.appVersion;
@@ -2450,7 +2450,7 @@ _CustomBuilder = {
                 for (var j in builder.elements) {
                     var extra = '';
                     if (builder.value === "userview" && CustomBuilder.appPublished === "true") {
-                        extra = '<a class="launch" title="'+get_cbuilder_msg('ubuilder.launch')+'" href="'+CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+builder.elements[j].id+'" target="_blank"><i class="fas fa-play"></i></a>';
+                        extra = '<a class="launch" title="'+get_cbuilder_msg('launch')+'" href="'+CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+builder.elements[j].id+'" target="_blank"><i class="fas fa-play"></i></a>';
                     }
                     $(li).find("ul").append('<li class="item" data-id="'+builder.elements[j].id+'" ><a class="builder-link" href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a>'+extra+'</li>');
                 }
