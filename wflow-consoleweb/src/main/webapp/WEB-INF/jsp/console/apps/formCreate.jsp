@@ -150,8 +150,8 @@
         }
 
         function closeDialog() {
-            if (parent && parent.PopupDialog.closeDialog) {
-                parent.PopupDialog.closeDialog();
+            if (parent && parent.JPopup) {
+                parent.JPopup.hide("navCreateNewDialog");
             }
             return false;
         }
