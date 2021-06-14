@@ -168,13 +168,13 @@ public class ProcessBuilderWebController {
                             activityForm.setActivityDefId(temp[1]);
                         }
                         
-                        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
+                        if (mapping.has("type") && mapping.has("formUrl") && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
                             activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
                             activityForm.setFormUrl(mapping.getString("formUrl"));
                             activityForm.setFormIFrameStyle(mapping.getString("formIFrameStyle"));
                             activityForm.setFormId(null);
                             activityForm.setDisableSaveAsDraft(null);
-                        } else {
+                        } else if (mapping.has("formId")) {
                             activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
                             activityForm.setFormId(mapping.getString("formId"));
                             activityForm.setDisableSaveAsDraft(mapping.getBoolean("disableSaveAsDraft"));
@@ -406,7 +406,7 @@ public class ProcessBuilderWebController {
         o.put("formIFrameStyle", f.getFormIFrameStyle());
         o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
         o.put("autoContinue", f.isAutoContinue());
-        o.put("type", f.getType());
+        o.put("type", (f.getType() != null)?f.getType():PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
     }
     
     protected void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
