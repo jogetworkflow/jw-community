@@ -221,6 +221,9 @@ body.right-panel-resizing #right-panel-resize-block{
     border-color: #0069d9;   
     color:#fff;
 }
+#cbuilder #top-panel .btn-group .btn.active{
+    color:#fff;
+}
 #cbuilder #top-panel .btn-group .btn.btn-icon {
     padding: 4px 10px 0;
     margin-top: 0.2rem;
