@@ -509,6 +509,7 @@ ProcessBuilder = {
                     durationUnit : durationUnit,
                     deadlineLimit : deadlineLimit
                 });
+                obj.properties.deadlines = deadlines;
             }
             
             //set subflow properties
@@ -1228,6 +1229,11 @@ ProcessBuilder = {
                 }
                 var actElement = self.frameBody.find("#" + activity.properties.id);
                 var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(actElement)});
+                for (var i = sourceConnSet.length - 1; i >= 0; i--) {
+                    if ($(sourceConnSet[i].target).hasClass("end")) { 
+                        sourceConnSet.splice(i, 1);
+                    }
+                }
                 if (sourceConnSet.length > 1) {
                     if (activity.properties.split === "") {
                         activity.properties.split = "XOR";
@@ -3509,7 +3515,6 @@ ProcessBuilder = {
                     name : 'mapping_formId',
                     label : get_cbuilder_msg("pbuilder.label.formName"),
                     type : 'selectbox',
-                    required : 'True',
                     options_callback : function(props, values) {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableForms;
