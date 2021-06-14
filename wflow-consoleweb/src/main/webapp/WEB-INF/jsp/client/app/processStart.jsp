@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup"/>
 
     <c:if test="${!empty param.css}">
         <link rel="stylesheet" type="text/css" href="<c:out value="${param.css}"/>">

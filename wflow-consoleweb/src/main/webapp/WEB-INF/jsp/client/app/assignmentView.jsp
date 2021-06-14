@@ -14,7 +14,7 @@
     <jsp:forward page="/WEB-INF/jsp/mobile/mAssignmentView.jsp"/>
 </c:if>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup"/>
 
 <div id="main-body-header"><c:out value="${assignment.processName}" escapeXml="true"/> - <c:out value="${assignment.activityName}" escapeXml="true"/></div>
 

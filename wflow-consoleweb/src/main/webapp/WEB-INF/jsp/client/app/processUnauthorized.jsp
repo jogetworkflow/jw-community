@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup"/>
 
 <div id="main-body-header"><fmt:message key="client.app.run.process.label.start.unauthorized" />
 <div id="main-body-content">  

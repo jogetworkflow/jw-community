@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup"/>
 
 <h3>processStarted</h3>
 <script type="text/javascript">

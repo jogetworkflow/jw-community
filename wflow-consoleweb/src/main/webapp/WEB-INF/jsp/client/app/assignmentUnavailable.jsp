@@ -6,7 +6,7 @@
     <jsp:forward page="/WEB-INF/jsp/mobile/mAssignmentUnavailable.jsp"/>
 </c:if>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup"/>
 
 <div id="main-body-header"><fmt:message key="client.app.run.process.label.assignment.unavailable" /></div>
 <div id="main-body-content">
