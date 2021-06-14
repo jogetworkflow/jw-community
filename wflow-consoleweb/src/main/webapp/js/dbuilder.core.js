@@ -909,6 +909,7 @@ DatalistBuilder = {
             elementObj.label = component.label;
             
             if (type === "filter") {
+                elementObj.filterParamName = CustomBuilder.config.builder.options.filterParam + elementObj.name;
                 elementObj.type = {
                     "className": "org.joget.apps.datalist.lib.TextFieldDataListFilterType",
                     "properties": {}
@@ -1137,6 +1138,9 @@ DatalistBuilder = {
      * Rendering filter, call form DatalistBuilder.renderElement
      */
     renderFilter : function(element, elementObj, component, deferrer) {
+        if (elementObj.filterParamName === undefined) {
+            elementObj.filterParamName = CustomBuilder.config.builder.options.filterParam + elementObj.name;
+        }
         
         var jsonStr = JSON.encode(elementObj);
         CustomBuilder.cachedAjax({
