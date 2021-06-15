@@ -2,6 +2,16 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.32
+=================
+9338e889e Fixed: wflow-consoleweb - Universal/Progressive Theme - Unable to scroll menus in userview category when "menu position" set to horizontal menu. #8185 @6.0-SNAPSHOT
+041a4dc3d Modified: jw-community - Upgrade httpclient for CVE-2020-13956. @6.0-SNAPSHOT
+a83bd7ebf Fixed: jw-community - SSLHandshakeException when sending email using TLS 1.2 in latest OpenJDK @6.0-SNAPSHOT
+59b374c72 Modified: jw-community - Updated commons-io to 2.7 for CVE-2021-29425 @6.0-SNAPSHOT
+2c424891e Added: jw-community - Added README.md @6.0-SNAPSHOT
+40287b686 Fixed: wflow-consoleweb - Monitoring - Reevaluating running process send user notification from wrong app. #8946 @6.0-SNAPSHOT
+8fe2e8a9a Fixed: wflow-commons - String parameter 'appId' is not present - Tomcat 400. #8752 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.31
 =================
 08b8a8b6 Fixed: wflow-core - Resource filename in Chinese characters displayed as underscore after upload.#8637 @6.0-SNAPSHOT

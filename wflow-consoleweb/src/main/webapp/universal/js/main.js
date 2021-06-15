@@ -152,7 +152,19 @@ if ((typeof _customFooTableArgs) === "undefined") {
             });
         };
         if ($("#sidebar").length > 0) {
-            scrollBar("#sidebar", "minimal-dark", "y");
+              var sidebar = function(){
+                if ($("#sidebar").css("display") === "inline-block" || $("#sidebar").css("width") === $("body").css("width")) {
+                    if ($("#sidebar").hasClass("mCustomScrollbar")) {
+                        $("#sidebar").mCustomScrollbar("destroy");
+                    }
+                } else {
+                    scrollBar("#sidebar", "minimal-dark", "y");
+                }
+            };
+            sidebar();
+            $(window).resize(function() {
+                sidebar();
+            });
         }
         if ($(".c-overflow").length > 0) {
             scrollBar(".c-overflow", "minimal-dark", "y");

@@ -218,7 +218,18 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>        
         <dependency>
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
