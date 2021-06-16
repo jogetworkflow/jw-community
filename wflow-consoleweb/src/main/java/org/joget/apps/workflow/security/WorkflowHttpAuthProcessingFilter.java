@@ -125,6 +125,17 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             // strip everything after the first semi-colon
             uri = uri.substring(0, pathParamIndex);
         } 
+        
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+            if (savedRequest != null) {
+                String savedUrl = savedRequest.getRedirectUrl();
+                if (savedUrl.endsWith("/presence")) {
+                    session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
+                }
+            }
+        }
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if ((super.obtainUsername(request) != null)) {
@@ -143,7 +154,6 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
         
         if (requiresAuth) {
             // generate new session to avoid session fixation vulnerability
-            HttpSession session = request.getSession(false);
             if (session != null) {
                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
                 session.invalidate();
