@@ -303,7 +303,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Locale code
      */
     public static String getAppLocale() {
-        return LocaleContextHolder.getLocale().toString();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().toString());
     }
     
     /**
@@ -331,7 +331,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Language code
      */
     public static String getAppLanguage() {
-        return LocaleContextHolder.getLocale().getLanguage();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().getLanguage());
     }
     
     /**
