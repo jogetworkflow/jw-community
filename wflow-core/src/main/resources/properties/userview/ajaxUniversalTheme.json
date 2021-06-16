@@ -23,6 +23,16 @@
         }]
     },
     {
+        name : 'dx8colorSchema',
+        label : '@@ubuilder.colorSchema@@',
+        type : 'colorschema',
+        value : '#f9fafb;#3b4348;#03a9f4;#6ecefb;#ffffff;#ffffff'
+    },
+    {
+        label : '@@ubuilder.customColor@@',
+        type : 'header'
+    },
+    {
         name : 'dx8background',
         label : '@@ubuilder.background@@',
         type : 'color'

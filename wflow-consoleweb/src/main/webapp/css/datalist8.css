@@ -1,6 +1,6 @@
 .dataList table {
     min-width:100%;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid var(--theme-color5, #dee2e6);
 }
 .dataList th, .dataList td{
     vertical-align: middle;
@@ -14,14 +14,14 @@
     border-top: 0px;
 }
 .dataList thead th{
-    color: #343a40;
+    color: var(--theme-color2, #343a40);
     padding: 10px;
-    border-top: 2px solid #dee2e6;
-    border-bottom: 2px solid #dee2e6;
-    background: #dee2e6;
+    border-top: 2px solid var(--theme-color5, #dee2e6);
+    border-bottom: 2px solid var(--theme-color5, #dee2e6);
+    background: var(--theme-color5, #dee2e6);
 }
 .dataList thead th a {
-    color: #343a40;
+    color: var(--theme-color2, #343a40);
 }
 .dataList th.sorted a, th.sortable a {
     background-position:right center;

@@ -120,11 +120,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         } else {
             String jsCssLink = "";
             
+            jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/ajaxuniversal.preload.min.css" + "\" rel=\"stylesheet\" />\n";
             jsCssLink += "<link href=\"" + data.get("context_path") + "/css/form8.css" + "\" rel=\"stylesheet\" />\n";
             jsCssLink += "<link href=\"" + data.get("context_path") + "/css/datalist8.css" + "\" rel=\"stylesheet\" />\n";
             jsCssLink += "<link href=\"" + data.get("context_path") + "/css/userview8.css" + "\" rel=\"stylesheet\" />\n";
-            
-            jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/ajaxuniversal.preload.min.css" + "\" rel=\"stylesheet\" />\n";
             
             jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/fonts/fontawesome-webfont.woff2?v=4.6.1\" as=\"font\" crossorigin />\n";
             jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-brands-400.woff2\" as=\"font\" crossorigin />\n";
@@ -229,6 +228,14 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     protected String generateLessCss() {
         String css = "body{";
+        if (!getPropertyString("dx8colorSchema").isEmpty()) {
+            String[] colors = getPropertyString("dx8colorSchema").split(";");
+            for (int i=0; i < 6; i++) {
+                if (!colors[i].isEmpty()) {
+                    css += "--theme-color"+(i+1)+":"+colors[i]+ ";";
+                }
+            }
+        }
         if (!getPropertyString("dx8background").isEmpty()) {
             css += "--theme-background:"+getPropertyString("dx8background")+ ";";
         }

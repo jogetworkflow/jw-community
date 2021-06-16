@@ -9563,6 +9563,175 @@ PropertyEditor.Type.CssStyle.prototype = {
 };
 PropertyEditor.Type.CssStyle = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CssStyle.prototype);
 
+PropertyEditor.Type.ColorSchema = function() {};
+PropertyEditor.Type.ColorSchema.prototype = {
+    shortname: "colorschema",
+    schemaOptions : [
+        "#f1f1f1;#FFFFFF;#8D9BCA;#1EA0CB;#253037;#19242b",
+        "#f1f1f1;#FFFFFF;#BA9994;#A8845C;#4C383A;#846C66",
+        "#f1f1f1;#FFFFFF;#A49689;#859190;#2F3037;#838489",
+        "#f1f1f1;#FFFFFF;#898682;#8C8682;#202122;#7D7874",
+        "#f1f1f1;#FFFFFF;#F38D64;#9A9A9A;#272527;#B5655D",
+        "#f1f1f1;#FFFFFF;#9A8E92;#D48075;#45333F;#8D8273",
+        "#f1f1f1;#FFFFFF;#37A8AF;#285259;#0F1112;#1F3D3E",
+        "#f1f1f1;#FFFFFF;#E5C12A;#6AA4AA;#152E35;#846B5D",
+        "#f1f1f1;#FFFFFF;#EC6459;#818eb7;#486EA1;#A7C36D",
+        "#f1f1f1;#FFFFFF;#A7A2BF;#87779A;#343336;#719CC1",
+        "#f1f1f1;#FFFFFF;#C95236;#A1A3AD;#302A3B;#AFAA54",
+        "#f1f1f1;#FFFFFF;#B2A082;#949492;#444647;#7B7B7B",
+        "#f1f1f1;#FFFFFF;#D93F30;#8D6562;#262832;#847B78",
+        "#f1f1f1;#FFFFFF;#dbbea1;#a37b73;#3f292b;#db7f67",
+        "#dee2e6;#FFFFFF;#7ea9bd;#2488EE;#052738;#37474F",
+        "#E1E5EE;#FFFFFF;#f7c59f;#7682A7;#2a324b;#767b91",
+        "#f1f1f1;#FFFFFF;#83677b;#64485c;#2d1115;#501c1d",
+        "#c5c7c8;#FFFFFF;#66fcf0;#47a29e;#0a0b0f;#202832",
+        "#c6cae4;#FFFFFF;#f03c1d;#d89a22;#4157a1;#f03c1d",
+        "#d1e9e3;#FFFFFF;#ffcb9b;#d9b08b;#2d3532;#116465",
+        "#f1f1f1;#FFFFFF;#8265a9;#a3b3b5;#291b3e;#45308e",
+        "#f1f1f1;#FFFFFF;#86c230;#6b6f72;#222629;#628931",
+        "#f1f1f1;#FFFFFF;#8fc1e2;#5185a5;#687864;#32708f",
+        "#f1f1f1;#FFFFFF;#539010;#a4a61e;#1f2605;#206521",
+        "#f1f1f1;#FFFFFF;#16db95;#b99b58;#080f5b;#0d19a3",
+        "#bbcdde;#FFFFFF;#ca6567;#9d5a63;#304356;#644d5b",
+        "#f1f1f1;#FFFFFF;#ffccbb;#d3e3fc;#00887a;#77a6f7",
+        "#f1f1f1;#FFFFFF;#4180bd;#a8c4f1;#012040;#1e4258",
+        "#f9fafb;#3b4348;#03a9f4;#6ecefb;#ffffff;#ffffff",
+        "#fffaee;#3b4348;#a39d85;#c6bca1;#eae7d2;#e0d9bf",
+        "#e9dcd1;#3b4348;#7a7a3d;#eba571;#d992a5;#cc5f81",
+        "#f1f1f1;#3b4348;#24120c;#b0846a;#d4bd9f;#b0846a",
+        "#f1f1f1;#3b4348;#a2a39d;#d0d1cb;#f5f7f2;#d0d1cb",
+        "#f7eceb;#3b4348;#cb9883;#eaaf96;#fcf7f1;#f0cfcd",
+        "#f1f1f1;#3b4348;#143371;#92b1cf;#ececf1;#cedfec",
+        "#f7f5f5;#3b4348;#118c88;#55bbac;#f1f5fb;#1fa798",
+        "#f1f1f1;#3b4348;#885498;#86bd75;#fdf7fb;#fdf7fb",
+        "#fefefe;#3b4348;#322727;#c57b4a;#e6e6e6;#a2a4a7",
+        "#fefefe;#3b4348;#7b1228;#f79caa;#fcf1f7;#f79caa",
+        "#fbfefa;#3b4348;#7b1228;#94c9c6;#cae2d5;#eac187",
+        "#fbfefa;#3b4348;#0c457b;#94c9c6;#cae2d5;#94c9c6",
+        "#fbfefa;#3b4348;#54a3e4;#d37aff;#e1e4f4;#bdd1f0",
+        "#fefefe;#3b4348;#fdb12a;#fcd540;#efefef;#e3e3e3",
+        "#fefefe;#3b4348;#379583;#5cdc96;#edf4e0;#8de3af",
+        "#fefefe;#3b4348;#5d5d61;#938e94;#b3c8d8;#b3c8d8",
+        "#fefefe;#3b4348;#e7727d;#afd274;#d7dadc;#c2bab0",
+        "#fefefe;#202832;#47a29e;#47a29e;#c5c7c8;#47a29e",
+        "#e4e2df;#5d001d;#9a184f;#ee4c7d;#e4e2df;#e3afbd",
+        "#fefefe;#3b4348;#123d6a;#b5a4aa;#ede3dc;#bbb2b5",
+        "#fefefe;#3b4348;#1cacd7;#f7941d;#eff6fc;#eff6fc"
+    ],
+    getData: function(useDefault) {
+        var field = this;
+        var data = new Object();
+
+        if (this.isDataReady) {
+            var selector = $("#" + this.id + "_schema_selector .color_values");
+            if ($(selector).length > 0) {
+                var value = selector.find('colorgroup').css("background-color");
+                selector.find('colorgroup color').each(function(){
+                    value += ";" + $(this).css("background-color");
+                });
+                data[this.properties.name] = value;
+            } else {
+                data[this.properties.name] = "";
+            }
+        } else {
+            data[this.properties.name] = this.value;
+        }
+        return data;
+    },
+    renderField : function() {
+        var thisObj = this;
+        
+        if (this.value === null) {
+            this.value = "";
+        }
+        
+        var html = '<div id="' + this.id + '_schema_selector" class="selector"><div class="color_values">';
+        
+        var colors = this.value.split(";");
+        if (colors.length === 6) {
+            html += '<colorgroup style="background:'+colors[0]+';">';
+            for (var i=1; i<6; i++) {
+                html += '<color style="background:'+colors[i]+';"></color>';
+            }
+            html += '</colorgroup>';
+        } else {
+            html += '<colorgroup><color></color><color></color><color></color><color></color><color></color></colorgroup>';
+        }
+        
+        html += '<span class="trigger"><i class="fas fa-chevron-down"></i></span></div><div class="color-input" style="display:none;"><input type="text"/></div><ul style="display:none;">';
+
+        $.each(thisObj.schemaOptions, function(i, option) {
+            var selected = "";
+            var values = option.split(";");
+            html += '<li data-value="' + PropertyEditor.Util.escapeHtmlTag(option) + '" class="' + selected + '">';
+            html += '<colorgroup style="background:'+values[0]+';">';
+            for (var i = 1; i < 6; i++) {
+                html += '<color style=\"background:'+values[i]+';\"></color>';
+            }
+            html += '</colorgroup></li>';
+        });
+        
+        html += '</div>';
+        
+        return html;
+    },
+    initScripting : function() {
+        var thisObj = this;
+        
+        var selector = $("#" + this.id + "_schema_selector");
+        
+        $(selector).find(".color-input input").colorPicker({
+            renderCallback: function($elm, toggled) {
+                if ($elm.val() !== "" && $elm.val() !== undefined) {
+                    if (this.color.colors.alpha === 1) {
+                        $elm.val('#' + this.color.colors.HEX);
+                    } else {
+                        $elm.val(this.color.toString('RGB'));
+                    }
+                }
+            }
+        }).off("focusin.tcp");
+        
+        $(selector).find(".color_values span.trigger").on("click", function(){
+            $(selector).toggleClass("showPicker");
+        });
+        
+        $(selector).find(".color_values").on("click", "colorgroup", function(e){
+            if (!$(selector).hasClass("showEditor")) {
+                $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
+                $(e.target).addClass("editing");
+                var color = $(e.target).css("background-color");
+                $(selector).find(".color-input input").val("");
+                $(selector).find(".color-input").show();
+                $(selector).find(".color-input input").val(color).trigger("click");
+            } else {
+                $(selector).find(".color_values .editing").css("background-color", $(selector).find(".color-input input").val());
+                $(selector).find(".color-input input").val("");
+                $(selector).find(".color-input").hide();
+                $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
+            }
+            
+            $(selector).toggleClass("showEditor");
+        });
+        
+        $(selector).find("li").on("click", function(){
+            $(selector).find("li").removeClass("selected");
+            $(this).addClass("selected");
+            thisObj.renderValue();
+            $(selector).removeClass("showPicker");
+        });
+        this.isDataReady = true;
+    },
+    renderValue : function() {
+        var selector = $("#" + this.id + "_schema_selector");
+        if ($(selector).find("li.selected").length > 0) {
+            $(selector).find(".color_values colorgroup").remove();
+            $(selector).find(".color_values").prepend($(selector).find("li.selected").html());
+        }
+    }
+};
+PropertyEditor.Type.ColorSchema = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ColorSchema.prototype);
+
 PropertyAssistant = {
     initialized : false,
     options : null,

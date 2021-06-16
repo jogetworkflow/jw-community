@@ -163,12 +163,12 @@
         <js>/xadmin/js/xadminExt.js</js>
     </group> 
     <group name="ajaxuniversal.preload.min">
-        <!--css>/css/form8.css</css>
-        <css>/css/datalist8.css</css>
-        <css>/css/userview8.css</css-->
         <css>/js/bootstrap4/css/bootstrap.min.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/ajaxuniversal/css/ajaxtheme.css</css>
+        <!--css>/css/form8.css</css>
+        <css>/css/datalist8.css</css>
+        <css>/css/userview8.css</css-->
     </group>    
     <group name="ajaxuniversal.min">
         <css>/universal/lib/waves/waves.min.css</css>
