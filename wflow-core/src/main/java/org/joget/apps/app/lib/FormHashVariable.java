@@ -76,7 +76,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                     if (row != null && row.getCustomProperties() != null) {
                         String val = row.getProperty(columnName);
                         if (val != null) {
-                            return AppUtil.escapeHashVariable(val);
+                            return val;
                         } else {
                             LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
                             return "";
@@ -128,5 +128,10 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
     @Override
     public String getPropertyAssistantDefinition() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/formHashVariable.json", null, true, null);
+    }
+    
+    @Override
+    public String escapeHashVariableValue(String value) {
+        return AppUtil.escapeHashVariable(value);
     }
 }

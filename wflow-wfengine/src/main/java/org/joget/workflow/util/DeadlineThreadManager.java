@@ -63,6 +63,9 @@ public class DeadlineThreadManager {
                 threadMap.put(profile, thread);
             }
             else {
+                if (interval != thread.getDelay()){
+                    LogUtil.info(DeadlineThreadManager.class.getName(), "Deadline checking time initialized to " + interval + " ms. Deadline times: " + thread.getLimitStructs() + ". Checking " + thread.getInstancesPerTransaction() + " instances per transaction, ignoring " + thread.getFailuresToIgnore() + " failures for profile " + thread.getProfile());
+                }
                 thread.setDelay(interval);
                 if (thread.isStopped()) {
                     LogUtil.info(DeadlineThreadManager.class.getName(), "Starting DeadlineChecker for profile " + profile);
