@@ -3,6 +3,13 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.19
+=================
+d48718e2c Fixed: wflow-core - Form Hash Variable - Hash variable in value is parsed. @7.0-SNAPSHOT
+4b7387c5b Fixed: wflow-wfengine - Changing deadline checker interval from NON-ZERO to another NON-ZERO in cloud does not work. @7.0-SNAPSHOT.
+6de237dc8 Fixed: wflow-consoleweb - Login to pages required authentication redirects to /presence. @7.0-SNAPSHOT
+a2e0fd3a5 Fixed: wflow-core - Security - Reflected XSS using locale lang parameter. #T63 @7.0-SNAPSHOT.
+
 CHANGES IN 7.0.18
 =================
 7e8e9a0a Modified: jw-community - Upgrade httpclient for CVE-2020-13956. @7.0-SNAPSHOT
