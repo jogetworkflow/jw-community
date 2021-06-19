@@ -2,7 +2,7 @@ body {
     background: #fff;
     --builder-filemanager-height: 250px;
     --builder-canvas-margin: 0px;
-    --builder-header-top-height: 65px;
+    --builder-header-top-height: 85px;
     --builder-bottom-panel-height: 30px;
     --builder-logo-width: 15vw;
     --drag-items-tabs-height: 40px;
@@ -105,9 +105,9 @@ body.initializing #builder_loader{
     border-style: solid;
     border-width: 0px;
     background-color: #fff;
-    height: calc(100vh - 65px);
+    height: calc(100vh - var(--builder-header-top-height));
     position: fixed;
-    top: 65px;
+    top: var(--builder-header-top-height);
     z-index: 10; 
     transition: 0.35s width ease-in-out;
 }
@@ -135,8 +135,8 @@ body.right-panel-resizing #right-panel-resize-block{
     box-shadow: -1px -2px 2px #f3f3f3 inset;
     width: 15vw;
     width: calc(var(--builder-left-panel-width));
-    height: calc(100vh - 65px);
-    max-height: calc(100vh - 65px);
+    height: calc(100vh - var(--builder-header-top-height));
+    max-height: calc(100vh - var(--builder-header-top-height));
     flex: 1 1 0;
     display: flex;
     flex-direction: column; 
@@ -195,10 +195,10 @@ body.right-panel-resizing #right-panel-resize-block{
     width: var(--builder-right-panel-width) !important; 
 }
 #cbuilder #top-panel {
-    height: 65px;
+    height: var(--builder-header-top-height, 85px);
     border-bottom: 1px solid #ccc;
     text-align: left;
-    background-color: #9bb1c1;
+    background-color: #cdd4da;
     overflow: hidden;
     width: 100%; 
     position: relative;
@@ -362,7 +362,7 @@ body.right-panel-resizing #right-panel-resize-block{
     overflow-x: hidden;
     list-style: none;
     overflow-y: hidden; 
-    padding-bottom: 35px;
+    padding-bottom: 45px;
 }
 #cbuilder .components-list:hover, #cbuilder .blocks-list:hover, #cbuilder .component-properties:hover {
     overflow-y: auto; 
@@ -619,8 +619,9 @@ body.right-panel-resizing #right-panel-resize-block{
     text-align: center; 
 }
 #cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
-    color: #495057;
-    background-color: #fff;
+    color: #394249;
+    background-color: #9bb1c1;
+    font-weight: bold;
     border-color: #fff #dee2e6 #fff #dee2e6;
     border-radius: 0px; 
 }
@@ -672,7 +673,7 @@ li[data-type] a {
     width: 100%;
     height: calc(100vh - 96px);
     width: 100%; 
-    background: #9bb1c1;
+    background: #cdd4da;
 }
 .has-file-manager .drag-elements-sidepane {
     height: calc(100vh - 96px - var(--builder-filemanager-height));
@@ -776,11 +777,15 @@ li[data-type] a {
     opacity: 0.75;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
     -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
-    background-color: #e6ebef; 
+    background-color: #ffffff; 
 }
 .components-list li ol li:hover{
     box-shadow: 0px 0px 1px 0px #4285f4;
-    background-color: rgba(66, 133, 244, 0.1); 
+    background-color: #007bff; 
+    color:#fff;
+}
+.components-list li ol li:hover a {
+    color:#fff;
 }
 
 /*
@@ -1010,8 +1015,8 @@ div.section, .header > ol {
     left: 0;
     width: var(--builder-logo-width);
     padding: 0 15px;
-    height: 64px;
-    line-height: 80px;
+    height: calc(var(--builder-header-top-height) - 1px);
+    line-height: 95px;
     text-align: left;
     color: #fff; 
     text-decoration: none;
@@ -1022,7 +1027,7 @@ div.section, .header > ol {
     left: 55px;
     font-size: 20px;
     display: table;
-    height: 64px;
+    height: calc(var(--builder-header-top-height) - 1px);
     width: calc(var(--builder-logo-width) - 80px);
     line-height: 22px;
 }
@@ -1060,7 +1065,16 @@ div.section, .header > ol {
 #builderElementName{
     font-weight: bold;
     padding-top: 2px;
+    padding-right: 60px;
     color: #394249 !important;
+    height: 45px;
+}
+#builderElementName .title{
+    display: inline-block;
+    padding: 8px 0;
+}
+#builderElementName .btn-group {
+    margin-top: 0 !important;
 }
 #builderToolbar {
     padding-right: 60px;
@@ -1157,7 +1171,7 @@ div.section, .header > ol {
 }
 .builder-view {
     position: absolute;
-    top : 65px;
+    top : var(--builder-header-top-height);
     bottom : 0px;
     left: 0px;
     right: 0px;
@@ -1261,7 +1275,7 @@ div.section, .header > ol {
     vertical-align: middle;
     line-height: 24px !important;
     cursor: pointer;
-    color: #bbb;
+    color: #ddd;
 }
 .auto-apply-changes.toggle-enabled{
     color: #007bff;
@@ -1470,22 +1484,23 @@ div.section, .header > ol {
     display: none;
 }
 #right-panel .nav-tabs .nav-link.active, #right-panel .nav-tabs .nav-item.show .nav-link {
-    border-color: #dee2e6 #dee2e6 #fff #dee2e6;
+    border-color: #dee2e6 #dee2e6 #9bb1c1 #dee2e6;
     border-top-left-radius: .25rem;
     border-top-right-radius: .25rem;
 }
 .element-properties {
     height: 100%;
-    background: #fff;
+    background: #9bb1c1;
     position: relative;
 }
 .element-properties-header {
     position: absolute;
-    border-bottom: 1px solid #ddd;
-    position: absolute;
-    top: 72px;
+    border-bottom: 3px solid #9bb1c1;
+    top: 75px;
     z-index: 25;
-    width: 100%;
+    width: 99%;
+    margin: auto 2px;
+    background: #9bb1c1;
 }
 .element-properties-header .search {
     
@@ -1534,14 +1549,14 @@ div.section, .header > ol {
     display: inline-block !important;
 }
 .element-properties .nav-tabs {
-    background: #f5f5f5;
+    background: #dee2e6;
     font-size: 12px;
 }
 .element-properties .element-properties-header-actions {
     padding: 5px;
     box-sizing: border-box;
     text-align: right;
-    background: #f5f5f5;
+    background: #dee2e6;
 }
 .element-properties .element-properties-header-actions button {
     font-size: 60%;
@@ -2067,15 +2082,15 @@ body.quick-nav-shown #builder-quick-nav {
     display:none;
 }
 .boxy-wrapper .title-bar {
-    height: auto;
-    padding: 8px 8px 5px;
+    height: 0px;
+    padding: 0px;
     background: #007bff;
     color: #fff;
 }
 .boxy-wrapper .title-bar .close {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     color: rgba(255,255,255,.6);
     font-size: 20px;
 }
@@ -2160,14 +2175,25 @@ table.diff tbody th{
 @keyframes save-glowing {
   0% {
     background-color: #007bff;
+    border-color: #007bff;
     box-shadow: 0 0 3px #007bff;
   }
   50% {
-    background-color: #1d8aff;
-    box-shadow: 0 0 15px #1d8aff;
+    background-color: #4ea4ff;
+    box-shadow: 0 0 20px #4ea4ff;
+    border-color: #4ea4ff;
   }
   100% {
     background-color: #007bff;
     box-shadow: 0 0 3px #007bff;
+    border-color: #007bff;
   }
+}
+
+
+@media (max-width: 1200px) {
+    #cbuilder #builderElementName .btn span,
+    #cbuilder #top-panel .btn-group .btn span{
+        display: none;
+    }
 }

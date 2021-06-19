@@ -12,7 +12,7 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
 .builder-type ul li.message{color: #888; font-style: italic;}
-#builder_canvas .canvas-header {padding-bottom: 0 !important;}
+#builder_canvas .canvas-header {padding: 0 30px 0 !important;}
 .builder-actions {visibility: hidden; position: absolute; right: 1px; top:6px; display:block;}
 .builder-type ul li .builder-actions a {color: #0069d9; font-size: 16px; padding-right: 2px; padding: 2px; border: 0; display: inline-block; cursor: pointer;}
 .builder-type ul li .builder-actions a.disabled {color:#ccc; cursor: default;}

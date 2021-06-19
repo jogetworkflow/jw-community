@@ -1893,6 +1893,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     font-size: 16px;
     font-weight: 500;
 }
+#propertyAssistantDialog .title-bar .close{
+    top: 8px;
+}
 #propertyAssistant {
     padding: 20px;
     overflow: auto;

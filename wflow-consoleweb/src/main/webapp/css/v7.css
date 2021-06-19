@@ -15,12 +15,12 @@ ul, li{
     list-style: none;
 }
 a {
-    color: #535353;
+    color: #394249;
     text-decoration: none;
     cursor: pointer;
 }
 a:hover {
-    color: #009688;
+    color: #024ea0;
 }
 #main-body-content a,
 #main-body a{
@@ -100,7 +100,7 @@ body:not(#login) #footer {
 
 /* siderbar */
 #nav {
-    background: #f7f9f9;
+    background: #cdd4da;
     width: 200px;
     height: 100%;
     position: fixed;
@@ -110,7 +110,7 @@ body:not(#login) #footer {
     z-index: 1;
 }
 #nav-title {
-    background: #ecf0f1;
+    background: #cdd4da;
     padding: 15px;
     font-weight: bold;
     border-bottom: 1px solid #E9E9E9;
@@ -127,7 +127,7 @@ body:not(#login) #footer {
     position: relative;
 }
 #nav-list li a:hover{ 
-    color: #004d40;
+    color: #4e6475;
 }
 #nav-list li a:before{
     content: "";
@@ -137,7 +137,7 @@ body:not(#login) #footer {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #00695c;
+    background: #4e6475;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
     -webkit-transform-origin: 0 50%;
@@ -157,7 +157,7 @@ body:not(#login) #footer {
     transform: scaleX(1) !important;
 }
 #nav-list li.nav-selected a{
-    background: #004d40;
+    background: #394249;
     color: #fff;
 }
 #nav-list li.divider {
@@ -209,7 +209,7 @@ div#adminWelcome {
     display: inline-block;
 }
 button, input[type='button'], input[type='submit'], .smallbutton, .btn{
-    background: #00695c;
+    background: #007bff;
     color: #fff;
     border:0;
     appearance: none;
@@ -235,7 +235,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
     outline:none;
-    background: #00897b !important;
+    background: #439cfd !important;
 }
 button:before, input[type='button']:before, input[type='submit']:before, .smallbutton:before, .btn:before{
     content: "";
@@ -245,7 +245,7 @@ button:before, input[type='button']:before, input[type='submit']:before, .smallb
     left: 0;
     right: 0;
     bottom: 0;
-    background: #004d40;
+    background: #007bff;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
     -webkit-transform-origin: 0 50%;
@@ -262,7 +262,7 @@ button:focus:before, input[type='button']:focus:before, input[type='submit']:foc
     transform: scaleX(1) !important;
 }
 button:hover, input[type='button']:hover, input[type='submit']:hover, .smallbutton:hover, .btn:hover{
-    background-color: #00897b;
+    background-color: #439cfd;
     color: #fff;
 }
 .smallbutton, .nv-button-small {
@@ -675,7 +675,7 @@ body.popupBody:not(.no-header) {
 }
 .boxy-content-header,
 body.popupBody #main-body-header {
-    background: #00695c;
+    background: #394249;
     color: #fff;
     padding: 15px;
     position: fixed;
@@ -1958,40 +1958,3 @@ span.dot_yellow{
     }
 }
 
-/* builder popup styling */
-body.builder-popup #main-body-header{
-    background: #0069d9;
-}
-body.builder-popup #main-body-content{
-    padding: 20px;
-}
-body.builder-popup .form-button, 
-body.builder-popup .btn,
-body.builder-popup button,
-body.builder-popup .input[type='button'],
-body.builder-popup .input[type='submit'],
-body.builder-popup .smallbutton{
-    background: #0069d9;
-}
-body.builder-popup .form-button:focus, 
-body.builder-popup button:focus, 
-body.builder-popup input[type='button']:focus, 
-body.builder-popup input[type='submit']:focus, 
-body.builder-popup .smallbutton:focus, 
-body.builder-popup .btn:focus{
-    background: #007bff !important;
-}
-body.builder-popup button:before, 
-body.builder-popup input[type='button']:before, 
-body.builder-popup input[type='submit']:before, 
-body.builder-popup .smallbutton:before, 
-body.builder-popup .btn:before{
-    background: #007bff;
-}
-body.builder-popup button:hover, 
-body.builder-popup input[type='button']:hover, 
-body.builder-popup input[type='submit']:hover, 
-body.builder-popup .smallbutton:hover, 
-body.builder-popup .btn:hover{
-    background-color: #007bff;
-}

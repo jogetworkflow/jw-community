@@ -78,7 +78,14 @@
                         <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
                     </a>
                     <div id="top-panel-main">
-                        <div id="builderElementName" style="color:${builderColor};"><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                        <div id="builderElementName" style="color:${builderColor};">
+                            <div class="title"><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                            <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
+                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
+                                    <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
+                                </button>
+                            </div>  
+                        </div>
                         <div id="builderToolbar">
                             <div id="main-button-group" class="btn-group toolbar-group mr-3" role="group">
                                 <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
@@ -133,17 +140,31 @@
 
                                 <a id="hide-advanced-tools-btn" title="<fmt:message key="cbuilder.hideAdvancedTools"/>" data-cbuilder-action="disableEnhancedTools"><i class="las la-angle-right"></i></a>    
                             </div> 
+                            
+                            <div class="btn-group toolbar-group tool mr-1" role="group">
+                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.undo"/> (Ctrl + Z)" id="undo-btn" data-cbuilder-action="undo" data-cbuilder-shortcut="ctrl+z">
+                                    <i class="la la-undo"></i>
+                                </button>
+
+                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.redo"/> (Ctrl + Shift + Z)" id="redo-btn" data-cbuilder-action="redo" data-cbuilder-shortcut="ctrl+shift+z">
+                                    <i class="la la-undo la-flip-horizontal"></i>
+                                </button>
+                            </div>
+                                    
+                            <div class="btn-group toolbar-group tool copypaste mr-3" style="display:none;"  role="group">
+                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
+                                    <i class="las la-copy"></i>
+                                </button>
+
+                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.paste"/> (Ctrl + V)" id="paste-element-btn" data-cbuilder-action="pasteElement" data-cbuilder-shortcut="ctrl+v">
+                                    <i class="las la-paste"></i>
+                                </button>
+                            </div>
 
                             <div id="node-details-toggle" class="btn-group toolbar-group btn-group-toggle" data-toggle="buttons" style="display:none">
                                 <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-layer-group"></i> </label>
                                 <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-crosshairs"></i> </label>
                             </div>
-
-                            <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
-                                <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
-                                    <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
-                                </button>
-                            </div>  
 
                             <div class="btn-group toolbar-group mr-3 responsive-buttons float-right" style="display:none;" role="group">
                                 <button id="mobile-view" data-view="mobile" class="btn btn-light"  title="<fmt:message key="cbuilder.mobileView"/>" data-cbuilder-action="viewport">
@@ -156,26 +177,6 @@
 
                                 <button id="desktop-view"  data-view="desktop" class="btn btn-light active"  title="<fmt:message key="cbuilder.desktopView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-laptop"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="btn-group toolbar-group tool mr-3 float-right" role="group">
-                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.undo"/> (Ctrl + Z)" id="undo-btn" data-cbuilder-action="undo" data-cbuilder-shortcut="ctrl+z">
-                                    <i class="la la-undo"></i>
-                                </button>
-
-                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.redo"/> (Ctrl + Shift + Z)" id="redo-btn" data-cbuilder-action="redo" data-cbuilder-shortcut="ctrl+shift+z">
-                                    <i class="la la-undo la-flip-horizontal"></i>
-                                </button>
-                            </div>
-                                    
-                            <div class="btn-group toolbar-group tool copypaste mr-1  float-right" style="display:none;"  role="group">
-                                <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
-                                    <i class="las la-copy"></i>
-                                </button>
-
-                                <button class="btn btn-light disabled"  title="<fmt:message key="ubuilder.paste"/> (Ctrl + V)" id="paste-element-btn" data-cbuilder-action="pasteElement" data-cbuilder-shortcut="ctrl+v">
-                                    <i class="las la-paste"></i>
                                 </button>
                             </div>
                         </div>
