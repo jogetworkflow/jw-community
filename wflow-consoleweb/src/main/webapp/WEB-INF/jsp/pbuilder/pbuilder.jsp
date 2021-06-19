@@ -8,11 +8,11 @@
 </c:set>
 <c:set var="builderCSS" scope="request">
     <style>
+        body {--builder-content-top : calc(var(--builder-header-top-height) + 40px);}
         #dragElement-clone{display: none !important;}
-        body {--builder-header-top-height : 110px;}
         #process-selector {
             position: fixed; 
-            top : 65px; 
+            top : var(--builder-header-top-height); 
             margin-right: 15vw;
             margin-left: 15vw;
             margin-right: var(--builder-right-panel-width);
@@ -32,7 +32,7 @@
         #node_dialog li:hover {background: #0069d9; color: #fff}
         [aria-describedby="node_dialog"] {width: 100px !important;}
         [aria-describedby="node_dialog"] .ui-dialog-titlebar{display:none}
-        #screenshotView, #listViewerView {top: var(--builder-header-top-height); right: var(--builder-right-panel-width); z-index: 8;}
+        #screenshotView, #listViewerView {top: var(--builder-content-top); right: var(--builder-right-panel-width); z-index: 8;}
         #listViewerView .nav-tabs .nav-link.active{border-color: #dee2e6 #dee2e6 #fff #dee2e6; border-top-left-radius: .25rem !important; border-top-right-radius: .25rem !important;}
         #listViewerView .nav-tabs .nav-item:first-child .nav-link.active{border-left: 1px solid #dee2e6;}
         #listViewerView .tab-content > div {padding: 15px 0;}

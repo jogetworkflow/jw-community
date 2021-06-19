@@ -37,7 +37,7 @@ ProcessBuilder = {
             
             $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
             
-            $(".responsive-buttons").after('<div class="btn-group mr-3 secondary-tools toolbar-group toolzoom-buttons float-right" role="group">\
+            $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
                 <button id="zoom-minus" class="btn btn-light"  title="Zoom Minus" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
                 <button id="zoom-plus" class="btn btn-light"  title="Zoom Plus" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
             
@@ -4185,7 +4185,7 @@ ProcessBuilder = {
         ProcessBuilder.jsPlumb.deleteEveryEndpoint();
         ProcessBuilder.jsPlumb.reset();
             
-        $("#process-selector, .zoom-buttons, #listviewer-btn").remove();
+        $("#process-selector, .toolzoom-buttons, #listviewer-btn").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        
     },

@@ -6,6 +6,7 @@ body {
     --builder-bottom-panel-height: 30px;
     --builder-logo-width: 15vw;
     --drag-items-tabs-height: 40px;
+    --builder-content-top: var(--builder-header-top-height);
 }
 @media (min-width: 576px) {
     body {
@@ -379,8 +380,8 @@ body.right-panel-resizing #right-panel-resize-block{
     height: calc( 100vh - 85px);
     top: 70px;
     width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
-    height: calc( 100vh - 5px - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
-    top: calc(var(--builder-header-top-height) + 5px);
+    height: calc( 100vh - 5px - (var(--builder-content-top) + var(--builder-bottom-panel-height)));
+    top: calc(var(--builder-content-top) + 5px);
     position: fixed;
     transition: width 0.35s ease-in-out, left 0.35s ease-in-out; 
     max-width: inherit;
@@ -417,9 +418,9 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
-    top: calc(var(--builder-header-top-height) + 25px);
+    top: calc(var(--builder-content-top) + 25px);
     overflow: auto;
-    height: calc( 100vh - 25px - (var(--builder-header-top-height) + var(--builder-bottom-panel-height)));
+    height: calc( 100vh - 25px - (var(--builder-content-top) + var(--builder-bottom-panel-height)));
 }
 #cbuilder #builder_canvas > div:not(#iframe-wrapper) {
     overflow: auto;
@@ -619,6 +620,12 @@ body.right-panel-resizing #right-panel-resize-block{
     text-align: center; 
 }
 #cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
+    color: #495057;
+    background-color: #fff;
+    border-color: #fff #dee2e6 #fff #dee2e6;
+    border-radius: 0px; 
+}
+#right-panel .nav-tabs .nav-link.active, #right-panel .nav-tabs .nav-item.show .nav-link {
     color: #394249;
     background-color: #9bb1c1;
     font-weight: bold;
@@ -1097,6 +1104,12 @@ div.section, .header > ol {
 .advanced-tools-toogle, .advanced-tools, .secondary-tools {
     background: #718595;
 }
+.toolbar-group.light-tools .btn-light:not(.active) {
+    color: #718595;
+}
+.toolbar-group.light-tools .btn-light:hover {
+    color: #007bff;
+}
 .toolbar-group.tool {
     background: #4e6475;
 }
@@ -1171,7 +1184,7 @@ div.section, .header > ol {
 }
 .builder-view {
     position: absolute;
-    top : var(--builder-header-top-height);
+    top : var(--builder-content-top);
     bottom : 0px;
     left: 0px;
     right: 0px;
@@ -1275,7 +1288,7 @@ div.section, .header > ol {
     vertical-align: middle;
     line-height: 24px !important;
     cursor: pointer;
-    color: #ddd;
+    color: #9bb1c1;
 }
 .auto-apply-changes.toggle-enabled{
     color: #007bff;

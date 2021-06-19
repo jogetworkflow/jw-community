@@ -166,7 +166,7 @@
                                 <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-crosshairs"></i> </label>
                             </div>
 
-                            <div class="btn-group toolbar-group mr-3 responsive-buttons float-right" style="display:none;" role="group">
+                            <div class="btn-group toolbar-group mr-3 light-tools responsive-buttons float-right" style="display:none;" role="group">
                                 <button id="mobile-view" data-view="mobile" class="btn btn-light"  title="<fmt:message key="cbuilder.mobileView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-mobile-phone"></i>
                                 </button>
