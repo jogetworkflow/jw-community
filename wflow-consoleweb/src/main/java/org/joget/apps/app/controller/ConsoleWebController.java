@@ -1448,10 +1448,9 @@ public class ConsoleWebController {
             return "console/apps/appCreate";
         } else {
             String appId = StringEscapeUtils.escapeHtml(appDefinition.getId());
-            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/builders";
-            model.addAttribute("url", url);
-            return "console/apps/dialogClose";
+            model.addAttribute("appId", appId);
+            model.addAttribute("appVersion", appDefinition.getVersion());
+            return "console/apps/packageUploadSuccess";
         }
     }
 
@@ -5740,7 +5739,7 @@ public class ConsoleWebController {
     
     @RequestMapping("/desktop/app/import")
     public String desktopAppImport() {
-        return "desktop/apps/import";
+        return "console/apps/import";
     }
 
     @RequestMapping(value = "/desktop/app/import/submit", method = RequestMethod.POST)
@@ -5763,7 +5762,7 @@ public class ConsoleWebController {
         if (appDef == null || !errors.isEmpty()) {
             map.addAttribute("error", true);
             map.addAttribute("errorList", errors);
-            return "desktop/apps/import";
+            return "console/apps/import";
         } else {
             String appId = appDef.getAppId();
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
@@ -5772,7 +5771,7 @@ public class ConsoleWebController {
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
             map.addAttribute("isPublished", appDef.isPublished());
-            return "desktop/apps/packageUploadSuccess";
+            return "console/apps/packageUploadSuccess";
         }
     }    
 
