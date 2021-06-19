@@ -161,7 +161,9 @@ DatalistBuilder = {
      */
     load: function (data) {
         if (data.binder === undefined || data.binder.className === undefined || data.binder.className === "") {
-            $("#binder-btn").trigger("click");
+            setTimeout(function(){
+                $("#binder-btn").trigger("click");
+            }, 1);
             return;
         }
         var deferreds = [];
