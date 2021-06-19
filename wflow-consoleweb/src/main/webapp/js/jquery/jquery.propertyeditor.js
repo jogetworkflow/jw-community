@@ -1517,8 +1517,13 @@ PropertyEditor.Model.Editor.prototype = {
         alert(errorMsg);
     },
     isChange: function() {
-        var test =  !PropertyEditor.Util.deepEquals(this, this.getData(), this.initialValues);
-        return test;
+        try {
+            var test =  !PropertyEditor.Util.deepEquals(this, this.getData(), this.initialValues);
+            return test;
+        } catch (err) {
+            //error caused by editor not loaded fully
+            return false;
+        }
     },
     save: function() {
         var thisObj = this;

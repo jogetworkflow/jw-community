@@ -3479,7 +3479,12 @@ _CustomBuilder.Builder = {
             {
                 if (self.isDragging && self.dragElement)
                 {
-                    self.isMoved = true;
+                    if (self.elementPosX !== x && self.elementPosY !== y) {
+                        self.isMoved = true;
+                    }
+                    self.elementPosX = x;
+                    self.elementPosY = y;
+                    
                     if (self.dragElement.data("css-border") === undefined) {
                         self.dragElement.data("css-border", self.dragElement.css("border"));
                         self.dragElement.css("border", "1px dashed #4285f4");
@@ -3686,28 +3691,31 @@ _CustomBuilder.Builder = {
                                 self.isMoved = false;
                                 self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
                                 self.data = self.selectedElData;
+                                
+                                var x = 0;
+                                var y = 0;
+                                if (event.type === "touchstart") {
+                                    x = event.touches[0].clientX;
+                                    y = event.touches[0].clientY;
+                                    if (event.touches[0].originalEvent) {
+                                        x = event.touches[0].originalEvent.clientX;
+                                        y = event.touches[0].originalEvent.clientY;
+                                    }
+                                } else {
+                                    x = event.clientX;
+                                    y = event.clientY;
+                                    if (event.originalEvent) {
+                                        x = event.originalEvent.clientX;
+                                        y = event.originalEvent.clientY;
+                                    }
+                                }
+                                self.elementPosX = x;
+                                self.elementPosY = y;
 
                                 if (self.component.builderTemplate.dragStart)
                                     self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
                                 if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
-                                    var x = 0;
-                                    var y = 0;
-                                    if (event.type === "touchstart") {
-                                        x = event.touches[0].clientX;
-                                        y = event.touches[0].clientY;
-                                        if (event.touches[0].originalEvent) {
-                                            x = event.touches[0].originalEvent.clientX;
-                                            y = event.touches[0].originalEvent.clientY;
-                                        }
-                                    } else {
-                                        x = event.clientX;
-                                        y = event.clientY;
-                                        if (event.originalEvent) {
-                                            x = event.originalEvent.clientX;
-                                            y = event.originalEvent.clientY;
-                                        }
-                                    }
                                     var elementOffset = self.dragElement.offset();
                                     var xDiff = x - elementOffset.left;
                                     var yDiff = y - elementOffset.top;
