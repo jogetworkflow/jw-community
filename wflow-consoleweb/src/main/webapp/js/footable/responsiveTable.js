@@ -1,6 +1,7 @@
 $(document).ready(function() {
     $(".dataList table").each(function(){
         responsiveTable($(this));
+        $(this).closest(".dataList").show();
     });
 });
 /* ---------- Responsive Table -------------- */

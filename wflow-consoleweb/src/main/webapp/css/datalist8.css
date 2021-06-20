@@ -1,3 +1,6 @@
+.dataList {
+    display: none;
+}
 .dataList table {
     min-width:100%;
     border-bottom: 2px solid var(--theme-color5, #dee2e6);
