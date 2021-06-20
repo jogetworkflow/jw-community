@@ -606,6 +606,13 @@ UserviewBuilder = {
                     }
                 }
             }
+            
+            if (!found) {
+                UserviewBuilder.mode = "userview";
+                UserviewBuilder.selectedMenu = null;
+                UserviewBuilder.load(data);
+                return;
+            }
                 
             UserviewBuilder.loadContentPage();
         } else {
