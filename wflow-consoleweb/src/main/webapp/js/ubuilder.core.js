@@ -585,6 +585,28 @@ UserviewBuilder = {
      */
     load: function (data) {
         if (UserviewBuilder.mode === "page") {
+            if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
+                var self = CustomBuilder.Builder;
+
+                var id = UserviewBuilder.selectedMenu.properties.id;
+                
+                //find selected menu
+                var found = false;
+                for (var c=0; c < data.categories.length; c++) {
+                    for (var m=0; m < data.categories[c].menus.length; m++) {
+                        if (data.categories[c].menus[m].properties.id === id) {
+                            UserviewBuilder.selectedMenu = data.categories[c].menus[m];
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if (found) {
+                        break;
+                    }
+                }
+            }
+                
             UserviewBuilder.loadContentPage();
         } else {
             $(".drag-elements-sidepane li.component").hide();
