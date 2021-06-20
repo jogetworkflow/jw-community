@@ -20,6 +20,74 @@
                 "type" : "textfield",
                 "required" : "True",
                 "value" : "@@org.joget.apps.userview.lib.component.ButtonComponent.pluginLabel@@"
+            },
+            {
+                "name" : "attr-href",
+                "label" : "@@datalist.hyperlinkdatalistaction.hyperlink@@",
+                "type" : "textfield"
+            },
+            {
+                "name" : "attr-target",
+                "label" : "@@datalist.hyperlinkdatalistaction.hyperlinkTarget@@",
+                "type" : "selectbox",
+                "options" : [{
+                    "value" : "",
+                    "label" : "@@datalist.hyperlinkdatalistaction.currentWindow@@"
+                },
+                {
+                    "value" : "_blank",
+                    "label" : "@@datalist.hyperlinkdatalistaction.newWindow@@"
+                },
+                {
+                    "value" : "_top",
+                    "label" : "@@datalist.hyperlinkdatalistaction.top@@"
+                },
+                {
+                    "value" : "_parent",
+                    "label" : "@@datalist.hyperlinkdatalistaction.parent@@"
+                }]
+            },
+            {
+                "label" : "@@dbuilder.displayType@@",
+                "name"  : "css-display-type",
+                "type" : "selectbox",
+                "value" : "btn btn-primary",
+                "options" : [{
+                    "label" : "@@dbuilder.btn.link@@",
+                    "value" : "btn btn-link"
+                },
+                {
+                    "label" : "@@dbuilder.btn.primary@@",
+                    "value" : "btn btn-primary"
+                },
+                {
+                    "label" : "@@dbuilder.btn.secondary@@",
+                    "value" : "btn btn-secondary"
+                },
+                {
+                    "label" : "@@dbuilder.btn.success@@",
+                    "value" : "btn btn-success"
+                },
+                {
+                    "label" : "@@dbuilder.btn.danger@@",
+                    "value" : "btn btn-danger"
+                },
+                {
+                    "label" : "@@dbuilder.btn.warning@@",
+                    "value" : "btn btn-warning"
+                },
+                {
+                    "label" : "@@dbuilder.btn.info@@",
+                    "value" : "btn btn-info"
+                },
+                {
+                    "label" : "@@dbuilder.btn.light@@",
+                    "value" : "btn btn-light"
+                },
+                {
+                    "label" : "@@dbuilder.btn.dark@@",
+                    "value" : "btn btn-dark"
+                }]
             }
         ]
     }

@@ -49,7 +49,7 @@ public class ImageComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<img "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\" />";
+        return "<img "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + style + "</img>";
     }
 
     @Override

@@ -48,7 +48,7 @@ public class LabelComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<label "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\">" + renderChildren() + "</label>";
+        return "<label "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style +"</label>";
     }
 
     @Override

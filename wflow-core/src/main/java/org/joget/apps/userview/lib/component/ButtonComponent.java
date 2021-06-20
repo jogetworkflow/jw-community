@@ -48,12 +48,12 @@ public class ButtonComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<button "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\">" + renderChildren() + "</button>";
+        return "<a "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</a>";
     }
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<button data-cbuilder-textContent>"+getI18nLabel()+"</button>'}";
+        return "{'html' : '<a class=\"\" data-cbuilder-textContent>"+getI18nLabel()+"</a>'}";
     }
     
 }

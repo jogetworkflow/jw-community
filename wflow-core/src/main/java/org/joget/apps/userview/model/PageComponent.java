@@ -90,20 +90,20 @@ public abstract class PageComponent extends ExtElement {
         String builderStyles = "";
         
         if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
-           String styleClass = "builder-style-"+UuidGenerator.getInstance().getUuid();
-           cssClass += " " + styleClass;
-           
-           builderStyles = "<style id=\""+styleClass+"\">";
-           if (!desktopStyle.isEmpty()) {
-               builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
-           }
-           if (!tabletStyle.isEmpty()) {
-               builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
-           }
-           if (!mobileStyle.isEmpty()) {
-               builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
-           }
-           builderStyles += "</style>";
+            String styleClass = "builder-style-"+UuidGenerator.getInstance().getUuid();
+            cssClass += " " + styleClass;
+
+            builderStyles = "<style id=\""+styleClass+"\">";
+            if (!desktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
+            }
+            if (!tabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
+            }
+            if (!mobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
+            }
+            builderStyles += "</style>";
         }
         
         boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isPreview"));

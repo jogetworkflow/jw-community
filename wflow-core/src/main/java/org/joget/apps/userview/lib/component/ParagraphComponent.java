@@ -48,7 +48,7 @@ public class ParagraphComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<p "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\">" + renderChildren() + "</p>";
+        return "<p "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</p>";
     }
 
     @Override

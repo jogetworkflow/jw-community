@@ -1,1 +1,27 @@
+[
+    {
+        "title" : "@@userview.page.editLabel@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "textContent",
+                "label" : "@@userview.formmenu.label@@",
+                "type" : "textfield",
+                "required" : "True",
+                "value" : "@@org.joget.apps.userview.lib.component.ButtonComponent.pluginLabel@@"
+            }
+        ]
+    }
+]
 

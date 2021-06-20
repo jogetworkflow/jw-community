@@ -48,7 +48,7 @@ public class HeadingComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<"+getPropertyString("tagName")+" "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\">" + renderChildren() + "</"+getPropertyString("tagName")+">";
+        return "<"+getPropertyString("tagName")+" "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</"+getPropertyString("tagName")+">";
     }
 
     @Override

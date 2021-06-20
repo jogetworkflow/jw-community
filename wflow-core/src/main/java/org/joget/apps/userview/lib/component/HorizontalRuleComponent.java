@@ -48,7 +48,7 @@ public class HorizontalRuleComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<hr "+attr+" id=\""+id+"\" class=\""+cssClass+"\" style=\""+style+"\" />";
+        return "<hr "+attr+" id=\""+id+"\" class=\""+cssClass+"\">"+style+"</hr>";
     }
 
     @Override

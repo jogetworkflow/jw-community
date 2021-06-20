@@ -4652,6 +4652,15 @@ _CustomBuilder.Builder = {
             }
         }
         
+        //if has text content
+        if (properties[prefix+"textContent"] !== undefined) {
+            if (element.is('[data-cbuilder-textContent]')) {
+                element.html(properties[prefix+"textContent"]);
+            } else {
+                element.find('[data-cbuilder-textContent]').html(properties[prefix+"textContent"]);
+            }
+        }
+        
         var builderStyles = "";
         if (desktopStyle !== "" || tabletStyle !== "" || mobileStyle !== "") {
            var styleClass = cssStyleClass;
@@ -4673,15 +4682,6 @@ _CustomBuilder.Builder = {
            }
            builderStyles += "</style>";
            element.append(builderStyles);
-        }
-
-        //if has text content
-        if (properties[prefix+"textContent"] !== undefined) {
-            if (element.is('[data-cbuilder-textContent]')) {
-                element.html(properties[prefix+"textContent"]);
-            } else {
-                element.find('[data-cbuilder-textContent]').html(properties[prefix+"textContent"]);
-            }
         }
     },
 
