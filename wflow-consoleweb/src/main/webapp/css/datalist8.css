@@ -239,6 +239,10 @@ body.rtl .dataList span.pagelinks{
 .card_layout_body_cell {
     display:none;
 }
+.card-layout.card-layout-active.no_action .select_checkbox,
+.card-layout.card-layout-active.no_action .checkbox_checkbox{
+    display:none;
+}
 .card-layout.card-layout-active table tbody {
     display: flex;
     justify-content: flex-start;
@@ -301,6 +305,12 @@ body.rtl .dataList span.pagelinks{
 }
 .card-layout.card-layout-active .exportlinks{
     display:none;
+}
+.footable-buttons:after{
+    content: "";
+    display: block;
+    clear: both;
+    float: none;
 }
 @media (max-width: 991px) {
     .card-layout.card-layout-active tr{
