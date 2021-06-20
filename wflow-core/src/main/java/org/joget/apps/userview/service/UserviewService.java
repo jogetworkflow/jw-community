@@ -33,6 +33,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginManager;
@@ -620,6 +621,10 @@ public class UserviewService {
     }
     
     public UserviewDefinition combinedUserviewDefinition(UserviewDefinition userviewDef) {
+        return combinedUserviewDefinition(userviewDef, false);
+    }
+    
+    public UserviewDefinition combinedUserviewDefinition(UserviewDefinition userviewDef, boolean isCopy) {
         try {
             JSONObject userviewObj = new JSONObject(userviewDef.getJson());
             JSONArray categoriesArray = userviewObj.getJSONArray("categories");
@@ -628,7 +633,7 @@ public class UserviewService {
                 JSONArray menusArray = categoryObj.getJSONArray("menus");
                 for (int j = 0; j < menusArray.length(); j++) {
                     JSONObject menuObj = (JSONObject) menusArray.get(j);
-                    loadPageDefinition(menuObj, userviewDef.getAppDefinition());
+                    loadPageDefinition(menuObj, userviewDef.getAppDefinition(), isCopy);
                 }
             }
             
@@ -640,20 +645,29 @@ public class UserviewService {
         return userviewDef;
     } 
     
-    public void loadPageDefinition(JSONObject menuObj, AppDefinition appDef) throws JSONException {
+    public void loadPageDefinition(JSONObject menuObj, AppDefinition appDef, boolean isCopy) throws JSONException {
         JSONObject properties = menuObj.getJSONObject("properties");
         String id = properties.getString("id");
-
+        String newId = id;
+        if (isCopy) {
+            newId = UuidGenerator.getInstance().getUuid();
+            properties.put("id", newId);
+        }
+        
         BuilderDefinition page = builderDefinitionDao.loadById("up-"+id, appDef);
         if (page != null) {
-            menuObj.put("referencePage", new JSONObject(page.getJson()));
+            JSONObject pageObj = new JSONObject(page.getJson());
+            if (isCopy) {
+                pageObj.getJSONObject("properties").put("id", "up-" + newId);
+            }
+            menuObj.put("referencePage", pageObj);
         }
         
         if (menuObj.has("menus")) {
             JSONArray menusArray = menuObj.getJSONArray("menus");
             for (int j = 0; j < menusArray.length(); j++) {
                 JSONObject mObj = (JSONObject) menusArray.get(j);
-                loadPageDefinition(mObj, appDef);
+                loadPageDefinition(mObj, appDef, isCopy);
             }
         }
     }

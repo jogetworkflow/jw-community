@@ -2891,6 +2891,9 @@ public class ConsoleWebController {
             Long copyVersion = appService.getPublishedVersion(copyAppId);
             AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             copy = userviewDefinitionDao.loadById(copyUserviewId, copyAppDef);
+            if (copy != null) {
+                copy = userviewService.combinedUserviewDefinition(copy, true);
+            }
         }
         
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -2912,6 +2915,7 @@ public class ConsoleWebController {
                 errors.add("console.userview.error.label.exists");
             } else {
                 String json = GeneratorUtil.createNewUserviewJson(userviewDefinition.getId(), userviewDefinition.getName(), userviewDefinition.getDescription(), copy);
+                json = userviewService.saveUserviewPages(json, userviewDefinition.getId(), appDef);
                 userviewDefinition.setJson(json);
                 invalid = !userviewDefinitionDao.add(userviewDefinition);
             }
