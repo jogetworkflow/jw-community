@@ -1500,10 +1500,13 @@ UserviewBuilder = {
             success: function(response) {
                 $(main).html(response);
                 UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
-                CustomBuilder.getScreenshot($(main), function(image){
-                    UserviewBuilder.screenshots[screenshotKey] = image;
-                    callback(image);
-                });
+                //add delay for js to run
+                setTimeout(function(){
+                    CustomBuilder.getScreenshot($(main), function(image){
+                        UserviewBuilder.screenshots[screenshotKey] = image;
+                        callback(image);
+                    });
+                }, 100);
             }
         });
     },
