@@ -262,7 +262,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Locale code
      */
     public static String getAppLocale() {
-        return LocaleContextHolder.getLocale().toString();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().toString());
     }
 
     /**
