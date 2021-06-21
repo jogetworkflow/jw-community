@@ -745,7 +745,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
                 
                 html += "<li class=\"user-link dropdown\">\n"
-                      + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
+                      + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle type-"+getPropertyString("userImage")+"\">\n"
                       + "	     " + profileImageTag + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";

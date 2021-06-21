@@ -100,14 +100,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             data.put("combine_single_menu_category", true);
             return null;
         } else {
-            //if not horizontal menu, move brand to sidebar
-            if (getPropertyString("horizontal_menu").isEmpty()) {
-                if (!getPropertyString("logo").isEmpty()) {
-                    data.put("brand_logo", "<div class=\"logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>");
-                }
-
-                data.put("nav_before", UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/sidebar_brand.ftl"));
+            if (!getPropertyString("logo").isEmpty()) {
+                data.put("brand_logo", "<div class=\"logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>");
             }
+
+            data.put("nav_before", UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/sidebar_brand.ftl"));
             
             return super.getMenus(data);
         }

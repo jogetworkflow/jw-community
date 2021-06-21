@@ -86,7 +86,7 @@ header.navbar .container-fluid{
 #header-welcome-message{
     color: var(--theme-header-font, var(--theme-color2, #72777a));
 }
-.header-nav .user-link > a {
+.header-nav .user-link > a:not(.type-no) {
     padding-left: 50px;
 }
 .header-nav .user-link img{
@@ -100,6 +100,7 @@ header.navbar .container-fluid{
 header.navbar .dropdown-menu {
     left:auto;
     right:0;
+    padding: .5rem;
 }
 .rtl header.navbar .dropdown-menu {
     left:0;
@@ -591,6 +592,12 @@ footer p {
 }
 
 /* horizontal menu */
+body.no_menu #sidebar-trigger{
+    display: none;
+}
+body.no_menu header.navbar .container-fluid {
+    padding: 12px 10px 12px 20px;
+}
 body.horizontal_menu #page {
     padding-left: 0px;
 }
@@ -601,20 +608,46 @@ body.horizontal_menu #header-info{
     display: inline-block;
 }
 @media (min-width: 768px) {
+    body.horizontal_menu header.navbar{
+        position: relative;
+    }
+    body.horizontal_menu #sidebar-trigger{
+        display: none;
+    }
+    body.horizontal_menu header.navbar .container-fluid {
+        padding: 12px 10px 12px 20px;
+    }
     body.horizontal_menu #sidebar {
         width: 100vw;
         display: block;
-        top: 65px;
         height: 46px;
         z-index: 799;
-        position: fixed;
+        position: relative;
         overflow: visible;
+        border-right: 0px;
+    }
+    body.horizontal_menu.inline_menu #sidebar {
+        width: auto;
+        display: inline-block;
+        background-color: var(--theme-header, var(--theme-color6, #fff));
+    }
+    body.horizontal_menu.inline_menu #sidebar .nav{
+        border-bottom: 0px;
+    }
+    body.horizontal_menu.inline_menu #header-link{
+        min-width: 100px;
+        margin-right: 20px;
+        height: 46px;
+    }
+    body.horizontal_menu.inline_menu #header-message {
+        display: none;
     }
     body.horizontal_menu #sidebar #navigation {
         height: auto;
         padding-top: 0;
         overflow: visible;
     }
+    body.horizontal_menu #sidebar .sidebar_brand,
     body.horizontal_menu #sidebar .user-menu{
         display: none !important;
     }
@@ -624,12 +657,15 @@ body.horizontal_menu #header-info{
         display: flex;
         -ms-flex-wrap: wrap;
         flex-wrap: wrap;
-        justify-content:center;
         border-bottom: 1px solid rgba(0,0,0,.0625);
+        padding: 0 10px;
     }
     body.horizontal_menu #sidebar .nav li {
         display: inline-block;
         width: auto;
+    }
+    body.horizontal_menu #sidebar .nav > li > a{
+        font-weight: 300;
     }
     body.horizontal_menu #sidebar .nav > li > a > span{
         padding: 0px;
@@ -648,6 +684,16 @@ body.horizontal_menu #header-info{
         right: 8px;
         content: "\f107";
     }
+    body.horizontal_menu #sidebar .nav > li.active:after {
+        top:auto;
+        width: auto;
+        right:0;
+        height: 3px;
+    }
+    body.horizontal_menu #sidebar .nav > li.toggled > ul {
+        display: none !important;
+    }
+    body.horizontal_menu #sidebar .nav > li.toggled:hover > ul,
     body.horizontal_menu #sidebar li:hover > ul {
         display: block !important;
         position: absolute;
@@ -656,21 +702,36 @@ body.horizontal_menu #header-info{
         max-height: calc(100vh - 210px);
         overflow: hidden;
         min-width: 200px;
-        background: #fff;
+        background: var(--theme-sidebar, var(--theme-color5,#fff));
+    }
+    body.horizontal_menu #sidebar .nav > li:not(.active) > a:hover, 
+    body.horizontal_menu #sidebar .nav > li > ul > li > a:hover, 
+    body.horizontal_menu #sidebar .nav > li > ul > li.active > a{
+        font-weight: 300 !important;
+    }
+    body.horizontal_menu #sidebar .nav > li > ul > li > a {
+        padding: 10px 15px;
     }
     body.horizontal_menu #sidebar li:hover > ul:hover {
         overflow-y: auto;
     }
-    body.horizontal_menu #sidebar .nav > li:last-child > ul {
+    body.horizontal_menu #sidebar .nav > li:last-child:not(:first-child) > ul {
         right: 0;
     }
     body.horizontal_menu #sidebar .nav > li > ul > li{
         display: block;
     }
     body.horizontal_menu #content{
-        padding: 130px 20px 20px;
+        padding: 20px;
     }
-    
+    body.horizontal_menu header.navbar .user-link a {
+        font-size: 14px;
+    }
+}
+@media (max-width: 767px) {
+    #header-info, #header-message, .header-nav .user-link {
+        display: none !important;
+    }
 }
 
 /* horizontal inline menu */
@@ -881,7 +942,7 @@ body#login #loginForm table td input[type='submit'] {
 }
 
 .dropdown-menu.notifications li{
-    padding: 5px 15px;
+    padding: 5px;
     position: relative;
     font-size: 13px;
     
@@ -1114,4 +1175,8 @@ body.embeded #content main > .main-body-content > .ui-html,
 body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content), 
 body.embeded .calendar_menu_body{
     border: 0;
+}
+
+img.gravatar:not([src]){
+    visibility: hidden;
 }
