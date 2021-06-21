@@ -193,7 +193,7 @@ DatalistBuilder = {
             self.selectNode(false);
             $("#element-highlight-box").hide();
 
-            var html = '<div class="dataList" data-cbuilder-uneditable data-cbuilder-classname="org.joget.apps.datalist.model.DataList" >\
+            var html = '<div class="dataList" style="display:block !important;" data-cbuilder-uneditable data-cbuilder-classname="org.joget.apps.datalist.model.DataList" >\
                             <form class="filter_form"><div class="filters" data-cbuilder-columns_filters data-cbuilder-filters data-cbuilder-sort-horizontal></div></form>\
                             <div class="footable-buttons" style="display:none">\
                                 <button class="expandAll footable-button"><i></i> Expand All</button>\
