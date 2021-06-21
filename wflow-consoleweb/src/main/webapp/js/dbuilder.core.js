@@ -1122,11 +1122,11 @@ DatalistBuilder = {
                 },
                 success: function(response) {
                     if (response.formatted !== undefined && response.formatted !== "") {
-                        var formatted = $(response.formatted);
+                        var formatted = $('<div>' + response.formatted + '</div>');
                         formatted.find("link, script").remove();
-                        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"]').each(function(){
-                            $(this).find("span.value").html(formatted.clone());
-                        });
+                        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"] span.value').html(formatted.html());
+                    } else {
+                        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"] span.value').html(elementObj.label);
                     }
                 },
                 error: function() {
