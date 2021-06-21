@@ -257,6 +257,7 @@ body.rtl .dataList span.pagelinks{
     display: block;
     border:0 !important;
 }
+.card-layout.card-layout-active tr.odd,
 .card-layout.card-layout-active tr.even{
     background-color: transparent;
 }
