@@ -79,8 +79,13 @@ function responsiveTable(table) {
                 table.closest(".dataList").addClass("card-layout-active");
             }
             if (width < 992) {
+                $(respButtons).find(".search_trigger").removeClass("filter_show");
+                $(filters).hide();
                 $(respButtons).show();
                 $(respButtons).find(".footable-button").hide();
+            } else {
+                $(respButtons).hide();
+                $(filters).show();
             }
         };
         
@@ -317,6 +322,7 @@ function initFooTable(table, respButtons, responsiveSetting) {
     $(table).off("footable_breakpoint");
     $(table).on("footable_breakpoint", function (event) {
         if($(this).hasClass("breakpoint")) {
+            $(buttons).find(".search_trigger").removeClass("filter_show");
             buttons.show();
             filters.hide();
             
@@ -328,6 +334,7 @@ function initFooTable(table, respButtons, responsiveSetting) {
             filters.show();
         }
     });
+    $(table).trigger("footable_breakpoint");
     
     $(buttons).find(".expandAll").off("click");
     $(buttons).find(".expandAll").on("click", function(){
