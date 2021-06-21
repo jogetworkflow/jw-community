@@ -64,6 +64,14 @@
 .dataList .filters textarea{
     display: inline-block;
     width: auto;
+    vertical-align: bottom !important;
+}
+.dataList .filters select option.label{
+    font-size: 80%;
+}
+.dataList .filters select option:not(.label){
+    color:var(--theme-font-color, #72777a) !important;
+    padding: 3px 0;
 }
 .dataList .actions {
     margin-top: 25px;
