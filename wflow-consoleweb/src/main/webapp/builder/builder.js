@@ -232,8 +232,13 @@ _CustomBuilder = {
         
         fetch(url, args)
         .then(function (response) {
-            history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
-            return response.text();
+            if (response.url.indexOf("/web/login") !== -1) {
+                document.location.href = url;
+                return false;
+            } else {
+                history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
+                return response.text();
+            }
         })
         .then(data => {
             $("#design-btn").trigger("click");
