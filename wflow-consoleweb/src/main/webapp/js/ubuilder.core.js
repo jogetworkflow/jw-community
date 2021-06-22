@@ -795,6 +795,9 @@ UserviewBuilder = {
                 UserviewBuilder.renderCategory(element, elementObj, component, callback);
             } else {
                 UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
+                if (UserviewBuilder.selectedMenu !== null && UserviewBuilder.selectedMenu.properties.id === elementObj.properties.id) {
+                    UserviewBuilder.showMenuSnapshot();
+                }
             }
         } else {
             if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
