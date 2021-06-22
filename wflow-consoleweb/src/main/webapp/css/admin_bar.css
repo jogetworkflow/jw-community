@@ -389,7 +389,7 @@ body.rtl #quickOverlayFrameDiv {
     display: none;
     min-width: 100px;
     max-width: 200px;
-    max-height: 15px;
+    max-height: 20px;
     position: relative;
     top: 1px;
     left: 1px;

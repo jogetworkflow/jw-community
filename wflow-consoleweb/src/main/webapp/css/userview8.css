@@ -543,6 +543,9 @@ ul.breadcrumb i.fa-angle-right{
     min-height: calc(100vh - 61px);
     background-color: var(--theme-background, var(--theme-color1, #f9fafb));
 }
+#content main{
+    position: relative;
+}
 #content main > [class*="-body-content"],
 #content main > [class*="_menu_body"],
 #content main > .ui-html{
