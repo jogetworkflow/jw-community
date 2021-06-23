@@ -14,6 +14,17 @@ public abstract class DefaultHashVariablePlugin extends ExtDefaultPlugin impleme
     /**
      * Escape special character in the value.
      * 
+     * 
+     * @return 
+     */
+    public String escapeHashVariableValue(String value) {
+        return value;
+    }
+
+    
+    /**
+     * Escape special character in the value.
+     * 
      * Default to escape Regex in the value
      * 
      * @return 
