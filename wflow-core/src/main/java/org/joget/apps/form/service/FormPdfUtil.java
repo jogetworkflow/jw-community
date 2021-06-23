@@ -436,7 +436,7 @@ public class FormPdfUtil {
                 }
 
                 if (type.equalsIgnoreCase("checkbox") || type.equalsIgnoreCase("radio")) {
-                    if (showAllSelectOptions) {
+                    if (showAllSelectOptions != null && showAllSelectOptions) {
                         replaceLabel += inputStringLabel.replaceAll("<label(.*?)>", "");
                         replaceLabel = replaceLabel.replaceAll("</label(.*?)>", "");
                     } else {
