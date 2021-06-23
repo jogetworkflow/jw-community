@@ -9628,15 +9628,24 @@ PropertyEditor.Type.ColorSchema.prototype = {
         var data = new Object();
 
         if (this.isDataReady) {
-            var selector = $("#" + this.id + "_schema_selector .color_values");
-            if ($(selector).length > 0) {
-                var value = selector.find('colorgroup').css("background-color");
-                selector.find('colorgroup color').each(function(){
-                    value += ";" + $(this).css("background-color");
-                });
-                data[this.properties.name] = value;
+            if (field.properties.editColor !== undefined && field.properties.editColor.toLowerCase() === "true") {
+                var selector = $("#" + this.id + "_schema_selector .color_values");
+                if ($(selector).length > 0) {
+                    var value = selector.find('colorgroup').css("background-color");
+                    selector.find('colorgroup color').each(function(){
+                        value += ";" + $(this).css("background-color");
+                    });
+                    data[this.properties.name] = value;
+                } else {
+                    data[this.properties.name] = "";
+                }
             } else {
-                data[this.properties.name] = "";
+                var selector = $("#" + this.id + "_schema_selector");
+                if ($(selector).find("li.selected").length > 0) {
+                    data[this.properties.name] = $(selector).find("li.selected").attr("data-value");
+                } else {
+                    data[this.properties.name] = "";
+                }
             }
         } else {
             data[this.properties.name] = this.value;
@@ -9665,8 +9674,17 @@ PropertyEditor.Type.ColorSchema.prototype = {
         
         html += '<span class="trigger"><i class="fas fa-chevron-down"></i></span></div><div class="color-input" style="display:none;"><input type="text"/></div><ul style="display:none;">';
 
-        $.each(thisObj.schemaOptions, function(i, option) {
+        var schemaOptions = [];
+        if (thisObj.properties.schemaOptions !== undefined) {
+            schemaOptions = thisObj.properties.schemaOptions;
+        } else {
+            schemaOptions = thisObj.schemaOptions;
+        }
+        $.each(schemaOptions, function(i, option) {
             var selected = "";
+            if (thisObj.value === option) {
+                selected = "selected";
+            }
             var values = option.split(";");
             html += '<li data-value="' + PropertyEditor.Util.escapeHtmlTag(option) + '" class="' + selected + '">';
             html += '<colorgroup style="background:'+values[0]+';">';
@@ -9685,38 +9703,40 @@ PropertyEditor.Type.ColorSchema.prototype = {
         
         var selector = $("#" + this.id + "_schema_selector");
         
-        $(selector).find(".color-input input").colorPicker({
-            renderCallback: function($elm, toggled) {
-                if ($elm.val() !== "" && $elm.val() !== undefined) {
-                    if (this.color.colors.alpha === 1) {
-                        $elm.val('#' + this.color.colors.HEX);
-                    } else {
-                        $elm.val(this.color.toString('RGB'));
+        if (thisObj.properties.editColor !== undefined && thisObj.properties.editColor.toLowerCase() === "true") {
+            $(selector).find(".color-input input").colorPicker({
+                renderCallback: function($elm, toggled) {
+                    if ($elm.val() !== "" && $elm.val() !== undefined) {
+                        if (this.color.colors.alpha === 1) {
+                            $elm.val('#' + this.color.colors.HEX);
+                        } else {
+                            $elm.val(this.color.toString('RGB'));
+                        }
                     }
                 }
-            }
-        }).off("focusin.tcp");
+            }).off("focusin.tcp");
+            
+            $(selector).find(".color_values").on("click", "colorgroup", function(e){
+                if (!$(selector).hasClass("showEditor")) {
+                    $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
+                    $(e.target).addClass("editing");
+                    var color = $(e.target).css("background-color");
+                    $(selector).find(".color-input input").val("");
+                    $(selector).find(".color-input").show();
+                    $(selector).find(".color-input input").val(color).trigger("click");
+                } else {
+                    $(selector).find(".color_values .editing").css("background-color", $(selector).find(".color-input input").val());
+                    $(selector).find(".color-input input").val("");
+                    $(selector).find(".color-input").hide();
+                    $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
+                }
+
+                $(selector).toggleClass("showEditor");
+            });
+        }
         
         $(selector).find(".color_values span.trigger").on("click", function(){
             $(selector).toggleClass("showPicker");
-        });
-        
-        $(selector).find(".color_values").on("click", "colorgroup", function(e){
-            if (!$(selector).hasClass("showEditor")) {
-                $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
-                $(e.target).addClass("editing");
-                var color = $(e.target).css("background-color");
-                $(selector).find(".color-input input").val("");
-                $(selector).find(".color-input").show();
-                $(selector).find(".color-input input").val(color).trigger("click");
-            } else {
-                $(selector).find(".color_values .editing").css("background-color", $(selector).find(".color-input input").val());
-                $(selector).find(".color-input input").val("");
-                $(selector).find(".color-input").hide();
-                $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
-            }
-            
-            $(selector).toggleClass("showEditor");
         });
         
         $(selector).find("li").on("click", function(){
