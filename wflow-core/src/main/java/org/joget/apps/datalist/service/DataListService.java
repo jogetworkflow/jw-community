@@ -126,9 +126,10 @@ public class DataListService {
     }
     
     public static Object evaluateColumnValueFromRow(Object row, String propertyName) {
+        Object value = null;
         if (propertyName != null && !propertyName.isEmpty()) {
             try {
-                Object value = LookupUtil.getBeanProperty(row, propertyName);
+                value = LookupUtil.getBeanProperty(row, propertyName);
                 
                 //handle for lowercase propertyName
                 if (value == null) {
@@ -149,12 +150,10 @@ public class DataListService {
                 if (value != null && value instanceof Date) {
                     value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
                 }
-                return value;
             } catch (Exception e) {}
             
-            if ((row instanceof Map) && propertyName.contains(".")) {
+            if (value == null && (row instanceof Map) && propertyName.contains(".")) {
                 Map rowMap = (Map) row;
-                Object value = null;
                 if (rowMap.containsKey(propertyName)) {
                     value = rowMap.get(propertyName);
                 } else if (rowMap.containsKey(propertyName.toLowerCase())) {
@@ -164,10 +163,9 @@ public class DataListService {
                 if (value != null && value instanceof Date) {
                     value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
                 }
-                return value;
             }
         }
-        return null;
+        return value;
     }
     
     public static boolean pwaOfflineValidation(AppDefinition appDef, String listId, boolean checkAction) {

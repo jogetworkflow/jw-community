@@ -122,8 +122,6 @@ DatalistBuilder = {
         var wait = $.Deferred();
         deferreds.push(wait);
         
-        DatalistBuilder.retrieveColumns(deferreds);
-        
         if(mode === DatalistBuilder.UPDATE){
             //reset all fields
             CustomBuilder.data.filters = new Array();
