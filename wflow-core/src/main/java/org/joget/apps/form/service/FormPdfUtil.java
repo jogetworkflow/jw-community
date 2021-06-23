@@ -436,7 +436,7 @@ public class FormPdfUtil {
                 }
 
                 if (type.equalsIgnoreCase("checkbox") || type.equalsIgnoreCase("radio")) {
-                    if (showAllSelectOptions) {
+                    if (showAllSelectOptions != null && showAllSelectOptions) {
                         replaceLabel += inputStringLabel.replaceAll("<label(.*?)>", "");
                         replaceLabel = replaceLabel.replaceAll("</label(.*?)>", "");
                     } else {
@@ -493,7 +493,7 @@ public class FormPdfUtil {
             } else if (type.equalsIgnoreCase("file") || type.equalsIgnoreCase("button") || type.equalsIgnoreCase("submit") || type.equalsIgnoreCase("reset") || type.equalsIgnoreCase("image")) {
                 html = html.replaceAll(StringUtil.escapeRegex(inputString), "");
             } else if (type.equalsIgnoreCase("checkbox") || type.equalsIgnoreCase("radio")) {
-                if (showAllSelectOptions) {
+                if (showAllSelectOptions != null && showAllSelectOptions) {
                     if (inputString.contains("checked")) {
                         if (request != null) {
                             replace = "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick.png\"/>";
@@ -530,7 +530,7 @@ public class FormPdfUtil {
             while (matcherOption.find()) {
                 String optionString = matcherOption.group(0);
                 String label = matcherOption.group(1);
-                if (showAllSelectOptions) {
+                if (showAllSelectOptions != null && showAllSelectOptions) {
                     if (optionString.contains("selected")) {
                         if (request != null) {
                             replace += "<img style=\"padding-left:20px\" alt=\"\" src=\"" + request.getContextPath() + "/plugin/org.joget.apps.app.lib.BeanShellTool/images/black_tick.png\"/>";
