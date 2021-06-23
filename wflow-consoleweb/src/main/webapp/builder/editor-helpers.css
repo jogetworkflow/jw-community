@@ -137,6 +137,12 @@ body.show-node-details.show-node-details-single .cbuilder-node-details:not(.curr
     font-size: 11px;
     z-index: 1;
 }
+body.is-dragging [data-cbuilder-dragelement] {
+    border-top: 1px dashed #4285f4 !important;
+    border-bottom: 1px dashed #4285f4 !important;
+    border-right: 1px dashed #4285f4 !important;
+    border-left: 1px dashed #4285f4 !important;
+}
 @media (min-width: 992px) {
     body:not(.show-node-details) [data-cbuilder-mobile-invisible]::after,
     body:not(.show-node-details) [data-cbuilder-tablet-invisible]::after {

@@ -3490,11 +3490,8 @@ _CustomBuilder.Builder = {
                     self.elementPosX = x;
                     self.elementPosY = y;
                     
-                    if (self.dragElement.data("css-border") === undefined) {
-                        self.dragElement.data("css-border", self.dragElement.css("border"));
-                        self.dragElement.css("border", "1px dashed #4285f4");
-                        self.frameBody.addClass("is-dragging");
-                    }
+                    self.dragElement.attr("data-cbuilder-dragelement", "true");
+                    self.frameBody.addClass("is-dragging");
                     
                     try {
                         $("#element-highlight-box").hide();
@@ -3629,7 +3626,7 @@ _CustomBuilder.Builder = {
                         }
                         if (self.component.builderTemplate.dragging) {
                             self.dragElement = self.component.builderTemplate.dragging(self.dragElement, self.component);
-                            self.dragElement.css("border", "1px dashed #4285f4");
+                            self.dragElement.attr("data-cbuilder-dragelement", "true");
                         }
 
                         if (self.iconDrag)
@@ -3691,7 +3688,11 @@ _CustomBuilder.Builder = {
                             self.selectNode(target, true);
                             if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
                                 $("#element-select-box").hide();
-                                self.dragElement = self.selectedEl;
+                                if (self.subSelectedEl){
+                                    self.dragElement = self.subSelectedEl;
+                                } else {
+                                    self.dragElement = self.selectedEl;
+                                }
                                 self.isDragging = true;
                                 self.isMoved = false;
                                 self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
@@ -4131,11 +4132,12 @@ _CustomBuilder.Builder = {
             }
 
             self.dragElement = $(html);
-            self.dragElement.css("border", "1px dashed #4285f4");
 
             if (self.component.builderTemplate.dragStart)
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
+            self.dragElement.attr("data-cbuilder-dragelement", "true");
+            
             self.isDragging = true;
             self.isMoved = false;
             self.frameBody.addClass("is-dragging");
@@ -4279,6 +4281,8 @@ _CustomBuilder.Builder = {
         if (self.component.builderTemplate.dropEnd)
             self.dragElement = self.component.builderTemplate.dropEnd(self.dragElement);
         
+        self.dragElement.removeAttr("data-cbuilder-dragelement");
+        
         if (self.isMoved) {
             if (self.dragElement.data("cbuilder-classname") === undefined && self.dragElement.data("cbuilder-select") === undefined) {
                 self.addElement();
@@ -4396,10 +4400,9 @@ _CustomBuilder.Builder = {
         if (CustomBuilder.Builder.options.callbacks["moveElement"] !== undefined && CustomBuilder.Builder.options.callbacks["moveElement"] !== "") {
             CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["moveElement"], [self.component, self.dragElement]);
         } else {
-            self.dragElement.css("border", self.dragElement.data("css-border"));
-            self.dragElement.removeData("css-border");
+            self.dragElement.removeAttr("data-cbuilder-dragelement");
         
-            var elementObj = $(self.dragElement).data("data");
+            var elementObj = $(self.selectedEl).data("data");
             
             var component = self.parseDataToComponent(elementObj);
 

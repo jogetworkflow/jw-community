@@ -419,6 +419,37 @@ DatalistBuilder = {
                                     var replace = $('<td data-cbuilder-id="new-dragging">'+UI.escapeHTML(component.label)+'</td>');
                                     dragElement.replaceWith(replace);
                                     dragElement = replace;
+                                } else {
+                                    var id = $(dragElement).attr("data-cbuilder-select");
+                                    
+                                    if (id !== undefined) {
+                                        //move header & tbody together
+                                        var index = tr.find("td").index(dragElement);
+                                        var cindex = table.find("thead tr th").index(table.find("thead tr th[data-cbuilder-id='"+id+"']"));
+                                        if (cindex < index) {
+                                            index++;
+                                        }
+                                        
+                                        var th = table.find("thead tr").find("[data-cbuilder-id='"+id+"']");
+                                        if (index === 0) {
+                                            table.find("thead tr").prepend(th);
+                                        } else {
+                                            table.find("thead tr").find("th:eq("+(index - 1)+")").after(th);
+                                        }
+                                        
+                                        table.find("tbody tr").each(function(){
+                                            var ctr = $(this);
+                                            if (!ctr.is(tr)) {
+                                                var td = ctr.find("[data-cbuilder-select='"+id+"']");
+
+                                                if (index === 0) {
+                                                    ctr.prepend(td);
+                                                } else {
+                                                    ctr.find("td:eq("+(index - 1)+")").after(td);
+                                                }
+                                            }
+                                        });
+                                    }
                                 }
                             } else {
                                 //table layout
@@ -522,13 +553,6 @@ DatalistBuilder = {
                             return true;
                         }
                         return false;
-                    },
-                    'isDraggable' : function(elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0 
-                                && CustomBuilder.Builder.selectedEl.closest(".dataList").hasClass("card-layout-active")) { //if row action and card layout
-                            return false;
-                        }
-                        return true;
                     },
                     'isPastable' : function(elementObj, component){
                         var copied = CustomBuilder.getCopiedElement();
@@ -708,6 +732,37 @@ DatalistBuilder = {
                                             var replace = $('<div data-cbuilder-id="new-dragging"><a href="#" class="btn btn-sm btn-primary">'+UI.escapeHTML(component.label)+'</a></div>');
                                             dragElement.replaceWith(replace);
                                             dragElement = replace;
+                                        } else {
+                                            var id = $(dragElement).attr("data-cbuilder-select");
+
+                                            if (id !== undefined) {
+                                                //move header & tbody together
+                                                var index = th.find("> div").index(dragElement);
+                                                var cindex = table.find("thead tr th.row_action_container > div").index(table.find("thead tr th.row_action_container > div[data-cbuilder-id='"+id+"']"));
+                                                if (cindex < index) {
+                                                    index++;
+                                                }
+                                                
+                                                var thra = table.find("thead tr th.row_action_container").find("> div[data-cbuilder-id='"+id+"']");
+                                                if (index === 0) {
+                                                    table.find("thead tr th.row_action_container").prepend(thra);
+                                                } else {
+                                                    table.find("thead tr th.row_action_container").find("> div:eq("+(index - 1)+")").after(thra);
+                                                }
+
+                                                table.find("tbody tr").each(function(){
+                                                    var ctr = $(this).find("td.row_action_container");
+                                                    if (!ctr.is(th)) {
+                                                        var ra = ctr.find("[data-cbuilder-select='"+id+"']");
+
+                                                        if (index === 0) {
+                                                            ctr.prepend(ra);
+                                                        } else {
+                                                            ctr.find("> div:eq("+(index - 1)+")").after(ra);
+                                                        }
+                                                    }
+                                                });
+                                            }
                                         }
                                     } else {
                                         //table layout
@@ -805,13 +860,6 @@ DatalistBuilder = {
                                     return true;
                                 }
                                 return false;
-                            },
-                            'isDraggable' : function(elementObj, component) {
-                                if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0 
-                                        && CustomBuilder.Builder.selectedEl.closest(".dataList").hasClass("card-layout-active")) { //if row action and card layout
-                                    return false;
-                                }
-                                return true;
                             },
                             'isPastable' : function(elementObj, component){
                                 var copied = CustomBuilder.getCopiedElement();
@@ -2398,6 +2446,22 @@ DatalistBuilder = {
             $(table).unbind("footable_expand_first_row");
             $(table).unbind("footable_expand_all");
             $(table).unbind("footable_collapse_all");
+        } else {
+            table.closest(".dataList").removeClass("card-layout-active");
+            table.find("thead [data-cbuilder-invisible]").removeAttr("data-cbuilder-invisible");
+            table.find("tbody tr").removeAttr("data-cbuilder-columns_filters");
+            table.find("tbody tr").removeAttr("data-cbuilder-columns");
+            table.find("tbody tr").removeAttr("data-cbuilder-prepend");
+            table.find("tbody tr").removeAttr("data-cbuilder-alternative-drop");
+            table.find("tbody tr").removeAttr("data-cbuilder-select");
+            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-all_actions");
+            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-rowactions");
+            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-alternative-drop");
+            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-sort-horizontal");
+            table.find("tbody tr .row_action_container div").each(function(){
+               $(this).css("width", $(this).data("builder-width")); 
+               $(this).data("builder-width", "");
+            });
         }
     },
     

@@ -265,6 +265,12 @@ body.rtl .dataList span.pagelinks{
     display: block;
     border:0 !important;
 }
+body.is-dragging .card-layout.card-layout-active table td[data-cbuilder-dragelement] {
+    border-top: 1px dashed #4285f4 !important;
+    border-bottom: 1px dashed #4285f4 !important;
+    border-right: 1px dashed #4285f4 !important;
+    border-left: 1px dashed #4285f4 !important;
+}
 .card-layout.card-layout-active tr.odd,
 .card-layout.card-layout-active tr.even{
     background-color: transparent;
