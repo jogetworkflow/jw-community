@@ -1099,11 +1099,12 @@ body.quickEditModeActive #category-container {
     padding: inherit !important;
     position: relative;
 }
-body.quickEditModeActive fieldset#form-canvas:before, 
-body.quickEditModeActive fieldset#form-canvas .subform-container:before, 
-body.quickEditModeActive .dataList:before, 
-body.quickEditModeActive #category-container:before{
-    border: solid 5px #e7fab6;
+body.quickEditModeActive fieldset#form-canvas:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container:after, 
+body.quickEditModeActive .dataList:after, 
+body.quickEditModeActive #category-container:after,
+body.quickEditModeActive #content > main:after{
+    border: solid 3px #e7fab6;
     position: absolute;
     top:0;
     left:0;
