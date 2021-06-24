@@ -1,0 +1,58 @@
+{
+    "html" : "<div class=\"container-fluid\"><div class=\"row\" data-cbuilder-columns></div><div>", 
+    "childsContainerAttr" : "columns", 
+    "elements" : [
+        {
+            "className" : "org.joget.apps.userview.lib.component.ColumnComponent",
+            "properties" : {
+                "css-col" : "col"
+            }
+        },
+        {
+            "className" : "org.joget.apps.userview.lib.component.ColumnComponent",
+            "properties" : {
+                "css-col" : "col"
+            }
+        }
+    ],
+    "selectNode" : function(element, elementObj, component) {
+        $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="@@fbuilder.addColumn@@"><i class="las la-columns"></i></a>');
+        
+        $("#columns-btn").off("click");
+        $("#columns-btn").on("click", function(event) {
+            $("#element-select-box").hide();
+
+            var self = CustomBuilder.Builder;
+            self.component = self.getComponent("org.joget.apps.userview.lib.component.ColumnComponent");
+            var classname = self.component.className;
+            var properties = {"css-column" : "col"};
+            var elements = [];
+            if (self.component.properties !== undefined) {
+                properties = $.extend(true, properties, self.component.properties);
+            }
+            if (self.component.builderTemplate.getElements !== undefined) {
+                elements = $.extend(true, elements, self.component.builderTemplate.getElements());
+            }
+            var elementObj = {
+                className: classname,
+                properties: properties,
+                elements : elements
+            };
+            self.updateElementId(elementObj);
+
+            var parent = self.selectedEl;
+            var parentDataArray = $(parent).data("data").elements;
+            parentDataArray.push(elementObj);
+
+            var temp = $('<div></div>');
+            self.selectedEl.find('> .row').append(temp);
+
+            self.renderElement(elementObj, temp, self.component, true);
+
+            CustomBuilder.update();
+
+            event.preventDefault();
+            return false;
+        });
+    }
+}

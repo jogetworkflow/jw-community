@@ -31,8 +31,8 @@
                 <c:set var="propertyOptions" value="''"/>
             </c:if>
             try {
-                <c:set var="initScript"> 
-                    CustomBuilder.initPaletteElement('Basic', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'list_css' : 'component', 'type' : 'component', 'builderTemplate' : ${template}}); 
+                <c:set var="initScript">
+                    CustomBuilder.initPaletteElement('Basic', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {'list_css' : 'component', 'type' : 'component', 'builderTemplate' : ${template}}); 
                 </c:set>
                 <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                 eval("${initScript}");    

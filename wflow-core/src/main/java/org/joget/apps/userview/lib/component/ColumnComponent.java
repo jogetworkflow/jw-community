@@ -3,12 +3,13 @@ package org.joget.apps.userview.lib.component;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
+import org.joget.plugin.base.HiddenPlugin;
 
-public class ContainerComponent extends SimplePageComponent {
+public class ColumnComponent extends SimplePageComponent implements HiddenPlugin {
 
     @Override
     public String getName() {
-        return "ContainerComponent";
+        return "ColumnComponent";
     }
 
     @Override
@@ -43,7 +44,7 @@ public class ContainerComponent extends SimplePageComponent {
 
     @Override
     public String getIcon() {
-        return "<i class=\"las la-vector-square\"></i>";
+        return "<i class=\"las la-columns\"></i>";
     }
 
     @Override
@@ -53,7 +54,6 @@ public class ContainerComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<div data-cbuilder-elements><div>'}";
+        return "{'html' : '<div data-cbuilder-elements></div>', 'parentContainerAttr' : 'columns'}";
     }
-    
 }

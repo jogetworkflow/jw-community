@@ -415,7 +415,7 @@ public class UserviewBuilderWebController {
         Collection<SimplePageComponent> list = new ArrayList<SimplePageComponent>();
         Collection<Plugin> pluginList = pluginManager.list(SimplePageComponent.class);
         for (Plugin plugin : pluginList) {
-            if (plugin instanceof SimplePageComponent && !(plugin instanceof HiddenPlugin)) {
+            if (plugin instanceof SimplePageComponent) {
                 list.add((SimplePageComponent) plugin);
             }
         }

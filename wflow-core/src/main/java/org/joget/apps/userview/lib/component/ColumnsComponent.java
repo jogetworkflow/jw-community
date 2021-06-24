@@ -4,11 +4,11 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 
-public class ContainerComponent extends SimplePageComponent {
+public class ColumnsComponent extends SimplePageComponent {
 
     @Override
     public String getName() {
-        return "ContainerComponent";
+        return "ColumnsComponent";
     }
 
     @Override
@@ -43,17 +43,16 @@ public class ContainerComponent extends SimplePageComponent {
 
     @Override
     public String getIcon() {
-        return "<i class=\"las la-vector-square\"></i>";
+        return "<i class=\"las la-columns\"></i>";
     }
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<div "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</div>";
+        return "<div "+attr+" id=\""+id+"\" class=\"container-fluid "+cssClass+"\"><div class=\"row\">" + renderChildren() + "</div>" + style + "</div>";
     }
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<div data-cbuilder-elements><div>'}";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/"+getName()+"_template.json", null, true, null);
     }
-    
 }
