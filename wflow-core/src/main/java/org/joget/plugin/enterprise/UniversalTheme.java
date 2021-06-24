@@ -177,7 +177,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String appId = uv.getParamString("appId");
         String userviewId = uv.getPropertyString("id");
         String manifestUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/manifest";
-        meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
+        meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\"  crossorigin=\"use-credentials\">";
         return meta;
     }
     
