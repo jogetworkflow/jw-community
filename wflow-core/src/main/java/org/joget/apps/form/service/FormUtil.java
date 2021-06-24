@@ -1457,7 +1457,7 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static String generateElementMetaData(Element element) {
-        String elementMetaData = " data-cbuilder-classname=\"" + element.getClassName() + "\"";
+        String elementMetaData = " data-cbuilder-classname=\"" + element.getClassName() + "\" data-cbuilder-label=\"" + element.getI18nLabel() + "\"";
         if (element instanceof HiddenPlugin) {
             elementMetaData = "";
         }

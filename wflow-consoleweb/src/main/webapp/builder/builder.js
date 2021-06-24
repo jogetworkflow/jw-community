@@ -4517,6 +4517,7 @@ _CustomBuilder.Builder = {
             
             $(element).attr("data-cbuilder-classname", component.className);
             $(element).attr("data-cbuilder-id", id);
+            $(element).attr("data-cbuilder-label", self._getElementType(elementObj, component));
             $(element).data("data", elementObj);
             
             if (component.builderTemplate.isAbsolutePosition(elementObj, component)) {
@@ -4549,6 +4550,7 @@ _CustomBuilder.Builder = {
                     }
                     $(newElement).attr("data-cbuilder-classname", component.className);
                     $(newElement).attr("data-cbuilder-id", id);
+                    $(newElement).attr("data-cbuilder-label", self._getElementType(elementObj, component));
                     $(newElement).data("data", elementObj);
 
                     if (component.builderTemplate.isAbsolutePosition(elementObj, component)) {
@@ -4715,12 +4717,16 @@ _CustomBuilder.Builder = {
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
         if (!$(node).is('[data-cbuilder-uneditable]')) {
-            var height = $(node).outerHeight();
-            if ($(node).find("> .cbuilder-node-details").length > 0) {
-                height = height - $(node).find("> .cbuilder-node-details").outerHeight();
-            }
-            if (height === 0) {
+            if ($(node).is('div, p') && $(node).html() === "") {
                 $(node).attr("data-cbuilder-invisible", "");
+            } else {
+                var height = $(node).outerHeight();
+                if ($(node).find("> .cbuilder-node-details").length > 0) {
+                    height = height - $(node).find("> .cbuilder-node-details").outerHeight();
+                }
+                if (height === 0) {
+                    $(node).attr("data-cbuilder-invisible", "");
+                }
             }
         }
     },

@@ -108,7 +108,7 @@ public abstract class PageComponent extends ExtElement {
         
         boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isPreview"));
         if (isBuilder) {
-            attr += " data-cbuilder-classname=\"" + getClassName() + "\" data-cbuilder-id=\"" + getPropertyString("id") + "\"";
+            attr += " data-cbuilder-classname=\"" + getClassName() + "\" data-cbuilder-id=\"" + getPropertyString("id") + "\" data-cbuilder-label=\"" + getI18nLabel() + "\"";
         }
 
         return render(id, cssClass, builderStyles, attr, isBuilder);

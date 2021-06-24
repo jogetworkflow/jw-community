@@ -44,6 +44,7 @@ body.is-dragging [data-cbuilder-droparea]:after {
     background: repeating-linear-gradient( 45deg, #606dbc, #606dbc 10px, #fff 10px, #fff 20px);
     opacity: 0.1;
     display: block;
+    border:3px solid #606dbc;
 }
 body.screenshot-in-progress .screenshot-hidden{
     display:none;
@@ -66,8 +67,7 @@ body.screenshot-in-progress .screenshot-hidden{
     border: 1px dashed #999;
     overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center; }
+    align-items: center;}
 body [data-cbuilder-invisible],
 body [data-cbuilder-element-invisible]{
     min-height: 35px;
@@ -78,7 +78,7 @@ body [data-cbuilder-invisible]::after,
 body [data-cbuilder-desktop-invisible]::after,
 body [data-cbuilder-mobile-invisible]::after,
 body [data-cbuilder-tablet-invisible]::after {
-    content: "";
+    content: '';
     position: absolute;
     left: 0px;
     top: 0px;
@@ -99,6 +99,14 @@ body [data-cbuilder-tablet-invisible]::after {
     display: flex;
     align-items: center;
     justify-content: center; }
+body [data-cbuilder-invisible]::after,
+body [data-cbuilder-desktop-invisible]::after,
+body [data-cbuilder-mobile-invisible]::after,
+body [data-cbuilder-tablet-invisible]::after {
+    content: attr(data-cbuilder-label);
+    justify-content: left; 
+    padding-left: 15px;
+}
 body.show-node-details [data-cbuilder-element-invisible]::after,
 body.show-node-details [data-cbuilder-invisible]::after,
 body.show-node-details [data-cbuilder-desktop-invisible]::after,
