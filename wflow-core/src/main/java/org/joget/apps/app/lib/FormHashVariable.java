@@ -124,4 +124,9 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         
         return syntax;
     }
+
+    @Override
+    public String escapeHashVariableValue(String value) {
+        return AppUtil.escapeHashVariable(value);
+    }
 }

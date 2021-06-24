@@ -262,7 +262,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Locale code
      */
     public static String getAppLocale() {
-        return LocaleContextHolder.getLocale().toString();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().toString());
     }
 
     /**
@@ -532,14 +532,15 @@ public class AppUtil implements ApplicationContextAware {
 
                                             //escape based on api call
                                             value = StringUtil.escapeString(value, escapeFormat, replaceMap);
+                                            
+                                            //escape special char in HashVariable
+                                            var = cachedPlugin.escapeHashVariable(var);
+                                            value = cachedPlugin.escapeHashVariableValue(value);
 
                                             //escape regex for replaceAll
                                             if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
                                                 value = StringUtil.escapeRegex(value);
                                             }
-
-                                            //escape special char in HashVariable
-                                            var = cachedPlugin.escapeHashVariable(var);
 
                                             content = content.replaceAll(var, value);
                                             break;

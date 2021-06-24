@@ -45,7 +45,7 @@ public class StringUtil {
     static final Whitelist whitelistRelaxed;
     static {
         // configure jsoup whitelist
-        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div").addAttributes(":all","id","style","class","title","target", "name");
+        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div", "hr").addAttributes(":all","id","style","class","title","target", "name");
         java.lang.reflect.Field field = ReflectionUtils.findField(whitelistRelaxed.getClass(), "protocols");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
