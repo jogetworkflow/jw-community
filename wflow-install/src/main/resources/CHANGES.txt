@@ -2,6 +2,14 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.33
+=================
+4708baf40 Fixed: wflow-consoleweb - "gridCombine" property options used with Plugin Default Properties will throw JS error. @6.0-SNAPSHOT
+570174ee8 Fixed: wflow-commons - hr tag is stripped off by jsoup whitelist in hash variable. @6.0-SNAPSHOT
+afbcca97c Fixed: wflow-core - Hash Variable is parsed in RTE when send email. @6.0-SNAPSHOT
+5b189bea1 Fixed: wflow-wfengine - Changing deadline checker interval from NON-ZERO to another NON-ZERO in cloud does not work. @6.0-SNAPSHOT.
+88faef9f8 Fixed: wflow-core/wflow-consoleweb - Security - Reflected XSS using locale lang parameter. #T63 @6.0-SNAPSHOT.
+
 CHANGES IN 6.0.32
 =================
 9338e889e Fixed: wflow-consoleweb - Universal/Progressive Theme - Unable to scroll menus in userview category when "menu position" set to horizontal menu. #8185 @6.0-SNAPSHOT
