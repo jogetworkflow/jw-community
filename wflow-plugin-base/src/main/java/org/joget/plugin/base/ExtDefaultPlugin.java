@@ -87,4 +87,8 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
     public Object execute(Map properties) {
         return null;
     }
+    
+    public boolean isHiddenPlugin() {
+        return this instanceof HiddenPlugin;
+    }
 }
