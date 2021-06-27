@@ -8389,7 +8389,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== null) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== null && !$(anchor).hasClass("loading")) {
+            $(anchor).addClass("loading");
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
@@ -8456,6 +8457,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 }
                 thisObj.editorObject.refresh();
                 PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
+                $(anchor).removeClass("loading");
             });
         }
     },
@@ -8543,7 +8545,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
             $.each(this.pageOptions.propertiesDefinition, function(i, page) {
                 var p = page.propertyEditorObject;
-                p.remove();
+                if (p !== undefined) {
+                    p.remove();
+                }
             });
         }
         
@@ -8841,7 +8845,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== null) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== null && !$(anchor).hasClass("loading")) {
+            $(anchor).addClass("loading");
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
@@ -8920,6 +8925,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 }
                 thisObj.editorObject.refresh();
                 PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
+                $(anchor).removeClass("loading");
             });
         }
     },
@@ -9015,7 +9021,9 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         if (!((typeof propertiesDefinition) === "undefined") && propertiesDefinition !== null) {
             $.each(propertiesDefinition, function(i, page) {
                 var p = page.propertyEditorObject;
-                p.remove();
+                if (p !== undefined) {
+                    p.remove();
+                }
             });
         }
         thisObj.editorObject.refresh();
