@@ -1,0 +1,64 @@
+[
+    {
+        "title": "@@datalist.imageFormatter.config@@",
+        "properties": [
+            {
+                "name": "imageSrc",
+                "label": "@@datalist.imageFormatter.imageSrc@@",
+                "type": "selectbox",
+                "options" : [
+                    {
+                        "value" : "",
+                        "label" : "@@datalist.imageFormatter.imageSrc.columnValue@@"
+                    },
+                    {
+                        "value" : "form",
+                        "label" : "@@datalist.imageFormatter.imageSrc.form@@"
+                    }
+                ]
+            },
+            {
+                "name": "formDefId",
+                "label": "@@datalist.imageFormatter.form@@",
+                "type": "selectbox",
+                "options_ajax": "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options",
+                "required": "True",
+                "control_field": "imageSrc",
+                "control_value": "form",
+                "control_use_regex": "false"
+            },
+            {
+                "name": "imagefullsize",
+                "label": "@@datalist.imageFormatter.imagefullsize@@",
+                "type" : "checkbox",
+                "options" : [
+                    {
+                        "value" : "true",
+                        "label" : ""
+                    }
+                ]
+            },
+            {
+                "name": "height",
+                "label": "@@datalist.imageFormatter.height@@",
+                "description": "@@datalist.imageFormatter.height.desc@@",
+                "type": "textfield",
+                "value": "60px",
+                "required": "True"
+            },
+            {
+                "name": "width",
+                "label": "@@datalist.imageFormatter.width@@",
+                "description": "@@datalist.imageFormatter.width.desc@@",
+                "type": "textfield",
+                "value": "60px",
+                "required": "True"
+            },
+            {
+                "name": "defaultImage",
+                "label": "@@datalist.imageFormatter.defaultImage@@",
+                "type": "textfield"
+            }
+        ]
+    }
+]
