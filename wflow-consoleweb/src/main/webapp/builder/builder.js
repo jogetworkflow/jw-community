@@ -3671,9 +3671,7 @@ _CustomBuilder.Builder = {
             }
             if ($(target).is("[data-cbuilder-unselectable]")) {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
-                    if (!hasChange) {
-                        self.selectNode(false);
-                    }
+                    self.selectNode(false);
                 });
                 return false;
             }
@@ -3684,7 +3682,10 @@ _CustomBuilder.Builder = {
             {
                 try {
                     CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
-                        if (!hasChange && self.mousedown) {
+                        if (hasChange) {
+                            self.mousedown = false;
+                        }
+                        if (self.mousedown) {
                             self.selectNode(target, true);
                             if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
                                 $("#element-select-box").hide();
@@ -3745,9 +3746,7 @@ _CustomBuilder.Builder = {
                 }catch (err){}
             } else {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
-                    if (!hasChange) {
-                        self.selectNode(false);
-                    }
+                    self.selectNode(false);
                 });
             }
             return false;
