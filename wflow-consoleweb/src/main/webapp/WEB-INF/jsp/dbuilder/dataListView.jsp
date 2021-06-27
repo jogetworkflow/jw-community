@@ -190,6 +190,9 @@
                                     media="${columnMedia}"
                                     />
                             </c:forEach>
+                            <c:if test="${dataList.havingCardAction}">
+                                <display:column property="cardAction" title="" sortable="false" headerClass="column_header column-hidden" class="column_body card-action column-hidden" media="html" />
+                            </c:if>
                             <c:if test="${!empty dataListRows[0] && !empty dataList.rowActions[0]}">
                                 <c:set var="actionTitle" value="" />
                                 <c:set var="firstCssClass" value="" />

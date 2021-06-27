@@ -81,6 +81,7 @@ public class DataList {
     private Map<String, String[]> requestParamMap = null;
     private boolean isAuthorized = true;
     private String unauthorizedMsg = null;
+    private DataListAction cardAction = null;
     
     private Map<String, Object> properties;
     
@@ -628,6 +629,10 @@ public class DataList {
                 }
             }
             
+            //look for card action
+            if ("card_action".equalsIgnoreCase(actionParamValue) && isHavingCardAction()) {
+                actionResult = getCardAction().executeAction(this, selectedKeys);
+            }
         }
         return actionResult;
     }
@@ -934,6 +939,49 @@ public class DataList {
         this.responsiveJson = responsiveJson;
     }
     
+    public DataListAction getCardAction() {
+        if (cardAction == null) {
+            Map actionObj = (Map) getProperty("card_click_action");
+            if ("true".equalsIgnoreCase(getPropertyString("card_clickable")) && actionObj != null && actionObj.get("className") != null) {
+                PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                cardAction = (DataListAction) pluginManager.getPlugin(actionObj.get("className").toString());
+                if (cardAction != null) {
+                    cardAction.setProperties((Map) actionObj.get("properties"));
+                    cardAction.setProperty("id", "card_action");
+                    
+                    if (cardAction.getHref() == null || (cardAction.getHref() != null && cardAction.getHref().isEmpty())) {
+                        String key = getBinder().getPrimaryKeyColumnName();
+                        String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+                        String queryString = "";
+                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                        if (request !=null) {
+                            queryString = request.getQueryString();
+                            if (queryString == null) {
+                                queryString = "";
+                            }
+                        }
+
+                        cardAction.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + cardAction.getPropertyString("id")));
+                        if (cardAction.getTarget() == null || (cardAction.getTarget() != null && cardAction.getTarget().isEmpty())) {
+                            cardAction.setProperty("target", "_self");
+                        }
+                        if (cardAction.getHrefParam() == null || (cardAction.getHrefParam() != null && cardAction.getHrefParam().isEmpty())) {
+                            cardAction.setProperty("hrefParam", keyParam);
+                        }
+                        if (cardAction.getHrefColumn() == null || (cardAction.getHrefColumn() != null && cardAction.getHrefColumn().isEmpty())) {
+                            cardAction.setProperty("hrefColumn", key);
+                        }
+                    }
+                }
+            }
+        }
+        return cardAction;
+    }
+    
+    public boolean isHavingCardAction() {
+        return getCardAction() != null;
+    }
+    
     /**
      * Retrieve current request map
      * @return 
@@ -1031,6 +1079,12 @@ public class DataList {
                     String style = props.get("BUILDER_GENERATED_" + prefix + view).toString();
                     if (!style.isEmpty()) {
                         styles.put(view, styles.get(view) + " " + cssClass + "{" + style + "}");
+                    }
+                }
+                if (props.containsKey("BUILDER_GENERATED_" + prefix + "HOVER_" + view)) {
+                    String style = props.get("BUILDER_GENERATED_" + prefix + "HOVER_" + view).toString();
+                    if (!style.isEmpty()) {
+                        styles.put(view, styles.get(view) + " " + cssClass + ":hover{" + style + "}");
                     }
                 }
             }

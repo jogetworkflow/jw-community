@@ -658,11 +658,22 @@ DatalistBuilder = {
                     }
                     return false;
                 },
+                'isSupportProperties' : function(elementObj, component) {
+                    var selectedEl = CustomBuilder.Builder.subSelectedEl;
+                    if ($(selectedEl).length > 0 && $(selectedEl).is("tr")) {
+                        return true;
+                    }
+                    return this.supportProperties;
+                },
+                'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
+                    return component.builderTemplate.cardPropertiesDefinition;
+                },
                 'cardStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("card")),
                 'columnStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("column")),
                 'rowActionStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("rowaction")),
                 'filterStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("filter")),
                 'actionStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("action")),
+                'cardPropertiesDefinition' : $.extend(true, [], DatalistBuilder.cardPropertiesDefinition()),
                 'draggable' : false,
                 'movable' : false,
                 'deletable' : false,
@@ -2301,6 +2312,47 @@ DatalistBuilder = {
         return container;
     },
     
+     /*
+     * used to prepare properties definition for card
+     */
+    cardPropertiesDefinition : function() {
+        return [
+            {
+                title : get_cbuilder_msg('dbuilder.cardSetting'),
+                properties:[
+                    {
+                        name : 'card_clickable',
+                        label : get_cbuilder_msg('dbuilder.card.clickable'),
+                        type : 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ]
+                    },
+                    {
+                        name : 'card_click_action',
+                        label : get_cbuilder_msg('dbuilder.card.clickaction'),
+                        type : 'elementselect',
+                        options_callback : function(props, values) {
+                            var options = [{label : '', value : ''}];
+                            var actions = DatalistBuilder.availableActions;
+                            for(var e in actions){
+                                var action = actions[e];
+                                if (action.supportColumn) {
+                                    options.push({label : UI.escapeHTML(action.label), value : action.className});
+                                }
+                            }
+                            return options;
+                        },
+                        url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions',
+                        control_field: "card_clickable",
+                        control_value: "true",
+                        control_use_regex: "false"
+                    }
+                ]
+            }
+        ];
+    },
+    
     /*
      * used to prepare properties definition for action
      */
@@ -2314,15 +2366,6 @@ DatalistBuilder = {
             
             for (var i in orig) {
                 if (type === "column" || type === "rowaction") {
-                    var header = $.extend(true, {}, orig[i]);
-                    header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
-                    for (var j in header.properties) {
-                        if (header.properties[j].name) {
-                            header.properties[j].name = header.properties[j].name.replace('style', type+'-header-style');
-                        }
-                    }
-                    self[type + 'StylePropertiesDefinitionObj'].push(header);
-
                     var tablebody = $.extend(true, {}, orig[i]);
                     tablebody.title = tablebody.title + " ("+get_cbuilder_msg('dbuilder.body')+")";
                     for (var j in tablebody.properties) {
@@ -2331,6 +2374,15 @@ DatalistBuilder = {
                         }
                     }
                     self[type + 'StylePropertiesDefinitionObj'].push(tablebody);
+                    
+                    var header = $.extend(true, {}, orig[i]);
+                    header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
+                    for (var j in header.properties) {
+                        if (header.properties[j].name) {
+                            header.properties[j].name = header.properties[j].name.replace('style', type+'-header-style');
+                        }
+                    }
+                    self[type + 'StylePropertiesDefinitionObj'].push(header);
                 } else {
                     var header = $.extend(true, {}, orig[i]);
                     for (var j in header.properties) {
@@ -2359,19 +2411,18 @@ DatalistBuilder = {
             var orig = CustomBuilder.Builder.stylePropertiesDefinition();
             
             for (var i in orig) {
+                var tablebody = $.extend(true, {}, orig[i]);
+                tablebody.title = tablebody.title + " ("+get_cbuilder_msg('dbuilder.body')+")";
+                self.tableStylePropertiesDefinitionObj.push(tablebody);
+                
                 var header = $.extend(true, {}, orig[i]);
-                header.title = header.title + " (Header)";
+                header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
                 for (var j in header.properties) {
                     if (header.properties[j].name) {
                         header.properties[j].name = header.properties[j].name.replace('style', 'header-style');
                     }
                 }
-
                 self.tableStylePropertiesDefinitionObj.push(header);
-                
-                var tablebody = $.extend(true, {}, orig[i]);
-                tablebody.title = tablebody.title + " (Body)";
-                self.tableStylePropertiesDefinitionObj.push(tablebody);
             }
         }
         

@@ -205,6 +205,19 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
         return output;
     }
+    
+    /**
+     * Decorator method to display card action
+     * @return
+     */
+    public Object getCardAction() {
+        String output = "";
+        DataListAction action = dataList.getCardAction();
+        if (action != null) {
+            output = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), " ", action.getConfirmation(), "card-action-link");
+        }
+        return output;
+    }
 
     protected DataListColumn findColumn(String columnName) {
         boolean skipHidden = false;
@@ -259,7 +272,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                             link += StringEscapeUtils.escapeHtml(params[i]);
                             link += "=";
                             isValid = true;
-                        } if (!link.contains("?")) {
+                        } else if (!link.contains("?")) {
                             if (!link.endsWith("/")) {
                                 link += "/";
                             }
