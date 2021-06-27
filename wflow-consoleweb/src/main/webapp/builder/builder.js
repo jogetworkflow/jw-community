@@ -4615,6 +4615,9 @@ _CustomBuilder.Builder = {
         var desktopStyle = "";
         var tabletStyle = "";
         var mobileStyle = "";
+        var hoverDesktopStyle = "";
+        var hoverTabletStyle = "";
+        var hoverMobileStyle = "";
         
         for (var property in properties) {
             if (properties.hasOwnProperty(property)) {
@@ -4635,7 +4638,16 @@ _CustomBuilder.Builder = {
                         value = "url('" + value + "')";
                     }
                     
-                    if (property.indexOf(prefix+'style-mobile-') === 0) {
+                    if (property.indexOf(prefix+'style-hover-mobile-') === 0) {
+                        var key = property.replace(prefix+'style-hover-mobile-', '');
+                        hoverMobileStyle += key + ":" + value + " !important;";
+                    } else if (property.indexOf(prefix+'style-hover-tablet-') === 0) {
+                        var key = property.replace(prefix+'style-hover-tablet-', '');
+                        hoverTabletStyle += key + ":" + value + " !important;";
+                    } else if (property.indexOf(prefix+'style-hover-') === 0) {
+                        var key = property.replace(prefix+'style-hover-', '');
+                        hoverDesktopStyle += key + ":" + value + " !important;";
+                    } else if (property.indexOf(prefix+'style-mobile-') === 0) {
                         var key = property.replace(prefix+'style-mobile-', '');
                         mobileStyle += key + ":" + value + " !important;";
                         
@@ -4688,6 +4700,15 @@ _CustomBuilder.Builder = {
            }
            if (mobileStyle !== "") {
                builderStyles += "@media (max-width: 767px) {" + styleClass + "{" + mobileStyle + "}} ";
+           }
+           if (hoverDesktopStyle !== "") {
+               builderStyles += styleClass + ":hover{" + hoverDesktopStyle + "} ";
+           }
+           if (hoverTabletStyle !== "") {
+               builderStyles += "@media (max-width: 991px) {" + styleClass + ":hover{" + hoverTabletStyle + "}} ";
+           }
+           if (hoverMobileStyle !== "") {
+               builderStyles += "@media (max-width: 767px) {" + styleClass + ":hover{" + hoverMobileStyle + "}} ";
            }
            builderStyles += "</style>";
            element.append(builderStyles);
@@ -5595,21 +5616,46 @@ _CustomBuilder.Builder = {
         if (self.stylePropertiesDefinitionObj === undefined) {
             self.stylePropertiesDefinitionObj = [
                 {
-                    title: 'Styling',
+                    title: get_cbuilder_msg('style.styling'),
                     properties:[
                         {
+                            name : 'normalstyle',
+                            label : get_cbuilder_msg('style.normalstyle'),
+                            type : 'header'
+                        },
+                        {
                             name : 'style',
-                            label : 'Desktop View Style',
+                            label : get_cbuilder_msg('style.styling.desktop'),
                             type : 'cssstyle'
                         },
                         {
                             name : 'style-tablet',
-                            label : 'Tablet View Style',
+                            label : get_cbuilder_msg('style.styling.tablet'),
                             type : 'cssstyle'
                         },
                         {
                             name : 'style-mobile',
-                            label : 'Mobile View Style',
+                            label : get_cbuilder_msg('style.styling.mobile'),
+                            type : 'cssstyle'
+                        },
+                        {
+                            name : 'hoverstyle',
+                            label : get_cbuilder_msg('style.hoverstyle'),
+                            type : 'header'
+                        },
+                        {
+                            name : 'style-hover',
+                            label : get_cbuilder_msg('style.styling.hover.desktop'),
+                            type : 'cssstyle'
+                        },
+                        {
+                            name : 'style-hover-tablet',
+                            label : get_cbuilder_msg('style.styling.hover.tablet'),
+                            type : 'cssstyle'
+                        },
+                        {
+                            name : 'style-hover-mobile',
+                            label : get_cbuilder_msg('style.styling.hover.mobile'),
                             type : 'cssstyle'
                         }
                     ]

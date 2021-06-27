@@ -277,12 +277,18 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         String desktopStyle = "";
         String tabletStyle = "";
         String mobileStyle = "";
+        String hoverDesktopStyle = "";
+        String hoverTabletStyle = "";
+        String hoverMobileStyle = "";
         String cssClass = "";
         String attr = ""; 
         
         for (String key : getProperties().keySet()) {
             if ((key.startsWith("css-") 
                         || key.startsWith("attr-")
+                        || key.startsWith("style-hover-mobile-")
+                        || key.startsWith("style-hover-tablet-")
+                        || key.startsWith("style-hover-")
                         || key.startsWith("style-mobile-")
                         || key.startsWith("style-tablet-")
                         || key.startsWith("style-"))
@@ -297,6 +303,12 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                     cssClass += " " + value;
                 } else if (key.startsWith("attr-")) {
                     attr += " " + key.replace("attr-", "") + "=\"" + value + "\"";
+                } else if (key.startsWith("style-hover-mobile-")) {
+                    hoverMobileStyle += key.replace("style-hover-mobile-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-hover-tablet-")) {
+                    hoverTabletStyle += key.replace("style-hover-tablet-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-hover-")) {
+                    hoverDesktopStyle += key.replace("style-hover-", "") + ":" + value + " !important;";
                 } else if (key.startsWith("style-mobile-")) {
                     mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
                 } else if (key.startsWith("style-tablet-")) {
@@ -310,20 +322,29 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         String builderStyles = "";
         
         if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
-           String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
-           cssClass += " " + styleClass;
-           
-           builderStyles = "<style id=\""+styleClass+"\">";
-           if (!desktopStyle.isEmpty()) {
-               builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
-           }
-           if (!tabletStyle.isEmpty()) {
-               builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
-           }
-           if (!mobileStyle.isEmpty()) {
-               builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
-           }
-           builderStyles += "</style>";
+            String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
+            cssClass += " " + styleClass;
+
+            builderStyles = "<style id=\""+styleClass+"\">";
+            if (!desktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
+            }
+            if (!tabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
+            }
+            if (!mobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
+            }
+            if (!hoverDesktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + ":hover{" + hoverDesktopStyle + "} ";
+            }
+            if (!hoverTabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + ":hover{" + hoverTabletStyle + "}} ";
+            }
+            if (!hoverMobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + hoverMobileStyle + "}} ";
+            }
+            builderStyles += "</style>";
         }
         
         if (!cssClass.isEmpty() || !attr.isEmpty()) {

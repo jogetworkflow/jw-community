@@ -809,12 +809,18 @@ public class JsonUtil {
             props.put(propKey + "MOBILE_STYLE", "");
             props.put(propKey + "TABLET_STYLE", "");
             props.put(propKey + "STYLE", "");
+            props.put(propKey + "HOVER_MOBILE_STYLE", "");
+            props.put(propKey + "HOVER_TABLET_STYLE", "");
+            props.put(propKey + "HOVER_STYLE", "");
         }
         
         for (String key : keys) {
             for (String prefix : prefixes) {
                 if ((key.startsWith(prefix+"css-") 
                         || key.startsWith(prefix+"attr-")
+                        || key.startsWith(prefix+"style-hover-mobile-")
+                        || key.startsWith(prefix+"style-hover-tablet-")
+                        || key.startsWith(prefix+"style-hover-")
                         || key.startsWith(prefix+"style-mobile-")
                         || key.startsWith(prefix+"style-tablet-")
                         || key.startsWith(prefix+"style-"))
@@ -831,6 +837,15 @@ public class JsonUtil {
                     } else if (key.startsWith(prefix+"attr-")) {
                         propKey += "ATTR";
                         value = " " + key.replace(prefix+"attr-", "") + "=\"" + value + "\"";
+                    } else if (key.startsWith(prefix+"style-hover-mobile-")) {
+                        propKey += "HOVER_MOBILE_STYLE";
+                        value = key.replace(prefix+"style-hover-mobile-", "") + ":" + value + " !important;";
+                    } else if (key.startsWith(prefix+"style-hover-tablet-")) {
+                        propKey += "HOVER_TABLET_STYLE";
+                        value = key.replace(prefix+"style-hover-tablet-", "") + ":" + value + " !important;";
+                    } else if (key.startsWith(prefix+"style-hover-")) {
+                        propKey += "HOVER_STYLE";
+                        value = key.replace(prefix+"style-hover-", "") + ":" + value + " !important;";
                     } else if (key.startsWith(prefix+"style-mobile-")) {
                         propKey += "MOBILE_STYLE";
                         value = key.replace(prefix+"style-mobile-", "") + ":" + value + " !important;";

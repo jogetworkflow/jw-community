@@ -42,6 +42,9 @@ public abstract class PageComponent extends ExtElement {
         String desktopStyle = "";
         String tabletStyle = "";
         String mobileStyle = "";
+        String hoverDesktopStyle = "";
+        String hoverTabletStyle = "";
+        String hoverMobileStyle = "";
         String cssClass = "";
         String attr = ""; 
         
@@ -50,6 +53,9 @@ public abstract class PageComponent extends ExtElement {
         for (String key : getProperties().keySet()) {
             if ((key.startsWith("css-") 
                         || key.startsWith("attr-")
+                        || key.startsWith("style-hover-mobile-")
+                        || key.startsWith("style-hover-tablet-")
+                        || key.startsWith("style-hover-")
                         || key.startsWith("style-mobile-")
                         || key.startsWith("style-tablet-")
                         || key.startsWith("style-"))
@@ -77,6 +83,12 @@ public abstract class PageComponent extends ExtElement {
                     cssClass += " " + value;
                 } else if (key.startsWith("attr-")) {
                     attr += " " + key.replace("attr-", "") + "=\"" + StringUtil.escapeString(value, StringUtil.TYPE_HTML, null) + "\"";
+                } else if (key.startsWith("style-hover-mobile-")) {
+                    hoverMobileStyle += key.replace("style-hover-mobile-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-hover-tablet-")) {
+                    hoverTabletStyle += key.replace("style-hover-tablet-", "") + ":" + value + " !important;";
+                } else if (key.startsWith("style-hover-")) {
+                    hoverDesktopStyle += key.replace("style-hover-", "") + ":" + value + " !important;";
                 } else if (key.startsWith("style-mobile-")) {
                     mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
                 } else if (key.startsWith("style-tablet-")) {
@@ -102,6 +114,15 @@ public abstract class PageComponent extends ExtElement {
             }
             if (!mobileStyle.isEmpty()) {
                 builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
+            }
+            if (!hoverDesktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + ":hover{" + hoverDesktopStyle + "} ";
+            }
+            if (!hoverTabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + ":hover{" + hoverTabletStyle + "}} ";
+            }
+            if (!hoverMobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + hoverMobileStyle + "}} ";
             }
             builderStyles += "</style>";
         }
