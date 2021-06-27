@@ -55,6 +55,7 @@
         {
             key : 'hrefColumn',
             label : '@@datalist.hyperlinkdatalistaction.columnName@@',
+            type : 'autocomplete',
             options_callback : 'DatalistBuilder.getColumnOptions'
         }]
     },

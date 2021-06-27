@@ -96,7 +96,7 @@ public class HyperlinkDataListAction extends DataListActionDefault {
                         url += params[i];
                         url += "=";
                         isValid = true;
-                    } else {
+                    } else if (!url.contains("?")) {
                         if (!url.endsWith("/")) {
                             url += "/";
                         }
