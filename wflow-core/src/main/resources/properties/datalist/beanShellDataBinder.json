@@ -1,0 +1,34 @@
+[{
+    "title" : "@@datalist.beanshellbinder.config@@",
+    "properties" : [{
+        "name" : "getColumnScript",
+        "label" : "@@datalist.beanshellbinder.getColumnScript@@",
+        "description" : "@@datalist.beanshellbinder.getColumnScript.desc@@",
+        "type" : "codeeditor",
+        "mode" : "java",   
+        "required" : "True"
+    },
+    {
+        "name" : "getDataScript",
+        "label" : "@@datalist.beanshellbinder.getDataScript@@",
+        "description" : "@@datalist.beanshellbinder.getDataScript.desc@@",
+        "type" : "codeeditor",
+        "mode" : "java",   
+        "required" : "True"
+    },
+    {
+        "name" : "getTotalScript",
+        "label" : "@@datalist.beanshellbinder.getTotalScript@@",
+        "description" : "@@datalist.beanshellbinder.getTotalScript.desc@@",
+        "type" : "codeeditor",
+        "mode" : "java",   
+        "required" : "True"
+    },
+    {
+        "name" : "primaryKey",
+        "label" : "@@datalist.jsonapibinder.primaryKey@@",
+        "type" : "textfield",
+        "value" : "id",        
+        "required" : "True"
+    }]
+}]
