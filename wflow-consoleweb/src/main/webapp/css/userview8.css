@@ -916,6 +916,9 @@ body#login #page #content{
     padding: 0;
     background-color: var(--theme-header, #fff);
 }
+body#login #page #content main{
+    position: unset;
+}
 body#login #loginForm {
     display: block;
     top:50%;
