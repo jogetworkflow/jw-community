@@ -1143,7 +1143,7 @@ public class AppServiceImpl implements AppService {
                 // TODO: handle exception
             }
         }
-        if (!AppDevUtil.isGitDisabled()) {
+        if (!AppDevUtil.isGitDisabled() && appDef != null) {
             try {
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
