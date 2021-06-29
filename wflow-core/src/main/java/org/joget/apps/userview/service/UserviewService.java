@@ -352,6 +352,12 @@ public class UserviewService {
 
                                     menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? StringEscapeUtils.escapeHtml(key) : Userview.USERVIEW_KEY_EMPTY_VALUE) + "/" + mId);
                                 }
+                                
+                                //set content placeholder
+                                String cp = menu.getContentPlaceholderRules();
+                                if (cp != null && !cp.isEmpty()) {
+                                    userview.addContentPlaceholderRule(menu.getUrl(), cp);
+                                }
 
                                 //set Current, if current menu id is empty, search the 1st valid menu
                                 if ((("".equals(menuId) || "index".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())

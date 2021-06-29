@@ -1,6 +1,7 @@
 package org.joget.apps.userview.model;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Userview extends Element {
@@ -13,6 +14,7 @@ public class Userview extends Element {
     private UserviewMenu current;
     private UserviewCategory currentCategory;
     private Map<String, Object> params;
+    private Map<String, String> contentPlaceholderRules = new LinkedHashMap();
 
     public Collection<UserviewCategory> getCategories() {
         return categories;
@@ -70,5 +72,13 @@ public class Userview extends Element {
             return params.get(key).toString();
         }
         return "";
+    }
+    
+    public void addContentPlaceholderRule(String url, String rule) {
+        contentPlaceholderRules.put(url, rule);
+    }
+    
+    public Map<String, String> getContentPlaceholderRules() {
+        return contentPlaceholderRules;
     }
 }

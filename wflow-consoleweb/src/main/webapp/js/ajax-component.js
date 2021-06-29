@@ -207,6 +207,7 @@ AjaxComponent = {
         }
         
         $(contentConatiner).addClass("ajaxloading");
+        $(contentConatiner).attr("data-content-placeholder", AjaxComponent.getContentPlaceholder(url));
         
         var args = {
             method : method,
@@ -248,6 +249,7 @@ AjaxComponent = {
                 AjaxComponent.callback(contentConatiner, data, url);
             }
             $(contentConatiner).removeClass("ajaxloading");
+            $(contentConatiner).removeAttr("data-content-placeholder");
         })
         .catch(error => {
             if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
@@ -256,6 +258,7 @@ AjaxComponent = {
                 AjaxComponent.errorCallback(element, error);
             }
             $(contentConatiner).removeClass("ajaxloading");
+            $(contentConatiner).removeAttr("data-content-placeholder");
         });
     },
     
@@ -542,6 +545,36 @@ AjaxComponent = {
         url = url.substring(1, url.length - 1);
         
         return [msg, url];
+    },
+    
+    /*
+     * Use to find the matching content placholder
+     */
+    getContentPlaceholder : function(url) {
+        if (window["ajaxContentPlaceholder"] !== undefined) {
+            const urlObj = new URL(url, window.location.origin);
+            var rule = window["ajaxContentPlaceholder"][urlObj.pathname];
+            if (rule !== undefined) {
+                if (typeof(rule) === "string") {
+                    return rule;
+                } else {
+                    for (const key in rule) {
+                        if (rule.hasOwnProperty(key)) {
+                            if (key !== "") {
+                                var patt = new RegExp(key);
+                                if (patt.test(urlObj.search)) {
+                                    return rule[key];
+                                }
+                            }
+                        }
+                    }
+                    if (rule[""] !== undefined) {
+                        return rule[""];
+                    }
+                }
+            }
+        }
+        return "";
     }
 };
 

@@ -39,6 +39,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String jscss = "";
         if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
             jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" async></script>";
+            jscss += "\n<script>" + getContentPlaceholderRules() + "</script>";
         }
         jscss += super.getInternalJsCssLib(data);
         return jscss;
@@ -314,5 +315,28 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String builderThemeCss() {
         return generateLessCss();
+    }
+    
+    protected String getContentPlaceholderRules() {
+        Map<String, String> rules = getUserview().getContentPlaceholderRules();
+        String script = "";
+        String value = "";
+        
+        if (!rules.isEmpty())  {
+            for (String url : rules.keySet()) {
+                if (!script.isEmpty()) {
+                    script += ", ";
+                }
+                script += "\"" + url + "\" : ";
+                value = rules.get(url);
+                if (value.startsWith("{") && value.endsWith("}")) {
+                    script += value;
+                } else {
+                    script += "\"" + value + "\"";
+                }
+            }
+            script = "var ajaxContentPlaceholder = {" + script + "};";
+        }
+        return script;
     }
 }

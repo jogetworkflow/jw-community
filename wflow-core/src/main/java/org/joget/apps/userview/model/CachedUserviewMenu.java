@@ -472,4 +472,9 @@ public class CachedUserviewMenu extends UserviewMenu {
     public String render(String id, String cssClass, String style, String attributes, boolean isBuilder) {
         return delegate.render(id, cssClass, style, attributes, isBuilder);
     }
+    
+    @Override
+    public String getContentPlaceholderRules() {
+        return delegate.getContentPlaceholderRules();
+    }
 }

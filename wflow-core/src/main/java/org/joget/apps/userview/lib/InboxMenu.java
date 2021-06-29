@@ -592,4 +592,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
         warning.put(WARNING_TYPE.READONLY, new String[]{ResourceBundleUtil.getMessage("pwa.process")});
         return warning;
     }
+    
+    @Override
+    public String getContentPlaceholderRules() {
+        return "{'_mode=assignment' : 'form', '' : 'table'}";
+    }
 }

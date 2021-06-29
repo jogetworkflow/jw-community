@@ -526,4 +526,9 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         }
         return null;
     }
+    
+    @Override
+    public String getContentPlaceholderRules() {
+        return "form";
+    }
 }

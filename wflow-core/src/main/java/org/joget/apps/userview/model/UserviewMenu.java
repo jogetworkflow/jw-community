@@ -256,4 +256,8 @@ public abstract class UserviewMenu extends PageComponent {
     public String getBuilderJavaScriptTemplate() {
         return "{'dragHtml' : '<div class=\"content-placeholder\"></div>'}";
     }
+    
+    public String getContentPlaceholderRules() {
+        return "";
+    }
 }

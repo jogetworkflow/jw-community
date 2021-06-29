@@ -218,4 +218,9 @@ public class DataListMenu extends UserviewMenu implements PwaOfflineValidation {
         }
         return null;
     }
+    
+    @Override
+    public String getContentPlaceholderRules() {
+        return "table";
+    }
 }

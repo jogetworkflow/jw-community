@@ -673,4 +673,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
         }
         return null;
     }
+    
+    @Override
+    public String getContentPlaceholderRules() {
+        return "form";
+    }
 }
