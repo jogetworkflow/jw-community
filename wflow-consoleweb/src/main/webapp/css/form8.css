@@ -119,16 +119,11 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 }
 .form-column-horizontal,
 .subform-column-horizontal{
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
+    display: block;
 }
 .form-column-horizontal > .form-cell,
 .subform-column-horizontal > .subform-cell{
-    -ms-flex-preferred-size: 0;
-    flex-basis: 0;
-    -ms-flex-positive: 1;
+    display: inline-block;
 }
 .form-column-horizontal > .form-cell + .form-cell,
 .subform-column-horizontal > .subform-cell + .subform-cell{

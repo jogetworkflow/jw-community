@@ -745,7 +745,8 @@ body.horizontal_menu #header-info{
 
 /* button and ripple effect */
 #content main button[class*=button],
-#content main input[type=button][class*=button]{
+#content main input[class*=button]
+{
     display: inline-block;
     font-weight: 400 !important;
     text-align: center;
@@ -769,7 +770,7 @@ body.horizontal_menu #header-info{
     outline: 0;
 }
 #content main button[class*=button],
-#content main input[type=button][class*=button],
+#content main input[class*=button],
 #sidebar a,
 .btn{
     --ripple-color: rgba(0, 0, 0, 0.1);
@@ -780,9 +781,9 @@ body.horizontal_menu #header-info{
 #content main button[class*=button]:focus:not(:disabled):not(.disabled),
 #content main button[class*=button]:active:not(:disabled):not(.disabled),
 #content main button[class*=button]:hover:not(:disabled):not(.disabled),
-#content main input[type=button][class*=button]:focus:not(:disabled):not(.disabled),
-#content main input[type=button][class*=button]:active:not(:disabled):not(.disabled),
-#content main input[type=button][class*=button]:hover:not(:disabled):not(.disabled),
+#content main input[class*=button]:focus:not(:disabled):not(.disabled),
+#content main input[class*=button]:active:not(:disabled):not(.disabled),
+#content main input[class*=button]:hover:not(:disabled):not(.disabled),
 #sidebar a:focus,
 #sidebar a:active,
 .btn:focus:not(:disabled):not(.disabled),
