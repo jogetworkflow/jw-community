@@ -7,7 +7,6 @@
         font-style:normal;
         font-variant:normal;
         font-weight:normal;
-        height:22px;
         padding:0.5em;
     }
 
@@ -62,7 +61,7 @@
         </script>
     <#elseif element.properties.view! == 'formView' && element.properties.user??>
         <#if element.properties.saved! == 'true'>
-            <p class="form-message" style="display:block;color:blue;">
+            <p class="form-message form-success">
                 <span>@@console.directory.user.message.saved@@</span>
             </p>
         </#if>

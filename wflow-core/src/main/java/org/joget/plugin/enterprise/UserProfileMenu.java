@@ -240,7 +240,9 @@ public class UserProfileMenu extends UserviewMenu {
             }
         }
 
-        setProperty("errors", errors);
+        if (!errors.isEmpty()) {
+            setProperty("errors", errors);
+        }
         if (passwordErrors != null && !passwordErrors.isEmpty()) {
             setProperty("passwordErrors", passwordErrors);
         }

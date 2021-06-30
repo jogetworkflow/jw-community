@@ -1033,6 +1033,16 @@ form.form .btn {
     background-color: #2196f3;
     border-color: #2196f3;
 }
+.form-message.form-success{
+    border: 1px solid transparent;
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #cce5ff;
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: .25rem;
+}
 .form-errors {
     border: 1px solid transparent;
     color: #721c24;
