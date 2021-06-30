@@ -221,35 +221,40 @@ AjaxComponent = {
         
         fetch(url, args)
         .then(function (response) {
-            if ((method === "GET" || response.redirected) && response.status === 200) {
+            if (response.url.indexOf("/web/login") !== -1) {
+                document.location.href = url;
+                return null;
+            } else if ((method === "GET" || response.redirected) && response.status === 200) {
                 history.pushState({url: response.url}, "", response.url); //handled redirected URL
             }
             return response.text();
         })
         .then(data => {
-            if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
-                //handle userview redirection with alert
-                if (data.indexOf("<div>") === -1) {
-                    var part = AjaxComponent.getMsgAndRedirectUrl(data.substring(data.indexOf("alert")));
-                    alert(part[0]);
-                    
-                    //if redirect url is not same with current userview page
-                    if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                        AjaxComponent.call($("#content"), part[1], "GET", null);
-                    } else {
-                        AjaxComponent.call(contentConatiner, part[1], "GET", null);
+            if (data !== null) {
+                if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
+                    //handle userview redirection with alert
+                    if (data.indexOf("<div>") === -1) {
+                        var part = AjaxComponent.getMsgAndRedirectUrl(data.substring(data.indexOf("alert")));
+                        alert(part[0]);
+
+                        //if redirect url is not same with current userview page
+                        if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
+                            AjaxComponent.call($("#content"), part[1], "GET", null);
+                        } else {
+                            AjaxComponent.call(contentConatiner, part[1], "GET", null);
+                        }
+                        return;
                     }
-                    return;
                 }
+
+                if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
+                    AjaxUniversalTheme.callback(data);
+                } else {
+                    AjaxComponent.callback(contentConatiner, data, url);
+                }
+                $(contentConatiner).removeClass("ajaxloading");
+                $(contentConatiner).removeAttr("data-content-placeholder");
             }
-            
-            if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
-                AjaxUniversalTheme.callback(data);
-            } else {
-                AjaxComponent.callback(contentConatiner, data, url);
-            }
-            $(contentConatiner).removeClass("ajaxloading");
-            $(contentConatiner).removeAttr("data-content-placeholder");
         })
         .catch(error => {
             if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
