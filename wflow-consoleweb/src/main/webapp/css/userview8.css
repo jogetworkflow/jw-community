@@ -878,9 +878,8 @@ body.horizontal_menu #header-info{
     display:none;
 }
 .boxy-wrapper .title-bar {
-    height: 0;
-    position: relative;
-    padding: 0;
+    background-color: #efefef;
+    padding: 8px;
 }
 .boxy-wrapper .title-bar .close {
     position: absolute;
