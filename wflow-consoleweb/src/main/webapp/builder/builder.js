@@ -1470,7 +1470,7 @@ _CustomBuilder = {
      * Utility method to generate an uuid
      */
     uuid : function(){
-        return 'xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {  //xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+        return 'xxxxxxxxxxxx4xxxxxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {  //xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx
             var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         }).toUpperCase();
