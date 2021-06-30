@@ -492,6 +492,20 @@ PropertyEditor.Util = {
             return v.toString(16);
         }).toUpperCase();
     },
+    unhandleDynamicOptionsField: function(page) {
+        if (page !== null && page !== undefined) {
+            var pageContainer = $(page.editor).find("#" + page.id);
+            if ($(pageContainer).is("[data-control_field][data-control_value]")) {
+                PropertyEditor.Util.unbindDynamicOptionsEvent($(pageContainer), page);
+            }
+            $(pageContainer).find("[data-control_field][data-control_value]").each(function() {
+                PropertyEditor.Util.unbindDynamicOptionsEvent($(this), page);
+            });
+            $(pageContainer).find("[data-required_control_field][data-required_control_value]").each(function() {
+                PropertyEditor.Util.unbindDynamicRequiredEvent($(this), page);
+            });
+        }
+    },
     handleDynamicOptionsField: function(page) {
         if (page !== null && page !== undefined) {
             var pageContainer = $(page.editor).find("#" + page.id);
@@ -506,7 +520,29 @@ PropertyEditor.Util = {
             });
         }
     },
+    unbindDynamicOptionsEvent: function(element, page) {
+        var control_id = element.data("control_id");
+        var control_field = element.data("control_field");
+        
+        var field = null;
+        if (page.editorObject !== undefined) {
+            var fields = page.editorObject.fields;
+            if (page.parentId !== "" && page.parentId !== undefined) {
+                var parentId = page.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            field = fields[control_field];
+        } else if (page[control_field] !== undefined) {
+            field = page[control_field];
+        }
+        if (field !== null && field !== undefined) {
+            $(field.editor).off("change."+control_id);
+        }
+    },
     bindDynamicOptionsEvent: function(element, page) {
+        var control_id = element.data("control_id");
         var control_field = element.data("control_field");
         var controlVal = String(element.data("control_value"));
         var isRegex = element.data("control_use_regex");
@@ -525,7 +561,7 @@ PropertyEditor.Util = {
             field = page[control_field];
         }
         if (field !== null && field !== undefined) {
-            $(field.editor).on("change", "[name=\"" + field.id + "\"]", function() {
+            $(field.editor).on("change."+control_id, "[name=\"" + field.id + "\"]", function() {
                 var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
                 if (match) {
                     element.show();
@@ -584,7 +620,29 @@ PropertyEditor.Util = {
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
         }
     },
+    unbindDynamicRequiredEvent: function(element, page) {
+        var control_id = element.data("required_control_id");
+        var control_field = element.data("required_control_field");
+        
+        var field = null;
+        if (page.editorObject !== undefined) {
+            var fields = page.editorObject.fields;
+            if (page.parentId !== "" && page.parentId !== undefined) {
+                var parentId = page.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            field = fields[control_field];
+        } else if (page[control_field] !== undefined) {
+            field = page[control_field];
+        }
+        if (field !== null && field !== undefined) {
+            $(field.editor).off("change."+control_id);
+        }
+    },
     bindDynamicRequiredEvent: function(element, page) {
+        var control_id = element.data("required_control_id");
         var control_field = element.data("required_control_field");
         var controlVal = String(element.data("required_control_value"));
         var isRegex = element.data("required_control_use_regex");
@@ -603,7 +661,7 @@ PropertyEditor.Util = {
             field = page[control_field];
         }
         if (field !== null && field !== undefined) {
-            $(field.editor).on("change", "[name=\"" + field.id + "\"]", function() {
+            $(field.editor).on("change."+control_id, "[name=\"" + field.id + "\"]", function() {
                 var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
                 if (match) {
                     element.find(".property-required").show();
@@ -613,6 +671,9 @@ PropertyEditor.Util = {
             });
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
         }
+    },
+    unhandleOptionsField: function(field) {
+        $(field.editor).off("change."+field.id);
     },
     handleOptionsField: function(field, reference, ajax_url, on_change, mapping, method, extra) {
         if (field.properties.options_callback !== undefined && field.properties.options_callback !== null && field.properties.options_callback !== "" &&
@@ -651,7 +712,7 @@ PropertyEditor.Util = {
                 } else {
                     selector = "[name=\"" + fields[fieldId].id + "\"]";
                 }
-                $(field.editor).on("change", selector, function() {
+                $(field.editor).on("change."+field.id, selector, function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
                     field.handleAjaxOptions(field.properties.options, reference);
                 });
@@ -889,7 +950,7 @@ PropertyEditor.Util = {
             } else {
                 selector = "[name=\"" + fields[fieldId].id + "\"]";
             }
-            $(field.editor).on("change", selector, function() {
+            $(field.editor).on("change."+field.id, selector, function() {
                 PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
             });
         }
@@ -1737,7 +1798,7 @@ PropertyEditor.Model.Page.prototype = {
         var showHide = "";
         if (this.properties.control_field !== undefined && this.properties.control_field !== null &&
             this.properties.control_value !== undefined && this.properties.control_value !== null) {
-            showHide = 'data-control_field="' + this.properties.control_field + '" data-control_value="' + this.properties.control_value + '"';
+            showHide = 'data-control_id="'+this.id+'" data-control_field="' + this.properties.control_field + '" data-control_value="' + this.properties.control_value + '"';
 
             if (this.properties.control_use_regex !== undefined && this.properties.control_use_regex.toLowerCase() === "true") {
                 showHide += ' data-control_use_regex="true"';
@@ -1868,6 +1929,7 @@ PropertyEditor.Model.Page.prototype = {
     },
     remove: function() {
         var page = $(this.editor).find("#" + this.id);
+        PropertyEditor.Util.unhandleDynamicOptionsField(this);
 
         if (this.properties.properties !== undefined) {
             $.each(this.properties.properties, function(i, property) {
@@ -1984,7 +2046,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 var showHide = "";
 
                 if (button.control_field !== undefined && button.control_field !== null && button.control_value !== undefined && button.control_value !== null) {
-                    showHide = 'data-control_field="' + button.control_field + '" data-control_value="' + button.control_value + '"';
+                    showHide = 'data-control_id="'+page.id + '_' + button.name+'" data-control_field="' + button.control_field + '" data-control_value="' + button.control_value + '"';
 
                     if (button.control_use_regex !== undefined && button.control_use_regex.toLowerCase() === "true") {
                         showHide += ' data-control_use_regex="true"';
@@ -2446,7 +2508,7 @@ PropertyEditor.Model.Type.prototype = {
 
         if (this.properties.control_field !== undefined && this.properties.control_field !== null &&
             this.properties.control_value !== undefined && this.properties.control_value !== null) {
-            showHide = 'data-control_field="' + this.properties.control_field + '" data-control_value="' + this.properties.control_value + '"';
+            showHide = 'data-control_id="'+this.id+'" data-control_field="' + this.properties.control_field + '" data-control_value="' + this.properties.control_value + '"';
 
             if (this.properties.control_use_regex !== undefined && this.properties.control_use_regex.toLowerCase() === "true") {
                 showHide += ' data-control_use_regex="true"';
@@ -2456,7 +2518,7 @@ PropertyEditor.Model.Type.prototype = {
         }
         if (this.properties.required_validation_control_field !== undefined && this.properties.required_validation_control_field !== null &&
             this.properties.required_validation_control_value !== undefined && this.properties.required_validation_control_value !== null) {
-            showHide += ' data-required_control_field="' + this.properties.required_validation_control_field + '" data-required_control_value="' + this.properties.required_validation_control_value + '"';
+            showHide += 'data-required_control_id="'+this.id+'" data-required_control_field="' + this.properties.required_validation_control_field + '" data-required_control_value="' + this.properties.required_validation_control_value + '"';
 
             if (this.properties.required_validation_control_use_regex !== undefined && this.properties.required_validation_control_use_regex.toLowerCase() === "true") {
                 showHide += ' data-required_control_use_regex="true"';
@@ -2562,7 +2624,9 @@ PropertyEditor.Model.Type.prototype = {
         return $(".property_container_" + this.id + ":not(.hidden)").length === 0;
     },
     pageShown: function() {},
-    remove: function() {}
+    remove: function() {
+        PropertyEditor.Util.unhandleOptionsField(this);
+    }
 };
 
 PropertyEditor.Type.Header = function() {};
