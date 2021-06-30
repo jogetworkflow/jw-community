@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
+import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
@@ -48,6 +49,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getLayout(Map<String, Object> data) {
         if (isAjaxContent(data)) {
+            String alert = userview.getCurrent().getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY);
+            if (!alert.isEmpty()) {
+                data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(alert, StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
+            }
             return UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/ajaxlayout.ftl");
         } else {
             if ("true".equals(getPropertyString("horizontal_menu"))) {

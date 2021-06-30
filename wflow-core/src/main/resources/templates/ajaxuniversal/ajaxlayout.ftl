@@ -3,6 +3,7 @@
         ${menus!}"
     </div>
     <div id="ajaxtheme_loading_content">
+        ${userview_menu_alert!}
         ${content_inner_before!}
         ${content!}
         ${content_inner_after!}

@@ -235,9 +235,9 @@ AjaxComponent = {
                     
                     //if redirect url is not same with current userview page
                     if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                        AjaxComponent.call($("#content"), part[1], "GET", null, callback, errorCallback);
+                        AjaxComponent.call($("#content"), part[1], "GET", null);
                     } else {
-                        AjaxComponent.call(contentConatiner, part[1], "GET", null, callback, errorCallback);
+                        AjaxComponent.call(contentConatiner, part[1], "GET", null);
                     }
                     return;
                 }
