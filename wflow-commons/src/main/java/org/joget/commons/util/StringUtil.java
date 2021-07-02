@@ -232,7 +232,7 @@ public class StringUtil {
                         
                         String[] values = (String[]) result.get(key);
                         if (values != null) {
-                            List<String> temp = (ArrayList<String>) Arrays.asList(values);
+                            List<String> temp = new ArrayList<String>(Arrays.asList(values));
                             temp.add(value);
                             values = (String[]) temp.toArray(new String[0]);
                         } else {
