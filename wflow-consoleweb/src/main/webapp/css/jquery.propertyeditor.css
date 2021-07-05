@@ -853,9 +853,11 @@ td.error .chosen-container, td.error input {
 .repeater-row .inputs .property-editor-property.property-type-repeater,
 .repeater-row .inputs .property-editor-property.property-type-htmleditor,
 .repeater-row .inputs .property-editor-property.property-type-codeeditor,
+.repeater-row .inputs .property-editor-property.property-type-elementselect,
 .repeater-row .inputs .property-editor-property.property-type-elementmultiselect,
 .repeater-row .inputs .property-editor-property.property-type-custom{
     width: 100%;
+    margin-right: 0% !important;
 }
 .repeater-row .inputs .property-editor-property.property-type-header .property-input,
 .repeater-row .inputs .property-editor-property.property-type-sortableselect .property-input,
@@ -865,6 +867,7 @@ td.error .chosen-container, td.error input {
 .repeater-row .inputs .property-editor-property.property-type-repeater .property-input,
 .repeater-row .inputs .property-editor-property.property-type-htmleditor .property-input,
 .repeater-row .inputs .property-editor-property.property-type-codeeditor .property-input,
+.repeater-row .inputs .property-editor-property.property-type-elementselect .property-input,
 .repeater-row .inputs .property-editor-property.property-type-elementmultiselect .property-input,
 .repeater-row .inputs .property-editor-property.property-type-custom .property-input{
     width: 100%;
@@ -1415,6 +1418,7 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode > .property-editor-pages > .property-page-show.collapsed + .property-page-show:not(.collapsed) {
     margin-top: 15px;
 }
+.editor-panel-mode > .property-editor-pages > .property-page-hide + .property-page-show.collapsed,
 .editor-panel-mode > .property-editor-pages > .property-page-show.collapsed + .property-page-show.collapsed {
     margin-top: 3px;
 }
@@ -1485,8 +1489,10 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-page.collapsed .property-editor-property-container{
     display: none;
 }
+.editor-panel-mode .repeater-row .inputs .element-pages .property-editor-property,
 .editor-panel-mode .property-editor-property {
     padding: 0 15px;
+    margin-bottom: 15px;
 }
 .editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-label{
     padding: 0 0 2px;
@@ -1517,6 +1523,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     border:0px !important;
     box-shadow: 0px 0px 10px 2px rgb(0 0 0 / 20%);
     border-radius: 5px;
+}
+.editor-panel-mode .repeater-row > .inputs > .inputs-container > div > .element-pages {
+    margin: 15px 5px;
 }
 .editor-panel-mode .element-pages .element-pages{
     box-shadow: none;

@@ -7995,7 +7995,7 @@ PropertyEditor.Type.Repeater.prototype = {
         var fieldsHolder = {};
         
         var html = "";
-        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        var cId = thisObj.properties.name + "-" + ((new Date()).getTime());
         if (fields !== null && fields !== undefined) {
             $.each(fields, function(i, property) {
                 html += thisObj.renderProperty(i, cId, property, value, fieldsHolder);
@@ -8464,7 +8464,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             deferreds.push(this.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function() {
                 if (thisObj.pageOptions.propertiesDefinition !== undefined && thisObj.pageOptions.propertiesDefinition !== null) {
-                    var parentId = thisObj.properties.name;
+                    var parentId = thisObj.prefix + "_" + thisObj.properties.name;
                     var elementdata = ' elementid="' + thisObj.id + '" elementvalue="' + value + '"';
 
                     //check if the element has a parent element
@@ -8920,7 +8920,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             deferreds.push(thisObj.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function() {
                 if (!((typeof $(row).data("propertiesDefinition")) === "undefined") && $(row).data("propertiesDefinition") !== null) {
-                    var parentId = thisObj.properties.name;
+                    var parentId = thisObj.prefix + "_" + thisObj.properties.name;
                     var elementdata = ' elementid="' + id + '" elementvalue="' + value + '"';
 
                     //check if the element has a parent element
