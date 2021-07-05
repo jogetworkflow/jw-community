@@ -167,7 +167,7 @@ AjaxComponent = {
     /*
      * Ajax call to retrieve the component html
      */
-    call : function(element, url, method, formData) {
+    call : function(element, url, method, formData, customCallback, customErrorCallback) {
         if (url.indexOf("?") === 0) {
             var currentUrl = window.location.href;
             if (currentUrl.indexOf("?") > 0) {
@@ -252,6 +252,9 @@ AjaxComponent = {
                 } else {
                     AjaxComponent.callback(contentConatiner, data, url);
                 }
+                if (customCallback){
+                    customCallback();
+                }
                 $(contentConatiner).removeClass("ajaxloading");
                 $(contentConatiner).removeAttr("data-content-placeholder");
             }
@@ -261,6 +264,9 @@ AjaxComponent = {
                 AjaxUniversalTheme.errorCallback(error);
             } else {
                 AjaxComponent.errorCallback(element, error);
+            }
+            if (customErrorCallback){
+                customErrorCallback();
             }
             $(contentConatiner).removeClass("ajaxloading");
             $(contentConatiner).removeAttr("data-content-placeholder");
