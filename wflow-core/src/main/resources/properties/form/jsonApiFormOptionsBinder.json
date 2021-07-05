@@ -1,5 +1,5 @@
 [{
-    "title" : "@@datalist.jsonapibinder.config@@",
+    "title" : "@@form.jsonapibinder.load.config@@",
     "properties" : [{
         "name" : "jsonUrl",
         "label" : "@@app.jsontool.jsonUrl@@",
@@ -101,21 +101,28 @@
         "type" : "textfield"
     },
     {
-        "name" : "totalRowCountObject",
-        "label" : "@@datalist.jsonapibinder.totalRowCountObject@@",
-        "type" : "textfield"
-    },
-    {
-        "name" : "primaryKey",
-        "label" : "@@datalist.jsonapibinder.primaryKey@@",
+        "name" : "idColumn",
+        "label" : "@@form.defaultformoptionbinder.idColumn@@",
         "type" : "textfield",
-        "value" : "id",        
         "required" : "True"
     },
     {
-        "name" : "handlePaging",
-        "label" : "@@datalist.jsonapibinder.autoHandlePagingAndSorting@@",
+        "name" : "labelColumn",
+        "label" : "@@form.defaultformoptionbinder.labelColumn@@",
+        "type" : "textfield",
+        "required" : "True"
+    },
+    {
+        "name" : "groupingColumn",
+        "label" : "@@form.defaultformoptionbinder.groupingColumn@@",
+        "type" : "textfield"
+    }
+    %s,
+    {
+        "name" : "addEmptyOption",
+        "label" : "@@form.defaultformoptionbinder.addEmptyOption@@",
         "type" : "checkbox",
+        "value" : "false",
         "options" : [{
             "value" : "true",
             "label" : ""

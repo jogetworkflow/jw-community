@@ -1,5 +1,5 @@
 [{
-    "title" : "@@datalist.jsonapibinder.config@@",
+    "title" : "@@form.jsonapibinder.load.config@@",
     "properties" : [{
         "name" : "jsonUrl",
         "label" : "@@app.jsontool.jsonUrl@@",
@@ -101,25 +101,38 @@
         "type" : "textfield"
     },
     {
-        "name" : "totalRowCountObject",
-        "label" : "@@datalist.jsonapibinder.totalRowCountObject@@",
-        "type" : "textfield"
-    },
-    {
         "name" : "primaryKey",
         "label" : "@@datalist.jsonapibinder.primaryKey@@",
         "type" : "textfield",
         "value" : "id",        
-        "required" : "True"
+        "required" : "true"
     },
     {
-        "name" : "handlePaging",
-        "label" : "@@datalist.jsonapibinder.autoHandlePagingAndSorting@@",
+        "name" : "manualFieldMapping",
+        "label" : "@@form.jsonapibinder.load.manualFieldMapping@@",
         "type" : "checkbox",
         "options" : [{
             "value" : "true",
             "label" : ""
         }]
+    },
+    {
+        "name" : "fieldMapping",
+        "label" : "@@app.jsontool.fieldMapping@@",
+        "type" : "grid",
+        "columns" : [{
+            "key" : "field",
+            "label" : "@@app.jsontool.fieldName@@",
+            "options_callback" : "FormBuilder.getFieldOptions"
+        },
+        {
+            "key" : "jsonObjectName",
+            "label" : "@@app.jsontool.jsonObjectName@@"
+        }],
+        "control_field": "manualFieldMapping",
+        "control_value": "true",
+        "control_use_regex": "false",
+        "required": "true"
     },
     {
         "name" : "debugMode",

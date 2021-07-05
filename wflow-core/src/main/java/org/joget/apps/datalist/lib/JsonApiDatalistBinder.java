@@ -1,32 +1,14 @@
 package org.joget.apps.datalist.lib;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.JsonApiUtil;
 import org.joget.apps.datalist.model.DataList;
 import static org.joget.apps.datalist.model.DataList.CHECKBOX_POSITION_BOTH;
 import static org.joget.apps.datalist.model.DataList.CHECKBOX_POSITION_LEFT;
@@ -35,12 +17,8 @@ import org.joget.apps.datalist.model.DataListBinderDefault;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
-import org.joget.apps.datalist.model.DataListQueryParam;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagingUtils;
-import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.workflow.util.WorkflowUtil;
-import org.json.JSONObject;
 
 public class JsonApiDatalistBinder extends DataListBinderDefault {
     
@@ -225,7 +203,7 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             count = getJsonApiData(dataList).size();
         } else {
             Map<String,Object> results = call(dataList);
-            Object c = getObjectFromMap(getPropertyString("totalRowCountObject"), results);
+            Object c = JsonApiUtil.getObjectFromMap(getPropertyString("totalRowCountObject"), results);
             
             try {
                 count = Integer.parseInt(c.toString());
@@ -237,178 +215,23 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
         return count;
     }
     
-    protected Object getObjectFromMap(String key, Map object) {
-        if (key.contains(".")) {
-            String subKey = key.substring(key.indexOf(".") + 1);
-            key = key.substring(0, key.indexOf("."));
-
-            Map tempObject = (Map) getObjectFromMap(key, object);
-
-            if (tempObject != null) {
-                return getObjectFromMap(subKey, tempObject);
-            }
-        } else {
-            if (key.contains("[") && key.contains("]")) {
-                String tempKey = key.substring(0, key.indexOf("["));
-                int number = Integer.parseInt(key.substring(key.indexOf("[") + 1, key.indexOf("]")));
-                Object tempObjectArray[] = (Object[]) object.get(tempKey);
-                if (tempObjectArray != null && tempObjectArray.length > number) {
-                    return tempObjectArray[number];
-                }
-            } else {
-                return object.get(key);
-            }
-        }
-        return null;
-    }
-    
     protected Map<String,Object> call(DataList dataList) {
         Map<String,Object> result = null;
         if (!getProperties().containsKey("jsonResult")) {
-            DataListQueryParam param = null;
+            Map<String, String> params = null;
             if (dataList != null) {
-                param = getQueryParam(dataList);
+                params = getQueryParam(dataList);
             }
-        
-            String jsonUrl = replaceParam(getPropertyString("jsonUrl"), param);
-            CloseableHttpClient client = null;
-            HttpRequestBase request = null;
-
-            try {
-                HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-
-                HttpClientBuilder httpClientBuilder = HttpClients.custom();
-                URL urlObj = new URL(jsonUrl);
-
-                if ("https".equals(urlObj.getProtocol())) {
-                    SSLContextBuilder builder = new SSLContextBuilder();
-                    builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
-                    httpClientBuilder.setSSLSocketFactory(sslsf);
-                }
-
-                client = httpClientBuilder.build();
-
-                if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                    LogUtil.info(JsonApiDatalistBinder.class.getName(), ("post".equalsIgnoreCase(getPropertyString("requestType"))?"POST":"GET") + " : " + jsonUrl);
-                }
-
-                if ("post".equalsIgnoreCase(getPropertyString("requestType"))) {
-                    request = new HttpPost(jsonUrl);
-
-                    if ("jsonPayload".equals(getPropertyString("postMethod"))) {
-                        JSONObject obj = new JSONObject();
-                        Object[] paramsValues = (Object[]) getProperty("params");
-                        if (paramsValues != null) {
-                            for (Object o : paramsValues) {
-                                Map mapping = (HashMap) o;
-                                String name  = mapping.get("name").toString();
-                                String value = replaceParam(mapping.get("value").toString(), param);
-                                obj.accumulate(name, value);
-                            }
-                        }
-
-                        StringEntity requestEntity = new StringEntity(obj.toString(4), "UTF-8");
-                        ((HttpPost) request).setEntity(requestEntity);
-                        request.setHeader("Content-type", "application/json");
-                        if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                            LogUtil.info(JsonApiDatalistBinder.class.getName(), "JSON Payload : " + obj.toString(4));
-                        }
-                    } else if ("custom".equals(getPropertyString("postMethod"))) {
-                        StringEntity requestEntity = new StringEntity(replaceParam(getPropertyString("customPayload"), param), "UTF-8");
-                        ((HttpPost) request).setEntity(requestEntity);
-                        request.setHeader("Content-type", "application/json");
-                        if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                            LogUtil.info(JsonApiDatalistBinder.class.getName(), "Custom JSON Payload : " + getPropertyString("customPayload"));
-                        }
-                    } else {
-                        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-                        Object[] paramsValues = (Object[]) getProperty("params");
-                        if (paramsValues != null) {
-                            for (Object o : paramsValues) {
-                                Map mapping = (HashMap) o;
-                                String name  = mapping.get("name").toString();
-                                String value = replaceParam(mapping.get("value").toString(), param);
-                                urlParameters.add(new BasicNameValuePair(name, value));
-                                if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                                    LogUtil.info(JsonApiDatalistBinder.class.getName(), "Adding param " + name + " : " + value);
-                                }
-                            }
-                            ((HttpPost) request).setEntity(new UrlEncodedFormEntity(urlParameters, "UTF-8"));
-                        }
-                    }
-                } else {
-                    request = new HttpGet(jsonUrl);
-                }
-
-                Object[] paramsValues = (Object[]) getProperty("headers");
-                if (paramsValues != null) {
-                    for (Object o : paramsValues) {
-                        Map mapping = (HashMap) o;
-                        String name  = mapping.get("name").toString();
-                        String value = replaceParam(mapping.get("value").toString(), param);
-                        if (name != null && !name.isEmpty() && value != null && !value.isEmpty()) {
-                            request.setHeader(name, value);
-                            if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                                LogUtil.info(JsonApiDatalistBinder.class.getName(), "Adding request header " + name + " : " + value);
-                            }
-                        }
-                    }
-                }
-                request.setHeader("referer", httpRequest.getHeader("referer"));
-                if ("true".equalsIgnoreCase(getPropertyString("copyCookies"))) {
-                    request.setHeader("Cookie", httpRequest.getHeader("Cookie"));
-                }
-
-                HttpResponse response = client.execute(request);
-                if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                    LogUtil.info(JsonApiDatalistBinder.class.getName(), jsonUrl + " returned with status : " + response.getStatusLine().getStatusCode());
-                }
-
-                String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
-                if (jsonResponse != null && !jsonResponse.isEmpty()) {
-                    if (jsonResponse.startsWith("[") && jsonResponse.endsWith("]")) {
-                        jsonResponse = "{ \"response\" : " + jsonResponse + " }";
-                    }
-                    if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
-                        LogUtil.info(JsonApiDatalistBinder.class.getName(), jsonResponse);
-                    }
-                    result = PropertyUtil.getProperties(new JSONObject(jsonResponse));
-                }
-            } catch (Exception ex) {
-                LogUtil.error(getClass().getName(), ex, "");
-            } finally {
-                try {
-                    if (request != null) {
-                        request.releaseConnection();
-                    }
-                    if (client != null) {
-                        client.close();
-                    }
-                } catch (IOException ex) {
-                    LogUtil.error(getClass().getName(), ex, "");
-                }
-            }
-            if (result == null) {
-                result = new HashMap<String, Object>();
-                setProperty("jsonResult", result);
-            }
+            result = JsonApiUtil.callApi(getProperties(), params);
+            setProperty("jsonResult", result);
         } else {
             result = (Map<String,Object>) getProperty("jsonResult");
         }
         return result;
     }
     
-    protected String replaceParam(String content, DataListQueryParam param) {
-        content = content.replace("{sort}", (param != null && param.getSort() != null)?param.getSort():"");
-        content = content.replace("{desc}", (param != null && param.getDesc() != null)?param.getDesc().toString():"");
-        content = content.replace("{size}", (param != null && param.getSize() != null)?param.getSize().toString():"");
-        content = content.replace("{start}", (param != null && param.getStart() != null)?param.getStart().toString():"");
-        return content;
-    }
-    
-    protected DataListQueryParam getQueryParam(DataList dataList) {
-        DataListQueryParam param = new DataListQueryParam();
+    protected Map<String, String> getQueryParam(DataList dataList) {
+        Map<String, String> param = new HashMap<String, String>();
 
         String page = dataList.getDataListParamString(TableTagParameters.PARAMETER_PAGE);
         String order = dataList.getDataListParamString(TableTagParameters.PARAMETER_ORDER);
@@ -452,10 +275,10 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             desc = true;
         }
 
-        param.setSort(sortColumn);
-        param.setDesc(desc);
-        param.setSize(recordSize);
-        param.setStart(start);
+        param.put("sort", sortColumn);
+        param.put("desc", Boolean.toString(desc));
+        param.put("size", Integer.toString(recordSize));
+        param.put("start", Integer.toString(start));
 
         return param;
     }
