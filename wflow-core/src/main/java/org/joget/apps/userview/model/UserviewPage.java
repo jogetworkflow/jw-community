@@ -36,16 +36,46 @@ public class UserviewPage {
         return html;
     }
     
+    public PageComponent findComponent(String id) {
+        Collection<PageComponent> components = getPageComponents();
+        if (components == null) {
+            components = new ArrayList<PageComponent>();
+            components.add(menu);
+        }
+        PageComponent p = findComponent(id, components);
+        return p;
+    }
+    
+    protected PageComponent findComponent(String id, Collection<PageComponent> components) {
+        if (components != null) {
+            for (PageComponent c : components) {
+                if (id.equals("pc-" + c.getPropertyString("id")) || id.equals(c.getPropertyString("id")) || id.equals(c.getPropertyString("customId"))) {
+                    return c;
+                } else if (c.getChildren() != null && !c.getChildren().isEmpty()) {
+                    PageComponent temp = findComponent(id, c.getChildren());
+                    if (temp != null) {
+                        return temp;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
     public String renderComponent(String id, Collection<PageComponent> components) {
         String html = "";
         
         if (components == null) {
             components = getPageComponents();
+            if (components == null) {
+                components = new ArrayList<PageComponent>();
+                components.add(menu);
+            }
         }
         
         if (components != null) {
             for (PageComponent c : components) {
-                if (id.equals("pc-" + c.getPropertyString("id")) || id.equals(c.getPropertyString("customId"))) {
+                if (id.equals("pc-" + c.getPropertyString("id")) || id.equals(c.getPropertyString("id")) || id.equals(c.getPropertyString("customId"))) {
                     html += c.render();
                     
                     if (c instanceof UserviewMenu) {
