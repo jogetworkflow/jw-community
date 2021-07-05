@@ -72,6 +72,8 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.form.dao.FormDataDaoImpl;
@@ -1441,7 +1443,14 @@ public class AppDevUtil {
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
                 String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                if (concatAppDef.contains(pluginClassName)) {
+                String pluginMatch;
+                if (plugin instanceof DefaultHashVariablePlugin) {
+                    HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
+                    pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
+                } else {
+                    pluginMatch = pluginClassName;
+                }
+                if (concatAppDef.contains(pluginMatch)) {
                     // plugin used, copy
                     String path = pluginManager.getOsgiPluginPath(pluginClassName);
                     if (path != null) {
@@ -1793,7 +1802,14 @@ public class AppDevUtil {
                 // look for plugins used in any definition file
                 for (Plugin plugin: pluginList) {
                     String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                    if (concatAppDef.contains(pluginClassName)) {
+                    String pluginMatch;
+                    if (plugin instanceof DefaultHashVariablePlugin) {
+                        HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
+                        pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
+                    } else {
+                        pluginMatch = pluginClassName;
+                    }
+                    if (concatAppDef.contains(pluginMatch)) {
                         // plugin used, copy
                         String path = pluginManager.getOsgiPluginPath(pluginClassName);
                         if (path != null) {
@@ -1900,7 +1916,14 @@ public class AppDevUtil {
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
                 String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                if (concatAppDef.contains(pluginClassName)) {
+                String pluginMatch;
+                if (plugin instanceof DefaultHashVariablePlugin) {
+                    HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
+                    pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
+                } else {
+                    pluginMatch = pluginClassName;
+                }
+                if (concatAppDef.contains(pluginMatch)) {
                     // plugin used, copy
                     String path = pluginManager.getOsgiPluginPath(pluginClassName);
                     if (path != null) {
@@ -1909,7 +1932,7 @@ public class AppDevUtil {
                             plugins.add(src.getName());
                         }
                     }
-                }                
+                }
             }
         }
         return plugins;
