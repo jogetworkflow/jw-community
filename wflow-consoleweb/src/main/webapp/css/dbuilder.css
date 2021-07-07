@@ -1,6 +1,6 @@
 body{
     overflow: visible;
-    width: auto;
+    width: min-content;
 }
 .dataList table {
     width: 100%;
