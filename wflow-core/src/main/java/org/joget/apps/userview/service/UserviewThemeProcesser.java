@@ -143,6 +143,7 @@ public class UserviewThemeProcesser {
         }
         
         Map<String, Object> data = new HashMap<String, Object>();
+        data.put("processor", this);
         data.put("params", userview.getParams());
         data.put("userview", userview);
         data.put("appId", userview.getParamString("appId"));
@@ -230,8 +231,20 @@ public class UserviewThemeProcesser {
         return getLayout(data);
     }
 
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+    
     public String getRedirectUrl() {
         return redirectUrl;
+    }
+    
+    public void setAlertMessage(String alertMessage) {
+        this.alertMessage = alertMessage;
+    }
+    
+    public String getAlertMessage() {
+        return alertMessage;
     }
 
     protected String mobileViewRedirection() {
@@ -747,6 +760,10 @@ public class UserviewThemeProcesser {
                 return handleMenuResponse;
             } else if (redirectUrl != null) {
                 return "<script>location.href = \""+redirectUrl+"\";</script>";
+            }
+            
+            if (alertMessage != null && !alertMessage.isEmpty()) {
+                html = "<script>alert(\"" + StringUtil.escapeString(alertMessage, StringUtil.TYPE_JAVASCIPT, null) + "\");</script>" + html;
             }
         }
         

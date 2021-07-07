@@ -183,6 +183,11 @@ AjaxComponent = {
             $("body").trigger("click.sidebar-toggled");
         }
         
+        if (!AjaxComponent.isCurrentUserviewUrl(url)) {
+            window.top.location.href = url;
+            return;
+        }
+        
         var isAjaxComponent = false;
         if (method === "POST") {
             url = UrlUtil.updateUrlParam(url, ConnectionManager.tokenName, ConnectionManager.tokenValue);
@@ -235,7 +240,9 @@ AjaxComponent = {
                     //handle userview redirection with alert
                     if (data.indexOf("<div>") === -1) {
                         var part = AjaxComponent.getMsgAndRedirectUrl(data.substring(data.indexOf("alert")));
-                        alert(part[0]);
+                        if (part[0] !== "") {
+                            alert(part[0]);
+                        }
 
                         //if redirect url is not same with current userview page
                         if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
@@ -503,8 +510,10 @@ AjaxComponent = {
                 }
                 
                 //remove userview key and menu id to compare
+                currentPath = currentPath.replace("/web/embed", "/web");
                 currentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
                 currentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+                url = url.replace("/web/embed", "/web");
                 url = url.substring(0, url.lastIndexOf("/"));
                 url = url.substring(0, url.lastIndexOf("/"));
                 
@@ -550,8 +559,11 @@ AjaxComponent = {
      */
     getMsgAndRedirectUrl : function(content) {
         var part = content.indexOf(".location") > 0?content.split(".location"):content.split("location.");
-        var msg = part[0].match(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g)[0];
-        msg = msg.substring(1, msg.length - 1);
+        var msg = "";
+        if (content.indexOf("alert") !== -1) {
+            msg = part[0].match(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g)[0];
+            msg = msg.substring(1, msg.length - 1);
+        }
         var url = part[1].match(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g)[0];
         url = url.substring(1, url.length - 1);
         

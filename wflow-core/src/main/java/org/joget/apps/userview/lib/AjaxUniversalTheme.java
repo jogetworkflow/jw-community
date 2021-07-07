@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
-import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
@@ -49,9 +49,13 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getLayout(Map<String, Object> data) {
         if (isAjaxContent(data)) {
-            String alert = userview.getCurrent().getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY);
-            if (!alert.isEmpty()) {
-                data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(alert, StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
+            UserviewThemeProcesser processor = (UserviewThemeProcesser) data.get("processor");
+            if (processor.getAlertMessage() != null && !processor.getAlertMessage().isEmpty()) {
+                data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
+            }
+            if (processor.getRedirectUrl() != null && !processor.getRedirectUrl().isEmpty() && !isCurrentUserviewUrl(processor.getRedirectUrl())) {
+                data.put("content", "<script>top.location.href = \""+processor.getRedirectUrl()+"\";</script>");
+                processor.setRedirectUrl(null);
             }
             return UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/ajaxlayout.ftl");
         } else {
@@ -215,7 +219,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     protected boolean isAjaxContent(Map<String, Object> data) {
         if (isAjaxContent == null) {
-            isAjaxContent = (data.get("embed") == null || !((Boolean) data.get("embed"))) && "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_loading"));
+            isAjaxContent = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_loading"));
         }
         return isAjaxContent;
     }
@@ -343,5 +347,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             script = "var ajaxContentPlaceholder = {" + script + "};";
         }
         return script;
+    }
+    
+    protected boolean isCurrentUserviewUrl(String url) {
+        return url.contains("/web/userview/"+userview.getParamString("appId")+"/"+userview.getParamString("userviewId"));
     }
 }
