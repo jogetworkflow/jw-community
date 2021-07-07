@@ -1284,6 +1284,8 @@ DatalistBuilder = {
         
         var index = ra.parent().find("> div").index(ra);
         
+        table.find('tbody tr td.row_action_container .row_action_inner > div').unwrap();
+        table.find('tbody tr td.row_action_container .row_action_inner').remove();
         table.find('tbody tr td.row_action_container [data-cbuilder-select="'+elementObj.id+'"]').remove();
         table.find("tbody tr").each(function(){
             var tr = $(this);
