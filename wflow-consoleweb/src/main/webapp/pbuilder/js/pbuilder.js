@@ -4317,7 +4317,10 @@ ProcessBuilder.Mapper = {
         var actId= "runProcess";
         var type = "start";
         var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
-
+        if (mapping !== null && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId + "::" + actId] !== undefined) {
+            mapping['modifier'] = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId + "::" + actId];
+        }
+        
         var cssClass = "type_"+type;
         $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="far fa-edit"></i></a>');
         $(".start").find(".edit_mapping").data("mapping", mapping);
