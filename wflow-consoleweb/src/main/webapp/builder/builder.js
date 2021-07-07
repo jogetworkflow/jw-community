@@ -2572,6 +2572,8 @@ _CustomBuilder.Builder = {
                                 <a id="parent-btn" href="" title="'+get_cbuilder_msg("cbuilder.selectParent")+'"><i class="las la-level-up-alt"></i></a> \
                                 <a id="up-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveUp")+'"><i class="la la-arrow-up"></i></a> \
                                 <a id="down-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveDown")+'"><i class="la la-arrow-down"></i></a> \
+                                <a id="left-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveLeft")+'"><i class="la la-arrow-left"></i></a> \
+                                <a id="right-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveRight")+'"><i class="la la-arrow-right"></i></a> \
                                 <span id="element-options"> \
                                     \
                                 </span>   \
@@ -2944,7 +2946,11 @@ _CustomBuilder.Builder = {
         if (component.builderTemplate.afterMoved)
             component.builderTemplate.afterMoved(self.selectedEl, elementObj, component);
         
-        self.selectNode(self.selectedEl);
+        if (self.subSelectedEl) {
+            self.selectNodeAndShowProperties(self.subSelectedEl, false, (!$("body").hasClass("no-right-panel")));
+        } else {
+            self.selectNodeAndShowProperties(self.selectedEl, false, (!$("body").hasClass("no-right-panel")));
+        }
 
         CustomBuilder.update();
         self.triggerChange();
@@ -3016,7 +3022,11 @@ _CustomBuilder.Builder = {
         if (component.builderTemplate.afterMoved)
             component.builderTemplate.afterMoved(self.selectedEl, elementObj, component);
         
-        self.selectNode(self.selectedEl);
+        if (self.subSelectedEl) {
+            self.selectNodeAndShowProperties(self.subSelectedEl, false, (!$("body").hasClass("no-right-panel")));
+        } else {
+            self.selectNodeAndShowProperties(self.selectedEl, false, (!$("body").hasClass("no-right-panel")));
+        }
 
         CustomBuilder.update();
         self.triggerChange();
@@ -3305,9 +3315,13 @@ _CustomBuilder.Builder = {
                         $("#paste-element-btn").removeClass("disabled");
                     }
                     
-                    $("#up-btn, #down-btn").hide();
+                    $("#up-btn, #down-btn, #left-btn, #right-btn").hide();
                     if (component.builderTemplate.isMovable(data, component)) {
-                        $("#up-btn, #down-btn").show();
+                        if ((!isSubSelect && $(self.selectedEl).closest('[data-cbuilder-sort-horizontal]').length > 0) || (isSubSelect && $(self.subSelectedEl).closest('[data-cbuilder-alternative-drop]').is('[data-cbuilder-sort-horizontal]'))) {
+                            $("#left-btn, #right-btn").show();
+                        } else {
+                            $("#up-btn, #down-btn").show();
+                        }
                     }
 
                     $("#delete-btn").hide();
@@ -3346,6 +3360,15 @@ _CustomBuilder.Builder = {
                     $("#element-select-box #element-select-name").css("top", "0px");
                 } else {
                     $("#element-select-box #element-select-name").css("top", "");
+                }
+                var right = offset.left + $("#element-select-box #element-select-name").width();
+                var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
+                if (right > frameRight) {
+                    $("#element-select-box #element-select-name").css("right", ($("#element-select-box #element-select-name").width() - box.width) + "px");
+                    $("#element-select-box #element-select-name").css("left", "unset");
+                } else {
+                    $("#element-select-box #element-select-name").css("right", "unset");
+                    $("#element-select-box #element-select-name").css("left", "-1px");
                 }
                 
                 $("#element-highlight-box").hide();
@@ -3828,16 +3851,16 @@ _CustomBuilder.Builder = {
     _initBox: function () {
         var self = this;
 
-        $("#down-btn").off("click");
-        $("#down-btn").on("click", function (event) {
+        $("#down-btn, #right-btn").off("click");
+        $("#down-btn, #right-btn").on("click", function (event) {
             $("#element-select-box").hide();
             self.moveNodeDown();
             event.preventDefault();
             return false;
         });
 
-        $("#up-btn").off("click");
-        $("#up-btn").on("click", function (event) {
+        $("#up-btn, #left-btn").off("click");
+        $("#up-btn, #left-btn").on("click", function (event) {
             $("#element-select-box").hide();
             self.moveNodeUp();
             event.preventDefault();
@@ -4291,7 +4314,11 @@ _CustomBuilder.Builder = {
 
             CustomBuilder.update();
         } else {
-            self.selectNode(self.selectedEl);
+            if (self.subSelectedEl) {
+                self.selectNode(self.subSelectedEl);
+            } else {
+                self.selectNode(self.selectedEl);
+            }
         }
     },
     
@@ -4436,7 +4463,11 @@ _CustomBuilder.Builder = {
             self.checkVisible(newParent);
             self.checkVisible(self.selectedEl);
             
-            self.selectNodeAndShowProperties(self.selectedEl, false, (!$("body").hasClass("no-right-panel")));
+            if (self.subSelectedEl) {
+                self.selectNodeAndShowProperties(self.subSelectedEl, false, (!$("body").hasClass("no-right-panel")));
+            } else {
+                self.selectNodeAndShowProperties(self.selectedEl, false, (!$("body").hasClass("no-right-panel")));
+            }
             
             self.triggerChange();
         }
