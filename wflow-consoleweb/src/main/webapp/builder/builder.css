@@ -1660,6 +1660,7 @@ body .ui-dialog {
     border-radius: 3px !important;
     box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
     z-index: 10001;
+    padding: 0 !important;
 }
 body .ui-dialog .ui-dialog-content {
     padding: 0 !important;
@@ -1680,16 +1681,11 @@ body .ui-button-text {
     display:none;
 }
 body .ui-dialog-titlebar-close{
-    top: 15px !important;
-    right: 10px !important;
-    border: 0 !important;
-    border-radius: 50% !important;
-    background: transparent !important;
-    display: block;
+    border:0 !important;
+    top: 25px !important;
+    right: 15px !important;
 }
-body .ui-dialog-titlebar-close:before {
-    display: none !important;
-}
+body .ui-dialog-titlebar-close,
 body .ui-icon-closethick{
     background: transparent !important;
     font-family: "Font Awesome 5 Free";
@@ -1707,9 +1703,11 @@ body .ui-icon-closethick{
     height: 20px !important;
     color:#ccc !important;
 }
+body .ui-dialog-titlebar-close:hover,
 body .ui-icon-closethick:hover {
     color: #aaa !important;
 }
+body .ui-dialog-titlebar-close:before,
 body .ui-icon-closethick:before{
     content: '\f00d';
 }
