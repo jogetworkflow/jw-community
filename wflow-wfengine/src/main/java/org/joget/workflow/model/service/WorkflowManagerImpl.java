@@ -1285,6 +1285,55 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         return workflowProcess;
     }
+    
+    /**
+     * Returns a processDefId of a running process by process instance ID.
+     * @param processId
+     * @return
+     */
+    public String getProcessDefId(String processId) {
+
+        SharkConnection sc = null;
+        WorkflowProcess workflowProcess = new WorkflowProcess();
+        try {
+            if (processId == null || processId.trim().length() == 0) {
+                return null;
+            }
+
+            sc = connect();
+
+            Shark shark = Shark.getInstance();
+            WfProcessIterator pi = sc.get_iterator_process();
+            ProcessFilterBuilder pieb = shark.getProcessFilterBuilder();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            WMFilter filter = new WMFilter();
+
+            if (processId != null && processId.trim().length() > 0) {
+                filter = pieb.addIdEquals(sessionHandle, processId);
+            }
+
+            pi.set_query_expression(pieb.toIteratorExpression(sessionHandle, filter));
+            WfProcess[] wfProcessList = pi.get_next_n_sequence(0);
+
+            if (wfProcessList.length > 0) {
+                WfProcess wfProcess = wfProcessList[0];
+                WfProcessMgr manager = wfProcess.manager();
+
+                return manager.name();
+            }
+        } catch (Exception ex) {
+
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns a list of running or completed activities for a process instance ID.
