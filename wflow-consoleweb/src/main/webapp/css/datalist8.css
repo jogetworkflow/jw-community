@@ -124,10 +124,10 @@
     -ms-user-select: none;
     user-select: none;
     border: 1px solid transparent;
-    padding: 10px 15px;
-    font-size: 13px !important;
-    line-height: 0.6;
-    border-radius: .25rem;
+    padding: .25rem .5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     color: #fff;
     background-color: var(--theme-button-bg, #007bff);
@@ -347,24 +347,6 @@ body.is-dragging .card-layout.card-layout-active table td[data-cbuilder-dragelem
     display: block;
     clear: both;
     float: none;
-}
-.rtl .dataList th.dataListAlignRight,
-.dataList th.dataListAlignLeft,
-.rtl .dataList td.dataListAlignRight,
-.dataList td.dataListAlignLeft {
-    text-align: left;
-}
-.rtl .dataList th.dataListAlignLeft,
-.dataList th.dataListAlignRight,
-.rtl .dataList td.dataListAlignLeft,
-.dataList td.dataListAlignRight {
-    text-align: right;
-}
-.rtl .dataList th.dataListAlignCenter,
-.dataList th.dataListAlignCenter,
-.rtl .dataList td.dataListAlignCenter,
-.dataList td.dataListAlignCenter {
-    text-align: center;
 }
 @media (max-width: 991px) {
     .card-layout.card-layout-active tr{
