@@ -193,6 +193,10 @@ header.navbar .dropdown-menu a span.time{
     height: 100%;
     padding-left: 55px;
 }
+.sidebar_brand #header-link > span {
+    max-height: 55px;
+    overflow: hidden;
+}
 
 /* side navigation */
 #navigation {
