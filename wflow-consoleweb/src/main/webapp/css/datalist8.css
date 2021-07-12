@@ -302,6 +302,9 @@ body.is-dragging .card-layout.card-layout-active table td[data-cbuilder-dragelem
     box-sizing: border-box;
     position: relative;
 }
+.card-layout.card-layout-active tr.empty{
+    width: 100%;
+}
 .card-layout.card-layout-active tr td.gap,
 .card-layout.card-layout-active thead{
     display: none !important;
