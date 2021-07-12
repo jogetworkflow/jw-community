@@ -4719,24 +4719,24 @@ _CustomBuilder.Builder = {
                         hoverDesktopStyle += getStyle(value, property, prefix+'style-hover-');
                     } else if (property.indexOf(prefix+'style-mobile-') === 0) {
                         var key = property.replace(prefix+'style-mobile-', '');
-                        mobileStyle += getStyle(value, property, prefix+'style-mobile-');
-                        
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-mobile-invisible", "");
+                        } else {
+                            mobileStyle += getStyle(value, property, prefix+'style-mobile-');
                         }
                     } else if (property.indexOf(prefix+'style-tablet-') === 0) {
                         var key = property.replace(prefix+'style-tablet-', '');
-                        tabletStyle += getStyle(value, property, prefix+'style-tablet-');
-                        
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-tablet-invisible", "");
+                        } else {
+                            tabletStyle += getStyle(value, property, prefix+'style-tablet-');
                         }
                     } else {
                         var key = property.replace(prefix+'style-', '');
-                        desktopStyle += getStyle(value, property, prefix+'style-');
-                        
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-desktop-invisible", "");
+                        } else {
+                            desktopStyle += getStyle(value, property, prefix+'style-');
                         }
                     }
                 }
@@ -5687,6 +5687,8 @@ _CustomBuilder.Builder = {
         
         if (prefix === undefined || prefix === null) {
             prefix = "";
+        } else if (prefix.indexOf("-", prefix.length - 1) === -1) {
+            prefix = prefix + "-";
         }
         if (title === undefined || title === null) {
             title = get_cbuilder_msg('style.styling');

@@ -942,15 +942,15 @@ UserviewBuilder = {
             var element = builder.frameBody.find("#page");
             var props = CustomBuilder.data.setting.properties.theme.properties;
             
-            builder.handleStylingProperties(element, props, "header", "header.navbar");
-            builder.handleStylingProperties(element, props, "welcome-message", "#welcomeMessage");
-            builder.handleStylingProperties(element, props, "sidebar", "#sidebar");
-            builder.handleStylingProperties(element, props, "categories", "#category-container");
-            builder.handleStylingProperties(element, props, "footer", "footer");
-            builder.handleStylingProperties(element, props, "breadcrumb", ".breadcrumb");
-            builder.handleStylingProperties(element, props, "brand-name", ".sidebar_brand #header-link");
-            builder.handleStylingProperties(element, props, "brand-logo", ".sidebar_brand .logo_container img");
-            builder.handleStylingProperties(element, props, "usermenu", "#navigation .user-menu > .mm-profile > a");
+            builder.handleStylingProperties(element.find("header.navbar"), props, "header", "header.navbar");
+            builder.handleStylingProperties(element.find("#welcomeMessage"), props, "welcome-message", "#welcomeMessage");
+            builder.handleStylingProperties(element.find("#sidebar"), props, "sidebar", "#sidebar");
+            builder.handleStylingProperties(element.find("#category-container"), props, "categories", "#category-container");
+            builder.handleStylingProperties(element.find("footer"), props, "footer", "footer");
+            builder.handleStylingProperties(element.find(".breadcrumb"), props, "breadcrumb", ".breadcrumb");
+            builder.handleStylingProperties(element.find(".sidebar_brand #header-link"), props, "brand-name", ".sidebar_brand #header-link");
+            builder.handleStylingProperties(element.find(".sidebar_brand .logo_container img"), props, "brand-logo", ".sidebar_brand .logo_container img");
+            builder.handleStylingProperties(element.find("#navigation .user-menu > .mm-profile > a"), props, "usermenu", "#navigation .user-menu > .mm-profile > a");
             
             element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
             if (props.dx8background !== undefined) {
