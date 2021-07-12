@@ -490,6 +490,7 @@ UserviewBuilder = {
      * Save properties from properties view
      */
     saveBuilderProperties : function(container, properties) {
+        properties.theme.properties = $.extend(CustomBuilder.data.setting.properties.theme.properties, properties.theme.properties);
         $.extend(CustomBuilder.data.setting.properties, properties);
         CustomBuilder.update();
         
