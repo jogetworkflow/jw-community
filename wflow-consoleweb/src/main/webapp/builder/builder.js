@@ -3264,6 +3264,7 @@ _CustomBuilder.Builder = {
         var isSubSelect = false;
         if ($(node).is('[data-cbuilder-subelement]')) {
             target = $(node).parent().closest("[data-cbuilder-classname]");
+            node = $(target);
         }
         if ($(node).is('[data-cbuilder-select]')) {
             var id = $(node).data('cbuilder-select');
