@@ -253,6 +253,7 @@ public class UserviewService {
                 LogUtil.debug(getClass().getName(), "set permission error.");
             }
             userview.setSetting(setting);
+            userview.setPermissionKey(permissionKey);
 
             //set categories
             Collection<UserviewCategory> categories = new ArrayList<UserviewCategory>();

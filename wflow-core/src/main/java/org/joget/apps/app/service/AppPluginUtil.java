@@ -1,6 +1,7 @@
 package org.joget.apps.app.service;
 
 import bsh.Interpreter;
+import com.google.gson.Gson;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -246,6 +247,106 @@ public class AppPluginUtil implements ApplicationContextAware {
         } catch (Exception e) {
             LogUtil.error(AppPluginUtil.class.getName(), e, "Error executing script");
             return null;
+        }
+    }
+    
+    public static Map<String, String> generateAttrAndStyles(Map<String, Object> properties, String prefix) {
+        Map<String, String> result = new HashMap<String, String>();
+        
+        String desktopStyle = "";
+        String tabletStyle = "";
+        String mobileStyle = "";
+        String hoverDesktopStyle = "";
+        String hoverTabletStyle = "";
+        String hoverMobileStyle = "";
+        String cssClass = "";
+        String attr = ""; 
+        
+        if (prefix == null) {
+            prefix = ""; 
+        }
+        
+        for (String key : properties.keySet()) {
+            if ((key.startsWith(prefix+"css-") 
+                        || key.startsWith(prefix+"attr-")
+                        || key.startsWith(prefix+"style-hover-mobile-")
+                        || key.startsWith(prefix+"style-hover-tablet-")
+                        || key.startsWith(prefix+"style-hover-")
+                        || key.startsWith(prefix+"style-mobile-")
+                        || key.startsWith(prefix+"style-tablet-")
+                        || key.startsWith(prefix+"style-"))
+                     && !properties.get(key).toString().isEmpty()) {
+                
+                String value = "";
+                if (!(properties.get(key) instanceof String)) {
+                    //to support userview ajax event
+                    try {
+                        Gson gson = new Gson();
+                        value = gson.toJson(properties.get(key));
+                    } catch (Exception e) {
+                        LogUtil.error(AppPluginUtil.class.getName(), e, "");
+                    }
+                    if (value.equals("[]") || value.equals("{}")) {
+                        continue;
+                    }
+                } else {
+                    value =  properties.get(key).toString();
+                }
+                if (key.contains("style") && key.endsWith("-background-image")) {
+                    value = "url('"+value+"')";
+                }
+
+                if (key.startsWith(prefix+"css-")) {
+                    if (!value.equalsIgnoreCase("true")) {
+                        cssClass += " " + value;
+                    } else {
+                        cssClass += " " + key.replace(prefix+"css-", "");
+                    }
+                } else if (key.startsWith(prefix+"attr-")) {
+                    attr += " " + key.replace(prefix+"attr-", "") + "=\"" + value.replaceAll("\"", "\\\"") + "\"";
+                } else if (key.startsWith(prefix+"style-hover-mobile-")) {
+                    hoverMobileStyle += generateStyle(value, key, prefix+"style-hover-mobile-");
+                } else if (key.startsWith(prefix+"style-hover-tablet-")) {
+                    hoverTabletStyle += generateStyle(value, key, prefix+"style-hover-tablet-");
+                } else if (key.startsWith(prefix+"style-hover-")) {
+                    hoverDesktopStyle += generateStyle(value, key, prefix+"style-hover-");
+                } else if (key.startsWith(prefix+"style-mobile-")) {
+                    mobileStyle += generateStyle(value, key, prefix+"style-mobile-");
+                } else if (key.startsWith(prefix+"style-tablet-")) {
+                    tabletStyle += generateStyle(value, key, prefix+"style-tablet-");
+                } else if (key.startsWith(prefix+"style-")) {
+                    desktopStyle += generateStyle(value, key, prefix+"style-");
+                }
+            }
+        }
+        
+        result.put("desktopStyle", desktopStyle);
+        result.put("tabletStyle", tabletStyle);
+        result.put("mobileStyle", mobileStyle);
+        result.put("hoverDesktopStyle", hoverDesktopStyle);
+        result.put("hoverTabletStyle", hoverTabletStyle);
+        result.put("hoverMobileStyle", hoverMobileStyle);
+        result.put("cssClass", cssClass);
+        result.put("attr", attr);
+        
+        return result;
+    }
+    
+    protected static String generateStyle(String value, String key, String prefix) {
+        if (key.equals(prefix + "custom")) {
+            String[] values = value.split(";");
+            String temp = "";
+            for (String v : values) {
+                if (!v.isEmpty()) {
+                    if (!v.contains("!important")) {
+                        v += " !important";
+                    }
+                    temp += v + ";";
+                }
+            }
+            return temp;
+        } else {
+            return key.replace(prefix, "") + ":" + value + " !important;";
         }
     }
 }

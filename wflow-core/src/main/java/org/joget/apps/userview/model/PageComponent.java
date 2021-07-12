@@ -60,65 +60,18 @@ public abstract class PageComponent extends ExtElement {
             id = getPropertyString("customId");
         }
 
-        String desktopStyle = "";
-        String tabletStyle = "";
-        String mobileStyle = "";
-        String hoverDesktopStyle = "";
-        String hoverTabletStyle = "";
-        String hoverMobileStyle = "";
-        String cssClass = "";
-        String attr = ""; 
+        Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
+        
+        String desktopStyle = styles.get("desktopStyle");
+        String tabletStyle = styles.get("tabletStyle");
+        String mobileStyle = styles.get("mobileStyle");
+        String hoverDesktopStyle = styles.get("hoverDesktopStyle");
+        String hoverTabletStyle = styles.get("hoverTabletStyle");
+        String hoverMobileStyle = styles.get("hoverMobileStyle");
+        String cssClass = styles.get("cssClass");
+        String attr = styles.get("attr"); 
         
         cssClass += " " + getName().replaceAll(" ", "_");
-        
-        for (String key : getProperties().keySet()) {
-            if ((key.startsWith("css-") 
-                        || key.startsWith("attr-")
-                        || key.startsWith("style-hover-mobile-")
-                        || key.startsWith("style-hover-tablet-")
-                        || key.startsWith("style-hover-")
-                        || key.startsWith("style-mobile-")
-                        || key.startsWith("style-tablet-")
-                        || key.startsWith("style-"))
-                     && !getPropertyString(key).isEmpty()) {
-                    
-                String value = "";
-                if (!(getProperty(key) instanceof String)) {
-                    try {
-                        Gson gson = new Gson();
-                        value = gson.toJson(getProperty(key));
-                    } catch (Exception e) {
-                        LogUtil.error(getClassName(), e, "");
-                    }
-                    if (value.equals("[]") || value.equals("{}")) {
-                        continue;
-                    }
-                } else {
-                    value =  getPropertyString(key);
-                }
-                if (key.contains("style") && key.endsWith("-background-image")) {
-                    value = "url('"+value+"')";
-                }
-                
-                if (key.startsWith("css-")) {
-                    cssClass += " " + value;
-                } else if (key.startsWith("attr-")) {
-                    attr += " " + key.replace("attr-", "") + "=\"" + StringUtil.escapeString(value, StringUtil.TYPE_HTML, null) + "\"";
-                } else if (key.startsWith("style-hover-mobile-")) {
-                    hoverMobileStyle += key.replace("style-hover-mobile-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-hover-tablet-")) {
-                    hoverTabletStyle += key.replace("style-hover-tablet-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-hover-")) {
-                    hoverDesktopStyle += key.replace("style-hover-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-mobile-")) {
-                    mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-tablet-")) {
-                    tabletStyle += key.replace("style-tablet-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-")) {
-                    desktopStyle += key.replace("style-", "") + ":" + value + " !important;";
-                }
-            }
-        }
         
         String builderStyles = "";
         

@@ -9364,7 +9364,8 @@ PropertyEditor.Type.CssStyle.prototype = {
         "background-repeat" : {"field" : "background-repeat", "label" : get_peditor_msg("style.repeat")},
         "background-size" : {"field" : "background-size", "label" : get_peditor_msg("style.backgroundSize")},
         "background-position-x" : {"field" : "unit", "label" : get_peditor_msg("style.positionX")},
-        "background-position-y" : {"field" : "unit", "label" : get_peditor_msg("style.positionY")}
+        "background-position-y" : {"field" : "unit", "label" : get_peditor_msg("style.positionY")},
+        "custom" : {"field" : "custom", "label" : get_peditor_msg("style.custom")}
     },
     styleFields : {
         'display' : {
@@ -9501,6 +9502,10 @@ PropertyEditor.Type.CssStyle.prototype = {
                 {value : 'contain', label : get_peditor_msg("style.contain")},
                 {value : 'cover', label : get_peditor_msg("style.cover")}
             ]
+        },
+        'custom' : {
+            type : 'codeeditor',
+            "mode" : "text"
         }
     },
     getData: function(useDefault) {

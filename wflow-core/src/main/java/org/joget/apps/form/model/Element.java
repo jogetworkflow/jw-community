@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
@@ -274,82 +275,40 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     }
     
     public String decorateWithBuilderProperties(String html, FormData formData) {
-        String desktopStyle = "";
-        String tabletStyle = "";
-        String mobileStyle = "";
-        String hoverDesktopStyle = "";
-        String hoverTabletStyle = "";
-        String hoverMobileStyle = "";
-        String cssClass = "";
-        String attr = ""; 
-        
-        for (String key : getProperties().keySet()) {
-            if ((key.startsWith("css-") 
-                        || key.startsWith("attr-")
-                        || key.startsWith("style-hover-mobile-")
-                        || key.startsWith("style-hover-tablet-")
-                        || key.startsWith("style-hover-")
-                        || key.startsWith("style-mobile-")
-                        || key.startsWith("style-tablet-")
-                        || key.startsWith("style-"))
-                     && !getPropertyString(key).isEmpty()) {
-                    
-                String value = getPropertyString(key);
-                if (key.contains("style") && key.endsWith("-background-image")) {
-                    value = "url('"+value+"')";
-                }
-                
-                if (key.startsWith("css-")) {
-                    cssClass += " " + value;
-                } else if (key.startsWith("attr-")) {
-                    attr += " " + key.replace("attr-", "") + "=\"" + value + "\"";
-                } else if (key.startsWith("style-hover-mobile-")) {
-                    hoverMobileStyle += key.replace("style-hover-mobile-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-hover-tablet-")) {
-                    hoverTabletStyle += key.replace("style-hover-tablet-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-hover-")) {
-                    hoverDesktopStyle += key.replace("style-hover-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-mobile-")) {
-                    mobileStyle += key.replace("style-mobile-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-tablet-")) {
-                    tabletStyle += key.replace("style-tablet-", "") + ":" + value + " !important;";
-                } else if (key.startsWith("style-")) {
-                    desktopStyle += key.replace("style-", "") + ":" + value + " !important;";
-                }
-            }
-        }
+        Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
         
         String builderStyles = "";
+        String cssClass = styles.get("cssClass");
         
-        if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
+        if (!styles.get("desktopStyle").isEmpty() || !styles.get("tabletStyle").isEmpty() || !styles.get("mobileStyle").isEmpty()) {
             String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
             cssClass += " " + styleClass;
 
             builderStyles = "<style id=\""+styleClass+"\">";
-            if (!desktopStyle.isEmpty()) {
-                builderStyles += "." + styleClass + "{" + desktopStyle + "} ";
+            if (!styles.get("desktopStyle").isEmpty()) {
+                builderStyles += "." + styleClass + "{" + styles.get("desktopStyle") + "} ";
             }
-            if (!tabletStyle.isEmpty()) {
-                builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + tabletStyle + "}} ";
+            if (!styles.get("tabletStyle").isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + styles.get("tabletStyle") + "}} ";
             }
-            if (!mobileStyle.isEmpty()) {
-                builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + mobileStyle + "}} ";
+            if (!styles.get("mobileStyle").isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + styles.get("mobileStyle") + "}} ";
             }
-            if (!hoverDesktopStyle.isEmpty()) {
-                builderStyles += "." + styleClass + ":hover{" + hoverDesktopStyle + "} ";
+            if (!styles.get("hoverDesktopStyle").isEmpty()) {
+                builderStyles += "." + styleClass + ":hover{" + styles.get("hoverDesktopStyle") + "} ";
             }
-            if (!hoverTabletStyle.isEmpty()) {
-                builderStyles += "@media (max-width: 991px) {." + styleClass + ":hover{" + hoverTabletStyle + "}} ";
+            if (!styles.get("hoverTabletStyle").isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + ":hover{" + styles.get("hoverTabletStyle") + "}} ";
             }
-            if (!hoverMobileStyle.isEmpty()) {
-                builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + hoverMobileStyle + "}} ";
+            if (!styles.get("hoverMobileStyle").isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + styles.get("hoverMobileStyle")+ "}} ";
             }
             builderStyles += "</style>";
         }
         
-        if (!cssClass.isEmpty() || !attr.isEmpty()) {
+        if (!cssClass.isEmpty() || !styles.get("attr").isEmpty()) {
             int index = html.indexOf("class=");
-            html = html.substring(0, index) + attr + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
+            html = html.substring(0, index) + styles.get("attr") + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
         }
         
         if (!builderStyles.isEmpty()) {

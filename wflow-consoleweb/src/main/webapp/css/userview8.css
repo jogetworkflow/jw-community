@@ -1104,6 +1104,18 @@ form.form .btn {
     color: var(--theme-link-active, var(--theme-color4, #0f9aee));
 }
 
+/* columns */
+.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+@media (max-width: 767px) {
+    .container-fluid.mobile-stack-columns .col{
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 /* quick edit & analyzer */
 .quickEdit, #form-canvas .quickEdit{
     position: absolute;

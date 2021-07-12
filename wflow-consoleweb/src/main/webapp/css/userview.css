@@ -360,6 +360,19 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 .rowCount:before {content: "("; display: inline-block;}
 .rowCount:after {content: ")"; display: inline-block;}
 #jqueryDialogDiv {overflow: hidden;}
+
+/* columns */
+.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+@media (max-width: 767px) {
+    .container-fluid.mobile-stack-columns .col{
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }

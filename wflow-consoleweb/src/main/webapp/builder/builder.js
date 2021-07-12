@@ -3262,6 +3262,9 @@ _CustomBuilder.Builder = {
 
         var target = $(node);
         var isSubSelect = false;
+        if ($(node).is('[data-cbuilder-subelement]')) {
+            target = $(node).parent().closest("[data-cbuilder-classname]");
+        }
         if ($(node).is('[data-cbuilder-select]')) {
             var id = $(node).data('cbuilder-select');
             target = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
@@ -3701,6 +3704,9 @@ _CustomBuilder.Builder = {
             if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
                 target = $(event.target).closest("[data-cbuilder-select]");
             }
+            if ($(event.target).is("[data-cbuilder-subelement]")) {
+                target = $(event.target).parent().closest("[data-cbuilder-classname]");
+            }
             if ($(target).length > 0)
             {
                 try {
@@ -3787,6 +3793,9 @@ _CustomBuilder.Builder = {
             if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
                 target = $(event.target).closest("[data-cbuilder-select]");
             }
+            if ($(event.target).is("[data-cbuilder-subelement]")) {
+                target = $(event.target).parent().closest("[data-cbuilder-classname]");
+            }
             if ($(target).length > 0)
             {
                 event.stopPropagation();
@@ -3805,6 +3814,9 @@ _CustomBuilder.Builder = {
         
         if ($(event.target).closest('[data-cbuilder-select]').length > 0) {
             target = $(event.target).closest('[data-cbuilder-select]');
+        }
+        if ($(event.target).is("[data-cbuilder-subelement]")) {
+            target = $(event.target).parent().closest("[data-cbuilder-classname]");
         }
         
         if ($(target).length > 0 && !$(target).is(self.frameBody) && !$(target).is('[data-cbuilder-uneditable]')) {
@@ -4098,6 +4110,9 @@ _CustomBuilder.Builder = {
                 'getStylePropertiesDefinition' : function(elementObj, component) {
                     return this.stylePropertiesDefinition;
                 },
+                'updateProperties' : function(element, elementObj, component) {
+                    
+                },
                 'parentContainerAttr' : 'elements',  //the html attr to locate the container of its parent
                 'childsContainerAttr' : 'elements', //the html attr to locate the container of its childs
                 'parentDataHolder' : 'elements', //the data attr of its parent element to store the current element
@@ -4346,6 +4361,9 @@ _CustomBuilder.Builder = {
             if (self.component.properties !== undefined) {
                 properties = $.extend(true, properties, self.component.properties);
             }
+            if (self.component.builderTemplate.properties !== undefined) {
+                properties = $.extend(true, properties, self.component.builderTemplate.properties);
+            }
             
             var elementObj = {
                 className: classname,
@@ -4478,7 +4496,13 @@ _CustomBuilder.Builder = {
      */
     updateElement : function(elementObj, element, deferreds) {
         var self = CustomBuilder.Builder;
-        self.renderElement(elementObj, element,  self.parseDataToComponent(elementObj), true, deferreds, function(newElement){
+        
+        var component = self.parseDataToComponent(elementObj);
+        if (component.builderTemplate !== undefined && component.builderTemplate.updateProperties !== undefined) {
+            component.builderTemplate.updateProperties(element, elementObj, component);
+        }
+        
+        self.renderElement(elementObj, element, component, true, deferreds, function(newElement){
             if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
                 var level = $(element).data("cbuilder-node-level");
                 CustomBuilder.Builder.renderNodeAdditional(self.nodeAdditionalType, newElement, level);
@@ -4650,6 +4674,24 @@ _CustomBuilder.Builder = {
         var hoverTabletStyle = "";
         var hoverMobileStyle = "";
         
+        var getStyle = function(value, key, prefix) {
+            if (key === (prefix + "custom")) {
+                var values = value.split(";");
+                var temp = "";
+                for (var v in values) {
+                    if (values[v] !== "") {
+                        if (values[v].indexOf("!important") === -1) {
+                            values[v] += " !important";
+                        }
+                        temp += values[v] + ";";
+                    }
+                }
+                return temp;
+            } else {
+                return key.replace(prefix, "") + ":" + value + " !important;";
+            }
+        };
+        
         for (var property in properties) {
             if (properties.hasOwnProperty(property)) {
                 if (property.indexOf(prefix+'attr-') === 0) {
@@ -4670,31 +4712,28 @@ _CustomBuilder.Builder = {
                     }
                     
                     if (property.indexOf(prefix+'style-hover-mobile-') === 0) {
-                        var key = property.replace(prefix+'style-hover-mobile-', '');
-                        hoverMobileStyle += key + ":" + value + " !important;";
+                        hoverMobileStyle += getStyle(value, property, prefix+'style-hover-mobile-');
                     } else if (property.indexOf(prefix+'style-hover-tablet-') === 0) {
-                        var key = property.replace(prefix+'style-hover-tablet-', '');
-                        hoverTabletStyle += key + ":" + value + " !important;";
+                        hoverTabletStyle += getStyle(value, property, prefix+'style-hover-tablet-');
                     } else if (property.indexOf(prefix+'style-hover-') === 0) {
-                        var key = property.replace(prefix+'style-hover-', '');
-                        hoverDesktopStyle += key + ":" + value + " !important;";
+                        hoverDesktopStyle += getStyle(value, property, prefix+'style-hover-');
                     } else if (property.indexOf(prefix+'style-mobile-') === 0) {
                         var key = property.replace(prefix+'style-mobile-', '');
-                        mobileStyle += key + ":" + value + " !important;";
+                        mobileStyle += getStyle(value, property, prefix+'style-mobile-');
                         
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-mobile-invisible", "");
                         }
                     } else if (property.indexOf(prefix+'style-tablet-') === 0) {
                         var key = property.replace(prefix+'style-tablet-', '');
-                        tabletStyle += key + ":" + value + " !important;";
+                        tabletStyle += getStyle(value, property, prefix+'style-tablet-');
                         
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-tablet-invisible", "");
                         }
                     } else {
                         var key = property.replace(prefix+'style-', '');
-                        desktopStyle += key + ":" + value + " !important;";
+                        desktopStyle += getStyle(value, property, prefix+'style-');
                         
                         if (key === "display" && value === "none") {
                             element.attr("data-cbuilder-desktop-invisible", "");
@@ -4768,7 +4807,9 @@ _CustomBuilder.Builder = {
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
         if (!$(node).is('[data-cbuilder-uneditable]')) {
-            if ($(node).is('div, p') && $(node).html() === "") {
+            var temp = $('<div>'+$(node).html()+'</div>');
+            $(temp).find('style').remove();
+            if ($(node).is('div, p') && $(temp).html() === "") {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
                 var height = $(node).outerHeight();
@@ -5641,13 +5682,19 @@ _CustomBuilder.Builder = {
     /*
      * Used to prepare the base element styling properties
      */
-    stylePropertiesDefinition : function(prefix) {
+    stylePropertiesDefinition : function(prefix, title) {
         var self = CustomBuilder.Builder;
         
-        if (self.stylePropertiesDefinitionObj === undefined) {
-            self.stylePropertiesDefinitionObj = [
+        if (prefix === undefined || prefix === null) {
+            prefix = "";
+        }
+        if (title === undefined || title === null) {
+            title = get_cbuilder_msg('style.styling');
+        }
+        
+        return [
                 {
-                    title: get_cbuilder_msg('style.styling'),
+                    title: title,
                     properties:[
                         {
                             name : 'normalstyle',
@@ -5655,17 +5702,17 @@ _CustomBuilder.Builder = {
                             type : 'header'
                         },
                         {
-                            name : 'style',
+                            name : prefix+'style',
                             label : get_cbuilder_msg('style.styling.desktop'),
                             type : 'cssstyle'
                         },
                         {
-                            name : 'style-tablet',
+                            name : prefix+'style-tablet',
                             label : get_cbuilder_msg('style.styling.tablet'),
                             type : 'cssstyle'
                         },
                         {
-                            name : 'style-mobile',
+                            name : prefix+'style-mobile',
                             label : get_cbuilder_msg('style.styling.mobile'),
                             type : 'cssstyle'
                         },
@@ -5675,27 +5722,23 @@ _CustomBuilder.Builder = {
                             type : 'header'
                         },
                         {
-                            name : 'style-hover',
+                            name : prefix+'style-hover',
                             label : get_cbuilder_msg('style.styling.hover.desktop'),
                             type : 'cssstyle'
                         },
                         {
-                            name : 'style-hover-tablet',
+                            name : prefix+'style-hover-tablet',
                             label : get_cbuilder_msg('style.styling.hover.tablet'),
                             type : 'cssstyle'
                         },
                         {
-                            name : 'style-hover-mobile',
+                            name : prefix+'style-hover-mobile',
                             label : get_cbuilder_msg('style.styling.hover.mobile'),
                             type : 'cssstyle'
                         }
                     ]
                 }
             ];
-        }
-        
-        var styleProps = $.extend(true, [], self.stylePropertiesDefinitionObj);
-        return styleProps;
     },
     
     /*

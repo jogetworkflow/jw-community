@@ -13,6 +13,37 @@
                 "type" : "textfield",
                 "regex_validation" : "^[a-zA-Z0-9_]+$",
                 "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "columns",
+                "label" : "@@userview.page.columns@@",
+                "type" : "grid",
+                "columns" : [
+                    {
+                        "key" : "style-max-width",
+                        "label" : "@@userview.page.columnsClass@@"
+                    },
+                    {
+                        "key" : "style-tablet-max-width",
+                        "label" : "@@userview.page.columnsClass.tablet@@"
+                    },
+                    {
+                        "key" : "style-mobile-max-width",
+                        "label" : "@@userview.page.columnsClass.mobile@@"
+                    }
+                ]
+            },
+            {
+                "name" : "css-mobile-stack-columns",
+                "label" : "@@userview.page.columns.stackColumns@@",
+                "type" : "checkbox",
+                "value" : "true",
+                "options" : [
+                    {
+                        "value" : "true",
+                        "label" : ""
+                    }
+                ]
             }
         ]
     }

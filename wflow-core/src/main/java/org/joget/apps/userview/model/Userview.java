@@ -15,6 +15,7 @@ public class Userview extends Element {
     private UserviewCategory currentCategory;
     private Map<String, Object> params;
     private Map<String, String> contentPlaceholderRules = new LinkedHashMap();
+    private String permissionKey = Permission.DEFAULT;
 
     public Collection<UserviewCategory> getCategories() {
         return categories;
@@ -80,5 +81,13 @@ public class Userview extends Element {
     
     public Map<String, String> getContentPlaceholderRules() {
         return contentPlaceholderRules;
+    }
+
+    public String getPermissionKey() {
+        return permissionKey;
+    }
+
+    public void setPermissionKey(String permissionKey) {
+        this.permissionKey = permissionKey;
     }
 }

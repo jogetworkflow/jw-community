@@ -34,7 +34,7 @@ public class ColumnComponent extends SimplePageComponent implements HiddenPlugin
 
     @Override
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/"+getName()+".json", null, true, null);
+        return "[]";
     }
     
     @Override
@@ -49,11 +49,11 @@ public class ColumnComponent extends SimplePageComponent implements HiddenPlugin
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<div "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</div>";
+        return "<div "+attr+" id=\""+id+"\" class=\"col "+cssClass+"\">" + renderChildren() + style + "</div>";
     }
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<div data-cbuilder-elements></div>', 'parentContainerAttr' : 'columns'}";
+        return "{'html' : '<div class=\"col\" data-cbuilder-subelement data-cbuilder-elements></div>', 'parentContainerAttr' : 'columns'}";
     }
 }

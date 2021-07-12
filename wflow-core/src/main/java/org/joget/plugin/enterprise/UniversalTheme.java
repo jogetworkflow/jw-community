@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.InboxMenu;
@@ -451,41 +452,29 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         Set<String> keys = new HashSet<String>();
         keys.addAll(props.keySet());
         
-        String mobileCss = "";
-        String tabletCss = "";
-        String desktopCss = "";
-        
         if (!prefix.isEmpty()) {
             prefix += "-";
         }
         
-        for (String key : keys) {
-            if ((key.startsWith(prefix+"style-mobile-")
-                    || key.startsWith(prefix+"style-tablet-")
-                    || key.startsWith(prefix+"style-"))
-                 && !props.get(key).toString().isEmpty()) {
-                String value = props.get(key).toString();
-                if (key.contains("style") && key.endsWith("-background-image")) {
-                    value = "url('"+value+"')";
-                }
-
-                if (key.startsWith(prefix+"style-mobile-")) {
-                    mobileCss += key.replace(prefix+"style-mobile-", "") + ":" + value + " !important;";
-                } else if (key.startsWith(prefix+"style-tablet-")) {
-                    tabletCss += key.replace(prefix+"style-tablet-", "") + ":" + value + " !important;";
-                } else if (key.startsWith(prefix+"style-")) {
-                    desktopCss += key.replace(prefix+"style-", "") + ":" + value + " !important;";
-                }
-            }
+        Map<String, String> stylesProps = AppPluginUtil.generateAttrAndStyles(props, prefix);
+        
+        if (!stylesProps.get("desktopStyle").isEmpty()) {
+            styles.put("STYLE", styles.get("STYLE") + " " + cssClass + "{" + stylesProps.get("desktopStyle") + "}");
         }
-        if (!mobileCss.isEmpty()) {
-            styles.put("MOBILE_STYLE", styles.get("MOBILE_STYLE") + " " + cssClass + "{" + mobileCss + "}");
+        if (!stylesProps.get("tabletStyle").isEmpty()) {
+            styles.put("TABLET_STYLE", styles.get("TABLET_STYLE") + " " + cssClass + "{" + stylesProps.get("tabletStyle") + "}");
         }
-        if (!tabletCss.isEmpty()) {
-            styles.put("TABLET_STYLE", styles.get("TABLET_STYLE") + " " + cssClass + "{" + tabletCss + "}");
+        if (!stylesProps.get("mobileStyle").isEmpty()) {
+            styles.put("MOBILE_STYLE", styles.get("MOBILE_STYLE") + " " + cssClass + "{" + stylesProps.get("mobileStyle") + "}");
         }
-        if (!desktopCss.isEmpty()) {
-            styles.put("STYLE", styles.get("STYLE") + " " + cssClass + "{" + desktopCss + "}");
+        if (!stylesProps.get("hoverDesktopStyle").isEmpty()) {
+            styles.put("STYLE", styles.get("STYLE") + " " + cssClass + ":hover{" + stylesProps.get("hoverDesktopStyle") + "}");
+        }
+        if (!stylesProps.get("hoverTabletStyle").isEmpty()) {
+            styles.put("TABLET_STYLE", styles.get("TABLET_STYLE") + " " + cssClass + ":hover{" + stylesProps.get("hoverTabletStyle") + "}");
+        }
+        if (!stylesProps.get("hoverMobileStyle").isEmpty()) {
+            styles.put("MOBILE_STYLE", styles.get("MOBILE_STYLE") + " " + cssClass + ":hover{" + stylesProps.get("hoverMobileStyle") + "}");
         }
     }
 

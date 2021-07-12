@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.model.DatalistDefinition;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -799,71 +800,18 @@ public class JsonUtil {
     }
     
     public static void generateBuilderProperties(Map<String, Object> props, String[] prefixes) {
-        Set<String> keys = new HashSet<String>();
-        keys.addAll(props.keySet());
-        
         for (String prefix : prefixes) {
             String propKey = "BUILDER_GENERATED_" + prefix.toUpperCase().replace("-", "_");
-            props.put(propKey + "CSS", "");
-            props.put(propKey + "ATTR", "");
-            props.put(propKey + "MOBILE_STYLE", "");
-            props.put(propKey + "TABLET_STYLE", "");
-            props.put(propKey + "STYLE", "");
-            props.put(propKey + "HOVER_MOBILE_STYLE", "");
-            props.put(propKey + "HOVER_TABLET_STYLE", "");
-            props.put(propKey + "HOVER_STYLE", "");
-        }
-        
-        for (String key : keys) {
-            for (String prefix : prefixes) {
-                if ((key.startsWith(prefix+"css-") 
-                        || key.startsWith(prefix+"attr-")
-                        || key.startsWith(prefix+"style-hover-mobile-")
-                        || key.startsWith(prefix+"style-hover-tablet-")
-                        || key.startsWith(prefix+"style-hover-")
-                        || key.startsWith(prefix+"style-mobile-")
-                        || key.startsWith(prefix+"style-tablet-")
-                        || key.startsWith(prefix+"style-"))
-                     && !props.get(key).toString().isEmpty()) {
-                    String value = props.get(key).toString();
-                    if (key.contains("style") && key.endsWith("-background-image")) {
-                        value = "url('"+value+"')";
-                    }
-                    
-                    String propKey = "BUILDER_GENERATED_" + prefix.toUpperCase().replace("-", "_");
-                    if (key.startsWith(prefix+"css-")) {
-                        propKey += "CSS";
-                        value = " " + value;
-                    } else if (key.startsWith(prefix+"attr-")) {
-                        propKey += "ATTR";
-                        value = " " + key.replace(prefix+"attr-", "") + "=\"" + value + "\"";
-                    } else if (key.startsWith(prefix+"style-hover-mobile-")) {
-                        propKey += "HOVER_MOBILE_STYLE";
-                        value = key.replace(prefix+"style-hover-mobile-", "") + ":" + value + " !important;";
-                    } else if (key.startsWith(prefix+"style-hover-tablet-")) {
-                        propKey += "HOVER_TABLET_STYLE";
-                        value = key.replace(prefix+"style-hover-tablet-", "") + ":" + value + " !important;";
-                    } else if (key.startsWith(prefix+"style-hover-")) {
-                        propKey += "HOVER_STYLE";
-                        value = key.replace(prefix+"style-hover-", "") + ":" + value + " !important;";
-                    } else if (key.startsWith(prefix+"style-mobile-")) {
-                        propKey += "MOBILE_STYLE";
-                        value = key.replace(prefix+"style-mobile-", "") + ":" + value + " !important;";
-                    } else if (key.startsWith(prefix+"style-tablet-")) {
-                        propKey += "TABLET_STYLE";
-                        value = key.replace(prefix+"style-tablet-", "") + ":" + value + " !important;";
-                    } else if (key.startsWith(prefix+"style-")) {
-                        propKey += "STYLE";
-                        value = key.replace(prefix+"style-", "") + ":" + value + " !important;";
-                    }
-                    String currentValue = (String) props.get(propKey);
-                    if (currentValue == null) {
-                        currentValue = "";
-                    }
-                    currentValue += value;
-                    props.put(propKey, currentValue);
-                }
-            }
+            Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(props, prefix);
+            
+            props.put(propKey + "CSS", styles.get("cssClass"));
+            props.put(propKey + "ATTR", styles.get("attr"));
+            props.put(propKey + "MOBILE_STYLE", styles.get("mobileStyle"));
+            props.put(propKey + "TABLET_STYLE", styles.get("tabletStyle"));
+            props.put(propKey + "STYLE", styles.get("desktopStyle"));
+            props.put(propKey + "HOVER_MOBILE_STYLE", styles.get("hoverMobileStyle"));
+            props.put(propKey + "HOVER_TABLET_STYLE", styles.get("hoverTabletStyle"));
+            props.put(propKey + "HOVER_STYLE", styles.get("hoverDesktopStyle"));
         }
     }
 }

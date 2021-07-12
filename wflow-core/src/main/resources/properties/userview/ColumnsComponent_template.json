@@ -1,20 +1,81 @@
 {
-    "html" : "<div class=\"container-fluid\"><div class=\"row\" data-cbuilder-columns></div><div>", 
+    "html" : "<div class=\"container-fluid\"><div class=\"row\" data-cbuilder-columns></div></div>", 
     "childsContainerAttr" : "columns", 
     "elements" : [
         {
             "className" : "org.joget.apps.userview.lib.component.ColumnComponent",
             "properties" : {
-                "css-col" : "col"
             }
         },
         {
             "className" : "org.joget.apps.userview.lib.component.ColumnComponent",
             "properties" : {
-                "css-col" : "col"
             }
         }
     ],
+    "properties" : {
+        "columns" : [
+            {
+                "style-max-width" : ""
+            },
+            {
+                "style-max-width" : ""
+            }
+        ],
+        "css-mobile-stack-columns" : "true"
+    },
+    "getStylePropertiesDefinition" : function(elementObj, component) {
+        var styleProps = $.extend(true, [], this.stylePropertiesDefinition);
+        var propColumns = elementObj.properties.columns;
+        for (var i = 0; i < propColumns.length; i++) {
+            styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("col-"+i+"-", "@@org.joget.apps.userview.lib.component.ColumnComponent.pluginLabel@@ " + (i+1))[0]);
+        }
+        return styleProps;
+    },
+    "updateProperties" : function(element, elementObj, component) {
+        var propColumns = elementObj.properties.columns;
+        var columns = elementObj.elements;
+        var hasChange = false;
+        if (columns.length < propColumns.length) {
+            for (var i = columns.length -1; i < propColumns.length - 1; i++) {
+                elementObj.elements.push({
+                    "className" : "org.joget.apps.userview.lib.component.ColumnComponent",
+                    "properties" : {}
+                });
+            }
+            hasChange = true;
+        } else if (columns.length > propColumns.length) {
+            for (var i = columns.length -1; i > propColumns.length - 1; i--) {
+                elementObj.elements.splice(i);
+            }
+            hasChange = true;
+        }
+        for (var i = 0; i < propColumns.length; i++) {
+            if (propColumns[i]['style-max-width'] !== undefined && propColumns[i]['style-max-width'] !== "") {
+                elementObj.elements[i].properties['style-max-width'] = propColumns[i]['style-max-width'];
+                elementObj.elements[i].properties['style-flex'] = "0 0 " + propColumns[i]['style-max-width'];
+            }
+            if (propColumns[i]['style-tablet-max-width'] !== undefined && propColumns[i]['style-tablet-max-width'] !== "") {
+                elementObj.elements[i].properties['style-tablet-max-width'] = propColumns[i]['style-tablet-max-width'];
+                elementObj.elements[i].properties['style-tablet-flex'] = "0 0 " + propColumns[i]['style-tablet-max-width'];
+            }
+            if (propColumns[i]['style-mobile-max-width'] !== undefined && propColumns[i]['style-mobile-max-width'] !== "") {
+                elementObj.elements[i].properties['style-mobile-max-width'] = propColumns[i]['style-mobile-max-width'];
+                elementObj.elements[i].properties['style-mobile-flex'] = "0 0 " + propColumns[i]['style-mobile-max-width'];
+            }
+        }
+        var properties = elementObj.properties;
+        for (var property in properties) {
+            if (properties.hasOwnProperty(property)) {
+                for (var i = 0; i < propColumns.length; i++) {
+                    if (property.indexOf("col-"+i+"-") === 0) {
+                        elementObj.elements[i].properties[property.replace("col-"+i+"-", "")] = properties[property];
+                    }
+                }
+            }
+        }
+        CustomBuilder.Builder.editStyles(properties, element, elementObj, component);
+    },
     "selectNode" : function(element, elementObj, component) {
         $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="@@fbuilder.addColumn@@"><i class="las la-columns"></i></a>');
         
@@ -25,7 +86,6 @@
             var self = CustomBuilder.Builder;
             self.component = self.getComponent("org.joget.apps.userview.lib.component.ColumnComponent");
             var classname = self.component.className;
-            var properties = {"css-column" : "col"};
             var elements = [];
             if (self.component.properties !== undefined) {
                 properties = $.extend(true, properties, self.component.properties);
@@ -43,6 +103,10 @@
             var parent = self.selectedEl;
             var parentDataArray = $(parent).data("data").elements;
             parentDataArray.push(elementObj);
+            
+            $(parent).data("data").properties.columns.push({
+                "style-max-width" : ""
+            });
 
             var temp = $('<div></div>');
             self.selectedEl.find('> .row').append(temp);
