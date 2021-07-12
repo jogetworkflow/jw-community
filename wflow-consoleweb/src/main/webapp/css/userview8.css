@@ -622,7 +622,7 @@ body.horizontal_menu #header-info{
         display: none;
     }
     body.horizontal_menu header.navbar .container-fluid {
-        padding: 12px 10px 12px 20px;
+        padding: 10px 10px 6px 20px;
     }
     body.horizontal_menu #sidebar {
         width: 100vw;
@@ -645,6 +645,7 @@ body.horizontal_menu #header-info{
         min-width: 100px;
         margin-right: 20px;
         height: 46px;
+        line-height: 46px;
     }
     body.horizontal_menu.inline_menu #header-message {
         display: none;
