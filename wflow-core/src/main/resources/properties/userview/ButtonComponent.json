@@ -48,6 +48,11 @@
                 }]
             },
             {
+                "name" : "attr-onclick",
+                "label" : "@@userview.page.button.onclick@@",
+                "type" : "textarea"
+            },
+            {
                 "label" : "@@dbuilder.displayType@@",
                 "name"  : "css-display-type",
                 "type" : "selectbox",
