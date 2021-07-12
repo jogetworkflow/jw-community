@@ -879,6 +879,25 @@ DatalistBuilder = {
                                 }
                                 return false;
                             },
+                            'renderPermission' : function(detailsDiv, element, elementObj, component, callback) {
+                                var self = CustomBuilder.Builder;
+                        
+                                var props = elementObj;
+
+                                var permissionObj = props;
+                                var key = CustomBuilder.Builder.permissionRuleKey;
+                                if (key !== "default") {
+                                    if (props["permission_rules"] === undefined) {
+                                        props["permission_rules"] = {};
+                                    }
+                                    if (props["permission_rules"][key] === undefined) {
+                                        props["permission_rules"][key] = {};
+                                    }
+                                    permissionObj = props["permission_rules"][key];
+                                }
+
+                                self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+                            },
                             'tableStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.tableStylePropertiesDefinition()),
                             'navigable' : false,
                             'dragHtml' : '<span></span>'
