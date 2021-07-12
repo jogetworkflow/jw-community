@@ -279,17 +279,42 @@
 .card_layout_body_cell {
     display:none;
 }
+.card-layout.card-layout-active.no_action .select_checkbox,
+.card-layout.card-layout-active.no_action .checkbox_checkbox{
+    display:none;
+}
 .card-layout.card-layout-active table tbody {
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
 }
 .card-layout.card-layout-active table,
-.card-layout.card-layout-active table td,
-.card-layout.card-layout-active table th{
+.card-layout.card-layout-active table td:not(.column-hidden),
+.card-layout.card-layout-active table th:not(.column-hidden),
+.card-layout.card-layout-active table td.card-action{
     display: block;
     border:0 !important;
 }
+.card-layout.card-layout-active table td.card-action a{
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index: 1;
+}
+.card-layout.card-layout-active table td.rowaction_body {
+    position: relative;
+    z-index: 2;
+}
+body.is-dragging .card-layout.card-layout-active table td[data-cbuilder-dragelement] {
+    border-top: 1px dashed #4285f4 !important;
+    border-bottom: 1px dashed #4285f4 !important;
+    border-right: 1px dashed #4285f4 !important;
+    border-left: 1px dashed #4285f4 !important;
+}
+.card-layout.card-layout-active tr.odd,
 .card-layout.card-layout-active tr.even{
     background-color: transparent;
 }
@@ -301,13 +326,17 @@
     width: calc(25% - 20px);
     margin: 10px;
     box-sizing: border-box;
+    position: relative;
+}
+.card-layout.card-layout-active tr.empty{
+    width: 100%;
 }
 .card-layout.card-layout-active tr td.gap,
 .card-layout.card-layout-active thead{
     display: none !important;
 }
 .card-layout.card-layout-active td {
-    padding: 2px 10px 0 !important;
+    padding: 2px 10px 0;
 }
 .card-layout.card-layout-active td.row_action{
     display: inline-block;
@@ -341,6 +370,12 @@
 }
 .card-layout.card-layout-active .exportlinks{
     display:none;
+}
+.footable-buttons:after{
+    content: "";
+    display: block;
+    clear: both;
+    float: none;
 }
 @media (max-width: 991px) {
     .card-layout.card-layout-active tr{
