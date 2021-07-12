@@ -782,6 +782,7 @@ body.horizontal_menu #header-info{
     --ripple-duration: 1s;
     --ripple-fuzz: 5px;
     border-color: transparent !important;
+    margin-bottom: 5px;
 }
 #content main button[class*=button]:focus:not(:disabled):not(.disabled),
 #content main button[class*=button]:active:not(:disabled):not(.disabled),
