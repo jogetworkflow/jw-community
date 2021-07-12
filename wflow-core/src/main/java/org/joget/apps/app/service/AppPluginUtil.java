@@ -303,7 +303,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                         cssClass += " " + key.replace(prefix+"css-", "");
                     }
                 } else if (key.startsWith(prefix+"attr-")) {
-                    attr += " " + key.replace(prefix+"attr-", "") + "=\"" + value.replaceAll("\"", "\\\"") + "\"";
+                    attr += " " + key.replace(prefix+"attr-", "") + "=\"" + StringUtil.escapeString(value, StringUtil.TYPE_HTML, null) + "\"";
                 } else if (key.startsWith(prefix+"style-hover-mobile-")) {
                     hoverMobileStyle += generateStyle(value, key, prefix+"style-hover-mobile-");
                 } else if (key.startsWith(prefix+"style-hover-tablet-")) {
