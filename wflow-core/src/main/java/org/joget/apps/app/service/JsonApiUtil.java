@@ -127,9 +127,15 @@ public class JsonApiUtil {
                     }
                 }
             }
-            request.setHeader("referer", httpRequest.getHeader("referer"));
-            if ("true".equalsIgnoreCase(properties.get("copyCookies").toString())) {
-                request.setHeader("Cookie", httpRequest.getHeader("Cookie"));
+            if (httpRequest != null) {
+                String referer = httpRequest.getHeader("referer");
+                if (referer == null || referer.isEmpty()) {
+                    referer = httpRequest.getRequestURL().toString();
+                }
+                request.setHeader("referer", referer);
+                if ("true".equalsIgnoreCase(properties.get("copyCookies").toString())) {
+                    request.setHeader("Cookie", httpRequest.getHeader("Cookie"));
+                }
             }
 
             HttpResponse response = client.execute(request);
@@ -169,7 +175,7 @@ public class JsonApiUtil {
     }
     
     public static String replaceParam(String content, Map<String, String> params) {
-        if (content != null && !content.isEmpty() && !params.isEmpty()) {
+        if (content != null && !content.isEmpty() && params != null && !params.isEmpty()) {
             for (String s : params.keySet()) {
                 String value = params.get(s);
                 content = content.replaceAll(StringUtil.escapeRegex("{"+s+"}"), StringUtil.escapeRegex(value != null?value:""));
