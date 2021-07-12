@@ -17,9 +17,9 @@
             {
                 "name" : "textContent",
                 "label" : "@@userview.formmenu.label@@",
-                "type" : "textfield",
+                "type" : "htmleditor",
                 "required" : "True",
-                "value" : "@@org.joget.apps.userview.lib.component.ButtonComponent.pluginLabel@@"
+                "value" : "@@org.joget.apps.userview.lib.component.LabelComponent.pluginLabel@@"
             }
         ]
     }
