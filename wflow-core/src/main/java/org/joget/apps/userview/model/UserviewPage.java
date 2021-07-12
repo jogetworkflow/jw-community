@@ -150,11 +150,11 @@ public class UserviewPage {
                 }
                 if (component instanceof UserviewMenu) {
                     ((UserviewMenu) component).setKey(menu.getKey());
-                    ((UserviewMenu) component).setUserview(menu.getUserview());
                     ((UserviewMenu) component).setUrl(menu.getUrl());
                 }
                 component.setProperties(PropertyUtil.getProperties(jsonObj.getJSONObject("properties")));
                 component.setChildren(getPageComponents(component, jsonObj));
+                component.setUserview(menu.getUserview());
             }
             return component;
         }

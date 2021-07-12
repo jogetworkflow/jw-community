@@ -1,10 +1,9 @@
 package org.joget.apps.userview.model;
 
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.StringUtil;
+import java.util.Map;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.property.service.PropertyUtil;
 
@@ -12,6 +11,7 @@ public abstract class PageComponent extends ExtElement {
 
     private Collection<PageComponent> children = new ArrayList<PageComponent>();
     private PageComponent parent;
+    private Userview userview;
 
     public PageComponent getParent() {
         return parent;
@@ -29,8 +29,29 @@ public abstract class PageComponent extends ExtElement {
         this.children = children;
     }
 
+    public Userview getUserview() {
+        return userview;
+    }
+
+    public void setUserview(Userview userview) {
+        this.userview = userview;
+    }
+    
+    public boolean isPermissionHidden() {
+        if (Permission.DEFAULT.equals(userview.getPermissionKey())) {
+            return getPropertyString("hidden").equalsIgnoreCase("true");
+        } else if (getProperties().containsKey("permission_rules")) {
+            Map<String, Object> permissionRules = (Map<String, Object>) getProperty("permission_rules");
+            if (permissionRules != null && permissionRules.containsKey(userview.getPermissionKey())) {
+                Map<String, Object> ruleObj = (Map<String, Object>)permissionRules.get(userview.getPermissionKey());
+                return "true".equalsIgnoreCase((String) ruleObj.get("hidden"));
+            }
+        }
+        return false;
+    }
+
     public String render() {
-        if (getPropertyString("hidden").equalsIgnoreCase("true")) {
+        if (isPermissionHidden()) {
             return "";
         }
         

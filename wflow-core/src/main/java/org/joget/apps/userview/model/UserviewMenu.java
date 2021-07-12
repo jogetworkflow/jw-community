@@ -19,7 +19,6 @@ public abstract class UserviewMenu extends PageComponent {
     private String key;
     private String readyJspPage;
     private String readyRenderPage;
-    private Userview userview;
 
     /**
      * Gets URL of this menu
@@ -148,22 +147,6 @@ public abstract class UserviewMenu extends PageComponent {
             readyRenderPage = getRenderPage();
         }
         return readyRenderPage;
-    }
-
-    /**
-     * Gets the userview which this menu is belongs to.
-     * @return 
-     */
-    public Userview getUserview() {
-        return userview;
-    }
-
-    /**
-     * Sets the userview which this menu is belongs to.
-     * @param userview 
-     */
-    public void setUserview(Userview userview) {
-        this.userview = userview;
     }
     
     /**

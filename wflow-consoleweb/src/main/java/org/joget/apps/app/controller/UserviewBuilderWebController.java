@@ -33,7 +33,6 @@ import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
-import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.enterprise.UniversalTheme;
@@ -343,10 +342,10 @@ public class UserviewBuilderWebController {
                 
                 if (pc instanceof UserviewMenu) {
                     ((UserviewMenu) pc).setUrl("");
-                    Userview userview = new Userview();
-                    userview.setProperty("id", userviewId);
-                    ((UserviewMenu) pc).setUserview(userview);
                 }
+                Userview userview = new Userview();
+                userview.setProperty("id", userviewId);
+                pc.setUserview(userview);
                 
                 String html = pc.render();
                 html = html.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
