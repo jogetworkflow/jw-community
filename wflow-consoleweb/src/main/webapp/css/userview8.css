@@ -737,7 +737,7 @@ body.horizontal_menu #header-info{
     }
 }
 @media (max-width: 767px) {
-    #header-info, #header-message, .header-nav .user-link {
+    #header-info > #header-name > .logo, #header-info > #header-name > #header-link, #header-message, .header-nav .user-link {
         display: none !important;
     }
 }
