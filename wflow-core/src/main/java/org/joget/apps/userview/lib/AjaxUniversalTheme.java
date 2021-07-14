@@ -217,6 +217,17 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         }
     }
     
+    @Override
+    public String getLoginForm(Map<String, Object> data) {
+        String name = "<div class=\"login_form_brand\">";
+        if (!getPropertyString("logo").isEmpty()) {
+            name += "<div class=\"login_form_logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>";
+        }
+        name += "<h1>" + userview.getPropertyString("name") + "</h1></div>";
+        data.put("login_form_inner_before", name);
+        return super.getLoginForm(data);
+    }
+    
     protected boolean isAjaxContent(Map<String, Object> data) {
         if (isAjaxContent == null) {
             isAjaxContent = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_loading"));
