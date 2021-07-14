@@ -210,6 +210,7 @@ if ((typeof _customFooTableArgs) === "undefined") {
                         html += "</a></li>";
                         footer.before($(html));
                     });
+                    $(".inbox-notification").trigger("inbox_notification_updated");
                 }
 
                 $(".inbox-notification .loading").hide();
