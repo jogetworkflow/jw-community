@@ -952,6 +952,13 @@ body#login #loginForm table td input[type='submit'] {
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+.login_form_logo_container .logo{
+    max-width: 100px;
+}
+.login_form_brand{
+    text-align: center;
+    margin-bottom: 30px;
+}
 
 .dropdown-menu.notifications li{
     padding: 5px;
