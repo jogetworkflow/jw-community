@@ -35,6 +35,11 @@ AjaxUniversalTheme = {
     },
     
     renderAjaxContent : function(menus, content) {
+        //update body id according to url
+        var currentPath = window.location.pathname;
+        var menuId = currentPath.substring(currentPath.lastIndexOf("/") + 1);
+        $("body").attr("id", menuId);
+        
         AjaxUniversalTheme.updateMenus(menus);
         $("#content main").html($(content).html());
 
