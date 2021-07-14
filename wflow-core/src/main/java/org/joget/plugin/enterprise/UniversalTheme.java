@@ -1049,7 +1049,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             profile.setUserview(userview);
             profile.setUrl(data.get("base_link") + PROFILE);
             profile.setKey(userview.getParamString("key"));
-            html += UserviewUtil.getUserviewMenuHtml(profile);
+            html += profile.render();
         } catch (Exception e) {
             html += handleContentError(e, data);
         }
@@ -1082,7 +1082,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 menu.setUserview(userview);
                 menu.setUrl(data.get("base_link") + INBOX);
                 menu.setKey(userview.getParamString("key"));
-                html += UserviewUtil.getUserviewMenuHtml(menu);
+                html += menu.render();
             }
         } catch (Exception e) {
             html += handleContentError(e, data);
