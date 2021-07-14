@@ -295,6 +295,9 @@ public class SetupServlet extends HttpServlet {
             byte[] fileContent = readInputStream(in);
             final AppDefinition appDef = appService.importApp(fileContent);
             if (appDef != null) {
+                //import form data
+                appService.importFormData(fileContent);
+                
                 TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplate");
                 transactionTemplate.execute(new TransactionCallback<Object>() {
                     public Object doInTransaction(TransactionStatus ts) {
