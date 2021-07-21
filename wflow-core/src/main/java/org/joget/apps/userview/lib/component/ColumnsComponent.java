@@ -48,7 +48,11 @@ public class ColumnsComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<div "+attr+" id=\""+id+"\" class=\"container-fluid "+cssClass+"\"><div class=\"row\">" + renderChildren() + "</div>" + style + "</div>";
+        String rowAttr = "";
+        if (isBuilder) {
+            rowAttr += " data-cbuilder-columns";
+        }
+        return "<div "+attr+" id=\""+id+"\" class=\"container-fluid "+cssClass+"\"><div class=\"row\" "+rowAttr+">" + renderChildren() + "</div>" + style + "</div>";
     }
 
     @Override

@@ -48,7 +48,11 @@ public class ScriptComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<script "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + getPropertyString("script") + "</script>";
+        if (isBuilder) {
+            return "<div data-cbuilder-invisible></div>";
+        } else {
+            return "<script "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + getPropertyString("script") + "</script>";
+        }
     }
 
     @Override

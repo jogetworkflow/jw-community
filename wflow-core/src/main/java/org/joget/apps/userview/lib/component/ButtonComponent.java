@@ -48,6 +48,9 @@ public class ButtonComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
+        if (isBuilder) {
+            attr += " data-cbuilder-textContent";
+        }
         return "<a "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</a>";
     }
 

@@ -49,6 +49,9 @@ public class ColumnComponent extends SimplePageComponent implements HiddenPlugin
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
+        if (isBuilder) {
+            attr += " data-cbuilder-subelement data-cbuilder-elements";
+        }
         return "<div "+attr+" id=\""+id+"\" class=\"col "+cssClass+"\">" + renderChildren() + style + "</div>";
     }
 

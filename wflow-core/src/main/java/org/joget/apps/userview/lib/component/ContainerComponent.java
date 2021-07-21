@@ -48,6 +48,9 @@ public class ContainerComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
+        if (isBuilder) {
+            attr += " data-cbuilder-elements";
+        }
         return "<div "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + renderChildren() + style + "</div>";
     }
 

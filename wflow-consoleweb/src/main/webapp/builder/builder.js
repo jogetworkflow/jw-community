@@ -4561,7 +4561,8 @@ _CustomBuilder.Builder = {
             //loop properties for css class, style & attribute 
             self.handleStylingProperties(temp, props);
         }
-        if (temp !== undefined && $("<div></div>").append($(temp).clone()).html().indexOf("#") === -1) {
+        const regex = new RegExp('#([^#^\"^ ])*\\.([^#^\"])*\\#');
+        if (temp !== undefined && !regex.test($("<div></div>").append($(temp).clone()).html())) {
             element.replaceWith(temp);
             element = temp;
             
