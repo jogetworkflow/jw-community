@@ -1703,8 +1703,8 @@ _CustomBuilder = {
         var viewport = $(".responsive-buttons button.active").data("view");
 	$(view).closest(".builder-view").addClass(viewport);
         
-        var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
-        $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + "?" + securityToken);
+        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl);
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();
         return false;
