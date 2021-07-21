@@ -470,6 +470,10 @@
     border:1px solid #ccc;
 }
 
+.property-input table.grid tr td > span.label {
+    display: none;
+}
+
 .property-input table tr th.property-type-grid-action-column,
 .property-input table tr td.property-type-grid-action-column{
     border:0px;
@@ -1648,9 +1652,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode table.grid{
     counter-reset: grid-row;
-}
-.editor-panel-mode table.grid tr td > span.label {
-    display: none;
 }
 .editor-panel-mode.narrow:not(.wider) table.grid,
 .editor-panel-mode.narrow:not(.wider) table.grid tbody,
