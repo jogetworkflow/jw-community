@@ -41,7 +41,6 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.UidGenerator;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -58,6 +57,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
@@ -987,6 +987,10 @@ public class AppUtil implements ApplicationContextAware {
 
                             if (css != null && !css.isEmpty()) {
                                 html += "<style type=\"text/css\">\n" + css + "\n</style>";
+                            }
+                            
+                            if (!(theme instanceof AjaxUniversalTheme)) {
+                                html = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+data.get("context_path").toString()+"/css/userview_popup.css?build="+data.get("build_number").toString()+"\">" + html;
                             }
 
                             return html;

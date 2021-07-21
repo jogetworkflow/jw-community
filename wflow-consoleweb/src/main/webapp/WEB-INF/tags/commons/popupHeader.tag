@@ -19,7 +19,6 @@
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <c:choose>
             <c:when test="${!empty userviewThemeCss}">
-                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/userview_popup.css?build=<fmt:message key="build.number"/>">
                 ${userviewThemeCss}
             </c:when>
             <c:otherwise>

@@ -839,6 +839,10 @@ body.horizontal_menu #header-info{
     background-position: 0% 0%, 0% 100%;
   }
 }
+#content .btn:not([class*="btn-"]){
+    background-color: var(--theme-button-bg, #348fe2);
+    color: #fff;
+}
 
 /* scrollbar */
 * {
@@ -1019,6 +1023,9 @@ form.form fieldset .form-row{
     display: flex;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+}
+form.form fieldset .form-row:first-child{
+    margin-top: 20px;
 }
 form.form fieldset .form-row + .form-row{
     margin-top: 15px;

@@ -8,7 +8,7 @@
         <div id="main-body-message" class="align-center">
             <p id="main-body-submessage"><fmt:message key="console.form.create.label.popupWarning"/></p>
             <fmt:message key="abuilder.title" var="name" />
-            <button onclick="launchAppBuilder()" class="form-button-large"><fmt:message key="console.builder.create.label.launch"><fmt:param value="${name}"/></fmt:message></button>
+            <button onclick="launchAppBuilder()" class="btn btn-primary form-button-large"><fmt:message key="console.builder.create.label.launch"><fmt:param value="${name}"/></fmt:message></button>
         </div>
     </div>
     <script type="text/javascript">
