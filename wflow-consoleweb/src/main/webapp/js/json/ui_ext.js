@@ -66,7 +66,7 @@ JPopup = {
         } else {
             url += "&";
         }
-        url += JPopup.tokenName + "="+ JPopup.tokenValue;
+        url += JPopup.tokenName + "="+ JPopup.tokenValue + UI.userviewThemeParams();;
         
         if (action !== undefined && action.toLowerCase() === "get") {
             $.each(params, function (key, data) {
