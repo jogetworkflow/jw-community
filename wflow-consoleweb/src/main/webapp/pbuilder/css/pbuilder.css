@@ -117,9 +117,13 @@
 .end{
     width: 30px;
     height: 30px;
+    min-height: 30px !important;
     background: orangered;
     border-radius: 20px;
     border: double 5px white;
+}
+.end:after{
+    display: none !important;
 }
 .node_label {
     overflow: hidden;
