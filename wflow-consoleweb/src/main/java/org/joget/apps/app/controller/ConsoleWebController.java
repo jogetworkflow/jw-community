@@ -1355,6 +1355,8 @@ public class ConsoleWebController {
                 copy = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             }
             
+            appDefinition.setName(StringUtil.stripAllHtmlTag(appDefinition.getName()));
+            
             Collection<String> errors = appService.createAppDefinition(appDefinition, copy);
             if (!errors.isEmpty()) {
                 model.addAttribute("errors", errors);
