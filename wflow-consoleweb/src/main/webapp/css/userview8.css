@@ -17,6 +17,9 @@ body{
     background-color: var(--theme-background, var(--theme-color1, #f9fafb));
     line-height: 1.5;
 }
+body.popupBody {
+    background-color: var(--theme-content-background, #ffffffcc);
+}
 input, select, textarea{
     outline-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
