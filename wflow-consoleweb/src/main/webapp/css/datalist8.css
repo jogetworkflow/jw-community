@@ -249,6 +249,7 @@ body.rtl .dataList span.pagelinks{
     padding: 8px 15px;
     height: 38px;
     vertical-align: baseline;
+    margin-bottom: 0px !important;
 }
 .card_layout_body_cell {
     display:none;
