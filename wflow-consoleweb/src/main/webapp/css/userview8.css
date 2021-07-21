@@ -770,13 +770,19 @@ body.horizontal_menu #header-info{
     line-height: 1.5;
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    color: #fff;
-    background-color: var(--theme-button-bg, #007bff);
-    border-color: var(--theme-button-bg, #007bff);
     background-image: none;
     text-shadow:none;
     box-shadow: none;
     outline: 0;
+}
+#content main button[class*=button]:not([class*="btn-"]),
+#content main input[class*=button]:not([class*="btn-"]),
+#content main button.btn-primary,
+#content main input.btn-primary
+{
+    color: #fff;
+    background-color: var(--theme-button-bg, #007bff);
+    border-color: var(--theme-button-bg, #007bff);
 }
 #content main button[class*=button],
 #content main input[class*=button],
