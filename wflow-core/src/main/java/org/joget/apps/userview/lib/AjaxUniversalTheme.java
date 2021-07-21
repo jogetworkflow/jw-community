@@ -254,6 +254,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 }
             }
         }
+        if (!getPropertyString("dx8backgroundImage").isEmpty()) {
+            css += "--theme-background-image:url('"+getPropertyString("dx8backgroundImage")+ "');";
+        }
         if (!getPropertyString("dx8background").isEmpty()) {
             css += "--theme-background:"+getPropertyString("dx8background")+ ";";
         }

@@ -29,6 +29,15 @@
         value : '#dee2e6;#FFFFFF;#7ea9bd;#2488EE;#052738;#FFFFFF'
     },
     {
+        name : 'dx8backgroundImage',
+        label : '@@ubuilder.backgroundImage@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+    },
+    {
         label : '@@ubuilder.customColor@@',
         type : 'header'
     },

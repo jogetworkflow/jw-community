@@ -30,9 +30,8 @@ body {
 #category-container {
     min-height: 200px;
 }
-#page-content-wrapper{
+#page.page-content-wrapper{
     padding-top: 59px;
-    background: #f9fafb;
     min-height: 100vh;
 }
 .bar-var {
@@ -43,15 +42,15 @@ body {
     width: 100%;
     background: #fff;
 }
-#page-content-wrapper main {
+#page.page-content-wrapper main {
     padding: 20px;
     min-height: 80vh;
 }
-#page-content-wrapper #content {
+#page.page-content-wrapper #content {
     padding: 0px;
 }
 @media (max-width: 1279px){
-    body #page {
+    body #page:not(.page-content-wrapper) {
         padding-left: 280px;
     }
     body #sidebar {
