@@ -2747,7 +2747,7 @@ _CustomBuilder.Builder = {
                     var classname = $(this).data("cbuilder-classname");
                     var childComponent = self.parseDataToComponent(elements[i]);
                     var props = self.parseElementProps(elements[i]);
-                    if ((data === undefined || data === null) && classname === childComponent.className) {
+                    if ((data === undefined || data === null) && childComponent !== null && childComponent !== undefined && classname === childComponent.className) {
                         $(this).data("data", elements[i]);
                         
                         var id = props.id;
