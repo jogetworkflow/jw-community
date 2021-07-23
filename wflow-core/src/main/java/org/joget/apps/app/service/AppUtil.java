@@ -1315,8 +1315,7 @@ public class AppUtil implements ApplicationContextAware {
                         }
                     }
                 } catch(Exception e){
-                    LogUtil.info(EmailTool.class.getName(), "Attached file fail from path \"" + path + "\"");
-                    e.printStackTrace();
+                    LogUtil.error(AppUtil.class.getName(), e, "File attachment failed from path \"" + path + "\"");
                 }
             }
         }
