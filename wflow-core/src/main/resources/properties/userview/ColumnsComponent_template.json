@@ -51,6 +51,7 @@
             hasChange = true;
         }
         for (var i = 0; i < propColumns.length; i++) {
+            elementObj.elements[i].properties = {};
             if (propColumns[i]['style-max-width'] !== undefined && propColumns[i]['style-max-width'] !== "") {
                 elementObj.elements[i].properties['style-max-width'] = propColumns[i]['style-max-width'];
                 elementObj.elements[i].properties['style-flex'] = "0 0 " + propColumns[i]['style-max-width'];
