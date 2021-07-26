@@ -1248,6 +1248,7 @@ img.gravatar:not([src]){
     position:relative;
     padding:10px 15px;
     z-index:7;
+    color: #333;
 }
 .systemAlertClose{
     position:absolute;
