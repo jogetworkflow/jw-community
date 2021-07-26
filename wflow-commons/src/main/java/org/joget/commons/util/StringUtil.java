@@ -606,7 +606,7 @@ public class StringUtil {
             }
             return sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(StringUtil.class.getName(), e, "");
             return null;
         }
     }
@@ -631,7 +631,7 @@ public class StringUtil {
             }
             return sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(StringUtil.class.getName(), e, "");
             return null;
         }
     }
