@@ -232,7 +232,7 @@ public class StringUtil {
                         
                         String[] values = (String[]) result.get(key);
                         if (values != null) {
-                            List<String> temp = (ArrayList<String>) Arrays.asList(values);
+                            List<String> temp = new ArrayList<String>(Arrays.asList(values));
                             temp.add(value);
                             values = (String[]) temp.toArray(new String[0]);
                         } else {
@@ -606,7 +606,7 @@ public class StringUtil {
             }
             return sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(StringUtil.class.getName(), e, "");
             return null;
         }
     }
@@ -631,7 +631,7 @@ public class StringUtil {
             }
             return sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(StringUtil.class.getName(), e, "");
             return null;
         }
     }

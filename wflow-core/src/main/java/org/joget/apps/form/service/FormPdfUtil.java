@@ -376,26 +376,6 @@ public class FormPdfUtil {
         //remove hidden td
         html = html.replaceAll("<td\\s?style=\\\"[^\\\"]*display:none;[^\\\"]?\\\"[^>]*>.*?</\\s?td>", "");
         
-        if (showAllSelectOptions != null && showAllSelectOptions) {
-            Pattern pattern = Pattern.compile("<label>[^<]*(<input[^>]*type=\\\"([^\\\"]*)\\\"[^>]*>)[^>]*</label>");
-            Matcher matcher = pattern.matcher(html);
-            while (matcher.find()) {
-                String label = matcher.group(0);
-                String input = matcher.group(1);
-                String type = matcher.group(2);
-                String replace = "";
-                
-                if (type.equalsIgnoreCase("checkbox") || type.equalsIgnoreCase("radio")) {
-                    if (input.contains("checked")) {
-                        replace = input;
-                    } else {
-                        replace = label;
-                    }
-                    html = html.replaceAll(StringUtil.escapeRegex(replace), "");
-                }
-            }
-        }
-        
         //convert Image if image doesnt end with />
         Pattern ImagePattern = Pattern.compile("<img[^>]*[^\\/]>");
         Matcher ImageMatcher = ImagePattern.matcher(html);
@@ -406,12 +386,12 @@ public class FormPdfUtil {
         }
         
         //convert label for checkbox and radio
-        Pattern formdiv = Pattern.compile("<div class=\"form-cell-value\" >(.|\\s)*?</div>");
+        Pattern formdiv = Pattern.compile("<div class=\"form-cell-value\" >.*?</div>", Pattern.DOTALL);
         Matcher divMatcher = formdiv.matcher(html);
         while (divMatcher.find()) {
             String divString = divMatcher.group(0);
 
-            Pattern tempPatternLabel = Pattern.compile("<label(.*?)>(.|\\s)*?</label>");
+            Pattern tempPatternLabel = Pattern.compile("<label.*?>.*?</label>", Pattern.DOTALL);
             Matcher tempMatcherLabel = tempPatternLabel.matcher(divString);
             int count = 0;
             String inputStringLabel = "";
@@ -445,7 +425,7 @@ public class FormPdfUtil {
                                 replaceLabel += ", ";
                             }
                             String label = "";
-                            Pattern patternLabel = Pattern.compile("</i>(.|\\s)*?</label>");
+                            Pattern patternLabel = Pattern.compile("</i>.*?</label>", Pattern.DOTALL);
                             Matcher matcherLabel = patternLabel.matcher(inputStringLabel);
                             if (matcherLabel.find()) {
                                 label = matcherLabel.group(0);

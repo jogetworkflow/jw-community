@@ -231,20 +231,8 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public AppDefinition getAppDefinitionForWorkflowProcess(String processId) {
-        AppDefinition appDef = null;
-
-        WorkflowProcess process = workflowManager.getRunningProcessById(processId);
-        if (process != null) {
-            String packageId = process.getPackageId();
-            Long packageVersion = Long.parseLong(process.getVersion());
-            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-            if (packageDef != null) {
-                appDef = packageDef.getAppDefinition();
-            }
-        }
-        // set into thread
-        AppUtil.setCurrentAppDefinition(appDef);
-        return appDef;
+        String processDefId = workflowManager.getProcessDefId(processId);
+        return getAppDefinitionWithProcessDefId(processDefId);
     }
     
     /**
@@ -256,14 +244,16 @@ public class AppServiceImpl implements AppService {
     public AppDefinition getAppDefinitionWithProcessDefId(String processDefId) {
         AppDefinition appDef = null;
 
-        processDefId = workflowManager.getConvertedLatestProcessDefId(processDefId);
-        String[] params = processDefId.split("#");
-        String packageId = params[0];
-        Long packageVersion = Long.parseLong(params[1]);
-        
-        PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-        if (packageDef != null) {
-            appDef = packageDef.getAppDefinition();
+        if (processDefId != null && !processDefId.isEmpty()) {
+            processDefId = workflowManager.getConvertedLatestProcessDefId(processDefId);
+            String[] params = processDefId.split("#");
+            String packageId = params[0];
+            Long packageVersion = Long.parseLong(params[1]);
+
+            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+            if (packageDef != null) {
+                appDef = packageDef.getAppDefinition();
+            }
         }
         
         // set into thread

@@ -542,7 +542,11 @@ public class AppUtil implements ApplicationContextAware {
             if (appDef == null && originalAppDef == null && wfAssignment != null) {
                 //retrieve appDef based on wf assignment
                 AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-                appDef = appService.getAppDefinitionForWorkflowProcess(wfAssignment.getProcessId());
+                if (wfAssignment.getProcessDefId() != null) {
+                    appDef = appService.getAppDefinitionWithProcessDefId(wfAssignment.getProcessDefId());
+                } else {
+                    appDef = appService.getAppDefinitionForWorkflowProcess(wfAssignment.getProcessId());
+                }
             }
             
             //parse content
@@ -1334,8 +1338,7 @@ public class AppUtil implements ApplicationContextAware {
                         }
                     }
                 } catch(Exception e){
-                    LogUtil.info(EmailTool.class.getName(), "Attached file fail from path \"" + path + "\"");
-                    e.printStackTrace();
+                    LogUtil.error(AppUtil.class.getName(), e, "File attachment failed from path \"" + path + "\"");
                 }
             }
         }

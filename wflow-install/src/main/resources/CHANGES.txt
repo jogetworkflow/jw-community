@@ -2,6 +2,20 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+CHANGES IN 7.0.20
+=================
+09072ffae Fixed: wflow-plugin-base - Plugin - Prevent NPE when label is return null. #9199 @7.0-SNAPSHOT
+8fec0845f Fixed: wflow-consoleweb - Form File Upload field adds underscore to filename on save. #T123 @7.0-SNAPSHOT
+b0c12cc3b Fixed: wflow-core - AppUtil - Process activity name using i18n hash caused stack overflow in user notification plugin. T93 @7.0-SNAPSHOT
+b9d6339fb Fixed: wflow-consoleweb - Process Mapper - Using Process Enhancement plugin, Run Process activity does not load configuration when click on "More Settings" in Process Mapper. #9191 @7.0-SNAPSHOT
+179b76bac Fixed: wflow-core: Custom Hash Variable Plugin not included in export app. #T104 @7.0-SNAPSHOT
+471c648b3 Fixed: wflow-core - Download PDF Datalist Plugin has new stack overflow error. @7.0-SNAPSHOT
+3835114bd Fixed: wflow-commons - StringUtil getUrlParams not working on parameters with same name. @7.0-SNAPSHOT
+6d38208af Fixed: wflow-core: Resources could not upload filenames with spaces. #T91 @7.0-SNAPSHOT
+60fda0c23 Fixed: wflow-consoleweb - Unable to download datalist csv file if System Locale = french. #T85  @7.0-SNAPSHOT
+53ec7858b Fixed: wflow-core - PWA - manifest requests constantly generating new JSESSIONID. @7.0-SNAPSHOT
+4348f6555 Fixed: wflow-core - FormPdfUtil - NPE due to missing null checker for "showAllSelectOptions" variable. #9161 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.19
 =================
 d48718e2c Fixed: wflow-core - Form Hash Variable - Hash variable in value is parsed. @7.0-SNAPSHOT

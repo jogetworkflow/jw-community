@@ -584,6 +584,13 @@ public interface WorkflowManager {
     WorkflowProcess getRunningProcessById(String processId);
     
     /**
+     * Returns a processDefId of a running process by process instance ID.
+     * @param processId
+     * @return
+     */
+    String getProcessDefId(String processId);
+    
+    /**
      * Returns all the id of running process instances
      * @return 
      */

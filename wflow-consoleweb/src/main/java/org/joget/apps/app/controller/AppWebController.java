@@ -520,9 +520,11 @@ public class AppWebController {
             }
             
             // set attachment filename
+            String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
             if (Boolean.valueOf(attachment).booleanValue()) {
-                String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
-                response.setHeader("Content-Disposition", "attachment; filename="+name+"; filename*=UTF-8''" + name);
+                response.setHeader("Content-Disposition", "attachment; filename=" + name + "; filename*=UTF-8''" + name);
+            } else {
+                response.setHeader("Content-Disposition", "inline; filename=" + name + "; filename*=UTF-8''" + name);
             }
 
             // send output
@@ -618,9 +620,11 @@ public class AppWebController {
             }
             
             // set attachment filename
+            String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
             if (Boolean.valueOf(attachment).booleanValue()) {
-                String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
-                response.setHeader("Content-Disposition", "attachment; filename="+name+"; filename*=UTF-8''" + name);
+                response.setHeader("Content-Disposition", "attachment; filename=" + name + "; filename*=UTF-8''" + name);
+            } else {
+                response.setHeader("Content-Disposition", "inline; filename=" + name + "; filename*=UTF-8''" + name);
             }
 
             // send output
