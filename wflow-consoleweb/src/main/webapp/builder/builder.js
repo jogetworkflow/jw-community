@@ -1062,9 +1062,6 @@ _CustomBuilder = {
         copy['type'] = type;
         copy['object'] = element;
         
-        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copy", JSON.encode(copy));
-        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copyTime", new Date());
-        CustomBuilder.updatePasteIcon(type);
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.copied'), "info");
     },
     
@@ -2503,7 +2500,8 @@ _CustomBuilder.Builder = {
             "renderElement" : "",
             "selectElement" : "",
             "updateElementId" : "",
-            "unloadElement" : ""
+            "unloadElement" : "",
+            "copyElement" : ""
         }
     },
     options : {},
@@ -3082,8 +3080,13 @@ _CustomBuilder.Builder = {
         
         var data = $(node).data("data");
         var component = self.parseDataToComponent(data);
+        var type = component.builderTemplate.getParentContainerAttr(data, component);
         
-        CustomBuilder.copy(data, component.builderTemplate.getParentContainerAttr(data, component));
+        CustomBuilder.copy(data, type);
+        
+        if (CustomBuilder.Builder.options.callbacks["copyElement"] !== undefined && CustomBuilder.Builder.options.callbacks["copyElement"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyElement"], [data, type]);
+        }
         
         self.selectNode(self.selectedEl);
         

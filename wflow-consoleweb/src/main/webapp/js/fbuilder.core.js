@@ -19,7 +19,8 @@ FormBuilder = {
                 "updateElementId" : "FormBuilder.updateElementId",
                 "unloadElement" : "FormBuilder.unloadElement",
                 "selectElement" : "FormBuilder.selectElement",
-                "renderXray" : "FormBuilder.renderXray"
+                "renderXray" : "FormBuilder.renderXray",
+                "copyElement" : "FormBuilder.copyElement"
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-fbuilder-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
@@ -868,6 +869,19 @@ FormBuilder = {
             return get_cbuilder_msg("fbuilder.reserveIds");
         }
         return null;    
+    },
+    
+    /*
+     * copy element to copy form hash variable clipboard
+     */
+    copyElement: function(data, type) {
+        if (type === "elements") {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#").select();
+            document.execCommand("copy");
+            $temp.remove();            
+        }
     },
       
     /*
