@@ -94,8 +94,7 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 .breadcrumb a:last-child {
     color: #7a7a7a !important;
 }
-#content main > [class*="-body-content"],
-#content main > [class*="_menu_body"]{
+#content main .main-body-content{
     background-color: transparent;
     border: 0;
     padding: 0px;
@@ -122,14 +121,14 @@ header.navbar .inbox-notification .dropdown-toggle:after{
     margin-right: -21px;
     margin-bottom: 20px;
 }
-#content main > .main-body-content > .ui-html,
+#content main .main-body-content > .ui-html,
 .main-body-content > [class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content) {
     background-color: var(--theme-content-background, #ffffff);
     border: 1px solid rgba(0,0,0,.0625);
     padding: 20px;
     box-shadow: 0 2px 10px rgb(0 0 0 / 15%);
 }
-body.embeded #content main > .main-body-content > .ui-html,
+body.embeded #content main .main-body-content > .ui-html,
 body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content) {
     box-shadow: none;
 }
@@ -157,8 +156,6 @@ body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-co
 }
 .form-section + .form-section{
     box-shadow: 0 10px 10px rgb(0 0 0 / 15%);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
 }
 .form-section-title{
     background-color: var(--theme-sidebar, var(--theme-color5,#fff));

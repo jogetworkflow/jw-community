@@ -314,6 +314,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if (!getPropertyString("dx8fontColor").isEmpty()) {
             css += "--theme-font-color:"+getPropertyString("dx8fontColor")+ ";";
         }
+        if (!getPropertyString("dx8contentFontColor").isEmpty()) {
+            css += "--theme-content-color:"+getPropertyString("dx8contentFontColor")+ ";";
+        }
         if (!getPropertyString("dx8footerBackground").isEmpty()) {
             css += "--theme-footer-bg:"+getPropertyString("dx8footerBackground")+ ";";
         }

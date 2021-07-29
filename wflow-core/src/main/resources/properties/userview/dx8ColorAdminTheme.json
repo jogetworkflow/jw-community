@@ -145,6 +145,11 @@
         value: '#000000'
     },
     {
+        name : 'dx8contentFontColor',
+        label : '@@ubuilder.contentFontColor@@',
+        type : 'color'
+    },
+    {
         name : 'dx8linkColor',
         label : '@@ubuilder.linkColor@@',
         type : 'color',

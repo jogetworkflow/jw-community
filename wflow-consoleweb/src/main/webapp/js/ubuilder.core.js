@@ -1037,6 +1037,9 @@ UserviewBuilder = {
             if (props.dx8fontColor !== undefined  && props.dx8fontColor !== "") {
                 css += "--theme-font-color:"+props.dx8fontColor+";";
             }
+            if (props.dx8contentFontColor !== undefined  && props.dx8contentFontColor !== "") {
+                css += "--theme-content-color:"+props.dx8contentFontColor+";";
+            }
             if (props.dx8footerBackground !== undefined  && props.dx8footerBackground !== "") {
                 css += "--theme-footer-bg:"+props.dx8footerBackground+";";
             }
