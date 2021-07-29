@@ -44,6 +44,8 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
                         baseUrl += request.getContextPath();
                     }
                     return baseUrl;
+                } else if ("remoteAddr".equals(variableKey)) {
+                    return AppUtil.getClientIp(request);
                 } else {
                     try {
                         //convert first character to upper case
