@@ -135,6 +135,9 @@ DatalistBuilder = {
             
             CustomBuilder.data['orderBy'] = "";
             CustomBuilder.data['order'] = "";
+            if (CustomBuilder.data['pageSizeSelectorOptions'] === undefined) {
+                CustomBuilder.data['pageSizeSelectorOptions'] = "10,20,30,40,50,100";
+            }
         }
         
         wait.resolve();

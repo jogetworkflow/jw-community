@@ -705,7 +705,7 @@ public class JsonUtil {
             listId = StringUtil.escapeString(listId, StringUtil.TYPE_JSON, null);
             name = StringUtil.escapeString(name, StringUtil.TYPE_JSON, null);
             desc = StringUtil.escapeString(desc, StringUtil.TYPE_JSON, null);
-            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[],\"responsive_layout\":\"card-layout\",\"responsive_layout\":\"sm-card\"}";
+            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[],\"responsive_layout\":\"card-layout\",\"responsive_layout\":\"sm-card\"}";
         }
 
         return json;
