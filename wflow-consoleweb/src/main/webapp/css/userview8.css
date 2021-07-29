@@ -587,8 +587,7 @@ footer {
     border-top: 1px solid rgba(0,0,0,.0625);
     font-size: .87rem;
     text-align: center;
-    padding:30px;
-    line-height: 0;
+    padding:15px;
 }
 footer p {
     margin-bottom: 0;
