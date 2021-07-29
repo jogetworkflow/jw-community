@@ -224,10 +224,12 @@ div.exportlinks > a span {
 .dataList th.order2 a {
     background-image:url("../images/v3/arrow_up.png");
 }
-.dataList tr.odd{
+.dataList tr.odd,
+.dataList tr.odd + tr.footable-row-detail{
     background-color: #ededed;
 }
-.dataList tr.even{
+.dataList tr.even,
+.dataList tr.even + tr.footable-row-detail{
     background-color: transparent;
 }
 @media (min-width: 768px) {

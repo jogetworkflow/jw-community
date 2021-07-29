@@ -48,7 +48,8 @@
 .dataList th.order2 a {
     background-image:url("../images/v3/arrow_up.png");
 }
-.dataList tr.even{
+.dataList tr.even,
+.dataList tr.even + tr.footable-row-detail{
     background-color: rgba(0,0,0,.05);
 }
 .dataList .filters {
