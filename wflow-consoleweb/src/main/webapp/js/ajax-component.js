@@ -1,14 +1,17 @@
 AjaxComponent = {
-    url : null,
+    currentUrlEventListening : [],
     
     /*
      * Intialize the content to found ajax supported component and event listening component
      */
     initAjax : function(element) {
+        AjaxComponent.currentUrlEventListening = [];
         $(element).find("[data-ajax-component]").each(function() {
             AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
         });
+        
+        AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
     },
     
     /*
@@ -18,16 +21,7 @@ AjaxComponent = {
         AjaxComponent.overrideButtonEvent(element);
         AjaxComponent.overrideDatalistButtonEvent(element);
         AjaxComponent.overrideFormEvent(element);
-        
-        var url = window.location.href;
-        if (url !== AjaxComponent.url) {
-            $("[data-events-triggering]").each(function() {
-                if (!$(this).is(element)) {
-                    AjaxComponent.triggerEvents($(this), window.location.href);
-                }
-            });
-            AjaxComponent.url = url;
-        }
+        AjaxComponent.initEventsListening(element);
         
         if (window["AdminBar"] !== undefined) {
             AdminBar.initQuickEditMode();
@@ -167,7 +161,7 @@ AjaxComponent = {
     /*
      * Ajax call to retrieve the component html
      */
-    call : function(element, url, method, formData, customCallback, customErrorCallback) {
+    call : function(element, url, method, formData, customCallback, customErrorCallback, isTriggerByEvent) {
         if (url.indexOf("?") === 0) {
             var currentUrl = window.location.href;
             if (currentUrl.indexOf("?") > 0) {
@@ -199,16 +193,37 @@ AjaxComponent = {
         
         var contentConatiner = $("#content");
         
-        if ($(element).closest("[data-ajax-component]").length > 0 && AjaxComponent.isCurrentUserviewPage(url)) {
-            isAjaxComponent = true;
-            contentConatiner = $(element).closest("[data-ajax-component]");
-            
-            var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
-            if (url === currentAjaxUrl) {
+        if (AjaxComponent.isCurrentUserviewPage(url)) {
+            if ($(element).closest("[data-ajax-component]").length > 0) {
+                isAjaxComponent = true;
+                contentConatiner = $(element).closest("[data-ajax-component]");
+
+                headers.append("__ajax_component", $(contentConatiner).attr("id"));
+                
+                if(isTriggerByEvent) {
+                    $(contentConatiner).data("event-url", url);
+                } else {
+                    //merge parameter with the url trigger by event
+                    if ($(contentConatiner).data("event-url") !== undefined) {
+                        var qs1 = "";
+                        var qs2 = "";
+                        if ($(contentConatiner).data("event-url").indexOf("?") !== -1) {
+                            qs1 = $(contentConatiner).data("event-url").substring($(contentConatiner).data("event-url").indexOf("?") + 1);
+                        }
+                        if (url.indexOf("?") !== -1) {
+                            qs2 = url.substring(url.indexOf("?") + 1);
+                        }
+                        
+                        url = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(qs1, qs2);
+                    }
+                }
+            }
+            //check it is a link clicked event, trigger event and do nothing else
+            if ($(element).closest("[data-events-triggering]").length > 0 && method === "GET" && AjaxComponent.isLinkClickedEvent($(element).closest("[data-events-triggering]"), url)) {
                 return;
             }
-            
-            headers.append("__ajax_component", $(contentConatiner).attr("id"));
+        } else {
+            AjaxComponent.unbindEvents();
         }
         
         $(contentConatiner).addClass("ajaxloading");
@@ -230,7 +245,11 @@ AjaxComponent = {
                 document.location.href = url;
                 return null;
             } else if ((method === "GET" || response.redirected) && response.status === 200) {
-                history.pushState({url: response.url}, "", response.url); //handled redirected URL
+                //only change url if is page change or main component
+                if (!isAjaxComponent || $(contentConatiner).hasClass("main-component")) {
+                    var resUrl = response.url;
+                    history.pushState({url: resUrl}, "", resUrl); //handled redirected URL
+                }
             }
             return response.text();
         })
@@ -248,6 +267,7 @@ AjaxComponent = {
                         if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
                             AjaxComponent.call($("#content"), part[1], "GET", null);
                         } else {
+                            AjaxComponent.triggerEvents(contentConatiner, url, method);
                             AjaxComponent.call(contentConatiner, part[1], "GET", null);
                         }
                         return;
@@ -262,6 +282,9 @@ AjaxComponent = {
                 if (customCallback){
                     customCallback();
                 }
+                
+                AjaxComponent.triggerEvents(contentConatiner, url, method);
+                
                 $(contentConatiner).removeClass("ajaxloading");
                 $(contentConatiner).removeAttr("data-content-placeholder");
             }
@@ -285,8 +308,12 @@ AjaxComponent = {
      */
     callback : function(element, data, url) {
         var newTarget = $(data);
+        var eventUrl = $(element).data("event-url");
         $(element).replaceWith(newTarget);
-        $(element).data("ajax-url", url);
+        $(newTarget).data("ajax-url", url);
+        if (eventUrl) {
+            $(newTarget).data("event-url", eventUrl);
+        }
         AjaxComponent.initContent($(newTarget));
 
         setTimeout(function(){
@@ -301,19 +328,39 @@ AjaxComponent = {
         //ignore for now
     },
     
+    isLinkClickedEvent : function(element, url) {
+        return AjaxComponent.triggerEvents(element, url, "linkClicked");
+    },
+    
     /*
      * Check the event triggering rules and trigger event
      */
-    triggerEvents : function(element, url) {
+    triggerEvents : function(element, url, method) {
+        var triggered = false;
+        
+        if (method === undefined) {
+            method = "GET";
+        }
+        
+        if (!$(element).is("[data-ajax-component]")) {
+            element = $(element).find(".main-component");
+        }
+        
         if ($(element).is("[data-events-triggering]")) {
             var events = $(element).data("events-triggering");
-            var urlParams = UrlUtil.getUrlParams(url);
-            
+            var urlParams = {};
+            if (url.indexOf("?") !== -1) {
+                urlParams = UrlUtil.getUrlParams(url.substring(url.indexOf("?") + 1));
+            }
             for (var i in events) {
                 var matched = true;
                 
+                if (events[i].ajaxMethod !== undefined && events[i].ajaxMethod.toLowerCase() !== method.toLowerCase()) {
+                    matched = false;
+                }
+                
                 var rules = events[i].parametersRules;
-                if (rules !== undefined && rules.length > 0) {
+                if (matched && rules !== undefined && rules.length > 0) {
                     for (var r in rules) {
                         var rname = rules[r].name;
                         var op = rules[r].operator;
@@ -394,31 +441,102 @@ AjaxComponent = {
                 }
                 
                 if (matched) {
-                    AjaxComponent.handleEventAction(element, events[i].action, events[i], urlParams);
-                } else if (events[i].elseAction !== "") {
-                    AjaxComponent.handleEventAction(element, events[i].elseAction, events[i], urlParams);
+                    triggered = true;
+                    var eventName = events[i].name;
+                    if ($(element).attr("data-pc-id") !== undefined && !$(element).is(".main-component")) {
+                        eventName = eventName + "_" + $(element).attr("data-pc-id");
+                    }
+                    
+                    AjaxComponent.triggerEvent(eventName, urlParams);
+                } else if (events[i].notMatchName !== undefined && events[i].notMatchName !== "") {
+                    var eventName = events[i].notMatchName;
+                    if ($(element).attr("data-pc-id") !== undefined && !$(element).is(".main-component")) {
+                        eventName = eventName + "_" + $(element).attr("data-pc-id");
+                    }
+                    
+                    AjaxComponent.triggerEvent(eventName, urlParams);
                 }
             }
         }
+        return triggered;
     },
     
     /*
+     * Trigger an event with url parameters
+     */
+    triggerEvent : function(name, urlParams) {
+        var e = $.Event(name, urlParams);
+        $("body").trigger(e);
+    },
+    
+    /*
+     * Based on the event listening config, listen to the event and do the action based on event
+     */
+    initEventsListening : function(element) {
+        var listen = function(component) {
+            if ($(component).is("[data-events-listening]") && !$(component).is("[data-events-listening-initialled]")) {
+                var events = $(component).data("events-listening");
+                var id = $(component).attr("id");
+                for (var i in events) {
+                    var eventName = events[i].name;
+                    var eventObject = events[i].eventObject;
+                    if (eventObject !== "") {
+                        eventObject = "_" + eventObject;
+                    }
+                    if (eventName.indexOf(" ") !== -1) {
+                        var temp = eventName.split(" ");
+                        eventName = "";
+                        for (var t in temp) {
+                            if (temp[t].trim() !== "") {
+                                eventName += temp[t] + eventObject + "." + id + "-" + i + " ";
+                            }
+                        }
+                    } else {
+                        eventName = eventName + eventObject + "." + id + "-" + i;
+                    }
+
+                    $("body").off(eventName);
+                    $("body").on(eventName, "", {element: component, eventObj : events[i]}, function(event){
+                        AjaxComponent.handleEventAction(event.data.element, event.data.eventObj, event);
+                    });
+                    AjaxComponent.currentUrlEventListening.push(eventName);
+                }
+                $(component).attr("data-events-listening-initialled", "");
+            }
+        };
+        
+        $(element).find("[data-events-listening]").each(function() {
+            listen($(this));
+        });
+        if ($(element).is("[data-events-listening]")) {
+            listen($(element));
+        }
+    },
+
+    /*
      * Handle the event action when the listened event triggered
      */
-    handleEventAction : function(element, action, eventObj, urlParams) {
+    handleEventAction : function(element, eventObj, urlParams) {
+        var action = eventObj.action;
         if (action === "hide") {
             $(element).hide();
         } else if (action === "show") {
-            if ($(element).closest("[data-ajax-component]").length > 0) {
-                var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
-                if (window.location.href !== currentAjaxUrl) {
-                    AjaxComponent.call(element, window.location.href, "GET", null);
-                }
+            $(element).show();
+        } else if (action === "reload") {
+            var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
+            if (currentAjaxUrl === undefined) {
+                currentAjaxUrl = window.location.href;
             }
+            AjaxComponent.call(element, currentAjaxUrl, "GET", null);
             $(element).show();
         } else if (action === "parameters") {
-            var newUrl = AjaxComponent.updateUrlParams(eventObj.parameters);
-            AjaxComponent.call(element, newUrl, "GET", null);
+            var url = $(element).closest("[data-ajax-component]").data("ajax-url");
+            if (url === undefined || url === null) {
+                url = window.location.href;
+            }
+            var newUrl = AjaxComponent.updateUrlParams(url, eventObj.parameters, urlParams);
+            AjaxComponent.call(element, newUrl, "GET", null, null, null, true);
+            $(element).show();
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
                 AjaxComponent.call($("#content"), window.location.href, "GET", null);
@@ -432,13 +550,26 @@ AjaxComponent = {
             } else {
                 window.location.href = url;
             }
+        } else if (action === "redirectComponent") {
+            var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
+            AjaxComponent.call($(element), url, "GET", null, null, null, true);
+            $(element).show();
+        }
+    },
+    
+    /*
+     * Used to unbind all listener in current page
+     */
+    unbindEvents : function () {
+        for (var i in AjaxComponent.currentUrlEventListening) {
+            $("body").off(AjaxComponent.currentUrlEventListening[i]);
         }
     },
     
     /*
      * Update url parameters value based on event parameters
      */
-    updateUrlParams : function(parameters, urlParams) {      
+    updateUrlParams : function(url, parameters, urlParams) {      
         var params = "";
         for (var i in parameters) {
             if (parameters[i].value !== "") {
@@ -446,14 +577,15 @@ AjaxComponent = {
                     params += "&";
                 }
                 params += parameters[i].name + "=" + parameters[i].value;
-            } else if (urlParams[parameters[i].name] !== undefined) {
-                delete urlParams[parameters[i].name];
             }
         }
         params = AjaxComponent.getEventRedirectURL(params, urlParams);
-        urlParams = $.extend(urlParams, UrlUtil.getUrlParams(params));
+        var currentParam = "";
+        if (url.indexOf("?") !== -1) {
+            currentParam = url.substring(url.indexOf("?") + 1);
+        }
         
-        var newUrl = window.location.pathname + "?" + UrlUtil.constructUrlQueryString(urlParams);
+        var newUrl = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(currentParam, params);
         return newUrl;
     },
     
@@ -471,7 +603,7 @@ AjaxComponent = {
      * Replace variables in a value
      */
     replaceParams: function(value, params) {
-        var regex = /(\{([a-zA-Z0-9_]+)\})/g;
+        var regex = /(\{([a-zA-Z0-9_-]+)\})/g;
         var matches = {};
         var match = regex.exec(value);
         while (match != null) {

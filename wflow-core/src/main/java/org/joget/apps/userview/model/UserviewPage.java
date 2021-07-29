@@ -18,6 +18,7 @@ public class UserviewPage {
     protected UserviewMenu menu;
     
     public UserviewPage(UserviewMenu menu) {
+        menu.setProperty("css-main-component", "true");
         this.menu = menu;
     }
     
@@ -131,6 +132,11 @@ public class UserviewPage {
                 PageComponent pc = getPageComponent(elements.getJSONObject(i));
                 if (pc != null) {
                     pc.setParent(parent);
+                    
+                    if (pc.getProperties().containsKey("id")) {
+                        pc.setProperty("attr-data-pc-id", pc.getProperty("id"));
+                    }
+                    
                     components.add(pc);
                 }
             }

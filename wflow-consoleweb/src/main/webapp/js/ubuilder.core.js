@@ -1135,82 +1135,23 @@ UserviewBuilder = {
                     ]
                 },
                 {
-                    name : 'attr-data-events-triggering', 
-                    label : get_cbuilder_msg("ubuilder.urlParamsEvent"), 
+                    name : 'attr-data-events-listening', 
+                    label : get_cbuilder_msg("ubuilder.event.listening"), 
                     type : 'repeater', 
                     fields : [
                         {
-                            name : 'parametersRules',
-                            label : get_cbuilder_msg("ubuilder.event.parametersRule"),
-                            type : 'grid',
-                            columns : [{
-                                key : 'name',
-                                label : get_cbuilder_msg("ubuilder.event.parameterName"),
-                                required : 'True'
-                            },
-                            {
-                                key : 'operator',
-                                label : get_cbuilder_msg("ubuilder.event.operator"),
-                                type : 'selectbox',
-                                options : [
-                                    {
-                                        value : '==',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.equalsTo")
-                                    },
-                                    {
-                                        value : '!=',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.notEqualsTo")
-                                    },
-                                    {
-                                        value : '>',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.greaterThan")
-                                    },
-                                    {
-                                        value : '>=',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.greaterThanOrEqualTo")
-                                    },
-                                    {
-                                        value : '<',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.lessThan")
-                                    },
-                                    {
-                                        value : '<=',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.lessThanOrEqualTo")
-                                    },
-                                    {
-                                        value : 'true',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.isTrue")
-                                    },
-                                    {
-                                        value : 'false',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.isFalse")
-                                    },
-                                    {
-                                        value : 'empty',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.isEmpty")
-                                    },
-                                    {
-                                        value : 'notEmpty',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.isNotEmpty")
-                                    },
-                                    {
-                                        value : 'contains',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.contains")
-                                    },
-                                    {
-                                        value : 'in',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.in")
-                                    },
-                                    {
-                                        value : 'regex',
-                                        label : get_cbuilder_msg("ubuilder.event.operator.regex")
-                                    }
-                                ]
-                            },
-                            {
-                                key : 'value',
-                                label : get_cbuilder_msg("ubuilder.event.value")
-                            }]
+                            name : 'eventObject',
+                            label : get_cbuilder_msg("ubuilder.event.object"),
+                            type : 'selectbox',
+                            options_callback : 'UserviewBuilder.getEventObject'
+                        },
+                        {
+                            name : 'name',
+                            label : get_cbuilder_msg("ubuilder.event.name"),
+                            type : 'autocomplete',
+                            required : 'True',
+                            options_callback : 'UserviewBuilder.getEventNames',
+                            options_callback_on_change : 'eventObject'
                         },
                         {
                             name : 'action',
@@ -1225,6 +1166,10 @@ UserviewBuilder = {
                                 label : get_cbuilder_msg("ubuilder.event.action.show")
                             },
                             {
+                                value : 'reload',
+                                label : get_cbuilder_msg("ubuilder.event.action.reloadSelf")
+                            },
+                            {
                                 value : 'parameters',
                                 label : get_cbuilder_msg("ubuilder.event.action.parameters")
                             },
@@ -1235,6 +1180,10 @@ UserviewBuilder = {
                             {
                                 value : 'redirectPage',
                                 label : get_cbuilder_msg("ubuilder.event.action.redirectPage")
+                            },
+                            {
+                                value : 'redirectComponent',
+                                label : get_cbuilder_msg("ubuilder.event.action.redirectComponent")
                             }]
                         },
                         {
@@ -1265,47 +1214,34 @@ UserviewBuilder = {
                             control_value: 'redirectComponent|redirectPage',
                             control_use_regex: 'true',
                             required : 'True'
-                        },
-                        {
-                            name : 'elseAction',
-                            label : get_cbuilder_msg("ubuilder.elseEventAction"),
-                            type : 'selectbox',
-                            options : [{
-                                value : '',
-                                label : ''
-                            },
-                            {
-                                value : 'hide',
-                                label : get_cbuilder_msg("ubuilder.event.action.hide")
-                            },
-                            {
-                                value : 'show',
-                                label : get_cbuilder_msg("ubuilder.event.action.show")
-                            }]
                         }
                     ],
                     control_field: 'attr-data-ajax-component',
                     control_value: 'true',
                     control_use_regex: 'false'
-                }
-            ]
-        });
-        
-        return props;
-    },
-    
-    /*
-     * Used to retrieve event listening properties options and inject to page component properties options 
-     */
-    getSimpleAjaxEventPropertyOptions : function(){
-        return {
-            title: get_cbuilder_msg("ubuilder.urlParamsEvent"),
-            properties:[
+                },
                 {
                     name : 'attr-data-events-triggering', 
-                    label : get_cbuilder_msg("ubuilder.urlParamsEvent"), 
+                    label : get_cbuilder_msg("ubuilder.event.triggering"), 
                     type : 'repeater', 
                     fields : [
+                        {
+                            name : 'name',
+                            label : get_cbuilder_msg("ubuilder.event.name"),
+                            type : 'textfield',
+                            required : 'True'
+                        },
+                        {
+                            name : 'ajaxMethod',
+                            label : get_cbuilder_msg("ubuilder.event.method"),
+                            type : 'selectbox',
+                            options : [
+                                {value : 'get', label : get_cbuilder_msg("ubuilder.event.method.get")},
+                                {value : 'post', label : get_cbuilder_msg("ubuilder.event.method.post")},
+                                {value : 'linkClicked', label : get_cbuilder_msg("ubuilder.event.method.linkClicked")}
+                            ],
+                            required : 'True'
+                        },
                         {
                             name : 'parametersRules',
                             label : get_cbuilder_msg("ubuilder.event.parametersRule"),
@@ -1380,27 +1316,52 @@ UserviewBuilder = {
                             }]
                         },
                         {
+                            name : 'notMatchName',
+                            label : get_cbuilder_msg("ubuilder.event.notMatchEventName"),
+                            type : 'textfield'
+                        }
+                    ],
+                    control_field: 'attr-data-ajax-component',
+                    control_value: 'true',
+                    control_use_regex: 'false'
+                }
+            ]
+        });
+        
+        return props;
+    },
+    
+    /*
+     * Used to retrieve event listening properties options and inject to page component properties options 
+     */
+    getSimpleAjaxEventPropertyOptions : function(){
+        return {
+            title: get_cbuilder_msg("ubuilder.urlParamsEvent"),
+            properties:[
+                {
+                    name : 'attr-data-events-listening', 
+                    label : get_cbuilder_msg("ubuilder.event.listening"), 
+                    type : 'repeater', 
+                    fields : [
+                        {
+                            name : 'eventObject',
+                            label : get_cbuilder_msg("ubuilder.event.object"),
+                            type : 'selecbox',
+                            options_callback : 'UserviewBuilder.getEventObject'
+                        },
+                        {
+                            name : 'name',
+                            label : get_cbuilder_msg("ubuilder.event.name"),
+                            type : 'autocomplete',
+                            required : 'True',
+                            options_callback : 'UserviewBuilder.getEventNames',
+                            options_callback_on_change : 'eventObject'
+                        },
+                        {
                             name : 'action',
                             label : get_cbuilder_msg("ubuilder.eventAction"),
                             type : 'selectbox',
                             options : [{
-                                value : 'hide',
-                                label : get_cbuilder_msg("ubuilder.event.action.hide")
-                            },
-                            {
-                                value : 'show',
-                                label : get_cbuilder_msg("ubuilder.event.action.show")
-                            }]
-                        },
-                        {
-                            name : 'elseAction',
-                            label : get_cbuilder_msg("ubuilder.elseEventAction"),
-                            type : 'selectbox',
-                            options : [{
-                                value : '',
-                                label : ''
-                            },
-                            {
                                 value : 'hide',
                                 label : get_cbuilder_msg("ubuilder.event.action.hide")
                             },
@@ -1636,19 +1597,44 @@ UserviewBuilder = {
                 }
             }
             
-            if (props['attr-data-events-triggering'] !== undefined) {
+            if (props['attr-data-events-listening'] !== undefined) {
                 var names = [];
-                for (var i in props['attr-data-events-triggering']) {
-                    var rules = props['attr-data-events-triggering'][i]['parametersRules'];
-                    for (var r in rules) {
-                        var n = rules[r].name;
-                        if ($.inArray(n, names) === -1) {
-                            names.push(n);
+                for (var i in props['attr-data-events-listening']) {
+                    var name = props['attr-data-events-listening'][i].name;
+                    if (name !== undefined && name !== "") {
+                        var temp = name.split(" ");
+                        for (var i in temp) {
+                            if (temp[i] !== "") {
+                                if ($.inArray(temp[i], names) === -1) {
+                                    names.push(temp[i]);
+                                }
+                            }
                         }
                     }
                 }
                 if (names.length > 0) {
-                    dl.append('<dt><i class="las la-link" title="'+get_advtool_msg('ubuilder.urlParamsEvent')+'"></i></dt><dd>'+names.join(', ')+'</dd>');
+                    dl.append('<dt><i class="las la-link" title="'+get_advtool_msg('ubuilder.event.triggering')+'"></i></dt><dd>'+names.join(', ')+'</dd>');
+                }
+            }
+            
+            if (props['attr-data-events-triggering'] !== undefined) {
+                var names = [];
+                for (var i in props['attr-data-events-triggering']) {
+                    var name = props['attr-data-events-triggering'][i].name;
+                    if (name !== undefined && name !== "") {
+                        if ($.inArray(name, names) === -1) {
+                            names.push(name);
+                        }
+                    }
+                    var notMatchName = props['attr-data-events-triggering'][i].notMatchName;
+                    if (notMatchName !== undefined && notMatchName !== "") {
+                        if ($.inArray(notMatchName, names) === -1) {
+                            names.push(notMatchName);
+                        }
+                    }
+                }
+                if (names.length > 0) {
+                    dl.append('<dt><i class="las la-link" title="'+get_advtool_msg('ubuilder.event.triggering')+'"></i></dt><dd>'+names.join(', ')+'</dd>');
                 }
             }
         }
@@ -1735,6 +1721,61 @@ UserviewBuilder = {
                 self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
             }
         }  
+    },
+    
+    /*
+     * Get all component object that triggering event
+     */
+    getEventObject : function() {
+        var self = CustomBuilder.Builder;
+        var objs = [{value:"", label: get_cbuilder_msg("ubuilder.mainComponent")}];
+        
+        self.frameBody.find("[data-events-triggering]").each(function(i, el){
+            if ($(el).attr("data-cbuilder-classname") !== "menu-component") {
+                objs.push({
+                   value : $(el).attr("data-cbuilder-id"),
+                   label : UI.escapeHTML($(el).data("data").properties.label)
+                });
+            }
+        });
+        
+        return objs;
+    },
+    
+    /*
+     * Get all events based on event object
+     */
+    getEventNames : function(properties, onChangeValues) {
+        var self = CustomBuilder.Builder;
+        var names = [];
+        
+        var element;
+        if (onChangeValues['eventObject'] === "") {
+            element = self.frameBody.find("[data-cbuilder-classname='menu-component']");
+        } else {
+            element = self.frameBody.find("[data-cbuilder-id='"+onChangeValues['eventObject']+"']");
+        }
+        
+        if ($(element).length > 0) {
+            var triggeringJson = $(element).data("events-triggering");
+            if (triggeringJson) {
+                for (var i in triggeringJson) {
+                    names.push({
+                        value : triggeringJson[i].name,
+                        label : triggeringJson[i].name
+                    });
+                    
+                    if (triggeringJson[i].notMatchName !== undefined && triggeringJson[i].notMatchName !== "") {
+                        names.push({
+                            value : triggeringJson[i].notMatchName,
+                            label : triggeringJson[i].notMatchName
+                        });
+                    }
+                }
+            }
+        }
+        
+        return names;
     },
     
     /*

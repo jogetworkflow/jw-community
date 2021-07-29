@@ -384,6 +384,8 @@ PropertyEditor.Util = {
                     if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                         fields = fields[parentId].fields;
                     }
+                } else if (field.repeaterFields) {
+                    fields = field.repeaterFields;
                 }
 
                 var on_change = null;
@@ -632,6 +634,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
+            } else if (field.repeaterFields) {
+                fields = field.repeaterFields;
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
@@ -655,6 +659,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
+            } else if (field.repeaterFields) {
+                fields = field.repeaterFields;
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
@@ -686,6 +692,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
+            } else if (field.repeaterFields) {
+                fields = field.repeaterFields;
             }
             
             for (var i in onChanges) {
@@ -752,6 +760,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
+            } else if (field.repeaterFields) {
+                fields = field.repeaterFields;
             }
             for (var i in onChanges) {
                 var fieldId = onChanges[i];
@@ -925,6 +935,8 @@ PropertyEditor.Util = {
             if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                 fields = fields[parentId].fields;
             }
+        } else if (field.repeaterFields) {
+            fields = field.repeaterFields;
         }
         for (var i in onChanges) {
             var fieldId = onChanges[i];
@@ -8062,6 +8074,7 @@ PropertyEditor.Type.Repeater.prototype = {
             }
 
             type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, null);
+            type.repeaterFields = fieldsHolder;
             property.propertyEditorObject = type;
 
             fieldsHolder[property.name] = type;
