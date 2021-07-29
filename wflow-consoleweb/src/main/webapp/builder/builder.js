@@ -579,7 +579,8 @@ _CustomBuilder = {
         } else {
             builderSetting = {
                 rightPanel : true,
-                advanceTools : false
+                advanceTools : false,
+                autoApplyChanges : true
             };
             $.localStorage.setItem(CustomBuilder.builderType+"-settings", JSON.encode(builderSetting));
         }
@@ -2733,12 +2734,14 @@ _CustomBuilder.Builder = {
             if ($(container).find("[data-cbuilder-classname]").length === 0) {  //empty container, just load it
                 for (var i in elements) {
                     var childComponent = self.parseDataToComponent(elements[i]);
-                    var temp = $('<div></div>');
-                    $(container).append(temp);
-                    
-                    var select = false;
-                    
-                    self.renderElement(elements[i], temp, childComponent, select, deferreds);
+                    if (childComponent !== undefined && childComponent !== null) {
+                        var temp = $('<div></div>');
+                        $(container).append(temp);
+
+                        var select = false;
+
+                        self.renderElement(elements[i], temp, childComponent, select, deferreds);
+                    }
                 }
             } else { //compare and update
                 var i = 0;
