@@ -555,22 +555,12 @@ ul.breadcrumb i.fa-angle-right{
 #content main{
     position: relative;
 }
-#content main > [class*="-body-content"],
-#content main > [class*="_menu_body"],
-#content main > .ui-html{
+#content .main-body-content{
     background-color: var(--theme-content-background, #ffffffcc);
     border: 1px solid rgba(0,0,0,.0625);
     padding: 20px;
 }
-#content main > [class*="-body-content"] + [class*="-body-content"],
-#content main > [class*="-body-content"] + [class*="_menu_body"],
-#content main > [class*="-body-content"] + .ui-html,
-#content main > [class*="_menu_body"] + [class*="_menu_body"],
-#content main > [class*="_menu_body"] + [class*="-body-content"],
-#content main > [class*="_menu_body"] + .ui-html,
-#content main > .ui-html + .ui-html,
-#content main > .ui-html + [class*="-body-content"]
-#content main > .ui-html + [class*="_menu_body"] {
+#content .main-body-content + .main-body-content {
     margin-top: 20px;
 }
 
