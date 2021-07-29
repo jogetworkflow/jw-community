@@ -748,6 +748,8 @@ td.error .chosen-container, td.error input {
     padding: 0;
     list-style: none;
     margin-top: 15px;
+    max-height: calc(100% - 260px);
+    overflow: auto;
 }
 .property_editor_app_resources .app_resources li {
     display: inline-block;
