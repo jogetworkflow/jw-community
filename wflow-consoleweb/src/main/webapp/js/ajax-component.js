@@ -12,6 +12,10 @@ AjaxComponent = {
         });
         
         AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
+        
+        setTimeout(function(){
+            $(window).trigger('resize'); //inorder for datalist to render in correct viewport
+        }, 5);
     },
     
     /*
