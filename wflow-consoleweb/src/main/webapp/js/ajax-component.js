@@ -6,7 +6,7 @@ AjaxComponent = {
      */
     initAjax : function(element) {
         AjaxComponent.currentUrlEventListening = [];
-        $(element).find("[data-ajax-component]").each(function() {
+        $(element).find("[data-ajax-component], [data-events-triggering], [data-events-listening]").each(function() {
             AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
         });
@@ -291,7 +291,7 @@ AjaxComponent = {
                 if (!isAjaxComponent) {
                     AjaxComponent.triggerPageLoadedEvent();
                 }
-                AjaxComponent.triggerEvents(contentConatiner, url, method);
+                AjaxComponent.triggerEvents(contentConatiner, url, method, formData);
                 
                 $(contentConatiner).removeClass("ajaxloading");
                 $(contentConatiner).removeAttr("data-content-placeholder");
@@ -356,7 +356,7 @@ AjaxComponent = {
     /*
      * Check the event triggering rules and trigger event
      */
-    triggerEvents : function(element, url, method) {
+    triggerEvents : function(element, url, method, formData) {
         var triggered = false;
         
         if (method === undefined) {
@@ -388,6 +388,12 @@ AjaxComponent = {
                         var compareValue = rules[r].value;
                         
                         var values = urlParams[rname];
+                        if (values === undefined && formData !== undefined && formData.has(rname)) {
+                            values = formData.get(rname);
+                            if (!Array.isArray(values)) {
+                                values = [values];
+                            }
+                        }
                         
                         if (op === "==" || op === "!=" || op === ">" || op === ">=" || op === "<" || op === "<=" || op === "true" || op === "false" || op === "in") {
                             var value = ""
@@ -487,6 +493,9 @@ AjaxComponent = {
      */
     triggerEvent : function(name, urlParams) {
         var e = $.Event(name, urlParams);
+        if (console && console.log) {
+            console.log("Event `" + name + "` triggered.");
+        }
         $("body").trigger(e);
     },
     
@@ -518,6 +527,9 @@ AjaxComponent = {
 
                     $("body").off(eventName);
                     $("body").on(eventName, "", {element: component, eventObj : events[i]}, function(event){
+                        if (console && console.log) {
+                            console.log("Event `" + event.type + "." + id + "-" + i + "` received.");
+                        }
                         AjaxComponent.handleEventAction(event.data.element, event.data.eventObj, event);
                     });
                     AjaxComponent.currentUrlEventListening.push(eventName);

@@ -1339,7 +1339,7 @@ UserviewBuilder = {
      */
     getSimpleAjaxEventPropertyOptions : function(){
         return {
-            title: get_cbuilder_msg("ubuilder.urlParamsEvent"),
+            title: get_cbuilder_msg("ubuilder.event.listening"),
             properties:[
                 {
                     name : 'attr-data-events-listening', 
@@ -1349,7 +1349,7 @@ UserviewBuilder = {
                         {
                             name : 'eventObject',
                             label : get_cbuilder_msg("ubuilder.event.object"),
-                            type : 'selecbox',
+                            type : 'selectbox',
                             options_callback : 'UserviewBuilder.getEventObject'
                         },
                         {
