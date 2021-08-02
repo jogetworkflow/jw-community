@@ -1755,6 +1755,10 @@ UserviewBuilder = {
         var element;
         if (onChangeValues['eventObject'] === "") {
             element = self.frameBody.find("[data-cbuilder-classname='menu-component']");
+            names.push({
+                value : "page_loaded",
+                label : "page_loaded"
+            });
         } else {
             element = self.frameBody.find("[data-cbuilder-id='"+onChangeValues['eventObject']+"']");
         }

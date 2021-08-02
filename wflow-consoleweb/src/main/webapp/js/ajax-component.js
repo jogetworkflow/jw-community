@@ -11,6 +11,7 @@ AjaxComponent = {
             AjaxComponent.initContent($(this));
         });
         
+        AjaxComponent.triggerPageLoadedEvent();
         AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
         
         setTimeout(function(){
@@ -287,6 +288,9 @@ AjaxComponent = {
                     customCallback();
                 }
                 
+                if (!isAjaxComponent) {
+                    AjaxComponent.triggerPageLoadedEvent();
+                }
                 AjaxComponent.triggerEvents(contentConatiner, url, method);
                 
                 $(contentConatiner).removeClass("ajaxloading");
@@ -334,6 +338,19 @@ AjaxComponent = {
     
     isLinkClickedEvent : function(element, url) {
         return AjaxComponent.triggerEvents(element, url, "linkClicked");
+    },
+    
+    /*
+     * trigger a default page loaded event
+     */
+    triggerPageLoadedEvent : function() {
+        var urlParams = {};
+        var url = window.location.href;
+        if (url.indexOf("?") !== -1) {
+            urlParams = UrlUtil.getUrlParams(url.substring(url.indexOf("?") + 1));
+        }
+            
+        AjaxComponent.triggerEvent("page_loaded", urlParams);
     },
     
     /*
