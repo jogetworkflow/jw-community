@@ -119,6 +119,20 @@ public class SetupManager {
     }
     
     /**
+     * Create or update a system setting
+     * @param setting 
+     */
+    public void updateSetting(String property, String value) {
+        Setting setting = getSettingByProperty(property);
+        if (setting == null) {
+            setting = new Setting();
+            setting.setProperty(property);
+        }
+        setting.setValue(value);
+        saveSetting(setting);
+    }
+    
+    /**
      * Save a system setting
      * @param setting 
      */

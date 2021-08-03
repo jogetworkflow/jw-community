@@ -1,11 +1,10 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import net.sf.ehcache.Cache;
+import java.util.Map;
 import net.sf.ehcache.Element;
 import org.hibernate.Query;
 import org.joget.apps.app.model.AppDefinition;
@@ -19,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> implements MessageDao {
 
     public static final String ENTITY_NAME = "Message";
-    private Cache cache;
+    private AppDefCache cache;
 
     @Autowired
     AppService appService;
@@ -32,33 +31,38 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         return ENTITY_NAME;
     }
     
-    public Cache getCache() {
+    public AppDefCache getCache() {
         return cache;
     }
 
-    public void setCache(Cache cache) {
+    public void setCache(AppDefCache cache) {
         this.cache = cache;
     }
     
-    private String getCacheKey(String messageKey, String locale, String appId, String version){
-        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_MSG_"+messageKey+":"+locale;
+    private String getCacheKey(String locale, String appId, String version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_MSG_"+locale;
     }
 
     public Message loadByMessageKey(String messageKey, String locale, AppDefinition appDefinition) {
-        String key = getCacheKey(messageKey, locale, appDefinition.getId(), appDefinition.getVersion().toString());
-        Element element = cache.get(key);
-
+        return getCachedMessageList(locale, appDefinition).get(messageKey);
+    }
+    
+    public Map<String, Message> getCachedMessageList(String locale, AppDefinition appDefinition) {
+        Map<String, Message> messageMap = new HashMap<String, Message>();
+        String cacheKey = getCacheKey(locale, appDefinition.getAppId(), appDefinition.getVersion().toString());
+        Element element = cache.get(cacheKey, appDefinition);
         if (element == null) {
-            Message message = loadById(messageKey + Message.ID_SEPARATOR + locale, appDefinition);
-
-            if (message != null) {
-                element = new Element(key, (Serializable) message);
-                cache.put(element);
+            messageMap = new HashMap<String, Message>();
+            Collection<Message> results = getMessageList(null, locale, appDefinition, null, null, null, null);
+            for (Message message : results) {
+                messageMap.put(message.getMessageKey(), message);
             }
-            return message;
+            element = new Element(cacheKey, messageMap);
+            cache.put(element, appDefinition);
         } else {
-            return (Message) element.getValue();
+            messageMap = (HashMap<String, Message>) element.getObjectValue();
         }
+        return messageMap;
     }
 
     public Collection<Message> getMessageList(String filterString, String locale, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
@@ -153,8 +157,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
                 Collection<Message> list = appDef.getMessageList();
                 for (Message object : list) {
                     if (obj.getId().equals(object.getId())) {
-                        String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
-                        cache.remove(key);
+                        String key = getCacheKey(object.getLocale(), object.getAppId(), object.getAppVersion().toString());
+                        cache.remove(key, appDef);
         
                         list.remove(obj);
                         break;
@@ -184,8 +188,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     
     @Override
     public boolean update(Message object) {
-        String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
-        cache.remove(key);
+        String key = getCacheKey(object.getLocale(), object.getAppId(), object.getAppVersion().toString());
+        cache.remove(key, object.getAppDefinition());
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         

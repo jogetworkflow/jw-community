@@ -4,17 +4,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LongTermCache;
 
 public class ResourceBundleMessageDao extends AbstractSpringDao {
 
     public static final String ENTITY_NAME = "ResourceBundleMessage";
 
-    private Cache cache;
+    private LongTermCache cache;
 
-    public void setCache(Cache cache) {
+    public void setCache(LongTermCache cache) {
         this.cache = cache;
     }
 
@@ -74,6 +74,6 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
     }
 
     private String getCacheKey(String key, String locale){
-        return DynamicDataSourceManager.getCurrentProfile()+locale;
+        return DynamicDataSourceManager.getCurrentProfile()+ "_" +locale;
     }
 }

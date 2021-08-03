@@ -1079,8 +1079,8 @@ public class AppUtil implements ApplicationContextAware {
         }
         if (appDef != null) {
             MessageDao messageDao = (MessageDao) getApplicationContext().getBean("messageDao");
-            Collection<Message> messageList = messageDao.getMessageList(null, currentLocale, appDef, null, null, null, null);
-            for (Message message : messageList) {
+            Map<String, Message> messageList = messageDao.getCachedMessageList(currentLocale, appDef);
+            for (Message message : messageList.values()) {
                 String key = message.getMessageKey();
                 String label = message.getMessage();
                 messageMap.put(key, label);

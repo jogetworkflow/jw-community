@@ -1009,14 +1009,12 @@ public class PluginManager implements ApplicationContextAware {
 
             for (String key : keyList) {
                 String tempKey = key.replaceAll("@@", "");
-                String label = null;
+                String label = ResourceBundleUtil.getMessage(tempKey);
 
-                if (bundle != null && bundle.containsKey(tempKey)) {
+                if (label == null && bundle != null && bundle.containsKey(tempKey)) {
                     label = bundle.getString(tempKey);
-                } else if (ResourceBundleUtil.getMessage(tempKey) != null) {
-                    label = ResourceBundleUtil.getMessage(tempKey);
                 }
-
+                
                 if (label != null) {
                     if (ESCAPE_JAVASCRIPT.equals(escapeType)) {
                         label = StringEscapeUtils.escapeJavaScript(label);

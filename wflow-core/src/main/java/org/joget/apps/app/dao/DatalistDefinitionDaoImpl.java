@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
@@ -18,16 +17,16 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
 
     public static final String ENTITY_NAME = "DatalistDefinition";
 
-    private Cache cache;
+    private AppDefCache cache;
     
     @Autowired
     AppDefinitionDao appDefinitionDao;
 
-    public Cache getCache() {
+    public AppDefCache getCache() {
         return cache;
     }
 
-    public void setCache(Cache cache) {
+    public void setCache(AppDefCache cache) {
         this.cache = cache;
     }
     
@@ -73,14 +72,14 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
     @Override
     public DatalistDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey);
+        Element element = cache.get(cacheKey, appDefinition);
 
         if (element == null) {
             DatalistDefinition listDef = super.loadById(id, appDefinition);
             
             if (listDef != null) {
                 element = new Element(cacheKey, (Serializable) listDef);
-                cache.put(element);
+                cache.put(element, appDefinition);
             }
             return listDef;
         }else{
@@ -127,7 +126,7 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         }
         
         // remove from cache
-        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         
         // save in db
         object.setDateModified(new Date());
@@ -156,7 +155,7 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
                 appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
-                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
                 
                 if (!AppDevUtil.isGitDisabled()) {
                     // remove json

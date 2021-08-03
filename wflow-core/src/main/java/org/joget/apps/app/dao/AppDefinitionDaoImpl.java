@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import net.sf.ehcache.Cache;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.lang.ArrayUtils;
@@ -57,18 +56,18 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     PluginManager pluginManager;    
      
     public static final String ENTITY_NAME = "AppDefinition";
-    private Cache cache;
+    private AppDefCache cache;
 
-    public Cache getCache() {
+    public AppDefCache getCache() {
         return cache;
     }
 
-    public void setCache(Cache cache) {
+    public void setCache(AppDefCache cache) {
         this.cache = cache;
     }
     
     public void clearCache(AppDefinition obj) {
-        cache.removeAll();
+        cache.removeAll(obj);
     }
 
     @Override

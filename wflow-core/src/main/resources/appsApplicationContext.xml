@@ -15,9 +15,15 @@
     <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl">
     </bean>
 
-    <bean id="fluCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="fluCacheObject" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
+    </bean>
+    
+    <bean id="fluCache" class="org.joget.apps.app.dao.AppDefCache">
+        <property name="cacheObject">
+            <ref local="fluCacheObject" />
+        </property>
     </bean>
 
     <bean id="userviewMenuCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
@@ -34,13 +40,9 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.CSS_CACHE"/>
     </bean>
-
-    <bean id="formColumnCacheBean" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-    </bean>
     
     <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache">
-        <property name="cache" ref="formColumnCacheBean"/>
+        <property name="cache" ref="longTermCache"/>
     </bean>
     
     <bean id="formSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
@@ -139,10 +141,12 @@
 
     <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
     
     <bean id="appResourceDao" class="org.joget.apps.app.dao.AppResourceDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">
