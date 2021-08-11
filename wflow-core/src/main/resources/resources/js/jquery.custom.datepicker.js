@@ -158,7 +158,9 @@
                 if (o.currentDateAs !== undefined && o.currentDateAs !== "") {
                     var option = $(element).datepicker( "option", o.currentDateAs);
                     if (option === undefined || option === null) {
+                        $(element).next(".trigger").remove();
                         $(element).datepicker("option", o.currentDateAs, new Date());
+                        $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
                     }
                 }
             });
