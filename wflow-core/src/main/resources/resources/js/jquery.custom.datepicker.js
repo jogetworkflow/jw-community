@@ -170,6 +170,7 @@
         if (value === "" && $(target).datetimepicker("option", type) === null) {
             return;
         }
+        $(target).next(".trigger").remove();
         if (o.datePickerType === "dateTime") {
             $(target).datetimepicker("option", type, value);
         } else if (o.datePickerType === "timeOnly") {
@@ -182,5 +183,6 @@
         } else {
             $(target).datepicker("option", type, value);
         }
+        $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
     }
 })(jQuery);
