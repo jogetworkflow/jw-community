@@ -158,7 +158,9 @@
                 if (o.currentDateAs !== undefined && o.currentDateAs !== "") {
                     var option = $(element).datepicker( "option", o.currentDateAs);
                     if (option === undefined || option === null) {
+                        $(element).next(".trigger").remove();
                         $(element).datepicker("option", o.currentDateAs, new Date());
+                        $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
                     }
                 }
             });
@@ -170,6 +172,7 @@
         if (value === "" && $(target).datetimepicker("option", type) === null) {
             return;
         }
+        $(target).next(".trigger").remove();
         if (o.datePickerType === "dateTime") {
             $(target).datetimepicker("option", type, value);
         } else if (o.datePickerType === "timeOnly") {
@@ -182,5 +185,6 @@
         } else {
             $(target).datepicker("option", type, value);
         }
+        $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
     }
 })(jQuery);
