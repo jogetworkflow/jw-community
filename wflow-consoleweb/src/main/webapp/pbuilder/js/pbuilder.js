@@ -38,8 +38,8 @@ ProcessBuilder = {
             $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
             
             $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
-                <button id="zoom-minus" class="btn btn-light"  title="Zoom Minus" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
-                <button id="zoom-plus" class="btn btn-light"  title="Zoom Plus" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
+                <button id="zoom-minus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomIn')+' (90%)" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
+                <button id="zoom-plus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomOut')+' (110%)" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
             
             ProcessBuilder.initComponents();
             CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
@@ -3068,6 +3068,7 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         self.setZoom("-");
         ProcessBuilder.jsPlumb.setZoom(self.zoom);
+        ProcessBuilder.updateZoomLabel();
     },
     
     /*
@@ -3077,7 +3078,29 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         self.setZoom("+");
         ProcessBuilder.jsPlumb.setZoom(self.zoom);
+        ProcessBuilder.updateZoomLabel();
     },
+    
+    /*
+     * Update zoom label
+     */
+    updateZoomLabel: function() {
+        var self = CustomBuilder.Builder;
+        var strIn = self.zoom - 0.1;
+        var strOut = self.zoom + 0.1;
+        if (strIn < 0.4) {
+            strIn = get_cbuilder_msg('pbuilder.label.disabled');
+        } else {
+            strIn = Math.round(strIn * 100) + "%";
+        }
+        if (strOut > 1.6) {
+            strOut = get_cbuilder_msg('pbuilder.label.disabled');
+        } else {
+            strOut = Math.round(strOut * 100) + "%";
+        }
+        $("#zoom-minus").attr("title", get_cbuilder_msg('pbuilder.label.zoomIn') + " (" + strIn + ")");
+        $("#zoom-plus").attr("title", get_cbuilder_msg('pbuilder.label.zoomOut') + " (" + strOut + ")");
+    },       
      
     /*
      * validate before post to save
