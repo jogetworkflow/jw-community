@@ -3672,6 +3672,29 @@ _CustomBuilder.Builder = {
                             self.dragElement = self.component.builderTemplate.dragging(self.dragElement, self.component);
                             self.dragElement.attr("data-cbuilder-dragelement", "true");
                         }
+                        
+                        //check if the drag element is visible in the canvas
+                        var dragOffset = $(self.dragElement).offset();
+                        var scrollHMin = $(self.frameDoc).scrollLeft();
+                        var scrollHMax = scrollHMin + $(self.iframe).width();
+                        var dragLeft = dragOffset.left;
+                        var dragRight = dragOffset.left + $(self.dragElement).width();
+                        if (dragLeft < scrollHMin) {
+                            $(self.frameDoc).scrollLeft(dragLeft);
+                        }
+                        if (dragRight > scrollHMax) {
+                            $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
+                        }
+                        var scrollVMin = $(self.frameDoc).scrollTop();
+                        var scrollVMax = scrollVMin + $(self.iframe).height();
+                        var dragTop = dragOffset.top;
+                        var dragBottom = dragOffset.top + $(self.dragElement).height();
+                        if (dragTop < scrollVMin) {
+                            $(self.frameDoc).scrollTop(dragTop);
+                        }
+                        if (dragBottom > scrollVMax) {
+                            $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                        }
 
                         if (self.iconDrag)
                             self.iconDrag.css({'left': x + 238, 'top': y + 20});
