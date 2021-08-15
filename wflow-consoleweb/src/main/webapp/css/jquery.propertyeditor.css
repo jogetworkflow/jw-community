@@ -2079,13 +2079,13 @@ body .ui-dialog .button_form.ui-dialog-content{
 .assist_icon:hover {
     opacity: 1;
 }
-.property-type-colorschema .selector {
+.property-type-colorscheme .selector {
     position: relative;
 }
-.property-type-colorschema .selector .color_values{
+.property-type-colorscheme .selector .color_values{
     cursor: pointer;
 }
-.property-type-colorschema .selector .color_values span.trigger{
+.property-type-colorscheme .selector .color_values span.trigger{
     display: inline-block;
     padding: 11.5px 5px;
     vertical-align: bottom;
@@ -2093,8 +2093,8 @@ body .ui-dialog .button_form.ui-dialog-content{
     color: #333;
     border-radius: 0px 3px 3px 0;
 }
-.property-type-colorschema .selector.showEditor .color_values colorgroup:after,
-.property-type-colorschema .selector.showPicker .color_values span.trigger:before {
+.property-type-colorscheme .selector.showEditor .color_values colorgroup:after,
+.property-type-colorscheme .selector.showPicker .color_values span.trigger:before {
     content: '';
     display: block;
     position: fixed;
@@ -2104,7 +2104,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     bottom: 0;
     cursor: default;
 }
-.property-type-colorschema ul{
+.property-type-colorscheme ul{
     list-style: none;
     margin: 0;
     padding: 0;
@@ -2118,17 +2118,17 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-radius: 5px;
     counter-reset: colorshema;
 }
-.property-type-colorschema .selector.showPicker ul {
+.property-type-colorscheme .selector.showPicker ul {
     display: block !important;
     z-index: 2;
     overflow: auto;
     max-width: 880px;
 }
-.property-type-colorschema li {
+.property-type-colorscheme li {
     padding: 5px;
     display: inline-block;
 }
-.property-type-colorschema li:before{
+.property-type-colorscheme li:before{
     display: inline-block;
     counter-increment: colorshema;
     content: counter(colorshema) ". ";
@@ -2137,19 +2137,19 @@ body .ui-dialog .button_form.ui-dialog-content{
     text-align: right;
     margin-right: 3px;
 }
-.property-type-colorschema li.selected colorgroup{
+.property-type-colorscheme li.selected colorgroup{
     border: 1px solid #007bff;
 }
-.property-type-colorschema li:hover{
+.property-type-colorscheme li:hover{
     background: #007bff;
     color: #fff;
 }
-.property-type-colorschema .color-input{
+.property-type-colorscheme .color-input{
     position: relative;
     margin-top: 5px;
     z-index: 5;
 }
-.property-type-colorschema colorgroup {
+.property-type-colorscheme colorgroup {
     padding: 6px 3px;
     border: 1px solid #ced4da;
     border-radius: 3px;
@@ -2160,7 +2160,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     text-align: center;
     vertical-align: middle;
 }
-.property-type-colorschema color {
+.property-type-colorscheme color {
     width:20px !important;
     height:20px !important;
     display:inline-block;
@@ -2168,14 +2168,14 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-radius: 3px;
     border: 1px solid #ced4da;
 }
-.property-type-colorschema .color_values colorgroup{
+.property-type-colorscheme .color_values colorgroup{
     padding: 8px 5px;
     height: 42px;
     width: 170px;
     cursor: text;
     border-radius: 3px 0px 0px 3px;
 }
-.property-type-colorschema .color_values color{
+.property-type-colorscheme .color_values color{
     width:25px !important;
     height:25px !important;
     cursor: text;

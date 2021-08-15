@@ -23,9 +23,9 @@
         }]
     },
     {
-        name : 'dx8colorSchema',
-        label : '@@ubuilder.colorSchema@@',
-        type : 'colorschema',
+        name : 'dx8colorScheme',
+        label : '@@ubuilder.colorScheme@@',
+        type : 'colorscheme',
         value : '#f9fafb;#3b4348;#03a9f4;#6ecefb;#ffffff;#ffffff'
     },
     {

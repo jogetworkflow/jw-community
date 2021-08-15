@@ -957,8 +957,8 @@ UserviewBuilder = {
         element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
         if (props.dx8background !== undefined) {
             var css = "<style data-cbuilder-style='calculatedThemeStyle'>body{";
-            if (props.dx8colorSchema !== undefined  && props.dx8colorSchema !== "") {
-                var colors = props.dx8colorSchema.split(";");
+            if (props.dx8colorScheme !== undefined  && props.dx8colorScheme !== "") {
+                var colors = props.dx8colorScheme.split(";");
                 for (var i =0; i < 6; i++) {
                     if (colors[i] !== "") {
                         css += "--theme-color"+(i+1)+":"+colors[i]+";";

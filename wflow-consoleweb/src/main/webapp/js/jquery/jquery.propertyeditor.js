@@ -9658,10 +9658,10 @@ PropertyEditor.Type.CssStyle.prototype = {
 };
 PropertyEditor.Type.CssStyle = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CssStyle.prototype);
 
-PropertyEditor.Type.ColorSchema = function() {};
-PropertyEditor.Type.ColorSchema.prototype = {
-    shortname: "colorschema",
-    schemaOptions : [
+PropertyEditor.Type.ColorScheme = function() {};
+PropertyEditor.Type.ColorScheme.prototype = {
+    shortname: "colorscheme",
+    schemeOptions : [
         "#f1f1f1;#FFFFFF;#8D9BCA;#1EA0CB;#253037;#19242b",
         "#f1f1f1;#FFFFFF;#BA9994;#A8845C;#4C383A;#846C66",
         "#f1f1f1;#FFFFFF;#A49689;#859190;#2F3037;#838489",
@@ -9719,7 +9719,7 @@ PropertyEditor.Type.ColorSchema.prototype = {
 
         if (this.isDataReady) {
             if (field.properties.editColor !== undefined && field.properties.editColor.toLowerCase() === "true") {
-                var selector = $("#" + this.id + "_schema_selector .color_values");
+                var selector = $("#" + this.id + "_scheme_selector .color_values");
                 if ($(selector).length > 0) {
                     var value = selector.find('colorgroup').css("background-color");
                     selector.find('colorgroup color').each(function(){
@@ -9730,7 +9730,7 @@ PropertyEditor.Type.ColorSchema.prototype = {
                     data[this.properties.name] = "";
                 }
             } else {
-                var selector = $("#" + this.id + "_schema_selector");
+                var selector = $("#" + this.id + "_scheme_selector");
                 if ($(selector).find("li.selected").length > 0) {
                     data[this.properties.name] = $(selector).find("li.selected").attr("data-value");
                 } else {
@@ -9749,7 +9749,7 @@ PropertyEditor.Type.ColorSchema.prototype = {
             this.value = "";
         }
         
-        var html = '<div id="' + this.id + '_schema_selector" class="selector"><div class="color_values">';
+        var html = '<div id="' + this.id + '_scheme_selector" class="selector"><div class="color_values">';
         
         var colors = this.value.split(";");
         if (colors.length === 6) {
@@ -9764,13 +9764,13 @@ PropertyEditor.Type.ColorSchema.prototype = {
         
         html += '<span class="trigger"><i class="fas fa-chevron-down"></i></span></div><div class="color-input" style="display:none;"><input type="text"/></div><ul style="display:none;">';
 
-        var schemaOptions = [];
-        if (thisObj.properties.schemaOptions !== undefined) {
-            schemaOptions = thisObj.properties.schemaOptions;
+        var schemeOptions = [];
+        if (thisObj.properties.schemeOptions !== undefined) {
+            schemeOptions = thisObj.properties.schemeOptions;
         } else {
-            schemaOptions = thisObj.schemaOptions;
+            schemeOptions = thisObj.schemeOptions;
         }
-        $.each(schemaOptions, function(i, option) {
+        $.each(schemeOptions, function(i, option) {
             var selected = "";
             if (thisObj.value === option) {
                 selected = "selected";
@@ -9791,7 +9791,7 @@ PropertyEditor.Type.ColorSchema.prototype = {
     initScripting : function() {
         var thisObj = this;
         
-        var selector = $("#" + this.id + "_schema_selector");
+        var selector = $("#" + this.id + "_scheme_selector");
         
         if (thisObj.properties.editColor !== undefined && thisObj.properties.editColor.toLowerCase() === "true") {
             $(selector).find(".color-input input").colorPicker({
@@ -9838,14 +9838,14 @@ PropertyEditor.Type.ColorSchema.prototype = {
         this.isDataReady = true;
     },
     renderValue : function() {
-        var selector = $("#" + this.id + "_schema_selector");
+        var selector = $("#" + this.id + "_scheme_selector");
         if ($(selector).find("li.selected").length > 0) {
             $(selector).find(".color_values colorgroup").remove();
             $(selector).find(".color_values").prepend($(selector).find("li.selected").html());
         }
     }
 };
-PropertyEditor.Type.ColorSchema = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ColorSchema.prototype);
+PropertyEditor.Type.ColorScheme = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ColorScheme.prototype);
 
 PropertyAssistant = {
     initialized : false,

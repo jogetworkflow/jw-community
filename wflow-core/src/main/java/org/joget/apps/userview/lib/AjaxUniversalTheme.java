@@ -246,8 +246,8 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     protected String generateLessCss() {
         String css = "body{";
-        if (!getPropertyString("dx8colorSchema").isEmpty()) {
-            String[] colors = getPropertyString("dx8colorSchema").split(";");
+        if (!getPropertyString("dx8colorScheme").isEmpty()) {
+            String[] colors = getPropertyString("dx8colorScheme").split(";");
             for (int i=0; i < 6; i++) {
                 if (!colors[i].isEmpty()) {
                     css += "--theme-color"+(i+1)+":"+colors[i]+ ";";
