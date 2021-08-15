@@ -1735,6 +1735,10 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
 }
+.editor-panel-mode .property-type-repeater .repeater-row.compress{
+    max-height: 66px;
+    overflow: hidden;
+}
 .editor-panel-mode .elementmultiselect {
     background: transparent;
     border: 0;
