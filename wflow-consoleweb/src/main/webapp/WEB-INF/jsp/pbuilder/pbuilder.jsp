@@ -43,6 +43,7 @@
         #listViewerView .cbuilder-node-details-list h6 {margin-bottom: 15px;}
         #listViewerView .cbuilder-node-details-list dt {float: left;clear: left; padding-left: 10px; padding-right: 5px; width: 120px; font-weight: 500;}
         #screenshotView .sticky-buttons {top: 125px;}
+        #cbuilder.jsonDef-builder-view, #cbuilder.i18n-builder-view, #cbuilder.diffChecker-builder-view {--builder-left-panel-width: 0px; --builder-content-top: var(--builder-header-top-height);}
     </style>    
 </c:set>    
 <c:set var="builderCode" scope="request" value="process"/>
