@@ -3624,6 +3624,15 @@ _CustomBuilder.Builder = {
                                             }
                                         }
                                     });
+                                    
+                                    if (child === null && elementsContainer.is("[data-cbuilder-sort-horizontal]")) {
+                                        var lastChild = childs[childs.length -1];
+                                        offset = $(lastChild).offset();
+                                        left = offset.left  - $(self.frameDoc).scrollLeft();
+                                        if (x > left + ($(lastChild).outerWidth() * self.zoom)) {
+                                            child = $(lastChild);
+                                        }
+                                    }
 
                                     if (child !== null) {
                                         var dY = ((child.outerHeight() * self.zoom) / 4);
