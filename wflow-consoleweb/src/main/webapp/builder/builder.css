@@ -1279,9 +1279,19 @@ div.section, .header > ol {
     position: relative;
     left: -1px;
 }
-.left-panel-closed #left-panel-toogle{
-    background: #ddd;
-    color: #000;
+#cbuilder.left-panel-closed #left-panel-toogle{
+    background: #394249;
+    color: #fff;
+    border-color: #394249;
+    height: 100%;
+}
+#cbuilder.left-panel-closed #left-panel {
+    background: #394249;
+    border-color: #394249;
+    box-shadow:none;
+}
+#cbuilder.left-panel-closed #left-panel .drag-elements *{
+    visibility: hidden;
 }
 .auto-apply-changes{
     font-size: 24px;
