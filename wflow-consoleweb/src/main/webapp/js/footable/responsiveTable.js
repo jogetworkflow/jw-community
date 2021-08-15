@@ -16,6 +16,9 @@ function responsiveTable(table) {
         $(filters).hide();
         
         var tableId = $(table).attr("id");
+        if ($("#"+tableId+"_filterpopup").length > 0) {
+            $("#"+tableId+"_filterpopup").closest("table.boxy-wrapper").remove();
+        }
         var searchPopup = new Boxy(
             '<div id="'+tableId+'_filterpopup" class="search_filter_popup"></div>',
             {
