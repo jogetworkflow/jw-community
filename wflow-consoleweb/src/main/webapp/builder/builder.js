@@ -4173,6 +4173,8 @@ _CustomBuilder.Builder = {
                 self.iconDrag.remove();
                 self.iconDrag = null;
             }
+            $("#element-highlight-box").hide();
+            self.selectNode(false);
             
             self.currentParent = null;
             self.component = self.getComponent($this.find("> div").attr("element-class"));
