@@ -17,7 +17,7 @@
 .property-editor-display {
     position: absolute;
     right: 5px;
-    top: 1px;
+    top: 5px;
     z-index: 100;
 }
 .property-editor-container input:not([type]),
@@ -43,26 +43,23 @@
 
 .property-editor-display a {
     text-decoration: none;
-    color: #fff;
+    color: #fff !important;
     font-size: 13px;
     height: 20px;
     width: 20px;
     padding: 0px;
     cursor: pointer;
-    border: solid 1px #222;
+    border: solid 1px #212529;
     opacity: .6;
     -moz-opacity: .6;
     filter: alpha(opacity=60);
-    background: #444;
-    -moz-box-shadow: 0 0 2px #222;
-    -webkit-box-shadow: 0 0 2px #222;
-    box-shadow: 0 0 2px #222;
+    background: #212529;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
     overflow: hidden;
     text-align: center;
-    line-height: 20px;
+    line-height: 19px;
 }
 
 .property-editor-display .compress {
@@ -692,10 +689,10 @@ td.error .chosen-container, td.error input {
     display: inline-block;
 }
 .property-editor-container input.image + .file-picker-actions .choosefile {
-    margin-left: 0;
-    top: -20px;
+    top: -21px;
     position: absolute;
-    left: -38px;
+    left: -51px;
+    padding: 6px 10px 2px 12px;
 }
 .image-placeholder {
     background-size: cover;
@@ -1237,14 +1234,14 @@ html .property-editor-container input[disabled] {
 .property-editor-container select:not([class^=ui]){
     display: block;
     min-width: 54%;
-    height: calc(1.5em + 0.75rem + 2px);
+    height: 32px;
     padding: 6px 12px;
-    line-height: 1.5;
+    line-height: 18px;
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
-    border-radius: 0.25rem;
+    border-radius: 5px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .property-editor-container input[type=number].withUnitSlector{
@@ -1892,6 +1889,14 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode:not(.wider) .element-pages .property-grid .property-input .property-type-grid-row-header{
     background: #9eadba;
     color:#fff;
+}
+.editor-panel-mode .property-type-label .property-input label{
+    padding: 6px 12px;
+    color: #495057;
+    background-color: #ffffff7a;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
 }
 
 /* property assistant */
