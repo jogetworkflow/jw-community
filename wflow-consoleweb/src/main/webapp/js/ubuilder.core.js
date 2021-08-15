@@ -955,7 +955,7 @@ UserviewBuilder = {
         }
 
         element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
-        if (props.dx8background !== undefined) {
+        if (props.dx8background !== undefined || props.dx8colorScheme !== undefined) {
             var css = "<style data-cbuilder-style='calculatedThemeStyle'>body{";
             if (props.dx8colorScheme !== undefined  && props.dx8colorScheme !== "") {
                 var colors = props.dx8colorScheme.split(";");

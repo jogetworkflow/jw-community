@@ -26,7 +26,7 @@
         name : 'dx8colorScheme',
         label : '@@ubuilder.colorScheme@@',
         type : 'colorscheme',
-        value : '#dee2e6;#FFFFFF;#7ea9bd;#2488EE;#052738;#FFFFFF'
+        value : '#e9e9e9;#FFFFFF;#AABEB2;#00652D;#00796b;#004c40'
     },
     {
         name : 'dx8backgroundImage',
@@ -54,7 +54,8 @@
     {
         name : 'dx8headerColor',
         label : '@@ubuilder.headerColor@@',
-        type : 'color'
+        type : 'color',
+        value: '#FFFFFF'
     },
     {
         name : 'dx8headerFontColor',
@@ -85,20 +86,17 @@
     {
         name : 'dx8navActiveLinkBackground',
         label : '@@ubuilder.navActiveLinkBackground@@',
-        type : 'color',
-        value: '#00BCD4'
+        type : 'color'
     },
     {
         name : 'dx8navActiveLinkColor',
         label : '@@ubuilder.navActiveLinkColor@@',
-        type : 'color',
-        value: '#FFFFFF'
+        type : 'color'
     },
     {
         name : 'dx8navActiveIconColor',
         label : '@@ubuilder.navActiveIconColor@@',
-        type : 'color',
-        value: '#FFFFFF'
+        type : 'color'
     },
     {
         name : 'dx8navBadge',
@@ -123,26 +121,22 @@
     {
         name : 'dx8buttonBackground',
         label : '@@ubuilder.buttonBackground@@',
-        type : 'color',
-        value: '#1890FF'
+        type : 'color'
     },
     {
         name : 'dx8buttonColor',
         label : '@@ubuilder.buttonColor@@',
-        type : 'color',
-        value: '#FFFFFF'
+        type : 'color'
     },
     {
         name : 'dx8primaryColor',
         label : '@@ubuilder.primaryColor@@',
-        type : 'color',
-        value: '#FFFFFF'
+        type : 'color'
     },
     {
         name : 'dx8fontColor',
         label : '@@ubuilder.fontColor@@',
-        type : 'color',
-        value: '#000000'
+        type : 'color'
     },
     {
         name : 'dx8contentFontColor',
@@ -152,8 +146,7 @@
     {
         name : 'dx8linkColor',
         label : '@@ubuilder.linkColor@@',
-        type : 'color',
-        value: '#2488EE'
+        type : 'color'
     },
     {
         name : 'dx8linkActiveColor',
@@ -168,8 +161,7 @@
     {
         name : 'dx8footerColor',
         label : '@@ubuilder.footerColor@@',
-        type : 'color',
-        value: '#000000'
+        type : 'color'
     }]
 },
 {
