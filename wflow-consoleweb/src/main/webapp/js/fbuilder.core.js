@@ -37,7 +37,9 @@ FormBuilder = {
      * Load and render data, called from CustomBuilder.loadJson
      */
     load: function (data) {
-        CustomBuilder.Builder.load(data);
+        CustomBuilder.Builder.load(data, function(){
+           FormBuilder.afterUpdate(); 
+        });
     },
     
     /*
@@ -881,6 +883,25 @@ FormBuilder = {
             $temp.val("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#").select();
             document.execCommand("copy");
             $temp.remove();            
+        }
+    },
+    
+    /*
+     * Used for update generate app button 
+     */
+    afterUpdate: function() {
+        if ($("#generator-btn").length > 0) {
+            if (FormBuilder.isEmpty() || !FormBuilder.isSaved()) {
+                $("#generator-btn").addClass("disabled");
+                if (FormBuilder.isEmpty()) {
+                    $("#generator-btn").attr("title",  $("#generator-btn").attr("title-empty"));
+                } else {
+                    $("#generator-btn").attr("title",  $("#generator-btn").attr("title-unsave"));
+                }
+            } else {
+                $("#generator-btn").removeClass("disabled");
+                $("#generator-btn").attr("title",  $("#generator-btn").attr("title-default"));
+            }
         }
     },
       

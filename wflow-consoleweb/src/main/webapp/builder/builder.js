@@ -824,6 +824,8 @@ _CustomBuilder = {
         var json = JSON.encode(CustomBuilder.data);
         CustomBuilder.updateJson(json, addToUndo);
         CustomBuilder.updatePasteIcons();
+        
+        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["afterUpdate"], [CustomBuilder.data]);
     },
     
     /*

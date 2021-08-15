@@ -83,7 +83,9 @@
                 "load" : "FormBuilder.load",
                 "saveEditProperties" : "FormBuilder.saveEditProperties",
                 "tooltipViewInit" : "FormBuilder.tooltipViewInit",
-                "tableUsageViewInit" : "FormBuilder.tableUsageViewInit"
+                "tableUsageViewInit" : "FormBuilder.tableUsageViewInit",
+                "afterUpdate" : "FormBuilder.afterUpdate",
+                "builderSaved" : "FormBuilder.afterUpdate"
             }
         },
         "advanced_tools" : {
