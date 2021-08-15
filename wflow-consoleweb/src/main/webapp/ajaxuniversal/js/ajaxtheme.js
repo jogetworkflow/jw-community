@@ -58,11 +58,11 @@ AjaxUniversalTheme = {
                 if ($("#"+cid).hasClass("toggled")) {
                     $(this).addClass("toggled");
                 }
-                $("#"+cid).replaceWith($(this));
+                $("#category-container #"+cid).replaceWith($(this));
             } else {
                 $(this).find(".menu-container > li").each(function(){
                     var mid = $(this).attr("id");
-                    $("#"+mid).replaceWith($(this));
+                    $("#category-container #"+mid).replaceWith($(this));
                 });
             }
             
