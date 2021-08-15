@@ -1898,6 +1898,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
 }
+.editor-panel-mode .property-type-image i.assist_icon {
+    right: 45px;
+}
 
 /* property assistant */
 #propertyAssistantDialog .title-bar{
