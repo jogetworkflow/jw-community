@@ -195,7 +195,7 @@ DatalistBuilder = {
             $("#element-highlight-box").hide();
 
             var html = '<div class="dataList" style="display:block !important;" data-cbuilder-uneditable data-cbuilder-classname="org.joget.apps.datalist.model.DataList" >\
-                            <form class="filter_form"><div class="filters" data-cbuilder-columns_filters data-cbuilder-filters data-cbuilder-sort-horizontal></div></form>\
+                            <form class="filter_form"><div class="filters" data-cbuilder-columns_filters data-cbuilder-filters data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragFiltersHere')+'"></div></form>\
                             <div class="footable-buttons" style="display:none">\
                                 <button class="expandAll footable-button"><i></i> Expand All</button>\
                                 <button class="collapseAll footable-button"><i></i> Collapse All</button>\
@@ -204,8 +204,8 @@ DatalistBuilder = {
                             <form>\
                                 <table class="xrounded_shadowed expandfirst">\
                                     <thead>\
-                                        <tr data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-prepend  data-cbuilder-sort-horizontal>\
-                                            <th class="gap">&nbsp;</th><th class="row_action_container row_action" data-cbuilder-all_actions data-cbuilder-rowActions  data-cbuilder-sort-horizontal></th>\
+                                        <tr data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-prepend  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragColumnsHere')+'">\
+                                            <th class="gap">&nbsp;</th><th class="row_action_container row_action" data-cbuilder-all_actions data-cbuilder-rowActions  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragRowActionsHere')+'"></th>\
                                         </tr>\
                                     </thead>\
                                     <tbody>\
@@ -216,7 +216,7 @@ DatalistBuilder = {
                                         <tr class="odd"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
                                     </tbody>\
                                 </table>\
-                                <div class="actions bottom left" data-cbuilder-all_actions data-cbuilder-actions  data-cbuilder-sort-horizontal></div>\
+                                <div class="actions bottom left" data-cbuilder-all_actions data-cbuilder-actions  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragActionsHere')+'"></div>\
                             </form>\
                         </div>';
 

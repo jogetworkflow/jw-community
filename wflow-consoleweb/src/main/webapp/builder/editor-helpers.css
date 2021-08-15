@@ -41,10 +41,21 @@ body.is-dragging [data-cbuilder-droparea]:after {
     bottom: 0;
     right: 0;
     pointer-events: none;
-    background: repeating-linear-gradient( 45deg, #606dbc, #606dbc 10px, #fff 10px, #fff 20px);
-    opacity: 0.1;
+    background: repeating-linear-gradient( 45deg, #606dbc52, #606dbc52 10px, #ffffff52 10px, #ffffff52 20px);
+    opacity: 0.3;
     display: block;
-    border:3px solid #606dbc;
+    border:3px solid #606dbc52;
+}
+body.is-dragging [data-cbuilder-droparea][data-cbuilder-droparea-msg]:after {
+    content: attr(data-cbuilder-droparea-msg);
+    color: #606dbc;
+    text-align: center;
+    font-size: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    font-weight: normal;
 }
 body.screenshot-in-progress .screenshot-hidden{
     display:none;
