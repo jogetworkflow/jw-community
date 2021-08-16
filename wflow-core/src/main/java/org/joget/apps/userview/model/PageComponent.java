@@ -38,6 +38,9 @@ public abstract class PageComponent extends ExtElement {
     }
     
     public boolean isPermissionHidden() {
+        if ("true".equals(userview.getParamString("isBuilder"))) {
+            return false;
+        }
         if (Permission.DEFAULT.equals(userview.getPermissionKey())) {
             return getPropertyString("hidden").equalsIgnoreCase("true");
         } else if (getProperties().containsKey("permission_rules")) {

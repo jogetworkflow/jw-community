@@ -242,6 +242,7 @@ public class UserviewBuilderWebController {
                 
                 Userview userview = new Userview();
                 userview.setProperty("id", userviewId);
+                userview.setParams(requestParameters);
                 menu.setUserview(userview);
                 
                 if (jObj.has("referencePage")) {
@@ -297,6 +298,7 @@ public class UserviewBuilderWebController {
                 menu.setUrl("");
                 
                 Userview userview = new Userview();
+                userview.setParams(requestParameters);
                 userview.setProperty("id", userviewId);
                 menu.setUserview(userview);
                 
@@ -344,6 +346,7 @@ public class UserviewBuilderWebController {
                     ((UserviewMenu) pc).setUrl("");
                 }
                 Userview userview = new Userview();
+                userview.setParams(requestParameters);
                 userview.setProperty("id", userviewId);
                 pc.setUserview(userview);
                 
