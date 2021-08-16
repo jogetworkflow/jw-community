@@ -32,13 +32,14 @@ public class AuditTrialJsonController {
         List<AuditTrail> auditTrailList;
         String condition = "";
         Collection<Object> args = new ArrayList<Object>();
-
+        boolean isSearched = false;
         if (search != null && !search.isEmpty()) {
             condition = "(e.username like ? or e.clazz like ? or e.method like ? or e.message like ?)";
             args.add("%" + search + "%");
             args.add("%" + search + "%");
             args.add("%" + search + "%");
             args.add("%" + search + "%");
+            isSearched = true;
         }
         
         if (dateFrom != null && dateFrom.trim().length() > 0 && dateTo != null && dateTo.trim().length() > 0) {
@@ -88,6 +89,8 @@ public class AuditTrialJsonController {
             dateToCal.set(Integer.parseInt(dateTos[0]), Integer.parseInt(dateTos[1]) - 1, Integer.parseInt(dateTos[2]), 23, 59, 59);
 
             jsonObject.accumulate("total", auditTrailDao.count("where timestamp >= ? and timestamp <=?", new Object[]{dateFromCal.getTime(), dateToCal.getTime()}));
+        } else if(isSearched){
+            jsonObject.accumulate("total", auditTrailDao.count(condition, args.toArray()));
         } else {
             jsonObject.accumulate("total", auditTrailDao.count("", null));
         }
