@@ -583,7 +583,7 @@ public class AppWebController {
                         Plugin plugin = pluginManager.getPlugin(permission.get("className").toString());
                         if (plugin != null && plugin instanceof Permission) {
                             Permission up = (Permission) plugin;
-                            up.setProperties((Map) value.get("properties"));
+                            up.setProperties((Map) permission.get("properties"));
                             up.setCurrentUser(workflowUserManager.getCurrentUser());
                             up.setRequestParameters(request.getParameterMap());
                             isAuthorize = up.isAuthorize();
