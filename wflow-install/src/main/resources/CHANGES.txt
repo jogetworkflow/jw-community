@@ -3,6 +3,21 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.21
+=================
+95c547988 Fixed: wflow-consoleweb - Audit Trail - The paging number are not showing correct results when there is a filter value. GH #55 @8.0-SNAPSHOT
+86da1b18e Fixed: wflow-core - Git Commit Helper - Temporary working directory did not delete fully in Windows. @8.0-SNAPSHOT
+57f3c9ef3 Fixed: wflow-core - Update AppWebController.java in order to fix Resource Permission. PR #53 @7.0-SNAPSHOT
+282f3afec Bump bcprov-jdk15on from 1.60 to 1.67 in /wflow-core
+8b3bfbe6d Fixed: wflow-core - Date Picker UI issue using X-Admin theme. #T187 @7.0-SNAPSHOT
+4594a665e Fixed: wflow-core - Datalist Export converts ' to &apos;. #T172 @7.0-SNAPSHOT
+986554b4a Fixed: wflow-core - FormPdfUtil - Prevent Regex DOS and remove redundant processing. @7.0-SNAPSHOT
+31557472e Fixed: wflow-core - MobileUtil - Prevent Regex DOS. @7.0-SNAPSHOT
+8619a41a8 Fixed: wflow-commons, wflow-plugin-base, wflow-core - Fixed error logging not using LogUtil @7.0-SNAPSHOT
+d4bfc7bc3 Modified: wflow-core - JSON Tool - Removed unused streamToString method @7.0-SNAPSHOT
+dd5aa9f3e Modified: wflow-consoleweb - Plugins - Added HTTP POST method requirement for plugin refresh @7.0-SNAPSHOT
+a51cc8659 Fixed: wflow-core - Security - Reflected XSS in App Name. #T149 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.20
 =================
 09072ffae Fixed: wflow-plugin-base - Plugin - Prevent NPE when label is return null. #9199 @7.0-SNAPSHOT
