@@ -90,4 +90,13 @@ public abstract class DefaultPlugin implements Plugin, BundleActivator {
         String helplink = ResourceBundleUtil.getMessage(getClass().getName() + ".helplink");
         return helplink;
     }
+    
+    /**
+     * Return plugin hide mode
+     * 
+     * @return 
+     */
+    public String getHideMode() {
+        return "";
+    }
 }

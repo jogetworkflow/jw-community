@@ -296,5 +296,10 @@ public class JsonTool extends DefaultApplicationPlugin {
 
         return row;
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 
 }

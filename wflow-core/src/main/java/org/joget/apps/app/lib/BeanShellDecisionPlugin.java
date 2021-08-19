@@ -64,4 +64,9 @@ public class BeanShellDecisionPlugin extends DecisionPluginDefault {
             return null;
         }
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

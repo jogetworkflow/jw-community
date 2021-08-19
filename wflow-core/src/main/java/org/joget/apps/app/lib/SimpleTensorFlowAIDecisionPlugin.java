@@ -76,4 +76,9 @@ public class SimpleTensorFlowAIDecisionPlugin extends RulesDecisionPlugin {
             response.getWriter().write(AppPluginUtil.getRuleEditorScript(request, response));
         }
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

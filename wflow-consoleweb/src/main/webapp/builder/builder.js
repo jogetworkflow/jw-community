@@ -428,6 +428,21 @@ _CustomBuilder = {
             $("#toggleAutoApplyChange").attr("title", get_cbuilder_msg("cbuilder.enableAutoApplyChanges"));
         }
         
+        var builderMode = $.localStorage.getItem("builderMode");
+        if (builderMode === undefined || builderMode === null || builderMode === "") {
+            builderMode = "mode-simple";
+        }
+        $("body").removeClass("mode-simple mode-full").addClass(builderMode);
+        if ($("#adminBar").find("#builderModeOption").length === 0) {
+            $("#adminBar").append('<div id="builderModeOption"><div><a><i class="las la-star"></i><span>'+get_cbuilder_msg('cbuilder.mode')+' : </span><span class="mode-simple">'+get_cbuilder_msg('cbuilder.mode.simple')+'</span><span class="mode-full">'+get_cbuilder_msg('cbuilder.mode.full')+'</span></a></div></div>');
+            $("#builderModeOption span[class]").on("click", function(){
+                var builderMode = $(this).attr("class");
+                $.localStorage.setItem("builderMode", builderMode);
+                $("body").removeClass("mode-simple mode-full").addClass(builderMode);
+                $(".initChosen").trigger("chosen:updated");
+            });
+        }
+        
         var builderCallback = function(){
             var jsonData = JSON.decode($("#cbuilder-json").val());
             $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(JSON.encode(jsonData));
@@ -692,6 +707,13 @@ _CustomBuilder = {
         var licss = "";
         if (metaData !== undefined && metaData.list_css !== undefined) {
             licss = metaData.list_css;
+        }
+        
+        if (metaData !== undefined && metaData.hide_mode !== undefined && metaData.hide_mode !== "") {
+            var temp = metaData.hide_mode.split(";");
+            for (var j in temp) {
+                licss += " hide-"+temp[j];
+            }
         }
         
         this.paletteElements[className] = new Object();

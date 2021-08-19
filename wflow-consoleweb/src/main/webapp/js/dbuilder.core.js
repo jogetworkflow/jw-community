@@ -711,6 +711,7 @@ DatalistBuilder = {
                         supportColumn : action.supportColumn,
                         supportRow : action.supportRow,
                         supportList : action.supportList,
+                        hide_mode : action.HideMode,
                         builderTemplate : {
                             'getParentContainerAttr' : function(elementObj, component) {
                                 if (elementObj === undefined || elementObj === null) {
@@ -1685,7 +1686,8 @@ DatalistBuilder = {
                         type : 'textfield',
                         control_field: 'hidePageSize',
                         control_value: '',
-                        control_use_regex: 'false'
+                        control_use_regex: 'false',
+                        hide_mode : 'simple'
                     },
                     {
                         label : get_cbuilder_msg('dbuilder.pageSize'),
@@ -1712,7 +1714,8 @@ DatalistBuilder = {
                             }
                             return options;
                         },
-                        options_callback_on_change : "pageSizeSelectorOptions"
+                        options_callback_on_change : "pageSizeSelectorOptions",
+                        hide_mode : 'simple'
                     },
                     {
                         label : get_cbuilder_msg('dbuilder.order'),
@@ -1752,7 +1755,8 @@ DatalistBuilder = {
                         type : 'checkbox',
                         options : [
                             {label : '', value : 'true'}
-                        ]
+                        ],
+                        hide_mode : 'simple'
                     },
                     {
                         label : get_cbuilder_msg('dbuilder.considerFilterWhenGetTotal'),
@@ -1760,7 +1764,8 @@ DatalistBuilder = {
                         type : 'checkbox',
                         options : [
                             {label : '', value : 'true'}
-                        ]
+                        ],
+                        hide_mode : 'simple'
                     },
                     {
                         label: get_cbuilder_msg('dbuilder.responsive'),
@@ -1813,7 +1818,8 @@ DatalistBuilder = {
                         ],
                         control_field: 'responsive_layout',
                         control_value: '',
-                        control_use_regex: 'false'
+                        control_use_regex: 'false',
+                        hide_mode : 'simple'
                     }, 
                     {
                         label: get_cbuilder_msg('dbuilder.displayAsCard'),
@@ -1838,7 +1844,8 @@ DatalistBuilder = {
                         ],
                         control_field: 'responsive_layout',
                         control_value: 'card-layout',
-                        control_use_regex: 'false'
+                        control_use_regex: 'false',
+                        hide_mode : 'simple'
                     }
                 ]
             }
@@ -2005,7 +2012,8 @@ DatalistBuilder = {
             {
                 label : get_cbuilder_msg('dbuilder.style'),
                 name  : 'style',
-                type : 'textfield'
+                type : 'textfield',
+                hide_mode : 'simple'
             },
             {
                 label : get_cbuilder_msg('dbuilder.alignment'),
@@ -2247,7 +2255,8 @@ DatalistBuilder = {
                         key : 'value',
                         label : get_cbuilder_msg('dbuilder.rowAction.value')
                     }]
-                }]
+                }],
+                hide_mode : 'simple'
             }, {
                 title : get_cbuilder_msg('dbuilder.others'),
                 properties : [

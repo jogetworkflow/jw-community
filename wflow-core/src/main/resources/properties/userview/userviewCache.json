@@ -27,5 +27,6 @@
         value : '20'
     }
     %s
-    ]
+    ],
+    'hide_mode' : 'simple'
 }

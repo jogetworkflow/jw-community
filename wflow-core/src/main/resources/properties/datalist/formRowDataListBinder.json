@@ -5,6 +5,7 @@
         label : '@@datalist.formrowdatalistbinder.extraCondition@@',
         type : 'textarea',
         rows : '5',
-        cols : '50'
+        cols : '50',
+        hide_mode : 'simple'
     }]
 }]

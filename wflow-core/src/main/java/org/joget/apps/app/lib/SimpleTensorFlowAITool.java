@@ -173,4 +173,9 @@ public class SimpleTensorFlowAITool extends DefaultApplicationPlugin implements 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.getWriter().write(TensorFlowUtil.getEditorScript(request, response));
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

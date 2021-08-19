@@ -13,7 +13,8 @@
             },
             {
                 "label" : "@@form.checkbox.advancedOptions@@",
-                "type" : "header"
+                "type" : "header",
+                "hide_mode" : "simple"
             },
             {
                 "name" : "runInMultiThread",
@@ -30,7 +31,8 @@
                 {
                     "value" : "single",
                     "label" : "@@app.multitools.runInSingleThread@@"
-                }]
+                }],
+                "hide_mode" : "simple"
             },{
                 "name" : "waitAllFinish",
                 "label" : "@@app.multitools.waitAllFinish@@",
@@ -41,11 +43,13 @@
                 }],
                 "control_field": "runInMultiThread",
                 "control_value": "true",
-                "control_use_regex": "false"
+                "control_use_regex": "false",
+                "hide_mode" : "simple"
             },{
                 "name" : "comment",
                 "label" : "@@ubuilder.comment@@",
-                "type" : "codeeditor"
+                "type" : "codeeditor",
+                "hide_mode" : "simple"
             }
         ]
     }

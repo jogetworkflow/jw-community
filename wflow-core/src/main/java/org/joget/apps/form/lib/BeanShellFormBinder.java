@@ -102,4 +102,9 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         properties.put("values", (dependencyValues == null)? new String[]{}: dependencyValues);
         return executeScript(getPropertyString("script"), properties, false);
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

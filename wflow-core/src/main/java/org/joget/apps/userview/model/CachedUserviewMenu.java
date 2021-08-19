@@ -477,4 +477,9 @@ public class CachedUserviewMenu extends UserviewMenu {
     public String getContentPlaceholderRules() {
         return delegate.getContentPlaceholderRules();
     }
+    
+    @Override
+    public String getHideMode() {
+        return delegate.getHideMode();
+    }
 }

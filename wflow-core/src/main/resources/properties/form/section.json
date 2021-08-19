@@ -60,7 +60,8 @@
         title:'@@form.section.advancedOptions@@',
         properties:[{
                 label : '@@form.section.visibility@@',
-                type : 'header'
+                type : 'header',
+                hide_mode : 'simple'
             },
             {
                 name : 'rules',
@@ -101,7 +102,8 @@
                     label : '@@form.section.regex@@',
                     type : 'truefalse',
                     false_value: ''
-                }]
+                }],
+                hide_mode : 'simple'
             },
             {
                 label : '@@form.section.permission@@',
@@ -125,13 +127,15 @@
             },
             {
                 label : '@@fbuilder.development@@',
-                type : 'header'
+                type : 'header',
+                hide_mode : 'simple'
             },
             {
                 name : 'comment',
                 label : '@@fbuilder.comment@@',
                 type : 'codeeditor',
-                mode : 'text'
+                mode : 'text',
+                hide_mode : 'simple'
             }
         ]
     }

@@ -25,7 +25,7 @@
                                     var elementTemplate = { "dragHtml" : "<div class=\"form-cell\"><c:out value="${fn:replace(element.formBuilderTemplate, '\"', '\\\\\"')}" escapeXml="false"/></div>" };   
                                 </c:otherwise>    
                             </c:choose>     
-                            FormBuilder.initPaletteElement('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.formBuilderIcon}' format='javascript'/>', elementProps, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'builderTemplate' :  elementTemplate}); 
+                            FormBuilder.initPaletteElement('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.formBuilderIcon}' format='javascript'/>', elementProps, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'builderTemplate' :  elementTemplate, 'hide_mode' : '<ui:escape value='${element.hideMode}' format='javascript'/>'}); 
                         </c:set>
                         <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                         eval("${initScript}");    

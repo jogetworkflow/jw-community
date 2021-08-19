@@ -83,4 +83,9 @@ public class BeanShellDatalistBinder extends DataListBinderDefault {
         
         return total;
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

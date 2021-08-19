@@ -33,6 +33,7 @@ import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.CustomPluginInterface;
+import org.joget.plugin.base.DefaultPlugin;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -117,6 +118,11 @@ public class PropertyJsonController {
                     if (p.getClass().isAnnotationPresent(Deprecated.class)) {
                         option.put("deprecated", "true");
                         option.put("label", p.getI18nLabel() + " " + ResourceBundleUtil.getMessage("general.method.label.deprecated"));
+                    }
+                    if (p instanceof DefaultPlugin) {
+                        option.put("hide_mode", ((DefaultPlugin) p).getHideMode());
+                    } else {
+                        option.put("hide_mode", "");
                     }
                     list.add(option);
                 }

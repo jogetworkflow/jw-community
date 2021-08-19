@@ -28,11 +28,13 @@
     {
         name : 'regex',
         label : '@@form.duplicatevaluevalidator.regexCheck@@',
-        type : 'textfield'
+        type : 'textfield',
+        hide_mode : 'simple'
     },
     {
         name : 'errorFormatMsg',
         label : '@@form.duplicatevaluevalidator.errorFormatMsg@@',
-        type : 'textfield'
+        type : 'textfield',
+        hide_mode : 'simple'
     }]
 }]

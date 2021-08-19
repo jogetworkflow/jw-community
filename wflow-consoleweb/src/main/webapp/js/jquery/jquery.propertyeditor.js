@@ -1818,6 +1818,14 @@ PropertyEditor.Model.Page.prototype = {
                 showHide += ' data-control_use_regex="false"';
             }
         }
+        if (this.properties.hide_mode !== undefined && this.properties.hide_mode !== null) {
+            var modes = this.properties.hide_mode.split(";");
+            for (var i in modes) {
+                if (modes[i] !== "") {
+                    hiddenClass += " hide-" + modes[i];
+                }
+            }
+        }
 
         if (this.properties.title !== undefined && this.properties.title !== null) {
             pageTitle = this.properties.title;
@@ -2538,13 +2546,22 @@ PropertyEditor.Model.Type.prototype = {
                 showHide += ' data-required_control_use_regex="false"';
             }
         }
+        var cssClass = "";
+        if (this.properties.hide_mode !== undefined && this.properties.hide_mode !== null) {
+            var modes = this.properties.hide_mode.split(";");
+            for (var i in modes) {
+                if (modes[i] !== "") {
+                    cssClass += " hide-" + modes[i];
+                }
+            }
+        }
         
         var parentId = this.parentId;
         if (parentId !== "" && parentId !== undefined) {
             parentId = parentId.substring(1);
         }
 
-        var html = '<div id="property_' + this.number + '" property-parentid="'+parentId+'" property-name="'+this.properties.name+'" class="'+this.getContainerClass()+' property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + '" ' + showHide + '>';
+        var html = '<div id="property_' + this.number + '" property-parentid="'+parentId+'" property-name="'+this.properties.name+'" class="'+this.getContainerClass()+' property_container_' + this.id + ' property-editor-property property-type-' + this.properties.type.toLowerCase() + cssClass + '" ' + showHide + '>';
 
         html += this.renderLabel();
         html += this.renderFieldWrapper();
@@ -8392,10 +8409,18 @@ PropertyEditor.Type.ElementSelect.prototype = {
 
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
+                var cssClass = "";
                 if (value === option.value) {
                     selected = " selected";
                 }
-                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                if (option.hide_mode !== undefined && option.hide_mode !== "") {
+                    var temp = option.hide_mode.split(";");
+                    for (var j in temp) {
+                        cssClass += " hide-"+temp[j];
+                    }
+                    cssClass = 'class="'+cssClass+'"';
+                }
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
             $("#" + this.id).html(html);
             $("#" + this.id).trigger("change");
@@ -8882,10 +8907,18 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 
                 $.each(thisObj.properties.options, function(i, option) {
                     var selected = "";
+                    var cssClass = "";
                     if (value === option.value) {
                         selected = " selected";
                     }
-                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                    if (option.hide_mode !== undefined && option.hide_mode !== "") {
+                        var temp = option.hide_mode.split(";");
+                        for (var j in temp) {
+                            cssClass += " hide-"+temp[j];
+                        }
+                        cssClass = 'class="'+cssClass+'"';
+                    }
+                    html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 $(this).html(html);
                 $(this).trigger("change");

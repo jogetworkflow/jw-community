@@ -107,6 +107,7 @@ body.rtl #adminBarButtons {
     line-height: 14px;
     height: 30px;
     box-sizing: border-box;
+    cursor: pointer;
 }
 #quickEditModeOption > div > a > i,
 #adminBarButtons > div > a > i {

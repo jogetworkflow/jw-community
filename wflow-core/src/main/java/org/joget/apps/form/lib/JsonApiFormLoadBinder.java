@@ -119,4 +119,9 @@ public class JsonApiFormLoadBinder extends FormBinder implements FormLoadBinder,
         }
         return r;
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

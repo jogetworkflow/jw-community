@@ -15,7 +15,7 @@
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
             <c:set var="key" value="0" />    
-            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId}">
+            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId && !isDefaultUserview}">
                 <c:set var="key" value="1" />    
                 <div class="separator"></div>
                 <div>

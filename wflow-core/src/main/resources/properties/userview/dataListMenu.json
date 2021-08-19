@@ -100,19 +100,23 @@
         name : 'customHeader',
         label : '@@userview.datalistmenu.customHeader@@',
         type : 'codeeditor',
-        mode : 'html'
+        mode : 'html',
+        hide_mode : 'simple'
     },
     {
         name : 'customFooter',
         label : '@@userview.datalistmenu.customFooter@@',
         type : 'codeeditor',
-        mode : 'html'
+        mode : 'html',
+        hide_mode : 'simple'
     },{
         label : '@@userview.datalistmenu.advanced@@',
-        type : 'header'
+        type : 'header',
+        hide_mode : 'simple'
     },{
         name : 'keyName',
         label : '@@userview.datalistmenu.userviewKeyName@@',
-        type : 'textfield'
+        type : 'textfield',
+        hide_mode : 'simple'
     }]
 }]

@@ -55,4 +55,9 @@ public class BeanShellPermission extends UserviewPermission implements FormPermi
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/beanShellPermission.json", null, true, null);
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

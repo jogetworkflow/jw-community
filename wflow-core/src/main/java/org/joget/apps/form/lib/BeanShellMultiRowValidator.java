@@ -70,4 +70,9 @@ public class BeanShellMultiRowValidator extends FormMultiRowValidator {
         properties.put("formData", data);
         return executeScript(getPropertyString("script"), properties, false);
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

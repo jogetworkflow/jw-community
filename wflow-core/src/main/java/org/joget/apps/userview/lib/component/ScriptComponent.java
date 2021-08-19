@@ -60,4 +60,8 @@ public class ScriptComponent extends SimplePageComponent {
         return "{'html' : '<div data-cbuilder-invisible></div>', 'supportStyle' : false}";
     }
     
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

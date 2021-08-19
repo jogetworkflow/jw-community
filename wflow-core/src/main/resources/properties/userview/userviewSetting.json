@@ -51,6 +51,7 @@
         options: [{
             value: 'true',
             label: ''
-        }]
+        }],
+        'hide_mode' : 'simple'
     }]
 }]

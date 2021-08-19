@@ -1,7 +1,8 @@
 [
     {
         "label" : "@@form.binder.otherDataHandling@@",
-        "type" : "header"
+        "type" : "header",
+        "hide_mode" : "simple"
     },
     {
         "name" : "autoHandleWorkflowVariable",
@@ -12,7 +13,8 @@
         "options" : [{
             "value" : "true",
             "label" : ""
-        }]
+        }],
+        "hide_mode" : "simple"
     },
     {
         "name" : "autoHandleFiles",
@@ -22,7 +24,8 @@
         "options" : [{
             "value" : "true",
             "label" : ""
-        }]
+        }],
+        "hide_mode" : "simple"
     },
     {
         "name" : "autoHandleFilesformDefId",
@@ -32,6 +35,7 @@
         "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options",
         "control_field" : "autoHandleFiles",
         "control_value" : "true",
-        "control_use_regex" : "false"
+        "control_use_regex" : "false",
+        "hide_mode" : "simple"
     }
 ]

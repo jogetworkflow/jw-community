@@ -69,7 +69,8 @@
         description : '@@form.datepicker.dataFormat.eg@@',
         control_field: 'datePickerType',
         control_value: '^$|dateTime',
-        control_use_regex: 'true'
+        control_use_regex: 'true',
+        hide_mode : 'simple'
     },
     {
         name : 'format24hr',

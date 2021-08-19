@@ -224,7 +224,8 @@
         label : '@@userview.formmenu.customFooter@@',
         type : 'codeeditor',
         mode : 'html'
-    }]
+    }],
+    hide_mode : 'simple'
 },
 {
     title : '@@userview.formmenu.advanced@@',
@@ -241,5 +242,6 @@
             value : 'Yes',
             label : ''
         }]
-    }]
+    }],
+    hide_mode : 'simple'
 }]

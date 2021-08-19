@@ -67,7 +67,7 @@
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
-            <body id="cbuilder" class="no-right-panel initializing max-property-editor">
+            <body id="cbuilder" class="mode-simple no-right-panel initializing max-property-editor">
                 <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none; z-index:9999;">
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
                     <i class="${builderIcon} fa-stack-1x"></i>

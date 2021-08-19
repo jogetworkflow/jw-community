@@ -118,4 +118,9 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/app/databaseUpdateTool.json", null, true, null);
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

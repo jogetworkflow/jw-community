@@ -335,4 +335,9 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
     public String getFormBuilderIcon() {
         return "<i class=\"fas fa-code\"></i>";
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

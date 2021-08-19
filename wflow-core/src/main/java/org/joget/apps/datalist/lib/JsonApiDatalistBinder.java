@@ -282,4 +282,9 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
 
         return param;
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }

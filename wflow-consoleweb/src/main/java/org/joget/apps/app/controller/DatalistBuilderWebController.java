@@ -40,7 +40,7 @@ import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.DefaultPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -205,6 +205,7 @@ public class DatalistBuilderWebController {
             hm.put("supportColumn", action.supportColumn());
             hm.put("supportRow", action.supportRow());
             hm.put("supportList", action.supportList());
+            hm.put("hideMode", ((DefaultPlugin) action).getHideMode());
             hm.put("icon", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getIcon()):"");
             hm.put("defaultPropertyValues", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getDefaultPropertyValues()):PropertyUtil.getDefaultPropertyValues(action.getPropertyOptions()));
             collection.add(hm);

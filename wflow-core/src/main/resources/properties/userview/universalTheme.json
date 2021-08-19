@@ -1139,31 +1139,36 @@
         name : 'homeAttractBanner',
         label : '@@theme.universal.homeAttractBanner@@',
         type : 'codeeditor',
-        mode : 'html'
+        mode : 'html',
+        hide_mode : 'simple'
     },
     {
         name : 'css',
         label : '@@theme.universal.customCss@@',
         type : 'codeeditor',
-        mode : 'css'
+        mode : 'css',
+        hide_mode : 'simple'
     },
     {
         name : 'js',
         label : '@@theme.universal.customJavascript@@',
         type : 'codeeditor',
-        mode : 'javascript'
+        mode : 'javascript',
+        hide_mode : 'simple'
     },
     {
         name : 'subheader',
         label : '@@theme.universal.subHeader@@',
         type : 'codeeditor',
-        mode : 'html'
+        mode : 'html',
+        hide_mode : 'simple'
     },
     {
         name : 'subfooter',
         label : '@@theme.universal.subFooter@@',
         type : 'codeeditor',
-        mode : 'html'
+        mode : 'html',
+        hide_mode : 'simple'
     },
     {
         name: 'disableHelpGuide',
@@ -1207,6 +1212,7 @@
         cols:'40',
         rows:'10'
     }],
+    hide_mode : 'simple',
     buttons : [{
         name : 'testpush',    
         label : '@@push.sendTestPush@@',

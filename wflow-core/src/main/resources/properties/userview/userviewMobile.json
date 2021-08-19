@@ -135,5 +135,6 @@
         type: 'textarea',
         rows: '10',
         cols: '50'
-    }]
+    }],
+    hide_mode : 'simple'
 }

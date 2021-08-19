@@ -113,4 +113,9 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
         
         return options;
     }
+    
+    @Override
+    public String getHideMode() {
+        return "simple";
+    }
 }
