@@ -100,6 +100,9 @@ public class UserviewWebController {
                 }
                 return view;
             }
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
         }
         return "ubuilder/view";
     }
