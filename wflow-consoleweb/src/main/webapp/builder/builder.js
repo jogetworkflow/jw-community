@@ -1086,6 +1086,9 @@ _CustomBuilder = {
         copy['type'] = type;
         copy['object'] = element;
         
+        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copy", JSON.encode(copy));
+        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copyTime", new Date());
+        
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.copied'), "info");
     },
     
