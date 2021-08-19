@@ -2,7 +2,7 @@
     {
         "label" : "@@form.binder.otherDataHandling@@",
         "type" : "header",
-        "hide_mode" : "simple"
+        "developer_mode" : "advanced"
     },
     {
         "name" : "autoHandleWorkflowVariable",
@@ -14,7 +14,7 @@
             "value" : "true",
             "label" : ""
         }],
-        "hide_mode" : "simple"
+        "developer_mode" : "advanced"
     },
     {
         "name" : "autoHandleFiles",
@@ -25,7 +25,7 @@
             "value" : "true",
             "label" : ""
         }],
-        "hide_mode" : "simple"
+        "developer_mode" : "advanced"
     },
     {
         "name" : "autoHandleFilesformDefId",
@@ -36,6 +36,6 @@
         "control_field" : "autoHandleFiles",
         "control_value" : "true",
         "control_use_regex" : "false",
-        "hide_mode" : "simple"
+        "developer_mode" : "advanced"
     }
 ]

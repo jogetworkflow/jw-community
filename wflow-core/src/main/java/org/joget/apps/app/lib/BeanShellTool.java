@@ -74,7 +74,7 @@ public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

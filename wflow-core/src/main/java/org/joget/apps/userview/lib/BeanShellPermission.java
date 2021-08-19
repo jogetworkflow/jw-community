@@ -57,7 +57,7 @@ public class BeanShellPermission extends UserviewPermission implements FormPermi
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

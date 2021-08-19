@@ -225,7 +225,7 @@
         type : 'codeeditor',
         mode : 'html'
     }],
-    hide_mode : 'simple'
+    developer_mode : 'advanced'
 },
 {
     title : '@@userview.formmenu.advanced@@',
@@ -243,5 +243,5 @@
             label : ''
         }]
     }],
-    hide_mode : 'simple'
+    developer_mode : 'advanced'
 }]

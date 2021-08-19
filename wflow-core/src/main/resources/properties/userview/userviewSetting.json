@@ -52,6 +52,6 @@
             value: 'true',
             label: ''
         }],
-        'hide_mode' : 'simple'
+        developer_mode : 'advanced'
     }]
 }]

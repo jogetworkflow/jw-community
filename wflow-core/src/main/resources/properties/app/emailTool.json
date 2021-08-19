@@ -165,13 +165,13 @@
             label:'@@app.emailtool.embed@@',
             type:'truefalse'
         }],
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         label : '@@app.emailtool.ics@@',
         type : 'header',
         description : '@@app.emailtool.ics.desc@@',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsAttachement',
@@ -181,7 +181,7 @@
             value : 'true',
             label : ''
         }],
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsEventName',
@@ -190,7 +190,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsDateStart',
@@ -200,7 +200,7 @@
         control_value: 'true',
         control_use_regex: 'false',
         required : 'true',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsDateEnd',
@@ -209,7 +209,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsDateFormat',
@@ -220,7 +220,7 @@
         control_value: 'true',
         control_use_regex: 'false',
         required : 'true',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsTimezone',
@@ -229,7 +229,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsAllDay',
@@ -243,7 +243,7 @@
         control_value: 'true',
         control_use_regex: 'false',
         supportHash : 'true',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsEventDesc',
@@ -252,7 +252,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsLocation',
@@ -261,7 +261,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'icsOrganizerEmail',
@@ -270,7 +270,7 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name:'icsAttendees',
@@ -294,6 +294,6 @@
         control_field: 'icsAttachement',
         control_value: 'true',
         control_use_regex: 'false',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     }]
 }]

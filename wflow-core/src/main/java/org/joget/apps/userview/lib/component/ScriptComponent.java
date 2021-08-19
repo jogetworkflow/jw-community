@@ -61,7 +61,7 @@ public class ScriptComponent extends SimplePageComponent {
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

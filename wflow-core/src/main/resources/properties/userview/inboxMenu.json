@@ -94,26 +94,26 @@
         label : '@@userview.inboxmenu.customHeader.list@@',
         type : 'codeeditor',
         mode : 'html',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'list-customFooter',
         label : '@@userview.inboxmenu.customFooter.list@@',
         type : 'codeeditor',
         mode : 'html',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },{
         name : 'assignment-customHeader',
         label : '@@userview.inboxmenu.customHeader.ass@@',
         type : 'codeeditor',
         mode : 'html',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     },
     {
         name : 'assignment-customFooter',
         label : '@@userview.inboxmenu.customFooter.ass@@',
         type : 'codeeditor',
         mode : 'html',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     }]
 }]

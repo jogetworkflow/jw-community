@@ -6,6 +6,6 @@
         type : 'textarea',
         rows : '5',
         cols : '50',
-        hide_mode : 'simple'
+        developer_mode : 'advanced'
     }]
 }]

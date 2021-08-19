@@ -175,7 +175,7 @@ public class SimpleTensorFlowAITool extends DefaultApplicationPlugin implements 
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

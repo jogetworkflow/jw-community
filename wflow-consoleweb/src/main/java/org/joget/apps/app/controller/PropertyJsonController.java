@@ -120,9 +120,9 @@ public class PropertyJsonController {
                         option.put("label", p.getI18nLabel() + " " + ResourceBundleUtil.getMessage("general.method.label.deprecated"));
                     }
                     if (p instanceof DefaultPlugin) {
-                        option.put("hide_mode", ((DefaultPlugin) p).getHideMode());
+                        option.put("developer_mode", ((DefaultPlugin) p).getDeveloperMode());
                     } else {
-                        option.put("hide_mode", "");
+                        option.put("developer_mode", "");
                     }
                     list.add(option);
                 }

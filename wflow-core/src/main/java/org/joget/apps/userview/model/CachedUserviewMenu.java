@@ -479,7 +479,7 @@ public class CachedUserviewMenu extends UserviewMenu {
     }
     
     @Override
-    public String getHideMode() {
-        return delegate.getHideMode();
+    public String getDeveloperMode() {
+        return delegate.getDeveloperMode();
     }
 }

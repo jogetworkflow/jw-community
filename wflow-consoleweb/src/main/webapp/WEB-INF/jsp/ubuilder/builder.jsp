@@ -32,7 +32,7 @@
             </c:if>
             try {
                 <c:set var="initScript">
-                    CustomBuilder.initPaletteElement('Basic', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {'list_css' : 'component', 'hide_mode' : '<ui:escape value='${element.hideMode}' format='javascript'/>', 'type' : 'component', 'builderTemplate' : ${template}}); 
+                    CustomBuilder.initPaletteElement('Basic', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {'list_css' : 'component', 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : 'component', 'builderTemplate' : ${template}}); 
                 </c:set>
                 <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                 eval("${initScript}");    
@@ -54,7 +54,7 @@
                 </c:if>
                 try {
                     <c:set var="initScript"> 
-                        CustomBuilder.initPaletteElement('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'pwaValidation' : '${element.pwaValidationType}', 'hide_mode' : '<ui:escape value='${element.hideMode}' format='javascript'/>', 'type' : 'menu', 'builderTemplate' : ${template}}); 
+                        CustomBuilder.initPaletteElement('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'pwaValidation' : '${element.pwaValidationType}', 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : 'menu', 'builderTemplate' : ${template}}); 
                     </c:set>
                     <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                     eval("${initScript}");    

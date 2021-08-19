@@ -77,7 +77,7 @@
                 label:'@@form.form.postProcessing@@',
                 description:'@@form.form.postProcessing.desc@@',
                 type : 'header',
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             },
             {
                 name:'postProcessor',
@@ -86,7 +86,7 @@
                 options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin',
                 url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
                 default_property_values_url: '[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties',
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             },
             {
                 name:'postProcessorRunOn',
@@ -107,7 +107,7 @@
                         label:'@@form.form.postProcessorRunOn.createAndUpdate@@'
                     }
                 ],
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             }
         ]
     }

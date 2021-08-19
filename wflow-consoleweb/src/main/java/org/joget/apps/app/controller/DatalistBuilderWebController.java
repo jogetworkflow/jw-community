@@ -205,7 +205,7 @@ public class DatalistBuilderWebController {
             hm.put("supportColumn", action.supportColumn());
             hm.put("supportRow", action.supportRow());
             hm.put("supportList", action.supportList());
-            hm.put("hideMode", ((DefaultPlugin) action).getHideMode());
+            hm.put("developerMode", ((DefaultPlugin) action).getDeveloperMode());
             hm.put("icon", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getIcon()):"");
             hm.put("defaultPropertyValues", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getDefaultPropertyValues()):PropertyUtil.getDefaultPropertyValues(action.getPropertyOptions()));
             collection.add(hm);

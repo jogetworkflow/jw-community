@@ -1329,7 +1329,7 @@ UserviewBuilder = {
                     control_use_regex: 'false'
                 }
             ],
-            hide_mode : 'simple'
+            developer_mode : 'advanced'
         });
         
         return props;
@@ -1377,7 +1377,7 @@ UserviewBuilder = {
                     ]
                 }
             ],
-            hide_mode : 'simple'
+            developer_mode : 'advanced'
         };
     },
     

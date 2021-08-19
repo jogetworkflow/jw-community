@@ -2228,11 +2228,11 @@ body.rtl #builderModeOption > div > a > i {
     cursor: pointer;
     border-radius: 3px 0 0 3px;
 }
-#builderModeOption span.mode-full {
+#builderModeOption span.mode-advanced {
     border-radius: 0 3px 3px 0;
 }
-#cbuilder.mode-simple #builderModeOption span.mode-simple,
-#cbuilder.mode-full #builderModeOption span.mode-full{
+#cbuilder.mode-basic #builderModeOption span.mode-basic,
+#cbuilder.mode-advanced #builderModeOption span.mode-advanced{
     background : #007bff;
     color:#fff;
 }
@@ -2257,8 +2257,8 @@ body.rtl div#builderModeOption:before {
     left: auto;
     right: 0px;
 }
-#cbuilder.mode-simple .hide-simple,
-#cbuilder.mode-full .hide-full {
+#cbuilder.mode-basic .advanced-mode-only:not(.basic-mode-only),
+#cbuilder.mode-advanced .basic-mode-only:not(.advanced-mode-only) {
     display: none !important;
 }
 

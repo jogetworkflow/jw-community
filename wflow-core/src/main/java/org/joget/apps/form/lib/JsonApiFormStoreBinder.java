@@ -120,7 +120,7 @@ public class JsonApiFormStoreBinder extends FormBinder implements FormStoreBinde
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

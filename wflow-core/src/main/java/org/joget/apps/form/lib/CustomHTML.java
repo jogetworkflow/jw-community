@@ -337,7 +337,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

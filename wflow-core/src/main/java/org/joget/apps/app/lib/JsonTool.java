@@ -298,8 +298,8 @@ public class JsonTool extends DefaultApplicationPlugin {
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 
 }

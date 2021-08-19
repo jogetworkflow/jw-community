@@ -14,7 +14,7 @@
             {
                 "label" : "@@form.checkbox.advancedOptions@@",
                 "type" : "header",
-                "hide_mode" : "simple"
+                "developer_mode" : "advanced"
             },
             {
                 "name" : "runInMultiThread",
@@ -32,7 +32,7 @@
                     "value" : "single",
                     "label" : "@@app.multitools.runInSingleThread@@"
                 }],
-                "hide_mode" : "simple"
+                "developer_mode" : "advanced"
             },{
                 "name" : "waitAllFinish",
                 "label" : "@@app.multitools.waitAllFinish@@",
@@ -44,12 +44,12 @@
                 "control_field": "runInMultiThread",
                 "control_value": "true",
                 "control_use_regex": "false",
-                "hide_mode" : "simple"
+                "developer_mode" : "advanced"
             },{
                 "name" : "comment",
                 "label" : "@@ubuilder.comment@@",
                 "type" : "codeeditor",
-                "hide_mode" : "simple"
+                "developer_mode" : "advanced"
             }
         ]
     }

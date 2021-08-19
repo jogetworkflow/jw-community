@@ -159,5 +159,5 @@
         label : '@@userview.runprocess.userviewKeyName@@',
         type : 'textfield'
     }],
-    hide_mode : 'simple'
+    developer_mode : 'advanced'
 }]

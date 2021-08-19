@@ -61,7 +61,7 @@
         properties:[{
                 label : '@@form.section.visibility@@',
                 type : 'header',
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             },
             {
                 name : 'rules',
@@ -103,7 +103,7 @@
                     type : 'truefalse',
                     false_value: ''
                 }],
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             },
             {
                 label : '@@form.section.permission@@',
@@ -128,14 +128,14 @@
             {
                 label : '@@fbuilder.development@@',
                 type : 'header',
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             },
             {
                 name : 'comment',
                 label : '@@fbuilder.comment@@',
                 type : 'codeeditor',
                 mode : 'text',
-                hide_mode : 'simple'
+                developer_mode : 'advanced'
             }
         ]
     }

@@ -1818,11 +1818,11 @@ PropertyEditor.Model.Page.prototype = {
                 showHide += ' data-control_use_regex="false"';
             }
         }
-        if (this.properties.hide_mode !== undefined && this.properties.hide_mode !== null) {
-            var modes = this.properties.hide_mode.split(";");
+        if (this.properties.developer_mode !== undefined && this.properties.developer_mode !== null) {
+            var modes = this.properties.developer_mode.split(";");
             for (var i in modes) {
                 if (modes[i] !== "") {
-                    hiddenClass += " hide-" + modes[i];
+                    hiddenClass += " "+modes[i]+"-mode-only";
                 }
             }
         }
@@ -2547,11 +2547,11 @@ PropertyEditor.Model.Type.prototype = {
             }
         }
         var cssClass = "";
-        if (this.properties.hide_mode !== undefined && this.properties.hide_mode !== null) {
-            var modes = this.properties.hide_mode.split(";");
+        if (this.properties.developer_mode !== undefined && this.properties.developer_mode !== null) {
+            var modes = this.properties.developer_mode.split(";");
             for (var i in modes) {
                 if (modes[i] !== "") {
-                    cssClass += " hide-" + modes[i];
+                    cssClass += " "+modes[i]+"-mode-only";
                 }
             }
         }
@@ -8413,10 +8413,10 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 if (value === option.value) {
                     selected = " selected";
                 }
-                if (option.hide_mode !== undefined && option.hide_mode !== "") {
-                    var temp = option.hide_mode.split(";");
+                if (option.developer_mode !== undefined && option.developer_mode !== "") {
+                    var temp = option.developer_mode.split(";");
                     for (var j in temp) {
-                        cssClass += " hide-"+temp[j];
+                        cssClass += " "+temp[j]+"-mode-only";
                     }
                     cssClass = 'class="'+cssClass+'"';
                 }
@@ -8911,10 +8911,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     if (value === option.value) {
                         selected = " selected";
                     }
-                    if (option.hide_mode !== undefined && option.hide_mode !== "") {
-                        var temp = option.hide_mode.split(";");
+                    if (option.developer_mode !== undefined && option.developer_mode !== "") {
+                        var temp = option.developer_mode.split(";");
                         for (var j in temp) {
-                            cssClass += " hide-"+temp[j];
+                            cssClass += " "+temp[j]+"-mode-only";
                         }
                         cssClass = 'class="'+cssClass+'"';
                     }

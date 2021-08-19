@@ -104,7 +104,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

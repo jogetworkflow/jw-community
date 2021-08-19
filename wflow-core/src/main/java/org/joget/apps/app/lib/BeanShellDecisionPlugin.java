@@ -66,7 +66,7 @@ public class BeanShellDecisionPlugin extends DecisionPluginDefault {
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }

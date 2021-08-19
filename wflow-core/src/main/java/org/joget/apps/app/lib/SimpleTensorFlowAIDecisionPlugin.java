@@ -78,7 +78,7 @@ public class SimpleTensorFlowAIDecisionPlugin extends RulesDecisionPlugin {
     }
     
     @Override
-    public String getHideMode() {
-        return "simple";
+    public String getDeveloperMode() {
+        return "advanced";
     }
 }
