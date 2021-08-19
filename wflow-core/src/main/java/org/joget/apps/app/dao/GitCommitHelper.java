@@ -1,11 +1,14 @@
 package org.joget.apps.app.dao;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 import java.util.Set;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.joget.apps.app.model.AppDefinition;
@@ -131,9 +134,27 @@ public class GitCommitHelper {
         git.getRepository().close();
         if (workingDir.exists()) {
             try {
-                FileUtils.deleteDirectory(workingDir);
+                Files.walkFileTree(workingDir.toPath(), new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (!Files.isWritable(file)) {
+                            //When you try to delete the file on Windows and it is marked as read-only
+                            //it would fail unless this change
+                            file.toFile().setWritable(true);
+                        }
+
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
             } catch (Exception e) {
-                //ignore
+                LogUtil.error(GitCommitHelper.class.getName(), e, "");
             }
         }
     }
