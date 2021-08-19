@@ -92,11 +92,13 @@ public abstract class DefaultPlugin implements Plugin, BundleActivator {
     }
     
     /**
-     * Return plugin hide mode
+     * Used to limit the plugin is only available for a specify mode.
+     * Default to available to all modes. Set the value to `basic` or `advanced` to
+     * make it available only for the mode.
      * 
      * @return 
      */
-    public String getHideMode() {
+    public String getDeveloperMode() {
         return "";
     }
 }
