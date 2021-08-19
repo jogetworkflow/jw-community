@@ -274,11 +274,14 @@ ProcessBuilder = {
     viewProcess : function() {
         var id = window.location.hash.replace("#", "");
         
-        ProcessBuilder.generateProcessData(id);
-        
-        CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
-            ProcessBuilder.validate();
-        });
+        if (id !== "") {
+            ProcessBuilder.generateProcessData(id);
+            CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+                ProcessBuilder.validate();
+            });
+        } else {
+            window.location.hash = "process1";
+        }
     },
     
     /*
