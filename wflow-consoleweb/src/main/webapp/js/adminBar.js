@@ -3,7 +3,6 @@ var AdminBar = {
     currentPageTitle: "",
     webConsole: false,
     builderMode: false,
-    isDefaultUserview: false,
     setCookiePath: function(path) {
         AdminBar.cookiePath = path;
     },
@@ -91,9 +90,6 @@ var AdminBar = {
         }
     },
     enableQuickEditMode: function() {
-        if (AdminBar.isDefaultUserview) {
-            return;
-        }
         var path = AdminBar.cookiePath;
         $.cookie("quickEditModeActive", "true", {
             path: path
@@ -118,9 +114,6 @@ var AdminBar = {
     showQuickEdit: function() {
         if (!AdminBar.isAdminBarHide()) {
             $(".analyzer-page").css("display", "inline-block");
-            if (AdminBar.isDefaultUserview) {
-                return;
-            }
             $("#quickEditMode").removeClass("off");
             $(".quickEdit").fadeIn();
             $(".analyzer-label").css("display", "inline-block");
@@ -174,7 +167,7 @@ var AdminBar = {
             }
             return false;
         });
-        if ((AdminBar.webConsole && !AdminBar.builderMode) || AdminBar.isDefaultUserview) {
+        if ((AdminBar.webConsole && !AdminBar.builderMode)) {
             $("#quickEditModeOption").hide();
         }
         if (AdminBar.isAdminBarHide()) {

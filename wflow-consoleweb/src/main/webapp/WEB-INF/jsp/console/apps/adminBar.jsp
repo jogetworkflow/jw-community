@@ -7,7 +7,6 @@
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
     <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
-        <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
@@ -15,7 +14,7 @@
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
             <c:set var="key" value="0" />    
-            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId && !isDefaultUserview}">
+            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId}">
                 <c:set var="key" value="1" />    
                 <div class="separator"></div>
                 <div>
@@ -58,9 +57,6 @@
             </c:if>
             <c:if test="${param.builderMode == 'true'}">
             AdminBar.builderMode = true;
-            </c:if>
-            <c:if test="${isDefaultUserview}">
-            AdminBar.isDefaultUserview = true;
             </c:if>
         </script>
         
