@@ -602,6 +602,10 @@ body.right-panel-resizing #right-panel-resize-block{
 #cbuilder #element-select-name #element-name{
     padding: 3px 8px;
 }
+#cbuilder #element-select-name #element-name{
+    cursor: move;
+    pointer-events: auto;
+}   
 #cbuilder #element-select-name #element-name,
 #cbuilder #element-select-name #element-actions{
     display:inline-block;

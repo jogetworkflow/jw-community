@@ -3928,6 +3928,67 @@ _CustomBuilder.Builder = {
      */
     _initBox: function () {
         var self = this;
+        
+        $("#element-select-name #element-name").off("mousedown touchstart");
+        $("#element-select-name #element-name").on("mousedown touchstart", function (event) {
+            self.mousedown = true;
+            try {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
+                    if (hasChange) {
+                        self.mousedown = false;
+                    }
+                    if (self.mousedown) {
+                        if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
+                            $("#element-select-box").hide();
+                            if (self.subSelectedEl){
+                                self.dragElement = self.subSelectedEl;
+                            } else {
+                                self.dragElement = self.selectedEl;
+                            }
+                            self.isDragging = true;
+                            self.isMoved = false;
+                            self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+                            self.data = self.selectedElData;
+
+                            var x = 0;
+                            var y = 0;
+                            if (event.type === "touchstart") {
+                                x = event.touches[0].clientX;
+                                y = event.touches[0].clientY;
+                                if (event.touches[0].originalEvent) {
+                                    x = event.touches[0].originalEvent.clientX;
+                                    y = event.touches[0].originalEvent.clientY;
+                                }
+                            } else {
+                                x = event.clientX;
+                                y = event.clientY;
+                                if (event.originalEvent) {
+                                    x = event.originalEvent.clientX;
+                                    y = event.originalEvent.clientY;
+                                }
+                            }
+                            self.elementPosX = x;
+                            self.elementPosY = y;
+
+                            if (self.component.builderTemplate.dragStart)
+                                self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
+
+                            if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
+                                var elementOffset = self.dragElement.offset();
+                                var xDiff = x - elementOffset.left;
+                                var yDiff = y - elementOffset.top;
+                                self.dragElement.data("cursorPosition", {"x" : xDiff, "y" : yDiff});
+                            }    
+
+                            self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
+                        }
+                    }
+                });
+            }catch (err){}
+                
+            event.preventDefault();
+            return false;
+        });
 
         $("#down-btn, #right-btn").off("click");
         $("#down-btn, #right-btn").on("click", function (event) {
