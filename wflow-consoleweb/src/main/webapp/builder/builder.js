@@ -4985,7 +4985,12 @@ _CustomBuilder.Builder = {
                 } else if (component.builderTemplate.isSupportProperties(data, component)) {
                     if (props.label !== undefined && props.label !== "") {
                         label = props.label;
-                    } else if (props.id !== undefined && props.id !== "") {
+                    } else if (props.textContent !== undefined && props.textContent !== "") {
+                        label = UI.escapeHTML(props.textContent);
+                        if (label.length > 30) {
+                            label += label.substring(0, 27) + "...";
+                        }
+                    } else if (props.id !== undefined && props.id !== "" && props.id.length < 32) {
                         label = props.id;
                     }
                 }
