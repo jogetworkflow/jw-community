@@ -169,3 +169,4 @@ body {--builder-left-panel-width: 0px !important;}
     border-right-color: transparent !important;
 }
 #cbuilder.mode-basic #showTags, #cbuilder.mode-basic .nv-tags {display:none !important;}
+.backToApp a, .backToApp a:hover{opacity: 0.1; cursor: none; pointer-events: none;}

@@ -203,7 +203,7 @@ _CustomBuilder = {
         
         if (temp.indexOf("/builders") !== -1) {
             $("#builder_loader").css("color", "#6e9f4b");
-            $("#builder_loader i.fa-stack-1x").attr("class", "fas fa-pencil-ruler fa-stack-1x");
+            $("#builder_loader i.fa-stack-1x").attr("class", "far fa-edit fa-stack-1x");
         } else {
             var builderLi = $("#builder-menu a[href='"+url+"']").closest(".builder-icon");
             $("#builder_loader").css("color", $(builderLi).find('> span').css("color"));

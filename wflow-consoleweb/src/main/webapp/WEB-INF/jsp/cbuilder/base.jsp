@@ -73,7 +73,7 @@
                     <i class="${builderIcon} fa-stack-1x"></i>
                 </span>
                 <div id="top-panel">
-                    <a id="builderIcon" class="reload" style="background-color:${builderColor};" onclick="location.reload(true);">
+                    <a id="builderIcon" class="reload" style="background-color:${builderColor};">
                         <i class="fa-2x ${builderIcon}"></i>
                         <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
                     </a>
