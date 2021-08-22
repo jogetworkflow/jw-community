@@ -1,16 +1,22 @@
 body {--builder-left-panel-width: 0px !important;}
 #builder_canvas {overflow:scroll; background: #fff;}
-#builders {padding: 30px !important; min-height: calc(100% - 71px); padding-top: 15px !important; width:100%; display: grid; grid-gap: 10px; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); grid-auto-rows: 5px;}
-#builders > div {padding: 0 !important; border-radius: 5px; overflow: hidden; box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.63);}
-.builder-title {padding: 15px; color: #fff; font-weight: bold; position: relative}
-.builder-title .addnew {position: absolute; right: 15px; color: #fff; font-size: 120%; cursor: pointer;}
-.builder-type .ul-wrapper {max-height: calc(100% - 54px); overflow-y: auto; min-height: 50px;}
+#builders {overflow:visible !important; padding: 30px 15px !important; min-height: calc(100% - 71px); padding-top: 15px !important; width:100%; position: relative; display: grid; grid-gap: 10px; grid-template-columns: repeat(auto-fill, minmax(400px,1fr)); grid-auto-rows: calc((100vh - 270px)/2);}
+#builders:before, #builders:after {content: ''; height: 100%; border-left: 1px solid #ccc; position: absolute; left:calc((100% - 30px)/3 + 14px);}
+#builders:after{left:auto; right:calc((100% - 30px)/3 + 13px);}
+#builders > div {padding: 0 !important; position: relative;}
+#builders > div:nth-child(n+4){border-top:1px solid #ccc; padding-top: 20px !important;}
+.builder-title {padding: 10px; padding-left: 75px; font-weight: bold; position: relative;}
+.builder-title .icon {display: block; position: absolute; top: 0; left: 16px; color: #fff; padding: 10px; width: 44px; text-align: center; border-radius: 5px;}
+.builder-title .addnew {position: absolute; right: 15px; color: #000; font-size: 120%; cursor: pointer;}
+.builder-type .ul-wrapper {min-height: 50px;}
 .builder-type ul { list-style: none; margin: 0; padding: 15px; min-height: 50px; font-size: 13px;}
 .builder-type ul li {position: relative; border:1px solid #fff; border-radius: 3px; background: #fff;}
 .builder-type ul li a {padding: 10px; text-decoration: none; color: #000; display: block;}
 .builder-type ul li + li {margin-top: 5px;}
-.builder-type ul li a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px;}
+.builder-type ul li a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px; text-align: right; position: absolute; right: 10px; top: 50%; width: 30%; word-break: break-all; transform: translateY(-50%); padding-right: 15px;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
+.builder-type ul li.has-sublabel a {position: relative;}
+.builder-type ul li.has-sublabel a .item-label {max-width: 70%; padding-right: 10px; display: inline-block;}
 .builder-type ul li.message{color: #888; font-style: italic;}
 #builder_canvas .canvas-header {padding: 0 30px 0 !important;}
 .builder-actions {visibility: hidden; position: absolute; right: 1px; top:6px; display:block;}
@@ -18,9 +24,15 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li .builder-actions a.disabled {color:#ccc; cursor: default;}
 .builder-type ul li .builder-actions a.launch {visibility: visible;}
 .builder-type ul li:hover .builder-actions {visibility: visible;}
-#builder_canvas .search-container {display: inline-block; width: 300px}
+#builder_canvas .search-container {display: inline-block; width: 300px;}
 #builder_canvas #showTags {margin-left: 20px; cursor: pointer;}
 .builder-process .item .delete {display: none;}
+@media screen and (max-width:980px) {
+    #builders {grid-auto-rows: calc((100vh - 270px)/4);}
+    #builders:before{left:calc((100% - 30px)/2 + 14px);}
+    #builders:after{display: none;}
+    #builders > div:nth-child(n+3){border-top:1px solid #ccc; padding-top: 20px !important;}
+}
 .nv-tags {
     font-size: 10px;
     line-height: 14px; 
@@ -156,3 +168,4 @@ body {--builder-left-panel-width: 0px !important;}
 #left-panel{
     border-right-color: transparent !important;
 }
+#cbuilder.mode-basic #showTags, #cbuilder.mode-basic .nv-tags {display:none !important;}

@@ -176,13 +176,14 @@ AppBuilder = {
             if (builder.value === "app") {
                 continue;
             }
-            var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div style="background: '+builder.color+'" class="builder-title"><i class="'+builder.icon+'"></i> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus-circle"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
+            var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div class="builder-title"><span class="icon" style="background: '+builder.color+'" ><i class="'+builder.icon+'"></i></span> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus-circle"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
             if (builder.elements && builder.elements.length > 0) {
                 for (var j in builder.elements) {
                     var action = "";
                     var actionClass= "";
                     var actionTitle= "";
                     var subLabel = "";
+                    var itemClass = "";
                     if (CustomBuilder.appPublished !== "true") {
                         actionClass = "not_publish disabled";
                         actionTitle = ' ' +get_cbuilder_msg('abuilder.appNotPublished');
@@ -193,9 +194,10 @@ AppBuilder = {
                         action = '<a class="runprocess '+actionClass+'" title="'+self.msg('runProcess')+actionTitle+'"><i class="fas fa-play"></i></a>';
                     }
                     if (builder.elements[j].subLabel !== undefined) {
+                        itemClass = "has-sublabel";
                         subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
                     }
-                    $(builderDiv).find("ul").append('<li class="item" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
+                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
@@ -429,16 +431,15 @@ AppBuilder = {
     
     resizeBuilders: function(){
         var builders = $('#builders')[0];
-        var rowHeight = parseInt(window.getComputedStyle(builders).getPropertyValue('grid-auto-rows'));
+        var rowHeight = ($(window).height() - 270) / 2;
+        if ($(window).width() <= 980) {
+            rowHeight = ($(window).height() - 270) / 3;
+        }
         var rowGap = parseInt(window.getComputedStyle(builders).getPropertyValue('grid-row-gap'));
-        var maxHeight = $(window).height() - 270;
         
         $(builders).find("> .builder-type").each(function(){
             var item = this;
             var height = $(item).find('ul').outerHeight() + 54;
-            if (height > maxHeight) {
-                height = maxHeight;
-            }
             var rowSpan = Math.ceil((height+rowGap)/(rowHeight+rowGap));
             item.style.gridRowEnd = "span "+rowSpan;
         });
