@@ -109,11 +109,6 @@
         type : 'color'
     },
     {
-        name : 'dx8navScrollbarTrack',
-        label : '@@ubuilder.navScrollbarTrack@@',
-        type : 'color'
-    },
-    {
         name : 'dx8navScrollbarThumb',
         label : '@@ubuilder.navScrollbarThumb@@',
         type : 'color'

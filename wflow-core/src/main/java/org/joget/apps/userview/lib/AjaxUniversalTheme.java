@@ -296,9 +296,6 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if (!getPropertyString("dx8navActiveIconColor").isEmpty()) {
             css += "--theme-sidebar-active-icon:"+getPropertyString("dx8navActiveIconColor")+ ";";
         }
-        if (!getPropertyString("dx8navScrollbarTrack").isEmpty()) {
-            css += "--theme-nav-scrollbar-track:"+getPropertyString("dx8navScrollbarTrack")+ ";";
-        }
         if (!getPropertyString("dx8navScrollbarThumb").isEmpty()) {
             css += "--theme-nav-scrollbar-thumb:"+getPropertyString("dx8navScrollbarThumb")+ ";";
         }

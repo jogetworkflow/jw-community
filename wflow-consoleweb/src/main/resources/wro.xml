@@ -173,6 +173,8 @@
     <group name="ajaxuniversal.min">
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
+        <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
+        <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/js/preload.js</js>
         <js>/js/bootstrap4/js/bootstrap.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>

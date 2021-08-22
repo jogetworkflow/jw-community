@@ -344,6 +344,9 @@ header.navbar .dropdown-menu a span.time{
 #sidebar .nav-tabs{
     border-bottom:0;
 }
+#sidebar #category-container{
+    padding-bottom: 80px;
+}
 #sidebar .badge{
     min-width: 25px;
     text-align: center;
@@ -663,6 +666,9 @@ body.horizontal_menu #header-info{
         border-bottom: 1px solid rgba(0,0,0,.0625);
         padding: 0 10px;
     }
+    body.horizontal_menu #sidebar #category-container{
+        padding-bottom: 0px;
+    }
     body.horizontal_menu #sidebar .nav li {
         display: inline-block;
         width: auto;
@@ -787,6 +793,9 @@ body.horizontal_menu #header-info{
     border-color: transparent !important;
     margin-bottom: 5px;
 }
+#sidebar a{
+    margin-bottom: 0px;
+}
 #content main button[class*=button]:focus:not(:disabled):not(.disabled),
 #content main button[class*=button]:active:not(:disabled):not(.disabled),
 #content main button[class*=button]:hover:not(:disabled):not(.disabled),
@@ -865,14 +874,8 @@ body.horizontal_menu #header-info{
     background-color: rgba(0, 0, 0, 0.15);
     outline: 1px solid slategrey; 
 }
-#navigation {
-    scrollbar-color: var(--theme-nav-scrollbar-thumb, var(--theme-color3, rgba(0, 0, 0, 0.15))) var(--theme-nav-scrollbar-track, var(--theme-color5, #fff));
-}
-#navigation::-webkit-scrollbar {
-    background-color: var(--theme-nav-scrollbar-track, var(--theme-color5, #fff));
-}
-#navigation::-webkit-scrollbar-thumb {
-    background-color: var(--theme-nav-scrollbar-thumb, var(--theme-color3, rgba(0, 0, 0, 0.15)));
+.mCS-minimal-dark.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+    background-color: var(--theme-nav-scrollbar-thumb, var(--theme-color3, rgba(0, 0, 0, 0.2))) !important;
 }
 
 /* Popup dialog */

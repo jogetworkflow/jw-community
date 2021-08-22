@@ -2,6 +2,8 @@ AjaxUniversalTheme = {
     init : function(target) {
         AjaxComponent.overrideLinkEvent(target);
         AjaxComponent.initContent(target);
+        
+        AjaxUniversalTheme.initSidebar();
             
         window.onpopstate = function(event) {
             if (event.state) {
@@ -11,6 +13,39 @@ AjaxUniversalTheme = {
                 }
             }
         };
+    },
+    
+    scrollBar : function(selector, mousewheelaxis) {
+        $(selector).mCustomScrollbar({
+            theme: "minimal-dark",
+            scrollInertia: 100,
+            axis: "mousewheelaxis",
+            mouseWheel: {
+                enable: !0,
+                axis: mousewheelaxis,
+                preventDefault: !0
+            }
+        });
+        
+        
+    },
+    
+    initSidebar : function() {
+        if ($("#sidebar").length > 0) {
+            var sidebar = function(){
+                if ($("#sidebar").css("display") === "inline-block" || $("#sidebar").width() > 280) {
+                    if ($("#sidebar #navigation").hasClass("mCustomScrollbar")) {
+                        $("#sidebar #navigation").mCustomScrollbar("destroy");
+                    }
+                } else {
+                    AjaxUniversalTheme.scrollBar("#sidebar #navigation", "y");
+                }
+            };
+            sidebar();
+            $(window).resize(function() {
+                sidebar();
+            });
+        }
     },
     
     callback : function(data) {
@@ -45,6 +80,10 @@ AjaxUniversalTheme = {
 
         AjaxComponent.overrideFormEvent($("#category-container"));
         AjaxComponent.initContent($("#content main"));
+        
+        if ($("#content main").find(".c-overflow").length > 0) {
+            AjaxUniversalTheme.scrollBar(".c-overflow", "y");
+        }
 
         setTimeout(function(){
             $(window).trigger('resize'); //inorder for datalist to render in correct viewport
