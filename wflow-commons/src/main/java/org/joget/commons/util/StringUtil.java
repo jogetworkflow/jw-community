@@ -689,7 +689,7 @@ public class StringUtil {
      */
     public static String stripHtmlRelaxed(String content) {
         if (content != null && content.indexOf("<") >= 0) {
-            content = Jsoup.clean(content, whitelistRelaxed);
+            content = Jsoup.clean(content, "", whitelistRelaxed, new OutputSettings().syntax(OutputSettings.Syntax.xml));
         }
         return content;
     }

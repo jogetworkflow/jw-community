@@ -20,6 +20,7 @@ public class TestHashVariable {
     public static String js;
     public static String css;
     public static String java;
+    public static String doubleQuate;
     public static String specialChars = "!@#$%^&*()_+-={}|[]\\:\";',./<>?\t\r\n`~";
     public static String separated = "Joget Inc.;<ABC> Inc.;Jack & Co.";
     public static String nl2br = "Joget Inc.\n<ABC> Inc.\nJack & Co.";
@@ -28,7 +29,8 @@ public class TestHashVariable {
     public static String escaped_sql;
     public static String escaped_js;
     public static String escaped_java;
-    public static String escaped_specialChars = "!@#$%^&amp;*()_+-={}|[]\\:&quot;;',./&lt;&gt;? `~";
+    public static String escaped_specialChars = "!@#$%^&amp;*()_+-={}|[]\\:\";',./&lt;&gt;? `~";
+    public static String escaped_doubleQuate;
     
     @Before
     public void setup() throws IOException {
@@ -58,6 +60,11 @@ public class TestHashVariable {
         java = TestUtil.readFile("/envVariable/java.txt").trim();
         escaped_java = TestUtil.readFile("/envVariable/escaped_java.txt").trim();
         TestUtil.createEnvVariable(appDef, "java", java);
+        
+        //double quote
+        doubleQuate = TestUtil.readFile("/envVariable/doubleQuote.txt").trim();
+        escaped_doubleQuate = TestUtil.readFile("/envVariable/escaped_doubleQuote.txt").trim();
+        TestUtil.createEnvVariable(appDef, "doubleQuote", escaped_doubleQuate);
         
         //special chars
         TestUtil.createEnvVariable(appDef, "specialChars", specialChars);
@@ -141,6 +148,11 @@ public class TestHashVariable {
         Assert.assertEquals(java, AppUtil.processHashVariable("#exp.'{envVariable.type}'.equals('java')?'{envVariable.html?expression}':'{envVariable.java?expression}'?noescape#", null, null, null));
     }
     
+    @Test
+    public void testDoubleQuote() {
+        Assert.assertEquals(escaped_doubleQuate, AppUtil.processHashVariable("#envVariable.doubleQuote#", null, null, null));
+    }
+      
     @After
     public void clean() {
         TestUtil.deleteAllVersions("testHashVariable");
