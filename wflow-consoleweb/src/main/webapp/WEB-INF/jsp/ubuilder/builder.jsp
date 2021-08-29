@@ -102,10 +102,13 @@
             },
             "permission" : {
                 "element_support_plugin" : ["org.joget.apps.userview.model.UserviewCategory"],
-                "render_elements_callback" : "UserviewBuilder.renderPermission",
+                "ignore_classes" : ["org.joget.apps.userview.model.Userview", "org.joget.apps.userview.model.UserviewPage", "menu-component"],
                 "permission_plugin" : "org.joget.apps.userview.model.UserviewAccessPermission",
+                "render_elements_callback" : "UserviewBuilder.renderPermissionElements",
                 "childs_properties" : ["elements", "categories", "menus"],
-                "supportNoPermisisonMessage" : "true"
+                "supportNoPermisisonMessage" : "true",
+                "display_element_id" : true,
+                "element_id_field" : "customId",
             }
         }  
     }

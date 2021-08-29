@@ -690,6 +690,7 @@ UserviewBuilder = {
                 }
             };
             component.builderTemplate.supportStyle = false;
+            component.builderTemplate.renderPermission = UserviewBuilder.renderPermission;
         } else if (component.className.indexOf("userview-") === 0) {
             
         } else if (component.type === "menu") {
@@ -731,6 +732,7 @@ UserviewBuilder = {
                     return true;
                 }
             };
+            component.builderTemplate.renderPermission = UserviewBuilder.renderPermission;
             
             //change label to icon text field
             var found = false;
@@ -1644,85 +1646,99 @@ UserviewBuilder = {
         callback();
     },
     
+    renderPermissionElements : function(container, key) {
+        if (UserviewBuilder.mode === "page") {
+            PermissionManager.renderElement(UserviewBuilder.selectedMenu.referencePage, container, key);
+        } else {
+            PermissionManager.renderElement(CustomBuilder.data, container, key);
+        }
+    },
+    
     /*
-     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * A method called from the component template
      * It used to render the permission option of an element
      */
-    renderPermission : function (detailsDiv, element, elementObj, component, permissionObj, callback) {
-        var self = CustomBuilder.Builder;
-        var dl = detailsDiv.find('dl');
+    renderPermission : function (row, elementObj, permissionObj, key, level) {
+        $(row).append('<td class="authorized" width="30%"><div class="authorized-btns btn-group"></div></td>');
         
-        if (UserviewBuilder.mode === "userview") {
-            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
-            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm accessible-btn">'+get_advtool_msg("adv.permission.accessible")+'</button>');
-            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
-            dl.find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm deny-btn">'+get_advtool_msg("adv.permission.deny")+'</button>');
+        $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm accessible-btn">'+get_advtool_msg("adv.permission.accessible")+'</button>');
+        $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn">'+get_advtool_msg("adv.permission.hidden")+'</button>');
+        $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm deny-btn">'+get_advtool_msg("adv.permission.deny")+'</button>');
             
-            if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
-                if (permissionObj["hide"] === "yes") {
-                    dl.find(".authorized-btns .hidden-btn").addClass("active");
-                } else if (permissionObj["permissionDeny"] === "true") {
-                    dl.find(".authorized-btns .deny-btn").addClass("active");
-                } else {
-                    dl.find(".authorized-btns .accessible-btn").addClass("active");
-                }
+        if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+            if (permissionObj["hide"] === "yes") {
+                $(row).find(".authorized-btns .hidden-btn").addClass("active");
+            } else if (permissionObj["permissionDeny"] === "true") {
+                $(row).find(".authorized-btns .deny-btn").addClass("active");
             } else {
-                if (permissionObj["permissionHidden"] === "true") {
-                    dl.find(".authorized-btns .hidden-btn").addClass("active");
-                } else if (permissionObj["permissionDeny"] === "true") {
-                    dl.find(".authorized-btns .deny-btn").addClass("active");
-                } else {
-                    dl.find(".authorized-btns .accessible-btn").addClass("active");
-                }
+                $(row).find(".authorized-btns .accessible-btn").addClass("active");
             }
-            
-            dl.on("click", ".btn", function(event) {
-                if ($(this).hasClass("active")) {
-                    return false;
-                }
-
-                var group = $(this).closest(".btn-group");
-                group.find(".active").removeClass("active");
-                $(this).addClass("active");
-                
-                if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
-                    if ($(dl).find(".authorized-btns .accessible-btn").hasClass("active")) {
-                        permissionObj["hide"] = "";
-                        permissionObj["permissionDeny"] = "";
-                    } else if ($(dl).find(".authorized-btns .hidden-btn").hasClass("active")) {
-                        permissionObj["hide"] = "yes";
-                        permissionObj["permissionDeny"] = "";
-                    } else {
-                        permissionObj["hide"] = "";
-                        permissionObj["permissionDeny"] = "true";
-                    }
-                } else {
-                    if ($(dl).find(".authorized-btns .accessible-btn").hasClass("active")) {
-                        permissionObj["permissionHidden"] = "";
-                        permissionObj["permissionDeny"] = "";
-                    } else if ($(dl).find(".authorized-btns .hidden-btn").hasClass("active")) {
-                        permissionObj["permissionHidden"] = "true";
-                        permissionObj["permissionDeny"] = "";
-                    } else {
-                        permissionObj["permissionHidden"] = "";
-                        permissionObj["permissionDeny"] = "true";
-                    }
-                }
-                
-                CustomBuilder.update();
-
-                event.preventDefault();
-                return false;
-            });
-            
-            callback();
         } else {
-            if (elementObj.className === "menu-component") {
-                callback();
+            if (permissionObj["permissionHidden"] === "true") {
+                $(row).find(".authorized-btns .hidden-btn").addClass("active");
+            } else if (permissionObj["permissionDeny"] === "true") {
+                $(row).find(".authorized-btns .deny-btn").addClass("active");
             } else {
-                self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
+                $(row).find(".authorized-btns .accessible-btn").addClass("active");
             }
-        }  
+            
+            //find category row
+            var catRow = $(row).prevAll(".level-1").first();
+            if ($(catRow).find(".authorized-btns .deny-btn").hasClass("active")) {
+                $(row).find(".authorized-btns .btn").attr("disabled", "disabled");
+            } else if ($(catRow).find(".authorized-btns .hidden-btn").hasClass("active")) {
+                $(row).find(".authorized-btns .accessible-btn").attr("disabled", "disabled");
+            }
+        }
+        
+        $(row).on("click", ".btn", function(event) {
+            if ($(this).hasClass("active")) {
+                return false;
+            }
+
+            var group = $(this).closest(".btn-group");
+            group.find(".active").removeClass("active");
+            $(this).addClass("active");
+
+            if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+                if ($(row).find(".authorized-btns .accessible-btn").hasClass("active")) {
+                    permissionObj["hide"] = "";
+                    permissionObj["permissionDeny"] = "";
+                    $(row).nextUntil(".level-1").each(function(){
+                        $(this).find(".authorized-btns .btn").removeAttr("disabled");
+                    });
+                } else if ($(row).find(".authorized-btns .hidden-btn").hasClass("active")) {
+                    permissionObj["hide"] = "yes";
+                    permissionObj["permissionDeny"] = "";
+                    $(row).nextUntil(".level-1").each(function(){
+                        $(this).find(".authorized-btns .btn").removeAttr("disabled");
+                        $(this).find(".authorized-btns .accessible-btn").attr("disabled", "disabled");
+                    });
+                } else {
+                    permissionObj["hide"] = "";
+                    permissionObj["permissionDeny"] = "true";
+                    $(row).nextUntil(".level-1").each(function(){
+                        $(this).find(".authorized-btns .btn").attr("disabled", "disabled");
+                    });
+                }
+            } else {
+                if ($(row).find(".authorized-btns .accessible-btn").hasClass("active")) {
+                    permissionObj["permissionHidden"] = "";
+                    permissionObj["permissionDeny"] = "";
+                } else if ($(row).find(".authorized-btns .hidden-btn").hasClass("active")) {
+                    permissionObj["permissionHidden"] = "true";
+                    permissionObj["permissionDeny"] = "";
+                } else {
+                    permissionObj["permissionHidden"] = "";
+                    permissionObj["permissionDeny"] = "true";
+                }
+            }
+
+            CustomBuilder.update();
+
+            event.preventDefault();
+            return false;
+        });
     },
     
     /*

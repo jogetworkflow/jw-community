@@ -1254,19 +1254,6 @@ _CustomBuilder = {
     },
     
     /*
-     * Used by advanced tool permission tab to retrieve element label
-     */
-    getPermissionElementLabel: function(element) {
-        if (element["className"] !== undefined && element["className"] !== "") {
-            var plugin = CustomBuilder.paletteElements[element["className"]];
-            if (plugin !== null && plugin !== undefined) {
-                return plugin.label;
-            }
-        }
-        return "";
-    },
-    
-    /*
      * Deprecated
      */
     saveBuilderPropertiesfunction(container, properties){
@@ -1792,45 +1779,18 @@ _CustomBuilder = {
      * Show the permission editor view, called by switchView method
      */
     permissionViewInit : function(view) {
-        if ($("body").hasClass("default-builder")) {
-            view.html("");
-            $("body").addClass("disable-select-edit");
-            
-            view.append('<div class="permission-rules panel-section"><div class="panel-header"><span class="text-secondary">'+get_advtool_msg("adv.permission.rules")+'</span></div><div class="permission-rules-container scrollable"></div></div>');
-            
-            var ruleObject = CustomBuilder.data.properties;
-            if (CustomBuilder.config.builder.callbacks["getRuleObject"] !== undefined && CustomBuilder.config.builder.callbacks["getRuleObject"] !== "") {
-                ruleObject = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getRuleObject"], []);
-            }
-            
-            CustomBuilder.Builder.renderPermissionRules(view.find(".permission-rules"), ruleObject);
-            
-            var tree = $('<div class="tree-viewer"></div>');
-            view.append(tree);
-            CustomBuilder.treeViewerViewInit(tree);
-        } else {
-            $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
-            PermissionManager.init($(view), $("#cbuilder-info").find('textarea[name="json"]').val(), CustomBuilder.advancedToolsOptions);
-            $(view).find(".dt-loading").remove();
-            
-            $("#cbuilder-info").find('textarea[name="json"]').off("change.permissionView");
-            $("#cbuilder-info").find('textarea[name="json"]').on("change.permissionView", function() {
-                if (!$(view).is(":visible")) { //ignore if current tab is permission tab
-                    $(view).html("");
-                }
-            });
-        }
+        $("body").addClass("no-right-panel");
+        view.html("");
+        $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+        PermissionManager.render($(view));
+        $(view).find(".dt-loading").remove();
     },
     
     /*
      * Run before permission editor dismiss, called by switchView method
      */
     permissionViewBeforeClosed : function(view) {
-        if ($("body").hasClass("default-builder")) {
-            CustomBuilder.Builder.removeNodeAdditional();
-            CustomBuilder.animateLeftPanel();
-            $("body").removeClass("disable-select-edit");
-        }
+        CustomBuilder.Builder.selectedEl = null;
     },
     
     /*
@@ -2624,7 +2584,6 @@ _CustomBuilder.Builder = {
         
         self._initDragdrop();
         self._initBox();
-        self._initPermissionComponent();
         
         self.dragElement = null;
     },
@@ -4039,7 +3998,7 @@ _CustomBuilder.Builder = {
             return false;
         });
     },
-    
+
     /*
      * Create a dummy component for permission rules and plugins
      */
@@ -4258,7 +4217,7 @@ _CustomBuilder.Builder = {
                 'builderReady' : true
             }, component.builderTemplate);
             
-            if (CustomBuilder.Builder.options.callbacks["initComponent"] !== undefined && CustomBuilder.Builder.options.callbacks["initComponent"] !== "") {
+            if (CustomBuilder.Builder.options.callbacks !== undefined && CustomBuilder.Builder.options.callbacks["initComponent"] !== undefined && CustomBuilder.Builder.options.callbacks["initComponent"] !== "") {
                 CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["initComponent"], [component]);
             }
         }
@@ -4654,7 +4613,6 @@ _CustomBuilder.Builder = {
     renderElement : function(elementObj, element, component, selectNode, deferreds, callback) {
         var self = CustomBuilder.Builder;
         var oldElement = element;
-        
         $("#element-select-box").hide();
         $("#element-highlight-box").hide();
         
@@ -5051,7 +5009,7 @@ _CustomBuilder.Builder = {
     
     /*
      * Used to traverling through all the nodes and render additional html to the node.
-     * Used by xray viwer and permission editor
+     * Used by xray viwer
      */
     renderNodeAdditional : function(type, node, level) {
         var self = CustomBuilder.Builder;
@@ -5248,458 +5206,6 @@ _CustomBuilder.Builder = {
         });
         
         CustomBuilder.Builder.triggerEvent("nodeAdditionalRemoved");
-    },
-    
-    /*
-     * Default render node permisison options method for renderNodeAdditional
-     */
-    renderPermission : function(detailsDiv, element, elementObj, component , callback) {
-        var self = CustomBuilder.Builder;
-        
-        var dl = detailsDiv.find('dl');
-        
-        //if the classname is one of the ignore class
-        var ignore_classes = CustomBuilder.config.advanced_tools.permission.ignore_classes;
-        if (ignore_classes.length > 0) {
-            if (elementObj["className"] === null || elementObj["className"] === undefined || $.inArray(elementObj["className"], ignore_classes) !== -1) {
-                callback();
-                return;
-            }
-        }
-        
-        //if the element is not in the allowed child properties
-        var childs_properties = CustomBuilder.config.advanced_tools.permission.childs_properties;
-        var parentDataHolder = component.builderTemplate.getParentDataHolder(elementObj, component);
-        if ($.inArray(parentDataHolder, childs_properties) === -1) {
-            callback();
-            return;
-        }
-        
-        var props = self.parseElementProps(elementObj);
-        
-        var permissionObj = props;
-        var key = CustomBuilder.Builder.permissionRuleKey;
-        if (key !== "default") {
-            if (props["permission_rules"] === undefined) {
-                props["permission_rules"] = {};
-            }
-            if (props["permission_rules"][key] === undefined) {
-                props["permission_rules"][key] = {};
-            }
-            permissionObj = props["permission_rules"][key];
-        }
-        
-        //if the element should support permission plugin
-        var plugins_classes = CustomBuilder.config.advanced_tools.permission.element_support_plugin;
-        if ($.inArray(elementObj["className"], plugins_classes) !== -1) {
-            dl.append('<dt><i class="las la-plug" title="Permission Plugin"></i></i></dt><dd><div class="permission-plugin"><span class="name"></span> <a class="edit-permission-plugin-btn"><i class="las la-edit"></i></a></div></dd>');
-            var pluginName = get_advtool_msg('adv.permission.noPlugin');
-            var className = "";
-            if (permissionObj["permission"] !== undefined 
-                && permissionObj["permission"]["className"] !== undefined  
-                && permissionObj["permission"]["className"] !== "") {
-
-                className = permissionObj["permission"]["className"];
-                var pluginName = CustomBuilder.availablePermission[className];
-                if (pluginName === undefined) {
-                    pluginName = className + "(" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
-                }
-            }
-            dl.find(".permission-plugin .name").text(pluginName);
-
-            if (permissionObj["permissionComment"] !== undefined && permissionObj["permissionComment"] !== "") {
-                dl.append('<dt><i class="lar la-comment" title="Comment"></i></i></dt><dd>'+permissionObj["permissionComment"]+'</dd>');
-            }
-            
-            dl.find(".edit-permission-plugin-btn").on("click", function() {
-                self.editPermissionPlugin( element, elementObj, component);
-            });
-        }
-        
-        //if no specify callback is available, using default rendering
-        var renderElementCallback = CustomBuilder.config.advanced_tools.permission.render_elements_callback;
-        if (renderElementCallback !== undefined && renderElementCallback !== "") {
-            CustomBuilder.callback(renderElementCallback, [detailsDiv, element, elementObj, component, permissionObj, callback]);
-        } else {
-            self._internalRenderPermission(detailsDiv, element, elementObj, component, permissionObj, callback);
-        }
-    },
-    
-    /*
-     * show popup to edit permission plugin
-     */
-    editPermissionPlugin : function( element, elementObj, component) {
-        var self = CustomBuilder.Builder;
-        
-        var props = self.parseElementProps(elementObj);
-        var permissionObj = props;
-        var key = CustomBuilder.Builder.permissionRuleKey;
-        if (key !== "default") {
-            if (props["permission_rules"] === undefined) {
-                props["permission_rules"] = {};
-            }
-            if (props["permission_rules"][key] === undefined) {
-                props["permission_rules"][key] = {};
-            }
-            permissionObj = props["permission_rules"][key];
-        }
-        CustomBuilder.editProperties("permission-plugin", permissionObj, elementObj, element);
-        
-        $("#style-properties-tab-link").hide();
-        $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
-        $("body").removeClass("no-right-panel");
-    },
-    
-    /*
-     * Default implementation of rendering permission option, called from renderPermission
-     */
-    _internalRenderPermission : function(detailsDiv, element, elementObj, component, permissionObj, callback) {
-        var self = CustomBuilder.Builder;
-        var dl = detailsDiv.find('dl');
-        
-        var authorizedOptions = CustomBuilder.config.advanced_tools.permission.authorized;
-        if (authorizedOptions !== undefined && authorizedOptions.property !== undefined && authorizedOptions.property !== "") {
-            dl.append('<dt class="authorized-row" ><i class="las la-lock-open" title="'+get_advtool_msg('adv.permission.authorized')+'"></i></i></dt><dd class="authorized-row" ><div class="authorized-btns btn-group"></div></dd>');
-
-            var value = permissionObj[authorizedOptions.property];
-            if (value === undefined || value === null) {
-                value = authorizedOptions.default_value;
-            }
-
-            for (var i in authorizedOptions.options) {
-                var active = "";
-                if (authorizedOptions.options[i]['value'] === value) {
-                    active = "active";
-                }
-                var disableChild = "";
-                if (authorizedOptions.options[i]['value'] === true) {
-                    disableChild = "data-disable-child";
-                }
-                dl.find(".authorized-btns").append('<button type="button" class="'+active+' btn btn-outline-success btn-sm '+authorizedOptions.options[i]['key']+'-btn" data-value="'+authorizedOptions.options[i]['value']+'" '+disableChild+'>'+authorizedOptions.options[i]['label']+'</button>');
-            }
-
-            dl.on("click", ".authorized-btns .btn", function(event) {
-                if ($(this).hasClass("active")) {
-                    return false;
-                }
-
-                var group = $(this).closest(".btn-group");
-                group.find(".active").removeClass("active");
-                $(this).addClass("active");
-
-                var selectedValue = $(this).data("value");
-                permissionObj[authorizedOptions.property] = "" + selectedValue;
-
-                $(element).find("[data-cbuilder-classname] .authorized-row .btn, [data-cbuilder-select] .authorized-row .btn").removeAttr("disabled");
-                if ($(this).is("[data-disable-child]")) {
-                    $(element).find("[data-cbuilder-classname] .authorized-row .btn, [data-cbuilder-select] .authorized-row .btn").addAttr("disabled");
-                }
-                
-                var target = $(this).closest(".cbuilder-node-details").parent();
-                if ($(target).is("[data-cbuilder-select]")) {
-                    //copy to others
-                    $(self.frameBody).find("[data-cbuilder-select='"+$(target).data("cbuilder-select")+"']").each(function(){
-                        if (!$(this).is(target)) {
-                            $(this).find("> .cbuilder-node-details .authorized-btns > .active").removeClass("active");
-                            $(this).find("> .cbuilder-node-details .authorized-btns > [data-value='"+selectedValue+"']").addClass("active");
-                        }
-                    });
-                }
-
-                CustomBuilder.update();
-
-                event.preventDefault();
-                return false;
-            });
-        }
-
-        var unauthorizedOptions = CustomBuilder.config.advanced_tools.permission.unauthorized;
-        if (unauthorizedOptions !== undefined && unauthorizedOptions.property !== undefined && unauthorizedOptions.property !== "") {
-            dl.append('<dt class="unauthorized-row" ><i class="las la-lock" title="'+get_advtool_msg('adv.permission.unauthorized')+'"></i></i></dt><dd class="unauthorized-row" ><div class="unauthorized-btns btn-group"></div></dd>');
-
-            var value = permissionObj[unauthorizedOptions.property];
-            if (value === undefined || value === null) {
-                value = unauthorizedOptions.default_value;
-            }
-
-            for (var i in unauthorizedOptions.options) {
-                var active = "";
-                if (unauthorizedOptions.options[i]['value'] === value) {
-                    active = "active";
-                }
-                dl.find(".unauthorized-btns").append('<button type="button" class="'+active+' btn btn-outline-danger btn-sm '+unauthorizedOptions.options[i]['key']+'-btn" data-value="'+unauthorizedOptions.options[i]['value']+'" >'+unauthorizedOptions.options[i]['label']+'</button>');
-            }
-
-            dl.on("click", ".unauthorized-btns .btn", function(event) {
-                if ($(this).hasClass("active")) {
-                    return false;
-                }
-
-                var group = $(this).closest(".btn-group");
-                group.find(".active").removeClass("active");
-                $(this).addClass("active");
-                
-                var selectedValue = $(this).data("value");
-                permissionObj[unauthorizedOptions.property] = "" + selectedValue;
-
-                $(element).find("[data-cbuilder-classname] .unauthorized-row .btn, [data-cbuilder-select] .unauthorized-row .btn").removeAttr("disabled");
-                if ($(this).is("[data-disable-child]")) {
-                    $(element).find("[data-cbuilder-classname] .unauthorized-row .btn, [data-cbuilder-select] .unauthorized-row .btn").addAttr("disabled");
-                }
-                
-                var target = $(this).closest(".cbuilder-node-details").parent();
-                if ($(target).is("[data-cbuilder-select]")) {
-                    //copy to others
-                    $(self.frameBody).find("[data-cbuilder-select='"+$(target).data("cbuilder-select")+"']").each(function(){
-                        if (!$(this).is(target)) {
-                            $(this).find("> .cbuilder-node-details .unauthorized-btns > .active").removeClass("active");
-                            $(this).find("> .cbuilder-node-details .unauthorized-btns > [data-value='"+selectedValue+"']").addClass("active");
-                        }
-                    });
-                }
-
-                CustomBuilder.update();
-
-                event.preventDefault();
-                return false;
-            });
-        }
-        
-        if (callback) {
-            callback();
-        }
-    },
-    
-    /*
-     * Used to render permission rule on left panel. Used by permission editor
-     */
-    renderPermissionRules : function(container, ruleObject) {
-        var self = CustomBuilder.Builder;
-        
-        container.find(".panel-header").append('<div class="btn-group responsive-btns float-right" role="group"></div>');
-        container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.newRule")+'" id="new-rule-btn"><i class="las la-plus"></i></button>');
-        container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.editRule")+'" id="edit-rule-btn"><i class="las la-pen"></i></button>');
-        container.find(".responsive-btns").append('<button class="btn btn-link btn-sm" title="'+get_advtool_msg("adv.permission.deleteRule")+'" id="delete-rule-btn" style="display:none;"><i class="las la-trash"></i></button>');
-        
-        var rulesContainer = container.find(".permission-rules-container");
-        rulesContainer.append("<div class=\"sortable\"></div>");
-        
-        if (ruleObject["permission_rules"] !== undefined) {
-            for (var i in ruleObject["permission_rules"]) {
-                self.renderRule(rulesContainer.find(".sortable"), ruleObject["permission_rules"][i]);
-            }
-        }
-        
-        //render default
-        var defaultRule = self.renderRule(rulesContainer, ruleObject);
-        self.setActiveRule(container, $(defaultRule));
-        
-        $(container).find(".sortable").sortable({
-            opacity: 0.8,
-            axis: 'y',
-            handle: '.sort',
-            tolerance: 'intersect',
-            stop: function(event, ui){
-                var newRules = [];
-
-                $(rulesContainer).find(".sortable .permission_rule").each(function(){
-                    newRules.push($(this).data("data"));
-                });
-
-                ruleObject["permission_rules"] = newRules;
-
-                CustomBuilder.updateJson();
-            }
-        });
-        
-        $("#new-rule-btn").off("click");
-        $("#new-rule-btn").on("click", function() {
-            var rule = {
-                permission_key : CustomBuilder.uuid(),
-                permission_name : get_advtool_msg('adv.permission.unnamed'),
-                permission : {
-                    className : "",
-                    properties : []
-                }
-            };
-
-            if (ruleObject["permission_rules"] === undefined) {
-                ruleObject["permission_rules"] = [];
-            }
-            ruleObject["permission_rules"].unshift(rule);
-
-            var ruleElm = self.renderRule(rulesContainer.find(".sortable"), rule, true);
-            self.setActiveRule(container, $(ruleElm));
-            
-            CustomBuilder.update();
-        });
-        
-        $("#edit-rule-btn").off("click");
-        $("#edit-rule-btn").on("click", function() {
-            var rule = rulesContainer.find(".active");
-            self.editPermissionRule(rule);
-        });
-        
-        $("#delete-rule-btn").off("click");
-        $("#delete-rule-btn").on("click", function() {
-            var rule = rulesContainer.find(".sortable .active");
-            
-            var key = $(rule).data("key");
-            var index = -1;
-            for (var i = 0; i < ruleObject["permission_rules"].length; i++) {
-                if (ruleObject["permission_rules"][i]["permission_key"] === key) {
-                    index = i;
-                    break;
-                }
-            }
-            if (index > -1) {
-                ruleObject["permission_rules"].splice(index, 1);
-
-                self.removeElementsPermission(key);
-                $(rule).remove();
-
-                if ($(rulesContainer).find(".sortable .permission_rule").length > 0) {
-                    self.setActiveRule(container, $(rulesContainer).find(".sortable .permission_rule:eq(0)"));
-                } else {
-                    self.setActiveRule(container, $(rulesContainer).find(".permission_rule.default"));
-                }
-
-                CustomBuilder.update();
-            }
-        });
-        
-        container.off("click", ".permission_rule");
-        container.on("click", ".permission_rule", function(){
-            self.setActiveRule(container, $(this));
-        });
-    },
-    
-    /*
-     * Render rule on left panel
-     */
-    renderRule : function(container, obj, prepend) {
-        var isDefault = true;
-        var key = "default";
-        var name = get_advtool_msg('adv.permission.default');
-        var pluginName = get_advtool_msg('adv.permission.noPlugin');
-        
-        if (obj['permission_key'] !== undefined) {
-            isDefault = false;
-            key = obj['permission_key'];
-            name = obj['permission_name'];
-        }
-        if (obj['permission'] !== undefined && obj['permission']["className"] !== undefined) {
-            var className = obj['permission']["className"];
-            if (className !== "") {
-                pluginName = CustomBuilder.availablePermission[className];
-                
-                if (pluginName === undefined) {
-                    pluginName = className + "(" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
-                }
-            }
-        }
-        var rule = $('<div class="permission_rule"><div class="sort"></div><div class="name"></div><div class="plugin"><span class="plugin_name"></span></div></div>');
-        
-        $(rule).data("key", key);
-        $(rule).attr("id", "permission-rule-"+key);
-        $(rule).data("data", {className: "permission-rule", properties : obj});
-        $(rule).find(".name").text(name);
-        $(rule).find(".plugin_name").text(pluginName);
-        
-        if (!isDefault) {
-            $(rule).find(".name").addClass("visible");
-            
-            if (prepend) {
-                $(container).prepend(rule);
-            } else {
-                $(container).append(rule);
-            }
-            
-            $(rule).find(".name").editable(function(value, settings){
-                if (value === "") {
-                    value = get_advtool_msg('adv.permission.unnamed');
-                }
-                if (obj['permission_name'] !== value) {
-                    obj['permission_name'] = value;
-                    CustomBuilder.updateJson();
-                }
-                return value;
-            },{
-                type      : 'text',
-                tooltip   : '' ,
-                select    : true ,
-                style     : 'inherit',
-                cssclass  : 'labelEditableField',
-                onblur    : 'submit',
-                rows      : 1,
-                width     : '80%',
-                minwidth  : 80,
-                data: function(value, settings) {
-                    if (value !== "") {
-                        var div = document.createElement('div');
-                        div.innerHTML = value;
-                        var decoded = div.firstChild.nodeValue;
-                        return decoded;
-                    } else {
-                        return value;
-                    }
-                }
-            });
-        } else {
-            $(rule).addClass("default");
-            $(container).append(rule);
-        }
-        
-        return $(rule);
-    },
-    
-    /*
-     * Set active rule and render the permission options for all nodes
-     */
-    setActiveRule : function(container, rule) {
-        container.find(".active").removeClass("active");
-        rule.addClass("active");
-        
-        container.find("#delete-rule-btn").hide();
-        if (!rule.hasClass("default")) {
-            container.find("#delete-rule-btn").show();
-        }
-        
-        CustomBuilder.Builder.permissionRuleKey = $(rule).data("key");
-        
-        CustomBuilder.Builder.removeNodeAdditional();
-        CustomBuilder.Builder.renderNodeAdditional('Permission');
-    },
-    
-    /*
-     * Show popup to edit permission rule
-     */
-    editPermissionRule : function(rule) {
-        $("body").addClass("no-right-panel");
-        
-        var self = CustomBuilder.Builder;
-        
-        var data = $(rule).data("data");
-        var props = data.properties;
-        CustomBuilder.editProperties("permission-rule", props, data, rule);
-        
-        $("#style-properties-tab-link").hide();
-        $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
-        $("body").removeClass("no-right-panel");
-    },
-    
-    /*
-     * Remove permission from all nodes based on key
-     */
-    removeElementsPermission : function(key) {
-        var self = CustomBuilder.Builder;
-        self.frameBody.find("[data-cbuilder-classname]").each(function(){
-            var data = $(this).data("data");
-            var props = self.parseElementProps(data);
-            if (props["permission_rules"] !== undefined && props["permission_rules"][key] !== undefined) {
-                delete props["permission_rules"][key];
-            }
-        });
     },
     
     /*

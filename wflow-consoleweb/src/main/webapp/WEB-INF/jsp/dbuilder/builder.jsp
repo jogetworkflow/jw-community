@@ -43,7 +43,10 @@
             },
             "permission" : {
                 "permission_plugin" : "org.joget.apps.datalist.model.DatalistPermission",
-                "childs_properties" : ["filters", "columns", "rowActions", "actions"]
+                "render_elements_callback": "DatalistBuilder.renderPermissionElements",
+                "check_ignore_rendering_callback": "DatalistBuilder.isPermissionIgnoreRendering",
+                "display_element_id" : true,
+                "element_id_field" : "name",
             }
         }
     }

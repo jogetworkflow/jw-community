@@ -97,9 +97,12 @@
             },
             "permission" : {
                 "element_support_plugin" : ["org.joget.apps.form.model.Section"],
-                "ignore_classes" : ["org.joget.apps.form.model.Column"],
-                "render_elements_callback" : "FormBuilder.renderPermission",
-                "permission_plugin" : "org.joget.apps.form.model.FormPermission"
+                "ignore_classes" : ["org.joget.apps.form.model.Form", "org.joget.apps.form.model.Column"],
+                "permission_plugin" : "org.joget.apps.form.model.FormPermission",
+                "display_element_id" : true,
+                "unauthorized" : {
+                    property : "permissionReadonly"
+                }
             }
         }
     }

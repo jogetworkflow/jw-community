@@ -1125,6 +1125,7 @@ div.section, .header > ol {
     display: table;
     width: 100%;
 }
+.permission-table .element-meta .element-icon > i, .permission-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span,
 .builder-palette-element > i, .builder-palette-element > span {
     display: block;
@@ -1143,6 +1144,7 @@ div.section, .header > ol {
     background-position: center;
     font-size: 11px;
 }
+.permission-table .element-meta .element-icon > svg,
 .tree ol li.tree-viewer-item label > svg,
 .builder-palette-element > svg{
     height: 16px;
@@ -1153,20 +1155,24 @@ div.section, .header > ol {
     transform-origin: 50% 50%;
     transform: scale(1.5);
 }
+.permission-table .element-meta .element-icon > i, .permission-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
     top: 1px;
     color: #ddd;
 }
+.permission-table .element-meta .element-icon > svg,
 .tree ol li.tree-viewer-item label > svg{
     transform: scale(1);
     top: 1px;
 }
+.permission-table .element-meta .element-icon > span.fa-stack,
 .tree ol li.tree-viewer-item label > span.fa-stack,
 .builder-palette-element > span.fa-stack{
     font-size: 50%;
     padding-top: 2px;
 }
+.permission-table .element-meta .element-icon > span.fa-stack i:last-child,
 .tree ol li.tree-viewer-item label > span.fa-stack i:last-child,
 .builder-palette-element > span.fa-stack i:last-child {
     display: block;
@@ -1438,12 +1444,9 @@ div.section, .header > ol {
     color: #fff !important;
 }
 #treeViewerView .builder-view-body,
-#xrayView .builder-view-body,
-#permissionView .builder-view-body {
+#xrayView .builder-view-body{
     background: #718595;
 }
-.permission-builder-view #element-select-name,
-.permission-builder-view #element-bottom-actions,
 .xray-builder-view #element-select-name,
 .xray-builder-view #element-bottom-actions{
     display:none;
@@ -1453,57 +1456,8 @@ div.section, .header > ol {
     padding: 0;
     overflow: none;
 }
-#permissionView .builder-view-body .tree-viewer,
-#permissionView .builder-view-body .permission-rules{
-    height: 50%;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 45px 0 20px;
-    position: absolute;
-    top:0;
-    overflow: auto; 
-}
-#permissionView .builder-view-body .tree-viewer {
-    border-top:1px solid #ddd;
-    top: 50%;
-}
-.permission-rules-container {
-    padding: 20px;
-    background:#718595;
-    font-size: 11px;
-}
-.permission_rule {
-    background:#fff;
-    border:1px solid #eee;
-    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
-    -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
-    padding: 5px 5px 5px 15px;
-    position: relative;
-}
-.permission_rule .sort {
-    border-right: 2px solid #eee;
-    border-left: 2px solid #eee;
-    position: absolute;
-    top: 5px;
-    bottom: 5px;
-    left: 5px;
-    width: 6px;
-    cursor: move;
-}
-.permission_rule.default .sort{
-    display:none;
-}
-.permission_rule .name{
-    font-weight: bold;
-    display: inline;
-}
-.sortable .permission_rule{
-    margin-bottom: 5px;
-}
-.permission_rule.active{
-    background:#0069d9;
-    color:#fff;
-    border: 1px solid #0069d9;
+#cbuilder.permission-builder-view  #right-panel {
+    z-index: 11;
 }
 
 /* properties editor */
