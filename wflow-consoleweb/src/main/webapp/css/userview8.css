@@ -1103,7 +1103,7 @@ form.form .btn {
     padding: 10px;
 }
 #content .grid-stack-item .grid-stack-item-header h4{
-    color: var(--theme-font-color, var(--theme-color2, #72777a));
+    color: var(--theme-font-color, #72777a);
     font-weight: 400;
 }
 #content .grid-stack-item-header-action{
@@ -1126,10 +1126,16 @@ form.form .btn {
     color: var(--theme-link-active, var(--theme-color4, #0f9aee));
 }
 
-/* columns */
+/* columns & components */
+.ContainerComponent {
+    padding: 10px;
+}
 .col {
+    padding-top: 5px;
+    padding-bottom: 5px;
     padding-left: 0;
     padding-right: 0;
+    box-sizing: border-box;
 }
 @media (max-width: 767px) {
     .container-fluid.mobile-stack-columns .col{
@@ -1222,6 +1228,7 @@ body.embeded #page{
     padding-left: 0;
     padding-top: 0 !important;
 }
+body.embeded,
 body.embeded #content{
     padding: 0px;
     background-color: transparent;
