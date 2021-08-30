@@ -445,20 +445,20 @@ _CustomBuilder = {
             $("#toggleAutoApplyChange").attr("title", get_cbuilder_msg("cbuilder.enableAutoApplyChanges"));
         }
         
-        var builderMode = $.localStorage.getItem("builderMode");
-        if (builderMode === undefined || builderMode === null || builderMode === "" || !(builderMode === "mode-basic" || builderMode === "mode-advanced")) {
-            builderMode = "mode-basic";
-        }
-        $("body").removeClass("mode-basic mode-advanced").addClass(builderMode);
-        if ($("#adminBar").find("#builderModeOption").length === 0) {
-            $("#adminBar").append('<div id="builderModeOption"><div><a><i class="las la-star"></i><span>'+get_cbuilder_msg('cbuilder.mode')+' : </span><span class="mode-basic">'+get_cbuilder_msg('cbuilder.mode.basic')+'</span><span class="mode-advanced">'+get_cbuilder_msg('cbuilder.mode.advanced')+'</span></a></div></div>');
-            $("#builderModeOption span[class]").on("click", function(){
-                var builderMode = $(this).attr("class");
-                $.localStorage.setItem("builderMode", builderMode);
-                $("body").removeClass("mode-basic mode-advanced").addClass(builderMode);
-                $(".initChosen").trigger("chosen:updated");
-            });
-        }
+//        var builderMode = $.localStorage.getItem("builderMode");
+//        if (builderMode === undefined || builderMode === null || builderMode === "" || !(builderMode === "mode-basic" || builderMode === "mode-advanced")) {
+//            builderMode = "mode-basic";
+//        }
+//        $("body").removeClass("mode-basic mode-advanced").addClass(builderMode);
+//        if ($("#adminBar").find("#builderModeOption").length === 0) {
+//            $("#adminBar").append('<div id="builderModeOption"><div><a><i class="las la-star"></i><span>'+get_cbuilder_msg('cbuilder.mode')+' : </span><span class="mode-basic">'+get_cbuilder_msg('cbuilder.mode.basic')+'</span><span class="mode-advanced">'+get_cbuilder_msg('cbuilder.mode.advanced')+'</span></a></div></div>');
+//            $("#builderModeOption span[class]").on("click", function(){
+//                var builderMode = $(this).attr("class");
+//                $.localStorage.setItem("builderMode", builderMode);
+//                $("body").removeClass("mode-basic mode-advanced").addClass(builderMode);
+//                $(".initChosen").trigger("chosen:updated");
+//            });
+//        }
         
         var builderCallback = function(){
             var jsonData = JSON.decode($("#cbuilder-json").val());
