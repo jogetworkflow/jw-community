@@ -1385,6 +1385,9 @@ body .ui-front {
 body #ui-datepicker-div {
     display:none;
 }
+.mCSB_scrollTools{
+    width: 6px !important;
+}
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
