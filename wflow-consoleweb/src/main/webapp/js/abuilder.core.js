@@ -89,7 +89,7 @@ AppBuilder = {
     renderBuilders: function(data) {
         var self = AppBuilder;
         
-        $("#builder_canvas").html('<div class="canvas-header"><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div><div id="builders"></div>');
+        $("#builder_canvas").html('<div class="canvas-header"><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div><div id="builders"><div id="builders-seperator"></div></div>');
         
         $("#builder_canvas").find('.search-container input').off("keyup change");
         $("#builder_canvas").find('.search-container input').on("keyup change", function(){
@@ -203,6 +203,7 @@ AppBuilder = {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
             }
             container.append(builderDiv);
+            $("#builders-seperator").append("<span></span>");
         }
         $("#builder_canvas").css("opacity", "1");
         
@@ -432,8 +433,8 @@ AppBuilder = {
     resizeBuilders: function(){
         var builders = $('#builders')[0];
         var rowHeight = ($(window).height() - 270) / 2;
-        if ($(window).width() <= 980) {
-            rowHeight = ($(window).height() - 270) / 3;
+        if ($(window).width() <= 1290) {
+            rowHeight = 200;
         }
         var rowGap = parseInt(window.getComputedStyle(builders).getPropertyValue('grid-row-gap'));
         
@@ -441,7 +442,7 @@ AppBuilder = {
             var item = this;
             var height = $(item).find('ul').outerHeight() + 54;
             var rowSpan = Math.ceil((height+rowGap)/(rowHeight+rowGap));
-            item.style.gridRowEnd = "span "+rowSpan;
+            item.style.gridRowEnd = "span "+(rowSpan+1);
         });
     },
     
