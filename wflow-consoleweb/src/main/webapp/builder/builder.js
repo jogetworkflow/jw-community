@@ -280,6 +280,23 @@ _CustomBuilder = {
                 CustomBuilder.intBuilderMenu();
             } else {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
+                
+                if (!(typeof document.removeEventListener === "undefined")) {
+                    var hidden, visibilityChange;
+                    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                        hidden = "hidden";
+                        visibilityChange = "visibilitychange";
+                    } else if (typeof document.msHidden !== "undefined") {
+                        hidden = "msHidden";
+                        visibilityChange = "msvisibilitychange";
+                    } else if (typeof document.webkitHidden !== "undefined") {
+                        hidden = "webkitHidden";
+                        visibilityChange = "webkitvisibilitychange";
+                    }
+
+                    document.removeEventListener(visibilityChange, null);
+                }
+                
                 $("body").attr("class", "no-right-panel initializing max-property-editor");
                 $("#builder_canvas").attr("class", "");
                 
@@ -1892,10 +1909,10 @@ _CustomBuilder = {
      * Show the JSON definition view, called by switchView method
      */
     jsonDefViewInit : function(view) {
-        if ($(view).find($("#cbuilder-info")).length === 0) {
-            $(view).append($("#cbuilder-info"));
-            $("#cbuilder-info").show();
-            $("#cbuilder-info").prepend('<pre id="json_definition"></pre>');
+        if ($(view).find($("#json_definition")).length === 0) {
+            $(view).append($("#cbuilder-info").find("button").addClass("button").clone());
+            $(view).find("button.button").wrap('<div class="sticky-buttons">');
+            $(view).prepend('<pre id="json_definition"></pre>');
 
             var editor = ace.edit("json_definition");
             editor.$blockScrolling = Infinity;
@@ -1928,15 +1945,14 @@ _CustomBuilder = {
                     CustomBuilder.editorSilentChange = false;
                 }
             });
-            $("#cbuilder-info").find("button").addClass("button").wrap('<div class="sticky-buttons">');
-            $("#cbuilder-info").find("button").on("click", function() {
+            $(view).find("button.button").on("click", function() {
                 CustomBuilder.editorIsChange = true;
                 var text = $(this).text();
                 $(this).text(get_advtool_msg('adv.tool.updated'));
                 $(this).attr("disabled", true);
                 setTimeout(function(){
-                    $("#cbuilder-info").find("button").text(text);
-                    $("#cbuilder-info").find("button").removeAttr("disabled");
+                    $(view).find("button.button").text(text);
+                    $(view).find("button.button").removeAttr("disabled");
                 }, 1000);
             });
             $(view).data("editor", editor);
@@ -2670,7 +2686,7 @@ _CustomBuilder.Builder = {
         var component = null;
         if (data !== undefined && data.className !== undefined) {
             component = self.getComponent(data.className);
-        } else if (self.options.callbacks['parseDataToComponent'] !== undefined && self.options.callbacks['parseDataToComponent'] !== "") {
+        } else if (self.options.callbacks !== undefined && self.options.callbacks['parseDataToComponent'] !== undefined && self.options.callbacks['parseDataToComponent'] !== "") {
             component = CustomBuilder.callback(self.options.callbacks['parseDataToComponent'], [data]);
         }
         
@@ -2685,7 +2701,7 @@ _CustomBuilder.Builder = {
         
         if (data[component.builderTemplate.getChildsDataHolder(data, component)] !== undefined) {
             return data[component.builderTemplate.getChildsDataHolder(data, component)];
-        } else if (self.options.callbacks['parseDataChildElements'] !== undefined && self.options.callbacks['parseDataChildElements'] !== "") {
+        } else if (self.options.callbacks !== undefined && self.options.callbacks['parseDataChildElements'] !== undefined && self.options.callbacks['parseDataChildElements'] !== "") {
             return CustomBuilder.callback(self.options.callbacks['parseDataChildElements'], [data]);
         }
         return null;
