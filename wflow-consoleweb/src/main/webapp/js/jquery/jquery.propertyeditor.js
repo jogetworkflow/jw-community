@@ -634,8 +634,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (field.repeaterFields) {
-                fields = field.repeaterFields;
+            } else if (element.repeaterFields) {
+                fields = element.repeaterFields;
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
@@ -659,8 +659,8 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (field.repeaterFields) {
-                fields = field.repeaterFields;
+            } else if (element.repeaterFields) {
+                fields = element.repeaterFields;
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
