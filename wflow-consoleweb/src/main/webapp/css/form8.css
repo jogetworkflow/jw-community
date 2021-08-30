@@ -69,7 +69,9 @@
     padding-right: 15px;
 }
 .form-cell + .form-cell,
-.subform-cell + .subform-cell{
+.subform-cell + .subform-cell,
+.form-cell + .subform-cell,
+.subform-cell + .form-cell{
     margin-top: 15px;
 }
 body .subform-cell > .subform-container.has-frame, .form-cell > .subform-container.has-frame{
