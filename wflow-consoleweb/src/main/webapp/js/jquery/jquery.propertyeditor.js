@@ -9898,7 +9898,7 @@ PropertyAssistant = {
             
             $(container).find(".assist_icon").on("click", function(){
                 PropertyAssistant.currentField = field[0];
-                PropertyAssistant.currentCaretPosition = null;
+                PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
                 PropertyAssistant.showDialog();
             });
             
@@ -10206,10 +10206,14 @@ PropertyAssistant = {
         
         var value = $(temp).text();
         if (value.trim() !== "") {
-            if ($(PropertyAssistant.currentField).hasClass("ace_text-input")) {
+            if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
                 var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
                 var codeeditor = ace.edit(id);
-                codeeditor.insert(value);
+                var old = codeeditor.getValue();
+                if (old !== "") {
+                    value = " " + value;
+                }
+                codeeditor.session.insert(PropertyAssistant.currentCaretPosition, value);
             } else {
                 var org = $(PropertyAssistant.currentField).val();
                 var output = "";
@@ -10713,24 +10717,30 @@ PropertyAssistant = {
      * Get the caret position of a field
      */
     doGetCaretPosition : function(oField) {
-        // Initialize
-        var iCaretPos = 0;
+        if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
+            var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
+            var codeeditor = ace.edit(id);
+            return codeeditor.getCursorPosition();
+        } else {
+            // Initialize
+            var iCaretPos = 0;
 
-        // IE Support
-        if (document.selection) {
-            // Set focus on the element
-            oField.focus();
-            // To get cursor position, get empty selection range
-            var oSel = document.selection.createRange();
-            // Move selection start to 0 position
-            oSel.moveStart('character', -oField.value.length);
-            // The caret position is selection length
-            iCaretPos = oSel.text.length;
-        } else if (oField.selectionStart || oField.selectionStart === '0') // Firefox support
-            iCaretPos = oField.selectionStart;
+            // IE Support
+            if (document.selection) {
+                // Set focus on the element
+                oField.focus();
+                // To get cursor position, get empty selection range
+                var oSel = document.selection.createRange();
+                // Move selection start to 0 position
+                oSel.moveStart('character', -oField.value.length);
+                // The caret position is selection length
+                iCaretPos = oSel.text.length;
+            } else if (oField.selectionStart || oField.selectionStart === '0') // Firefox support
+                iCaretPos = oField.selectionStart;
 
-        // Return results
-        return (iCaretPos);
+            // Return results
+            return (iCaretPos);
+        }
     },
     
     /*
