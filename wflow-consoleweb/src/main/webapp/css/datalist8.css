@@ -261,7 +261,7 @@ body.rtl .dataList span.pagelinks{
 }
 .card-layout.card-layout-active table tbody {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
 .card-layout.card-layout-active table,
