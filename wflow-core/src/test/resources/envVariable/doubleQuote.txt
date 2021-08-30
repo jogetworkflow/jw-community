@@ -1,0 +1,9 @@
+<a href="index.html">label</a>
+<a href="index.html">label "hello" </a>
+<script>alert("hello")</script>
+<a onclick="alert('hello')"></a>
+<a>""""</a>
+<a>''''</a>
+<a>"Hello<a>
+<a>Hello"<a>
+<a>"Hello"</a
