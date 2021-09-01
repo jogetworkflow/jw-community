@@ -512,6 +512,9 @@ body select:not([class^="ui-"]):focus{
     width:auto;
     font-weight: normal;
 }
+.form-row label span.mandatory{
+    color:red;
+}
 .form-row input:not([type]),
 .form-row input[type=text],
 .form-row input[type=password],

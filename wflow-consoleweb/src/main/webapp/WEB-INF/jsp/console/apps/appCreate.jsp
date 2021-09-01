@@ -20,12 +20,12 @@
             <fieldset>
                 <legend><fmt:message key="console.app.create.label.details"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.app.common.label.id"/></label>
-                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.app.common.label.id"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.app.common.label.name"/></label>
-                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.app.common.label.name"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
@@ -36,14 +36,15 @@
                     <div class="form-row">
                         <label for="copyAppId" style="display:inline-block;width:auto;float:none;">
                             <fmt:message key="console.app.create.copy.appId"/>
-                            
+                        </label>
+                        <span class="form-input">
                             <select id="copyAppId" name="copyAppId">
                                 <option></option>
                                 <c:forEach items="${appList}" var="app">
                                     <option value="${app.id}"><c:out value="${app.name}"/></option>
                                 </c:forEach>
                             </select>
-                        </label>
+                        </span>    
                     </div>    
                 </div>
             </fieldset>

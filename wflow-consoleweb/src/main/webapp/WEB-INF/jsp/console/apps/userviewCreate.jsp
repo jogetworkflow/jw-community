@@ -20,12 +20,12 @@
             <fieldset>
                 <legend><fmt:message key="console.userview.common.label.details"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.userview.common.label.id"/></label>
-                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.userview.common.label.id"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.userview.common.label.name"/></label>
-                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.userview.common.label.name"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.userview.common.label.description"/></label>

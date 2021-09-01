@@ -23,16 +23,16 @@
             <fieldset>
                 <legend><fmt:message key="console.form.create.label.details"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.form.common.label.id"/></label>
-                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.form.common.label.id"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.form.common.label.name"/></label>
-                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.form.common.label.name"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.form.common.label.tableName"/></label>
-                    <span class="form-input withPrefix large"><span class="prefix">app_fd_</span><form:input path="tableName" cssErrorClass="form-input-error" maxlength="28" autocomplete="off"/> *</span>
+                    <label for="field1"><fmt:message key="console.form.common.label.tableName"/> <span class="mandatory">*</span></label>
+                    <span class="form-input withPrefix large"><span class="prefix">app_fd_</span><form:input path="tableName" cssErrorClass="form-input-error" maxlength="28" autocomplete="off"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="form.form.description"/></label>

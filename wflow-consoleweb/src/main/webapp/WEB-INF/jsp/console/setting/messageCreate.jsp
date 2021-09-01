@@ -19,12 +19,12 @@
             <fieldset>
                 <legend><fmt:message key="console.setting.message.common.label.details"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.setting.message.common.label.key"/></label>
-                    <span class="form-input"><form:input path="key" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.setting.message.common.label.key"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="key" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.setting.message.common.label.locale"/></label>
-                    <span class="form-input"><form:select path="locale" cssErrorClass="form-input-error"><form:options items="${localeList}"/></form:select> *</span>
+                    <label for="field1"><fmt:message key="console.setting.message.common.label.locale"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:select path="locale" cssErrorClass="form-input-error"><form:options items="${localeList}"/></form:select></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.setting.message.common.label.message"/></label>

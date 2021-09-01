@@ -23,8 +23,8 @@
                     <span class="form-input"><c:out value="${organization.id}"/><input id="id" type="hidden" value="<c:out value="${organization.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.org.common.label.name"/></label>
-                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.org.common.label.name"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.org.common.label.description"/></label>

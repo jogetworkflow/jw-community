@@ -1083,6 +1083,13 @@ form.form .btn {
     display: block;
     font-size: 80%;
 }
+.form #advancedView h5{
+    padding: 15px 15px 0;
+    font-size: 14px;
+}
+.form-row label span.mandatory{
+    color:red;
+}
 
 /* dashboard */
 #content .main-body-content.Dashboard {

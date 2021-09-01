@@ -23,8 +23,8 @@
                     <span class="form-input"><c:out value="${user.username}"/><input id="id" type="hidden" value="<c:out value="${user.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
-                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.lastName"/></label>

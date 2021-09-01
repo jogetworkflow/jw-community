@@ -23,7 +23,7 @@
                     <span class="form-input"><c:out value="${message.key}"/><input id="id" type="hidden" value="<c:out value="${message.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.setting.message.common.label.locale"/></label>
+                    <label for="field1"><fmt:message key="console.setting.message.common.label.locale"/> <span class="mandatory">*</span></label>
                     <span class="form-input"><c:out value="${message.locale}"/></span>
                 </div>
                 <div class="form-row">

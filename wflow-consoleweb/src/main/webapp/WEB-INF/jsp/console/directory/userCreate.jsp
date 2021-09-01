@@ -19,12 +19,12 @@
             <fieldset>
                 <legend><fmt:message key="console.directory.user.common.label.details"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.username"/></label>
-                    <span class="form-input"><form:input path="username" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.username"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="username" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
-                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.lastName"/></label>
@@ -35,12 +35,12 @@
                     <span class="form-input"><form:input path="email" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.password"/></label>
-                    <span class="form-input"><form:password path="password" cssErrorClass="form-input-error" autocomplete="off"/> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.password"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:password path="password" cssErrorClass="form-input-error" autocomplete="off"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.confirmPassword"/></label>
-                    <span class="form-input"><form:password path="confirmPassword" cssErrorClass="form-input-error" autocomplete="off"/> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.confirmPassword"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:password path="confirmPassword" cssErrorClass="form-input-error" autocomplete="off"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.role"/></label>
