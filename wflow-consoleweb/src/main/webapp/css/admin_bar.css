@@ -402,7 +402,7 @@ body.rtl #quickOverlayFrameDiv {
     padding: 2px 5px;
     background: #e7fab6;
     border-radius: 2px;
-    z-index: 0;
+    z-index: 1;
     box-shadow: #A0C847 0px 0px 3px 1px;
     opacity: 0.8;
     overflow: hidden;
