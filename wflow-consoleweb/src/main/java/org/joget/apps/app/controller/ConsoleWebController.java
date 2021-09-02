@@ -4091,6 +4091,7 @@ public class ConsoleWebController {
                     DynamicDataSourceManager.writeProperty(paramName, paramValue);
                 }
             }
+            WorkflowUtil.switchProfile(profileName);
         }
     }
 
