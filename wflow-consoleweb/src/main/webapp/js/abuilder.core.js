@@ -440,9 +440,10 @@ AppBuilder = {
         
         $(builders).find("> .builder-type").each(function(){
             var item = this;
-            var height = $(item).find('ul').outerHeight() + 54;
+            item.style.removeProperty('gridRowEnd');
+            var height = $(item).find('ul').outerHeight() + 80;
             var rowSpan = Math.ceil((height+rowGap)/(rowHeight+rowGap));
-            item.style.gridRowEnd = "span "+(rowSpan+1);
+            item.style.gridRowEnd = "span "+(rowSpan);
         });
     },
     
