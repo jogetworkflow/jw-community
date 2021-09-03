@@ -173,7 +173,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         return "<i class=\"fas fa-calendar-alt\"></i>";
     }
     
-    protected String getFormat() {
+    public String getFormat() {
         if (format == null) {
             format = getPropertyString("format");
             if (format.isEmpty()) {
@@ -221,7 +221,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         return "";
     }
     
-    protected String getJavaDateFormat(String format) {
+    public String getJavaDateFormat(String format) {
         if (format.contains("DD")) {
             format = format.replaceAll("DD", "EEEE");
         } else {
