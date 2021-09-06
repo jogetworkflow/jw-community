@@ -12,7 +12,7 @@ public interface GovHealthCheck extends Plugin, PropertyEditable {
     
     String getInfoLink();
     
-    GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs);
+    GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult);
     
     boolean isConfigurable();
 }

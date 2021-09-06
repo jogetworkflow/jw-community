@@ -3,13 +3,15 @@ package org.joget.governance.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GovHealthCheckResult {
     public enum Status {
         PASS, FAIL, WARN, INFO
     };
     
-    public class Detail {
+    public static class Detail {
         private String detail;
         private String link;
         private String linkLabel;
@@ -50,6 +52,7 @@ public class GovHealthCheckResult {
     private Date timestamp;
     private Collection<Detail> details;
     private String moreInfo;
+    private Map<String, String> datas;
 
     public Status getStatus() {
         return status;
@@ -90,6 +93,9 @@ public class GovHealthCheckResult {
     }
 
     public Collection<Detail> getDetails() {
+        if (this.details == null) {
+            this.details = new ArrayList<Detail>();
+        }
         return details;
     }
 
@@ -115,4 +121,30 @@ public class GovHealthCheckResult {
     public void setMoreInfo(String moreInfo) {
         this.moreInfo = moreInfo;
     }
+
+    public Map<String, String> getDatas() {
+        if (this.datas == null) {
+            this.datas = new HashMap<String, String>();
+        }
+        return datas;
+    }
+
+    public void setDatas(Map<String, String> datas) {
+        this.datas = datas;
+    }
+    
+    public void setData(String key, String data) {
+        if (this.datas == null) {
+            this.datas = new HashMap<String, String>();
+        }
+        this.datas.put(key, data);
+    }
+    
+    public String getData(String key) {
+        if (this.datas != null) {
+            return this.datas.get(key);
+        }
+        return null;
+    }
 }
+

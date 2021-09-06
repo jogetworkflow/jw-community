@@ -65,7 +65,7 @@ public class NamingConventionCheck extends GovHealthCheckAbstract {
     }
 
     @Override
-    public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs) {
+    public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
         result.setStatus(GovHealthCheckResult.Status.PASS);
         

@@ -51,7 +51,7 @@ public class DbConnectionsCheck extends GovHealthCheckAbstract {
     }
 
     @Override
-    public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs) {
+    public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
         
         int maxActiveAlertNum = 20;

@@ -410,8 +410,9 @@ public class GovHealthCheckManager {
             GovHealthCheck checker = (GovHealthCheck) element;
             
             Date lastCheck = null;
+            GovHealthCheckResult prevResult = null;
             if (prevResults != null) {
-                GovHealthCheckResult prevResult = prevResults.get(pe.getClassName());
+                prevResult = prevResults.get(pe.getClassName());
                 if (prevResult != null) {
                     lastCheck = prevResult.getTimestamp();
                 }
@@ -419,7 +420,7 @@ public class GovHealthCheckManager {
             
             try {
                 Date checkTime = new Date();
-                GovHealthCheckResult result = checker.performCheck(lastCheck, interval);
+                GovHealthCheckResult result = checker.performCheck(lastCheck, interval, prevResult);
                 if (result != null) {
                     result.setTimestamp(checkTime);
                     results.put(pe.getClassName(), result);
