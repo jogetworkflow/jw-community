@@ -384,8 +384,10 @@ PropertyEditor.Util = {
                     if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                         fields = fields[parentId].fields;
                     }
-                } else if (field.repeaterFields) {
-                    fields = field.repeaterFields;
+                } 
+                
+                if (field.repeaterFields) {
+                    fields = $.extend({}, fields, field.repeaterFields);
                 }
 
                 var on_change = null;
@@ -634,8 +636,10 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (element.repeaterFields) {
-                fields = element.repeaterFields;
+            }
+            
+            if (element.repeaterFields) {
+                fields = $.extend({}, fields, element.repeaterFields);
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
@@ -659,8 +663,10 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (element.repeaterFields) {
-                fields = element.repeaterFields;
+            }
+            
+            if (element.repeaterFields) {
+                fields = $.extend({}, fields, element.repeaterFields);
             }
             field = fields[control_field];
         } else if (page[control_field] !== undefined) {
@@ -692,8 +698,10 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (field.repeaterFields) {
-                fields = field.repeaterFields;
+            }
+            
+            if (field.repeaterFields) {
+                fields = $.extend({}, fields, field.repeaterFields);
             }
             
             for (var i in onChanges) {
@@ -760,8 +768,10 @@ PropertyEditor.Util = {
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                     fields = fields[parentId].fields;
                 }
-            } else if (field.repeaterFields) {
-                fields = field.repeaterFields;
+            }
+            
+            if (field.repeaterFields) {
+                fields = $.extend({}, fields, field.repeaterFields);
             }
             for (var i in onChanges) {
                 var fieldId = onChanges[i];
@@ -935,8 +945,9 @@ PropertyEditor.Util = {
             if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
                 fields = fields[parentId].fields;
             }
-        } else if (field.repeaterFields) {
-            fields = field.repeaterFields;
+        }
+        if (field.repeaterFields) {
+            fields = $.extend({}, fields, field.repeaterFields);
         }
         for (var i in onChanges) {
             var fieldId = onChanges[i];
