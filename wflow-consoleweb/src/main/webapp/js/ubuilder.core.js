@@ -1491,8 +1491,16 @@ UserviewBuilder = {
                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             },
             success: function(response) {
-                $(main).html(response);
-                UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
+                UserviewBuilder.screenshotFrame.contentWindow.onerror = function(error, url, line) {
+                    $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
+                };
+                if (response.indexOf('error') === -1) {
+                    $(main).html(response);
+                    UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
+                } else {
+                    $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
+                }
+                
                 //add delay for js to run
                 setTimeout(function(){
                     CustomBuilder.getScreenshot($(main), function(image){

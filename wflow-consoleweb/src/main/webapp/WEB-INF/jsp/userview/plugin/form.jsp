@@ -54,7 +54,14 @@
     <c:choose>
         <c:when test="${empty properties.customHeader && !empty properties.headerTitle}">
             <div class="viewForm-body-header">
-                <c:out value="${properties.headerTitle}" escapeXml="false"/>
+                <c:choose>
+                    <c:when test="${properties.view eq 'assignmentFormUnavailable'}">
+                        <span class="error"><c:out value="${properties.headerTitle}" escapeXml="false"/></span>
+                    </c:when>
+                    <c:otherwise>    
+                        <c:out value="${properties.headerTitle}" escapeXml="false"/>
+                    </c:otherwise>
+                </c:choose>   
             </div>
         </c:when>
         <c:otherwise>
