@@ -1051,8 +1051,10 @@ div.section, .header > ol {
 #top-panel-main{
     padding-left: calc(var(--builder-logo-width) + 10px);
 }
-.advanced-tools-supported #builderToolbar .btn-light span{
-    display:none;
+@media (max-width: 1200px) {
+    .advanced-tools-supported #builderToolbar .btn-light span{
+        display:none;
+    }
 }
 .advanced-tools-supported .advanced-tools-toogle {
     display: none;
