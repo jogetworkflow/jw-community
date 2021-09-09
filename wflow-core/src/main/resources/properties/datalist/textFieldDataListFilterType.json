@@ -1,11 +1,33 @@
 [
     {
-        title:'@@datalist.tfdlft.config@@',
-        properties:[
+        "title" :"@@datalist.tfdlft.config@@",
+        "properties":[
             {
-                name:'defaultValue',
-                label:'@@datalist.tfdlft.defaultValue@@',
-                type:'textfield'
+                "name"  :   "defaultValue",
+                "label" :   "@@datalist.tfdlft.defaultValue@@",
+                "type"  :   "textfield"
+            },
+            {
+                "name"  :   "filterSelection",
+                "label" :   "@@datalist.tfdlft.filterType@@",
+                "type"  :   "checkbox",
+                "value" :   "String",
+                "options" : [
+                    {
+                        "value" : "Number",
+                        "label" : "@@datalist.tfdlft.filterType.number@@"
+                    },
+                    {
+                        "value" : "String",
+                        "label" : "@@datalist.tfdlft.filterType.string@@"
+                    }
+                ]
+            },
+            {
+                "name"  :   "searchFields",
+                "label" :   "@@datalist.tfdlft.searchFields@@",
+                "type"  :   "MultiSelect",
+                "options_callback" : "DatalistBuilder.getColumnOptions"
             }
         ]
     }
