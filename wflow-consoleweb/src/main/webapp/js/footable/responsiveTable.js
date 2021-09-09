@@ -72,6 +72,12 @@ function responsiveTable(table) {
         if (table.closest(".dataList").hasClass("card-label")) {
             initCardLabelLayout(table);
         }
+        if (table.hasClass('lg-card') || table.hasClass('md-card') || table.hasClass('sm-card')) {
+            $(table).find("tbody tr.space").remove();
+            for(var i = 0; i < 10; i++) {
+                $(table).find("tbody").append('<tr class="space"></tr>');
+            }
+        }
         
         var resize = function (event) {
             var width = $(window).width();

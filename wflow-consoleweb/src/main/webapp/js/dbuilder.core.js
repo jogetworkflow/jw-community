@@ -37,6 +37,7 @@ DatalistBuilder = {
         }, function() {
             CustomBuilder.Builder.setHead('<link data-footable-style href="' + CustomBuilder.contextPath + '/js/footable/footable.core.min.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
+            CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist_cardlayout.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-dbuilder-style href="' + CustomBuilder.contextPath + '/css/dbuilder.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<script data-footable-script src="' + CustomBuilder.contextPath + '/js/footable/footable.js"/>');

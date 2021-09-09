@@ -128,9 +128,6 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             String jsCssLink = "";
             
             jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/ajaxuniversal.preload.min.css" + "\" rel=\"stylesheet\" />\n";
-            jsCssLink += "<link href=\"" + data.get("context_path") + "/css/form8.css" + "\" rel=\"stylesheet\" />\n";
-            jsCssLink += "<link href=\"" + data.get("context_path") + "/css/datalist8.css" + "\" rel=\"stylesheet\" />\n";
-            jsCssLink += "<link href=\"" + data.get("context_path") + "/css/userview8.css" + "\" rel=\"stylesheet\" />\n";
             
             jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/fonts/fontawesome-webfont.woff2?v=4.6.1\" as=\"font\" crossorigin />\n";
             jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-brands-400.woff2\" as=\"font\" crossorigin />\n";
