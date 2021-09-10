@@ -362,9 +362,30 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 #jqueryDialogDiv {overflow: hidden;}
 
 /* columns */
+.row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px
+}
+.ContainerComponent {
+    padding: 10px;
+}
 .col {
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
     padding-left: 0;
     padding-right: 0;
+    box-sizing: border-box;
 }
 @media (max-width: 767px) {
     .container-fluid.mobile-stack-columns .col{
