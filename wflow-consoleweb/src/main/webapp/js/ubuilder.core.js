@@ -1496,11 +1496,11 @@ UserviewBuilder = {
                 UserviewBuilder.screenshotFrame.contentWindow.onerror = function(error, url, line) {
                     $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
                 };
-                if (response.indexOf('error') === -1) {
-                    $(main).html(response);
-                    UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
-                } else {
+                $(main).html(response);
+                if ($(main).find("#error, .error, #errors, .errors").length > 0 || (response.indexOf(' Cause:') !== -1 && response.indexOf('Invalid') !== -1)) {
                     $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
+                } else {
+                    UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
                 }
                 
                 //add delay for js to run
