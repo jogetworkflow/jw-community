@@ -33,19 +33,21 @@ I18nEditor = {
     },
     retrieveI18nHash : function (keys, labels, found, options) {
         for (var i in found) {
-            if (found[i].indexOf("#i18n.") !== -1 || found[i].indexOf("{i18n.") === 0) {
-                var label = found[i].substring(6, found[i].length - 1);
-                if ($.inArray(label, keys) === -1) {
-                    labels.push({
-                        key : label,
-                        label : label
-                    });
-                    keys.push(label);
+            if ((typeof found[i]) === "string") {
+                if (found[i].indexOf("#i18n.") !== -1 || found[i].indexOf("{i18n.") === 0) {
+                    var label = found[i].substring(6, found[i].length - 1);
+                    if ($.inArray(label, keys) === -1) {
+                        labels.push({
+                            key : label,
+                            label : label
+                        });
+                        keys.push(label);
+                    }
+                } else if (found[i].indexOf("{", 1) !== -1) {
+                    var regex = new RegExp("\\{([^\\{^\\}])*\\}","gi");
+                    var nestedfound = found[i].match(regex);
+                    I18nEditor.retrieveI18nHash(labels, nestedfound, options);
                 }
-            } else if (found[i].indexOf("{", 1) !== -1) {
-                var regex = new RegExp("\\{([^\\{^\\}])*\\}","gi");
-                var nestedfound = found[i].match(regex);
-                I18nEditor.retrieveI18nHash(labels, nestedfound, options);
             }
         }
     },
