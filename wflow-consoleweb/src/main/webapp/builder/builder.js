@@ -3275,10 +3275,12 @@ _CustomBuilder.Builder = {
             node = $(target);
         }
         if ($(node).is('[data-cbuilder-select]')) {
-            var id = $(node).data('cbuilder-select');
+            var id = $(node).attr('data-cbuilder-select');
             target = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
             self.subSelectedEl = $(node);
             isSubSelect = true;
+        } else {
+            self.subSelectedEl = null;
         }
         if (!target.is(":visible")) {
             var id = $(node).data('cbuilder-id');
@@ -3736,17 +3738,17 @@ _CustomBuilder.Builder = {
             if (!$(target).is("[data-cbuilder-classname]")) {
                 target = $(event.target).closest("[data-cbuilder-classname]");
             }
-            if ($(target).is("[data-cbuilder-unselectable]")) {
-                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
-                    self.selectNode(false);
-                });
-                return false;
-            }
             if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
                 target = $(event.target).closest("[data-cbuilder-select]");
             }
             if ($(event.target).is("[data-cbuilder-subelement]")) {
                 target = $(event.target).parent().closest("[data-cbuilder-classname]");
+            }
+            if ($(target).is("[data-cbuilder-unselectable]")) {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
+                    self.selectNode(false);
+                });
+                return false;
             }
             if ($(target).length > 0)
             {
@@ -3881,7 +3883,7 @@ _CustomBuilder.Builder = {
             
             var data = target.data("data");
             if (data === undefined && $(target).is('[data-cbuilder-select]')) {
-                var id = $(target).data('cbuilder-select');
+                var id = $(target).attr('data-cbuilder-select');
                 data = self.frameBody.find('[data-cbuilder-id="'+id+'"]').data("data");
             }
             if (data !== undefined) {
@@ -5070,7 +5072,7 @@ _CustomBuilder.Builder = {
         if (target.is("[data-cbuilder-classname]") || target.is("[data-cbuilder-select]")) {
             var element = target;
             if (target.is("[data-cbuilder-select]")) {
-                var id = $(target).data('cbuilder-select');
+                var id = $(target).attr('data-cbuilder-select');
                 element = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
                 if ($(element).find("> .cbuilder-node-details").length > 0) {
                     return;

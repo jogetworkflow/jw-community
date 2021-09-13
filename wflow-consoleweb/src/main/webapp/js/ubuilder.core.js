@@ -1455,6 +1455,7 @@ UserviewBuilder = {
                 self.frameBody.find(".userview-body-content img.screenshot").remove();
                 self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
                 self.frameBody.find(".userview-body-content").addClass("has-screenshot");
+                self.frameBody.find(".userview-body-content").attr("data-cbuilder-select", UserviewBuilder.selectedMenu.properties.id);
             }
         };
         
@@ -1475,6 +1476,7 @@ UserviewBuilder = {
         self.frameBody.find("#btn_container").hide();
         self.frameBody.find(".userview-body-content img.screenshot").remove();
         self.frameBody.find(".userview-body-content").removeClass("has-screenshot");
+        self.frameBody.find(".userview-body-content").removeAttr("data-cbuilder-select");
     },
     
     /*
