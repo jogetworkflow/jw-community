@@ -8313,7 +8313,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
             if (this.pageOptions.propertiesDefinition !== undefined && this.pageOptions.propertiesDefinition !== null) {
                 $.each(this.pageOptions.propertiesDefinition, function(i, page) {
                     var p = page.propertyEditorObject;
-                    element['properties'] = $.extend(element['properties'], p.getData());
+                    if (p !== undefined) {
+                        element['properties'] = $.extend(element['properties'], p.getData());
+                    }
                 });
             }
 
