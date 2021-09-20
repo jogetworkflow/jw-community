@@ -259,6 +259,7 @@ div, label, input, button, select, th, td, a, span {
 #builder-palette-body {
     height: 100%;
     overflow: auto;
+    width: 190px;
 }
 #builder-palette ul li {
     padding-bottom: 2px;
@@ -290,6 +291,15 @@ div, label, input, button, select, th, td, a, span {
     margin: 0px;
     color: #4C4C4C;
     min-height: 30px;
+    overflow: auto;
+    word-wrap: break-word;
+}
+.builder-palette-column:not(.ui-draggable-dragging) > i{
+    float: left;
+}
+.builder-palette-column:not(.ui-draggable-dragging) > label{
+    float: right;
+    width: 83%;
 }
 .builder-palette-element > i, 
 .builder-palette-element > span.fa-stack,
