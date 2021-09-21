@@ -11,6 +11,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
+        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/popper.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
 
