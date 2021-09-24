@@ -287,7 +287,7 @@ public class SecurityUtil implements ApplicationContextAware {
      */
     public static String getCsrfTokenValue(HttpServletRequest request) {
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
-        LogicalSession logicalSession = csrfGuard.getLogicalSessionExtractor().extract(request);
+        LogicalSession logicalSession = csrfGuard.getLogicalSessionExtractor().extractOrCreate(request);
         return csrfGuard.getTokenService().getTokenValue(logicalSession.getKey(), request.getRequestURI());
     }
 
