@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
-import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -221,14 +220,23 @@ public class PluginManager implements ApplicationContextAware {
                     public void onFileCreate(File file) {
                         handleFileChange(file);
                     }
+                    
+                    @Override
+                    public void onFileChange(File file) {
+                        handleFileChange(file);
+                    }
 
                     @Override
                     public void onFileDelete(File file) {
-                        handleFileChange(file);
+                        handleFileDelete(file);
                     }
                 };
                 
                 monitor = new FileAlterationMonitor(1000);
+                
+                if (!(new File(baseDirectory)).exists()) {
+                    (new File(baseDirectory)).mkdirs();
+                }
                 
                 FileAlterationObserver observer = new FileAlterationObserver(baseDirectory, FileFilterUtils.suffixFileFilter(".jar"));
                 observer.addListener(listener);
@@ -249,12 +257,23 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     protected void handleFileChange(File file) {
-        Date lastModified = new Date();
-        if (file.lastModified() > 0) {
-            lastModified = new Date(file.lastModified());
+        try {
+            Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
+            if (bundle != null) {
+                startBundle(bundle);
+                LogUtil.info(PluginManager.class.getName(), "Installed plugin " + file.getName());
+            }
+        } catch (Exception e) {
+            LogUtil.error(PluginManager.class.getName(), e, "");
         }
-        if (getCache().getLastCleared() == null || getCache().getLastCleared().before(lastModified)) {
-            refresh();
+    }
+    
+    protected void handleFileDelete(File file) {
+        try {
+            uninstallBundle(file.toURI().toURL().toExternalForm());
+            LogUtil.info(PluginManager.class.getName(), "Uninstalled plugin " + file.getName());
+        } catch (Exception e) {
+            LogUtil.error(PluginManager.class.getName(), e, "");
         }
     }
 
@@ -318,13 +337,29 @@ public class PluginManager implements ApplicationContextAware {
                 newBundle = null;
             } else {
                 newBundle.update();
-            }
+            }           
             // clear cache
             clearCache();
             return newBundle;
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle installation from " + location + ": " + be.toString());
             return null;
+        }
+    }
+    
+    protected void uninstallBundle(String location) {
+        try {
+            BundleContext context = getOsgiContainer().getBundleContext();
+            Bundle bundle = context.getBundle(location);
+            if (uninstallable(bundle.getSymbolicName())) {
+                bundle.stop();
+                bundle.uninstall();
+                
+                // clear cache
+                clearCache();
+            }
+        } catch (Exception be) {
+            LogUtil.error(PluginManager.class.getName(), be, "Failed bundle uninstallation from " + location + ": " + be.toString());
         }
     }
     
@@ -1178,6 +1213,10 @@ public class PluginManager implements ApplicationContextAware {
             try {
                 uninstallAll(false);
                 getOsgiContainer().stop();
+                
+                if (monitor != null) {
+                    monitor.stop();
+                }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "Could not stop Felix");
             }
