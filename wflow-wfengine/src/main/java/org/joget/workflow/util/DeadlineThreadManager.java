@@ -74,6 +74,15 @@ public class DeadlineThreadManager {
             }
         }
     }
+    
+    public static boolean isDeadlineChekerRunning() {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        DeadlineChecker thread = getThread(profile);
+        if (thread != null && !thread.isStopped()) {
+            return true;
+        }
+        return false;
+    }
 
     protected static DeadlineChecker getThread(String profile) {
         DeadlineChecker thread = (DeadlineChecker)threadMap.get(profile);
