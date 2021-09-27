@@ -1,7 +1,11 @@
 body {--builder-left-panel-width: 0px !important;}
+#cbuilder[data-browser="ie"] #left-panel{display:none;}
 #builder_canvas {overflow:scroll; background: #fff;}
+#cbuilder[data-browser="ie"] #builder_canvas{margin-left:5px; width: calc(100vw - 35px); max-width: calc(100vw - 35px);}
 #builders {overflow:visible !important; padding: 30px 15px !important; min-height: calc(100% - 71px); padding-top: 15px !important; width:100%; position: relative; display: grid; grid-gap: 10px; grid-template-columns: repeat(auto-fill, minmax(400px,1fr)); grid-auto-rows: calc((100vh - 270px)/2);}
 #builders > div {padding: 0 !important; position: relative;}
+#cbuilder[data-browser="ie"] #builders > div {width:400px; display:inline-block; float: left; padding-bottom: 60px !important; border-left: 1px solid #ccc;}
+#cbuilder[data-browser="ie"] #builders > div:nth-child(2) {border-left:0;}
 .builder-title {padding: 10px; padding-left: 75px; font-weight: bold; position: relative;}
 .builder-title .icon {display: block; position: absolute; top: 0; left: 16px; color: #fff; padding: 10px; width: 44px; text-align: center; border-radius: 5px;}
 .builder-title .addnew {position: absolute; right: 15px; color: #000; font-size: 120%; cursor: pointer;}
@@ -23,11 +27,14 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li:hover .builder-actions {visibility: visible;}
 #builder_canvas .search-container {display: inline-block; width: 300px;}
 #builder_canvas #showTags {margin-left: 20px; cursor: pointer;}
+#cbuilder[data-browser="ie"] #showTags {top:3px; position: absolute;}
 .builder-process .item .delete {display: none;}
 #builders-seperator {position:absolute !important; top: 0; bottom:0; left:0; right: 0px;}
 #builders-seperator > span {height: 100%; border-left: 1px solid #ccc; position: absolute; left:calc((100% - 30px)/3 + 14px);}
+#cbuilder[data-browser="ie"] #builders-seperator, #cbuilder[data-browser="ie"] #builders-seperator > span {display:none !important;} 
 #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/3 * 2) + 14px);}
 #builders > div:nth-child(n+5){border-top:1px solid #ccc; padding-top: 20px !important;}
+#cbuilder[data-browser="ie"] #builders > div {border-top:0px !important; padding-top: 0px !important;}
 @media screen and (max-width:1290px) {
     #builders {grid-auto-rows: 200px;}
     #builders-seperator > span {left:calc((100% - 30px)/2 + 14px); right: auto;}

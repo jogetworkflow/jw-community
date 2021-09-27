@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
@@ -144,6 +145,12 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             } 
             jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
             jsCssLink += getInternalJsCssLib(data);
+            
+            if (MobileUtil.isIE()) {
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/js/ie/fetch.js\"></script>\n";
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/js/ie/css-vars-ponyfill.js\"></script>\n";
+                jsCssLink += "<script>cssVars();</script>\n";
+            }
 
             return jsCssLink;
         }
@@ -242,7 +249,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     protected String generateLessCss() {
-        String css = "body{";
+        String css = ":root{";
         if (!getPropertyString("dx8colorScheme").isEmpty()) {
             String[] colors = getPropertyString("dx8colorScheme").split(";");
             for (int i=0; i < 6; i++) {

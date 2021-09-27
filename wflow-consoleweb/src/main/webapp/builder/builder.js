@@ -219,7 +219,7 @@ _CustomBuilder = {
         $("#quick-nav-bar").removeClass("active");
         $("body").addClass("initializing");
         
-        const headers = new Headers();
+        var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
         headers.append("_ajax-rendering", "true");
         
@@ -240,7 +240,7 @@ _CustomBuilder = {
                 return response.text();
             }
         })
-        .then(data => {
+        .then(function (data) {
             $("#design-btn").trigger("click");
     
             CustomBuilder.updatePresenceIndicator();
@@ -351,7 +351,7 @@ _CustomBuilder = {
                 }
             }
         })
-        .catch(error => {
+        .catch(function (error) {
             console.log(error);
         });
     },
@@ -541,23 +541,25 @@ _CustomBuilder = {
      * Change the builder fav icon to the builder color
      */
     builderFavIcon : function() {
-        setTimeout(function(){
-            var faviconSize = 32;
-            var canvas = document.createElement('canvas');
-            canvas.width = faviconSize;
-            canvas.height = faviconSize;
+        if(!(navigator.userAgent.indexOf('MSIE')!==-1 || navigator.appVersion.indexOf('Trident/') > -1)){
+            setTimeout(function(){
+                var faviconSize = 32;
+                var canvas = document.createElement('canvas');
+                canvas.width = faviconSize;
+                canvas.height = faviconSize;
 
-            var context = canvas.getContext('2d');
-            context.fillStyle = CustomBuilder.builderColor;
-            context.fillRect(0, 0, faviconSize, faviconSize);
+                var context = canvas.getContext('2d');
+                context.fillStyle = CustomBuilder.builderColor;
+                context.fillRect(0, 0, faviconSize, faviconSize);
 
-            var img = new Image();
-            img.onload = function() {
-                context.drawImage(img, 4, 4, 24, 24);
-                $("#favicon").attr("href",canvas.toDataURL('image/png'));
-            }
-            img.src = CustomBuilder.contextPath + "/builder/favicon.svg";
-        }, 1);
+                var img = new Image();
+                img.onload = function() {
+                    context.drawImage(img, 4, 4, 24, 24);
+                    $("#favicon").attr("href",canvas.toDataURL('image/png'));
+                };
+                img.src = CustomBuilder.contextPath + "/builder/favicon.svg";
+            }, 1);
+        }
     },
     
     /*
@@ -763,7 +765,7 @@ _CustomBuilder = {
             var categoryId = CustomBuilder.createPaletteCategory(category, tab);
             var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
 
-            var li = $('<li class="'+licss+'"><div id="'+className.replaceAll(".", "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div></li>');
+            var li = $('<li class="'+licss+'"><div id="'+className.replace(/\./g, "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div></li>');
             $(li).find('.builder-palette-element').prepend(iconObj);
             $(container).append(li);
         }
@@ -1268,16 +1270,6 @@ _CustomBuilder = {
      */
     customAdvancedToolTabs: function() {
         CustomBuilder.callback(CustomBuilder.config.advanced_tools["customTabsCallback"]);
-    },
-    
-    /*
-     * Deprecated
-     */
-    saveBuilderPropertiesfunction(container, properties){
-        CustomBuilder.data.properties = $.extend(CustomBuilder.data.properties, properties);
-        CustomBuilder.update();
-
-        $('#step-design').click();
     },
     
     /*
@@ -2272,7 +2264,7 @@ _CustomBuilder = {
             });
         }
         target = $(target)[0];
-        html2canvas(target, {logging : false}).then(canvas => {
+        html2canvas(target, {logging : false}).then(function(canvas) {
             if (hasSvg === true) {
                 $(target).find('canvas.screenshotSvg').remove();
             }
@@ -2281,7 +2273,7 @@ _CustomBuilder = {
                 callback(image);
             }
         },
-        error => {
+        function(error) {
             if (hasSvg === true) {
                 $(target).find('canvas.screenshotSvg').remove();
             }
@@ -3243,8 +3235,10 @@ _CustomBuilder.Builder = {
         CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, true);
     },
     
-    selectNodeAndShowProperties: function(node, dragging, show = true) {
-        
+    selectNodeAndShowProperties: function(node, dragging, show) {
+        if (show === undefined) {
+            show = true;
+        }
         var self = CustomBuilder.Builder;
         if (!node || $(node).is('[data-cbuilder-uneditable]'))
         {
@@ -3275,7 +3269,7 @@ _CustomBuilder.Builder = {
             node = $(target);
         }
         if ($(node).is('[data-cbuilder-select]')) {
-            var id = $(node).attr('data-cbuilder-select');
+            var id = $(node).data('cbuilder-select');
             target = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
             self.subSelectedEl = $(node);
             isSubSelect = true;
@@ -4665,7 +4659,7 @@ _CustomBuilder.Builder = {
             //loop properties for css class, style & attribute 
             self.handleStylingProperties(temp, props);
         }
-        const regex = new RegExp('#([^#^\"^ ])*\\.([^#^\"])*\\#');
+        var regex = new RegExp('#([^#^\"^ ])*\\.([^#^\"])*\\#');
         if (temp !== undefined && !regex.test($("<div></div>").append($(temp).clone()).html())) {
             element.replaceWith(temp);
             element = temp;
@@ -5072,7 +5066,7 @@ _CustomBuilder.Builder = {
         if (target.is("[data-cbuilder-classname]") || target.is("[data-cbuilder-select]")) {
             var element = target;
             if (target.is("[data-cbuilder-select]")) {
-                var id = $(target).attr('data-cbuilder-select');
+                var id = $(target).data('cbuilder-select');
                 element = self.frameBody.find('[data-cbuilder-id="'+id+'"]');
                 if ($(element).find("> .cbuilder-node-details").length > 0) {
                     return;

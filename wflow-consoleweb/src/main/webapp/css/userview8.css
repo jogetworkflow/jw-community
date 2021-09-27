@@ -80,11 +80,12 @@ header.navbar .container-fluid{
 #header-name .logo{
     height: 40px;
     margin-right: 10px;
+    vertical-align: top;
 }
 #header-link {
     font-size: 25px;
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
     font-weight: bold;
     color: var(--theme-header-font, var(--theme-color2, #72777a));
     text-decoration: none;
@@ -386,6 +387,7 @@ header.navbar .dropdown-menu a span.time{
     display: inline-block;
     padding: 15px 0;
     left: 25px;
+    top:2px;
 }
 .rtl .hi-trigger {
     margin-right: -20px;

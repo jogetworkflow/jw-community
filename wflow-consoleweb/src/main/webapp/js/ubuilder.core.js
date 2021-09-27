@@ -964,7 +964,7 @@ UserviewBuilder = {
 
         element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
         if (props.dx8background !== undefined || props.dx8colorScheme !== undefined) {
-            var css = "<style data-cbuilder-style='calculatedThemeStyle'>body{";
+            var css = "<style data-cbuilder-style='calculatedThemeStyle'>:root{";
             if (props.dx8colorScheme !== undefined  && props.dx8colorScheme !== "") {
                 var colors = props.dx8colorScheme.split(";");
                 for (var i =0; i < 6; i++) {
@@ -1574,7 +1574,7 @@ UserviewBuilder = {
                     permissionLabel.push(label);
                 }
                 if (elementObj['properties']['permission_rules'] !== undefined) {
-                    for (var key of Object.keys(elementObj['properties']['permission_rules'])) {
+                    for (var key in Object.keys(elementObj['properties']['permission_rules'])) {
                         var rule = elementObj['properties']['permission_rules'][key];
                         if (rule['permission'] !== undefined && rule['permission']['className'] !== "") {
                             var label = rule['permission']['className'];

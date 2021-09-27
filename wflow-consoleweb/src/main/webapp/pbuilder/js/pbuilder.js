@@ -3052,7 +3052,7 @@ ProcessBuilder = {
     /*
      * recalculate the connection position
      */
-    refreshConnections() {
+    refreshConnections : function() {
         var self = CustomBuilder.Builder;
         
         if (self.frameBody.find(".process").length > 0) {

@@ -192,7 +192,7 @@ AjaxComponent = {
             url = UrlUtil.updateUrlParam(url, ConnectionManager.tokenName, ConnectionManager.tokenValue);
         }
         
-        const headers = new Headers();
+        var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
         headers.append("__ajax_theme_loading", "true");
         
@@ -258,7 +258,7 @@ AjaxComponent = {
             }
             return response.text();
         })
-        .then(data => {
+        .then(function (data){
             if (data !== null) {
                 if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
                     //handle userview redirection with alert
@@ -297,7 +297,7 @@ AjaxComponent = {
                 $(contentConatiner).removeAttr("data-content-placeholder");
             }
         })
-        .catch(error => {
+        .catch(function (error) {
             if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
                 AjaxUniversalTheme.errorCallback(error);
             } else {
@@ -659,15 +659,15 @@ AjaxComponent = {
      * Check the URL is within the same userview
      */
     isCurrentUserviewUrl : function(url) {
-        if (url !== null && url !== undefined && !url.startsWith("javascript") && url.indexOf("/web/ulogin/") < 0) {
-            if (!(url.startsWith("http") || url.startsWith("/"))) {
+        if (url !== null && url !== undefined && url.indexOf("javascript") !== 0 && url.indexOf("/web/ulogin/") < 0) {
+            if (!(url.indexOf("http") === 0 || url.indexOf("/") === 0)) {
                 return true;
             } else {
                 var currentPath = window.location.pathname;
                 var currentOrigin = window.location.origin;
                 
-                if (url.startsWith("http")) {
-                    if (!url.startsWith(currentOrigin)) {
+                if (url.indexOf("http") === 0) {
+                    if (!url.indexOf(currentOrigin) === 0) {
                         return false;
                     } else {
                         url = url.replace(currentOrigin, "");
@@ -698,9 +698,9 @@ AjaxComponent = {
         if (url.indexOf("?") !== -1) {
             url = url.substring(0, url.indexOf("?"));
         }
-        if (url.startsWith("/")) {
+        if (url.indexOf("/") === 0) {
             return window.location.pathname.indexOf(url) !== -1;
-        } else if (url.startsWith("http")) {
+        } else if (url.indexOf("http") === 0) {
             var currentUrl = window.location.href;
             if (currentUrl.indexOf("?") !== -1) {
                 currentUrl = currentUrl.substring(0, currentUrl.indexOf("?"));
@@ -740,13 +740,13 @@ AjaxComponent = {
      */
     getContentPlaceholder : function(url) {
         if (window["ajaxContentPlaceholder"] !== undefined) {
-            const urlObj = new URL(url, window.location.origin);
+            var urlObj = new URL(url, window.location.origin);
             var rule = window["ajaxContentPlaceholder"][urlObj.pathname];
             if (rule !== undefined) {
                 if (typeof(rule) === "string") {
                     return rule;
                 } else {
-                    for (const key in rule) {
+                    for (var key in rule) {
                         if (rule.hasOwnProperty(key)) {
                             if (key !== "") {
                                 var patt = new RegExp(key);

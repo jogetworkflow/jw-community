@@ -330,7 +330,7 @@ FormBuilder = {
             permissionLabel.push(label);
         }
         if (elementObj['properties']['permission_rules'] !== undefined) {
-            for (var key of Object.keys(elementObj['properties']['permission_rules'])) {
+            for (var key in Object.keys(elementObj['properties']['permission_rules'])) {
                 var rule = elementObj['properties']['permission_rules'][key];
                 if (rule['permission'] !== undefined && rule['permission']['className'] !== "") {
                     var label = rule['permission']['className'];

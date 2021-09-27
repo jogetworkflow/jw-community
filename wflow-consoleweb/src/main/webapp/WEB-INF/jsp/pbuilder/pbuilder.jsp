@@ -9,19 +9,23 @@
 <c:set var="builderCSS" scope="request">
     <style>
         body {--builder-content-top : calc(var(--builder-header-top-height) + 40px);}
+        #cbuilder[data-browser="ie"] #builder_canvas{top:130px;}
         #dragElement-clone{display: none !important;}
         #process-selector {
             position: fixed; 
+            top:85px;
             top : var(--builder-header-top-height); 
-            margin-right: 15vw;
+            margin-right: 20vw;
             margin-left: 15vw;
             margin-right: var(--builder-right-panel-width);
             margin-left: var(--builder-left-panel-width);
+            width: calc(100vw - (13.5vw + 20vw + 30px));
             width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
             background: #fafbfc;
             padding: 5px 10px 5px 23px;
             z-index: 9;
         }
+        #cbuilder[data-browser="ie"] #process-selector {left:15px;}
         #process-selector .process_action {display:inline-block; padding: 0px 15px; font-size: 110%; vertical-align: middle;}
         #process-delete-btn {color:#ff4500}
         #process-delete-btn:hover {color:red}

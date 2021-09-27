@@ -5908,9 +5908,9 @@ PropertyEditor.Type.IconTextField.prototype = {
                 if ($(i).find('.property-icon-picker').length === 0) {
                     $(i).append('<div class="property-icon-picker"><div class="value_holder"><span class="color"></span><input class="color_value" placeholder="Color" style="display:none"/></input><input class="text_value" placeholder="Value"/><i class="la la-check"></i></div><div><input class="search" placeholder="Search"/><ul></ul></div></div>');
                     
-                    for (const set in field.icons) {
+                    for (var set in field.icons) {
                         $(i).find("ul").append('<li class="iconset">'+set+'</li>');
-                        for (const property in field.icons[set]) {
+                        for (var property in field.icons[set]) {
                             $(i).find("ul").append('<li data-search-terms="'+field.icons[property]+'"><i class="'+property+'" data-icon-picker-options ></i></li>');
                         }
                     }

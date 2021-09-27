@@ -106,8 +106,10 @@ body.initializing #builder_loader{
     border-style: solid;
     border-width: 0px;
     background-color: #fff;
+    height: calc(100vh - 85px);
     height: calc(100vh - var(--builder-header-top-height));
     position: fixed;
+    top: 85px;
     top: var(--builder-header-top-height);
     z-index: 10; 
     transition: 0.35s width ease-in-out;
@@ -134,16 +136,23 @@ body.right-panel-resizing #right-panel-resize-block{
     background: -webkit-linear-gradient(left, #fff 85%, #fafbfc 100%);
     background: linear-gradient(left, #fff 85%, #fafbfc 100%);
     box-shadow: -1px -2px 2px #f3f3f3 inset;
-    width: 15vw;
+    width: 13.5vw;
     width: calc(var(--builder-left-panel-width));
+    height: calc(100vh - 85px);
     height: calc(100vh - var(--builder-header-top-height));
+    max-height: calc(100vh - 85px);
     max-height: calc(100vh - var(--builder-header-top-height));
     flex: 1 1 0;
     display: flex;
     flex-direction: column; 
 }
+#cbuilder[data-browser="ie"] #left-panel{
+    position: fixed;
+    left: 30px;
+    top: 85px;
+}
 #cbuilder #left-panel #filemanager {
-    width: 30vw;
+    width: 13.5vw;
     width: calc( var(--builder-left-panel-width));
     border-bottom: 1px solid #ddd; 
 }
@@ -178,6 +187,7 @@ body.right-panel-resizing #right-panel-resize-block{
     overflow-y: auto; 
 }
 #cbuilder #left-panel .components-list, #cbuilder #left-panel .blocks-list, #cbuilder #left-panel .component-properties {
+    width: 13.5vw;
     width: var(--builder-left-panel-width); 
 }
 #cbuilder:not(.max-property-editor) #right-panel {
@@ -192,10 +202,11 @@ body.right-panel-resizing #right-panel-resize-block{
     background: -webkit-linear-gradient(right, #fff 85%, #fafbfc 100%);
     background: linear-gradient(right, #fff 85%, #fafbfc 100%);
     box-shadow: 1px -2px 2px #f3f3f3 inset;
-    width: 15vw;
+    width: 20vw;
     width: var(--builder-right-panel-width) !important; 
 }
 #cbuilder #top-panel {
+    height: 85px;
     height: var(--builder-header-top-height, 85px);
     border-bottom: 1px solid #ccc;
     text-align: left;
@@ -245,7 +256,7 @@ body.right-panel-resizing #right-panel-resize-block{
     bottom: 0px;
     position: fixed;
     border-top: 1px solid #ddd;
-    left: 15vw;
+    left: 13.5vw;
     left: calc( var(--builder-left-panel-width) + var(--builder-canvas-margin));
     right: 15vw;
     right: var(--builder-right-panel-width);
@@ -254,7 +265,7 @@ body.right-panel-resizing #right-panel-resize-block{
     padding: 5px 10px;
 }
 #cbuilder.quick-nav-shown #bottom-panel {
-    left: calc(15vw + 30px);
+    left: calc(13.5vw + 30px);
     left: calc( var(--builder-left-panel-width) + var(--builder-canvas-margin) + 30px);
 }
 #cbuilder #bottom-panel #vvveb-code-editor {
@@ -372,13 +383,13 @@ body.right-panel-resizing #right-panel-resize-block{
     background: #fff; 
 }
 #cbuilder #builder_canvas {
-    margin-left: 15vw;
+    margin-left: calc(13.5vw + 5px);
     margin-left: calc(var(--builder-left-panel-width) + 5px);
     width: 100%;
     height: 100%;
     width: calc( 100vw - 600px);
     height: calc( 100vh - 85px);
-    top: 70px;
+    top: 90px;
     width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
     height: calc( 100vh - 5px - (var(--builder-content-top) + var(--builder-bottom-panel-height)));
     top: calc(var(--builder-content-top) + 5px);
@@ -387,10 +398,14 @@ body.right-panel-resizing #right-panel-resize-block{
     max-width: inherit;
     overflow: auto;
 }
+#cbuilder[data-browser="ie"] #builder_canvas{
+    left:30px;
+}
 #cbuilder.default-builder #builder_canvas {
     max-width: 1200px;
 }
 #cbuilder.quick-nav-shown #builder_canvas {
+    width: calc( 100vw - 35px - 13.5vw);
     width: calc( 100vw - 35px - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
 }
 #cbuilder.default-builder #builder_canvas {
@@ -404,22 +419,26 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #builder_canvas.desktop {
     width: 1000px;
+    max-width: calc(100vw - 10px - 13.5vw);
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.tablet {
     width: 768px !important;
     background: #eee;
+    max-width: calc(100vw - 10px - 13.5vw);
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.mobile{
     width: 320px !important;
     background: #eee;
+    max-width: calc(100vw - 10px - 13.5vw);
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
     top: calc(var(--builder-content-top) + 25px);
     overflow: auto;
+    height: calc( 100vh - 25px - (85px + 30px));
     height: calc( 100vh - 25px - (var(--builder-content-top) + var(--builder-bottom-panel-height)));
 }
 #cbuilder #builder_canvas > div:not(#iframe-wrapper) {
@@ -1024,8 +1043,10 @@ div.section, .header > ol {
     position: absolute;
     top: 0;
     left: 0;
+    width: 13.5vw; 
     width: var(--builder-logo-width);
     padding: 0 15px;
+    height: 84px;
     height: calc(var(--builder-header-top-height) - 1px);
     line-height: 95px;
     text-align: left;
@@ -1038,7 +1059,9 @@ div.section, .header > ol {
     left: 55px;
     font-size: 20px;
     display: table;
+    height: 84px;
     height: calc(var(--builder-header-top-height) - 1px);
+    width: calc(13.5vw - 80px); 
     width: calc(var(--builder-logo-width) - 80px);
     line-height: 22px;
 }
@@ -1049,6 +1072,7 @@ div.section, .header > ol {
     word-wrap: break-word;
 }
 #top-panel-main{
+    padding-left: calc(13.5vw + 10px);
     padding-left: calc(var(--builder-logo-width) + 10px);
 }
 @media (max-width: 1200px) {
@@ -1196,6 +1220,7 @@ div.section, .header > ol {
 }
 .builder-view {
     position: absolute;
+    top : 85px;
     top : var(--builder-content-top);
     bottom : 0px;
     left: 0px;
@@ -1511,7 +1536,9 @@ div.section, .header > ol {
     top:65px;
     right: 0;
     bottom: 30px;
+    width: 20vw;
     width: var(--builder-right-panel-width);
+    min-width: 20vw;
     min-width: var(--builder-right-panel-width);
     z-index: 1000000;
     background: #fff;
@@ -1887,6 +1914,7 @@ body.quick-nav-shown #builder-quick-nav {
 }
 #quick-nav-bar.active #builder-menu ul li.active ul {
     width: 300px !important;
+    min-width: 13.5vw;
     min-width: var(--builder-logo-width);
     max-width: 100vw;
     overflow: auto;
@@ -1945,6 +1973,7 @@ body.quick-nav-shown #builder-quick-nav {
     z-index: 3;
     left: 40px;
     width: 300px !important;
+    min-width: 13.5vw;
     min-width: var(--builder-logo-width);
     max-width: 100vw;
     background: #455a65;
@@ -2013,6 +2042,7 @@ body.quick-nav-shown #builder-quick-nav {
 #builder-message {
     position: fixed; 
     top: 85px; 
+    right: calc(13.5vw + 15px);
     right: calc(var(--builder-right-panel-width) + 15px);
     z-index: 1000;
 }

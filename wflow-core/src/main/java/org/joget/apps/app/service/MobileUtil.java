@@ -80,4 +80,8 @@ public class MobileUtil {
         return isMobileView;
     }
     
+    public static boolean isIE() {
+        String userAgent = WorkflowUtil.getHttpServletRequest().getHeader("User-Agent");
+        return (userAgent.contains("MSIE") || userAgent.contains("Trident"));
+    }
 }

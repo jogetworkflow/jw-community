@@ -1,7 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
 
 <c:set var="isAjaxRender" scope="request" value="${pageContext.request.getHeader('_ajax-rendering')}"/>
+<c:set var="isIE" scope="request" value="${MobileUtil.isIE()}"/>
 
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
@@ -67,7 +69,7 @@
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
-            <body id="cbuilder" class="no-right-panel initializing max-property-editor">
+            <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor">
                 <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none; z-index:9999;">
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
                     <i class="${builderIcon} fa-stack-1x"></i>
@@ -79,7 +81,7 @@
                     </a>
                     <div id="top-panel-main">
                         <div id="builderElementName" style="color:${builderColor};">
-                            <div class="title"><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                            <div class="title"><span><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
                                 <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
@@ -101,7 +103,7 @@
 
                             <div class="btn-group toolbar-group mr-3 advanced-tools-toogle" role="group">
                                 <button class="btn btn-light"  title="<fmt:message key="adv.tool.Advanced.Tools"/>" id="advanced-tools-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-action="enableEnhancedTools">
-                                     <i class="las la-toolbox"></i> <span><fmt:message key="adv.tool.Advanced.Tools"/><span>
+                                     <i class="las la-toolbox"></i> <span><fmt:message key="adv.tool.Advanced.Tools"/></span>
                                 </button>
                             </div>
 
@@ -309,6 +311,9 @@
                 <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/wro/advancedTool.js?build=<fmt:message key="build.number"/>"></script>
                 <script data-cbuilder-script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/cbuilder?type=${builderCode}&build=<fmt:message key="build.number"/>"></script>
+                <c:if test="${isIE}">
+                    <script src="${pageContext.request.contextPath}/js/ie/fetch.js"></script>
+                </c:if>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/builder/builder.js"></script>
                 ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}
                 <script data-cbuilder-script>
