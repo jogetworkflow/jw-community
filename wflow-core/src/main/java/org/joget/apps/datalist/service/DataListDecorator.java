@@ -194,11 +194,17 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), linkCss);
                 }
                 
-                if (i > 0) {
-                    output += "</td><td class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
+                if ("true".equals(dataList.getPropertyString("rowActionsMode"))) {
+                    if (!link.isEmpty()) {
+                        output += " <span class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">" + link + "</span> ";
+                    }
+                } else {
+                    if (i > 0) {
+                        output += "</td><td class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
+                    }
+                    
+                    output += " " + link + " ";
                 }
-                
-                output += " " + link + " ";
                 
                 i++;
             }

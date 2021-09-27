@@ -137,6 +137,7 @@
     text-shadow:none;
     box-shadow: none;
     outline: 0;
+    margin-bottom: 5px;
 }
 .dataList .column-hidden {
     display: none;

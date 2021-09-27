@@ -1769,6 +1769,14 @@ DatalistBuilder = {
                         developer_mode : 'advanced'
                     },
                     {
+                        label : get_cbuilder_msg('dbuilder.rowActionsMode'),
+                        name  : 'rowActionsMode',
+                        type : 'checkbox',
+                        options : [
+                            {label : '', value : 'true'}
+                        ]
+                    },
+                    {
                         label: get_cbuilder_msg('dbuilder.responsive'),
                         name: 'responsive',
                         type: 'header',

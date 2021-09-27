@@ -212,6 +212,11 @@
                                         </c:otherwise>
                                      </c:choose>
                                 </c:forEach>
+                                <c:if test="${!empty dataList.properties.rowActionsMode && dataList.properties.rowActionsMode eq 'true'}">
+                                    <c:set var="actionTitle" value=""/>
+                                    <c:set var="firstHeaderCssClass" value="rowaction_header"/>
+                                    <c:set var="firstBodyCssClass" value="rowaction_body"/>
+                                </c:if>
                                 <display:column headerClass="row_action ${firstHeaderCssClass}" class="row_action ${firstBodyCssClass}" property="actions" media="html" title="${actionTitle}"/>
                             </c:if>
                             <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
