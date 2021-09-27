@@ -4580,7 +4580,7 @@ public class ConsoleWebController {
             String secureValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
             
             DynamicDataSourceManager.createProfile(profileName);
-            WorkflowUtil.switchProfile(profileName);
+            DynamicDataSourceManager.changeProfile(profileName);
 
             //request params
             Enumeration e = request.getParameterNames();
@@ -4596,6 +4596,7 @@ public class ConsoleWebController {
                     DynamicDataSourceManager.writeProperty(paramName, paramValue);
                 }
             }
+            WorkflowUtil.switchProfile(profileName);
         }
     }
 

@@ -201,6 +201,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 Collection<WorkflowActivity> activityList = workflowManager.getProcessActivityDefinitionList(wp.getId());
                 activityIds.add(processDefId+"::"+WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
                 participantIds.add(processDefId+"::"+"processStartWhiteList");
+                toolIds.add(processDefId+"::"+WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
                 for (WorkflowActivity a : activityList) {
                     if (a.getType().equalsIgnoreCase("normal")) {
                         activityIds.add(processDefId+"::"+a.getId());
