@@ -274,6 +274,14 @@
     <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
     </bean>
+    
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass"
+            value="org.springframework.security.core.context.SecurityContextHolder" />
+        <property name="targetMethod" value="setStrategyName" />
+        <property name="arguments" value="org.joget.apps.util.ThreadLocalSecurityContextHolderStrategy" />
+    </bean>
    
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />
