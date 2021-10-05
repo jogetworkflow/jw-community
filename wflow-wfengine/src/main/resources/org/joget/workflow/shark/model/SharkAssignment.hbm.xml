@@ -9,7 +9,6 @@
         
         <many-to-one entity-name="SharkActivity" insert="false" fetch="join" lazy="false" update="false" name="activity" column="ActivityId" />
         <many-to-one entity-name="SharkProcess" insert="false" fetch="join" lazy="false" update="false" name="process" column="ActivityProcessId"/>
-        <many-to-one entity-name="WorkflowProcessLink" not-found="ignore" insert="false" fetch="join" lazy="no-proxy" update="false" name="link" column="ActivityProcessId"/>
     </class>
 </hibernate-mapping>
 

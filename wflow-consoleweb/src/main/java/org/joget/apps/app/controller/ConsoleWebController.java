@@ -5176,6 +5176,8 @@ public class ConsoleWebController {
         WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(recordId);
         if (link != null) {
             recordId = link.getOriginProcessId();
+        } else if (wfProcess.getRecordId() != null) {
+            recordId = wfProcess.getRecordId();
         }
         map.addAttribute("recordId", recordId);
 
