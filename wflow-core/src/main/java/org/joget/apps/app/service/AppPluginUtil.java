@@ -139,7 +139,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                     String value = "";
 
                     if (propertyMap.get(key) != null) {
-                        value = propertyMap.get(key).toString().trim();
+                        value = SecurityUtil.decrypt(propertyMap.get(key).toString().trim());
                     }
 
                     if (value.equals("") && !defaultValue.equals("")) {
