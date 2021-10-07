@@ -281,7 +281,7 @@ function initFooTable(table, respButtons, responsiveSetting) {
     });
 
     //wrap all row action in data in extra .class so that it can be differentia and remove later
-    $(table).find("td.row_action").wrapInner('<span class="row_action_inner"></span>');
+    $(table).find("td.row_action:not(.row_action_container)").wrapInner('<span class="row_action_inner"></span>');
 
     //add row action into detail view with better layout
     $(table).off("footable_row_detail_updated");
