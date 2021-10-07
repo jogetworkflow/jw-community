@@ -3,6 +3,7 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
+<c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
 <c:if test="${isQuickEditEnabled || param.webConsole =='true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
@@ -42,7 +43,9 @@
                     <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/> : </span><span class="on"><fmt:message key='adminBar.label.on'/></span><span class="off"><fmt:message key='adminBar.label.off'/></span></a>
                 </div>
             </div>
-            
+            <c:if test="${!empty envName}">
+                <span id="environmentName">${envName}</span>
+            </c:if>
         </div>
             
         <div id="adminControl">

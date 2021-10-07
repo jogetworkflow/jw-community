@@ -284,6 +284,21 @@ $(window).on("load", function() {
         }, 0);
     } else {
         AdminBar.initQuickEditMode();
+        
+        var environmentName = "";
+        if ($("#adminBar #environmentName").length > 0) {
+            environmentName = $("#adminBar #environmentName").text();
+        }
+        var parentAdminBar = $("#adminBar", parent.document);
+        if (environmentName !== "") {
+            if ($(parentAdminBar).find("#environmentName").length === 0) {
+                $(parentAdminBar).append('<span id="environmentName">'+environmentName+'</span>');
+            } else {
+                $(parentAdminBar).find("#environmentName").text(environmentName);
+            }
+        } else {
+            $(parentAdminBar).find("#environmentName").remove();
+        }
     }
 });
 

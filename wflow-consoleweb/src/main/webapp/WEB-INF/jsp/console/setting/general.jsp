@@ -432,7 +432,17 @@
                         </span>
                     </div>
                 </span>
-            </div>               
+            </div> 
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="environmentName"><fmt:message key="console.setting.general.label.environmentName"/></label>
+                        <span class="form-input">
+                            <input id="environmentName" type="text" name="environmentName" value="<c:out value="${settingMap['environmentName']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>                
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
             </div>
