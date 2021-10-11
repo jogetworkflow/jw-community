@@ -108,13 +108,13 @@
                                 <copy file="src/main/resources/joget_stop.ico" todir="target" />
                                 <copy file="src/main/resources/mariadb-start.bat" todir="target" />
                                 <copy file="src/main/resources/mariadb-stop.bat" todir="target" />
-                                <copy file="src/main/resources/tomcat8-run.bat" todir="target" />
-                                <copy file="src/main/resources/tomcat8-stop.bat" todir="target" />
+                                <copy file="src/main/resources/tomcat-run.bat" todir="target" />
+                                <copy file="src/main/resources/tomcat-stop.bat" todir="target" />
                                 <copy file="src/main/resources/joget-start.bat" todir="target" />
                                 <copy file="src/main/resources/joget-stop.bat" todir="target" />
                                 <copy file="src/main/resources/build.xml" todir="target" />
                                 <copy file="src/main/resources/setup.sh" todir="target" />
-                                <copy file="src/main/resources/tomcat8.sh" todir="target" />
+                                <copy file="src/main/resources/tomcat.sh" todir="target" />
 
                                 <mkdir dir="downloads" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
@@ -177,8 +177,8 @@
                                         <include name="NOTICE.txt" />
                                         <include name="README.txt" />
                                         <include name="CHANGES.txt" />
-                                        <include name="tomcat8-run.bat" />
-                                        <include name="tomcat8-stop.bat" />
+                                        <include name="tomcat-run.bat" />
+                                        <include name="tomcat-stop.bat" />
                                         <include name="mariadb-start.bat" />
                                         <include name="mariadb-stop.bat" />
                                         <include name="VERSION.txt" />

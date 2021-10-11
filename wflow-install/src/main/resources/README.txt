@@ -20,7 +20,7 @@ Installation for Linux:
 3. Install MySQL Server version 5.6 and above
 4. Create an empty database 'jwdb' in the MySQL server
 5. Execute the setup script to create the required database tables: ./setup.sh
-6. Execute the bundled Apache Tomcat application server: ./tomcat8.sh run
+6. Execute the bundled Apache Tomcat application server: ./tomcat.sh run
 7. Access the App Center at http://localhost:8080/jw
 
 
@@ -32,6 +32,6 @@ Installation for Windows:
 4. Create an empty database 'jwdb' in the MySQL server
 5. Populate the jwdb database with the SQL script in data\jwdb-empty.sql
 6. Edit wflow\app_datasource-default.properties to match your database settings
-7. Edit tomcat8-run.bat and change JAVA_HOME to your Java installation directory
-8. Run tomcat8-run.bat to start the bundled Apache Tomcat application server
+7. Edit tomcat-run.bat and change JAVA_HOME to your Java installation directory
+8. Run tomcat-run.bat to start the bundled Apache Tomcat application server
 9. Access the App Center at http://localhost:8080/jw

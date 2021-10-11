@@ -167,7 +167,7 @@ Section "Joget DX" SecJoget
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.65\webapps\jw.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-9.0.54\webapps\jw.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -182,8 +182,8 @@ Section "Joget DX" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-8.5.65\webapps"
-  File /oname=apache-tomcat-8.5.65\webapps\jw.war apache-tomcat-8.5.65\webapps\jw.war
+  CreateDirectory "$INSTDIR\apache-tomcat-9.0.54\webapps"
+  File /oname=apache-tomcat-9.0.54\webapps\jw.war apache-tomcat-9.0.54\webapps\jw.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -207,16 +207,16 @@ Section "Joget DX" SecJoget
 
 SectionEnd
 
-Section "Apache Tomcat 8" SecTomcat
+Section "Apache Tomcat 9" SecTomcat
 
   SectionIn RO
   SetOutPath "$INSTDIR"
 
 ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-8.5.65
-  File tomcat8-run.bat
-  File tomcat8-stop.bat
+  File /r /x *.war apache-tomcat-9.0.54
+  File tomcat-run.bat
+  File tomcat-stop.bat
   File joget-start.bat
   File joget-stop.bat
 
@@ -282,6 +282,9 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-9.0.54\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+    StrCpy $EXISTING_TOMCAT_VERSION "9.0.54"  
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.65\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "8.5.65"  
@@ -356,8 +359,8 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre11.0.2"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.65\webapps\jw"
-  Delete "$INSTDIR\apache-tomcat-8.5.65\webapps\jw.war"
+  RmDir /r "$INSTDIR\apache-tomcat-9.0.54\webapps\jw"
+  Delete "$INSTDIR\apache-tomcat-9.0.54\webapps\jw.war"
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\NOTICE.txt"
@@ -369,8 +372,8 @@ Section "Uninstall"
   Delete "$INSTDIR\joget_stop.ico"
   Delete "$INSTDIR\Start Joget Server.lnk"
   Delete "$INSTDIR\Stop Joget Server.lnk"
-  Delete "$INSTDIR\tomcat8-run.bat"
-  Delete "$INSTDIR\tomcat8-stop.bat"
+  Delete "$INSTDIR\tomcat-run.bat"
+  Delete "$INSTDIR\tomcat-stop.bat"
   Delete "$INSTDIR\mariadb-start.bat"
   Delete "$INSTDIR\mariadb-stop.bat"
   Delete "$INSTDIR\joget-start.bat"
