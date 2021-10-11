@@ -478,8 +478,11 @@ public class UserviewThemeProcesser {
         modelMap.put("appId", userview.getParamString("appId"));
         modelMap.put("appVersion", appDef.getVersion().toString());
         modelMap.put("userviewId", userview.getParamString("userviewId"));
-        html += UserviewUtil.renderJspAsString("ubuilder/adminBar.jsp", modelMap) + "\n\n";
-
+        
+        if (!"true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
+            html += UserviewUtil.renderJspAsString("ubuilder/adminBar.jsp", modelMap) + "\n\n";
+        }
+        
         if ("true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
             html += "<!--[if IE]><div id=\"preview-label\" class=\"ie\">"+ResourceBundleUtil.getMessage("fbuilder.preview")+"</div><![endif]-->\n"
                     + "        <!--[if !IE]><!--><div id=\"preview-label\">"+ResourceBundleUtil.getMessage("fbuilder.preview")+"</div><!--<![endif]-->        \n"
