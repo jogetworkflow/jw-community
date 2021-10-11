@@ -281,7 +281,15 @@
     <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
     </bean>
-    
+
+    <bean
+        class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass"
+            value="org.springframework.security.core.context.SecurityContextHolder" />
+        <property name="targetMethod" value="setStrategyName" />
+        <property name="arguments" value="org.joget.apps.util.ThreadLocalSecurityContextHolderStrategy" />
+    </bean>
+            
     <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl">
     </bean>
     
