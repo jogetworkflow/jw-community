@@ -315,6 +315,27 @@ UserviewBuilder = {
                 return UserviewBuilder.selectedMenu.properties;
             }
         }});
+        CustomBuilder.initPaletteElement("", "userview-content", "", "", "", "", false, "", {builderTemplate: {
+            'deletable' : false,
+            'copyable' : false,
+            'draggable' : false,
+            'movable' : false,
+            'navigable' : false,
+            'renderNodeAdditional' : false,
+            'getLabel' : function(elementObj, component) {
+                var self = CustomBuilder.Builder;
+                var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
+                var menuObj = UserviewBuilder.selectedMenu;
+                if ((menuObj !== null && menuObj.properties.id !== menuId) || menuObj === null) {
+                    menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+                }
+                var classname = menuObj.className;
+                var self = CustomBuilder.Builder;
+                var actualComponent = self.getComponent(classname);
+                
+                return CustomBuilder.Builder._getElementType(menuObj, actualComponent);
+            }
+        }});
     },
     
     getHeaderProperties : function() {
@@ -634,12 +655,16 @@ UserviewBuilder = {
                     var id = UserviewBuilder.selectedMenu.properties.id;
                     self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
                 } else {
+                    var self = CustomBuilder.Builder;
+                        
+                    var id = "";
                     var params = UrlUtil.getUrlParams(window.location.search);
                     if (params !== undefined && params["menuId"] !== undefined) {
-                        var self = CustomBuilder.Builder;
-                    
-                        var id = params["menuId"][0];
+                        id = params["menuId"][0];
                         self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
+                    } else {
+                        id = self.frameBody.find("#category-container li.menu:eq(0)").attr("id");
+                        UserviewBuilder.showMenuSnapshot(id);
                     }
                 }
             });
@@ -902,7 +927,7 @@ UserviewBuilder = {
         //breadcrumb
         html += '<ul class="breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
         
-        html += '<div class="userview-body-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
+        html += '<div class="userview-body-content" data-cbuilder-classname="userview-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" data-cbuilder-classname data-cbuilder-uneditable data-cbuilder-unselectable class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
         html += '</main></div></div></div><div class="clearfix"></div>';
         
         //footer
@@ -922,6 +947,7 @@ UserviewBuilder = {
         userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: combinedProperties, categories: elementObj.categories});
         userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-content"]').data("data", {className: "userview-content", properties: combinedProperties});
         
         userviewElement.attr("data-cbuilder-uneditable", "");
         userviewElement.attr("data-cbuilder-unselectable", "");
@@ -932,7 +958,14 @@ UserviewBuilder = {
         });
         
         userviewElement.find("#edit-content-btn").off("click");
-        userviewElement.find("#edit-content-btn").on("click", function() {
+        userviewElement.find("#edit-content-btn").on("click", function(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            var menuId = $(this).closest(".userview-body-content").attr("data-ubuilder-menuid");
+            if ((UserviewBuilder.selectedMenu !== null && UserviewBuilder.selectedMenu.properties.id !== menuId) || UserviewBuilder.selectedMenu === null) {
+                var self = CustomBuilder.Builder;
+                UserviewBuilder.selectedMenu = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+            }
             UserviewBuilder.loadContentPage();
         });
         
@@ -1398,7 +1431,11 @@ UserviewBuilder = {
             UserviewBuilder.removeMenuSnapshot();
         }
         
-        if (elementObj.className === "userview-categories") {
+        if (elementObj.className === "userview-content") {
+            var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
+            self.selectNode(self.frameBody.find('[data-cbuilder-id="'+menuId+'"]'));
+            return;
+        } else if (elementObj.className === "userview-categories") {
             $("#element-select-box #element-options").append('<a id="category-btn" href="" title="'+get_cbuilder_msg('ubuilder.addCategory')+'"><i class="las la-plus"></i></a>');
             
             $("#category-btn").off("click");
@@ -1422,10 +1459,24 @@ UserviewBuilder = {
                 event.preventDefault();
                 return false;
             });
+            
+            var firstMenu = $(element).find(".menu-container li.menu:eq(0)");
+            if ($(firstMenu).length > 0) {
+                UserviewBuilder.showMenuSnapshot($(firstMenu).attr("id"));
+            }
         } else if (element.closest(".menu-container").length > 0) {
             //is a menu
             UserviewBuilder.selectedMenu = elementObj;
             UserviewBuilder.showMenuSnapshot();
+        }
+        
+        if (UserviewBuilder.mode !== "page" 
+                && elementObj.className !== "org.joget.apps.userview.model.UserviewCategory"
+                && element.closest(".menu-container").length === 0) {
+            var firstMenu = self.frameBody.find("#category-container li.menu:eq(0)");
+            if ($(firstMenu).length > 0) {
+                UserviewBuilder.showMenuSnapshot($(firstMenu).attr("id"));
+            }
         }
         
         if (element.closest("#navigation").length > 0) {
@@ -1445,26 +1496,44 @@ UserviewBuilder = {
     /*
      * Show the menu page screenshot and the edit content button when a menu is selected
      */
-    showMenuSnapshot : function() {
+    showMenuSnapshot : function(menuId) {
         var self = CustomBuilder.Builder;
-        var json = JSON.encode(UserviewBuilder.selectedMenu);
-        var screenshotKey = UserviewBuilder.selectedMenu.properties.id + "_" + CustomBuilder.hashCode(json);
-        
-        var renderScreenshot = function(screenshot) {
-            if (screenshot !== null && screenshot !== undefined && screenshot.length > 6) {
-                self.frameBody.find(".userview-body-content img.screenshot").remove();
-                self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
-                self.frameBody.find(".userview-body-content").addClass("has-screenshot");
-                self.frameBody.find(".userview-body-content").attr("data-cbuilder-select", UserviewBuilder.selectedMenu.properties.id);
-            }
-        };
-        
-        self.frameBody.find("#btn_container").show();
-        
-        if (UserviewBuilder.screenshots[screenshotKey] === undefined) {
-            UserviewBuilder.generateMenuSnapshot(json, screenshotKey, renderScreenshot);
+        var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
+        var main = frameBody.find("#content > main");
+        if ($(main).length === 0) {
+            setTimeout(function(){
+                UserviewBuilder.showMenuSnapshot(menuId);
+            }, 10);
         } else {
-            renderScreenshot(UserviewBuilder.screenshots[screenshotKey]);
+            var json;
+            var menuObj;
+            if (menuId === undefined) {
+                menuObj = UserviewBuilder.selectedMenu;
+                menuId = UserviewBuilder.selectedMenu.properties.id;
+            } else {
+                menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+            }
+
+            var json = JSON.encode(menuObj);
+            var screenshotKey = menuId + "_" + CustomBuilder.hashCode(json);
+
+            self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid", menuId);
+
+            var renderScreenshot = function(screenshot) {
+                if (screenshot !== null && screenshot !== undefined && screenshot.length > 6) {
+                    self.frameBody.find(".userview-body-content img.screenshot").remove();
+                    self.frameBody.find(".userview-body-content").prepend('<img class="screenshot" src="'+screenshot+'"/>');
+                    self.frameBody.find(".userview-body-content").addClass("has-screenshot");
+                }
+            };
+
+            self.frameBody.find("#btn_container").show();
+
+            if (UserviewBuilder.screenshots[screenshotKey] === undefined) {
+                UserviewBuilder.generateMenuSnapshot(json, screenshotKey, renderScreenshot);
+            } else {
+                renderScreenshot(UserviewBuilder.screenshots[screenshotKey]);
+            }
         }
     },
     
@@ -1476,7 +1545,6 @@ UserviewBuilder = {
         self.frameBody.find("#btn_container").hide();
         self.frameBody.find(".userview-body-content img.screenshot").remove();
         self.frameBody.find(".userview-body-content").removeClass("has-screenshot");
-        self.frameBody.find(".userview-body-content").removeAttr("data-cbuilder-select");
     },
     
     /*
@@ -1485,7 +1553,6 @@ UserviewBuilder = {
     generateMenuSnapshot : function(json, screenshotKey, callback) {
         var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
         var main = frameBody.find("#content > main");
-                
         $.ajax({
             type: "POST",
             data: {"json": json },
@@ -1499,21 +1566,34 @@ UserviewBuilder = {
                     $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
                 };
                 $(main).html(response);
-                if ($(main).find("#error, .error, #errors, .errors").length > 0 || (response.indexOf(' Cause:') !== -1 && response.indexOf('Invalid') !== -1)) {
-                    $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
-                } else {
-                    UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
-                }
-                
-                //add delay for js to run
-                setTimeout(function(){
-                    CustomBuilder.getScreenshot($(main), function(image){
-                        UserviewBuilder.screenshots[screenshotKey] = image;
-                        callback(image);
-                    });
-                }, 100);
+                UserviewBuilder.captureScreenshot($(main), response, frameBody, screenshotKey, callback);
             }
         });
+    },
+    
+    /*
+     * wait library ready and capture screenshot
+     */
+    captureScreenshot : function(main, response, frameBody, screenshotKey, callback) {
+        if (UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent === undefined) {
+            setTimeout(function(){
+                UserviewBuilder.captureScreenshot($(main), response, frameBody, screenshotKey, callback);
+            }, 10);
+        } else {
+            if ($(main).find("#error, .error, #errors, .errors").length > 0 || (response.indexOf(' Cause:') !== -1 && response.indexOf('Invalid') !== -1)) {
+                $(main).html('<h4 style="color:red;">'+get_cbuilder_msg("ubuilder.pleaseConfigureFirst")+'</h4>');
+            } else {
+                UserviewBuilder.screenshotFrame.contentWindow.AjaxComponent.initContent($(frameBody));
+            }
+
+            //add delay for js to run
+            setTimeout(function(){
+                CustomBuilder.getScreenshot($(main), function(image){
+                    UserviewBuilder.screenshots[screenshotKey] = image;
+                    callback(image);
+                });
+            }, 100);
+        }
     },
     
     /*
