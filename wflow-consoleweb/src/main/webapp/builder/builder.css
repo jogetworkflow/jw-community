@@ -1623,7 +1623,7 @@ li.jsondiffpatch-unchanged {
 .sticky-buttons {
     position: fixed;
     right: 20px;
-    top: 80px;
+    top: 100px;
 }
 .table_column_items {
     list-style: none;
