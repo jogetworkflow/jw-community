@@ -1000,6 +1000,13 @@ div.section, .header > ol {
     left: 40px;
     top: 0px;
 }
+.tree ol li.tree-viewer-node > label{
+    padding-left: 30px;
+}
+.tree ol li.tree-viewer-node > label:before {
+    left: 14px;
+    top: 3px;
+}
 .tree ol li input + ol > li {
     display: none;
     margin-left: -14px !important;
