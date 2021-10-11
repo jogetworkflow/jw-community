@@ -3,6 +3,11 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.23
+=================
+d42cfc2d4 Fixed: wflow-commons - Datasource profile properties not added into cache due to 727b692f @7.0-SNAPSHOT
+727b692f0 Fixed: wflow-commons, wflow-consoleweb - DB setup page shows System Error on first load @7.0-SNAPSHOT
+
 CHANGES IN 7.0.22
 =================
 77b17b52d Fixed: wflow-core - Security - App Admin role not working when login through SSO. T294 @7.0-SNAPSHOT
