@@ -56,7 +56,7 @@ public class SetupServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // check for existing setup, return 403 forbidden if already configured (currentProfile key exists in app_datasource.properties) or virtual hosting is enabled
-        Properties properties = DynamicDataSourceManager.getProfileProperties();
+        Properties properties = DynamicDataSourceManager.loadProfileProperties();
         if (HostManager.isVirtualHostEnabled() || properties == null || properties.containsKey("currentProfile")) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
