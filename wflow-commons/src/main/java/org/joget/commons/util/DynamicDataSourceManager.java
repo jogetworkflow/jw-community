@@ -130,8 +130,15 @@ public class DynamicDataSourceManager {
         Element element = cache.get(getCacheKey(filename));
         Properties properties;
         if (element == null) {
+            // not in cache, load from file
             properties = loadProfileProperties();
+
+            // add into cache
+            element = new Element(getCacheKey(filename), properties);
+            cache.put(element);
+            LogUtil.debug(DynamicDataSourceManager.class.getName(), "Updated app_datasource.properties cache");
         } else {
+            // read from cache
             properties = (Properties) element.getObjectValue();
         }
         return properties;
