@@ -57,7 +57,9 @@ body.is-dragging [data-cbuilder-droparea][data-cbuilder-droparea-msg]:after {
     justify-content: center;
     font-weight: normal;
 }
-body.screenshot-in-progress .screenshot-hidden{
+body.screenshot-in-progress .screenshot-hidden,
+body.screenshot-in-progress [data-cbuilder-element-invisible],
+body.screenshot-in-progress [data-cbuilder-invisible] {
     display:none;
 }
 [data-cbuilder-disabled] {
