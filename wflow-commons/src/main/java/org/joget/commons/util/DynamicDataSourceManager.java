@@ -128,35 +128,43 @@ public class DynamicDataSourceManager {
     public static Properties getProfileProperties() {
         String filename = DynamicDataSourceManager.DATASOURCE_FILE;
         Element element = cache.get(getCacheKey(filename));
-        Properties properties = null;
+        Properties properties;
         if (element == null) {
-            properties = profilePropertyManager.newInstance();
-            FileInputStream fis = null;
-            String defaultDataSourceFilename = determineDefaultDataSourceFilename();
-            try {
-                fis = new FileInputStream(new File(defaultDataSourceFilename));
-                properties.load(fis);
-                
-                element = new Element(getCacheKey(filename), properties);
-                cache.put(element);
-                LogUtil.debug(DynamicDataSourceManager.class.getName(), "Updated app_datasource.properties cache");
-            } catch (Exception e) {
-                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
-            } finally {
-                try {
-                    if (fis != null) {
-                        fis.close();
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
-                }
-            }
+            // not in cache, load from file
+            properties = loadProfileProperties();
+
+            // add into cache
+            element = new Element(getCacheKey(filename), properties);
+            cache.put(element);
+            LogUtil.debug(DynamicDataSourceManager.class.getName(), "Updated app_datasource.properties cache");
         } else {
+            // read from cache
             properties = (Properties) element.getObjectValue();
         }
         return properties;
     }
 
+    public static Properties loadProfileProperties() {
+        Properties properties = profilePropertyManager.newInstance();
+        FileInputStream fis = null;
+        String defaultDataSourceFilename = determineDefaultDataSourceFilename();
+        try {
+            fis = new FileInputStream(new File(defaultDataSourceFilename));
+            properties.load(fis);
+        } catch (Exception e) {
+            LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (Exception e) {
+                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+            }
+        }
+        return properties;
+    }
+    
     public static String getCurrentProfile() {
         Properties properties = getProfileProperties();
         

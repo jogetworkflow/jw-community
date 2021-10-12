@@ -2,6 +2,19 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+CHANGES IN 7.0.22
+=================
+77b17b52d Fixed: wflow-core - Security - App Admin role not working when login through SSO. T294 @7.0-SNAPSHOT
+be775d1b4 Fixed: wflow-core - when process hash variable, value is not decryp on formhashvariable and formbinderhashvariable. #9276 @7.0-SNAPSHOT.
+f4eab2b69 Fixed: wflow-commons - Performance - Cloud - I/O bottleneck in DynamicDataSource.getProfileProperties and DynamicDataSource.getProperty. @7.0-SNAPSHOT
+0abff0199 Fixed: wflow-consoleweb - Datalist Builder - Long column names can block the column canvas. @7.0-SNAPSHOT.
+21ebde681 Fixed: wflow-core  - When deploy process with process enhancement plugin, "More Settings" configurations will revert back to default for "Run Process" activity. #T275 @7.0-SNAPSHOT
+5d130315f Modified: wflow-core - Removed libtensorflow_jni_gpu depenedency due to not in used and huge file size. @7.0-SNAPSHOT.
+57332a934 Modified: wflow-jdbc - Security - Upgrade ojdbc6 12.1.0.2 to ojdbc8 21.1.0.0. @7.0-SNAPSHOT.
+99f743920 Modified: wflow-core - Upgrade org.tensorflow from 1.9.0 to 1.15.0. @7.0-SNAPSHOT
+5431b9b50 Fixed: wflow-consoleweb - Datasource & Profile: If user save as new profile, properties file created but empty. #T217 @7.0-SNAPSHOT.
+5c4be4b97 Modified: wflow-commons/core - Bump jsoup from 1.7.2 to 1.14.2. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.21
 =================
 95c547988 Fixed: wflow-consoleweb - Audit Trail - The paging number are not showing correct results when there is a filter value. GH #55 @8.0-SNAPSHOT

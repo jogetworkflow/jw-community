@@ -10,6 +10,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.FormRow;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -76,7 +77,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                     if (row != null && row.getCustomProperties() != null) {
                         String val = row.getProperty(columnName);
                         if (val != null) {
-                            return val;
+                            return StringUtil.decryptContent(val);
                         } else {
                             LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
                             return "";
