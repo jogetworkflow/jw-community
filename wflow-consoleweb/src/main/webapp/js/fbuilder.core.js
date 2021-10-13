@@ -9,8 +9,8 @@ FormBuilder = {
      */
     initBuilder: function (callback) {
         
-        $("#i18n-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.tooltip')+'" id="tooltip-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tooltip" data-cbuilder-action="switchView"><i class="lar la-question-circle"></i> </button>');
-        $("#usages-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.Table')+'" id="table-usage-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tableUsage" data-cbuilder-action="switchView"><i class="las la-table"></i> </button>');
+        $("#i18n-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.tooltip')+'" id="tooltip-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tooltip" data-cbuilder-action="switchView" data-view-control><i class="lar la-question-circle"></i> </button>');
+        $("#usages-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.Table')+'" id="table-usage-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tableUsage" data-cbuilder-action="switchView" data-view-control><i class="las la-table"></i> </button>');
         
         CustomBuilder.Builder.init({
             callbacks : {

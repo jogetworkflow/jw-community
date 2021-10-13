@@ -1644,7 +1644,7 @@ _CustomBuilder = {
         }
         $("body").removeClass(currentView+"-builder-view");
         $("body").removeClass("hide-tool");
-        
+        $("body").removeClass("view-control")
         $("[data-cbuilder-view]").removeClass("active-view active");
         $(".builder-view").hide();
         
@@ -1676,6 +1676,10 @@ _CustomBuilder = {
     
             if ($this.data("hide-tool") !== undefined) {
                 $("body").addClass("hide-tool");
+            }
+
+            if ($this.data("view-control") !== undefined) {
+                $("body").addClass("view-control");
             }
             
             $("#"+view+"View.builder-view").show();

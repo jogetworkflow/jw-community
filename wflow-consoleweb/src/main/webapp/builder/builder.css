@@ -222,6 +222,7 @@ body.right-panel-resizing #right-panel-resize-block{
     border-radius: 0.25rem !important; 
     margin-left: 0px;
 }
+#cbuilder.view-control #top-panel .light-tools,
 #cbuilder.hide-tool #top-panel .btn-group.tool{
     visibility: hidden
 }
