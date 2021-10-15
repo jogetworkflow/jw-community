@@ -6,6 +6,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListener;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 
 public class SessionFactoryCacheListener implements CacheEventListener {
 
@@ -28,12 +29,22 @@ public class SessionFactoryCacheListener implements CacheEventListener {
                 new Thread() {
                     @Override
                     public void run() {
-                        // delay close
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            // ignore
+                        // check for open sessions
+                        int retryCount = 0;
+                        int sleepDuration = 10000; // 10s
+                        Statistics stats = sf.getStatistics();
+                        long openSessionCount = stats.getSessionOpenCount() - stats.getSessionCloseCount();
+                        long retryLimit = openSessionCount * 60; // delay up to 10 minutes for each open session to prevent closing before transaction is completed
+                        while (openSessionCount > 0 && retryCount < retryLimit) {
+                            try {
+                                Thread.sleep(sleepDuration);
+                            } catch (InterruptedException ex) {
+                                // ignore
+                            }
+                            openSessionCount = stats.getSessionOpenCount() - stats.getSessionCloseCount();
+                            retryCount++;
                         }
+                        
                         // close session factory
                         sf.close();
                     }
