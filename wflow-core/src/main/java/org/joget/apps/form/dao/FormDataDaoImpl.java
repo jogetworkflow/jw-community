@@ -14,7 +14,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,11 +25,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import net.sf.ehcache.Cache;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
+import org.hibernate.InvalidMappingException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -68,7 +67,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -90,7 +88,25 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     private Cache formSessionFactoryCache;
     private Cache joinFormSessionFactoryCache;
     private Cache formPersistentClassCache;
-    private Document formRowDocument;
+    
+    private static final Document formRowDocument;
+    static {
+        InputStream is = null;
+        try {
+            is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
+            formRowDocument = XMLUtil.loadDocument(is);
+        } catch (Exception e) {
+            throw new HibernateException("Unable to load FormRow.hbm.xml", e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+    }
+       
     private static Set<String> cacheInProgress = new HashSet<String>();
     
     public FormDefinitionDao getFormDefinitionDao() {
@@ -844,22 +860,27 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
             Configuration configuration = null;
             if (pc == null) {
-                // locate entity hbm mapping file
-                String path = getFormMappingPath();
-                String filename = entityName + ".hbm.xml";
-                File mappingFile = new File(path, filename);
-                if (mappingFile.exists()) {
-                    // load existing mapping
-                    configuration = new Configuration().configure();
-                    configuration.addFile(mappingFile);
-                    configuration.buildMappings();
-                    pc = configuration.getClassMapping(entityName);
-                    if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
-                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                try {
+                    // locate entity hbm mapping file
+                    String path = getFormMappingPath();
+                    String filename = entityName + ".hbm.xml";
+                    File mappingFile = new File(path, filename);
+                    if (mappingFile.exists()) {
+                        // load existing mapping
+                        configuration = new Configuration().configure();
+                        configuration.addFile(mappingFile);
+                        configuration.buildMappings();
+                        pc = configuration.getClassMapping(entityName);
+                        if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                        }
+                        // save into cache
+                        formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
+                    } else {
+                        mappingFileExist = false;
                     }
-                    // save into cache
-                    formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
-                } else {
+                } catch(InvalidMappingException ime) {
+                    // could not read XML file
                     mappingFileExist = false;
                 }
             }
@@ -948,7 +969,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
         }
         
-        if (sf == null) {
+        if (sf == null || sf.isClosed()) {
             if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " create session factory");
             }
@@ -976,7 +997,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory found in cache");
             }
 
-            if (sf == null) {
+            if (sf == null || sf.isClosed()) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] create join session factory");
                 sf = createJoinSessionFactory(entities);
             }
@@ -1001,29 +1022,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
 
         // load default FormRow hbm xml
+        Document document;
         synchronized(this) {
-            if (formRowDocument == null) {
-                InputStream is = null;
-                try {
-                    is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
-                    formRowDocument = XMLUtil.loadDocument(is);
-                } catch (ParserConfigurationException e) {
-                    throw new HibernateException("Unable to load FormRow.hbm.xml", e);
-                } catch (SAXException e) {
-                    throw new HibernateException("Unable to load FormRow.hbm.xml", e);
-                } catch (IOException e) {
-                    throw new HibernateException("Unable to load FormRow.hbm.xml", e);
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException ex) {
-                        }
-                    }
-                }
-            }
+            document = (Document) formRowDocument.cloneNode(true);
         }
-        Document document = (Document)formRowDocument.cloneNode(true);
 
         // update entity-name
         NodeList classTags = document.getElementsByTagName("class");
@@ -1067,11 +1069,6 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String filename = entityName + ".hbm.xml";        
             File mappingFile = new File(path, filename);
             try {
-                // delete existing mapping file
-                if (mappingFile.exists()) {
-                    mappingFile.delete();
-                }
-
                 // save new mapping file
                 XMLUtil.saveDocument(document, mappingFile.getPath());
             } catch (TransformerException e) {
@@ -1120,6 +1117,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // build session factory
         final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
         SessionFactory sf = configuration.buildSessionFactory(sr);
+        sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory created");
 
         // update schema
@@ -1147,6 +1145,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // build session factory
         final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
         SessionFactory sf = configuration.buildSessionFactory(sr);
+        sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory created");
 
         // update schema
