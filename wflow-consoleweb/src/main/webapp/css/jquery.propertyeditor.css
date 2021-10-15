@@ -629,6 +629,10 @@ td.error .chosen-container, td.error input {
     padding:0px;
 }
 
+.property-editor-container .ace_editor {
+    overflow:visible;
+}
+
 .property-type-sortableselect .sorted_select_control{
     display:inline-block;
     vertical-align: top;
