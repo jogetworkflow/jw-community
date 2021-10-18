@@ -542,10 +542,15 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                 isHidden = false;
             } else {
                 boolean isParentHidden = false;
+                boolean isParentReadonly = false;
                 if (getParent() != null) {
                     isParentHidden = getParent().isHidden(formData);
+                    isParentReadonly = getParent().isReadonly(formData);
                 }
-                if (!isParentHidden) {
+                if (!isParentHidden && isParentReadonly) {
+                    //based on permission setting, if parent is readonly, all childs are readonly as well
+                    isHidden = false;
+                } else if (!isParentHidden) {
                     Map props = getProperties();
                     if (!Permission.DEFAULT.equals(getPermissionKey(formData))) {
                         Map rules = (Map) getProperty("permission_rules");
