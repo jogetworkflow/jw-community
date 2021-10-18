@@ -656,15 +656,15 @@ UserviewBuilder = {
                     self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
                 } else {
                     var self = CustomBuilder.Builder;
-                        
+                    
                     var id = "";
                     var params = UrlUtil.getUrlParams(window.location.search);
                     if (params !== undefined && params["menuId"] !== undefined) {
                         id = params["menuId"][0];
                         self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
-                    } else {
+                    } else if (!self.selectedEl) {
                         id = self.frameBody.find("#category-container li.menu:eq(0)").attr("id");
-                        UserviewBuilder.showMenuSnapshot(id);
+                        self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
                     }
                 }
             });
@@ -878,10 +878,10 @@ UserviewBuilder = {
      */
     renderUserview : function(element, elementObj, component, callback) {
         var html = '<div id="page">';
-        html += '<header class="navbar" data-cbuilder-classname="userview-header"><div class="navbar-inner"><div class="container-fluid"><div class="hi-trigger ma-trigger" id="sidebar-trigger"><div class="line-wrap"><div class="line top"></div><div class="line center"></div><div class="line bottom"></div></div></div>';
+        html += '<header class="navbar" data-cbuilder-id="userview-header" data-cbuilder-classname="userview-header"><div class="navbar-inner"><div class="container-fluid"><div class="hi-trigger ma-trigger" id="sidebar-trigger"><div class="line-wrap"><div class="line top"></div><div class="line center"></div><div class="line bottom"></div></div></div>';
         
         //header message
-        html += '<div id="header-message" class=""><div id="header-welcome-message" class="" data-cbuilder-classname="userview-welcome-message"><span id="welcomeMessage">'+elementObj.properties.welcomeMessage+'</span></div><div class="clearfix"></div></div>';
+        html += '<div id="header-message" class=""><div id="header-welcome-message" class="" data-cbuilder-id="userview-welcome-message" data-cbuilder-classname="userview-welcome-message"><span id="welcomeMessage">'+elementObj.properties.welcomeMessage+'</span></div><div class="clearfix"></div></div>';
         
         //home icon
         html += '<div class="nav-no-collapse header-nav"><ul class="nav pull-right"><li class=""><a class="btn" href="" title="Home"><i class="fa fa-home"></i></a></li>';
@@ -893,10 +893,10 @@ UserviewBuilder = {
         html += '<li class="shortcut-link dropdown"><a class="btn dropdown-toggle"><i class="fa fa-th-list white"></i></a></ul></div></div></div></header>';
         
         //sidebar
-        html += '<div id="main" class="container-fluid-full"><div class="row-fluid"><div id="sidebar" class="span2" data-cbuilder-classname="userview-sidebar">';
+        html += '<div id="main" class="container-fluid-full"><div class="row-fluid"><div id="sidebar" class="span2" data-cbuilder-id="userview-sidebar" data-cbuilder-classname="userview-sidebar">';
         
         //logo
-        html += '<div class="sidebar_brand"><div class="logo_container" data-cbuilder-classname="userview-brand-logo">';
+        html += '<div class="sidebar_brand"><div class="logo_container" data-cbuilder-id="userview-brand-logo" data-cbuilder-classname="userview-brand-logo">';
         if (elementObj.setting.properties.theme !== undefined) {
             var logoUrl = elementObj.setting.properties.theme.properties.logo;
             if (logoUrl !== undefined && logoUrl !== "") {
@@ -910,44 +910,44 @@ UserviewBuilder = {
         html += '</div>';
         
         //userview name
-        html += '<a href="*" id="header-link" class="" data-cbuilder-classname="userview-name"><span>'+elementObj.properties.name+'</span></a></div>';
+        html += '<a href="*" id="header-link" class="" data-cbuilder-id="userview-name" data-cbuilder-classname="userview-name"><span>'+elementObj.properties.name+'</span></a></div>';
         
         html += '<nav id="navigation" class="nav-collapse sidebar-nav">';
         
         //usermenu
         html += '<ul class="user-menu nav nav-tabs nav-stacked main-menu"><li class="mm-profile user-link toggled">';
-        html += '<a class="dropdown" data-cbuilder-classname="userview-usermenu" ><img class="gravatar" alt="gravatar" width="30" height="30" src="//www.gravatar.com/avatar/default?d=identicon"><span>Admin</span><small>email@company.com</small></a>';
+        html += '<a class="dropdown" data-cbuilder-id="userview-usermenu" data-cbuilder-classname="userview-usermenu" ><img class="gravatar" alt="gravatar" width="30" height="30" src="//www.gravatar.com/avatar/default?d=identicon"><span>Admin</span><small>email@company.com</small></a>';
         html += '<ul><li><a href=""><span><i class="fa fa-user"></i> '+get_cbuilder_msg('ubuilder.profile')+'</span></a></li><li><a href=""><span><i class="fas fa-sign-out-alt"></i>'+get_cbuilder_msg('ubuilder.logout')+'</span></a></li></ul></li></ul>';
         
         //category container
-        html += '<ul id="category-container" class="nav nav-tabs nav-stacked main-menu" data-cbuilder-classname="userview-categories" data-cbuilder-categories></ul></nav></div>';
+        html += '<ul id="category-container" class="nav nav-tabs nav-stacked main-menu" data-cbuilder-id="userview-categories" data-cbuilder-classname="userview-categories" data-cbuilder-categories></ul></nav></div>';
         
         html += '<div id="content" class="span10"><main>';
         
         //breadcrumb
-        html += '<ul class="breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
+        html += '<ul class="breadcrumb" data-cbuilder-id="userview-breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
         
-        html += '<div class="userview-body-content" data-cbuilder-classname="userview-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" data-cbuilder-classname data-cbuilder-uneditable data-cbuilder-unselectable class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
+        html += '<div class="userview-body-content" data-cbuilder-id="userview-content" data-cbuilder-classname="userview-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" data-cbuilder-classname data-cbuilder-uneditable data-cbuilder-unselectable class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
         html += '</main></div></div></div><div class="clearfix"></div>';
         
         //footer
-        html += '<footer class="" data-cbuilder-classname="userview-footer"><div id="footer-message"><p><span id="footerMessage">'+elementObj.properties.footerMessage+'</span></p></div></footer>';
+        html += '<footer class="" data-cbuilder-id="userview-footer" data-cbuilder-classname="userview-footer"><div id="footer-message"><p><span id="footerMessage">'+elementObj.properties.footerMessage+'</span></p></div></footer>';
         html += '</div>';
         
         var userviewElement = $(html);
         
         var combinedProperties = $.extend(true, {}, elementObj.properties, elementObj.setting.properties.theme.properties);
         
-        userviewElement.find('[data-cbuilder-classname="userview-header"]').data("data", {className: "userview-header", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-welcome-message"]').data("data", {className: "userview-welcome-message", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-sidebar"]').data("data", {className: "userview-sidebar", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-brand-logo"]').data("data", {className: "userview-brand-logo", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-usermenu"]').data("data", {className: "userview-usermenu", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-name"]').data("data", {className: "userview-name", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: combinedProperties, categories: elementObj.categories});
-        userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: combinedProperties});
-        userviewElement.find('[data-cbuilder-classname="userview-content"]').data("data", {className: "userview-content", properties: combinedProperties});
+        userviewElement.find('[data-cbuilder-classname="userview-header"]').data("data", {className: "userview-header", properties: $.extend(true, combinedProperties, {id : 'userview-header'})});
+        userviewElement.find('[data-cbuilder-classname="userview-welcome-message"]').data("data", {className: "userview-welcome-message", properties: $.extend(true, combinedProperties, {id : 'userview-welcome-message'})});
+        userviewElement.find('[data-cbuilder-classname="userview-sidebar"]').data("data", {className: "userview-sidebar", properties: $.extend(true, combinedProperties, {id : 'userview-sidebar'})});
+        userviewElement.find('[data-cbuilder-classname="userview-brand-logo"]').data("data", {className: "userview-brand-logo", properties: $.extend(true, combinedProperties, {id : 'userview-brand-logo'})});
+        userviewElement.find('[data-cbuilder-classname="userview-usermenu"]').data("data", {className: "userview-usermenu", properties: $.extend(true, combinedProperties, {id : 'userview-usermenu'})});
+        userviewElement.find('[data-cbuilder-classname="userview-name"]').data("data", {className: "userview-name", properties: $.extend(true, combinedProperties, {id : 'userview-name'})});
+        userviewElement.find('[data-cbuilder-classname="userview-categories"]').data("data", {className: "userview-categories", properties: $.extend(true, combinedProperties, {id : 'userview-categories'}), categories: elementObj.categories});
+        userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: $.extend(true, combinedProperties, {id : 'userview-breadcrumb'})});
+        userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: $.extend(true, combinedProperties, {id : 'userview-footer'})});
+        userviewElement.find('[data-cbuilder-classname="userview-content"]').data("data", {className: "userview-content", properties: $.extend(true, combinedProperties, {id : 'userview-content'})});
         
         userviewElement.attr("data-cbuilder-uneditable", "");
         userviewElement.attr("data-cbuilder-unselectable", "");
