@@ -239,6 +239,9 @@ body.rtl .dataList span.pagelinks{
         display: inline-block
     }
 }
+.dataList.no_export div.exportlinks {
+    display:none !important;
+}
 .dataList .exportlinks{
     text-align: right;
     margin: 10px 0;

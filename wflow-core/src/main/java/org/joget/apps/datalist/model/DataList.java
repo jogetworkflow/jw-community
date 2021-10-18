@@ -1070,6 +1070,24 @@ public class DataList {
         return css;
     }
     
+    public boolean getNoExport() {
+        boolean noExport = true;
+        if (getColumns() != null) {
+            for (DataListColumn column : getColumns()) {
+                boolean isExport = true;
+                if ((column.isHidden() && !"true".equalsIgnoreCase(column.getPropertyString("include_export")))
+                       || (!column.isHidden() && "true".equalsIgnoreCase(column.getPropertyString("exclude_export")))) {
+                    isExport = false;
+                }
+                if (isExport) {
+                    noExport = false;
+                    break;
+                }
+            }
+        }
+        return noExport;
+    }
+    
     protected static void generateStyle(Map<String, String> styles, Map<String, Object> props, String cssClass, String prefix) {
         String[] views = new String[]{"MOBILE_STYLE", "TABLET_STYLE", "STYLE"};
         
