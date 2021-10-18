@@ -526,162 +526,188 @@ PropertyEditor.Util = {
     },
     unbindDynamicOptionsEvent: function(element, page) {
         var control_id = element.data("control_id");
-        var control_field = element.data("control_field");
+        var control_fields = element.data("control_field").split(";");
         
-        var field = null;
-        if (page.editorObject !== undefined) {
-            var fields = page.editorObject.fields;
-            if (page.parentId !== "" && page.parentId !== undefined) {
-                var parentId = page.parentId.substring(1);
-                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
+        for (var i in control_fields) {
+            var control_field = control_fields[i];
+            var field = null;
+            if (page.editorObject !== undefined) {
+                var fields = page.editorObject.fields;
+                if (page.parentId !== "" && page.parentId !== undefined) {
+                    var parentId = page.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
                 }
+                field = fields[control_field];
+            } else if (page[control_field] !== undefined) {
+                field = page[control_field];
             }
-            field = fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
-        if (field !== null && field !== undefined) {
-            $(field.editor).off("change."+control_id);
+            if (field !== null && field !== undefined) {
+                $(field.editor).off("change."+control_id+"_"+field.id);
+            }
         }
     },
     bindDynamicOptionsEvent: function(element, page) {
         var control_id = element.data("control_id");
-        var control_field = element.data("control_field");
-        var controlVal = String(element.data("control_value"));
+        var control_fields = element.data("control_field").split(";");
+        var controlVals = String(element.data("control_value")).split(";");
         var isRegex = element.data("control_use_regex");
         
-        var field = null;
-        if (page.editorObject !== undefined) {
-            var fields = page.editorObject.fields;
-            if (page.parentId !== "" && page.parentId !== undefined) {
-                var parentId = page.parentId.substring(1);
-                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
+        for (var i in control_fields) {
+            var control_field = control_fields[i];
+            var controlVal = controlVals[i];
+        
+            var field = null;
+            if (page.editorObject !== undefined) {
+                var fields = page.editorObject.fields;
+                if (page.parentId !== "" && page.parentId !== undefined) {
+                    var parentId = page.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
                 }
+                field = fields[control_field];
+            } else if (page[control_field] !== undefined) {
+                field = page[control_field];
             }
-            field = fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
-        if (field !== null && field !== undefined) {
-            $(field.editor).on("change."+control_id, "[name=\"" + field.id + "\"]", function() {
-                var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
-                if (match) {
-                    element.show();
-                    element.removeClass("hidden");
-                    if (element.hasClass("property-editor-page")) {
-                        element.removeClass("property-page-hide");
-                        element.addClass("property-page-show");
+            if (field !== null && field !== undefined) {
+                $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
+                    var match;
+                    if (control_fields.length > 1) {
+                        match = PropertyEditor.Util.dynamicOptionsCheckValueMultiFields(element, page, element.data("control_field"), String(element.data("control_value")), isRegex);
+                    } else {        
+                        match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
+                    }
+                    if (match) {
+                        element.show();
+                        element.removeClass("hidden");
+                        if (element.hasClass("property-editor-page")) {
+                            element.removeClass("property-page-hide");
+                            element.addClass("property-page-show");
 
-                        element.find(".property-editor-property:not(.hidden)").each(function() {
-                            $(this).find("input, select, textarea, table").removeClass("hidden");
+                            element.find(".property-editor-property:not(.hidden)").each(function() {
+                                $(this).find("input, select, textarea, table").removeClass("hidden");
+                            });
+                        } else {
+                            element.find("input, select, textarea, table").removeClass("hidden");
+                        }
+                    } else {
+                        element.hide();
+                        element.addClass("hidden");
+                        element.find("input, select, textarea, table").addClass("hidden");
+                        if (element.hasClass("property-editor-page")) {
+                            element.addClass("property-page-hide");
+                            element.removeClass("property-page-show");
+                        }
+                    }
+                    element.find("input, select, textarea, table").trigger("change");
+                    if (page.properties !== undefined && page.properties.properties !== undefined) {
+                        $.each(page.properties.properties, function(i, property) {
+                            var type = property.propertyEditorObject;
+                            if (element.find("[name='" + type.id + "']").length > 0) {
+                                type.pageShown();
+                            }
                         });
                     } else {
-                        element.find("input, select, textarea, table").removeClass("hidden");
+                        $.each(page, function(i, property) {
+                            var type = property;
+                            if (element.find("[name='" + type.id + "']").length > 0) {
+                                type.pageShown();
+                            }
+                        });
                     }
-                } else {
-                    element.hide();
-                    element.addClass("hidden");
-                    element.find("input, select, textarea, table").addClass("hidden");
-                    if (element.hasClass("property-editor-page")) {
-                        element.addClass("property-page-hide");
-                        element.removeClass("property-page-show");
-                    }
-                }
-                element.find("input, select, textarea, table").trigger("change");
-                if (page.properties !== undefined && page.properties.properties !== undefined) {
-                    $.each(page.properties.properties, function(i, property) {
-                        var type = property.propertyEditorObject;
-                        if (element.find("[name='" + type.id + "']").length > 0) {
-                            type.pageShown();
-                        }
-                    });
-                } else {
-                    $.each(page, function(i, property) {
-                        var type = property;
-                        if (element.find("[name='" + type.id + "']").length > 0) {
-                            type.pageShown();
-                        }
-                    });
-                }
 
-                if (element.hasClass("property-editor-page")) {
-                    var current = $(page.editor).find('.property-page-show.current');
-                    if ($(current).length > 0) {
-                        var pageId = $(current).attr("id");
-                        page.editorObject.pages[pageId].refreshStepsIndicator();
-                        page.editorObject.pages[pageId].buttonPanel.refresh();
+                    if (element.hasClass("property-editor-page")) {
+                        var current = $(page.editor).find('.property-page-show.current');
+                        if ($(current).length > 0) {
+                            var pageId = $(current).attr("id");
+                            page.editorObject.pages[pageId].refreshStepsIndicator();
+                            page.editorObject.pages[pageId].buttonPanel.refresh();
+                        }
                     }
-                }
-                if (element.hasClass("page-button-custom") && page.editorObject.isSinglePageDisplay()) {
-                    $(field.editor).find('.property-editor-buttons').html('');
-                    var buttonPanel = $(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true);
-                    $(buttonPanel).find(".button_form").remove();
-                    $(field.editor).find('.property-editor-buttons').append(buttonPanel);
-                }
-            });
-            $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+                    if (element.hasClass("page-button-custom") && page.editorObject.isSinglePageDisplay()) {
+                        $(field.editor).find('.property-editor-buttons').html('');
+                        var buttonPanel = $(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true);
+                        $(buttonPanel).find(".button_form").remove();
+                        $(field.editor).find('.property-editor-buttons').append(buttonPanel);
+                    }
+                });
+                $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+            }
         }
     },
     unbindDynamicRequiredEvent: function(element, page) {
         var control_id = element.data("required_control_id");
-        var control_field = element.data("required_control_field");
+        var control_fields = element.data("required_control_field").split(";");
         
-        var field = null;
-        if (page.editorObject !== undefined) {
-            var fields = page.editorObject.fields;
-            if (page.parentId !== "" && page.parentId !== undefined) {
-                var parentId = page.parentId.substring(1);
-                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
+        for (var i in control_fields) {
+            var control_field = control_fields[i];
+            var field = null;
+            if (page.editorObject !== undefined) {
+                var fields = page.editorObject.fields;
+                if (page.parentId !== "" && page.parentId !== undefined) {
+                    var parentId = page.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
                 }
+
+                if (element.repeaterFields) {
+                    fields = $.extend({}, fields, element.repeaterFields);
+                }
+                field = fields[control_field];
+            } else if (page[control_field] !== undefined) {
+                field = page[control_field];
             }
-            
-            if (element.repeaterFields) {
-                fields = $.extend({}, fields, element.repeaterFields);
+            if (field !== null && field !== undefined) {
+                $(field.editor).off("change."+control_id+"_"+field.id);
             }
-            field = fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
-        if (field !== null && field !== undefined) {
-            $(field.editor).off("change."+control_id);
         }
     },
     bindDynamicRequiredEvent: function(element, page) {
         var control_id = element.data("required_control_id");
-        var control_field = element.data("required_control_field");
-        var controlVal = String(element.data("required_control_value"));
+        var control_fields = element.data("required_control_field").split(";");
+        var controlVals = String(element.data("required_control_value")).split(";");
         var isRegex = element.data("required_control_use_regex");
         
-        var field = null;
-        if (page.editorObject !== undefined) {
-            var fields = page.editorObject.fields;
-            if (page.parentId !== "" && page.parentId !== undefined) {
-                var parentId = page.parentId.substring(1);
-                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
-                }
-            }
+        for (var i in control_fields) {
+            var control_field = control_fields[i];
+            var controlVal = controlVals[i];
             
-            if (element.repeaterFields) {
-                fields = $.extend({}, fields, element.repeaterFields);
-            }
-            field = fields[control_field];
-        } else if (page[control_field] !== undefined) {
-            field = page[control_field];
-        }
-        if (field !== null && field !== undefined) {
-            $(field.editor).on("change."+control_id, "[name=\"" + field.id + "\"]", function() {
-                var match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
-                if (match) {
-                    element.find(".property-required").show();
-                } else {
-                    element.find(".property-required").hide();
+            var field = null;
+            if (page.editorObject !== undefined) {
+                var fields = page.editorObject.fields;
+                if (page.parentId !== "" && page.parentId !== undefined) {
+                    var parentId = page.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
+                    }
                 }
-            });
-            $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+
+                if (element.repeaterFields) {
+                    fields = $.extend({}, fields, element.repeaterFields);
+                }
+                field = fields[control_field];
+            } else if (page[control_field] !== undefined) {
+                field = page[control_field];
+            }
+            if (field !== null && field !== undefined) {
+                $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
+                    var match;
+                    if (control_fields.length > 1) {
+                        match = PropertyEditor.Util.dynamicOptionsCheckValueMultiFields(element, page, element.data("required_control_field"), String(element.data("required_control_value")), isRegex);
+                    } else {        
+                        match = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
+                    }
+                    if (match) {
+                        element.find(".property-required").show();
+                    } else {
+                        element.find(".property-required").hide();
+                    }
+                });
+                $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+            }
         }
     },
     unhandleOptionsField: function(field) {
@@ -1007,41 +1033,92 @@ PropertyEditor.Util = {
         var data = control.getData(true);
         return PropertyEditor.Util.internalDynamicOptionsCheckValue(data, control.properties.name, controlVal, isRegex);
     },
-    internalDynamicOptionsCheckValue: function(data, name, controlVal, isRegex) {
-        var values = new Array();
-        var value = data[name];
-
-        if (value !== undefined && value !== null && value["className"] !== undefined) {
-            values = [value["className"]];
-        }else if (value !== undefined && value !== null) {
-            values = value.split(";");
-        }
-
-        if (values.length === 0) {
-            values.push("");
-        }
-
-        for (var i = 0; i < values.length; i++) {
-            if (isRegex !== undefined && isRegex) {
-                var regex = new RegExp(controlVal);
-                var result = regex.exec(values[i]);
-                if ($.isArray(result)) {
-                    if (result.indexOf(values[i]) !== -1) {
-                        return true;
-                    }
-                } else {
-                    if (result === values[i]) {
-                        return true;
+    dynamicOptionsCheckValueMultiFields: function(element, page, controlFieldStr, controlValsStr, isRegex) {
+        var control_fields = controlFieldStr.split(";");
+        var controlVals = controlValsStr.split(";");
+        
+        var data = {};
+        for (var i in control_fields) {
+            var control_field = control_fields[i];
+            var controlVal = controlVals[i];
+            
+            var field = null;
+            if (page.editorObject !== undefined) {
+                var fields = page.editorObject.fields;
+                if (page.parentId !== "" && page.parentId !== undefined) {
+                    var parentId = page.parentId.substring(1);
+                    if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                        fields = fields[parentId].fields;
                     }
                 }
-            } else {
-                if (values[i] === controlVal) {
-                    return true;
+
+                if (element.repeaterFields) {
+                    fields = $.extend({}, fields, element.repeaterFields);
+                }
+                field = fields[control_field];
+            } else if (page[control_field] !== undefined) {
+                field = page[control_field];
+            }
+            if (field !== null && field !== undefined) {
+                if (!field.isHidden()) {
+                    data = $.extend(data, field.getData(true));
                 }
             }
         }
+        return PropertyEditor.Util.internalDynamicOptionsCheckValue(data, controlFieldStr, controlValsStr, isRegex);
+    },
+    internalDynamicOptionsCheckValue: function(data, nameStr, controlValStr, isRegex) {
+        var names = nameStr.split(";");
+        var controlVals = controlValStr.split(";");
+        
+        var checkResult = true;
+        for (var j in names) {
+            var r = false;
+            var name = names[j];
+            var controlVal = controlVals[j];
+            
+            var values = new Array();
+            var value = data[name];
 
-        return false;
+            if (value !== undefined && value !== null && value["className"] !== undefined) {
+                values = [value["className"]];
+            }else if (value !== undefined && value !== null) {
+                values = value.split(";");
+            }
+
+            if (values.length === 0) {
+                values.push("");
+            }
+        
+            for (var i = 0; i < values.length; i++) {
+                if (isRegex !== undefined && isRegex) {
+                    var regex = new RegExp(controlVal);
+                    var result = regex.exec(values[i]);
+                    if ($.isArray(result)) {
+                        if (result.indexOf(values[i]) !== -1) {
+                            r = true;
+                            break;
+                        }
+                    } else {
+                        if (result === values[i]) {
+                            r = true;
+                            break;
+                        }
+                    }
+                } else {
+                    if (values[i] === controlVal) {
+                        r = true;
+                        break;
+                    }
+                }
+            }
+            checkResult = checkResult && r;
+            if (!checkResult) {
+                break;
+            }
+        }
+
+        return checkResult;
     },
     supportHashField: function(field) {
         if (field.properties.supportHash !== undefined && field.properties.supportHash.toLowerCase() === "true") {

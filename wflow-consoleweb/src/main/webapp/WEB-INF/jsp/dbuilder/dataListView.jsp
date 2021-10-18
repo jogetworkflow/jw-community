@@ -12,7 +12,7 @@
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
 
-<div class="dataList <c:if test="${empty dataList.actions}">no_action</c:if>">
+<div class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/footable.min.js?build=<fmt:message key="build.number"/>" defer></script>

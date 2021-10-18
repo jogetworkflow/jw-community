@@ -651,6 +651,10 @@ body .subform-cell .subform-container.has-frame {
     margin-bottom: 15px;
 }
 
+.collapsible-show + .form-element.collapsible-show .subform-container.has-frame {
+    margin-top: 20px;
+}
+
 body .form-column > .subform-cell {
     margin-left: -0.5%;
     margin-right: -0.5%;
