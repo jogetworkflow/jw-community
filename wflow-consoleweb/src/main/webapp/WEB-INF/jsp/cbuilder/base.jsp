@@ -116,7 +116,7 @@
                                     <i class="las la-x-ray"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.permission"/>" id="permission-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="permission" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.permission"/>" id="permission-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="permission" data-cbuilder-action="switchView" data-view-control>
                                     <i class="la la-lock"></i>
                                 </button>
 
