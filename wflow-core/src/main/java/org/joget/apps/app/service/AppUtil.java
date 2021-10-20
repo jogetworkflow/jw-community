@@ -1247,7 +1247,7 @@ public class AppUtil implements ApplicationContextAware {
                                 File file = FileUtil.getFile(v, loadForm, primaryKey);
                                 if (file != null && file.exists()) {
                                     FileDataSource fds = new FileDataSource(file);
-                                    String name = MimeUtility.encodeText(file.getName());
+                                    String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
                                     if (embed != null && "true".equalsIgnoreCase(embed)) {
                                         email.embed(fds, name, name);
                                         inlineImages.add(file.getName());
@@ -1291,7 +1291,7 @@ public class AppUtil implements ApplicationContextAware {
                 String embed = (String) mapping.get("embed");
 
                 try {
-                    String name = MimeUtility.encodeText(fileName);
+                    String name = MimeUtility.encodeText(fileName, "UTF-8", null);
                     if (embed != null && "true".equalsIgnoreCase(embed)) {
                         if ("system".equals(type)) {
                             File file = new File(fileName);
