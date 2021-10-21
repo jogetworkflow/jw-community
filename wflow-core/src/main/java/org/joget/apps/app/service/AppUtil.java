@@ -1215,6 +1215,7 @@ public class AppUtil implements ApplicationContextAware {
     
     public static void emailAttachment(Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef, final HtmlEmail email) {
         //handle file attachment
+        System.setProperty("mail.mime.encodeparameters", "false");
         String formDefId = (String) properties.get("formDefId");
         Object[] fields = null;
         if (properties.get("fields") instanceof Object[]){
