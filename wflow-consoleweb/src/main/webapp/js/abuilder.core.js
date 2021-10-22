@@ -6,13 +6,6 @@ AppBuilder = {
     initBuilder: function (callback) {
         var self = AppBuilder;
         
-        $(".btn-group.tool").hide();
-        $("#i18n-btn").before('<a class="btn btn-light" title="'+self.msg('envVariable')+'" id="variables-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a>');
-        $("#i18n-btn").after('<a class="btn btn-light" title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView"><i class="lar la-file-image"></i> </a>\
-            <a class="btn btn-light" title="'+self.msg('pluginDefault')+'" id="plugin-default-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView"><i class="las la-plug"></i> </a>\
-            <a class="btn btn-light" title="'+self.msg('performance')+'" id="performance-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView"><i class="las la-tachometer-alt"></i> </a>\
-            <a class="btn btn-light" title="'+self.msg('logs')+'" id="logs-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="logViewer" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/logs" data-cbuilder-action="switchView"><i class="las la-scroll"></i> </a>');
-        
         $("#design-btn").attr("title", get_cbuilder_msg('abuilder.builders')).find("span").text(get_cbuilder_msg('abuilder.builders'));
         $("#design-btn").after('<a class="btn btn-light" title="'+self.msg('versions')+'" id="versions-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="versions" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/versioning" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-list-ol"></i> <span>'+self.msg('versions')+'</span></a>');
         
@@ -324,105 +317,6 @@ AppBuilder = {
         JPopup.show("exportAppDialog", CustomBuilder.contextPath + "/web/console/app"+CustomBuilder.appPath+"/exportconfig?", {}, "");
     },
     
-    logViewerViewBeforeClosed: function(view) {
-        view.html("");
-    },
-    
-    /*
-     * Custom implementation for i18n editor view
-     */
-    i18nViewInit : function(view) {
-        if ($(view).find(".i18n_table").length === 0) {
-            $(view).html("");
-            $(view).prepend('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
-            
-            var config = $.extend(true, {loadEnglish : true}, CustomBuilder.advancedToolsOptions);
-            
-            CustomBuilder.cachedAjax({
-                type: "POST",
-                url: CustomBuilder.contextPath + '/web/json/console/app' + CustomBuilder.appPath + '/message/keys',
-                dataType : "json",
-                beforeSend: function (request) {
-                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                },
-                success: function(response) {
-                    var labels = [];
-                    try {
-                        for (var i in response.data) {
-                            labels.push({key: response.data[i], label: response.data[i]});
-                        }
-                    } catch(err) {}
-                    
-                    I18nEditor.renderTable($(view), labels, config);
-                    I18nEditor.refresh($(view));
-                    
-                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus-circle"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
-                    $(view).find(".i18n_table .addNewKey").on("click", function(){
-                        AppBuilder.i18nAddNewKey($(this));
-                    });
-                    
-                    $(view).find(".dt-loading").remove();
-                }
-            });
-        }
-        setTimeout(function(){
-            I18nEditor.refresh($(view));
-        }, 5);
-    },
-    
-    /*
-     * Add new key to i18n table
-     */
-    i18nAddNewKey : function(button) {
-        $(button).hide();
-        $(button).after('<div class="newKeyContainer"><label><strong>'+get_cbuilder_msg('abuilder.addNewKey')+'</strong></label> <textarea></textarea> <a class="addNewKeySubmit btn btn-primary btn-sm">'+get_cbuilder_msg("cbuilder.ok")+'</a> <a class="addNewKeyCancel btn btn-secondary btn-sm">'+get_cbuilder_msg("cbuilder.cancel")+'</a></div>');
-        var container = $(button).next();
-        $(container).find(".addNewKeySubmit").on("click", function(){
-            var key = $(container).find("textarea").val();
-            
-            //check duplicate
-            var keysInput = $(button).closest("tbody").find("tr:not(.addnew) td.label textarea");
-            var found = false;
-            $(keysInput).each(function(){
-               var v = $(this).val();
-               if (v === key) {
-                   found = true;
-               }
-            });
-            if (!found) {
-                var cssClass = "odd";
-                if ($(button).closest("tr").next().hasClass("odd")) {
-                    cssClass = "even";
-                }
-                var newRow = $('<tr class="'+cssClass+'"><td class="label"><span>'+UI.escapeHTML(key)+'</span><textarea name="i18n_key_'+(keysInput.length +1)+'" style="display:none">'+key+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
-                var lang1 = $(button).closest(".i18n_table").find("select#lang1").val();
-                var lang2 = $(button).closest(".i18n_table").find("select#lang2").val();
-                if (lang1 !== "") {
-                    var relkey = key + "_" + lang1;
-                    newRow.find('td.lang1').html('<textarea></textarea>');
-                    newRow.find('td.lang1 textarea').attr("rel", relkey.toLowerCase());
-                }
-                if (lang2 !== "") {
-                    var relkey = key + "_" + lang2;
-                    newRow.find('td.lang2').html('<textarea></textarea>');
-                    newRow.find('td.lang2 textarea').attr("rel", relkey.toLowerCase());
-                }
-                
-                $(button).closest("tr").after(newRow);
-                
-                $(container).remove();
-                $(button).show();
-            } else {
-                $(container).find("textarea").css("border-color", "red");
-                $(container).find("textarea").before('<br><span style="color:red;">'+get_cbuilder_msg('abuilder.addNewKey.error')+'</span><br>');
-            }
-        });
-        $(container).find(".addNewKeyCancel").on("click", function(){
-            $(container).remove();
-            $(button).show();
-        });
-    },
-    
     /*
      * Convinient method to retrieve message
      */
@@ -451,7 +345,7 @@ AppBuilder = {
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
-        $("#variables-btn, #resources-btn, #plugin-default-btn, #performance-btn, #logs-btn, #unpublish-btn, #publish-btn, #versions-btn").remove();
+        $("#unpublish-btn, #publish-btn, #versions-btn").remove();
         $("#design-btn").attr("title", get_cbuilder_msg("cbuilder.design")).find("span").text(get_cbuilder_msg("cbuilder.design"));
         $("#export-btn").parent().remove();
         $('#save-btn, .btn-group.tool').show();

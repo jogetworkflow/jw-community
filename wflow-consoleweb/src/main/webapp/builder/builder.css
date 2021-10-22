@@ -1890,6 +1890,36 @@ body.quick-nav-shown #builder-quick-nav {
     text-align: center;
     cursor: pointer;
 }
+#builder-menu ul.app_tools {
+    text-align: center;
+    font-size: 18px;
+}
+#quick-nav-bar:not(.active) #builder-menu .seperator{
+    border-top: 1px solid #394249;
+}
+#builder-menu .seperator{
+    border-top: 1px solid #fff;
+    display: block;
+    margin: 10px 5px 15px;
+    opacity: 0.7;
+}
+#quick-nav-bar:not(.active) #builder-menu ul.app_tools li,
+#builder-menu ul.app_tools li {
+    padding: 2px;
+}
+#quick-nav-bar:not(.active) #builder-menu ul.app_tools li a {
+    color:#394249;
+}
+#builder-menu ul.app_tools li a{
+    color: #fff;
+    opacity: 0.7;
+}
+#builder-menu ul.app_tools li a:hover{
+    opacity: 1;
+}
+#builder-menu ul.app_tools li a.active-view{
+    color: #0069d9 !important;
+}
 #quick-nav-bar:not(.active) #builder-menu ul li > span {
     background: transparent !important;
 }

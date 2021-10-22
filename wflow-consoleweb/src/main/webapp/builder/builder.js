@@ -472,38 +472,7 @@ _CustomBuilder = {
                 CustomBuilder.initPermissionList(CustomBuilder.config.advanced_tools.permission.permission_plugin);
             }
             
-            $("[data-cbuilder-action]").each(function () {
-                var on = "click";
-                var target = $(this);
-                if (this.dataset.cbuilderOn)
-                    on = this.dataset.cbuilderOn;
-                
-                var action = CustomBuilder[this.dataset.cbuilderAction];
-                if (CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction] !== undefined && CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction] !== "") {
-                    var func = PropertyEditor.Util.getFunction(CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction]);
-                    if (func !== null && func !== undefined) {
-                        action = func;
-                    }
-                }
-                
-                var buttonAction = function(event) {
-                    if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
-                        action.call(this, event);
-                    }
-                    return false;
-                };
-                $(this).off(on);
-                $(this).on(on, buttonAction);
-                if (this.dataset.cbuilderShortcut)
-                {
-                    $(document).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                    $(document).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
-                    if (window.FrameDocument) {
-                        $(window.FrameDocument).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                        $(window.FrameDocument).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
-                    }
-                }
-            });
+            CustomBuilder.initBuilderActions();
             
             CustomBuilder.customAdvancedToolTabs();
             
@@ -535,6 +504,49 @@ _CustomBuilder = {
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
+    },
+    
+    
+    initBuilderActions : function(container) {
+        if (container === undefined) {
+            container = "body";
+        }
+        
+        $(container).find("[data-cbuilder-action]").each(function () {
+            var on = "click";
+            var target = $(this);
+            if (this.dataset.cbuilderOn)
+                on = this.dataset.cbuilderOn;
+
+            var action = CustomBuilder[this.dataset.cbuilderAction];
+            if (CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction] !== undefined && CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction] !== "") {
+                var func = PropertyEditor.Util.getFunction(CustomBuilder.config.builder.callbacks[this.dataset.cbuilderAction]);
+                if (func !== null && func !== undefined) {
+                    action = func;
+                }
+            }
+
+            var buttonAction = function(event) {
+                if ($("#quick-nav-bar").hasClass("active")) {
+                   $("#closeQuickNav").trigger("click");
+                }
+                if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
+                    action.call(this, event);
+                }
+                return false;
+            };
+            $(this).off(on);
+            $(this).on(on, buttonAction);
+            if (this.dataset.cbuilderShortcut)
+            {
+                $(document).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
+                $(document).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                if (window.FrameDocument) {
+                    $(window.FrameDocument).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
+                    $(window.FrameDocument).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                }
+            }
+        });
     },
     
     /*
@@ -2001,6 +2013,105 @@ _CustomBuilder = {
         $("body").removeClass("no-left-panel");
     },
     
+    logViewerViewBeforeClosed: function(view) {
+        view.html("");
+    },
+    
+    /*
+     * Custom implementation for app message editor view
+     */
+    appMessageViewInit : function(view) {
+        if ($(view).find(".i18n_table").length === 0) {
+            $(view).html("");
+            $(view).prepend('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
+            
+            var config = $.extend(true, {loadEnglish : true}, CustomBuilder.advancedToolsOptions);
+            
+            CustomBuilder.cachedAjax({
+                type: "POST",
+                url: CustomBuilder.contextPath + '/web/json/console/app' + CustomBuilder.appPath + '/message/keys',
+                dataType : "json",
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    var labels = [];
+                    try {
+                        for (var i in response.data) {
+                            labels.push({key: response.data[i], label: response.data[i]});
+                        }
+                    } catch(err) {}
+                    
+                    I18nEditor.renderTable($(view), labels, config);
+                    I18nEditor.refresh($(view));
+                    
+                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus-circle"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                    $(view).find(".i18n_table .addNewKey").on("click", function(){
+                        CustomBuilder.appMessageAddNewKey($(this));
+                    });
+                    
+                    $(view).find(".dt-loading").remove();
+                }
+            });
+        }
+        setTimeout(function(){
+            I18nEditor.refresh($(view));
+        }, 5);
+    },
+    
+    /*
+     * Add new key to i18n table
+     */
+    appMessageAddNewKey : function(button) {
+        $(button).hide();
+        $(button).after('<div class="newKeyContainer"><label><strong>'+get_cbuilder_msg('abuilder.addNewKey')+'</strong></label> <textarea></textarea> <a class="addNewKeySubmit btn btn-primary btn-sm">'+get_cbuilder_msg("cbuilder.ok")+'</a> <a class="addNewKeyCancel btn btn-secondary btn-sm">'+get_cbuilder_msg("cbuilder.cancel")+'</a></div>');
+        var container = $(button).next();
+        $(container).find(".addNewKeySubmit").on("click", function(){
+            var key = $(container).find("textarea").val();
+            
+            //check duplicate
+            var keysInput = $(button).closest("tbody").find("tr:not(.addnew) td.label textarea");
+            var found = false;
+            $(keysInput).each(function(){
+               var v = $(this).val();
+               if (v === key) {
+                   found = true;
+               }
+            });
+            if (!found) {
+                var cssClass = "odd";
+                if ($(button).closest("tr").next().hasClass("odd")) {
+                    cssClass = "even";
+                }
+                var newRow = $('<tr class="'+cssClass+'"><td class="label"><span>'+UI.escapeHTML(key)+'</span><textarea name="i18n_key_'+(keysInput.length +1)+'" style="display:none">'+key+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                var lang1 = $(button).closest(".i18n_table").find("select#lang1").val();
+                var lang2 = $(button).closest(".i18n_table").find("select#lang2").val();
+                if (lang1 !== "") {
+                    var relkey = key + "_" + lang1;
+                    newRow.find('td.lang1').html('<textarea></textarea>');
+                    newRow.find('td.lang1 textarea').attr("rel", relkey.toLowerCase());
+                }
+                if (lang2 !== "") {
+                    var relkey = key + "_" + lang2;
+                    newRow.find('td.lang2').html('<textarea></textarea>');
+                    newRow.find('td.lang2 textarea').attr("rel", relkey.toLowerCase());
+                }
+                
+                $(button).closest("tr").after(newRow);
+                
+                $(container).remove();
+                $(button).show();
+            } else {
+                $(container).find("textarea").css("border-color", "red");
+                $(container).find("textarea").before('<br><span style="color:red;">'+get_cbuilder_msg('abuilder.addNewKey.error')+'</span><br>');
+            }
+        });
+        $(container).find(".addNewKeyCancel").on("click", function(){
+            $(container).remove();
+            $(button).show();
+        });
+    },
+    
     /*
      * Search element in left panel when left panel search field keyup
      */
@@ -2447,6 +2558,7 @@ _CustomBuilder = {
     },
     
     renderBuilderMenu : function(data) {
+        $("#builder-menu > ul.app_tools, #builder-menu > .seperator").remove();
         $("#builder-menu > ul").html("");
         
         var container = $("#builder-menu > ul");
@@ -2469,6 +2581,18 @@ _CustomBuilder = {
             }
             container.append(li);
         }
+        
+        container.after('<span class="seperator"></span><ul class="app_tools"></ul>');
+        
+        var appTools = $("#builder-menu > ul.app_tools");
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.envVariable')+'" id="variables-btn" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView"><i class="lar la-file-image"></i> </a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.pluginDefault')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView"><i class="las la-plug"></i> </a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.performance')+'" id="performance-btn" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView"><i class="las la-tachometer-alt"></i> </a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.logs')+'" id="logs-btn" data-cbuilder-view="logViewer" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/logs" data-cbuilder-action="switchView"><i class="las la-scroll"></i> </a></li>');
+        
+        CustomBuilder.initBuilderActions(appTools);
 
         $("#builder-menu > ul > li.menu-" + CustomBuilder.builderType).addClass("active");
 

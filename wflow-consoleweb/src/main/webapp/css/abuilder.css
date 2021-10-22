@@ -35,6 +35,7 @@ body {--builder-left-panel-width: 0px !important;}
 #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/3 * 2) + 14px);}
 #builders > div:nth-child(n+5){border-top:1px solid #ccc; padding-top: 20px !important;}
 #cbuilder[data-browser="ie"] #builders > div {border-top:0px !important; padding-top: 0px !important;}
+#cbuilder .advanced-tools, #cbuilder .advanced-tools-toogle {display:none !important; }
 @media screen and (max-width:1290px) {
     #builders {grid-auto-rows: 200px;}
     #builders-seperator > span {left:calc((100% - 30px)/2 + 14px); right: auto;}

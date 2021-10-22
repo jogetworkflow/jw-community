@@ -63,8 +63,6 @@
                 "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
-                "logViewerViewBeforeClosed" : "AppBuilder.logViewerViewBeforeClosed",
-                "i18nViewInit" : "AppBuilder.i18nViewInit",
                 "exportApp" : "AppBuilder.exportApp"
             }
         },
@@ -86,10 +84,6 @@
             }
         },
         "msg" : {
-            'envVariable':'<ui:msgEscJS key="console.app.envVariable.common.label"/>',
-            'pluginDefault':'<ui:msgEscJS key="console.app.pluginDefault.common.label"/>',
-            'performance':'<ui:msgEscJS key="apm.performance"/>',
-            'logs':'<ui:msgEscJS key="console.log.title"/>',
             'versions':'<ui:msgEscJS key="console.app.common.label.versions"/>',
             'export':'<ui:msgEscJS key="console.app.export.label"/>',
             'publish':'<ui:msgEscJS key="console.app.version.label.publish"/>',
