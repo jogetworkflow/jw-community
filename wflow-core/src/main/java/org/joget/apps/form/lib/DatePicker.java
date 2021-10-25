@@ -410,7 +410,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                     dataFormat = UTC_DATEFORMAT;
                 }
                     
-                if (!displayFormat.equals(dataFormat)) {
+                if (!displayFormat.equals(dataFormat) || value.length() > displayFormat.length() + 5) { //or value has time value but format doesn't 
                     SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                     SimpleDateFormat display = new SimpleDateFormat(displayFormat);
                     if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {

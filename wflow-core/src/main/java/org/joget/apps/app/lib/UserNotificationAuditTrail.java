@@ -62,6 +62,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
         AuditTrail auditTrail = (AuditTrail) props.get("auditTrail");
         
         if (validation(auditTrail)) {
+            WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             String method = auditTrail.getMethod();
             Object[] args = auditTrail.getArgs();
             
@@ -75,10 +76,22 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                 users = new ArrayList<String> ();
                 users.add((String) args[3]);
                 activityInstanceId = (String) args[2];
+            } else if (method.equals("completeAssignmentAndReassign") && args.length == 5) {
+                users = new ArrayList<String> ();
+                users.add((String) args[3]);
+                
+                WorkflowActivity activity = workflowManager.getActivityById((String) args[2]);
+                activity = workflowManager.getActivityByProcess((String) args[1], activity.getActivityDefId());
+                activityInstanceId = activity.getId();
+            } else if (method.equals("activityStartAndAssignTo") && args.length == 4) {
+                users = new ArrayList<String> ();
+                users = Arrays.asList((String[]) args[2]);
+                
+                WorkflowActivity activity = workflowManager.getActivityByProcess((String) args[0], (String) args[1]);
+                activityInstanceId = activity.getId();
             }
             
             if (activityInstanceId != null && !activityInstanceId.isEmpty() && users != null) {
-                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
                 WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
                 LogUtil.info(UserNotificationAuditTrail.class.getName(), "Users to notify: " + users);
                 
@@ -323,7 +336,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
     protected boolean validation(AuditTrail auditTrail) {
         return auditTrail != null 
                 && (auditTrail.getMethod().equals("getDefaultAssignments")
-                || auditTrail.getMethod().equals("assignmentReassign"));
+                || auditTrail.getMethod().equals("assignmentReassign")
+                || auditTrail.getMethod().equals("activityStartAndAssignTo")
+                || auditTrail.getMethod().equals("completeAssignmentAndReassign"));
     }
     
     protected boolean excluded(String exclusion, WorkflowActivity activity) {

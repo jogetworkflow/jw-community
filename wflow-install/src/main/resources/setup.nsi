@@ -285,6 +285,9 @@ Function CheckUpgrade
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-9.0.54\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "9.0.54"  
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.72\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+    StrCpy $EXISTING_TOMCAT_VERSION "8.5.72"  
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.65\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "8.5.65"  
