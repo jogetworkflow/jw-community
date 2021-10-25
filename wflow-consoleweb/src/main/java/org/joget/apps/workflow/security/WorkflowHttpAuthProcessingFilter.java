@@ -150,7 +150,14 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 // logged in, but timed out
                 requiresAuth = true;
             }
-        } 
+        }
+        
+        if (!requiresAuth && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
+            User user = workflowUserManager.getCurrentUser();
+            if (user == null || user.getActive() == 0) {
+                requiresAuth = true;
+            }
+        }
         
         if (requiresAuth) {
             // generate new session to avoid session fixation vulnerability

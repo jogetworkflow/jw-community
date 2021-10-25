@@ -117,7 +117,7 @@ Oracle JDBC Driver:
 http://www.oracle.com/technetwork/licenses/distribution-license-152002.html
 
 Microsoft SQL JDBC Driver:
-http://msdn.microsoft.com/en-us/sqlserver/jj589698
+https://github.com/microsoft/mssql-jdbc/blob/dev/LICENSE
 
 WebSocket Server API
 https://oss.oracle.com/licenses/CDDL+GPL-1.1
