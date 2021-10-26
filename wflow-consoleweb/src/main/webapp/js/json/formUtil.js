@@ -163,14 +163,20 @@ FormUtil = {
                 var values = [];
                 
                 if (v['field'] !== "") {
-                    values = FormUtil.getValues(v['field'], element).join(";");
-                }
-            
-                if (values.length === 0 && v['defaultValue'] !== "") {
-                    values = v['defaultValue'];
+                    values = FormUtil.getValues(v['field'], element);
                 }
                 
-                queryString += encodeURIComponent(v['param']) + "=" + encodeURIComponent(values) + "&";
+                if (values.length === 0 && v['defaultValue'] !== "") {
+                    values = [v['defaultValue']];
+                }
+                
+                if (values.length === 0) {
+                    values = [""];
+                }
+                
+                for (var j in values) {
+                    queryString += encodeURIComponent(v['param']) + "=" + encodeURIComponent(values[j]) + "&";
+                }
             });
             
             if (queryString !== "") {
