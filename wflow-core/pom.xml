@@ -69,6 +69,16 @@
             <type>jar</type>
             <classifier>jdk15</classifier>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>displaytag</groupId>
@@ -90,6 +100,14 @@
                 <exclusion>
                     <groupId>com.lowagie</groupId>
                     <artifactId>itext</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
