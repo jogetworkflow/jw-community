@@ -338,10 +338,13 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             FormData formData = new FormData();
 
             String recordId = getRequestParameterString("recordId");
-            if (recordId != null && recordId.trim().length() == 0) {
+            if ((recordId == null || recordId.trim().length() == 0) && (getRequestParameterString(FormUtil.FORM_META_ORIGINAL_ID) != null && !getRequestParameterString(FormUtil.FORM_META_ORIGINAL_ID).isEmpty())) {
+                recordId = getRequestParameterString(FormUtil.FORM_META_ORIGINAL_ID);
+            } else {
                 recordId = null;
             }
 
+            formData.setPrimaryKeyValue(recordId);
             formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
@@ -354,6 +357,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                 viewProcess(startFormDef);
                 return;
             }
+            
+            formData.setPrimaryKeyValue(null);
             
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
