@@ -163,7 +163,11 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             // generate new session to avoid session fixation vulnerability
             if (session != null) {
                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
-                session.invalidate();
+                try {
+                    session.invalidate();
+                } catch (IllegalStateException ignored) {
+                    //session is already invalidated
+                }
                 session = request.getSession(true);
                 if (savedRequest != null) { 
                     new HttpSessionRequestCache().saveRequest(request, response);
