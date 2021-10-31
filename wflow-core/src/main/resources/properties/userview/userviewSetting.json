@@ -1,7 +1,14 @@
 [{
     title : '@@userview.userviewsetting.configLayout@@',
     helplink : '@@userview.userviewsetting.helplink@@',
-    properties : [{
+    properties : [
+    {
+        name: 'userviewName',
+        label: '@@console.userview.common.label.name@@',
+        required: 'true',
+        type: 'textfield'
+    },
+    {
         name: 'theme',
         label: '@@userview.userviewsetting.theme@@',
         control_field: 'userviewType',

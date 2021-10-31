@@ -547,6 +547,7 @@ UserviewBuilder = {
         d['setting'] = new Object();
         d.setting['className'] = "org.joget.apps.userview.model.UserviewSetting";
         d.setting['properties'] = new Array();
+        d.setting['properties']['userviewName'] = get_cbuilder_msg('ubuilder.userviewName');
         d['categories'] = new Array();
 
         CustomBuilder.data = d;
@@ -601,6 +602,9 @@ UserviewBuilder = {
             
             //update original json as well
             $('#cbuilder-json-original').val(CustomBuilder.json);
+        }
+        if (data.setting.properties['userviewName'] === undefined) {
+            data.setting.properties['userviewName'] = $('<div>'+data.properties['name']+'</div>').text();
         }
     },
     
@@ -788,14 +792,14 @@ UserviewBuilder = {
             CustomBuilder.data.properties.description = elementProperty.description;
             CustomBuilder.data.properties.footerMessage = elementProperty.footerMessage;
             CustomBuilder.data.properties.logoutText = elementProperty.logoutText;
-            CustomBuilder.data.properties.name = elementProperty.name;
+            CustomBuilder.data.properties.userviewName = elementProperty.userviewName;
             CustomBuilder.data.properties.welcomeMessage = elementProperty.welcomeMessage;
             
             var temp = $.extend({}, elementProperty);
             delete temp.description;
             delete temp.footerMessage;
             delete temp.logoutText;
-            delete temp.name;
+            delete temp.userviewName;
             delete temp.welcomeMessage;
             delete temp.id;
             

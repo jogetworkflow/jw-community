@@ -10,6 +10,7 @@
     },
     "setting": {
         "properties": {
+            "userviewName": "%s",
             "userviewDescription": "%s",
             "theme": {
                 "className": "%s", 

@@ -137,12 +137,7 @@ public class UserviewBuilderWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         
-        String name = StringUtil.stripAllHtmlTag(userviewService.getUserviewName(json));
-        if (name.length() > 255) {
-            name = name.substring(0, 255);
-        }
-        name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
-        userview.setName(name);
+        userview.setName(userviewService.getUserviewName(json));
         userview.setDescription(userviewService.getUserviewDescription(json));
         
         UserviewDefinition migratedUserview = userviewService.combinedUserviewDefinition(userview);

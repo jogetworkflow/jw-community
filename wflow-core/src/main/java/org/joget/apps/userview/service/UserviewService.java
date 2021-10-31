@@ -425,7 +425,23 @@ public class UserviewService {
     public String getUserviewName(String json) {
         try {
             JSONObject userviewObj = new JSONObject(json);
-            return PropertyUtil.getProperties(userviewObj.getJSONObject("properties")).get("name").toString();
+            JSONObject settingObj = userviewObj.getJSONObject("setting");
+            Object nameObj = PropertyUtil.getProperties(settingObj.getJSONObject("properties")).get("userviewName");
+            
+            String name = "";
+            if (nameObj == null) {
+                nameObj = PropertyUtil.getProperties(userviewObj.getJSONObject("properties")).get("name");
+            }
+            
+            if (nameObj != null) {
+                name = StringUtil.stripAllHtmlTag(nameObj.toString());
+                if (name.length() > 255) {
+                    name = name.substring(0, 255);
+                }
+                name = StringUtil.unescapeString(name,StringUtil.TYPE_HTML,null);
+            }
+            
+            return name;
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "Get Userview Name Error!!");
         }
