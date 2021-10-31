@@ -225,15 +225,18 @@ _CustomBuilder = {
         
         var args = {
             method : "GET",
-            headers: headers
+            headers: headers,
+            redirect : "follow"
         };
         
         PresenceUtil.message("leave");
+        var redirect = false;
         
         fetch(url, args)
         .then(function (response) {
-            if (response.url.indexOf("/web/login") !== -1) {
+            if (response.url.indexOf("/web/login") !== -1 || response.url.indexOf("org.joget.apps.ext.ConsoleWebPlugin") !== -1) {
                 document.location.href = url;
+                redirect = true;
                 return false;
             } else {
                 history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
@@ -241,6 +244,10 @@ _CustomBuilder = {
             }
         })
         .then(function (data) {
+            if (redirect) {
+                return;
+            }
+            
             $("#design-btn").trigger("click");
     
             CustomBuilder.updatePresenceIndicator();

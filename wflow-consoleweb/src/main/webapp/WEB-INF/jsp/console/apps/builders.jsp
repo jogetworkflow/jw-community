@@ -94,7 +94,8 @@
             'runProcess':'<ui:msgEscJS key="client.app.run.process.label.start"/>',
             'addNewMessage':'<ui:msgEscJS key="console.app.common.label.addnew"/>',
             'publishConfirm':'<ui:msgEscJS key="console.app.publish.label.confirm"/>',
-            'unpublishConfirm':'<ui:msgEscJS key="console.app.unpublish.label.confirm"/>'
+            'unpublishConfirm':'<ui:msgEscJS key="console.app.unpublish.label.confirm"/>',
+            'appInfo':'${appInfo}'
         }
     }
 </c:set>

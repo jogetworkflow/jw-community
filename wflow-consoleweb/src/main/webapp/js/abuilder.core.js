@@ -15,6 +15,11 @@ AppBuilder = {
         $('#save-btn').after(' <button class="btn btn-secondary btn-icon" style="display:none;" title="'+self.msg('unpublish')+'" id="unpublish-btn" data-cbuilder-action="unpublishApp"><i class="las la-cloud-download-alt"></i> <span>'+self.msg('unpublish')+'</span></button>\
             <button class="btn btn-primary btn-icon" style="display:none;" title="'+self.msg('publish')+'" id="publish-btn" data-cbuilder-action="publishApp"><i class="las la-cloud-upload-alt"></i> <span>'+self.msg('publish')+'</span></button>');
         
+        var appInfo = self.msg('appInfo');
+        if (appInfo !== "") {
+            $("#builderToolbar").append('<span id="app-info">'+appInfo+'</div>');
+        }
+        
         $("#builder_canvas").off("click", " li.item a.item-link");
         $("#builder_canvas").on("click", " li.item a.item-link", function(){
             CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
@@ -345,10 +350,11 @@ AppBuilder = {
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
-        $("#unpublish-btn, #publish-btn, #versions-btn").remove();
+        $("#unpublish-btn, #publish-btn, #versions-btn, #app-info").remove();
         $("#design-btn").attr("title", get_cbuilder_msg("cbuilder.design")).find("span").text(get_cbuilder_msg("cbuilder.design"));
         $("#export-btn").parent().remove();
-        $('#save-btn, .btn-group.tool').show();
+        $('#save-btn').show();
+        $('.btn-group.tool').css('display', 'inline-block');
         $("#builder_canvas").css("opacity", "1");
         $(window).off("resize.appbuilder");
     }
