@@ -126,12 +126,12 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             uri = uri.substring(0, pathParamIndex);
         } 
 
+        uri = uri.substring(request.getContextPath().length());
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if ((super.obtainUsername(request) != null)) {
             // request contains j_username, force authentication
             requiresAuth = true;
         } else if (us != null) {
-            uri = uri.substring(request.getContextPath().length());
             if (us.getAuthenticateAllApi() && uri.startsWith("/web/json/") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews") && isAnonymous) {
                 // authenticateAllApi flag is true, so force authentication for all json calls except for plugin, sso, and published userview calls
                 requiresAuth = true;
@@ -141,9 +141,10 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             }
         }
         
-        if (!requiresAuth && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
+        if (!requiresAuth && !uri.startsWith("/web/ulogin") && !uri.startsWith("/web/login") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
             User user = workflowUserManager.getCurrentUser();
             if (user == null || user.getActive() == 0) {
+                System.out.println(">>> " + uri);
                 requiresAuth = true;
             }
         }
