@@ -488,6 +488,7 @@ public class UserviewThemeProcesser {
                     + "        <!--[if !IE]><!--><div id=\"preview-label\">"+ResourceBundleUtil.getMessage("fbuilder.preview")+"</div><!--<![endif]-->        \n"
                     + "        <div style=\"display:none\" id=\"preview-form\">\n"
                     + "            <form id=\"preview\" action=\"\" method=\"post\">\n"
+                    + "                <input type=\"hidden\" name=\""+SecurityUtil.getCsrfTokenName()+"\" value=\"" + StringEscapeUtils.escapeHtml(SecurityUtil.getCsrfTokenValue(request)) + "\"/>\"/>\n"
                     + "                <input type=\"hidden\" name=\"json\" value=\"" + StringEscapeUtils.escapeHtml(userview.getParamString("json")) + "\"/>\"/>\n"
                     + "            </form>\n"
                     + "        </div>\n";
