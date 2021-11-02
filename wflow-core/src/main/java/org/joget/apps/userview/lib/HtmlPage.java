@@ -425,6 +425,9 @@ public class HtmlPage extends UserviewMenu {
             "}" +
             ".ql-editor .ql-align-right {" +
             "  text-align: right;" +
+            "}" +
+            ".ql-editor > p:first-child:empty {" +
+            "  display: none;" +
             "}</style>";
         
         return css;
