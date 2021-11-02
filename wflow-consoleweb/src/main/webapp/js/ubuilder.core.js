@@ -1923,6 +1923,32 @@ UserviewBuilder = {
             elementObj.properties.id = CustomBuilder.uuid();
         }
     },
+    
+    /*
+     * Show the builder preview view, called by switchView method
+     */
+    previewViewInit : function(view) {
+        var self = CustomBuilder.Builder;
+        
+        $(view).html('<div id="preview-iframe-wrapper"><iframe id="preview-iframe" name="preview-iframe" src="about:none"></iframe></div>');
+        
+        var viewport = $(".responsive-buttons button.active").data("view");
+	$(view).closest(".builder-view").addClass(viewport);
+        
+        
+        var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
+        if (menuId !== undefined && menuId !== "") {
+            menuId = "/" + menuId;
+        } else {
+            menuId = "";
+        }
+        
+        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
+        $('#cbuilder-preview').attr("target", "preview-iframe");
+        $('#cbuilder-preview').submit();
+        return false;
+    },
       
     /*
      * remove dynamically added items    

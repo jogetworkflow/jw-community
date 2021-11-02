@@ -90,7 +90,8 @@
                 "saveEditProperties" : "UserviewBuilder.saveEditProperties",
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties",
-                "getRuleObject" : "UserviewBuilder.getRuleObject"
+                "getRuleObject" : "UserviewBuilder.getRuleObject",
+                "previewViewInit" : "UserviewBuilder.previewViewInit"
             }
         },
         "advanced_tools" : {
