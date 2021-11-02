@@ -1518,7 +1518,7 @@ DatalistBuilder = {
             if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
                 action = elementObj.action.className;
                 if (DatalistBuilder.availableActions[action] !== undefined) {
-                    action = DatalistBuilder.availableActions[action];
+                    action = DatalistBuilder.availableActions[action].label;
                 } else {
                     action += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
                 }
