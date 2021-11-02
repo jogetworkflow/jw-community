@@ -141,7 +141,8 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             }
         }
         
-        if (!requiresAuth && !uri.startsWith("/web/ulogin") && !uri.startsWith("/web/login") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!requiresAuth && (!isAnonymous || (isAnonymous && auth != null)) && !uri.startsWith("/web/ulogin") && !uri.startsWith("/web/login") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
             User user = workflowUserManager.getCurrentUser();
             if (user == null || user.getActive() == 0) {
                 requiresAuth = true;

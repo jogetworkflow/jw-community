@@ -2,6 +2,29 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+CHANGES IN 7.0.24
+=================
+10bf1b552 Modified: wflow-core/wflow-commons - Upgrade Commons BeanUtils for CVE-2014-0114 and CVE-2019-10086 & Upgrade Commons Collections for CVE-2015-6420 and CVE-2017-15708. @7.0-SNAPSHOT
+274e109ef Modified: wflow-wfengine - Update bsh to 2.0b6 for vulnerability CVE-2016-2510. @7.0-SNAPSHOT
+8774079f3 Modified: wflow-commons - Upgraded Spring LDAP Core to 2.3.4.RELEASE and slf4j dependency to 1.7.25 @7.0-SNAPSHOT
+9d0413f87 Modified: wflow-consoleweb - Upgraded MySQL JDBC in Community Edition to 8.0.26 @7.0-SNAPSHOT
+430a2d7b6 Modified: wflow-commons - Upgraded Tomcat JDBC Pool Package to 8.5.72 @7.0-SNAPSHOT
+6f51a52f3 Modified: wflow-core - Upgraded commons-compress for CVE-2021-35515, CVE-2021-35517 and CVE-2021-36090 @7.0-SNAPSHOT
+307e06235 Modified: wflow-core - Update jstl to 1.2 for vulnerability CVE-2015-0254. @7.0-SNAPSHOT
+e3b1df704 Modified: wflow-commons - Update commons-email to 1.5 for vulnerability CVE-2017-9801. @7.0-SNAPSHOT
+86f5c26bb Fixed: wflow-core - Run Process Menu w/ "recordId" URL param - Readonly fields are deleted on form submission. @7.0-SNS
+a377b5051 Modified: wflow-core - Update POI to 4.1.2 for vulnerability CVE-2019-12415 & XML Beans to 3.1.0 for vulnerability CVE-2021-23926. @7.0-SNAPSHOT
+84e0fb9fd Modified: wflow-core - Form - JS utility method FormUtil.getFieldsAsUrlQueryString wrongly construct query string when field has multi values. T380 @7.0-SNAPSHOT
+479e2b99d Fixed: wflow-core - Process enhancement plugin - When reassignment, user notification plugin not working. @7.0-SNAPSHOT
+63eb5ff10 Modified: wflow-jdbc - Update mssql-jdbc to 9.4.0.jre8. @7.0-SNAPSHOT
+6d622b65d Fixed: wflow-consoleweb - Security - Force logout once an user is deleted or inactive. T373 @7.0-SNAPSHOT
+258f41a38 Fixed: wflow-core - EmailTool/ExportFormEmailTool - Mix of non-standard and standard format encoding on filename. #T372 @7.0-SNAPSHOT
+d18d68625 Fixed: wflow-core - Email Tools - file upload field as attachment in email, filename shows ?????.pdf if foreign language. @7.0-SNAPSHOT
+59437b29d Fixed: wflow-consoleweb - Protected (Readonly) App : Invalid Expiry Date and invalid expiry date error in server log. @7.0-SNAPSHOT
+6d927389a Modified: wflow-install - Upgraded to Apache Tomcat 8.5.72 @7.0-SNAPSHOT
+cb8c3edf8 Fixed: wflow-core - Date Picker - Formatting the display value to remove time when the display value has time value but format doesn't has time format. T361 @7.0-SNAPSHOT
+452d74ff5 Fixed: wflow-consoleweb - AJAX subform - Hide Details link is blocked by subform. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.23
 =================
 d42cfc2d4 Fixed: wflow-commons - Datasource profile properties not added into cache due to 727b692f @7.0-SNAPSHOT
