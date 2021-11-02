@@ -1663,7 +1663,7 @@ _CustomBuilder = {
         }
         $("body").removeClass(currentView+"-builder-view");
         $("body").removeClass("hide-tool");
-        $("body").removeClass("view-control")
+        $("body").removeClass("view-control");
         $("[data-cbuilder-view]").removeClass("active-view active");
         $(".builder-view").hide();
         
@@ -1705,10 +1705,6 @@ _CustomBuilder = {
             $(viewDiv).find('.builder-view-body').trigger("builder-view-show");
             $("body").addClass(view+"-builder-view");
         }
-        
-        //for builder
-        $("#element-highlight-box, #element-select-box").hide();
-        $("body").addClass("no-right-panel");
     },
     
     /*
@@ -1811,6 +1807,8 @@ _CustomBuilder = {
      * Show the permission editor view, called by switchView method
      */
     permissionViewInit : function(view) {
+        CustomBuilder.Builder.selectedElBeforePermission = CustomBuilder.Builder.selectedEl;
+        
         $("body").addClass("no-right-panel");
         view.html("");
         $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
@@ -1831,6 +1829,11 @@ _CustomBuilder = {
      */
     permissionViewBeforeClosed : function(view) {
         CustomBuilder.Builder.selectedEl = null;
+        
+        if (CustomBuilder.Builder.selectedElBeforePermission !== null) {
+            CustomBuilder.Builder.selectNode(CustomBuilder.Builder.selectedElBeforePermission);
+        }
+        
         $("#cbuilder-json").off("change.permissionViewInit");
     },
     
