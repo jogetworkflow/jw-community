@@ -91,7 +91,8 @@
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties",
                 "getRuleObject" : "UserviewBuilder.getRuleObject",
-                "previewViewInit" : "UserviewBuilder.previewViewInit"
+                "previewViewInit" : "UserviewBuilder.previewViewInit",
+                "previewViewBeforeClosed" : "UserviewBuilder.previewViewBeforeClosed"
             }
         },
         "advanced_tools" : {

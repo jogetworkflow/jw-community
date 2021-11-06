@@ -1938,6 +1938,10 @@ UserviewBuilder = {
         
         var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
         if (menuId !== undefined && menuId !== "") {
+            var menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+            if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
+                menuId = menuObj.properties.customId;
+            }
             menuId = "/" + menuId;
         } else {
             menuId = "";
@@ -1948,6 +1952,35 @@ UserviewBuilder = {
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();
         return false;
+    },
+    
+    /*
+     * Used to select back the corresponding menu if the preview page is changed
+     */
+    previewViewBeforeClosed : function(view) {
+        var self = CustomBuilder.Builder;
+        var url = document.getElementById("preview-iframe").contentWindow.location.href;
+        
+        var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
+        if (menuId !== undefined && menuId !== "") {
+            var menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+            if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
+                menuId = menuObj.properties.customId;
+            }
+        } else {
+            menuId = "";
+        }
+        
+        var currentId = url.substring(url.lastIndexOf('/') + 1);
+        if (currentId !== menuId) {
+            self.frameBody.find(".menu-container .menu").each(function(){
+                var menuObj = $(this).data("data");
+                if (menuObj.properties.id === currentId || menuObj.properties.customId === currentId) {
+                    CustomBuilder.Builder.selectNode($(this));
+                    return false;
+                }
+            });
+        }
     },
       
     /*
