@@ -1291,7 +1291,7 @@ body .ui-dialog {
     border: 0;
     border-radius: 3px !important;
     box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
-    z-index: 10001;
+    z-index: 10001 !important;
 }
 body .ui-dialog .ui-dialog-content {
     padding: 0 !important;
