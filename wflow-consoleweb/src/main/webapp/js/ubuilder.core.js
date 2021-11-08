@@ -1554,7 +1554,7 @@ UserviewBuilder = {
     /*
      * Retreive the menu page html based on json and generate a screenshot 
      */
-    generateMenuSnapshot : function(json, screenshotKey, callback) {
+    generateMenuSnapshot : function(json, screenshotKey, callback, retried) {
         var frameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
         var main = frameBody.find("#content > main");
         $.ajax({
@@ -1571,6 +1571,26 @@ UserviewBuilder = {
                 };
                 $(main).html(response);
                 UserviewBuilder.captureScreenshot($(main), response, frameBody, screenshotKey, callback);
+            },
+            error : function(request, status, error) {
+                if (status === 403 && (retried === undefined || retried === false)) {
+                    //refresh ConnectionManager token
+                    $.ajax({
+                        type: 'POST',
+                        url: UI.base + "/csrf",
+                        headers: {
+                            "FETCH-CSRF-TOKEN-PARAM":"true",
+                            "FETCH-CSRF-TOKEN":"true"
+                        },
+                        success: function (response) {
+                            var temp = response.split(":");
+                            ConnectionManager.tokenValue = temp[1];
+                            JPopup.tokenValue = temp[1];
+                            
+                            UserviewBuilder.generateMenuSnapshot(json, screenshotKey, callback, true);
+                        }
+                    });
+                }
             }
         });
     },

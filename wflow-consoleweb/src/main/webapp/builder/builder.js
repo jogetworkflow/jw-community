@@ -360,6 +360,7 @@ _CustomBuilder = {
         })
         .catch(function (error) {
             console.log(error);
+            document.location.href = url;
         });
     },
     
@@ -2373,6 +2374,32 @@ _CustomBuilder = {
 
             if (orgSuccess) {
                 orgSuccess(response);
+            }
+        };
+        
+        var retried = false;
+        var orgError = ajaxObj.error;
+        ajaxObj.error = function(request, status, error) {
+            if (status === 403 && !retried) {
+                //refresh ConnectionManager token
+                $.ajax({
+                    type: 'POST',
+                    url: UI.base + "/csrf",
+                    headers: {
+                        "FETCH-CSRF-TOKEN-PARAM":"true",
+                        "FETCH-CSRF-TOKEN":"true"
+                    },
+                    success: function (response) {
+                        var temp = response.split(":");
+                        ConnectionManager.tokenValue = temp[1];
+                        JPopup.tokenValue = temp[1];
+
+                        $.ajax(ajaxObj);
+                    }
+                });
+                retried = true;
+            } else if (orgError) {
+                orgError(request, status, error);
             }
         };
         

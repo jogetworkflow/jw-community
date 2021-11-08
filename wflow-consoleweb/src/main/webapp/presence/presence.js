@@ -269,7 +269,7 @@ PresenceUtil = {
             PresenceUtil.message("leave");
         });        
     },
-    message: function(action) {
+    message: function(action, retried) {
         $.ajax({
             type: 'POST',
             url: PresenceUtil.url,
@@ -281,7 +281,29 @@ PresenceUtil = {
             },
             error: function(request, status, error) {
                 console.warn("Presence error", error);
-                 document.location.href = document.location;
+                
+                if (status === 403 && (retried === undefined || retried === false)) {
+                    //refresh ConnectionManager token and retry
+                    $.ajax({
+                        type: 'POST',
+                        url: UI.base + "/csrf",
+                        headers: {
+                            "FETCH-CSRF-TOKEN-PARAM":"true",
+                            "FETCH-CSRF-TOKEN":"true"
+                        },
+                        success: function (response) {
+                            var temp = response.split(":");
+                            ConnectionManager.tokenValue = temp[1];
+                            JPopup.tokenValue = temp[1];
+
+                            PresenceUtil.message(action, true);
+                        },
+                        error: function(request, status, error) {
+                            console.warn("fail to refresh csrf token");
+                            document.location.href = document.location;
+                        }
+                    });
+                }
             }
         });
     }
