@@ -600,4 +600,16 @@ body.fixiosframe.stop-scrolling {
     #quickOverlayFrameDiv {
         height: calc(100% - 49px);
     }
+    #adminBar #environmentName{
+        height: 45px;
+        padding: 8px 45px;
+    }
+}
+@media screen and (max-width:400px) { 
+    #adminBar #environmentName{
+        max-width: 75px;
+        height: 45px;
+        padding: 0px;
+        color: #ff6100;
+    }
 }
