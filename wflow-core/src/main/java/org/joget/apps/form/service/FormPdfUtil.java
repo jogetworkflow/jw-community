@@ -335,6 +335,7 @@ public class FormPdfUtil {
         style += ".form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}";
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
         style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
+        style += ".th.grid-action-header, td.grid-action-cell { display: none !important;}";
         style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
         style += ".richtexteditor { float:left;}";
@@ -585,19 +586,21 @@ public class FormPdfUtil {
         
         //remove br
         html = html.replaceAll("</\\s?br>", "");
-        
+
         return html;
     }
     
     protected static String escapeSpecialCharacter(String html, String tag) {
         //convert label
-        Pattern pattern = Pattern.compile("<"+tag+"[^>]*>.*?</"+tag+">", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("<"+tag+"[^>]*>(.*?)</"+tag+">", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
         while (matcher.find()) {
-            String text = matcher.group(0);
+            String tagHtml = matcher.group(0);
+            String text = matcher.group(1);
             if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;") && !text.contains("&quot;") && !text.contains("&#")) {
                 String replace = StringEscapeUtils.escapeXml(text);
-                html = html.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
+                replace = tagHtml.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
+                html = html.replaceAll(StringUtil.escapeRegex(tagHtml), StringUtil.escapeRegex(replace));
             }
         }
         return html;
