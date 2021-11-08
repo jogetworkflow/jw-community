@@ -113,6 +113,12 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         } else {
             if (!getPropertyString("logo").isEmpty()) {
                 data.put("brand_logo", "<div class=\"logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>");
+            } else {
+                String classes = (String) data.get("sidebar_brand_classes");
+                if (classes == null) {
+                    classes = "";
+                }
+                data.put("sidebar_brand_classes", classes + " no_logo");
             }
 
             data.put("nav_before", UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/sidebar_brand.ftl"));
