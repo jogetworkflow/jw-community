@@ -906,6 +906,12 @@ body .flexigrid div.bDiv table tbody {
 a.guider_button:hover {
     color: #f0f0f0;
 }
+@media screen and (max-width:680px) { 
+    #main-action-help,
+    .guider {
+        display: none !important;
+    }
+}
 
 /* others */
 .align-center {
