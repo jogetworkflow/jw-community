@@ -335,7 +335,7 @@ public class FormPdfUtil {
         style += ".form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}";
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
         style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
-        style += ".th.grid-action-header, td.grid-action-cell { display: none !important;}";
+        style += "th.grid-action-header, td.grid-action-cell { display: none !important;}";
         style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
         style += ".richtexteditor { float:left;}";
