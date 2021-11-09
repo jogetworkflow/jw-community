@@ -512,16 +512,22 @@ PropertyEditor.Util = {
     },
     handleDynamicOptionsField: function(page) {
         if (page !== null && page !== undefined) {
+            var triggerChangeFields = [];
+            
             var pageContainer = $(page.editor).find("#" + page.id);
             if ($(pageContainer).is("[data-control_field][data-control_value]")) {
-                PropertyEditor.Util.bindDynamicOptionsEvent($(pageContainer), page);
+                PropertyEditor.Util.bindDynamicOptionsEvent($(pageContainer), page, triggerChangeFields);
             }
             $(pageContainer).find("[data-control_field][data-control_value]").each(function() {
-                PropertyEditor.Util.bindDynamicOptionsEvent($(this), page);
+                PropertyEditor.Util.bindDynamicOptionsEvent($(this), page, triggerChangeFields);
             });
             $(pageContainer).find("[data-required_control_field][data-required_control_value]").each(function() {
-                PropertyEditor.Util.bindDynamicRequiredEvent($(this), page);
+                PropertyEditor.Util.bindDynamicRequiredEvent($(this), page, triggerChangeFields);
             });
+            
+            for (var i in triggerChangeFields) {
+                $(page.editor).find("[name=\"" + triggerChangeFields[i] + "\"]").trigger("change");
+            }
         }
     },
     unbindDynamicOptionsEvent: function(element, page) {
@@ -548,7 +554,7 @@ PropertyEditor.Util = {
             }
         }
     },
-    bindDynamicOptionsEvent: function(element, page) {
+    bindDynamicOptionsEvent: function(element, page, triggerChangeFields) {
         var control_id = element.data("control_id");
         var control_fields = element.data("control_field").split(";");
         var controlVals = String(element.data("control_value")).split(";");
@@ -633,7 +639,10 @@ PropertyEditor.Util = {
                         $(field.editor).find('.property-editor-buttons').append(buttonPanel);
                     }
                 });
-                $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+                
+                if ($.inArray(field.id, triggerChangeFields) === -1) {
+                    triggerChangeFields.push(field.id);
+                }
             }
         }
     },
@@ -665,7 +674,7 @@ PropertyEditor.Util = {
             }
         }
     },
-    bindDynamicRequiredEvent: function(element, page) {
+    bindDynamicRequiredEvent: function(element, page, triggerChangeFields) {
         var control_id = element.data("required_control_id");
         var control_fields = element.data("required_control_field").split(";");
         var controlVals = String(element.data("required_control_value")).split(";");
@@ -706,7 +715,10 @@ PropertyEditor.Util = {
                         element.find(".property-required").hide();
                     }
                 });
-                $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
+                
+                if ($.inArray(field.id, triggerChangeFields) === -1) {
+                    triggerChangeFields.push(field.id);
+                }
             }
         }
     },
@@ -830,6 +842,31 @@ PropertyEditor.Util = {
                         }
                         targetValue = values.join(";");
                     } else {
+                        //it is element select, simply validate the properties fields before make ajax call to prevent unnecessary call
+                        if (childField === "className" && (targetValue === undefined || targetValue === null || targetValue[childField] === undefined || targetValue[childField] === null || targetValue[childField] === "")) {
+                            return;
+                        } else if (childField === "properties") {
+                            try {
+                                if (targetField.pageOptions.propertiesDefinition !== undefined && targetField.pageOptions.propertiesDefinition !== null) {
+                                    var errors = [];
+                                    $.each(targetField.pageOptions.propertiesDefinition, function(i, page) {
+                                        var p = page.propertyEditorObject;
+                                        p.validate(targetValue[childField], errors, true);
+                                    });
+                                    if (errors.length > 0) {
+                                        //there is required field leave empty, don't make the call until all field are filled.
+                                        return;
+                                    }
+                                } else {
+                                    //the element select field not ready yet, this call will trigger again later when it is ready.
+                                    return;
+                                }
+                            } catch (err) {
+                                //if error then don't make the ajax call
+                                return;
+                            }
+                        }
+                        
                         if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
                             targetValue = "";
                         } else if ($.type(targetValue[childField]) === "string") {
@@ -1000,7 +1037,11 @@ PropertyEditor.Util = {
                 selector = "[name=\"" + fields[fieldId].id + "\"]";
             }
             $(field.editor).on("change."+field.id, selector, function() {
-                PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
+                //delay to make sure show/hide dynamic field is complete before make an ajax call when there is a change event 
+                // (in case, the ajax call and the show/hide dynamic field is listen on same field)
+                setTimeout(function(){
+                    PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
+                }, 1);
             });
         }
     },
@@ -1341,6 +1382,23 @@ PropertyEditor.Util = {
             });
 
         });
+    },
+    /* used to replace jquery `$.when.apply($, deferreds).then` due to performance slowness. */
+    deferredHandler : function(deferreds, callback) {
+        var count = deferreds.length;
+        if (count > 0) {
+            for (var i in deferreds) {
+                deferreds[i].always(function() {
+                    count--;
+
+                    if (count === 0) {
+                        callback();
+                    }
+                });
+            }
+        } else {
+            callback();
+        }
     }
 };
 
@@ -1388,7 +1446,7 @@ PropertyEditor.Model.Editor.prototype = {
             dummy.resolve();
         }
 
-        $.when.apply($, deferreds).then(function() {
+        PropertyEditor.Util.deferredHandler(deferreds, function() {
             if (errors.length > 0) {
                 $(thisObj.editor).find(".property-input-error").closest(".property-editor-page").addClass("property-page-has-errors");
                
@@ -1875,7 +1933,7 @@ PropertyEditor.Model.Page.prototype = {
             dummy.resolve();
         }
 
-        $.when.apply($, deferreds).then(function() {
+        PropertyEditor.Util.deferredHandler(deferreds, function() {
             if (errors.length > 0) {
                 failureCallback(errors);
             } else if (successCallback !== undefined && successCallback !== null) {
@@ -2261,7 +2319,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     });
                 }
                 
-                $.when.apply($, deferreds).then(function() {
+                PropertyEditor.Util.deferredHandler(deferreds, function() {
                     if (errors.length > 0) {
                         page.editorObject.alertValidationErrors(errors);
                     } else {
@@ -8158,12 +8216,18 @@ PropertyEditor.Type.Repeater.prototype = {
             }
         });
         
+        var triggerChangeFields = [];
+            
         $(row).find("[data-control_field][data-control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicOptionsEvent($(this), fieldsHolder);
+            PropertyEditor.Util.bindDynamicOptionsEvent($(this), fieldsHolder, triggerChangeFields);
         });
         $(row).find("[data-required_control_field][data-required_control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicRequiredEvent($(this), fieldsHolder);
+            PropertyEditor.Util.bindDynamicRequiredEvent($(this), fieldsHolder, triggerChangeFields);
         });
+        
+        for (var i in triggerChangeFields) {
+            $(thisObj.editor).find("[name=\"" + triggerChangeFields[i] + "\"]").trigger("change");
+        }
         
         thisObj.updateBtn();
     },
@@ -8581,7 +8645,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== null && !$(anchor).hasClass("loading")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== "" && value !== undefined && value !== null && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
@@ -8590,7 +8654,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
 
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));
-            $.when.apply($, deferreds).then(function() {
+            PropertyEditor.Util.deferredHandler(deferreds, function() {
                 if (thisObj.pageOptions.propertiesDefinition !== undefined && thisObj.pageOptions.propertiesDefinition !== null) {
                     var parentId = thisObj.prefix + "_" + thisObj.properties.name;
                     var elementdata = ' elementid="' + thisObj.id + '" elementvalue="' + value + '"';
@@ -8708,7 +8772,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 d.resolve();
                 return d;
             }
-        
+            
             $.ajax({
                 url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
                 data: "value=" + encodeURIComponent(value),
@@ -9045,7 +9109,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         }
 
         //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== null && !$(anchor).hasClass("loading")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== "" && value !== undefined && value !== null && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
@@ -9054,7 +9118,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
 
             deferreds.push(thisObj.getElementProperties(row, value));
             deferreds.push(thisObj.getElementDefaultProperties(value));
-            $.when.apply($, deferreds).then(function() {
+            PropertyEditor.Util.deferredHandler(deferreds, function() {
                 if (!((typeof $(row).data("propertiesDefinition")) === "undefined") && $(row).data("propertiesDefinition") !== null) {
                     var parentId = thisObj.prefix + "_" + thisObj.properties.name;
                     var elementdata = ' elementid="' + id + '" elementvalue="' + value + '"';
