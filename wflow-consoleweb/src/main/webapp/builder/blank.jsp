@@ -1,4 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="org.joget.commons.util.SecurityUtil"%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -30,6 +32,12 @@
                 padding: 25px !important;
             }
         </style>
+        <script>
+            ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+            ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+            JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+            JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+        </script>
     </head>
     <body>
     </body>

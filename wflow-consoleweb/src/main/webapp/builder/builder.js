@@ -2380,7 +2380,7 @@ _CustomBuilder = {
         var retried = false;
         var orgError = ajaxObj.error;
         ajaxObj.error = function(request, status, error) {
-            if (status === 403 && !retried) {
+            if (request.status === 403 && !retried) {
                 //refresh ConnectionManager token
                 $.ajax({
                     type: 'POST',
@@ -2393,7 +2393,18 @@ _CustomBuilder = {
                         var temp = response.split(":");
                         ConnectionManager.tokenValue = temp[1];
                         JPopup.tokenValue = temp[1];
-
+                        
+                        $("iframe").each(function() {
+                            try {
+                                if (this.contentWindow.ConnectionManager !== undefined) {
+                                    this.contentWindow.ConnectionManager.tokenValue = temp[1];
+                                }
+                                if (this.contentWindow.JPopup !== undefined) {
+                                    this.contentWindow.JPopup.tokenValue = temp[1];
+                                }
+                            } catch(err) {}
+                        });
+                        
                         $.ajax(ajaxObj);
                     }
                 });

@@ -1573,7 +1573,7 @@ UserviewBuilder = {
                 UserviewBuilder.captureScreenshot($(main), response, frameBody, screenshotKey, callback);
             },
             error : function(request, status, error) {
-                if (status === 403 && (retried === undefined || retried === false)) {
+                if (request.status === 403 && (retried === undefined || retried === false)) {
                     //refresh ConnectionManager token
                     $.ajax({
                         type: 'POST',
@@ -1586,6 +1586,17 @@ UserviewBuilder = {
                             var temp = response.split(":");
                             ConnectionManager.tokenValue = temp[1];
                             JPopup.tokenValue = temp[1];
+                            
+                            $("iframe").each(function() {
+                                try {
+                                    if (this.contentWindow.ConnectionManager !== undefined) {
+                                        this.contentWindow.ConnectionManager.tokenValue = temp[1];
+                                    }
+                                    if (this.contentWindow.JPopup !== undefined) {
+                                        this.contentWindow.JPopup.tokenValue = temp[1];
+                                    }
+                                } catch(err) {}
+                            });
                             
                             UserviewBuilder.generateMenuSnapshot(json, screenshotKey, callback, true);
                         }
