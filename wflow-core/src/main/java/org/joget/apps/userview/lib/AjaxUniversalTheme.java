@@ -82,6 +82,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if (isAjaxContent(data)) {
             return "";
         } else {
+            if ("true".equals(getPropertyString("horizontal_menu"))) {
+                data.put("header_help_before", "<span class=\"grow\"></span>");
+            }
+            
             return super.getHeader(data);
         }
     }

@@ -111,7 +111,7 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 #content main > [class*="_menu_body"] > div > h2,
 #content main > [class*="-body-content"] > div > h3, 
 #content main > [class*="_menu_body"] > div > h3{
-    background-color: var(--theme-sidebar, var(--theme-color5,#fff));
+    background-color: var(--theme-sidebar, var(--theme-color4,#fff));
     color: var(--theme-color2, #ffffff);
     font-size: 20px; 
     border-radius: 3px 3px 0 0; 

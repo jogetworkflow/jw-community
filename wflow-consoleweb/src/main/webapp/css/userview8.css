@@ -639,6 +639,12 @@ body.horizontal_menu #header-info{
         overflow: visible;
         border-right: 0px;
     }
+    body.horizontal_menu header.navbar .grow {
+        flex-grow: 1;
+    }
+    body.horizontal_menu header.navbar #header-message{
+        padding-left: 25px; 
+    }
     body.horizontal_menu.inline_menu #sidebar {
         width: auto;
         display: inline-block;
@@ -675,7 +681,7 @@ body.horizontal_menu #header-info{
         padding: 0 10px;
     }
     body.horizontal_menu #sidebar #category-container{
-        padding-bottom: 0px;
+        padding-bottom: 1px;
     }
     body.horizontal_menu #sidebar .nav li {
         display: inline-block;
@@ -724,7 +730,8 @@ body.horizontal_menu #header-info{
         max-height: calc(100vh - 210px);
         overflow: hidden;
         min-width: 200px;
-        background: var(--theme-sidebar, var(--theme-color5,#fff));
+        background: var(--theme-sidebar, var(--theme-color4,#fff));
+        top: 46px;
     }
     body.horizontal_menu #sidebar .nav > li:not(.active) > a:hover, 
     body.horizontal_menu #sidebar .nav > li > ul > li > a:hover, 
@@ -1115,6 +1122,8 @@ form.form .btn {
     background-color: var(--theme-content-background, #ffffff);
     border: 1px solid rgba(0,0,0,.0625)!important;
     overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgb(0 0 0 / 41%);
 }
 #content .grid-stack-item-loading{
     opacity: 0.3;
@@ -1122,6 +1131,7 @@ form.form .btn {
 #content .grid-stack-item .grid-stack-item-header{
     background-color: var(--theme-content-background, #ffffff);
     padding: 10px;
+    border-radius: 10px 0px 0px;
 }
 #content .grid-stack-item .grid-stack-item-header h4{
     color: var(--theme-font-color, #72777a);

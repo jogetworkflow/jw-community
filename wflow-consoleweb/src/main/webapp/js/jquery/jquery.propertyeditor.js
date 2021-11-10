@@ -9862,7 +9862,7 @@ PropertyEditor.Type.ColorScheme.prototype = {
         "#e9e9e9;#FFFFFF;#BEBDAB;#565737;#2e7d32;#005005",
         "#e9e9e9;#FFFFFF;#D5C1B5;#755741;#827717;#524c00",
         "#e9e9e9;#FFFFFF;#D8BEBB;#AC2C2E;#8d6e63;#5f4339",
-        "#e9e9e9;#FFFFFF;#7FD1AE;#8F8D9E;#757575;#494949",
+        "#e9e9e9;#FFFFFF;#7FD1AE;#757575;#0f2f4a;#0072d2",
         "#e9e9e9;#FFFFFF;#A4BEB8;#006651;#546e7a;#29434e"
     ],
     getData: function(useDefault) {
