@@ -435,8 +435,8 @@ body.rtl .editor-cell select:not([class^="ui-"]):not([multiple]) {
   background-position: 0% 50%;
 }
 
-body select:not([class^="ui-"]):not([multiple]) option,
-body .editor-cell select:not([class^="ui-"]):not([multiple]) option {
+body select:not([class^="ui-"]):not([multiple]):not([size]) option,
+body .editor-cell select:not([class^="ui-"]):not([multiple]):not([size]) option {
     color: #000;
     background: #fff;
 }
