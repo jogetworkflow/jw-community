@@ -8027,7 +8027,7 @@ PropertyEditor.Type.Repeater.prototype = {
             $("#" + thisObj.id + "_input .error").removeClass("error");
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
-            $("#" + thisObj.id + "_input .repeater-row").each(function(i){
+            $("#" + thisObj.id + "_input > div > .repeater-rows-container > .repeater-row").each(function(i){
                 var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
                 if (deffers !== null && deffers !== undefined && deffers.length > 0) {
                     deferreds = $.merge(deferreds, deffers);
@@ -8064,7 +8064,7 @@ PropertyEditor.Type.Repeater.prototype = {
         if (this.isDataReady) {
             var rows = [];
             if (!field.isHidden()) {
-                $("#" + field.id + "_input .repeater-row").each(function(){
+                $("#" + field.id + "_input > div > .repeater-rows-container > .repeater-row").each(function(){
                     rows.push(field.getRow($(this)));
                 });
                 
@@ -8116,35 +8116,35 @@ PropertyEditor.Type.Repeater.prototype = {
         
         thisObj.loadValues();
         
-        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > div > .addrow", function(){
             thisObj.addRow(this);
         });
         
-        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > .deleterow", function(){
             thisObj.deleteRow(this);
         });
         
-        $("#" + thisObj.id + "_input").on("click", "a.expand", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > a.expand", function(){
             thisObj.expandRow(this);
         });
         
-        $("#" + thisObj.id + "_input").on("click", "a.compress", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > a.compress", function(){
             thisObj.compressRow(this);
         });
         
-        $("#" + thisObj.id + "_input").on("click", "a.expandAll", function(){
-            $("#" + thisObj.id + "_input .repeater-row a.expand").each(function() {
+        $("#" + thisObj.id + "_input").on("click", "> div > div > a.expandAll", function(){
+            $("#" + thisObj.id + "_input > div > .repeater-rows-container > .repeater-row > div > a.expand").each(function() {
                 thisObj.expandRow(this);
             });
         });
         
-        $("#" + thisObj.id + "_input").on("click", "a.collapseAll", function(){
-            $("#" + thisObj.id + "_input .repeater-row a.compress").each(function() {
+        $("#" + thisObj.id + "_input").on("click", "> div > div > a.collapseAll", function(){
+            $("#" + thisObj.id + "_input > div > .repeater-rows-container > .repeater-row > div > a.compress").each(function() {
                 thisObj.compressRow(this);
             });
         });
         
-        $("#" + thisObj.id + "_input .repeater-rows-container").sortable({
+        $("#" + thisObj.id + "_input > div > .repeater-rows-container").sortable({
             opacity: 0.8,
             axis: 'y',
             handle: '.sort',
@@ -8195,7 +8195,7 @@ PropertyEditor.Type.Repeater.prototype = {
         if (before !== null && before !== undefined && !$(before).hasClass("pebutton")) {
             $(before).closest(".repeater-row").before(row);
         } else {
-            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+            $("#" + thisObj.id + "_input").find("> div > .repeater-rows-container").append(row);
         }
         
         if (fields !== null && fields !== undefined) {
@@ -8292,12 +8292,12 @@ PropertyEditor.Type.Repeater.prototype = {
     updateBtn : function() {
         var thisObj = this;
         
-        if ($("#" + thisObj.id + "_input").find(".repeater-row.expand").length > 0) {
-            $("#" + thisObj.id + "_input a.collapseAll").show();
-            $("#" + thisObj.id + "_input a.expandAll").hide();
+        if ($("#" + thisObj.id + "_input > div > .repeater-rows-container").find("> .repeater-row.expand").length > 0) {
+            $("#" + thisObj.id + "_input > div > div > a.collapseAll").show();
+            $("#" + thisObj.id + "_input > div > div > a.expandAll").hide();
         } else {
-            $("#" + thisObj.id + "_input a.collapseAll").hide();
-            $("#" + thisObj.id + "_input a.expandAll").show();
+            $("#" + thisObj.id + "_input > div > div > a.collapseAll").hide();
+            $("#" + thisObj.id + "_input > div > div > a.expandAll").show();
         }
     }
 };
@@ -8829,7 +8829,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $("#" + thisObj.id + "_input .error").removeClass("error");
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
-            $("#" + thisObj.id + "_input .repeater-row").each(function(i){
+            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(i){
                 var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
                 if (deffers !== null && deffers !== undefined && deffers.length > 0) {
                     deferreds = $.merge(deferreds, deffers);
@@ -8860,7 +8860,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
 
         if (this.isDataReady) {
             var arr = [];
-            $("#" + this.id + "_input .repeater-row").each(function(){
+            $("#" + this.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var temp = thisObj.getRow($(this), useDefault);
                 if (temp !== null) {
                     arr.push(thisObj.getRow($(this), useDefault));
@@ -8919,15 +8919,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         thisObj.loadValues();
         
-        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
             thisObj.addRow(this);
         });
         
-        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
+        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
             thisObj.deleteRow(this);
         });
         
-        $("#" + thisObj.id + "_input .repeater-rows-container").sortable({
+        $("#" + thisObj.id + "_input  > div > .repeater-rows-container").sortable({
             opacity: 0.8,
             axis: 'y',
             handle: '.sort',
@@ -8996,7 +8996,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+bid+"\"]");
             $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
         } else {
-            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+            $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append(row);
             
             var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+thisObj.id+"\"]");
             $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
@@ -9718,7 +9718,7 @@ PropertyEditor.Type.CssStyle.prototype = {
                 properties[prefix + "-" + property] = "";
             }
             
-            $("#" + field.id + "_input .repeater-row").each(function(){
+            $("#" + field.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var fields = $(this).data("fields");
                 if (fields !== undefined) {
                     $.each(fields, function(i, property) {
@@ -9779,8 +9779,8 @@ PropertyEditor.Type.CssStyle.prototype = {
     addRow : function(name, value) {
         var thisObj = this;
         
-        if ($("#" + thisObj.id + "_input").find(".repeater-rows-container .repeater-row[data-property='"+name+"']").length > 0) {
-            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append($("#" + thisObj.id + "_input").find(".repeater-rows-container .repeater-row[data-property='"+name+"']"));
+        if ($("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container >  .repeater-row[data-property='"+name+"']").length > 0) {
+            $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append($("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container > .repeater-row[data-property='"+name+"']"));
             return;
         }
         
@@ -9808,7 +9808,7 @@ PropertyEditor.Type.CssStyle.prototype = {
         
         $(row).data("fields", fields);
         
-        $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+        $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append(row);
         
         if (fields !== null && fields !== undefined) {
             $.each(fields, function(i, property) {

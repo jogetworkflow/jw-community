@@ -841,7 +841,7 @@ td.error .chosen-container, td.error input {
 .repeater-row .inputs .property-editor-property{
     display:inline-block;
 }
-.repeater-row.compress .inputs .property-editor-property.default-hidden{
+.repeater-row.compress > .inputs > div > .property-editor-property.default-hidden{
     display: none;
 }
 .repeater-row .inputs .property-editor-property {
@@ -923,12 +923,12 @@ td.error .chosen-container, td.error input {
     top:0;
     bottom: 0;
 }
-.repeater-row .actions > a, .repeater-row .actions > i {
+.repeater-row > .actions > a, .repeater-row > .actions > i {
     position: absolute; 
     top:50%;
     left:50%;
     transform: translate(-50%, -50%);
-    color: #888;
+    color: #888 !important;
 }
 .repeater-row .actions:last-child {
     border-right: 0; 
@@ -962,6 +962,9 @@ td.error .chosen-container, td.error input {
 }
 .repeater-rows-container.css-styles .repeater-row .inputs .property-editor-property{
     width: 100%;
+}
+.pebutton {
+    color: #6c757d !important;
 }
 .btn.pebutton {
     display: inline-block;
@@ -1739,7 +1742,7 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
 }
-.editor-panel-mode .property-type-repeater .repeater-row.compress{
+.editor-panel-mode .property-type-repeater .repeater-row.compress > .inputs{
     max-height: 66px;
     overflow: hidden;
 }
