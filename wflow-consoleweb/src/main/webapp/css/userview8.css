@@ -758,6 +758,9 @@ body.horizontal_menu #header-info{
         padding-top: 10px;
         padding-bottom: 10px;
     }
+    body.horizontal_menu .menu-container li + li {
+        border-top: 1px dotted #fff;
+    }
 }
 @media (max-width: 767px) {
     #header-info > #header-name > .logo, #header-info > #header-name > #header-link, #header-message, .header-nav .user-link {

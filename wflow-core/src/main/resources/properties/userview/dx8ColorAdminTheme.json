@@ -54,14 +54,12 @@
     {
         name : 'dx8headerColor',
         label : '@@ubuilder.headerColor@@',
-        type : 'color',
-        value: '#FFFFFF'
+        type : 'color'
     },
     {
         name : 'dx8headerFontColor',
         label : '@@ubuilder.headerFontColor@@',
-        type : 'color',
-        value: '#000000'
+        type : 'color'
     },
     {
         name : 'dx8navBackground',
