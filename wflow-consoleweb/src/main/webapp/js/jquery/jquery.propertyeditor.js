@@ -537,7 +537,9 @@ PropertyEditor.Util = {
         for (var i in control_fields) {
             var control_field = control_fields[i];
             var field = null;
-            if (page.editorObject !== undefined) {
+            if (page.fields !== undefined && page.fields[control_field] !== undefined) {
+                field = page.fields[control_field];
+            } else if (page.editorObject !== undefined) {
                 var fields = page.editorObject.fields;
                 if (page.parentId !== "" && page.parentId !== undefined) {
                     var parentId = page.parentId.substring(1);
@@ -546,8 +548,6 @@ PropertyEditor.Util = {
                     }
                 }
                 field = fields[control_field];
-            } else if (page[control_field] !== undefined) {
-                field = page[control_field];
             }
             if (field !== null && field !== undefined) {
                 $(field.editor).off("change."+control_id+"_"+field.id);
@@ -565,7 +565,9 @@ PropertyEditor.Util = {
             var controlVal = controlVals[i];
         
             var field = null;
-            if (page.editorObject !== undefined) {
+            if (page.fields !== undefined && page.fields[control_field] !== undefined) {
+                field = page.fields[control_field];
+            } else if (page.editorObject !== undefined) {
                 var fields = page.editorObject.fields;
                 if (page.parentId !== "" && page.parentId !== undefined) {
                     var parentId = page.parentId.substring(1);
@@ -574,8 +576,6 @@ PropertyEditor.Util = {
                     }
                 }
                 field = fields[control_field];
-            } else if (page[control_field] !== undefined) {
-                field = page[control_field];
             }
             if (field !== null && field !== undefined) {
                 $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
@@ -653,7 +653,9 @@ PropertyEditor.Util = {
         for (var i in control_fields) {
             var control_field = control_fields[i];
             var field = null;
-            if (page.editorObject !== undefined) {
+            if (page.fields !== undefined && page.fields[control_field] !== undefined) {
+                field = page.fields[control_field];
+            } else if (page.editorObject !== undefined) {
                 var fields = page.editorObject.fields;
                 if (page.parentId !== "" && page.parentId !== undefined) {
                     var parentId = page.parentId.substring(1);
@@ -666,8 +668,6 @@ PropertyEditor.Util = {
                     fields = $.extend({}, fields, element.repeaterFields);
                 }
                 field = fields[control_field];
-            } else if (page[control_field] !== undefined) {
-                field = page[control_field];
             }
             if (field !== null && field !== undefined) {
                 $(field.editor).off("change."+control_id+"_"+field.id);
@@ -685,7 +685,9 @@ PropertyEditor.Util = {
             var controlVal = controlVals[i];
             
             var field = null;
-            if (page.editorObject !== undefined) {
+            if (page.fields !== undefined && page.fields[control_field] !== undefined) {
+                field = page.fields[control_field];
+            } else if (page.editorObject !== undefined) {
                 var fields = page.editorObject.fields;
                 if (page.parentId !== "" && page.parentId !== undefined) {
                     var parentId = page.parentId.substring(1);
@@ -698,8 +700,6 @@ PropertyEditor.Util = {
                     fields = $.extend({}, fields, element.repeaterFields);
                 }
                 field = fields[control_field];
-            } else if (page[control_field] !== undefined) {
-                field = page[control_field];
             }
             if (field !== null && field !== undefined) {
                 $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
@@ -8217,12 +8217,17 @@ PropertyEditor.Type.Repeater.prototype = {
         });
         
         var triggerChangeFields = [];
+        var page = {
+            fields : fieldsHolder,
+            editorObject : thisObj.editorObject,
+            parentId : thisObj.parentId
+        };
             
         $(row).find("[data-control_field][data-control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicOptionsEvent($(this), fieldsHolder, triggerChangeFields);
+            PropertyEditor.Util.bindDynamicOptionsEvent($(this), page, triggerChangeFields);
         });
         $(row).find("[data-required_control_field][data-required_control_value]").each(function() {
-            PropertyEditor.Util.bindDynamicRequiredEvent($(this), fieldsHolder, triggerChangeFields);
+            PropertyEditor.Util.bindDynamicRequiredEvent($(this), page, triggerChangeFields);
         });
         
         for (var i in triggerChangeFields) {
@@ -8286,6 +8291,21 @@ PropertyEditor.Type.Repeater.prototype = {
     },
     deleteRow : function(button) {
         var thisObj = this;
+        var row = $(button).closest(".repeater-row");
+        
+        var page = {
+            fields : $(row).data("fields"),
+            editorObject : thisObj.editorObject,
+            parentId : thisObj.parentId
+        };
+        
+        $(row).find("[data-control_field][data-control_value]").each(function() {
+            PropertyEditor.Util.unbindDynamicOptionsEvent($(this), page);
+        });
+        $(row).find("[data-required_control_field][data-required_control_value]").each(function() {
+            PropertyEditor.Util.unbindDynamicRequiredEvent($(this), page);
+        });
+        
         $(button).closest(".repeater-row").remove();
         thisObj.updateBtn();
     },
