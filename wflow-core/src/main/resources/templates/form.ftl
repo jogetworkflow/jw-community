@@ -35,12 +35,6 @@
                 if ($(form).find("[name='"+ ConnectionManager.tokenName +"']").length === 0) {
                     $(form).append('<input type="hidden" name="'+ConnectionManager.tokenName+'" value="'+ConnectionManager.tokenValue+'"/>');
                 }
-                if ($(form).attr("action").indexOf(ConnectionManager.tokenName) === -1) {
-                    var url = $(form).attr("action");
-                    url += ((url.indexOf("?") === -1)?"?":"&");
-                    url += url + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
-                    $(form).attr("action", url);
-                }
                 return true;
             });
 

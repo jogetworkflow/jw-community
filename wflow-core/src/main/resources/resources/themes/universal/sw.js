@@ -444,7 +444,6 @@ function sendFormDataToServer(savedRequest){
 
         getCsrfToken()
             .then(function(json){
-                var requestUrl = replaceUrlParam(savedRequest.url, 'OWASP_CSRFTOKEN', json.tokenValue);
                 var payload = savedRequest.payload;
 
                 var method = savedRequest.method;
