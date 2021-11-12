@@ -598,6 +598,14 @@ DatalistBuilder = {
                         }
                         return '<div></div>';
                     },
+                    'customPropertiesData' : function(props, elementObj, component) {
+                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
+                            props.datalist_type = 'filter';
+                        } else {
+                            props.datalist_type = 'column';
+                        }
+                        return props;
+                    },
                     'customPropertyOptions' : function(elementOptions, element, elementObj, paletteElement) {
                         if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
                             return DatalistBuilder.getFilterPropertiesDefinition();
@@ -900,6 +908,14 @@ DatalistBuilder = {
                                         }
                                     });
                                 }
+                            },
+                            'customPropertiesData' : function(props, elementObj, component) {
+                                if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
+                                    props.datalist_type = 'row_action';
+                                } else {
+                                    props.datalist_type = 'action';
+                                }
+                                return props;
                             },
                             'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
                                 if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
