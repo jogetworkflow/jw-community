@@ -9851,14 +9851,14 @@ PropertyEditor.Type.ColorScheme.prototype = {
     schemeOptions : [
         "#e9e9e9;#FFFFFF;#996C67;#291715;#c41c00;#ff5722",
         "#e9e9e9;#FFFFFF;#D3B8B9;#774B4E;#d32f2f;#9a0007",
-        "#e9e9e9;#FFFFFF;#C1ADB8;#654258;#c2185b;#8c0032",
-        "#e9e9e9;#FFFFFF;#90AECF;#3B4856;#7b1fa2;#4a0072",
+        "#e9e9e9;#FFFFFF;#C1ADB8;#2a8ffb;#2a0814;#e72a6d",
+        "#e9e9e9;#FFFFFF;#90AECF;#2a8ffb;#4a0072;#7b1fa2",
         "#e9e9e9;#FFFFFF;#7EB3C7;#334A52;#512da8;#140078",
         "#e9e9e9;#FFFFFF;#7AB5B7;#324B4C;#303f9f;#001970",
         "#e9e9e9;#FFFFFF;#AECAC7;#2C6562;#1976d2;#004ba0",
         "#e9e9e9;#FFFFFF;#AFA4DA;#312D4A;#304ffe;#0026ca",
         "#e9e9e9;#FFFFFF;#9debf9;#007252;#00838f;#005662",
-        "#e9e9e9;#FFFFFF;#AABEB2;#00652D;#00796b;#004c40",
+        "#e9e9e9;#FFFFFF;#AABEB2;#00652D;#014048;#ff5722",
         "#e9e9e9;#FFFFFF;#BEBDAB;#565737;#2e7d32;#005005",
         "#e9e9e9;#FFFFFF;#D5C1B5;#755741;#827717;#524c00",
         "#e9e9e9;#FFFFFF;#D8BEBB;#AC2C2E;#8d6e63;#5f4339",
@@ -9870,7 +9870,7 @@ PropertyEditor.Type.ColorScheme.prototype = {
         var data = new Object();
 
         if (this.isDataReady) {
-            if (field.properties.editColor !== undefined && field.properties.editColor.toLowerCase() === "true") {
+            if (field.properties.editColor === undefined || field.properties.editColor.toLowerCase() !== "false") {
                 var selector = $("#" + this.id + "_scheme_selector .color_values");
                 if ($(selector).length > 0) {
                     var value = selector.find('colorgroup').css("background-color");
@@ -9945,7 +9945,7 @@ PropertyEditor.Type.ColorScheme.prototype = {
         
         var selector = $("#" + this.id + "_scheme_selector");
         
-        if (thisObj.properties.editColor !== undefined && thisObj.properties.editColor.toLowerCase() === "true") {
+        if (thisObj.properties.editColor === undefined || thisObj.properties.editColor.toLowerCase() !== "false") {
             $(selector).find(".color-input input").colorPicker({
                 renderCallback: function($elm, toggled) {
                     if ($elm.val() !== "" && $elm.val() !== undefined) {
