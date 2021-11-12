@@ -759,7 +759,7 @@ body.horizontal_menu #header-info{
         padding-bottom: 10px;
     }
     body.horizontal_menu .menu-container li + li {
-        border-top: 1px dotted #fff;
+        border-top: 2px dotted #ffffff40;
     }
 }
 @media (max-width: 767px) {
