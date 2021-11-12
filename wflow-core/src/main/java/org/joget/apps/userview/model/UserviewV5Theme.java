@@ -224,6 +224,9 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String getLoginForm(Map<String, Object> data) {
+        if (!data.containsKey("loginBackground") && !getPropertyString("loginBackground").isEmpty()) {
+            data.put("loginBackground", "<style>#login{background-size:cover; background-image:url('"+getPropertyString("loginBackground")+"');}</style>");
+        }
         if (!data.containsKey("login_form_before")) {
             if (getProperties().containsKey("loginPageTop")) {
                 data.put("login_form_before", getPropertyString("loginPageTop"));

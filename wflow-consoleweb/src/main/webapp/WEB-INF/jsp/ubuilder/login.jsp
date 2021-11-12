@@ -74,6 +74,9 @@
 
         <style type="text/css">
             ${userview.setting.theme.css}
+            <c:if test="${!empty userview.setting.theme.properties.loginBackground}">
+                #login{background-size:cover; background-image:url('${userview.setting.theme.properties.loginBackground}');}
+            </c:if>
         </style>
     </head>
 

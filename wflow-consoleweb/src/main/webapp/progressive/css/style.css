@@ -1499,6 +1499,10 @@ body#welcome div#main {
 div#main {
     background: #f8f8f8;
 }
+#login div#main {
+    background: #f8f8f8a6;
+    height: 80vh;
+}
 body#welcome .breadcrumb {
     display: none;
 }

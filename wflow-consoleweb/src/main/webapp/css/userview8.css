@@ -951,10 +951,13 @@ body#login footer{
 body#login #page{
     padding-left: 0;
 }
+body#login {
+    background-color: var(--theme-header, #fff);
+    background-size: cover;
+}
 body#login #page #content{
     height: 100vh;
     padding: 0;
-    background-color: var(--theme-header, #fff);
 }
 body#login #page #content main{
     position: unset;

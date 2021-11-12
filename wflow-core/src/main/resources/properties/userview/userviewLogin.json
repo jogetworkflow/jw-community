@@ -1,6 +1,16 @@
 {
     title: '@@userview.userviewsetting.loginPage@@',
-    properties: [{
+    properties: [
+    {
+        name : 'loginBackground',
+        label : '@@theme.xadmin.loginBackground@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+    },
+    {
         name: 'loginPageTop',
         label: '@@userview.userviewsetting.loginPageTop@@',
         type: 'textarea',

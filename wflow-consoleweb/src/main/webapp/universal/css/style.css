@@ -354,6 +354,10 @@ header.navbar .dropdown-menu .dropdown-menu-title a.refresh {
     padding-top: 25px;
     min-height: 50vh;
 }
+#login div#main {
+    background: #f8f8f8a6;
+    height: 80vh;
+}
 body.has_home_banner #main{
     margin-top:0px;
 }

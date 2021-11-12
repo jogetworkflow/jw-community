@@ -1,3 +1,4 @@
+${loginBackground!}
 <#if userview.params.login_error?? >
     ${login_error_before!}
     <div id="main-body-message" class="${login_error_classes!}">
