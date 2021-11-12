@@ -8397,6 +8397,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
         if (this.value === null) {
             this.value = "";
         }
+        ace.config.set('loadWorkerFromBlob', false);
         this.codeeditor = ace.edit(this.id);
         this.codeeditor.setValue(this.value);
         this.codeeditor.getSession().setTabSize(4);
@@ -8404,7 +8405,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
             this.properties.theme = "textmate";
         }
         this.codeeditor.setTheme("ace/theme/" + this.properties.theme);
-        if (this.properties.mode !== undefined || this.properties.mode !== "") {
+        if (this.properties.mode !== undefined && this.properties.mode !== "") {
             this.codeeditor.getSession().setMode("ace/mode/" + this.properties.mode);
         }
         if (this.properties.check_syntax !== undefined && this.properties.check_syntax.toLowerCase() === "false") {
