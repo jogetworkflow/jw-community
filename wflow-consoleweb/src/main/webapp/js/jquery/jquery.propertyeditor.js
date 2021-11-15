@@ -578,6 +578,7 @@ PropertyEditor.Util = {
                 field = fields[control_field];
             }
             if (field !== null && field !== undefined) {
+                $(field.editor).off("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]");
                 $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
                     var match;
                     if (control_fields.length > 1) {
@@ -702,6 +703,7 @@ PropertyEditor.Util = {
                 field = fields[control_field];
             }
             if (field !== null && field !== undefined) {
+                $(field.editor).off("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]");
                 $(field.editor).on("change."+control_id+"_"+field.id, "[name=\"" + field.id + "\"]", function() {
                     var match;
                     if (control_fields.length > 1) {
@@ -766,6 +768,7 @@ PropertyEditor.Util = {
                 } else {
                     selector = "[name=\"" + fields[fieldId].id + "\"]";
                 }
+                $(field.editor).off("change."+field.id, selector);
                 $(field.editor).on("change."+field.id, selector, function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
                     field.handleAjaxOptions(field.properties.options, reference);
@@ -1036,6 +1039,7 @@ PropertyEditor.Util = {
             } else {
                 selector = "[name=\"" + fields[fieldId].id + "\"]";
             }
+            $(field.editor).off("change."+field.id, selector);
             $(field.editor).on("change."+field.id, selector, function() {
                 //delay to make sure show/hide dynamic field is complete before make an ajax call when there is a change event 
                 // (in case, the ajax call and the show/hide dynamic field is listen on same field)
@@ -1195,6 +1199,7 @@ PropertyEditor.Util = {
 
             }
 
+            $(propertyInput).find(".hashFieldAction").off("click");
             $(propertyInput).find(".hashFieldAction").on("click", toogleHashField);
         }
     },
@@ -1325,11 +1330,13 @@ PropertyEditor.Util = {
             });
             $(object).dialog("open");
 
+            $(object).off("click", ".app_resources li");
             $(object).on("click", ".app_resources li", function() {
                 field.selectResource($(this).find(".name").text());
                 $(object).dialog("close");
             });
 
+            $(object).find(".search_field input").off("keyup");
             $(object).find(".search_field input").on("keyup", function() {
                 var text = $(this).val();
                 if (text.length > 3) {
@@ -1518,7 +1525,8 @@ PropertyEditor.Model.Editor.prototype = {
         }
         
         if (this.options.simpleMode) {
-            $(this.editor).on("change", function() {
+            $(this.editor).off("change.simplemode");
+            $(this.editor).on("change.simplemode", function() {
                 if (thisObject.isChange()) {
                     thisObject.save();
                 }
@@ -1555,7 +1563,8 @@ PropertyEditor.Model.Editor.prototype = {
                 $(thisObject.editor).removeClass("pediting");
             });
         } else if ($(this.editor).hasClass("editor-panel-mode")) {
-            $(this.editor).on("change", "*", function() {
+            $(this.editor).off("change.panelmode");
+            $(this.editor).on("change.panelmode", "*", function() {
                 //dynamic styling class
                 setTimeout(function() {
                      thisObject.updateStylingClass();
@@ -2058,7 +2067,8 @@ PropertyEditor.Model.Page.prototype = {
         }
         PropertyEditor.Util.handleDynamicOptionsField(this);
         
-        $(this.editor).find("#" + this.id + " .property-editor-page-title").on("click", function(){
+        $(this.editor).find("#" + this.id + " .property-editor-page-title").off("click.collapsible");
+        $(this.editor).find("#" + this.id + " .property-editor-page-title").on("click.collapsible", function(){
             $(this).parent().toggleClass("collapsed");
         });
 
@@ -6036,6 +6046,7 @@ PropertyEditor.Type.IconTextField.prototype = {
         var field = this;
         var icon = $("#" + this.id).prev("span.icon");
         if (!$(icon).hasClass("attachedPicker")) {
+            $(icon).find("> span").off("click");
             $(icon).find("> span").on("click", function(e) {
                 e.stopPropagation();
                 
@@ -6059,6 +6070,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                         }
                     }
                     
+                    $(i).find("input.search").off("keyup");
                     $(i).find("input.search").on("keyup", function() {
                         var searchText = this.value.toLowerCase();
                         $(this).parent().find("li[data-search-terms]").each(function () {
@@ -6201,7 +6213,8 @@ PropertyEditor.Type.Number.prototype = {
             }
         };
         
-        selector.on("change", updateLayoutOnAutoValue);
+        selector.off("change.updatelayout");
+        selector.on("change.updatelayout", updateLayoutOnAutoValue);
         updateLayoutOnAutoValue();
     }
 };
@@ -6600,22 +6613,28 @@ PropertyEditor.Type.SelectBox.prototype = {
                     $(this).html(html);
                 });
             }
+            $("#" + this.id).off("chosen:showing_dropdown");
             $("#" + this.id).on("chosen:showing_dropdown", function(evt, chosen) {
                 updateLabel(chosen.chosen);
             });
+            $("#" + this.id).off("chosen:hiding_dropdown");
             $("#" + this.id).on("chosen:hiding_dropdown", function(evt, chosen) {
                 updateLabel(chosen.chosen);
             });
+            $("#" + this.id).off("chosen:ready");
             $("#" + this.id).on("chosen:ready", function(evt) {
                 updateLabel($("#" + field.id).data("chosen"));
             });
+            $("#" + this.id).off("chosen:updated");
             $("#" + this.id).on("chosen:updated", function(evt) {
                 updateLabel($("#" + field.id).data("chosen"));
             });
-            $("#" + this.id).on("change", function() {
+            $("#" + this.id).off("change.updatelabel");
+            $("#" + this.id).on("change.updatelabel", function() {
                 updateLabel($("#" + field.id).data("chosen"));
             });
             setTimeout(function() {
+                $($("#" + field.id).data("chosen").container).find(".chosen-search input").off("keydown");
                 $($("#" + field.id).data("chosen").container).find(".chosen-search input").on("keydown", function() {
                     setTimeout(function() { updateLabel($("#" + field.id).data("chosen")); }, 5);
                 });
@@ -6650,7 +6669,8 @@ PropertyEditor.Type.SelectBox.prototype = {
                     $("#" + field.id + "_input").removeClass("builder-link");
                 }
             };
-            $("#" + field.id).on("change", function() {
+            $("#" + field.id).off("change.builder");
+            $("#" + field.id).on("change.builder", function() {
                 updateLink();
             });
             updateLink();
@@ -7245,33 +7265,38 @@ PropertyEditor.Type.Grid.prototype = {
         });
 
         //add
-        $(table).next('a.property-type-grid-action-add').click(function() {
+        $(table).next('a.property-type-grid-action-add').off("click");
+        $(table).next('a.property-type-grid-action-add').on("click", function() {
             grid.gridActionAdd(this);
             return false;
         });
 
         //delete
-        $(table).find('a.property-type-grid-action-delete').click(function() {
+        $(table).find('a.property-type-grid-action-delete').off("click");
+        $(table).find('a.property-type-grid-action-delete').on("click", function() {
             grid.gridActionDelete(this);
             table.trigger("change");
             return false;
         });
 
         //move up
-        $(table).find('a.property-type-grid-action-moveup').click(function() {
+        $(table).find('a.property-type-grid-action-moveup').off("click");
+        $(table).find('a.property-type-grid-action-moveup').on("click", function() {
             grid.gridActionMoveUp(this);
             table.trigger("change");
             return false;
         });
 
         //move down
-        $(table).find('a.property-type-grid-action-movedown').click(function() {
+        $(table).find('a.property-type-grid-action-movedown').off("click");
+        $(table).find('a.property-type-grid-action-movedown').on("click", function() {
             grid.gridActionMoveDown(this);
             table.trigger("change");
             return false;
         });
         
-        $(table).on("click", ".property-type-grid-row-header", function(){
+        $(table).off("click.collapsible", ".property-type-grid-row-header");
+        $(table).on("click.collapsible", ".property-type-grid-row-header", function(){
             $(this).toggleClass("collapsed");
         });
 
@@ -7995,7 +8020,8 @@ PropertyEditor.Type.GridFixedRow.prototype = {
             });
         });
         
-        $(table).on("click", ".property-type-grid-row-header", function(){
+        $(table).off("click.collapsible", ".property-type-grid-row-header");
+        $(table).on("click.collapsible", ".property-type-grid-row-header", function(){
             $(this).toggleClass("collapsed");
         });
 
@@ -8116,28 +8142,34 @@ PropertyEditor.Type.Repeater.prototype = {
         
         thisObj.loadValues();
         
+        $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > div > .addrow");
         $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > div > .addrow", function(){
             thisObj.addRow(this);
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container > .repeater-row > div > .deleterow");
         $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > .deleterow", function(){
             thisObj.deleteRow(this);
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container > .repeater-row > div > a.expand");
         $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > a.expand", function(){
             thisObj.expandRow(this);
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container > .repeater-row > div > a.compress");
         $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > div > a.compress", function(){
             thisObj.compressRow(this);
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > div > a.expandAll");
         $("#" + thisObj.id + "_input").on("click", "> div > div > a.expandAll", function(){
             $("#" + thisObj.id + "_input > div > .repeater-rows-container > .repeater-row > div > a.expand").each(function() {
                 thisObj.expandRow(this);
             });
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > div > a.collapseAll");
         $("#" + thisObj.id + "_input").on("click", "> div > div > a.collapseAll", function(){
             $("#" + thisObj.id + "_input > div > .repeater-rows-container > .repeater-row > div > a.compress").each(function() {
                 thisObj.compressRow(this);
@@ -8381,7 +8413,8 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             convert_urls: false,
             valid_elements: '*[*]',
             setup: function(editor) {
-                editor.on('focus', function(e) {
+                editor.off('focus.tinymce');
+                editor.on('focus.tinymce', function(e) {
                     $(thisObj.editor).find(".property-description").hide();
                     var property = $("#" + e.target.id).parentsUntil(".property-editor-property-container", ".property-editor-property");
                     $(property).find(".property-description").show();
@@ -8940,10 +8973,12 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         thisObj.loadValues();
         
+        $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .deleterow");
         $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
             thisObj.addRow(this);
         });
         
+        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container .repeater-row > .actions > .deleterow");
         $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
             thisObj.deleteRow(this);
         });
@@ -9410,10 +9445,12 @@ PropertyEditor.Type.File.prototype = {
     },
     initScripting: function() {
         var thisObj = this;
+        $("#" + this.id).parent().find(".clearfile").off("click");
         $("#" + this.id).parent().find(".clearfile").on("click", function() {
             $("#" + thisObj.id).val("").trigger("focus").trigger("change");
         });
 
+        $("#" + this.id).parent().find(".choosefile").off("click");
         $("#" + this.id).parent().find(".choosefile").on("click", function() {
             $("#" + thisObj.id).trigger("focus");
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
@@ -9481,7 +9518,8 @@ PropertyEditor.Type.Image.prototype = {
     },
     initScripting: function() {
         var thisObj = this;
-        $("#" + this.id).on("change", function() {
+        $("#" + this.id).off("change.init");
+        $("#" + this.id).on("change.init", function() {
             var value = $(this).val();
             var path = value;
             if (path.indexOf("#appResource.") !== -1) {
@@ -9494,10 +9532,12 @@ PropertyEditor.Type.Image.prototype = {
             $(imagePlaceholder).css("background-image", "url('" + PropertyEditor.Util.escapeHtmlTag(path) + "')");
         });
 
+        $("#" + this.id).parent().find(".image-remove").off("click");
         $("#" + this.id).parent().find(".image-remove").on("click", function() {
             $("#" + thisObj.id).val("").trigger("focus").trigger("change");
         });
 
+        $("#" + this.id).parent().find(".choosefile").off("click");
         $("#" + this.id).parent().find(".choosefile").on("click", function() {
             $("#" + thisObj.id).trigger("focus");
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
@@ -9774,6 +9814,7 @@ PropertyEditor.Type.CssStyle.prototype = {
 
         thisObj.loadValues();
         
+        $("#" + thisObj.id + "_input").off("click", ".addrow");
         $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
             var style = $("#" + thisObj.id).find(".add_new_style").val();
             if (style !== "") {
@@ -9782,6 +9823,7 @@ PropertyEditor.Type.CssStyle.prototype = {
             }
         });
         
+        $("#" + thisObj.id + "_input").off("click", ".deleterow");
         $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
             thisObj.deleteRow(this);
         });
@@ -9979,6 +10021,7 @@ PropertyEditor.Type.ColorScheme.prototype = {
                 }
             }).off("focusin.tcp");
             
+            $(selector).find(".color_values").off("click", "colorgroup");
             $(selector).find(".color_values").on("click", "colorgroup", function(e){
                 if (!$(selector).hasClass("showEditor")) {
                     $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
@@ -9998,10 +10041,12 @@ PropertyEditor.Type.ColorScheme.prototype = {
             });
         }
         
+        $(selector).find(".color_values span.trigger").off("click");
         $(selector).find(".color_values span.trigger").on("click", function(){
             $(selector).toggleClass("showPicker");
         });
         
+        $(selector).find("li").off("click");
         $(selector).find("li").on("click", function(){
             $(selector).find("li").removeClass("selected");
             $(this).addClass("selected");
@@ -10056,7 +10101,8 @@ PropertyAssistant = {
             delete keys[e.which];
         });
         
-        $(element).on("focus", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor", function() {
+        $(element).off("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor");
+        $(element).on("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor", function() {
             var field = $(this);
             $(element).find(".assist_icon").remove();
             var container = $(field).parent();
@@ -10071,6 +10117,7 @@ PropertyAssistant = {
             
             $(container).append('<i class="assist_icon la la-user-astronaut" title="'+get_peditor_msg('peditor.assit')+'"></i>');
             
+            $(container).find(".assist_icon").off("click");
             $(container).find(".assist_icon").on("click", function(){
                 PropertyAssistant.currentField = field[0];
                 PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
@@ -10240,13 +10287,15 @@ PropertyAssistant = {
                         
                         $("#propertyAssistant .inputResultWrapper").append('<div class="traveller"><i class="up las la-caret-up"></i><i class="down las la-caret-down"></i><a class="optional_btn show" title="'+get_peditor_msg('peditor.showOptionalField')+'"><i class="las la-toggle-off"></i></a><a class="optional_btn hide" title="'+get_peditor_msg('peditor.hideOptionalField')+'"><i class="las la-toggle-on"></i></a></div>');
                         
+                        $("#propertyAssistant .traveller .up").off("click");
                         $("#propertyAssistant .traveller .up").on("click", function() {
                             PropertyAssistant.travelUp();
                         });
+                        $("#propertyAssistant .traveller .down").off("click");
                         $("#propertyAssistant .traveller .down").on("click", function() {
                             PropertyAssistant.travelDown();
                         });
-                        
+                        $("#propertyAssistant .optional_btn").off("click");
                         $("#propertyAssistant .optional_btn").on("click", function() {
                             PropertyAssistant.toogleOptionalField();
                         });
@@ -10264,10 +10313,12 @@ PropertyAssistant = {
                         
                         $("#assistantTypeSelector").chosen({ width: "54%", placeholder_text: '' });
                         
+                        $("#assistantTypeSelector").off("change");
                         $("#assistantTypeSelector").on("change", function(){
                             PropertyAssistant.changeType();
                         });
                         
+                        $('#propertyAssistant .inputWrapper').off('click', '[contenteditable]');
                         $('#propertyAssistant .inputWrapper').on('click', '[contenteditable]',  function(e) {
                             $("#propertyAssistant .inputOptionsWrapper .subOptionField").hide();
                             $('#propertyAssistant .inputWrapper [contenteditable]').prop("contenteditable", false);
@@ -10305,6 +10356,7 @@ PropertyAssistant = {
                             e.stopImmediatePropagation();
                         });
                         
+                        $('#propertyAssistant .clearBtn').off("click");
                         $('#propertyAssistant .clearBtn').on("click", function() {
                             if ($('#propertyAssistant .inputResult').find(".editing").length > 0) {
                                 if ($('#propertyAssistant .inputResult .editing').is("[placeholder]")) {
@@ -10318,6 +10370,7 @@ PropertyAssistant = {
                             return false;
                         });
                         
+                        $('#propertyAssistant .insertBtn').off("click");
                         $('#propertyAssistant .insertBtn').on("click", function() {
                             //check all require chunk are filled
                             if ($('#propertyAssistant [contenteditable][data-required]:empty').length > 0) {
@@ -10500,6 +10553,7 @@ PropertyAssistant = {
             $(container).find('.inputOptionsField').append('<input id="'+prefix+field.name+'" type="number" value=""/>');
         }
         
+        $(container).find('#'+prefix+field.name).off('change');
         $(container).find('#'+prefix+field.name).on('change', function(){
             var value = $(container).find('#'+prefix+field.name).val();
             var option = null;
@@ -10636,22 +10690,28 @@ PropertyAssistant = {
      * Make the selectbox show the value and label together
      */
     showOptionValue : function(select) {
+        $(select).off("chosen:showing_dropdown")
         $(select).on("chosen:showing_dropdown", function(evt, chosen) {
             PropertyAssistant.updateOptionLabel(chosen.chosen);
         });
+        $(select).off("chosen:hiding_dropdown");
         $(select).on("chosen:hiding_dropdown", function(evt, chosen) {
             PropertyAssistant.updateOptionLabel(chosen.chosen);
         });
+        $(select).off("chosen:ready");
         $(select).on("chosen:ready", function(evt) {
             PropertyAssistant.updateOptionLabel($(select).data("chosen"));
         });
+        $(select).off("chosen:updated");
         $(select).on("chosen:updated", function(evt) {
             PropertyAssistant.updateOptionLabel($(select).data("chosen"));
         });
+        $(select).off("change");
         $(select).on("change", function() {
             PropertyAssistant.updateOptionLabel($(select).data("chosen"));
         });
         setTimeout(function() {
+            $($(select).data("chosen").container).find(".chosen-search input").off("keydown");
             $($(select).data("chosen").container).find(".chosen-search input").on("keydown", function() {
                 setTimeout(function() { PropertyAssistant.updateOptionLabel($(select).data("chosen")); }, 5);
             });
