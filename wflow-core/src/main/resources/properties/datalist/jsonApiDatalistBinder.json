@@ -116,6 +116,7 @@
         "name" : "handlePaging",
         "label" : "@@datalist.jsonapibinder.autoHandlePagingAndSorting@@",
         "type" : "checkbox",
+        "value" : "true",       
         "options" : [{
             "value" : "true",
             "label" : ""

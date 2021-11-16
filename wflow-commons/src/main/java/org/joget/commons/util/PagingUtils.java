@@ -2,6 +2,7 @@ package org.joget.commons.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,9 +25,32 @@ public class PagingUtils {
      * @param desc 
      */
     public static void sort(List list, String field, Boolean desc) {
-        if (list != null && field != null) {
+        if (list != null && !list.isEmpty() && field != null) {
             boolean asc = (desc == null || !desc);
-            Collections.sort(list, new PropertyComparator(field, true, asc));
+            
+            if (list.get(0) instanceof Map) {
+                final String f = field;
+                final boolean d = desc;
+                Collections.sort(list, new Comparator<Map<String, Object>>() {
+                    public int compare(Map<String, Object> m1, Map<String, Object> m2) {
+                        if (m2.get(f) != null && m1.get(f) != null) {
+                            if (d) {
+                                return m2.get(f).toString().compareTo(m1.get(f).toString());
+                            } else {
+                                return m1.get(f).toString().compareTo(m2.get(f).toString());
+                            }
+                        } else if (d && m1.get(f) == null) {
+                            return 1;
+                        } else if (!d && m2.get(f) == null) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
+            } else {
+                Collections.sort(list, new PropertyComparator(field, true, asc));
+            }
         }
     }
     
