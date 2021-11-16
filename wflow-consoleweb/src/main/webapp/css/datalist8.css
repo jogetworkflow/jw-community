@@ -156,6 +156,8 @@
     font-size:0;
     color:transparent;
     white-space: break-spaces;
+    display:inline-block;
+    margin-top: 5px;
 }
 body.rtl .dataList span.pagelinks{
     text-align:right;
