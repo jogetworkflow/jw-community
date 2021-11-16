@@ -8411,6 +8411,8 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             image_advtab: true,
             relative_urls: false,
             convert_urls: false,
+            extended_valid_elements:"style,link[href|rel]",
+            custom_elements:"style,link,~link",
             valid_elements: '*[*]',
             setup: function(editor) {
                 editor.off('focus.tinymce');
