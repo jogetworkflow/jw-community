@@ -644,6 +644,7 @@ UserviewBuilder = {
                 
             UserviewBuilder.loadContentPage();
         } else {
+            $("[data-section='components-Page-Components']").hide();
             $(".drag-elements-sidepane li.component").hide();
             
             if(data.properties === null || data.properties === undefined){
@@ -679,6 +680,7 @@ UserviewBuilder = {
      * Load and render content page, called from UserviewBuilder.load
      */
     loadContentPage : function() {
+        $("[data-section='components-Page-Components']").show();
         $(".drag-elements-sidepane li.component").show();
         
         var menu = UserviewBuilder.selectedMenu;
