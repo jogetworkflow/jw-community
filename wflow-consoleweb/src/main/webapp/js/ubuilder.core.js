@@ -1133,7 +1133,7 @@ UserviewBuilder = {
      */
     renderUserviewPage : function(element, elementObj, component, callback) {
         var html = '<div id="page" class="page-content-wrapper" data-cbuilder-uneditable data-cbuilder-unselectable>';
-        html += '<div class="bar-var"><button id="save-content-btn" class="btn btn-primary"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button></div>';
+        html += '<div class="bar-var" ><button id="save-content-btn" class="btn btn-success" style="background-color:#35950d;"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button></div>';
         html += '<div id="content"><main data-cbuilder-elements></main></div>';
         html += '</div>';
         

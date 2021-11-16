@@ -40,7 +40,7 @@ body {
     position: fixed;
     top:0;
     width: 100%;
-    background: #fff;
+    background: #cdd4da;
     z-index: 1;
 }
 #page.page-content-wrapper main {
