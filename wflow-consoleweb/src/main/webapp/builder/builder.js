@@ -1396,8 +1396,7 @@ _CustomBuilder = {
             var d = $.Deferred();
             deferreds.push(d);
             $(this).data("deferred", d);
-            
-            $(this).find(".page-button-save").first().trigger("click");
+            $(this).find(".page-button-save").last().trigger("click");
         });
         
         $.when.apply($, deferreds).then(function() {
