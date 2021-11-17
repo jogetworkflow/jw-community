@@ -52,7 +52,7 @@ public abstract class PageComponent extends ExtElement {
         }
         return false;
     }
-
+    
     public String render() {
         if (isPermissionHidden()) {
             return "";
@@ -62,7 +62,7 @@ public abstract class PageComponent extends ExtElement {
         if (!getPropertyString("customId").isEmpty()) {
             id = getPropertyString("customId");
         }
-
+        
         Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
         
         String desktopStyle = styles.get("desktopStyle");
@@ -76,10 +76,11 @@ public abstract class PageComponent extends ExtElement {
         
         cssClass += " " + getName().replaceAll(" ", "_");
         
+        String styleClass = "builder-style-"+UuidGenerator.getInstance().getUuid();
+        String additionalStyle = getAdditionalStyle(styleClass);
         String builderStyles = "";
         
-        if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
-            String styleClass = "builder-style-"+UuidGenerator.getInstance().getUuid();
+        if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty() || !additionalStyle.isEmpty()) {
             cssClass += " " + styleClass;
 
             builderStyles = "<style id=\""+styleClass+"\">";
@@ -101,15 +102,58 @@ public abstract class PageComponent extends ExtElement {
             if (!hoverMobileStyle.isEmpty()) {
                 builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + hoverMobileStyle + "}} ";
             }
+            
+            builderStyles += additionalStyle;
+            
             builderStyles += "</style>";
         }
         
-        boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isPreview"));
+        boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isBuilder"));
         if (isBuilder) {
             attr += " data-cbuilder-classname=\"" + getClassName() + "\" data-cbuilder-id=\"" + getPropertyString("id") + "\" data-cbuilder-label=\"" + getI18nLabel() + "\"";
         }
 
         return render(id, cssClass, builderStyles, attr, isBuilder);
+    }
+    
+    public String getAdditionalStyle(String styleClass) {
+        return "";
+    }
+    
+    public String getAdditionalStyle(String styleClass, String selector, String prefix) {
+        Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(getProperties(), prefix);
+        
+        String desktopStyle = styles.get("desktopStyle");
+        String tabletStyle = styles.get("tabletStyle");
+        String mobileStyle = styles.get("mobileStyle");
+        String hoverDesktopStyle = styles.get("hoverDesktopStyle");
+        String hoverTabletStyle = styles.get("hoverTabletStyle");
+        String hoverMobileStyle = styles.get("hoverMobileStyle");
+        
+        String builderStyles = "";
+        
+        if (!desktopStyle.isEmpty() || !tabletStyle.isEmpty() || !mobileStyle.isEmpty()) {
+            if (!desktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + " " + selector + "{" + desktopStyle + "} ";
+            }
+            if (!tabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + " " + selector + "{" + tabletStyle + "}} ";
+            }
+            if (!mobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + " " + selector + "{" + mobileStyle + "}} ";
+            }
+            if (!hoverDesktopStyle.isEmpty()) {
+                builderStyles += "." + styleClass + " " + selector + ":hover{" + hoverDesktopStyle + "} ";
+            }
+            if (!hoverTabletStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 991px) {." + styleClass + " " + selector + ":hover{" + hoverTabletStyle + "}} ";
+            }
+            if (!hoverMobileStyle.isEmpty()) {
+                builderStyles += "@media (max-width: 767px) {." + styleClass + " " + selector + ":hover{" + hoverMobileStyle + "}} ";
+            }
+        }
+        
+        return builderStyles;
     }
     
     public String renderChildren() {

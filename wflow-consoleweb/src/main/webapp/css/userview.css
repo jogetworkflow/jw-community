@@ -387,6 +387,15 @@ input[type="button"], input[type="submit"], input[type="reset"] {
     padding-right: 0;
     box-sizing: border-box;
 }
+.accordion {
+    margin-bottom: 10px;
+}
+.accordion .card-header {
+    cursor: pointer;
+}
+.accordion .card-body {
+    padding: 10px;
+}
 @media (max-width: 767px) {
     .container-fluid.mobile-stack-columns .col{
         flex: 0 0 100% !important;

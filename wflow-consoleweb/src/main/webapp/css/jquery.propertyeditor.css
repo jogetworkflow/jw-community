@@ -281,6 +281,10 @@
     margin-right: 5px;
 }
 
+.property-type-hidden {
+    display:none !important;
+}
+
 .property-type-label .property-input label{
     padding-top: 8px;
 }

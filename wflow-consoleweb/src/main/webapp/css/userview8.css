@@ -1425,6 +1425,15 @@ body #ui-datepicker-div {
 .mCSB_scrollTools{
     width: 6px !important;
 }
+.accordion {
+    margin-bottom: 10px;
+}
+.accordion .card-header {
+    cursor: pointer;
+}
+.accordion .card-body {
+    padding: 10px;
+}
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }

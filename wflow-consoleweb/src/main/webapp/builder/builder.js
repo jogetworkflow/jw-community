@@ -4037,8 +4037,8 @@ _CustomBuilder.Builder = {
         if ($(event.target).closest('[data-cbuilder-select]').length > 0) {
             target = $(event.target).closest('[data-cbuilder-select]');
         }
-        if ($(event.target).is("[data-cbuilder-subelement]")) {
-            target = $(event.target).parent().closest("[data-cbuilder-classname]");
+        if ($(event.target).closest("[data-cbuilder-classname]").is("[data-cbuilder-subelement]")) {
+            target = $(event.target).closest("[data-cbuilder-classname]").parent().closest("[data-cbuilder-classname]");
         }
         
         if ($(target).length > 0 && !$(target).is(self.frameBody) && !$(target).is('[data-cbuilder-uneditable]')) {
@@ -4675,7 +4675,7 @@ _CustomBuilder.Builder = {
                 parent = $(self.dragElement).closest("body");
             }
             var data = parent.data("data");
-
+            
             var index = 0;
             var container = $(self.dragElement).parent().closest("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(elementObj, self.component)+"]");
             index = $(container).find("> *").index(self.dragElement);
@@ -4686,6 +4686,10 @@ _CustomBuilder.Builder = {
                 data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)] = parentDataArray;
             }
             parentDataArray.splice(index, 0, elementObj);
+            
+            if (self.component.builderTemplate.afterAddElement !== undefined) {
+                self.component.builderTemplate.afterAddElement(elementObj, self.component);
+            }
 
             self.renderElement(elementObj, self.dragElement, self.component, true, null, callback);
         }

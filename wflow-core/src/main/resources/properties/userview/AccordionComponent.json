@@ -1,0 +1,57 @@
+[
+    {
+        "title" : "@@userview.page.editAccordion@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "accordion",
+                "label" : "@@userview.page.accordion@@",
+                "type" : "repeater",
+                "fields" : [
+                    {
+                        "name" : "id",
+                        "label" : "id",
+                        "type" : "hidden"
+                    },
+                    {
+                        "name" : "label",
+                        "label" : "@@userview.htmlpage.label@@",
+                        "type" : "icon-textfield",
+                        "required" : "true"
+                    },
+                    {
+                        "name" : "customId",
+                        "label" : "@@userview.formmenu.customId@@",
+                        "type" : "textfield",
+                        "regex_validation" : "^[a-zA-Z0-9_]+$",
+                        "validation_message" : "@@userview.formmenu.invalidId@@"
+                    },
+                    {
+                        "name" : "expanded",
+                        "label" : "@@userview.page.accordion.expanded@@",
+                        "type" : "checkbox",
+                        "options" : [{
+                            "value" : "true",
+                            "label" : ""
+                        }]
+                    }
+                ]
+            }
+        ]
+    }
+]
+
+
+
+

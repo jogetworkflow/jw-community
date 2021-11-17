@@ -1,0 +1,59 @@
+{
+    "dragHtml" : "<div data-cbuilder-accordion-childs class=\"accordion\"><div class=\"card\"><a class=\"card-header\" id=\"headingOne\" data-toggle=\"collapse\" aria-expanded=\"true\" >@@userview.page.accordionItem@@</a><div class=\"card-body collapse show\" ></div></div></div>",
+    "childsContainerAttr" : "accordionChilds", 
+    "elements" : [],
+    "properties" : {
+        "accordion" : [
+            {
+                "label" : "@@userview.page.accordionItem@@"
+            }
+        ]
+    },
+    "afterAddElement" : function(elementObj, component) {
+        component.builderTemplate.updateProperties(null, elementObj, component);
+    },
+    "getStylePropertiesDefinition" : function(elementObj, component) {
+        var styleProps = $.extend(true, [], this.stylePropertiesDefinition);
+        styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("header-", "@@userview.page.accordionHeaderStyling@@ ")[0]);
+        styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("body-", "@@userview.page.accordionBodyStyling@@ ")[0]);
+        styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("card-", "@@userview.page.accordionCardStyling@@ ")[0]);
+        return styleProps;
+    },
+    "updateProperties" : function(element, elementObj, component) {
+        var propAccordions = elementObj.properties.accordion;
+        var accordions = elementObj.elements;
+        
+        var accordionsMap = {};
+        if (accordions !== undefined) {
+            for (var i = 0; i < accordions.length; i++) {
+                accordionsMap[accordions[i].properties['id']] = accordions[i].elements;
+            }
+        }
+        
+        var newElements = [];
+        for (var i = 0; i < propAccordions.length; i++) {
+            var o = {
+                "className" : "org.joget.apps.userview.lib.component.AccordionChildComponent",
+                "properties" : {
+                    "label" : propAccordions[i]['label'],
+                    "expanded" : propAccordions[i]['expanded'],
+                    "customId" : propAccordions[i]['customId'],
+                    "id" : propAccordions[i]['id']
+                },
+                "elements" : []
+            };
+            
+            if (o.properties['id'] === undefined || o.properties['id'] === "") {
+                propAccordions[i]['id'] = CustomBuilder.uuid();
+                o.properties['id'] = propAccordions[i]['id'];
+            }
+            
+            if (accordionsMap[o.properties['id']] !== undefined) {
+                o.elements = accordionsMap[o.properties['id']];
+            }
+            
+            newElements.push(o);
+        }
+        elementObj.elements = newElements;
+    }
+}

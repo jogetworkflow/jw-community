@@ -8766,6 +8766,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     if ($(anchor).parent(".element-pages").length > 0 && $(anchor).parent(".element-pages").find(".property-page-show").length > 0) {
                         $(anchor).parent(".element-pages").show();
                     }
+                    
+                    $(anchor).next().addClass("collapsed");
                 }
                 thisObj.editorObject.refresh();
                 PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
@@ -9244,6 +9246,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     if ($(anchor).parent(".element-pages").length > 0 && $(anchor).parent(".element-pages").find(".property-page-show").length > 0) {
                         $(anchor).parent(".element-pages").show();
                     }
+                    
+                    $(anchor).next().addClass("collapsed");
                 }
                 thisObj.editorObject.refresh();
                 PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");

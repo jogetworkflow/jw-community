@@ -16,6 +16,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.lib.DefaultTheme;
+import org.joget.apps.userview.model.ExtElement;
 import org.joget.apps.userview.model.PageComponent;
 import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
@@ -38,6 +39,7 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.enterprise.UniversalTheme;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -323,28 +325,21 @@ public class UserviewBuilderWebController {
         response.addHeader("X-XSS-Protection", "0");
 
         try {
+            Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+            requestParameters.put("contextPath", request.getContextPath());
+            requestParameters.put("isPreview", "true");
+            requestParameters.put("isBuilder", "true");
+            requestParameters.put("appId", appDef.getAppId());
+            requestParameters.put("appVersion", appDef.getVersion().toString());
+                
+            Userview userview = new Userview();
+            userview.setParams(requestParameters);
+            userview.setProperty("id", userviewId);
+            
             JSONObject jObj = new JSONObject(tempJson);
-            PageComponent pc = (PageComponent) pluginManager.getPlugin(jObj.getString("className"));
+            PageComponent pc = getPageComponent(jObj, userview);
             
             if (pc != null) {
-                pc.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
-            
-                Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
-                requestParameters.put("contextPath", request.getContextPath());
-                requestParameters.put("isPreview", "true");
-                requestParameters.put("isBuilder", "true");
-                requestParameters.put("appId", appDef.getAppId());
-                requestParameters.put("appVersion", appDef.getVersion().toString());
-                pc.setRequestParameters(requestParameters);
-                
-                if (pc instanceof UserviewMenu) {
-                    ((UserviewMenu) pc).setUrl("");
-                }
-                Userview userview = new Userview();
-                userview.setParams(requestParameters);
-                userview.setProperty("id", userviewId);
-                pc.setUserview(userview);
-                
                 String html = pc.render();
                 html = html.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
                 html = pluginManager.processPluginTranslation(html, pc.getClassName(), null);
@@ -355,6 +350,44 @@ public class UserviewBuilderWebController {
         } catch (Exception e) {
             LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");
         }
+    }
+    
+    private Collection<PageComponent> getPageComponents(PageComponent parent, JSONObject jsonObj, Userview userview) throws JSONException {
+        Collection<PageComponent> components = new ArrayList<PageComponent>();
+        
+        if (jsonObj.has("elements")) {
+            JSONArray elements = jsonObj.getJSONArray("elements");
+            for (int i = 0; i < elements.length(); i++) {
+                PageComponent pc = getPageComponent(elements.getJSONObject(i), userview);
+                if (pc != null) {
+                    pc.setParent(parent);
+                    
+                    if (pc.getProperties().containsKey("id")) {
+                        pc.setProperty("attr-data-pc-id", pc.getProperty("id"));
+                    }
+                    
+                    components.add(pc);
+                }
+            }
+        }
+        
+        return components;
+    }
+    
+    private PageComponent getPageComponent(JSONObject jsonObj, Userview userview) throws JSONException {
+        PageComponent component = (PageComponent) pluginManager.getPlugin(jsonObj.getString("className"));
+        if (component != null) {
+            if (component instanceof UserviewMenu) {
+                ((UserviewMenu) component).setUrl("");
+            }
+            if (component instanceof ExtElement) {
+                ((ExtElement) component).setRequestParameters(userview.getParams());
+            }
+            component.setProperties(PropertyUtil.getProperties(jsonObj.getJSONObject("properties")));
+            component.setChildren(getPageComponents(component, jsonObj, userview));
+            component.setUserview(userview);
+        }
+        return component;
     }
     
     @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/theme/css")
