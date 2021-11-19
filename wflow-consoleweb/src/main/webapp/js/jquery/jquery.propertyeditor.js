@@ -1127,10 +1127,14 @@ PropertyEditor.Util = {
             var values = new Array();
             var value = data[name];
 
-            if (value !== undefined && value !== null && value["className"] !== undefined) {
-                values = [value["className"]];
-            }else if (value !== undefined && value !== null) {
-                values = value.split(";");
+            if (value !== undefined && value !== null) {
+                if (value["className"] !== undefined) {
+                    values = [value["className"]];
+                } else if (value.indexOf(";") !== -1 && $('<div>'+value+'</div>').find("*").length === 0) { //check is not html
+                    values = value.split(";");
+                } else {
+                    values = [value];
+                }
             }
 
             if (values.length === 0) {
@@ -5998,10 +6002,10 @@ PropertyEditor.Type.IconTextField.prototype = {
         var icon = $('[name=' + this.id + ']:not(.hidden)').prev("span.icon");
         if (icon.length > 0) {
             var iconValue = icon.find(".value").html();
-            if (iconValue !== "") {
-                value = iconValue + " " + value;
+                if (iconValue !== "") {
+                    value = iconValue + " " + value;
+                }
             }
-        }
         
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
@@ -6041,7 +6045,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                 valueWithoutIcon = $(temp).html().substring(1);
             }
         }
-
+        
         return '<span class="icon"><span><span class="value">'+icon+'</span><span class="dropdown"><i class="fas fa-angle-down"></i></span></span></span><input style="padding-left:50px;" type="text" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(valueWithoutIcon) + '"/>';
     },
     initScripting: function() {
@@ -8451,6 +8455,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
         return '<pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre>';
     },
     initScripting: function() {
+        var thisObj = this;
         if (this.value === null) {
             this.value = "";
         }
@@ -8468,10 +8473,14 @@ PropertyEditor.Type.CodeEditor.prototype = {
         if (this.properties.check_syntax !== undefined && this.properties.check_syntax.toLowerCase() === "false") {
             this.codeeditor.getSession().setUseWorker(false);
         }
+        this.codeeditor.getSession().on('change', function() {
+            $(thisObj.editor).find("#"+thisObj.id).trigger("change");
+        });
         this.codeeditor.setAutoScrollEditorIntoView(true);
         this.codeeditor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
         this.codeeditor.setOption("minLines", 10);
         this.codeeditor.resize();
+        $(thisObj.editor).find("#"+thisObj.id).trigger("change");
     },
     pageShown: function() {
         this.codeeditor.resize();
