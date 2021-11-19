@@ -6002,10 +6002,14 @@ PropertyEditor.Type.IconTextField.prototype = {
         var icon = $('[name=' + this.id + ']:not(.hidden)').prev("span.icon");
         if (icon.length > 0) {
             var iconValue = icon.find(".value").html();
+            if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
+                value = iconValue;
+            } else {
                 if (iconValue !== "") {
                     value = iconValue + " " + value;
                 }
             }
+        }
         
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
@@ -6046,7 +6050,15 @@ PropertyEditor.Type.IconTextField.prototype = {
             }
         }
         
-        return '<span class="icon"><span><span class="value">'+icon+'</span><span class="dropdown"><i class="fas fa-angle-down"></i></span></span></span><input style="padding-left:50px;" type="text" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(valueWithoutIcon) + '"/>';
+        var hideTextField = "";
+        var iconOnly = "";
+        if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
+            hideTextField = "visibility: hidden; !important;";
+            iconOnly = "style=\"border-radius: 0.25rem;\"";
+            valueWithoutIcon = "";
+        }
+
+        return '<span class="icon"><span '+iconOnly+'><span class="value">'+icon+'</span><span class="dropdown"><i class="fas fa-angle-down"></i></span></span></span><input style="padding-left:50px;'+hideTextField+'" type="text" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(valueWithoutIcon) + '"/>';
     },
     initScripting: function() {
         var field = this;
@@ -6120,6 +6132,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                             
                             $(i).removeClass("open");
                             $("body").off("click.icon-picker");
+                            $("#" + this.id).trigger("change");
                         } else if ($(i).find("input.color_value").is(":visible")) {
                             $(i).find("input.text_value").show();
                             $(i).find("input.color_value").hide();
