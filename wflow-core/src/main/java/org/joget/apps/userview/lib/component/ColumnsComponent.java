@@ -54,6 +54,20 @@ public class ColumnsComponent extends SimplePageComponent {
         }
         return "<div "+attr+" id=\""+id+"\" class=\"container-fluid "+cssClass+"\"><div class=\"row\" "+rowAttr+">" + renderChildren() + "</div>" + style + "</div>";
     }
+    
+    @Override
+    public String getAdditionalStyle(String styleClass) {
+        String style = "";
+        
+        if (!getPropertyString("gutter").isEmpty()) {
+            String g = getPropertyString("gutter");
+            style += "." + styleClass + "{padding-left:0; padding-right:0;}";
+            style += "." + styleClass + " > .row {margin-left:-"+g+"; margin-right:-"+g+";}";
+            style += "." + styleClass + " > .row > .col {padding-left:"+g+"; padding-right:"+g+";}";
+        }
+            
+        return style;
+    }
 
     @Override
     public String getBuilderJavaScriptTemplate() {

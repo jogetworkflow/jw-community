@@ -1,4 +1,5 @@
 {
+    "dragHtml" : "<div class=\"container-fluid\"><div class=\"row\"><div class=\"col\" data-cbuilder-label=\"@@org.joget.apps.userview.lib.component.ColumnComponent.pluginLabel@@\" data-cbuilder-invisible=\"\"></div><div class=\"col\" data-cbuilder-label=\"@@org.joget.apps.userview.lib.component.ColumnComponent.pluginLabel@@\" data-cbuilder-invisible=\"\"></div></div></div>", 
     "html" : "<div class=\"container-fluid\"><div class=\"row\" data-cbuilder-columns></div></div>", 
     "childsContainerAttr" : "columns", 
     "elements" : [
@@ -31,6 +32,14 @@
             styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("col-"+i+"-", "@@org.joget.apps.userview.lib.component.ColumnComponent.pluginLabel@@ " + (i+1))[0]);
         }
         return styleProps;
+    },
+    "afterRender" : function(element, elementObj, component) {
+        if (elementObj.properties['gutter'] !== undefined && elementObj.properties['gutter'] !== "") {
+            var gutter = elementObj.properties['gutter'];
+            $(element).css({"padding-left" : "0px", "padding-right" : "0px"});
+            $(element).find("> .row").css({"margin-left" : "-"+gutter, "margin-right" : "-"+gutter});
+            $(element).find("> .row > .col").css({"padding-left" : gutter, "padding-right" : gutter});
+        }
     },
     "updateProperties" : function(element, elementObj, component) {
         var propColumns = elementObj.properties.columns;

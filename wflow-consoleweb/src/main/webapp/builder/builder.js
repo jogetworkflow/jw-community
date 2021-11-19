@@ -4921,6 +4921,10 @@ _CustomBuilder.Builder = {
         $.when.apply($, deferreds).then(function() {
             self.checkVisible(element);
             self.checkVisible(element.parent().closest("[data-cbuilder-classname]"));
+            
+            if (component.builderTemplate.afterRender !== undefined) {
+                component.builderTemplate.afterRender(element, elementObj, component)
+            }
 
             if (selectNode) {
                 if ($(oldElement).is($(self.selectedEl))) {
