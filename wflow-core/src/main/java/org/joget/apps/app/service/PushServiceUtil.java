@@ -24,21 +24,28 @@ public class PushServiceUtil {
     public static final String WEBPUSH_SUBSCRIPTION_USER_METADATA = "WEBPUSH_SUBSCRIPTION";
     public static final String WEBPUSH_SUBSCRIPTION_DELIMITER = "|";
     
-    static PushService pushService;
-    
-    static {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-        pushService = new PushService();
-    }
+    static String pushServicePublicKey;
+    static String pushServicePrivateKey;
+    static PushService pushServiceInstance;
     
     public void setPublicKey(String publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-        pushService.setPublicKey(publicKey);
+        pushServicePublicKey = publicKey;
     }
     
     public void setPrivateKey(String privateKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-        pushService.setPrivateKey(privateKey);
+        pushServicePrivateKey = privateKey;
+    }
+    
+    synchronized static PushService getPushService() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
+        if (pushServiceInstance == null) {
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+            pushServiceInstance = new PushService();
+            pushServiceInstance.setPublicKey(pushServicePublicKey);
+            pushServiceInstance.setPrivateKey(pushServicePrivateKey);
+        }
+        return pushServiceInstance;
     }
     
     /**
@@ -149,6 +156,7 @@ public class PushServiceUtil {
         String userAuth = subscription.keys.auth;
         String payload = "{\"title\":\"" + StringEscapeUtils.escapeJavaScript(title) + "\", \"text\":\"" + StringEscapeUtils.escapeJavaScript(text) + "\", \"url\":\"" + StringEscapeUtils.escapeJavaScript(url) + "\",\"icon\":\"" + StringEscapeUtils.escapeJavaScript(icon) + "\",\"badge\":\"" + StringEscapeUtils.escapeJavaScript(badge) + "\"}";
         try {
+            PushService pushService = PushServiceUtil.getPushService();
             Notification notification = new Notification(endpoint, userPublicKey, userAuth, payload);
             HttpResponse httpResponse = pushService.send(notification);
             LogUtil.debug(PushServiceUtil.class.getName(), "Send push subscription " + subscriptionJson + ": " + httpResponse.getStatusLine().getStatusCode());
