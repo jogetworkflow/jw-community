@@ -273,6 +273,43 @@ function getUrlParam(paramName){
         return results[1];
 }
 
+var loadingScript = {};
+function loadScript(url, callback){
+    var name = url.substring(url.lastIndexOf("/") + 1).replace(".", "_");
+    var callbackHandler = function() {
+        try {
+            while(loadingScript[name].length > 0) {
+                var c = loadingScript[name].shift();
+                c();
+            }
+        } catch (err) {
+            console.log(err);
+            var tag = document.getElementById("js-" + name);
+            tag.remove();
+        }
+    };
+    if (loadingScript[name] !== undefined && loadingScript[name].length > 0) {
+        loadingScript[name].push(callback);
+    } else {
+        if (document.querySelectorAll('#js-' + name).length === 0) {
+            loadingScript[name] = [];
+            loadingScript[name].push(callback);
+        
+            var head = document.getElementsByTagName('head')[0];
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = url;
+            script.id = "js-" + name;
+            script.onreadystatechange = callbackHandler;
+            script.onload = callbackHandler;
+            head.appendChild(script);
+        } else {
+            loadingScript[name].push(callback);
+            callbackHandler();
+        }
+    }
+}
+
 /* compatibility implementation of $.browser */
 jQuery.uaMatch = function( ua ) {
     ua = ua.toLowerCase();
