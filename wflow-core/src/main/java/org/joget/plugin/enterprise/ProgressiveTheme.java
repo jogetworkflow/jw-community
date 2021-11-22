@@ -1,5 +1,6 @@
 package org.joget.plugin.enterprise;
 
+import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 
 public class ProgressiveTheme extends UniversalTheme {
@@ -117,4 +118,14 @@ public class ProgressiveTheme extends UniversalTheme {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/progressiveTheme.json", null, true, null);
     }
     
+    @Override
+    public String getMenus(Map<String, Object> data) {
+        if ("true".equals(getPropertyString("displayCategoryLabel"))) {
+            data.put("combine_single_menu_category", false);
+        } else {
+            data.put("combine_single_menu_category", true);
+        }
+        data.put("categories_container_before", getSidebarUserMenu(data));
+        return super.getMenus(data);
+    }
 }

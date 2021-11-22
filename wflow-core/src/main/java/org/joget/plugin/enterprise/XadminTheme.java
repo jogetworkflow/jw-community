@@ -590,9 +590,14 @@ public class XadminTheme extends UniversalTheme {
             data.put("nav_classes", "left-nav");
             data.put("nav_inner_before", "<div id=\"side-nav\">");
             data.put("categories_container_id", "nav");
-            data.put("combine_single_menu_category", true);
             data.put("nav_inner_after", "</div>");
             data.put("menus_container_classes", "sub-menu");
+            
+            if ("true".equals(getPropertyString("displayCategoryLabel"))) {
+                data.put("combine_single_menu_category", false);
+            } else {
+                data.put("combine_single_menu_category", true);
+            }
 
             return UserviewUtil.getTemplate(this, data, "/templates/userview/menus.ftl");
         } else {
