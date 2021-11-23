@@ -277,6 +277,9 @@ a {
 .accordion .card-body {
     padding: 10px;
 }
+.card {
+    background-size: cover;
+}
 #adminBar {
     display:none;
 }

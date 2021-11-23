@@ -1434,6 +1434,9 @@ body #ui-datepicker-div {
 .accordion .card-body {
     padding: 10px;
 }
+.card {
+    background-size: cover;
+}
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }

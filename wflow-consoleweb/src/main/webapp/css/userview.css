@@ -396,6 +396,9 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 .accordion .card-body {
     padding: 10px;
 }
+.card {
+    background-size: cover;
+}
 @media (max-width: 767px) {
     .container-fluid.mobile-stack-columns .col{
         flex: 0 0 100% !important;
