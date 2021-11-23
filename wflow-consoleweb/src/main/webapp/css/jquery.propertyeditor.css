@@ -258,7 +258,7 @@
 
 .property-description em {
     display: inline-block;
-    background: #fefefe;
+    background: #fefefe57;
     border:1px solid #ddd;
     border-radius: 2px;
     padding: 1px 5px;
@@ -644,6 +644,9 @@ td.error .chosen-container, td.error input {
 
 .property-editor-container .ace_editor {
     overflow:visible;
+}
+.property-editor-container .property-type-codeeditor {
+    overflow:hidden;
 }
 
 .property-type-sortableselect .sorted_select_control{
@@ -1183,12 +1186,15 @@ td.error .chosen-container, td.error input {
 }
 .property-editor-container.narrow input[type=number].withUnitSlector {
     width: 70%;
+    max-width: 120px;
 }
 .property-editor-container.narrow input[type=number].withUnitSlector + select{
     width: 30%;
+    max-width: 80px;
 }
 .property-editor-container.narrow input[type=number].withUnitSlector.autoUnit + select{
     width:100%;
+    border-radius: 0.25rem !important;
 }
 /* field */
 .property-editor-container select {
