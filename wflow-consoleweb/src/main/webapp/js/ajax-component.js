@@ -232,7 +232,12 @@ AjaxComponent = {
         }
         
         $(contentConatiner).addClass("ajaxloading");
-        $(contentConatiner).attr("data-content-placeholder", AjaxComponent.getContentPlaceholder(url));
+        
+        var contentPlaceholder = $(element).data("ajax-content-placeholder");
+        if (contentPlaceholder === undefined || contentPlaceholder === null || contentPlaceholder === "") {
+            contentPlaceholder = AjaxComponent.getContentPlaceholder(url);
+        }
+        $(contentConatiner).attr("data-content-placeholder", contentPlaceholder);
         
         var args = {
             method : method,
