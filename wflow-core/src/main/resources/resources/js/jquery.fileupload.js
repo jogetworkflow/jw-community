@@ -84,12 +84,13 @@
                         $(file.previewElement).find(".error").text(resp.error);
                     }
                 });
-                myDropzone.on("error", function(file, error) {
+                myDropzone.on("error", function(file, resp) {
                     $(file.previewElement).find(".progress").remove();
                     $(file.previewElement).find(".remove").show();
                     $(file.previewElement).find("input").remove();
                     $(file.previewElement).find(".name").css("color" , "red");
                     $(file.previewElement).find("img").remove();
+                    $(file.previewElement).find(".error").text(resp.error.code + " " + resp.error.message);
                 });
                 
                 $(target).on("click", ".remove", function(){
