@@ -365,7 +365,7 @@ public class DatalistBuilderWebController {
         }
         
         String nonce = request.getParameter("_nonce");
-        if (!SecurityUtil.verifyNonce(nonce, new String[]{"EmbedList", appDef.getAppId(), appDef.getVersion().toString(), listId, nonce})) {
+        if (!SecurityUtil.verifyNonce(nonce, new String[]{"EmbedList", appDef.getAppId(), appDef.getVersion().toString(), listId})) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
