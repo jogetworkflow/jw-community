@@ -942,8 +942,7 @@ FormBuilder = {
     },
 
     previewForm: function(){
-        var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
-        $('#form-preview').attr("action", FormBuilder.contextPath + FormBuilder.formPreviewUrl + "?" + securityToken);
+        $('#form-preview').attr("action", FormBuilder.contextPath + FormBuilder.formPreviewUrl);
         $('#form-preview').submit();
         return false;
     },
