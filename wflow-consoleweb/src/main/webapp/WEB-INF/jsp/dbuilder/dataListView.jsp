@@ -288,8 +288,6 @@
 </div>
 
 <script>
-    var popupActionDialog = null;
-    
     DataListUtil = {
         submitForm: function(form) {
             var params = $(form).serialize();
@@ -395,40 +393,6 @@
         } else {
             $(table).find("input[type=checkbox]").prop("checked", false);
         }
-    }
-    function dlPopupAction(element, message) {
-        var url = $(element).attr("href");
-        var showPopup = true;
-        if (message != "") {
-            showPopup = confirm(message);
-        }
-        if (showPopup) {
-            if (popupActionDialog == null) {
-                popupActionDialog = new PopupDialog(url);
-            } else {
-                popupActionDialog.src = url;
-            }
-            popupActionDialog.init();
-        }
-        return false;
-    }
-    function dlPostAction(element, message) {
-        var url = $(element).attr("href");
-        var showPopup = true;
-        if (message != "") {
-            showPopup = confirm(message);
-        }
-        if (showPopup) {
-            var  orgAction = $(element).closest("form").attr("action");
-            $(element).closest("form").removeAttr("target");
-            $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
-            $(element).closest("form").attr("action", $(element).attr("href"));
-            $(element).closest("form").submit();
-            
-            //reset the action
-            $(element).closest("form").attr("action", orgAction);
-        }
-        return false;
     }
     function showConfirm(element, message) {
         var table = $(element).parent().parent().find('table');

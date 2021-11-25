@@ -309,6 +309,41 @@ function loadScript(url, callback){
         }
     }
 }
+var popupActionDialog = null;
+function dlPopupAction(element, message) {
+    var url = $(element).attr("href");
+    var showPopup = true;
+    if (message != "") {
+        showPopup = confirm(message);
+    }
+    if (showPopup) {
+        if (popupActionDialog == null) {
+            popupActionDialog = new PopupDialog(url);
+        } else {
+            popupActionDialog.src = url;
+        }
+        popupActionDialog.init();
+    }
+    return false;
+}
+function dlPostAction(element, message) {
+    var url = $(element).attr("href");
+    var showPopup = true;
+    if (message != "") {
+        showPopup = confirm(message);
+    }
+    if (showPopup) {
+        var  orgAction = $(element).closest("form").attr("action");
+        $(element).closest("form").removeAttr("target");
+        $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
+        $(element).closest("form").attr("action", $(element).attr("href"));
+        $(element).closest("form").submit();
+
+        //reset the action
+        $(element).closest("form").attr("action", orgAction);
+    }
+    return false;
+}
 
 /* compatibility implementation of $.browser */
 jQuery.uaMatch = function( ua ) {
