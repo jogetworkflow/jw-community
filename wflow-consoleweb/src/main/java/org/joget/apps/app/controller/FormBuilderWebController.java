@@ -242,6 +242,21 @@ public class FormBuilderWebController {
 
     @RequestMapping("/form/embed")
     public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
+
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        String appId  = "";
+        String appVersion = "";
+        if (appDef != null) {
+            appId = appDef.getAppId();
+            appVersion = appDef.getVersion().toString();
+        }        
+
+        String nonce = request.getParameter("_nonce");
+        if (!SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, json})) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+
         FormData formData = new FormData();
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
@@ -249,22 +264,13 @@ public class FormBuilderWebController {
         formData = formService.retrieveFormDataFromRequest(formData, request);
         String decryptedJson = SecurityUtil.decrypt(json);
         Form form = formService.loadFormFromJson(decryptedJson, formData);
-        
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        String appId  = "";
-        String appVersion = "";
-        if (appDef != null) {
-            appId = appDef.getAppId();
-            appVersion = appDef.getVersion().toString();
-        }
-        String nonce = request.getParameter("_nonce");
-        if (form == null || !SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, form.getPropertyString("id"), nonce})) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+        if (form == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
         
-
-        if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
+        if(callbackSetting == null || callbackSetting.isEmpty()){
             callbackSetting = "{}";
         }
         String encodedCallbackSetting = URLEncoder.encode(StringEscapeUtils.escapeHtml(callbackSetting), "UTF-8");
@@ -272,47 +278,45 @@ public class FormBuilderWebController {
         String csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
         form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+encodedCallbackSetting+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
 
-        if(form != null){
-            //if id field not exist, automatically add an id hidden field
-            Element idElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
-            if (idElement == null) {
-                Collection<Element> formElements = form.getChildren();
-                idElement = new HiddenField();
-                idElement.setProperty(FormUtil.PROPERTY_ID, FormUtil.PROPERTY_ID);
-                idElement.setParent(form);
-                formElements.add(idElement);
-            }
-            
-            // create new section for buttons
-            Section section = new Section();
-            section.setProperty(FormUtil.PROPERTY_ID, "section-actions");
-            Collection<Element> sectionChildren = new ArrayList<Element>();
-            section.setChildren(sectionChildren);
-            Collection<Element> formChildren = form.getChildren(formData);
-            if (formChildren == null) {
-                formChildren = new ArrayList<Element>();
-            }
-            formChildren.add(section);
-
-            // add new horizontal column to section
-            Column column = new Column();
-            column.setProperty("horizontal", "true");
-            Collection<Element> columnChildren = new ArrayList<Element>();
-            column.setChildren(columnChildren);
-            sectionChildren.add(column);
-
-            Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
-            hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
-            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, json);
-            columnChildren.add((Element) hiddenField);
-
-            Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
-            submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
-            submitButton.setProperty("label", buttonLabel);
-            columnChildren.add((Element) submitButton);
-            
-            model.addAttribute("readonly", FormUtil.isReadonly(form, formData));
+        //if id field not exist, automatically add an id hidden field
+        Element idElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
+        if (idElement == null) {
+            Collection<Element> formElements = form.getChildren();
+            idElement = new HiddenField();
+            idElement.setProperty(FormUtil.PROPERTY_ID, FormUtil.PROPERTY_ID);
+            idElement.setParent(form);
+            formElements.add(idElement);
         }
+
+        // create new section for buttons
+        Section section = new Section();
+        section.setProperty(FormUtil.PROPERTY_ID, "section-actions");
+        Collection<Element> sectionChildren = new ArrayList<Element>();
+        section.setChildren(sectionChildren);
+        Collection<Element> formChildren = form.getChildren(formData);
+        if (formChildren == null) {
+            formChildren = new ArrayList<Element>();
+        }
+        formChildren.add(section);
+
+        // add new horizontal column to section
+        Column column = new Column();
+        column.setProperty("horizontal", "true");
+        Collection<Element> columnChildren = new ArrayList<Element>();
+        column.setChildren(columnChildren);
+        sectionChildren.add(column);
+
+        Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
+        hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
+        hiddenField.setProperty(FormUtil.PROPERTY_VALUE, json);
+        columnChildren.add((Element) hiddenField);
+
+        Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
+        submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
+        submitButton.setProperty("label", buttonLabel);
+        columnChildren.add((Element) submitButton);
+
+        model.addAttribute("readonly", FormUtil.isReadonly(form, formData));
 
         // generate form HTML
         String formHtml = null;

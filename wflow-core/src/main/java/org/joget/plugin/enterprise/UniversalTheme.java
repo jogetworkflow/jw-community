@@ -875,7 +875,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     
     @Override
     public String getMenus(Map<String, Object> data) {
-        data.put("combine_single_menu_category", true);
+        if ("true".equals(getPropertyString("displayCategoryLabel"))) {
+            data.put("combine_single_menu_category", false);
+        } else {
+            data.put("combine_single_menu_category", true);
+        }
         data.put("categories_container_before", getSidebarUserMenu(data));
         
         return super.getMenus(data);

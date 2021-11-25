@@ -848,6 +848,10 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
     left:auto;
 }
 
+.form-cell-value label, .subform-cell-value label{
+    outline:0px;
+}
+
 @media (min-width: 768px){
     body .multiPagedForm.wizard .page-nav-panel .nav_item {
         background: none;

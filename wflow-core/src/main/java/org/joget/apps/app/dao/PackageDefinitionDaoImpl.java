@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import org.hibernate.Query;
@@ -177,7 +178,14 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
     @Override
     public PackageDefinition updatePackageDefinitionVersion(PackageDefinition packageDef, Long packageVersion) {
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+        Collection<WorkflowProcess> previousProcessList = workflowManager.getProcessList(packageDef.getAppDefinition().getAppId(), packageDef.getVersion().toString());
+        HashSet<String> previousProcessIds = new HashSet();  
         String packageId = packageDef.getId();
+        
+        for (WorkflowProcess wp : previousProcessList) {
+            previousProcessIds.add(WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId()));
+        }
 
         // detach previous package version
         delete(packageDef);
@@ -190,11 +198,11 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         Collection<String> activityIds = new ArrayList<String>();
         Collection<String> toolIds = new ArrayList<String>();
         Collection<String> participantIds = new ArrayList<String>();
+        Collection<String> newProcessIds = new ArrayList<String>();
         Map<String, PackageActivityForm> packageActivityFormMap = new HashMap<String, PackageActivityForm>();
         Map<String, PackageActivityPlugin> packageActivityPluginMap = new HashMap<String, PackageActivityPlugin>();
         Map<String, PackageParticipant> packageParticipantMap = new HashMap<String, PackageParticipant>();
         try {
-            WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             Collection<WorkflowProcess> processList = workflowManager.getProcessList(packageDef.getAppDefinition().getAppId(), packageVersion.toString());
             for (WorkflowProcess wp : processList) {
                 String processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
@@ -214,6 +222,10 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 Collection<WorkflowParticipant> participantList = workflowManager.getProcessParticipantDefinitionList(wp.getId());
                 for (WorkflowParticipant p : participantList) {
                     participantIds.add(processDefId+"::"+p.getId());
+                }
+                
+                if (!previousProcessIds.contains(WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId()))) {
+                    newProcessIds.add(wp.getId());
                 }
             }
 
@@ -256,6 +268,19 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
 //        appDefinitionDao.merge(appDef);
         saveOrUpdate(packageDef);
+        
+        if (newProcessIds.size() > 0) {
+            for (String processID : newProcessIds) {
+                PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
+                String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processID);
+                PackageParticipant participant = new PackageParticipant();
+                participant.setProcessDefId(processIdWithoutVersion);
+                participant.setParticipantId(WorkflowUtil.PROCESS_START_WHITE_LIST);
+                participant.setType(PackageParticipant.TYPE_ROLE);
+                participant.setValue(PackageParticipant.VALUE_ROLE_ADMIN);
+                packageDefinitionDao.addAppParticipant(packageDef.getAppDefinition().getAppId(), packageDef.getAppDefinition().getVersion(), participant);
+            }
+        }
         return packageDef;
     }
 

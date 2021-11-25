@@ -1127,6 +1127,15 @@
         }]
     },
     {
+        name : 'displayCategoryLabel',
+        label : '@@theme.universal.displayCategoryLabel@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'removeAssignmentTitle',
         label : '@@theme.universal.removeAssignmentTitle@@',
         type : 'checkbox',
