@@ -8758,7 +8758,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                         }
                     }
                     
-                    if ($(anchor).hasClass("initial")) {
+                    if ($(anchor).hasClass("initial") && thisObj.pageOptions.propertiesDefinition.length > 0) {
                         $(anchor).removeClass("initial").addClass("partialLoad");
                         var cloneDefinitionFirstPage = $.extend({}, thisObj.pageOptions.propertiesDefinition[0]);
                         cloneDefinitionFirstPage.properties = [{
@@ -8947,6 +8947,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 });
             }
         }
+        this.pageOptions.propertiesDefinition = null;
         
         var field = $("#" + this.id);
         field.closest(".property-editor-property").find(".element-pages").hide();
@@ -9304,7 +9305,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     };
 
                     
-                    if ($(anchor).hasClass("initial")) {
+                    if ($(anchor).hasClass("initial") && $(row).data("propertiesDefinition").length > 0) {
                         $(anchor).removeClass("initial").addClass("partialLoad");
                         var cloneDefinitionFirstPage = $.extend({}, newOptions.propertiesDefinition[0]);
                         cloneDefinitionFirstPage.properties = [{
@@ -9501,6 +9502,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 });
             }
         }
+        $(row).removeData("propertiesDefinition");
         thisObj.editorObject.refresh();
     },
     remove: function() {
