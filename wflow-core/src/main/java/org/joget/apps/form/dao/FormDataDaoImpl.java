@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +56,7 @@ import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
+import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
@@ -989,6 +991,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
         
+        Properties properties = getProperties();
+        String workflowSchema = (String) properties.get("workflowSchema");
+        if (workflowSchema != null && !workflowSchema.isEmpty()) {
+            configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));
+        }
+        
         // get columns
         Collection<String> formFields;
         if (rowSet != null) {
@@ -1096,6 +1104,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
+
+        Properties properties = getProperties();
+        String workflowSchema = (String) properties.get("workflowSchema");
+        if (workflowSchema != null && !workflowSchema.isEmpty()) {
+            configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));
+        }
         
         String path = getFormMappingPath();
         for (String e : entities) {
