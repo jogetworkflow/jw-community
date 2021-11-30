@@ -15,14 +15,14 @@
     <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl">
     </bean>
 
-    <bean id="fluCacheObject" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="fluCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
     </bean>
     
-    <bean id="fluCache" class="org.joget.apps.app.dao.AppDefCache">
+    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
         <property name="cacheObject">
-            <ref local="fluCacheObject" />
+            <ref local="fluCache" />
         </property>
     </bean>
 
@@ -101,28 +101,28 @@
 
     <bean id="appDefinitionDao" class="org.joget.apps.app.dao.AppDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="formColumnCache" ref="formColumnCache" />
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="datalistDefinitionDao" class="org.joget.apps.app.dao.DatalistDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
     
     <bean id="builderDefinitionDao" class="org.joget.apps.app.dao.BuilderDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
@@ -132,7 +132,7 @@
 
     <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl">
@@ -141,12 +141,12 @@
 
     <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
     
     <bean id="appResourceDao" class="org.joget.apps.app.dao.AppResourceDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">
