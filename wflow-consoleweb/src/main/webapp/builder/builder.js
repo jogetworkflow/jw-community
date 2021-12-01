@@ -711,7 +711,7 @@ _CustomBuilder = {
     /*
      * Add element to palette
      */
-    initPaletteElement : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData, tab){
+    initPaletteElement : function(categories, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData, tab){
         if (this.paletteElements[className] !== undefined) {
             return;
         }
@@ -782,12 +782,16 @@ _CustomBuilder = {
         }
 
         if (render === undefined || render !== false) {
-            var categoryId = CustomBuilder.createPaletteCategory(category, tab);
-            var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
+            var categoriesArr = categories.split(";");
+            for (var i in categoriesArr) {
+                var category = categoriesArr[i];
+                var categoryId = CustomBuilder.createPaletteCategory(category, tab);
+                var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
 
-            var li = $('<li class="'+licss+'"><div id="'+className.replace(/\./g, "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div></li>');
-            $(li).find('.builder-palette-element').prepend(iconObj);
-            $(container).append(li);
+                var li = $('<li class="'+licss+'"><div id="'+className.replace(/\./g, "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div></li>');
+                $(li).find('.builder-palette-element').prepend($(iconObj).clone());
+                $(container).append(li);
+            }
         }
     },
     

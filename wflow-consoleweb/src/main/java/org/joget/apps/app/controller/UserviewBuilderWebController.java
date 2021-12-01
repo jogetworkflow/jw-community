@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,12 +19,11 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.lib.DefaultTheme;
+import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.ExtElement;
 import org.joget.apps.userview.model.PageComponent;
-import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.model.Userview;
-import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPage;
@@ -55,8 +57,6 @@ public class UserviewBuilderWebController {
 
     @Autowired
     private UserviewService userviewService;
-    @Autowired
-    private UserviewBuilderPalette userviewBuilderPalette;
     @Autowired
     AppService appService;
     @Autowired
@@ -116,8 +116,34 @@ public class UserviewBuilderWebController {
         basicRequestParams.put("userviewId", userviewId);
         basicRequestParams.put("contextPath", request.getContextPath());
         
-        map.addAttribute("simplePageComponent", getAvailableElements());
-        map.addAttribute("menuTypeCategories", userviewBuilderPalette.getUserviewMenuCategoryMap(basicRequestParams));
+        List<PageComponent> list = new ArrayList<PageComponent>();
+        List<String> categories = new ArrayList<String>();
+        Collection<Plugin> pluginList = pluginManager.list(PageComponent.class);
+        for (Plugin plugin : pluginList) {
+            if (plugin instanceof UserviewMenu) {
+                CachedUserviewMenu menu = new CachedUserviewMenu((UserviewMenu) plugin);
+                list.add(menu);
+                
+                if (!categories.contains(menu.getCategory())) {
+                    categories.add(menu.getCategory());
+                }
+            } else if (plugin instanceof PageComponent) {
+                list.add((PageComponent) plugin);
+            }
+        }
+        
+        Collections.sort(categories);
+        
+        // sort by label
+        Collections.sort(list, new Comparator<PageComponent>() {
+            @Override
+            public int compare(PageComponent o1, PageComponent o2) {
+                return o1.getI18nLabel().compareTo(o2.getI18nLabel());
+            }
+        });
+        
+        map.addAttribute("categories", categories);
+        map.addAttribute("pageComponent", list);
         
         response.addHeader("X-XSS-Protection", "0");
 
@@ -439,16 +465,5 @@ public class UserviewBuilderWebController {
         }
         String userviewJson = userview.getJson();
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
-    }
-    
-    protected Collection<SimplePageComponent> getAvailableElements() {
-        Collection<SimplePageComponent> list = new ArrayList<SimplePageComponent>();
-        Collection<Plugin> pluginList = pluginManager.list(SimplePageComponent.class);
-        for (Plugin plugin : pluginList) {
-            if (plugin instanceof SimplePageComponent) {
-                list.add((SimplePageComponent) plugin);
-            }
-        }
-        return list;
     }
 }

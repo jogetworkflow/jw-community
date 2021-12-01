@@ -644,8 +644,8 @@ UserviewBuilder = {
                 
             UserviewBuilder.loadContentPage();
         } else {
+            $(".components-list > li").show();
             $("[data-section='components-Page-Components']").hide();
-            $(".drag-elements-sidepane li.component").hide();
             
             if(data.properties === null || data.properties === undefined){
                 data = UserviewBuilder.initDefaultUserviewDataModel();
@@ -680,8 +680,8 @@ UserviewBuilder = {
      * Load and render content page, called from UserviewBuilder.load
      */
     loadContentPage : function() {
+        $(".components-list > li").hide();
         $("[data-section='components-Page-Components']").show();
-        $(".drag-elements-sidepane li.component").show();
         
         var menu = UserviewBuilder.selectedMenu;
         if (menu.referencePage === undefined) {

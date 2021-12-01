@@ -23,16 +23,27 @@
                     console.log("Error initializing ${element.className} : " + err);
                 }
             }
-        
-        <c:forEach items="${simplePageComponent}" var="element">
+        <c:forEach items="${categories}" var="category">
+            CustomBuilder.createPaletteCategory('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>');
+        </c:forEach>
+        CustomBuilder.createPaletteCategory('<ui:msgEscJS key="ubuilder.pageComponents"/>');    
+        <c:forEach items="${pageComponent}" var="element">
+            <c:set var="category" value=""/>
+            <c:set var="pwaValidation" value=""/>
+            <c:set var="type" value="component"/>
             <c:set var="propertyOptions" value="${element.propertyOptions}"/>
             <c:set var="template" value="${element.builderJavaScriptTemplate}"/>
             <c:if test="${empty propertyOptions}">
                 <c:set var="propertyOptions" value="''"/>
             </c:if>
+            <c:if test="${element.isMenu()}">
+                <c:set var="type" value="menu"/>   
+                <c:set var="pwaValidation" value="'pwaValidation' : '${element.pwaValidationType}', "/>    
+                <c:set var="category" value='${category};${fn:replace(element.category, "\'", "\\\\\'")}'/>
+            </c:if>
             try {
-                <c:set var="initScript">
-                    CustomBuilder.initPaletteElement('<ui:msgEscJS key="ubuilder.pageComponents"/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {'list_css' : 'component', 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : 'component', 'builderTemplate' : ${template}}); 
+                <c:set var="initScript"> 
+                    CustomBuilder.initPaletteElement('<ui:msgEscJS key="ubuilder.pageComponents"/>${category}', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {${pwaValidation} 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : '${type}', 'builderTemplate' : ${template}}); 
                 </c:set>
                 <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                 eval("${initScript}");    
@@ -41,29 +52,6 @@
                     console.log("Error initializing ${element.className} : " + err);
                 }
             }
-        </c:forEach>
-        
-        <c:forEach items="${menuTypeCategories}" var="categoryRow">
-            <c:set var="category" value="${categoryRow.key}"/>
-            <c:set var="elementList" value="${categoryRow.value}"/>
-            <c:forEach items="${elementList}" var="element">
-                <c:set var="propertyOptions" value="${element.propertyOptions}"/>
-                <c:set var="template" value="${element.builderJavaScriptTemplate}"/>
-                <c:if test="${empty propertyOptions}">
-                    <c:set var="propertyOptions" value="''"/>
-                </c:if>
-                try {
-                    <c:set var="initScript"> 
-                        CustomBuilder.initPaletteElement('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', true, "", {'pwaValidation' : '${element.pwaValidationType}', 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : 'menu', 'builderTemplate' : ${template}}); 
-                    </c:set>
-                    <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
-                    eval("${initScript}");    
-                } catch (err) {
-                    if (console && console.log) {
-                        console.log("Error initializing ${element.className} : " + err);
-                    }
-                }
-            </c:forEach>
         </c:forEach>
         });
     </script>    

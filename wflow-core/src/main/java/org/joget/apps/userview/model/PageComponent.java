@@ -180,6 +180,10 @@ public abstract class PageComponent extends ExtElement {
         return "";
     }
     
+    public boolean isMenu() {
+        return this instanceof UserviewMenu;
+    }
+    
     /**
      * Category to be displayed in Userview Builder palette 
      * @return
