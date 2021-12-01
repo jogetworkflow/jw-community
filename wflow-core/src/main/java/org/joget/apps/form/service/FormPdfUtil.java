@@ -582,6 +582,7 @@ public class FormPdfUtil {
         html = escapeSpecialCharacter(html, "label");
         html = escapeSpecialCharacter(html, "span");
         html = escapeSpecialCharacter(html, "th");
+        html = escapeSpecialCharacter(html, "td");
         html = escapeSpecialCharacter(html, "p");
         
         //remove br
