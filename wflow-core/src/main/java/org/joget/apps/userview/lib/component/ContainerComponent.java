@@ -56,7 +56,7 @@ public class ContainerComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<div data-cbuilder-elements><div>'}";
+        return "{'html' : '<div data-cbuilder-elements class=\"ContainerComponent\"><div>'}";
     }
     
 }
