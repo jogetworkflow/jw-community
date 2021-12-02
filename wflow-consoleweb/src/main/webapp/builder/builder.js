@@ -2745,6 +2745,9 @@ _CustomBuilder.Builder = {
                 
         $("#builder_canvas").append('<div id="iframe-wrapper"> \
                 <div id="iframe-layer"> \
+                    <div id="element-parent-box"> \
+                        <div id="element-parent-name"></div> \
+                    </div> \
                     <div id="element-highlight-box"> \
                         <div id="element-highlight-name"></div> \
                     </div> \
@@ -2818,7 +2821,7 @@ _CustomBuilder.Builder = {
         
         self.frameBody.html("");
         self.selectNode(false);
-        $("#element-highlight-box").hide();
+        $("#element-parent-box, #element-highlight-box").hide();
         
         var component = self.parseDataToComponent(data);
         var temp = $('<div></div>');
@@ -2966,7 +2969,7 @@ _CustomBuilder.Builder = {
         {
             window.FrameWindow = self.iframe.contentWindow;
             window.FrameDocument = self.iframe.contentWindow.document;
-            $("#element-highlight-box").hide();
+            $("#element-parent-box, #element-highlight-box").hide();
 
             $(window.FrameWindow).off("scroll resize");
             $(window.FrameWindow).on("scroll resize", function (event) {
@@ -3495,7 +3498,7 @@ _CustomBuilder.Builder = {
             
             try {
                 var box = self.getBox(node);
-
+                $("#element-parent-box").hide();
                 $("#element-select-box").css(
                     {
                         "top": box.top - self.frameDoc.scrollTop(),
@@ -3725,6 +3728,7 @@ _CustomBuilder.Builder = {
                                 } else {
                                     target = $(selement).closest("[data-cbuilder-classname]");
                                 }
+                                self.highlightParent($(elementsContainer), event);
                                 if (elementsContainer.find(self.dragElement).length === 0) {
                                     elementsContainer.append(self.dragElement);
                                 }
@@ -3747,7 +3751,7 @@ _CustomBuilder.Builder = {
                             }
                         } else {
                             var elementsContainer = $(eventTarget).closest("[data-cbuilder-"+parentContainerAttr+"]");
-
+                            
                             if ($(eventTarget).is("[data-cbuilder-ignore-dragging]").length > 0 || $(eventTarget).closest("[data-cbuilder-ignore-dragging]").length > 0) {
                                 var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
                                 if (selement.length > 0) {
@@ -3761,8 +3765,12 @@ _CustomBuilder.Builder = {
                                     return;
                                 }
                             }
-
+                            if ($(elementsContainer).closest('[data-cbuilder-classname]').is(self.dragElement) || $(self.dragElement).find($(elementsContainer)).length > 0) {
+                                return;
+                            }
                             if ($(target).parent().length > 0 && $(target).parent().is(elementsContainer)) {
+                                self.highlightParent($(elementsContainer), event);
+                                    
                                 //not container
                                 var offset = $(target).offset();
                                 var top = offset.top - $(self.frameDoc).scrollTop();
@@ -3784,6 +3792,8 @@ _CustomBuilder.Builder = {
                                     }
                                 }
                             } else {
+                                self.highlightParent($(elementsContainer), event);
+                                
                                 //is container
                                 var childs = elementsContainer.find('> [data-cbuilder-classname]');
                                 if (isAlternativeDrop) {
@@ -3888,9 +3898,10 @@ _CustomBuilder.Builder = {
                     }
                 } else if (!$(target).is(self.frameBody))
                 {
+                    $("#element-parent-box").hide();
                     self.highlight($(target), event);
                 } else {
-                    $("#element-highlight-box").hide();
+                    $("#element-parent-box, #element-highlight-box").hide();
                 }
             }
         });
@@ -4029,6 +4040,52 @@ _CustomBuilder.Builder = {
             event.preventDefault();
             return false;    
         });
+    },
+    
+    /*
+     * Highlight an element parent in canvas
+     */
+    highlightParent : function(target, event) {
+        var self = CustomBuilder.Builder;
+        
+        if ($(event.target).closest('[data-cbuilder-select]').length > 0) {
+            target = $(event.target).closest('[data-cbuilder-select]');
+        }
+        if (!$(target).is('[data-cbuilder-classname]')) {
+            target = $(target).closest('[data-cbuilder-classname]');
+        }
+        if ($(target).length > 0 && !$(target).is(self.frameBody) && !$(target).is('[data-cbuilder-uneditable]')) {
+            var box = self.getBox(target);
+            
+            $("#element-parent-box").css(
+                    {"top": box.top - self.frameDoc.scrollTop(),
+                        "left": box.left - self.frameDoc.scrollLeft(),
+                        "width": box.width,
+                        "height": box.height,
+                        "display": event.target.hasAttribute('contenteditable') ? "none" : "block"
+                    });
+
+            var nameOffset = $("#element-parent-box").offset();
+            if (nameOffset.top <= 76) {
+                $("#element-parent-name").css("top", "0px");
+            } else {
+                $("#element-parent-name").css("top", "");
+            }
+            
+            var data = target.data("data");
+            if (data === undefined && $(target).is('[data-cbuilder-select]')) {
+                var id = $(target).attr('data-cbuilder-select');
+                data = self.frameBody.find('[data-cbuilder-id="'+id+'"]').data("data");
+            }
+            if (data !== undefined) {
+                var component = self.parseDataToComponent(data);
+                $("#element-parent-name").html(self._getElementType(data, component));
+            } else {
+                $("#element-parent-box").hide();
+            }
+        } else {
+            $("#element-parent-box").hide();
+        }
     },
     
     /*
@@ -4441,7 +4498,7 @@ _CustomBuilder.Builder = {
                 self.iconDrag.remove();
                 self.iconDrag = null;
             }
-            $("#element-highlight-box").hide();
+            $("#element-parent-box, #element-highlight-box").hide();
             self.selectNode(false);
             
             self.currentParent = null;
@@ -4462,6 +4519,7 @@ _CustomBuilder.Builder = {
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
             self.dragElement.attr("data-cbuilder-dragelement", "true");
+            console.log(self.dragElement);
             
             self.isDragging = true;
             self.isMoved = false;
@@ -4508,6 +4566,7 @@ _CustomBuilder.Builder = {
             }
             if (self.dragElement) {
                 self.dragElement.remove();
+                $("#element-parent-box").hide();
                 self.dragElement = null;
             }
         });
@@ -4547,6 +4606,7 @@ _CustomBuilder.Builder = {
                 
                 if (self.dragElement && elementMouseIsOver && elementMouseIsOver.tagName !== 'IFRAME') {
                     self.dragElement.remove();
+                    $("#element-parent-box").hide();
                     self.dragElement = null;
                 } else {
                     self.handleDropEnd();
@@ -4818,7 +4878,7 @@ _CustomBuilder.Builder = {
         var self = CustomBuilder.Builder;
         var oldElement = element;
         $("#element-select-box").hide();
-        $("#element-highlight-box").hide();
+        $("#element-parent-box, #element-highlight-box").hide();
         
         if (deferreds === null || deferreds === undefined || deferreds.length === 0) {
             deferreds = [deferreds];

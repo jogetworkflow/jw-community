@@ -46,6 +46,11 @@ body.is-dragging [data-cbuilder-droparea]:after {
     display: block;
     border:3px solid #606dbc52;
 }
+body.is-dragging [data-cbuilder-droparea] [data-cbuilder-droparea]:after {
+    background: #000;
+    opacity: 0.05;
+    border:3px solid #606dbc;
+}
 body.is-dragging [data-cbuilder-droparea][data-cbuilder-droparea-msg]:after {
     content: attr(data-cbuilder-droparea-msg);
     color: #606dbc;
@@ -56,6 +61,9 @@ body.is-dragging [data-cbuilder-droparea][data-cbuilder-droparea-msg]:after {
     align-content: center;
     justify-content: center;
     font-weight: normal;
+}
+body.is-dragging [data-cbuilder-dragelement] [data-cbuilder-droparea]:after {
+    display: none;
 }
 body.screenshot-in-progress .screenshot-hidden,
 body.screenshot-in-progress [data-cbuilder-element-invisible],
@@ -163,6 +171,17 @@ body.is-dragging [data-cbuilder-dragelement] {
     border-bottom: 1px dashed #4285f4 !important;
     border-right: 1px dashed #4285f4 !important;
     border-left: 1px dashed #4285f4 !important;
+    position: relative;
+}
+body.is-dragging [data-cbuilder-dragelement]:after {
+    content: "";
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom:0;
+    background: #ffffff;
+    opacity: 0.1;
 }
 @media (min-width: 992px) {
     body:not(.show-node-details) [data-cbuilder-mobile-invisible]::after,

@@ -474,6 +474,7 @@ body.right-panel-resizing #right-panel-resize-block{
     pointer-events: none;
     white-space: nowrap; 
 }
+#cbuilder #element-parent-box,
 #cbuilder #element-highlight-box {
     position: absolute;
     border: 1px solid #54c5fd;
@@ -482,6 +483,9 @@ body.right-panel-resizing #right-panel-resize-block{
     top: 0px;
     left: 0px;
     display: none;
+}
+#cbuilder #element-parent-box{
+    border: 1px dotted #08565c;
 }
 #cbuilder .text-edit#element-select-box {
     border-style: dashed;
@@ -606,6 +610,7 @@ body.right-panel-resizing #right-panel-resize-block{
 #cbuilder #element-highlight-box-actions a#add-btn i {
     font-weight: 600; 
 }
+#cbuilder #element-parent-name,
 #cbuilder #element-highlight-name,
 #cbuilder #element-select-name{
     background: #54c5fd;
@@ -618,6 +623,7 @@ body.right-panel-resizing #right-panel-resize-block{
     display: inline-block;
     border-radius: 3px 3px 0px 0px; 
 }
+#cbuilder #element-parent-name,
 #cbuilder #element-highlight-name,
 #cbuilder #element-select-name #element-name{
     padding: 3px 8px;
@@ -636,6 +642,9 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #element-select-name{
     background: #4285f4;
+}
+#cbuilder #element-parent-name{
+    background: #08565c;
 }
 #cbuilder .nav-tabs .nav-item:first-child .nav-link {
     border-left: none; 
