@@ -329,11 +329,15 @@ UserviewBuilder = {
                 if ((menuObj !== null && menuObj.properties.id !== menuId) || menuObj === null) {
                     menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
                 }
-                var classname = menuObj.className;
-                var self = CustomBuilder.Builder;
-                var actualComponent = self.getComponent(classname);
-                
-                return CustomBuilder.Builder._getElementType(menuObj, actualComponent);
+                if (menuObj !== undefined) {
+                    var classname = menuObj.className;
+                    var self = CustomBuilder.Builder;
+                    var actualComponent = self.getComponent(classname);
+
+                    return CustomBuilder.Builder._getElementType(menuObj, actualComponent);
+                } else {
+                    return "";
+                }
             }
         }});
     },
