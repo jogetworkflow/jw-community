@@ -878,6 +878,33 @@ li.header > input.header_check:checked + ol {
     padding-top: 10px;
 }
 
+li.header > input.header_check:checked + ol {
+    display: flex;
+    flex-direction: column;
+}
+li.header > input.header_check:checked + ol > li {
+    order: 2;
+    position: relative;
+}
+li.header > input.header_check:checked + ol > li > i.la-star{
+    position: absolute;
+    cursor: pointer;
+    display:none;
+    top : 3px;
+    right : 5px;
+    font-size: 13px;
+    color: #f2d600;
+}
+li.header > input.header_check:checked + ol > li:hover > i.la-star{
+    display:block;
+}
+li.header > input.header_check:checked + ol > li.fav {
+    order: 1;
+}
+li.header > input.header_check:checked + ol > li.fav > i.la-star {
+    display:block;
+    font-weight: 900;
+}
 div.section, .header > ol {
     display: block;
     height: 0;

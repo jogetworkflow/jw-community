@@ -467,6 +467,12 @@ _CustomBuilder = {
 //                $(".initChosen").trigger("chosen:updated");
 //            });
 //        }
+
+        $(".components-list").off("click", " ol > li > i.la-star");
+        $(".components-list").on("click", " ol > li > i.la-star", function() {
+            CustomBuilder.togglePaletteFav($(this).parent());
+        });
+        CustomBuilder.updatePaletteFav();
         
         var builderCallback = function(){
             var jsonData = JSON.decode($("#cbuilder-json").val());
@@ -787,12 +793,51 @@ _CustomBuilder = {
                 var category = categoriesArr[i];
                 var categoryId = CustomBuilder.createPaletteCategory(category, tab);
                 var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
-
-                var li = $('<li class="'+licss+'"><div id="'+className.replace(/\./g, "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div></li>');
+                var eid = categoryId+"_"+className.replace(/\./g, "_");
+                var li = $('<li class="'+licss+'"><div id="'+eid+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div><i class="lar la-star"></i></li>');
                 $(li).find('.builder-palette-element').prepend($(iconObj).clone());
                 $(container).append(li);
             }
         }
+    },
+    
+    /*
+     * Check a palette element is in fav list and flag it
+     */
+    updatePaletteFav : function() {
+        var list = CustomBuilder.getBuilderSetting("paletteFavList");
+        if (list !== undefined && list !== null) {
+            for (var i in list) {
+                var div = $("li div#"+list[i]);
+                if ($(div).length > 0) {
+                    $(div).parent().addClass("fav");
+                }
+            }
+        }
+    },
+    
+    /*
+     * Toogle a palette element into fav list
+     */
+    togglePaletteFav : function(li) {
+        var list = CustomBuilder.getBuilderSetting("paletteFavList");
+        if (list === undefined || list === null) {
+            list = [];
+        }
+        var id = $(li).find("[element-class]").attr("id");
+        
+        if ($(li).hasClass("fav")) {
+            $(li).removeClass("fav");
+            if ($.inArray(id, list) !== -1) {
+                list = list.splice( $.inArray(id, list), 1);
+            }
+        } else {
+            $(li).addClass("fav");
+            if ($.inArray(id, list) === -1) {
+                list.push(id);
+            }
+        }
+        CustomBuilder.setBuilderSetting("paletteFavList", list);
     },
     
     /*
@@ -4517,9 +4562,8 @@ _CustomBuilder.Builder = {
         var self = CustomBuilder.Builder;
         self.isDragging = false;
 
-        $('.drag-elements-sidepane').off("mousedown touchstart", "ul > li > ol > li");
-        $('.drag-elements-sidepane').on("mousedown touchstart", "ul > li > ol > li", function (event) {
-
+        $('.drag-elements-sidepane').off("mousedown touchstart", "ul > li > ol > li > [element-class]");
+        $('.drag-elements-sidepane').on("mousedown touchstart", "ul > li > ol > li > [element-class]", function (event) {
             $this = $(this);
             if (self.iconDrag) {
                 self.iconDrag.remove();
@@ -4529,7 +4573,7 @@ _CustomBuilder.Builder = {
             self.selectNode(false);
             
             self.currentParent = null;
-            self.component = self.getComponent($this.find("> div").attr("element-class"));
+            self.component = self.getComponent($this.attr("element-class"));
             self.data = null;
             
             var html = null;
@@ -4552,7 +4596,7 @@ _CustomBuilder.Builder = {
             self.frameBody.addClass("is-dragging");
             self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
             
-            self.iconDrag = $($this.html()).attr("id", "dragElement-clone").css('position', 'absolute');
+            self.iconDrag = $($($this.parent().html())[0]).attr("id", "dragElement-clone").css('position', 'absolute');
             self.iconDrag.find("> a").remove();
 
             $('body').append(self.iconDrag);
