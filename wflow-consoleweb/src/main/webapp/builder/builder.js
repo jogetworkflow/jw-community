@@ -3867,29 +3867,56 @@ _CustomBuilder.Builder = {
                             self.dragElement.attr("data-cbuilder-dragelement", "true");
                         }
                         
-                        //check if the drag element is visible in the canvas
                         var dragOffset = $(self.dragElement).offset();
+                        var frameX = x + $(self.frameDoc).scrollLeft();
+                        var frameY = y + $(self.frameDoc).scrollTop();
                         var scrollHMin = $(self.frameDoc).scrollLeft();
                         var scrollHMax = scrollHMin + $(self.iframe).width();
                         var dragLeft = dragOffset.left;
                         var dragRight = dragOffset.left + $(self.dragElement).width();
-                        if (dragLeft < scrollHMin) {
-                            $(self.frameDoc).scrollLeft(dragLeft);
-                        }
-                        if (dragRight > scrollHMax) {
-                            $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
-                        }
                         var scrollVMin = $(self.frameDoc).scrollTop();
                         var scrollVMax = scrollVMin + $(self.iframe).height();
                         var dragTop = dragOffset.top;
                         var dragBottom = dragOffset.top + $(self.dragElement).height();
-                        if (dragTop < scrollVMin) {
-                            $(self.frameDoc).scrollTop(dragTop);
+                        
+                        var followCursor = false;
+                        if (frameY < dragTop && frameY > scrollVMin && frameY < scrollVMin + 50) {
+                            //check if the cursor on the top edge of the screen and the drag element can't follow
+                            $(self.frameDoc).scrollTop(frameY - 30);
+                            followCursor = true;
                         }
-                        if (dragBottom > scrollVMax) {
-                            $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                        if (frameY > dragBottom && frameY < scrollVMax && frameY > scrollVMax - 50) {
+                            //check if the cursor on the bottom edge of the screen and the drag element can't follow
+                            $(self.frameDoc).scrollTop(frameY + 30);
+                            followCursor = true;
                         }
-
+                        if (frameX < dragLeft && frameX > scrollHMin && frameX < scrollHMin + 50) {
+                            //check if the cursor on the left edge of the screen and the drag element can't follow
+                            $(self.frameDoc).scrollLeft(frameX - 30);
+                            followCursor = true;
+                        }
+                        if (frameX > dragRight && frameX < scrollHMax && frameX > scrollHMax - 50) {
+                            //check if the cursor on the right edge of the screen and the drag element can't follow
+                            $(self.frameDoc).scrollLeft(frameX + 30);
+                            followCursor = true;
+                        }
+                        
+                        if (!followCursor) {
+                            //check if the drag element is visible in the canvas
+                            if (dragLeft < scrollHMin) {
+                                $(self.frameDoc).scrollLeft(dragLeft);
+                            }
+                            if (dragRight > scrollHMax) {
+                                $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
+                            }
+                            if (dragTop < scrollVMin) {
+                                $(self.frameDoc).scrollTop(dragTop);
+                            }
+                            if (dragBottom > scrollVMax) {
+                                $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                            }
+                        }
+                      
                         if (self.iconDrag)
                             self.iconDrag.css({'left': x + 238, 'top': y + 20});
                     } catch (err) {
@@ -4519,7 +4546,6 @@ _CustomBuilder.Builder = {
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
 
             self.dragElement.attr("data-cbuilder-dragelement", "true");
-            console.log(self.dragElement);
             
             self.isDragging = true;
             self.isMoved = false;
