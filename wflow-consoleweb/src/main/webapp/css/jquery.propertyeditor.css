@@ -984,12 +984,6 @@ td.error .chosen-container, td.error input {
 .repeater-row.error {
     border: 1px solid red;
 }
-.repeater-rows-container.css-styles .repeater-row .inputs {
-    padding: 0px 30px 0px 0px;
-}
-.repeater-rows-container.css-styles .repeater-row .inputs .property-editor-property{
-    width: 100%;
-}
 .pebutton {
     color: #6c757d !important;
 }
@@ -1149,6 +1143,49 @@ td.error .chosen-container, td.error input {
 .pewrapper select:focus + span.label {
     display: inline-block;
 }
+.css-styles-container .style-group {
+    border: 1px solid #9eadba;
+}
+.css-styles-container .style-group.hide {
+    display:none;
+}
+.css-styles-container .style-group > h6 {
+    display: block !important;
+    width: 100%;
+    background: #9eadba;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    font-size: 13px;
+    padding: 3px 5px;
+}
+.css-styles-container .style-group > h6 > i {
+    font-size: 16px;
+    vertical-align: top;
+}
+.css-styles-container .style-group .style-group-input-container{
+    display: flex;
+    flex-wrap: wrap;
+}
+.css-styles-container .style-group .style-group-input-container .property-label {
+    font-size: 80%;
+}
+.css-styles-container .style-group .style-group-input-container .input1 {
+    width: 50%;
+}
+.css-styles-container .style-group .style-group-input-container .input3,
+.css-styles-container .style-group .style-group-input-container .input2 {
+    width: 100%;
+}
+.property-editor-container.wider .css-styles-container .style-group .style-group-input-container .input1 {
+    width: 25%;
+}
+.property-editor-container.wider .css-styles-container .style-group .style-group-input-container .input2 {
+    width: 50%;
+}
+.css-styles-container .style-group > h6.collapsed + .style-group-input-container{
+    display:none;
+}
 .property-editor-container.narrow .property-label-container {
     width: 100%;
     float: none;
@@ -1185,15 +1222,19 @@ td.error .chosen-container, td.error input {
     width: calc(100% - 16px) !important;
 }
 .property-editor-container.narrow input[type=number].withUnitSlector {
-    width: 70%;
+    width: 55%;
     max-width: 120px;
 }
 .property-editor-container.narrow input[type=number].withUnitSlector + select{
-    width: 30%;
+    width: 45%;
+    padding-left: 3px;
+    padding-right: 3px;
     max-width: 80px;
 }
 .property-editor-container.narrow input[type=number].withUnitSlector.autoUnit + select{
     width:100%;
+    padding-left: 6px;
+    padding-right: 6px;
     border-radius: 0.25rem !important;
 }
 /* field */
@@ -1298,6 +1339,17 @@ html .property-editor-container input[disabled] {
 }
 .property-editor-container input[type=number].withUnitSlector.autoUnit + select{
     width: 200px;
+}
+.property-type-iconbuttons .btn-check {
+    display: none;
+}
+.property-type-iconbuttons .btn-check:checked + label {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.property-type-iconbuttons .btn-group label:nth-child(2) {
+    border-radius: 0.2rem 0 0 0.2rem;
 }
 .ui-screen-hidden{
     display: none !important;
@@ -1479,7 +1531,8 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-page-title:before,
 .editor-panel-mode .property-editor-page-title:after,
 .editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-label:before,
-.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after{
+.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
+.css-styles-container .style-group > h6:after{
     -webkit-font-smoothing: antialiased;
     display: inline-block;
     font-style: normal;
@@ -1490,7 +1543,8 @@ body .ui-dialog .button_form.ui-dialog-content{
     font-size: 11px;
 }
 .editor-panel-mode .property-editor-page-title:after,
-.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after{
+.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
+.css-styles-container .style-group > h6:after{
     content: '\f107';
     padding: 0px;
     cursor: pointer;
@@ -1719,13 +1773,15 @@ body .ui-dialog .button_form.ui-dialog-content{
     counter-increment: grid-row;
     content: counter(grid-row) ". ";
 }
-.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after{
+.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
+.css-styles-container .style-group > h6:after{
     content: '\f0fe';
     background: transparent;
     color: #fff;
     right: 10px;
 }
-.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header.collapsed:after{
+.editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header.collapsed:after,
+.css-styles-container .style-group > h6.collapsed:after{
     content: '\f146';
 }
 .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{

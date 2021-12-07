@@ -1819,6 +1819,17 @@ body .property-editor-page-button-panel input[type=button]:hover{
     background-color: #00897b;
     color: #fff;
 }
+.property-editor-container #style-properties-viewport-control{
+    margin-bottom: 15px;
+}
+.property-editor-container[data-viewport="desktop"] .viewport-tablet,
+.property-editor-container[data-viewport="desktop"] .viewport-mobile,
+.property-editor-container[data-viewport="tablet"] .viewport-desktop,
+.property-editor-container[data-viewport="tablet"] .viewport-mobile,
+.property-editor-container[data-viewport="mobile"] .viewport-tablet,
+.property-editor-container[data-viewport="mobile"] .viewport-desktop{
+    display: none;
+}
 body.stop-scrolling {
     overflow: hidden;
 }

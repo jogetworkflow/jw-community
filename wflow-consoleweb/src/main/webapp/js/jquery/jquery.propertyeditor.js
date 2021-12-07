@@ -2718,6 +2718,10 @@ PropertyEditor.Model.Type.prototype = {
             }
         }
         
+        if (this.properties.viewport !== undefined) {
+            cssClass += " viewport-" + this.properties.viewport;
+        }
+        
         var parentId = this.parentId;
         if (parentId !== "" && parentId !== undefined) {
             parentId = parentId.substring(1);
@@ -6521,6 +6525,40 @@ PropertyEditor.Type.ImageRadio.prototype = {
 };
 PropertyEditor.Type.ImageRadio = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ImageRadio.prototype);
 
+PropertyEditor.Type.IconButtons = function() {};
+PropertyEditor.Type.IconButtons.prototype = {
+    shortname: "iconbuttons",
+    getData: PropertyEditor.Type.Radio.prototype.getData,
+    renderField: function() {
+        var thisObj = this;
+        var html = '<div class="btn-group btn-group-sm btn-group-fullwidth clearfix" role="group">';
+
+        if (this.value === null) {
+            this.value = "";
+        }
+
+        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+
+        if (this.properties.options !== undefined && this.properties.options !== null) {
+            $.each(this.properties.options, function(i, option) {
+                var checked = "";
+                if (thisObj.value === option.value) {
+                    checked = " checked";
+                }
+                html += '<input type="radio" autocomplete="off" class="btn-check" id="' + thisObj.id + '_'+option.value+'" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/><label class="btn btn-outline-secondary " for="' + thisObj.id + '_'+option.value+'" title="' + PropertyEditor.Util.escapeHtmlTag(option.title) + '">'+option.label+'</label>';
+            });
+        }
+        
+        html += '</div>';
+        return html;
+    },
+    initScripting: function() {
+        PropertyEditor.Util.supportHashField(this);
+    },
+    renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault
+};
+PropertyEditor.Type.IconButtons = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.IconButtons.prototype);
+
 PropertyEditor.Type.SelectBox = function() {};
 PropertyEditor.Type.SelectBox.prototype = {
     shortname: "selectbox",
@@ -6612,6 +6650,22 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#" + this.id).addClass("chosen-rtl");
         }
         $("#" + this.id).chosen({ width: "54%", placeholder_text: " " });
+        
+        if (this.properties.html === "true") {
+            $("#" + this.id)
+            .off('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel')
+            .on('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel', function() {
+                $("#" + field.id).next().find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
+                    var html = $(this).text();
+                    if (html.indexOf('<') !== -1) {
+                        $(this).html(html);
+                    }
+                });
+            });
+            setTimeout(function() {
+                $("#" + field.id).trigger("keyup");
+            }, 100);
+        }
 
         //support options_label_processor for selectobox & multiselect
         if (this.properties.options_label_processor !== undefined && this.properties.options_label_processor !== null) {
@@ -9737,53 +9791,92 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
 PropertyEditor.Type.CssStyle = function() {};
 PropertyEditor.Type.CssStyle.prototype = {
     shortname: "cssstyle",
-    styleOptions : {
-        "display" : {"field" : "display", "label" : get_peditor_msg("style.display")},
-        "position" : {"field" : "position", "label" : get_peditor_msg("style.position")},
-        "top" : {"field" : "unit", "label" : get_peditor_msg("style.top")},
-        "left" : {"field" : "unit", "label" : get_peditor_msg("style.left")},
-        "right" : {"field" : "unit", "label" : get_peditor_msg("style.right")},
-        "bottom" : {"field" : "unit", "label" : get_peditor_msg("style.bottom")},
-        "float" : {"field" : "float", "label" : get_peditor_msg("style.float")},
-        "background-color" : {"field" : "color", "label" : get_peditor_msg("style.backgroundColor")},
-        "color" : {"field" : "color", "label" : get_peditor_msg("style.color")},
-        "font-size" : {"field" : "unit", "label" : get_peditor_msg("style.fontSize")},
-        "font-family" : {"field" : "font-family", "label" : get_peditor_msg("style.fontFamily")},
-        "font-weight" : {"field" : "font-weight", "label" : get_peditor_msg("style.fontWeight")},
-        "text-align" : {"field" : "text-align", "label" : get_peditor_msg("style.textAlign")},
-        "line-height" : {"field" : "unit", "label" : get_peditor_msg("style.lineHeight")},
-        "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing")},
-        "text-decoration" : {"field" : "text-decoration", "label" : get_peditor_msg("style.textDecoration")},
-        "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor")},
-        "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle")},
-        "width" : {"field" : "unit", "label" : get_peditor_msg("style.width")},
-        "height" : {"field" : "unit", "label" : get_peditor_msg("style.height")},
-        "min-width" : {"field" : "unit", "label" : get_peditor_msg("style.minWidth")},
-        "min-height" : {"field" : "unit", "label" : get_peditor_msg("style.minHeight")},
-        "max-width" : {"field" : "unit", "label" : get_peditor_msg("style.maxWidth")},
-        "max-height" : {"field" : "unit", "label" : get_peditor_msg("style.maxHeight")},
-        "margin-top" : {"field" : "unit", "label" : get_peditor_msg("style.marginTop")},
-        "margin-left" : {"field" : "unit", "label" : get_peditor_msg("style.marginLeft")},
-        "margin-right" : {"field" : "unit", "label" : get_peditor_msg("style.marginRight")},
-        "margin-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.marginBottom")},
-        "padding-top" : {"field" : "unit", "label" : get_peditor_msg("style.paddingTop")},
-        "padding-left" : {"field" : "unit", "label" : get_peditor_msg("style.paddingLeft")},
-        "padding-right" : {"field" : "unit", "label" : get_peditor_msg("style.paddingRight")},
-        "padding-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.paddingBottom")},
-        "border-style" : {"field" : "border-style", "label" : get_peditor_msg("style.style")},
-        "border-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderWidth")},
-        "border-radius" : {"field" : "unit", "label" : get_peditor_msg("style.borderRadius")},
-        "border-color" : {"field" : "color", "label" : get_peditor_msg("style.borderColor")},
-        "border-top-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderTop")},
-        "border-left-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderLeft")},
-        "border-right-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderRight")},
-        "border-bottom-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderBottom")},
-        "background-image" : {"field" : "image", "label" : get_peditor_msg("style.backgroundImage")},
-        "background-repeat" : {"field" : "background-repeat", "label" : get_peditor_msg("style.repeat")},
-        "background-size" : {"field" : "background-size", "label" : get_peditor_msg("style.backgroundSize")},
-        "background-position-x" : {"field" : "unit", "label" : get_peditor_msg("style.positionX")},
-        "background-position-y" : {"field" : "unit", "label" : get_peditor_msg("style.positionY")},
-        "custom" : {"field" : "custom", "label" : get_peditor_msg("style.custom")}
+    styleGroups : {
+        "text" : {
+            header : "<i class=\"las la-font\"></i> " + get_peditor_msg("style.text"),
+            fields : {
+                "font-size" : {"field" : "unit", "label" : get_peditor_msg("style.fontSize"), "class" : "input1"},
+                "color" : {"field" : "color", "label" : get_peditor_msg("style.color"), "class" : "input1"},
+                "font-family" : {"field" : "font-family", "label" : get_peditor_msg("style.fontFamily"), "class" : "input2"},
+                "font-weight" : {"field" : "font-weight", "label" : get_peditor_msg("style.fontWeight"), "class" : "input1"},
+                "line-height" : {"field" : "unit", "label" : get_peditor_msg("style.lineHeight"), "class" : "input1"},
+                "text-align" : {"field" : "text-align", "label" : get_peditor_msg("style.textAlign"), "class" : "input2"},
+                "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing"), "class" : "input1"},
+                "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor"), "class" : "input1"},
+                "text-decoration" : {"field" : "text-decoration", "label" : get_peditor_msg("style.textDecoration"), "class" : "input2"},
+                "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle"), "class" : "input1"}
+            }
+        },
+        "background" : {
+            header : "<i class=\"las la-fill\"></i> " + get_peditor_msg("style.background"),
+            fields : {
+                "background-image" : {"field" : "image", "label" : get_peditor_msg("style.backgroundImage"), "class" : "input3"},
+                "background-color" : {"field" : "color", "label" : get_peditor_msg("style.backgroundColor"), "class" : "input1"},
+                "background-repeat" : {"field" : "background-repeat", "label" : get_peditor_msg("style.repeat"), "class" : "input1"},
+                "background-size" : {"field" : "background-size", "label" : get_peditor_msg("style.backgroundSize"), "class" : "input1"},
+                "background-position-x" : {"field" : "unit", "label" : get_peditor_msg("style.positionX"), "class" : "input1"},
+                "background-position-y" : {"field" : "unit", "label" : get_peditor_msg("style.positionY"), "class" : "input1"}
+            }
+        },
+        "margin" : {
+            header : "<i class=\"las la-arrows-alt\"></i> " + get_peditor_msg("style.margin"),
+            fields : {
+                "margin-top" : {"field" : "unit", "label" : get_peditor_msg("style.marginTop"), "class" : "input1"},
+                "margin-left" : {"field" : "unit", "label" : get_peditor_msg("style.marginLeft"), "class" : "input1"},
+                "margin-right" : {"field" : "unit", "label" : get_peditor_msg("style.marginRight"), "class" : "input1"},
+                "margin-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.marginBottom"), "class" : "input1"}
+            }
+        },
+        "padding" : {
+            header : "<i class=\"las la-compress-arrows-alt\"></i> " + get_peditor_msg("style.padding"),
+            fields : {
+                "padding-top" : {"field" : "unit", "label" : get_peditor_msg("style.paddingTop"), "class" : "input1"},
+                "padding-left" : {"field" : "unit", "label" : get_peditor_msg("style.paddingLeft"), "class" : "input1"},
+                "padding-right" : {"field" : "unit", "label" : get_peditor_msg("style.paddingRight"), "class" : "input1"},
+                "padding-bottom" : {"field" : "unit", "label" : get_peditor_msg("style.paddingBottom"), "class" : "input1"}
+            }
+        },
+        "border" : {
+            header : "<i class=\"las la-border-style\"></i> " + get_peditor_msg("style.border"),
+            fields : {
+                "border-style" : {"field" : "border-style", "label" : get_peditor_msg("style.style"), "class" : "input1"},
+                "border-color" : {"field" : "color", "label" : get_peditor_msg("style.borderColor"), "class" : "input1"},
+                "border-top-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderTop"), "class" : "input1"},
+                "border-left-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderLeft"), "class" : "input1"},
+                "border-right-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderRight"), "class" : "input1"},
+                "border-bottom-width" : {"field" : "unit", "label" : get_peditor_msg("style.borderBottom"), "class" : "input1"},
+                "border-radius" : {"field" : "unit", "label" : get_peditor_msg("style.borderRadius"), "class" : "input1"}
+            }
+        },
+        "display" : {
+            header : "<i class=\"lar la-images\"></i> " + get_peditor_msg("style.display"),
+            fields : {
+                "display" : {"field" : "display", "label" : get_peditor_msg("style.display"), "class" : "input1"},
+                "position" : {"field" : "position", "label" : get_peditor_msg("style.position"), "class" : "input1"},
+                "top" : {"field" : "unit", "label" : get_peditor_msg("style.top"), "class" : "input1"},
+                "left" : {"field" : "unit", "label" : get_peditor_msg("style.left"), "class" : "input1"},
+                "right" : {"field" : "unit", "label" : get_peditor_msg("style.right"), "class" : "input1"},
+                "bottom" : {"field" : "unit", "label" : get_peditor_msg("style.bottom"), "class" : "input1"},
+                "float" : {"field" : "float", "label" : get_peditor_msg("style.float"), "class" : "input1"}
+            }
+        },
+        "size" : {
+            header : "<i class=\"las la-vector-square\"></i> " + get_peditor_msg("style.size"),
+            fields : {
+                "width" : {"field" : "unit", "label" : get_peditor_msg("style.width"), "class" : "input1"},
+                "height" : {"field" : "unit", "label" : get_peditor_msg("style.height"), "class" : "input1"},
+                "min-width" : {"field" : "unit", "label" : get_peditor_msg("style.minWidth"), "class" : "input1"},
+                "min-height" : {"field" : "unit", "label" : get_peditor_msg("style.minHeight"), "class" : "input1"},
+                "max-width" : {"field" : "unit", "label" : get_peditor_msg("style.maxWidth"), "class" : "input1"},
+                "max-height" : {"field" : "unit", "label" : get_peditor_msg("style.maxHeight"), "class" : "input1"}
+            }
+        },
+        "custom" : {
+            header : "<i class=\"las la-code\"></i> " + get_peditor_msg("style.custom"),
+            fields : {
+                "custom" : {"field" : "custom", "label" : get_peditor_msg("style.custom"), "class" : "input3"}
+            }
+        }
     },
     styleFields : {
         'display' : {
@@ -9811,11 +9904,11 @@ PropertyEditor.Type.CssStyle.prototype = {
             mode : 'css_unit'
         },
         'float' : {
-            type : 'selectbox',
+            type : 'iconbuttons',
             options : [
-                {value : '', label : get_peditor_msg("style.none")},
-                {value : 'left', label : get_peditor_msg("style.left")},
-                {value : 'right', label : get_peditor_msg("style.right")}
+                {value : '', label : '<i class="la la-times"></i>', title : get_peditor_msg("style.none")},
+                {value : 'left', label : '<i class="la la-align-left"></i>', title : get_peditor_msg("style.left")},
+                {value : 'right', label : '<i class="la la-align-right"></i>', title : get_peditor_msg("style.right")}
             ]
         },
         'color' : {
@@ -9825,44 +9918,46 @@ PropertyEditor.Type.CssStyle.prototype = {
             type : 'selectbox',
             options : [
                 {value : '', label : 'Default'},
-                {value : 'Arial, Helvetica, sans-serif', label : 'Arial'},
-                {value : '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', label : 'Lucida Grande'},
-                {value : '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif', label : 'Palatino Linotype'},
-                {value : '\'Times New Roman\', Times, serif', label : 'Times New Roman'},
-                {value : 'Georgia, serif', label : 'Georgia, serif'},
-                {value : 'Tahoma, Geneva, sans-serif', label : 'Tahoma'},
-                {value : '\'Comic Sans MS\', cursive, sans-serif', label : 'Comic Sans'},
-                {value : 'Verdana, Geneva, sans-serif', label : 'Verdana'},
-                {value : 'Impact, Charcoal, sans-serif', label : 'Impact'},
-                {value : '\'Arial Black\', Gadget, sans-serif', label : 'Arial Black'},
-                {value : '\'Trebuchet MS\', Helvetica, sans-serif', label : 'Trebuchet'},
-                {value : '\'Courier New\', Courier, monospace', label : 'Courier New'},
-                {value : '\'Brush Script MT\', sans-serif', label : 'Brush Script'}
-            ]
+                {value : 'Arial, Helvetica, sans-serif', label : '&lt;span style="font-family:Arial;"&gt;Arial&lt;/span&gt;'},
+                {value : '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', label : '&lt;span style="font-family:\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif;"&gt;Lucida Grande&lt;/span&gt;'},
+                {value : '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif', label : '&lt;span style="font-family:\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif;"&gt;Palatino Linotype&lt;/span&gt;'},
+                {value : '\'Times New Roman\', Times, serif', label : '&lt;span style="font-family:\'Times New Roman\', Times, serif;"&gt;Times New Roman&lt;/span&gt;'},
+                {value : 'Georgia, serif', label : '&lt;span style="font-family:Georgia, serif;"&gt;Georgia, serif&lt;/span&gt;'},
+                {value : 'Tahoma, Geneva, sans-serif', label : '&lt;span style="font-family:Tahoma, Geneva, sans-serif;"&gt;Tahoma&lt;/span&gt;'},
+                {value : '\'Comic Sans MS\', cursive, sans-serif', label : '&lt;span style="font-family:\'Comic Sans MS\', cursive, sans-serif;"&gt;Comic Sans&lt;/span&gt;'},
+                {value : 'Verdana, Geneva, sans-serif', label : '&lt;span style="font-family:Verdana, Geneva, sans-serif;"&gt;Verdana&lt;/span&gt;'},
+                {value : 'Impact, Charcoal, sans-serif', label : '&lt;span style="font-family:Impact, Charcoal, sans-serif;"&gt;Impact&lt;/span&gt;'},
+                {value : '\'Arial Black\', Gadget, sans-serif', label : '&lt;span style="font-family:\'Arial Black\', Gadget, sans-serif;"&gt;Arial Black&lt;/span&gt;'},
+                {value : '\'Trebuchet MS\', Helvetica, sans-serif', label : '&lt;span style="font-family:\'Trebuchet MS\', Helvetica, sans-serif;"&gt;Trebuchet&lt;/span&gt;'},
+                {value : '\'Courier New\', Courier, monospace', label : '&lt;span style="font-family:\'Courier New\', Courier, monospace;"&gt;Courier New&lt;/span&gt;'},
+                {value : '\'Brush Script MT\', sans-serif', label : '&lt;span style="font-family:\'Brush Script MT\', sans-serif;"&gt;Brush Script&lt;/span&gt;'}
+            ],
+            html : 'true'
         },
         'font-weight' : {
             type : 'selectbox',
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
-                {value : '100', label : get_peditor_msg("style.thin")},
-                {value : '200', label : get_peditor_msg("style.extraLight")},
-                {value : '300', label : get_peditor_msg("style.light")},
-                {value : '400', label : get_peditor_msg("style.normal")},
-                {value : '500', label : get_peditor_msg("style.medium")},
-                {value : '600', label : get_peditor_msg("style.semiBold")},
-                {value : '700', label : get_peditor_msg("style.bold")},
-                {value : '800', label : get_peditor_msg("style.extraBold")},
-                {value : '900', label : get_peditor_msg("style.ultraBold")}
-            ]
+                {value : '100', label : '&lt;span style="font-weight:100;"&gt;' + get_peditor_msg("style.thin") + '&lt;/span&gt;'},
+                {value : '200', label : '&lt;span style="font-weight:200;"&gt;' + get_peditor_msg("style.extraLight") + '&lt;/span&gt;'},
+                {value : '300', label : '&lt;span style="font-weight:300;"&gt;' + get_peditor_msg("style.light") + '&lt;/span&gt;'},
+                {value : '400', label : '&lt;span style="font-weight:400;"&gt;' + get_peditor_msg("style.normal") + '&lt;/span&gt;'},
+                {value : '500', label : '&lt;span style="font-weight:500;"&gt;' + get_peditor_msg("style.medium") + '&lt;/span&gt;'},
+                {value : '600', label : '&lt;span style="font-weight:600;"&gt;' + get_peditor_msg("style.semiBold") + '&lt;/span&gt;'},
+                {value : '700', label : '&lt;span style="font-weight:700;"&gt;' + get_peditor_msg("style.bold") + '&lt;/span&gt;'},
+                {value : '800', label : '&lt;span style="font-weight:800;"&gt;' + get_peditor_msg("style.extraBold") + '&lt;/span&gt;'},
+                {value : '900', label : '&lt;span style="font-weight:900;"&gt;' + get_peditor_msg("style.ultraBold") + '&lt;/span&gt;'}
+            ],
+            html : 'true'
         },
         'text-align' : {
-            type : 'selectbox',
+            type : 'iconbuttons',
             options : [
-                {value : '', label : get_peditor_msg("style.default")},
-                {value : 'left', label : get_peditor_msg("style.left")},
-                {value : 'center', label : get_peditor_msg("style.center")},
-                {value : 'right', label : get_peditor_msg("style.right")},
-                {value : 'justify', label : get_peditor_msg("style.justify")}
+                {value : '', label : '<i class="la la-times"></i>', title : get_peditor_msg("style.default")},
+                {value : 'left', label : '<i class="la la-align-left"></i>', title : get_peditor_msg("style.left")},
+                {value : 'center', label : '<i class="la la-align-center"></i>', title : get_peditor_msg("style.center")},
+                {value : 'right', label : '<i class="la la-align-right"></i>', title : get_peditor_msg("style.right")},
+                {value : 'justify', label : '<i class="la la-align-justify"></i>', title : get_peditor_msg("style.justify")}
             ]
         },
         'text-decoration' : {
@@ -9870,32 +9965,35 @@ PropertyEditor.Type.CssStyle.prototype = {
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
                 {value : 'none', label : get_peditor_msg("style.none")},
-                {value : 'underline', label : get_peditor_msg("style.underline")},
-                {value : 'overline', label : get_peditor_msg("style.overline")},
-                {value : 'line-through', label : get_peditor_msg("style.lineThrough")},
-                {value : 'underline overline', label : get_peditor_msg("style.underlineOverline")}
-            ]
+                {value : 'underline', label : '&lt;span style="text-decoration:underline;"&gt;' + get_peditor_msg("style.underline") + '&lt;/span&gt;'},
+                {value : 'overline', label : '&lt;span style="text-decoration:overline;"&gt;' + get_peditor_msg("style.overline") + '&lt;/span&gt;'},
+                {value : 'line-through', label : '&lt;span style="text-decoration:line-through;"&gt;' + get_peditor_msg("style.lineThrough") + '&lt;/span&gt;'},
+                {value : 'underline overline', label : '&lt;span style="text-decoration:underline overline;"&gt;' + get_peditor_msg("style.underlineOverline") + '&lt;/span&gt;'}
+            ],
+            html : 'true'
         },
         'text-decoration-style' : {
             type : 'selectbox',
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
-                {value : 'solid', label : get_peditor_msg("style.solid")},
-                {value : 'wavy', label : get_peditor_msg("style.wavy")},
-                {value : 'dotted', label : get_peditor_msg("style.dotted")},
-                {value : 'dashed', label : get_peditor_msg("style.dashed")},
-                {value : 'double', label : get_peditor_msg("style.double")}
-            ]
+                {value : 'solid', label : '&lt;span style="text-decoration:underline;text-decoration-style:solid;"&gt;' + get_peditor_msg("style.solid") + '&lt;/span&gt;'},
+                {value : 'wavy', label : '&lt;span style="text-decoration:underline;text-decoration-style:wavy;"&gt;' + get_peditor_msg("style.wavy") + '&lt;/span&gt;'},
+                {value : 'dotted', label : '&lt;span style="text-decoration:underline;text-decoration-style:dotted;"&gt;' + get_peditor_msg("style.dotted") + '&lt;/span&gt;'},
+                {value : 'dashed', label : '&lt;span style="text-decoration:underline;text-decoration-style:dashed;"&gt;' + get_peditor_msg("style.dashed") + '&lt;/span&gt;'},
+                {value : 'double', label : '&lt;span style="text-decoration:underline;text-decoration-style:double;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
+            ],
+            html : 'true'
         },
         'border-style' : {
             type : 'selectbox',
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
-                {value : 'solid', label : get_peditor_msg("style.solid")},
-                {value : 'dotted', label : get_peditor_msg("style.dotted")},
-                {value : 'dashed', label : get_peditor_msg("style.dashed")},
-                {value : 'double', label : get_peditor_msg("style.double")}
-            ]
+                {value : 'solid', label : '&lt;span style="border:1px solid #ccc;"&gt;' + get_peditor_msg("style.solid") + '&lt;/span&gt;'},
+                {value : 'dotted', label : '&lt;span style="border:1px dotted #ccc;"&gt;' + get_peditor_msg("style.dotted") + '&lt;/span&gt;'},
+                {value : 'dashed', label : '&lt;span style="border:1px dashed #ccc;"&gt;' + get_peditor_msg("style.dashed") + '&lt;/span&gt;'},
+                {value : 'double', label : '&lt;span style="border:1px double #ccc;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
+            ],
+            html : 'true'
         },
         'image' : {
             type: 'image',
@@ -9931,136 +10029,150 @@ PropertyEditor.Type.CssStyle.prototype = {
         var properties = new Object();
         var prefix = field.properties.name;
         if (this.isDataReady) {
-            //set empty for all styles
-            for (var property in field.styleOptions) {
-                properties[prefix + "-" + property] = "";
+            for (var g in field.styleGroups) {
+                for (var p in field.styleGroups[g].fields) {
+                    properties[prefix + "-" + p] = "";
+                }
             }
             
-            $("#" + field.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
+            $("#" + field.id + " .css-styles-container .style-group").each(function(){
                 var fields = $(this).data("fields");
                 if (fields !== undefined) {
                     $.each(fields, function(i, property) {
                         var type = property.propertyEditorObject;
                         var data = type.getData(false);
                         if (data !== null) {
-                            properties[prefix + "-" + property.name] = data[property.name];
+                            properties[property.name] = data[property.name];
                         }
                     });
                 }
             });
+        } else {
+            if (field.options.propertyValues !== undefined && field.options.propertyValues !== null) {
+                for (var g in field.styleGroups) {
+                    for (var p in field.styleGroups[g].fields) {
+                        if (field.options.propertyValues[prefix + "-" +p] !== undefined) {
+                            properties[prefix + "-" + p] = field.options.propertyValues[prefix + "-" +p];
+                        }
+                    }
+                }
+            }
         }
         
         return properties;
     },
     renderField : function() {
         var thisObj = this;
+        this.isDataReady = false;
+        
+        var html = '<div id="'+thisObj.id+'" name="'+thisObj.id+'"><div class="css-styles-container"></div>';
         
         var options = '<option value=""></option>';
-        for (var property in thisObj.styleOptions) {
-            options += '<option value="'+property+'" >'+thisObj.styleOptions[property].label+'</label>';
+        for (var g in thisObj.styleGroups) {
+            options += '<option value="'+g+'" >'+UI.escapeHTML(thisObj.styleGroups[g].header)+'</option>';
         }
         
-        var html = '<div id="'+thisObj.id+'" name="'+thisObj.id+'"><div class="repeater-rows-container css-styles"></div><div style="text-align:left; margin-bottom: 10px;"><select class="add_new_style initChosen">'+options+'</select> <a class="pebutton addrow" style="float:none;"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        html += '<div style="text-align:left; margin-top:5px; margin-bottom: 10px;"><select class="add_new_style initChosen">'+options+'</select></div></div>';
         
         return html;
     },
     initScripting : function() {
-        var thisObj = this;
+        var field = this;
         
-        $("#" + this.id).find(".add_new_style").chosen({ width: "54%", placeholder_text: "Add new style" });
-
-        thisObj.loadValues();
-        
-        $("#" + thisObj.id + "_input").off("click", ".addrow");
-        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
-            var style = $("#" + thisObj.id).find(".add_new_style").val();
-            if (style !== "") {
-                thisObj.addRow(style, "");
-                $("#" + thisObj.id).find(".add_new_style").val("").trigger("change").trigger("chosen:updated");
-            }
+        $("#" + this.id).find(".add_new_style").chosen({ width: "100%", placeholder_text: get_peditor_msg("style.addNew") })
+        .off('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel')
+        .on('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel', function() {
+            $("#" + field.id + " .add_new_style").next().find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
+                var html = $(this).text();
+                if (html.indexOf('<') !== -1) {
+                    $(this).html(html);
+                }
+            });
         });
         
-        $("#" + thisObj.id + "_input").off("click", ".deleterow");
-        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
-            thisObj.deleteRow(this);
+        for (var g in field.styleGroups) {
+            field.renderGroup(g, field.options.propertyValues);
+        }
+        
+        $("#" + field.id).find(".add_new_style").off("change.addGroup");
+        $("#" + field.id).find(".add_new_style").on("change.addGroup", function() {
+            var g = $("#" + field.id).find(".add_new_style").chosen().val();
+            field.renderGroup(g);
         });
+        
+        this.isDataReady = true;
     },
-    loadValues : function() {
+    renderGroup : function(g, values) {
         var thisObj = this;
+        var group = thisObj.styleGroups[g];
         
-        if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
-            for (var property in thisObj.styleOptions) {
-                if (thisObj.options.propertyValues[thisObj.properties.name + "-" + property] !== undefined) {
-                    thisObj.addRow(property, thisObj.options.propertyValues[thisObj.properties.name + "-" + property]);
+        if (values !== undefined && values !== null) {
+            var isHasValues = false;
+            for (var f in group.fields) {
+                if (values[thisObj.properties.name + "-" +f] !== undefined) {
+                    isHasValues = true;
+                    break;
                 }
             }
-        }
-    },
-    addRow : function(name, value) {
-        var thisObj = this;
-        
-        if ($("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container >  .repeater-row[data-property='"+name+"']").length > 0) {
-            $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append($("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container > .repeater-row[data-property='"+name+"']"));
-            return;
+            if (!isHasValues) {
+                return;
+            }
         }
         
-        var row = $('<div class="repeater-row" data-property="'+name+'"><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
+        var container = $("#" + this.id).find('.css-styles-container');
+        var gHtml = "";
         var fields = [];
-        var values = {};
-        values[name] = value;
-        
-        var field = $.extend(true, {}, thisObj.styleFields[thisObj.styleOptions[name].field]);
-        field['name'] = name;
-        field['label'] = thisObj.styleOptions[name].label;
-        if (field['appPath'] !== undefined) {
-            field['appPath'] = thisObj.options.appPath;
-        }
-        fields.push(field);
-        
-        var html = "";
-        var cId = thisObj.id + "-" + ((new Date()).getTime());
-        if (fields !== null && fields !== undefined) {
-            $.each(fields, function(i, property) {
-                html += thisObj.renderProperty(i, cId, property, values);
-            });
-        }
-        $(row).find(".inputs .inputs-container").append(html);
-        
-        $(row).data("fields", fields);
-        
-        $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append(row);
-        
-        if (fields !== null && fields !== undefined) {
-            $.each(fields, function(i, property) {
-                var type = property.propertyEditorObject;
-                type.initScripting();
-                type.initDefaultScripting();
-            });
-        }
-    },
-    renderProperty: function(i, prefix, property, values) {
-        var type = property.propertyEditorObject;
+        for (var f in group.fields) {
+            var field = $.extend(true, {}, thisObj.styleFields[group.fields[f].field]);
+            field['name'] = thisObj.properties.name + "-" + f;
+            field['label'] = group.fields[f].label;
+            if (field['appPath'] !== undefined) {
+                field['appPath'] = thisObj.options.appPath;
+            }
+            fields.push(field);
 
-        if (type === undefined) {
-            var value = null;
-            if (values !== null && values !== undefined && values[property.name] !== undefined) {
-                value = values[property.name];
-            } else if (property.value !== undefined && property.value !== null) {
-                value = property.value;
+            var type = field.propertyEditorObject;
+            if (type === undefined) {
+                var value = null;
+                if (values !== null && values !== undefined && values[field.name] !== undefined) {
+                    value = values[field.name];
+                } else if (field.value !== undefined && field.value !== null) {
+                    value = field.value;
+                }
+
+                type = PropertyEditor.Util.getTypeObject(this, f, thisObj.id, field, value, null);
+                field.propertyEditorObject = type;
             }
 
-            type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, null);
-            property.propertyEditorObject = type;
+            if (type !== null) {
+                gHtml += '<div class="'+group.fields[f].class+'">' + type.render() + '</div>';
+            }
         }
-
-        if (type !== null) {
-            return type.render();
+        var group = $('<div class="style-group" data-style-group="'+g+'"><h6>'+group.header+'</h6><div class="style-group-input-container">' + gHtml + '</div></div>');
+        $(container).append(group);
+        $(group).data("fields", fields);
+        
+        $(group).find("> h6").off("click").on("click", function(){
+            $(this).toggleClass("collapsed");
+        });
+        
+        $.each(fields, function(i, property) {
+            var type = property.propertyEditorObject;
+            type.initScripting();
+            type.initDefaultScripting();
+        });
+        
+        $("#" + thisObj.id).find(".add_new_style").find('option[value="'+g+'"]').remove();
+        $("#" + thisObj.id).find(".add_new_style").trigger("chosen:updated");
+        if ($("#" + thisObj.id).find(".add_new_style option").length === 1) {
+            $("#" + thisObj.id).find(".add_new_style").parent().hide();
         }
-        return "";
-    },
-    deleteRow : function(button) {
-        var thisObj = this;
-        $(button).closest(".repeater-row").remove();
+        
+        if (values === undefined) {
+            $(group).closest(".property-editor-pages").animate({
+                scrollTop: $(group).position().top
+            }, 10);
+        }
     }
 };
 PropertyEditor.Type.CssStyle = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CssStyle.prototype);

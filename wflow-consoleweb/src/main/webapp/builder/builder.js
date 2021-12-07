@@ -2266,10 +2266,11 @@ _CustomBuilder = {
                 width = winWidth;
             }
             $("#right-panel").css("width", width + 'px');
+        } else {
+            width = $("#right-panel").width();
         }
         
-        var width = $("#right-panel").width();
-        if (width > 450) {
+        if (width > 680) {
             $("#right-panel .property-editor-container").addClass("wider");
         } else {
             $("#right-panel .property-editor-container").removeClass("wider");
@@ -5653,6 +5654,36 @@ _CustomBuilder.Builder = {
         $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
         $("#right-panel #style-properties-tab").propertyEditor(options);
         
+        var supportViewport = false;
+        
+        for (var i in options.propertiesDefinition) {
+            for (var j in options.propertiesDefinition[i].properties) {
+                if (options.propertiesDefinition[i].properties[j].viewport !== undefined) {
+                    supportViewport = true;
+                    break;
+                }
+            }
+            if (supportViewport) {
+                break;
+            }
+        }
+        
+        if (supportViewport) {
+            var controls = $('<div id="style-properties-viewport-control" class="btn-group btn-group-sm btn-group-fullwidth clearfix" role="group"></div>');
+            $(controls).append('<button data-viewport="desktop" class="btn btn-outline-dark active"><i class="la la la-laptop"></i> '+get_cbuilder_msg('cbuilder.desktop')+'</button>');
+            $(controls).append('<button data-viewport="tablet" class="btn btn-outline-dark"><i class="la la-tablet"></i> '+get_cbuilder_msg('cbuilder.tablet')+'</button>');
+            $(controls).append('<button data-viewport="mobile" class="btn btn-outline-dark"><i class="la la-mobile-phone"></i> '+get_cbuilder_msg('cbuilder.mobile')+'</button>');
+
+            $(controls).find("button").off("click").on("click", function(){
+                $(controls).find("button").removeClass("active");
+                $(this).closest(".property-editor-container").attr("data-viewport", $(this).data("viewport"));
+                $(this).addClass("active");
+                return false;
+            });
+            $("#right-panel #style-properties-tab").find(".property-editor-container").attr("data-viewport", "desktop");
+            $("#right-panel #style-properties-tab").find(".property-editor-container > .property-editor-pages").prepend(controls);
+        }
+        
         if ($("body").hasClass("max-property-editor")) {
             CustomBuilder.adjustPropertyPanelSize();
         }
@@ -5678,44 +5709,40 @@ _CustomBuilder.Builder = {
                     title: title,
                     properties:[
                         {
-                            name : 'normalstyle',
-                            label : get_cbuilder_msg('style.normalstyle'),
-                            type : 'header'
-                        },
-                        {
                             name : prefix+'style',
-                            label : get_cbuilder_msg('style.styling.desktop'),
-                            type : 'cssstyle'
+                            label : get_cbuilder_msg('style.normalstyle'),
+                            type : 'cssstyle',
+                            viewport : 'desktop'
                         },
                         {
                             name : prefix+'style-tablet',
-                            label : get_cbuilder_msg('style.styling.tablet'),
-                            type : 'cssstyle'
+                            label : get_cbuilder_msg('style.normalstyle'),
+                            type : 'cssstyle',
+                            viewport : 'tablet'
                         },
                         {
                             name : prefix+'style-mobile',
-                            label : get_cbuilder_msg('style.styling.mobile'),
-                            type : 'cssstyle'
-                        },
-                        {
-                            name : 'hoverstyle',
-                            label : get_cbuilder_msg('style.hoverstyle'),
-                            type : 'header'
+                            label : get_cbuilder_msg('style.normalstyle'),
+                            type : 'cssstyle',
+                            viewport : 'mobile'
                         },
                         {
                             name : prefix+'style-hover',
-                            label : get_cbuilder_msg('style.styling.hover.desktop'),
-                            type : 'cssstyle'
+                            label : get_cbuilder_msg('style.hoverstyle'),
+                            type : 'cssstyle',
+                            viewport : 'desktop'
                         },
                         {
                             name : prefix+'style-hover-tablet',
-                            label : get_cbuilder_msg('style.styling.hover.tablet'),
-                            type : 'cssstyle'
+                            label : get_cbuilder_msg('style.hoverstyle'),
+                            type : 'cssstyle',
+                            viewport : 'tablet'
                         },
                         {
                             name : prefix+'style-hover-mobile',
-                            label : get_cbuilder_msg('style.styling.hover.mobile'),
-                            type : 'cssstyle'
+                            label : get_cbuilder_msg('style.hoverstyle'),
+                            type : 'cssstyle',
+                            viewport : 'mobile'
                         }
                     ]
                 }
