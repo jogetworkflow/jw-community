@@ -27,6 +27,7 @@
     z-index: 1;
 }
 .card-layout.card-layout-active table td.rowaction_body {
+    display: inline-block !important;
     position: relative;
     z-index: 2;
 }
@@ -49,6 +50,7 @@ body.is-dragging .card-layout.card-layout-active table td[data-cbuilder-dragelem
     padding-bottom: 0 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
+    visibility: hidden !important;
 }
 .card-layout.card-layout-active tr{
     display: block;
