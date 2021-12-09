@@ -80,22 +80,31 @@ function responsiveTable(table) {
         }
         
         var resize = function (event) {
-            var width = $(window).width();
-            table.closest(".dataList").removeClass("card-layout-active");
-            if ((width < 768 && table.closest(".dataList").hasClass("sm-card")) 
-                    || (width < 992 && table.closest(".dataList").hasClass("md-card"))
-                    || (table.closest(".dataList").hasClass("lg-card"))) {
-                table.closest(".dataList").addClass("card-layout-active");
-            }
-            if (width < 992) {
-                $(respButtons).find(".search_trigger").removeClass("filter_show");
-                $(filters).hide();
-                $(respButtons).show();
-                $(respButtons).find(".footable-button").hide();
-            } else {
-                $(respButtons).hide();
-                $(filters).show();
-            }
+            setTimeout(function(){
+                $(".dataList table").each(function(){
+                    var width = $(window).width();
+                    var table = $(this);
+                    if (table.closest(".dataList").parent().closest(".dataList").length > 0) {
+                        width = table.closest(".dataList").parent().width();
+                    }
+
+                    table.closest(".dataList").removeClass("card-layout-active");
+                    if ((width < 768 && table.closest(".dataList").hasClass("sm-card")) 
+                            || (width < 992 && table.closest(".dataList").hasClass("md-card"))
+                            || (table.closest(".dataList").hasClass("lg-card"))) {
+                        table.closest(".dataList").addClass("card-layout-active");
+                    }
+                    if (width < 992) {
+                        $(respButtons).find(".search_trigger").removeClass("filter_show");
+                        $(filters).hide();
+                        $(respButtons).show();
+                        $(respButtons).find(".footable-button").hide();
+                    } else {
+                        $(respButtons).hide();
+                        $(filters).show();
+                    }
+                });
+            }, 10);
         };
         
         $(window).off("resize.responsive-table");
