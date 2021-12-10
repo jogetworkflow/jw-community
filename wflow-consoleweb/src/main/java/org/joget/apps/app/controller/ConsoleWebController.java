@@ -3701,6 +3701,11 @@ public class ConsoleWebController {
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/forms") 
     public String consoleFormList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        String result = checkVersionExist(map, appId, version);
+        if (result != null) {
+            return result;
+        }
+        
         if (version != null && !version.isEmpty()) {
             version = "/" + version;
         }

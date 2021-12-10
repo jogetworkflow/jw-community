@@ -8,14 +8,14 @@
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
         <c:set var="name" scope="request">
-            <c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
+            <c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
         </c:set>
         <c:set var="script" scope="request">
             ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}
             <script data-cbuilder-script>
                 $(function () {
-                    CustomBuilder.initConfig(${builderConfig});
-                    CustomBuilder.initPropertiesOptions(${builderProps});
+                    CustomBuilder.initConfig(<c:out value="${builderConfig}" escapeXml="false"/>);
+                    CustomBuilder.initPropertiesOptions(<c:out value="${builderProps}" escapeXml="false"/>);
 
                     CustomBuilder.initBuilder(function() {
                         CustomBuilder.loadJson($("#cbuilder-json").val());
@@ -29,7 +29,7 @@
             title : "<c:out value="${builderLabel}"/> <c:choose><c:when test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:when><c:otherwise>: <c:out value="${appDefinition.name}"/></c:otherwise></c:choose>",
             appId : "<c:out value="${appDefinition.id}"/>",
             appVersion : "<c:out value="${appDefinition.version}"/>",
-            appPublished : "${appDefinition.published}",
+            appPublished : "<ui:escape value="${appDefinition.published}" format="json" />",
             appPath : "/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>",
             builderType : "<ui:escape value="${builderCode}" format="json" />",
             builderLabel : "<ui:escape value="${builderLabel}" format="json" />",
@@ -70,18 +70,18 @@
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
             <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor">
-                <span id="builder_loader" class="fa-stack fa-3x" style="color:${builderColor}; display:none; z-index:9999;">
+                <span id="builder_loader" class="fa-stack fa-3x" style="color:<c:out value="${builderColor}"/>; display:none; z-index:9999;">
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
-                    <i class="${builderIcon} fa-stack-1x"></i>
+                    <i class="<c:out value="${builderIcon}"/> fa-stack-1x"></i>
                 </span>
                 <div id="top-panel">
-                    <a id="builderIcon" class="reload" style="background-color:${builderColor};">
-                        <i class="fa-2x ${builderIcon}"></i>
+                    <a id="builderIcon" class="reload" style="background-color:<c:out value="${builderColor}"/>;">
+                        <i class="fa-2x <c:out value="${builderIcon}"/>"></i>
                         <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
                     </a>
                     <div id="top-panel-main">
-                        <div id="builderElementName" style="color:${builderColor};">
-                            <div class="title"><span><c:out value="${appDefinition.name}" /> v${appDefinition.version}<c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                        <div id="builderElementName" style="color:<c:out value="${builderColor}"/>;">
+                            <div class="title"><span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
                                 <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
@@ -215,7 +215,7 @@
                     </button>
                 </div>
                 <div id="builder_canvas">
-                    ${builderCanvas}
+                    <c:out value="${builderCanvas}" escapeXml="false"/>
                 </div>
                 <div id="right-panel-resize-block"></div>
                 <div id="right-panel">
@@ -310,7 +310,7 @@
                 <script type="text/javascript" src="${pageContext.request.contextPath}/builder/jquery.hotkeys.js"></script>
                 <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/wro/advancedTool.js?build=<fmt:message key="build.number"/>"></script>
-                <script data-cbuilder-script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/cbuilder?type=${builderCode}&build=<fmt:message key="build.number"/>"></script>
+                <script data-cbuilder-script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/cbuilder?type=<c:out value="${builderCode}"/>&build=<fmt:message key="build.number"/>"></script>
                 <c:if test="${isIE}">
                     <script src="${pageContext.request.contextPath}/js/ie/fetch.js"></script>
                 </c:if>
@@ -324,17 +324,17 @@
                             CustomBuilder.appId = '<c:out value="${appDefinition.id}"/>';
                             CustomBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
                             CustomBuilder.appPath = '/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>';
-                            CustomBuilder.appPublished = "${appDefinition.published}";
+                            CustomBuilder.appPublished = '<c:out value="${appDefinition.published}"/>';
                             CustomBuilder.builderType = '<c:out value="${builderCode}"/>';
                             CustomBuilder.builderLabel = '<c:out value="${builderLabel}"/>';
                             CustomBuilder.builderColor = '<c:out value="${builderColor}"/>';
                             CustomBuilder.builderIcon = '<c:out value="${builderIcon}"/>';
                             CustomBuilder.id = '<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>';
                             CustomBuilder.buildNumber = '<fmt:message key="build.number"/>';
-                            CustomBuilder.isGitDisabled = '${isGitDisabled}';
+                            CustomBuilder.isGitDisabled = '<c:out value="${isGitDisabled}"/>';
 
-                            CustomBuilder.initConfig(${builderConfig});
-                            CustomBuilder.initPropertiesOptions(${builderProps});
+                            CustomBuilder.initConfig(<c:out value="${builderConfig}" escapeXml="false"/>);
+                            CustomBuilder.initPropertiesOptions(<c:out value="${builderProps}" escapeXml="false"/>);
 
                             CustomBuilder.initBuilder(function() {
                                 CustomBuilder.loadJson($("#cbuilder-json").val());

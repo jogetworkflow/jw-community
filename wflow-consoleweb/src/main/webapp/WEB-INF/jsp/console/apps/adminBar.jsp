@@ -19,7 +19,7 @@
                 <c:set var="key" value="1" />    
                 <div class="separator"></div>
                 <div>
-                    <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/builders" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
+                    <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
                 </div>
             </c:if>    
                 <div class="separator"></div>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <c:if test="${!empty envName}">
-                <span id="environmentName">${envName}</span>
+                <span id="environmentName"><c:out value="${envName}"/></span>
             </c:if>
         </div>
             
