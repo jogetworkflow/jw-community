@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
 import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +40,6 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.UidGenerator;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -1302,7 +1300,7 @@ public class AppUtil implements ApplicationContextAware {
                             }
                         } else {
                             URL u = new URL(path);
-                            email.embed(new URLDataSource(u), name, name);
+                            email.embed(new CustomURLDataSource(u), name, name);
                         }
                     } else {
                         if ("system".equals(type)) {
@@ -1312,7 +1310,7 @@ public class AppUtil implements ApplicationContextAware {
                             email.attach(attachment);
                         } else {
                             URL u = new URL(path);
-                            email.attach(u, name, "");
+                            email.attach(new CustomURLDataSource(u), name, "");
                         }
                     }
                 } catch(Exception e){
