@@ -3,6 +3,12 @@
     helplink : '@@userview.userviewsetting.helplink@@',
     properties : [
     {
+        name: 'userviewId',
+        label:'@@cbuilder.id@@',
+        type:'readonly',
+        required:'True'
+    },
+    {
         name: 'userviewName',
         label: '@@console.userview.common.label.name@@',
         required: 'true',

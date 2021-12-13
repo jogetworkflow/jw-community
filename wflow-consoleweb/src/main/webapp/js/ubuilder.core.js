@@ -510,6 +510,7 @@ UserviewBuilder = {
      * Get the properties for Propertise View
      */
     getBuilderProperties : function() {
+        CustomBuilder.data.setting.properties.userviewId = CustomBuilder.data.properties.id;
         return CustomBuilder.data.setting.properties;
     },
     
@@ -517,6 +518,8 @@ UserviewBuilder = {
      * Save properties from properties view
      */
     saveBuilderProperties : function(container, properties) {
+        delete properties.userviewId;
+        
         properties.theme.properties = $.extend(CustomBuilder.data.setting.properties.theme.properties, properties.theme.properties);
         $.extend(CustomBuilder.data.setting.properties, properties);
         CustomBuilder.update();
