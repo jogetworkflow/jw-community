@@ -351,7 +351,7 @@ public class PluginManager implements ApplicationContextAware {
         try {
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle bundle = context.getBundle(location);
-            if (uninstallable(bundle.getSymbolicName())) {
+            if (bundle != null && uninstallable(bundle.getSymbolicName())) {
                 bundle.stop();
                 bundle.uninstall();
                 

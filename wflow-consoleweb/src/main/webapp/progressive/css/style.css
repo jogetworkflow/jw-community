@@ -221,7 +221,7 @@ div#header-name img {
 
 header.navbar .header-nav{
     display: inline-block;
-    padding: 13px 0 10px;
+    padding: 13px 0 9px;
     float: right;
 }
 .rtl header.navbar .header-nav {

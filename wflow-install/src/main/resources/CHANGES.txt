@@ -2,6 +2,20 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+CHANGES IN 7.0.25
+=================
+33e0d3004 Fixed: wflow-plugin-base - Plugin Manager - Plugin file change monitor should only reload changed plugin. @7.0-SNAPSHOT
+27826da5a Fixed: wflow-consoleweb - Security - CSRF token is passed in Form Builder preview URL. @7.0-SNAPSHOT
+02c278286 Fixed: wflow-consoleweb - Security - Possible remote code execution using JSON parameter in form and list grid @7.0-SNAPSHOT
+99524b136 Fixed: wflow-core - Fixed nonce verification not working when comparing different number of attributes @7.0-SNAPSHOT
+56f5e97a4 Fixed: wflow-core - Creating new process does not set the new process's process start white list to admin only by default. @7.0-SNAPSHOT
+b81e6e5e1 Added: wflow-core/wflow-consoleweb - Progressive/Universal/Xadmin Theme - Display userview category label even though the category only has 1 menu in it. @7.0-SNAPSHOT
+c42781f0f Fixed: wflow-consoleweb - Fixed radio btn and checkbox having outline on 1st option on focus. @7.0-SNASPHOT
+8338d21f2 Modified: wflow-core - Lazy load PushServiceUtil initialization to improve startup speed @7.0-SNAPSHOT
+896c1b11a Fixed: wflow-consoleweb - Security - CSRF token is passed in URL. @7.0-SNAPSHOT
+7c56043d1 Fixed: wflow-consoleweb - Selectbox - Missing selected indicator when having multiple select boxes. @7.0-SNASPHOT
+e41cd20dd Fixed: wflow-core - FormPdfUtil - Grid having extra column in header row. @7.0-SNAPSHOT Fixed: wflow-core - FormPdfUtil - Label with `&` char does not escape correctly. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.24
 =================
 10bf1b552 Modified: wflow-core/wflow-commons - Upgrade Commons BeanUtils for CVE-2014-0114 and CVE-2019-10086 & Upgrade Commons Collections for CVE-2015-6420 and CVE-2017-15708. @7.0-SNAPSHOT
