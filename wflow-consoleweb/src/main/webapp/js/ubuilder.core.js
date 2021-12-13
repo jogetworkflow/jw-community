@@ -798,14 +798,14 @@ UserviewBuilder = {
             CustomBuilder.data.properties.description = elementProperty.description;
             CustomBuilder.data.properties.footerMessage = elementProperty.footerMessage;
             CustomBuilder.data.properties.logoutText = elementProperty.logoutText;
-            CustomBuilder.data.properties.userviewName = elementProperty.userviewName;
+            CustomBuilder.data.properties.name = elementProperty.name;
             CustomBuilder.data.properties.welcomeMessage = elementProperty.welcomeMessage;
             
             var temp = $.extend({}, elementProperty);
             delete temp.description;
             delete temp.footerMessage;
             delete temp.logoutText;
-            delete temp.userviewName;
+            delete temp.name;
             delete temp.welcomeMessage;
             delete temp.id;
             
