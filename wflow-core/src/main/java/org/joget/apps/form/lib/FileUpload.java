@@ -353,28 +353,11 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         
         //create nonce
         String paramName = FormUtil.getElementParameterName(this);
-        String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName}, 1);
-        if (nonce == null || nonce.isEmpty()) {
-            nonce = UuidGenerator.getInstance().getUuid();
-        }
-        
-        int lifepanHour = 1;
-        SetupManager sm = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-        String extendNonceCacheTime = sm.getSettingValue("extendNonceCacheTime");
-        if (extendNonceCacheTime != null && !extendNonceCacheTime.isEmpty()) {
-            try {
-                lifepanHour += Integer.parseInt(extendNonceCacheTime);
-            } catch (Exception e) {}
-        }
-        net.sf.ehcache.Element element = new net.sf.ehcache.Element(nonce + "_fileType", getPropertyString("fileType"));
-        element.setEternal(false);
-        element.setTimeToLive(lifepanHour * 60 * 60);
-        
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("nonceCache");
-        cache.put(element);
+        String fileType = getPropertyString("fileType");
+        String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName, fileType}, 1);
         
         try {
-            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
+            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8")+"&_ft="+URLEncoder.encode(fileType, "UTF-8");
         } catch (Exception e) {}
         return url;
     }
@@ -385,16 +368,10 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         String appId = request.getParameter("_appId");
         String appVersion = request.getParameter("_appVersion");
         String filePath = request.getParameter("_path");
+        String fileType = request.getParameter("_ft");
 
-        if (SecurityUtil.verifyNonce(nonce, new String[]{"FileUpload", appId, appVersion, paramName})) {
+        if (SecurityUtil.verifyNonce(nonce, new String[]{"FileUpload", appId, appVersion, paramName, fileType})) {
             if ("POST".equalsIgnoreCase(request.getMethod())) {
-                
-                Cache cache = (Cache) AppUtil.getApplicationContext().getBean("nonceCache");
-                net.sf.ehcache.Element element = cache.get(nonce + "_fileType");
-                String fileType = null;
-                if (element != null) {
-                    fileType = (String) element.getObjectValue();
-                }
                 
                 try {
                     JSONObject obj = new JSONObject();
@@ -459,6 +436,8 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                     return;
                 }
             }
+        } else {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, ResourceBundleUtil.getMessage("general.error.error403"));
         }
     }
 }

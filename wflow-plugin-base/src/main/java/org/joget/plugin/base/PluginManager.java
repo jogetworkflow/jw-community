@@ -238,7 +238,6 @@ public class PluginManager implements ApplicationContextAware {
                 monitor.addObserver(observer);
                 monitor.start();
             } catch (Exception e) {
-                e.printStackTrace();
                 LogUtil.error(PluginManager.class.getName(), e, "UNABLE TO MONITOR SERVER");
             }
         }

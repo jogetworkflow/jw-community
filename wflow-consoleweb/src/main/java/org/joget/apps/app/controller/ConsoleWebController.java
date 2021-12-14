@@ -4271,7 +4271,7 @@ public class ConsoleWebController {
         return "console/setting/plugin";
     }
 
-    @RequestMapping("/console/setting/plugin/refresh")
+    @RequestMapping(value = "/console/setting/plugin/refresh", method = RequestMethod.POST)
     public void consoleSettingPluginRefresh(Writer writer) {
         setupManager.clearCache();
         pluginManager.refresh();
