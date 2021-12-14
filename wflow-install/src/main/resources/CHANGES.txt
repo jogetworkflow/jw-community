@@ -2,6 +2,18 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.34
+=================
+08356db1b Fixed: wflow-core - MobileUtil - Prevent Regex DOS. @7.0-SNAPSHOT
+4c10be9f3 Fixed: wflow-commons, wflow-plugin-base, wflow-core - Fixed error logging not using LogUtil @7.0-SNAPSHOT
+568c01c2f Modified: wflow-consoleweb - Plugins - Added HTTP POST method requirement for plugin refresh @7.0-SNAPSHOT
+8b38dd789 Fixed: wflow-consoleweb - Security - Possible remote code execution using JSON parameter in form and list grid @7.0-SNAPSHOT
+e2076468f Fixed: wflow-consoleweb - Security - CSRF token is passed in Form Builder preview URL. @7.0-SNAPSHOT
+47077a7d6 Fixed: wflow-consoleweb - Security - CSRF token is passed in URL. @6.0-SNAPSHOT
+722e4a60d Fixed: wflow-core - Fixed nonce verification not working when comparing different number of attributes @7.0-SNAPSHOT
+1272aef54 Fixed: wflow-core - FormPdfUtil - Correction on 2a218cb3. @6.0-SNAPSHOT
+2a218cb33 Fixed: wflow-core - FormPdfUtil - Grid having extra column in header row. @6.0-SNAPSHOT Fixed: wflow-core - FormPdfUtil - Label with `&` char does not escape correctly. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.33
 =================
 4708baf40 Fixed: wflow-consoleweb - "gridCombine" property options used with Plugin Default Properties will throw JS error. @6.0-SNAPSHOT
