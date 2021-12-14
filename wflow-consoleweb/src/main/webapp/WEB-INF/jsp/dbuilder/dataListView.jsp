@@ -16,7 +16,7 @@
     .filter-cell{display:inline-block;padding-left:5px;}
 </style>
 
-<div class="dataList">
+<div class="dataList <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/footable.min.js?build=<fmt:message key="build.number"/>" defer></script>

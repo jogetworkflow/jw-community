@@ -945,4 +945,22 @@ public class DataList {
     public void setUnauthorizedMsg(String unauthorizedMsg) {
         this.unauthorizedMsg = unauthorizedMsg;
     }
+    
+    public boolean getNoExport() {
+        boolean noExport = true;
+        if (getColumns() != null) {
+            for (DataListColumn column : getColumns()) {
+                boolean isExport = true;
+                if ((column.isHidden() && !"true".equalsIgnoreCase(column.getPropertyString("include_export")))
+                        || (!column.isHidden() && "true".equalsIgnoreCase(column.getPropertyString("exclude_export")))) {
+                    isExport = false;
+                }
+                if (isExport) {
+                    noExport = false;
+                    break;
+                }
+            }
+        }
+        return noExport;
+    }
 }

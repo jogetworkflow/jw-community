@@ -65,6 +65,11 @@
 .dataList tr.tableRowEven, tr.even {
     background-color:#F9F9F9;
 }
+
+.dataList.no_export div.exportlinks {
+    display:none !important;
+}
+
 .dataList div.exportlinks {
     background-color:#EEEEEE;
     border:1px dotted #999999;
