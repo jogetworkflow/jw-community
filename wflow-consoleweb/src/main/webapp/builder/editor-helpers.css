@@ -254,6 +254,9 @@ body.show-node-details [data-cbuilder-absolute-position]:hover .cbuilder-node-de
 body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details .cbuilder-node-details-list{
     width: 100%;
 }
+[data-cbuilder-inlineedit] {
+    padding: 5px;
+} 
 .cbuilder-node-details-list, .cbuilder-node-details-box{
     position:absolute;
     top:0;

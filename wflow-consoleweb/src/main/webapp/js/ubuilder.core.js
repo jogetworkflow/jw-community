@@ -313,6 +313,15 @@ UserviewBuilder = {
             },
             'customPropertiesData' : function(properties, elementObj, component) {
                 return UserviewBuilder.selectedMenu.properties;
+            },
+            'getInlineEditor' : function(elementObj, component) {
+                var classname = UserviewBuilder.selectedMenu.className;
+                var self = CustomBuilder.Builder;
+                var actualComponent = self.getComponent(classname);
+                if (actualComponent.builderTemplate !== undefined) {
+                    return actualComponent.builderTemplate.getInlineEditor(elementObj, component);
+                }
+                return null;
             }
         }});
         CustomBuilder.initPaletteElement("", "userview-content", "", "", "", "", false, "", {builderTemplate: {

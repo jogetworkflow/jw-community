@@ -56,7 +56,7 @@ public class ButtonComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<a class=\"\" data-cbuilder-textContent>"+getI18nLabel()+"</a>'}";
+        return "{'html' : '<a class=\"\" data-cbuilder-textContent>"+getI18nLabel()+"</a>', 'inlineEditor' : {'property' : 'textContent', 'mode' : 'simple'}}";
     }
     
 }

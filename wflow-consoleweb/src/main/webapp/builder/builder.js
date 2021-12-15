@@ -3473,10 +3473,19 @@ _CustomBuilder.Builder = {
     },
     
     selectNodeAndShowProperties: function(node, dragging, show) {
+        var self = CustomBuilder.Builder;
+        
+        self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
+            try {
+                self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                $(this).removeAttr('data-cbuilder-inlineedit');
+                $(this).off("change.inlineedit");
+            }catch(err){}
+        });
+        
         if (show === undefined) {
             show = true;
         }
-        var self = CustomBuilder.Builder;
         if (!node || $(node).is('[data-cbuilder-uneditable]'))
         {
             self.selectedEl = null;
@@ -3491,13 +3500,6 @@ _CustomBuilder.Builder = {
                 
             return;
         }
-
-//        if (self.texteditEl && self.selectedEl.get(0) != node)
-//        {
-//            Vvveb.WysiwygEditor.destroy(self.texteditEl);
-//            $("#select-box").removeClass("text-edit").find("#select-actions").show();
-//            self.texteditEl = null;
-//        }
 
         var target = $(node);
         var isSubSelect = false;
@@ -3590,6 +3592,118 @@ _CustomBuilder.Builder = {
                 
                 if (show) {
                     self._showPropertiesPanel(target, data, component);
+                    
+                    if (component.builderTemplate.getInlineEditor() !== undefined && component.builderTemplate.getInlineEditor() !== null) {
+                        var inlineEditor = component.builderTemplate.getInlineEditor();
+                        var inilineEditEl = $(target);
+                        
+                        var inlineSelector = inlineEditor.selector;
+                        if (inlineSelector !== undefined && inlineSelector !== null && inlineSelector !== "") {
+                            if ($(target).find(inlineSelector).length > 0) {
+                                inilineEditEl = $(target).find(inlineSelector);
+                            } else {
+                                inilineEditEl = null;
+                            }
+                        }
+                        
+                        if (inilineEditEl !== null) {
+                            var inlineid = $(inilineEditEl).attr("id");
+                            if (inlineid === undefined || inlineid === null || inlineid === "") {
+                                inlineid = "inline_" + CustomBuilder.uuid();
+                                $(inilineEditEl).attr("id", inlineid);
+                            }
+                            $(inilineEditEl).attr('data-cbuilder-inlineedit', '');
+                            $(inilineEditEl).removeAttr('data-cbuilder-invisible');
+                            $(inilineEditEl).removeAttr('data-cbuilder-element-invisible');
+                            $(inilineEditEl).removeAttr('data-cbuilder-desktop-invisible');
+                            $(inilineEditEl).removeAttr('data-cbuilder-tablet-invisible');
+                            $(inilineEditEl).removeAttr('data-cbuilder-mobile-invisible');
+
+                            try {
+                                var toolbar = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                if (inlineEditor.mode === "full") {
+                                    toolbar = 'styleselect | fontselect fontsizeselect forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                } else if (inlineEditor.mode === "simple") {
+                                    toolbar = 'bold italic | alignleft aligncenter alignright alignjustify';
+                                }
+                                setTimeout(function(){
+                                    //find propety field
+                                    var pfield = $("#element-properties-tab [property-name='"+inlineEditor.property+"']");
+                                    self.iframe.contentWindow.tinymce.init({
+                                        selector: '#' + inlineid,
+                                        inline: true,
+                                        image_advtab: true,
+                                        relative_urls: false,
+                                        convert_urls: false,
+                                        extended_valid_elements:"style,link[href|rel]",
+                                        custom_elements:"style,link,~link",
+                                        valid_elements: '*[*]',
+                                        plugins: [
+                                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'hr',
+                                            'insertdatetime', 'media', 'table', 'contextmenu',
+                                            'textcolor', 'colorpicker', 'textpattern', 'imagetools'
+                                        ],
+                                        forced_root_block : '',
+                                        toolbar: toolbar,
+                                        menubar: false,
+                                        init_instance_callback: function(editor) {
+                                            editor.focus();
+
+                                            //copy the value from property editor
+                                            var value = "";
+                                            if ($(pfield).hasClass('property-type-codeeditor')) {
+                                                value = ace.edit($(pfield).find('pre.ace_editor').attr('id')).getValue();
+                                            } else if ($(pfield).hasClass('property-type-htmleditor')) {
+                                                value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
+                                            } else {
+                                                value = $(pfield).find('textarea, input').val();
+                                            }
+                                            editor.setContent(value);
+
+                                            $(inilineEditEl).off('change.inlineedit keyup.inlineedit mousemouseup.inlineedit touchend.inlineedit');
+                                            $(inilineEditEl).on('change.inlineedit keyup.inlineedit mousemouseup.inlineedit touchend.inlineedit', function(e) {
+                                                self._inlineEditChnaged(target, pfield, editor);
+                                            });
+
+                                            editor.on('ExecCommand', function(e) {
+                                                self._inlineEditChnaged(target, pfield, editor);
+                                            });
+
+                                            $(pfield).find('textarea[name], pre[name]').off("change.inlineedit keyup.inlineedit");
+                                            $(pfield).find('textarea[name], pre[name]').on("change.inlineedit keyup.inlineedit", function(){
+                                                if (!$(pfield).hasClass("syncPropValue")) {
+                                                    $(pfield).addClass("syncInlineValue");
+                                                    var value = "";
+                                                    if ($(pfield).hasClass('property-type-codeeditor')) {
+                                                        value = ace.edit($(pfield).find('pre.ace_editor').attr('id')).getValue();
+                                                    } else if ($(pfield).hasClass('property-type-htmleditor')) {
+                                                        value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
+                                                    } else {
+                                                        value = $(pfield).find('textarea, input').val();
+                                                    }
+                                                    editor.setContent(value);
+                                                    $(pfield).removeClass("syncInlineValue");
+                                                    self._updateBoxes();
+                                                }
+                                            });
+
+                                            if ($(pfield).hasClass('property-type-htmleditor')) {
+                                                tinymce.get($(pfield).find('textarea').attr('id')).on('ExecCommand', function(e) {
+                                                    if (!$(pfield).hasClass("syncPropValue")) {
+                                                        $(pfield).addClass("syncInlineValue");
+                                                        var value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
+                                                        editor.setContent(value);
+                                                        $(pfield).removeClass("syncInlineValue");
+                                                        self._updateBoxes();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }, 200);
+                            } catch (err) {}
+                        }
+                    }
                 }
                 
                 $("#element-select-name #element-name").html(this._getElementType(data, component));
@@ -3624,6 +3738,25 @@ _CustomBuilder.Builder = {
                 console.log(err);
                 return false;
             }
+        }
+    },
+    
+    _inlineEditChnaged : function(target, field, editor) {
+        var self = CustomBuilder.Builder;
+        if (!$(field).hasClass("syncInlineValue")) {
+            var content = editor.getContent();
+            $(field).addClass("syncPropValue");
+
+            if ($(field).hasClass('property-type-codeeditor')) {
+                ace.edit($(field).find('pre.ace_editor').attr('id')).setValue(content);
+            } else if ($(field).hasClass('property-type-htmleditor')) {
+                tinymce.get($(field).find('textarea').attr('id')).setContent(content);
+            } else {
+                $(field).find('textarea, input').val(content);
+            }
+
+            $(field).removeClass("syncPropValue");
+            self._updateBoxes();
         }
     },
     
@@ -3693,12 +3826,23 @@ _CustomBuilder.Builder = {
 
         var self = CustomBuilder.Builder;
 
-        self.frameHtml.off("mousemove touchmove");
-        self.frameHtml.on("mousemove touchmove", function (event, parentEvent) {
+        self.frameHtml.off("mousemove.builder touchmove.builder");
+        self.frameHtml.on("mousemove.builder touchmove.builder", function (event, parentEvent) {
             var x = 0;
             var y = 0;
             
             var eventTarget = $(event.target);
+            
+            if (self.isDragging && self.dragElement) {
+                self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
+                    try {
+                        self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                        $(this).removeAttr('data-cbuilder-inlineedit');
+                        $(this).off("change.inlineedit");
+                    }catch(err){}
+                });
+            }
+                
             if (event.type === "touchmove") {
                 if (event.touches === undefined) {
                     var frameOffset = $(self.iframe).offset();
@@ -3979,9 +4123,13 @@ _CustomBuilder.Builder = {
             }
         });
 
-        self.frameHtml.off("mouseup touchend");
-        self.frameHtml.on("mouseup touchend", function (event) {
+        self.frameHtml.off("mouseup.builder touchend.builder");
+        self.frameHtml.on("mouseup.builder touchend.builder", function (event) {
             self.mousedown = false;
+            var target = $(event.target);
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+                return true;
+            }
             if (self.isDragging)
             {
                 self.isDragging = false;
@@ -3997,10 +4145,14 @@ _CustomBuilder.Builder = {
             }
         });
         
-        self.frameHtml.off("mousedown touchstart");
-        self.frameHtml.on("mousedown touchstart", function (event) {
+        self.frameHtml.off("mousedown.builder touchstart.builder");
+        self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+                self.mousedown = false;
+                return true;
+            }
             if (!$(target).is("[data-cbuilder-classname]")) {
                 target = $(event.target).closest("[data-cbuilder-classname]");
             }
@@ -4014,6 +4166,7 @@ _CustomBuilder.Builder = {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
                     self.selectNode(false);
                 });
+                self.mousedown = false;
                 return false;
             }
             if ($(target).length > 0)
@@ -4090,9 +4243,12 @@ _CustomBuilder.Builder = {
             return false;
         });
         
-        self.frameHtml.off("click");
-        self.frameHtml.on("click", function (event) {
+        self.frameHtml.off("click.builder");
+        self.frameHtml.on("click.builder", function (event) {
             var target = $(event.target);
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+                return true;
+            }
             if (!$(target).is("[data-cbuilder-classname]")) {
                 target = $(event.target).closest("[data-cbuilder-classname]");
             }
@@ -4218,8 +4374,8 @@ _CustomBuilder.Builder = {
     _initBox: function () {
         var self = this;
         
-        $("#element-select-name #element-name").off("mousedown touchstart");
-        $("#element-select-name #element-name").on("mousedown touchstart", function (event) {
+        $("#element-select-name #element-name").off("mousedown.builder touchstart.builder");
+        $("#element-select-name #element-name").on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             try {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
@@ -4478,6 +4634,9 @@ _CustomBuilder.Builder = {
                 'getPasteTemporaryNode' : function(elementObj, component) {
                     return '<div></div>';
                 },
+                'getInlineEditor' : function(elementObj, component) {
+                    return this.inlineEditor;
+                },
                 'isRenderNodeAdditional' : function(elementObj, component, type) {
                     return this.renderNodeAdditional;
                 },
@@ -4563,8 +4722,8 @@ _CustomBuilder.Builder = {
         var self = CustomBuilder.Builder;
         self.isDragging = false;
 
-        $('.drag-elements-sidepane').off("mousedown touchstart", "ul > li > ol > li > [element-class]");
-        $('.drag-elements-sidepane').on("mousedown touchstart", "ul > li > ol > li > [element-class]", function (event) {
+        $('.drag-elements-sidepane').off("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]");
+        $('.drag-elements-sidepane').on("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]", function (event) {
             $this = $(this);
             if (self.iconDrag) {
                 self.iconDrag.remove();
@@ -4625,8 +4784,8 @@ _CustomBuilder.Builder = {
             return false;
         });
         
-        $('.drag-elements-sidepane').off("mouseup", "ul > li > ol > li");
-        $('.drag-elements-sidepane').on("mouseup", "ul > li > ol > li", function (event) {
+        $('.drag-elements-sidepane').off("mouseup.builder", "ul > li > ol > li");
+        $('.drag-elements-sidepane').on("mouseup.builder", "ul > li > ol > li", function (event) {
             self.isDragging = false;
             self.frameBody.removeClass("is-dragging");
             self.frameBody.find("[data-cbuilder-droparea]").removeAttr("data-cbuilder-droparea");
@@ -4642,8 +4801,8 @@ _CustomBuilder.Builder = {
             }
         });
 
-        $('body').off('mouseup touchend');
-        $('body').on('mouseup touchend', function (event) {
+        $('body').off('mouseup.builder touchend.builder');
+        $('body').on('mouseup.builder touchend.builder', function (event) {
             if (self.iconDrag && self.isDragging == true)
             {
                 self.isDragging = false;
@@ -4685,8 +4844,8 @@ _CustomBuilder.Builder = {
             }
         });
 
-        $('body').off('mousemove touchmove');
-        $('body').on('mousemove touchmove', function (event) {
+        $('body').off('mousemove.builder touchmove.builder');
+        $('body').on('mousemove.builder touchmove.builder', function (event) {
             if (self.iconDrag && self.isDragging == true)
             {
                 event.stopPropagation();

@@ -56,7 +56,7 @@ public class ParagraphComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<p data-cbuilder-textContent>"+getI18nLabel()+"</p>'}";
+        return "{'html' : '<p data-cbuilder-textContent>"+getI18nLabel()+"</p>', 'inlineEditor' : {'property' : 'textContent', 'mode' : 'simple'}}";
     }
     
 }

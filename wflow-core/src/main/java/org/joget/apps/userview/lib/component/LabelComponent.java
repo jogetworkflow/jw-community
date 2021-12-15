@@ -56,7 +56,7 @@ public class LabelComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<label data-cbuilder-textContent>"+getI18nLabel()+"</label>'}";
+        return "{'html' : '<label data-cbuilder-textContent>"+getI18nLabel()+"</label>', 'inlineEditor' : {'property' : 'textContent', 'mode' : 'simple'}}";
     }
     
 }

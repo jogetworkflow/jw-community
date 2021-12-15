@@ -17,7 +17,7 @@
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
-        
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/js/tinymce/tinymce.min.js"></script>
         <style>
             html, body
             {
@@ -31,6 +31,7 @@
             body {
                 padding: 25px !important;
             }
+            .mce-tinymce-inline {margin-left: 230px !important;}
         </style>
         <script>
             ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";

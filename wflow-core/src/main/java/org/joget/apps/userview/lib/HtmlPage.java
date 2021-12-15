@@ -432,4 +432,9 @@ public class HtmlPage extends UserviewMenu {
         
         return css;
     }
+    
+    @Override
+    public String getBuilderJavaScriptTemplate() {
+        return "{'dragHtml' : '<div class=\"content-placeholder\"></div>', 'inlineEditor' : {'selector' : '> .ui-html','property' : 'content', 'mode' : 'full'}}";
+    }
 }

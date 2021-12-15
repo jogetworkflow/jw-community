@@ -56,7 +56,7 @@ public class HeadingComponent extends SimplePageComponent {
 
     @Override
     public String getBuilderJavaScriptTemplate() {
-        return "{'html' : '<h1 data-cbuilder-textContent>"+getI18nLabel()+"</h1>'}";
+        return "{'html' : '<h1 data-cbuilder-textContent>"+getI18nLabel()+"</h1>', 'inlineEditor' : {'property' : 'textContent', 'mode' : 'simple'}}";
     }
     
 }
