@@ -1979,7 +1979,13 @@ UserviewBuilder = {
     previewViewInit : function(view) {
         var self = CustomBuilder.Builder;
         
-        $(view).html('<div id="preview-iframe-wrapper"><iframe id="preview-iframe" name="preview-iframe" src="about:none"></iframe></div>');
+        $(view).html('<div id="preview-iframe-wrapper"><i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i><iframe id="preview-iframe" name="preview-iframe" style="opacity:0;" src="about:none"></iframe></div>');
+        
+        var iframe = $(view).find("#preview-iframe")[0];
+        iframe.onload = function() {
+            $(view).find('.dt-loading').remove();
+            $(iframe).css('opacity', "1");
+        }; 
         
         var viewport = $(".responsive-buttons button.active").data("view");
 	$(view).closest(".builder-view").addClass(viewport);
