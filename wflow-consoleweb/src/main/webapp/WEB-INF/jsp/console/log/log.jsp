@@ -27,7 +27,7 @@
 <script>
     $(document).ready(function() {
         var status = "";
-        var navHeight = $("#nav").outerHeight(true);
+        var navHeight = $("#main-body-content").outerHeight(true);
         var textFile = null;
         var textChange = false;
         
@@ -106,7 +106,5 @@
                 }, 1000);
             }
         };
-    });
-    
-    Template.init("#menu-apps", "#nav-app-logs");
+    });    
 </script>  
