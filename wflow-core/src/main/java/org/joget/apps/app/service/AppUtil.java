@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
 import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
@@ -1325,7 +1324,7 @@ public class AppUtil implements ApplicationContextAware {
                             }
                         } else {
                             URL u = new URL(path);
-                            email.embed(new URLDataSource(u), name, name);
+                            email.embed(new CustomURLDataSource(u), name, name);
                         }
                     } else {
                         if ("system".equals(type)) {
@@ -1335,7 +1334,7 @@ public class AppUtil implements ApplicationContextAware {
                             email.attach(attachment);
                         } else {
                             URL u = new URL(path);
-                            email.attach(u, name, "");
+                            email.attach(new CustomURLDataSource(u), name, "");
                         }
                     }
                 } catch(Exception e){
