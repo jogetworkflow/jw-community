@@ -15,11 +15,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Layout;
-import org.apache.log4j.helpers.CountingQuietWriter;
-import org.apache.log4j.spi.ErrorCode;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.StringLayout;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
+import org.apache.logging.log4j.core.config.plugins.PluginElement;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.util.Strings;
 import org.eclipse.jgit.util.FileUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
@@ -27,83 +34,89 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 
-public class LogViewerAppender extends AppenderSkeleton {
-    protected LoadingCache<String, CountingQuietWriter> qwCache = null;
-    
+@Plugin(name = "LogViewerAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
+public class LogViewerAppender extends AbstractAppender {
+
+    protected LoadingCache<String, Writer> qwCache = null;
+
     protected static final int SIZE = 40;
-    public static final int MAX_FILESIZE = 200*1024; //200kb
+    public static final int MAX_FILESIZE = 200 * 1024; //200kb
     public static final String SYSTEM_PROPERTY_NODE_NAME = "wflow.name";
-    
+
     public static final String LOG_DIRECTORY = "app_logs";
     public static final String LOG_NAME = "viewer";
     public static final String LOG_NAME_EXT = ".log";
     public static final String LOG_ROLLING_EXT = ".rolling";
     public static final String CONSOLE_LOG = "CONSOLE_LOG";
-    
+
     protected static boolean startLogging = false;
-    
+
     protected static Map<String, Set<LogViewerEndpoint>> broadcastEndpoints = new HashMap<String, Set<LogViewerEndpoint>>();
-    
-    public LogViewerAppender() {}
-    
-    public LogViewerAppender (Layout layout) throws IOException {
-        this.layout = layout;
+
+    @PluginFactory
+    public static LogViewerAppender createAppender(
+            @PluginAttribute("name") final String name,
+            @PluginElement("Filter") final Filter filter,
+            @PluginElement("Layout") final StringLayout layout) {
+        return new LogViewerAppender(name, filter, layout);
     }
-    
-    protected LoadingCache<String, CountingQuietWriter> getCache() {
+
+    private LogViewerAppender(final String name, final Filter filter, final StringLayout layout) {
+        super(name, filter, layout, true, null);
+    }
+
+    protected LoadingCache<String, Writer> getCache() {
         if (qwCache == null) {
-            CacheLoader loader = new CacheLoader<String, CountingQuietWriter> () {
+            CacheLoader loader = new CacheLoader<String, Writer>() {
                 @Override
-                public CountingQuietWriter load(String filename) throws Exception {
-                    CountingQuietWriter writer = null;
+                public Writer load(String filename) throws Exception {
+                    Writer writer = null;
                     FileOutputStream ostream = null;
-                    
+
                     File file = new File(filename);
                     try {
                         if (!file.exists()) {
                             file.getParentFile().mkdirs();
                         }
                         ostream = new FileOutputStream(filename, true);
-                    
+
                         Writer fw = new OutputStreamWriter(ostream, "UTF-8");
-                        writer = new CountingQuietWriter(fw, errorHandler);
+                        writer = fw;
 
                         writeHeader(writer);
                     } catch (Exception e) {
-                        errorHandler.error("getWriter("+filename+") call failed.",
-                                        e, ErrorCode.FILE_OPEN_FAILURE);
+                        e.printStackTrace();
                     }
                     return writer;
                 }
             };
-            
-            RemovalListener<String, CountingQuietWriter> removalListener = new RemovalListener<String, CountingQuietWriter>() {
+
+            RemovalListener<String, Writer> removalListener = new RemovalListener<String, Writer>() {
                 @Override
-                public void onRemoval(RemovalNotification<String, CountingQuietWriter> removal) {
-                    CountingQuietWriter writer = removal.getValue();
-                    writeFooter(writer);
+                public void onRemoval(RemovalNotification<String, Writer> removal) {
+                    Writer writer = removal.getValue();
                     try {
+                        writeFooter(writer);
                         writer.close();
                     } catch (Exception e) {
                     }
                 }
             };
-            
+
             qwCache = CacheBuilder.newBuilder()
-                        .maximumSize(SIZE)
-                        .expireAfterAccess(10, TimeUnit.MINUTES)
-                        .removalListener(removalListener)
-                        .build(loader);
+                    .maximumSize(SIZE)
+                    .expireAfterAccess(10, TimeUnit.MINUTES)
+                    .removalListener(removalListener)
+                    .build(loader);
         }
-        
+
         return qwCache;
     }
-    
-    
-    protected synchronized CountingQuietWriter getWriter(String appId) {
+
+    protected synchronized Writer getWriter(String appId) {
         try {
             String filename = getFileName(appId);
-            
+
             //check rolling
             File currentFile = new File(filename);
             long size = currentFile.length();
@@ -113,23 +126,23 @@ public class LogViewerAppender extends AppenderSkeleton {
                 if (file.exists()) {
                     file.delete();
                 }
-                
+
                 //remove from cache to close it
                 getCache().invalidate(filename);
-                
+
                 //rename the current to rolling
                 FileUtils.rename(new File(filename), new File(filename + LOG_ROLLING_EXT));
-            }            
-            
-            CountingQuietWriter writer = getCache().get(filename);            
+            }
+
+            Writer writer = getCache().get(filename);
 
             return writer;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    } 
-    
+    }
+
     protected static String getCurrentAppId() {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if (appDef != null) {
@@ -138,7 +151,7 @@ public class LogViewerAppender extends AppenderSkeleton {
             return null;
         }
     }
-    
+
     public static String getFilepath(String appId) {
         if (appId == null) {
             appId = getCurrentAppId();
@@ -149,16 +162,16 @@ public class LogViewerAppender extends AppenderSkeleton {
         }
         return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + serverName + File.separator + appId;
     }
-    
+
     public static String getFileName(String appId) {
         return getFilepath(appId) + File.separator + LOG_NAME + LOG_NAME_EXT;
     }
-    
+
     protected String getFileName() {
         return getFileName(null);
     }
-    
-    protected boolean checkStartLogging(LoggingEvent event) {
+
+    protected boolean checkStartLogging(LogEvent event) {
         if (!startLogging) {
             //only start logging after first found ResponseOverrideFilter, else will causing Context fail to init
             if ("org.displaytag.filter.ResponseOverrideFilter".equals(event.getLoggerName())) {
@@ -170,38 +183,44 @@ public class LogViewerAppender extends AppenderSkeleton {
     }
 
     @Override
-    protected void append(LoggingEvent event) {
-        if (checkStartLogging(event)) { 
-            CountingQuietWriter systemWriter = getWriter(CONSOLE_LOG);
-            CountingQuietWriter appWriter = null;
-            
-            String appId = getCurrentAppId();
-            if (appId != null) {
-                appWriter = getWriter(appId);
-            }
-            write(systemWriter, appWriter, this.layout.format(event));
+    public void start() {
+        super.start();
+    }
 
-            if (layout.ignoresThrowable()) {
-                String[] s = event.getThrowableStrRep();
-                if (s != null) {
-                    int len = s.length;
-                    for (int i = 0; i < len; i++) {
-                        write(systemWriter, appWriter, s[i]);
-                        write(systemWriter, appWriter, Layout.LINE_SEP);
-                    }
+    @Override
+    public void append(LogEvent event) {
+        if (checkStartLogging(event)) { 
+            try {
+                Writer systemWriter = getWriter(CONSOLE_LOG);
+                Writer appWriter = null;
+
+                String appId = getCurrentAppId();
+                if (appId != null) {
+                    appWriter = getWriter(appId);
                 }
-            }
-            
-            if (systemWriter != null) {
-                systemWriter.flush();
-            }
-            if (appWriter != null) {
-                appWriter.flush();
+                String output = new String(getLayout().toByteArray(event));
+                write(systemWriter, appWriter, output);
+
+                if (systemWriter != null) {
+                    systemWriter.flush();
+                }
+                if (appWriter != null) {
+                    appWriter.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
-    
-    protected void write(CountingQuietWriter systemWriter, CountingQuietWriter appWriter, String string) {
+
+    @Override
+    public void stop() {
+        reset();
+        broadcastEndpoints = new HashMap<>();
+        super.stop();
+    }
+
+    protected void write(Writer systemWriter, Writer appWriter, String string) throws IOException {
         if (systemWriter != null) {
             systemWriter.write(string);
         }
@@ -212,54 +231,42 @@ public class LogViewerAppender extends AppenderSkeleton {
         broadcast(CONSOLE_LOG, string);
     }
 
-    @Override
-    public synchronized void close() {
-        if (this.closed) {
-            return;
-        }
-        this.closed = true;
-        reset();
-        broadcastEndpoints = new HashMap<String, Set<LogViewerEndpoint>>();
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return true;
-    }
-    
     protected void reset() {
         getCache().invalidateAll();
     }
-    
-    protected void writeFooter(CountingQuietWriter writer) {
-        if (layout != null) {
-            String f = layout.getFooter();
-            if (f != null && writer != null) {
-                writer.write(f);
-                writer.flush();
-            }
-        }
-    }
 
-    protected void writeHeader(CountingQuietWriter writer) {
-        if (layout != null) {
-            String h = layout.getHeader();
-            if (h != null && writer != null) {
+    protected void writeFooter(Writer writer) throws IOException {
+        Layout layout = getLayout();
+        if (layout != null && layout.getFooter() != null) {
+            byte[] footer = layout.getFooter();
+            if (writer != null && footer != null) {
+                String h = new String(layout.getHeader());
                 writer.write(h);
             }
         }
     }
-    
+
+    protected void writeHeader(Writer writer) throws IOException {
+        Layout layout = getLayout();
+        if (layout != null && layout.getHeader() != null) {
+            byte[] header = layout.getHeader();
+            if (writer != null && header != null) {
+                String h = new String(layout.getHeader());
+                writer.write(h);
+            }
+        }
+    }
+
     public static synchronized void registerEndpoint(String profile, String appId, LogViewerEndpoint endpoint) {
         String key = profile + ":" + appId;
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
         if (endpoints == null) {
-            endpoints = new HashSet<LogViewerEndpoint>();
+            endpoints = new HashSet<>();
             broadcastEndpoints.put(key, endpoints);
         }
         endpoints.add(endpoint);
     }
-    
+
     public static synchronized void removeEndpoint(String profile, String appId, LogViewerEndpoint endpoint) {
         String key = profile + ":" + appId;
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
@@ -270,16 +277,22 @@ public class LogViewerAppender extends AppenderSkeleton {
             }
         }
     }
-    
+
     protected static void broadcast(String appId, String message) {
         String key = HostManager.getCurrentProfile() + ":" + appId;
+        String lines[] = message.split(Strings.LINE_SEPARATOR);
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
-        if (endpoints != null) {
+        if (endpoints != null && lines.length > 0) {
             Set<LogViewerEndpoint> invalidEndpoints = new HashSet<LogViewerEndpoint>();
             for (LogViewerEndpoint endpoint : endpoints) {
                 synchronized (endpoint) {
                     try {
-                        endpoint.session.getBasicRemote().sendText(message);
+                        for (String line: lines) {
+                            endpoint.session.getBasicRemote().sendText(line);
+                        }
+                    } catch (IllegalStateException e) {
+                        // WebSocket connection closed, ignore
+                        invalidEndpoints.add(endpoint);
                     } catch (Exception e) {
                         e.printStackTrace();
                         invalidEndpoints.add(endpoint);
@@ -288,7 +301,7 @@ public class LogViewerAppender extends AppenderSkeleton {
             }
             if (!invalidEndpoints.isEmpty()) {
                 endpoints.removeAll(invalidEndpoints);
-                
+
                 if (endpoints.isEmpty()) {
                     broadcastEndpoints.remove(key);
                 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" name="JogetLogConfig" packages="org.joget.logs">
+    <Properties>
+        <Property name="LOGDIR">${sys:catalina.home}/logs</Property>
+    </Properties>
+    <ThresholdFilter level="info"/>
+ 
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%-5p %d{dd MMM yyyy HH:mm:ss} %c - %m%n"/>
+        </Console>
+        <RollingFile
+            name="LOGFILE"
+            fileName="${LOGDIR}/joget.log"
+            filePattern="${LOGDIR}/joget.log.%d{yyyyMMdd}.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%-5p %d{dd MMM yyyy HH:mm:ss} %c - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB" />
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+        <RollingFile
+            name="EMAIL"
+            fileName="${LOGDIR}/email.log"
+            filePattern="${LOGDIR}/email.log.%d{yyyyMMdd}.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%-5p %d{dd MMM yyyy HH:mm:ss} %-50c - %m%throwable{0}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB" />
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>        
+        <LogViewerAppender name="LOGVIEWER">
+            <PatternLayout pattern="%-7p %d{dd MMM yyyy HH:mm:ss} %c - %m%n"/>
+        </LogViewerAppender>
+    </Appenders>
+ 
+    <Loggers>
+        <!-- Custom logger levels -->
+        <Logger name="bitronix.tm.twopc" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.directwebremoting.util.SwallowingHttpServletResponse" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.displaytag.util.LookupUtil" level="error" additivity="false">
+        </Logger>        
+        <Logger name="org.hibernate" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.hibernate.tool.hbm2ddl.SchemaUpdate" level="fatal" additivity="false">
+        </Logger>
+        <Logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="fatal" additivity="false">
+        </Logger>
+        <Logger name="org.joget.apps.form.dao.FormDataLocalSessionFactoryBean" level="warn" additivity="false">
+        </Logger>
+        <Logger name="org.joget.commons.spring.web" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.objectweb" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.owasp.csrfguard" level="warn" additivity="false">
+        </Logger>
+        <Logger name="org.springframework" level="error" additivity="false">
+        </Logger>
+        <Logger name="org.springframework.web.context.ContextLoader" level="fatal" additivity="false">
+        </Logger>
+        <Logger name="org.springframework.beans.factory.BeanCreationException" level="fatal" additivity="false">
+        </Logger>
+        <Logger name="org.springframework.transaction.support.TransactionSynchronizationUtils" level="fatal" additivity="false">
+        </Logger>
+        <Logger name="DatabaseManager" level="error" additivity="false">
+        </Logger>
+        <Logger name="Scripting" level="error" additivity="false">
+        </Logger>
+        <Logger name="Shark" level="error" additivity="false">
+        </Logger>
+        <Logger name="TimeProfiler" level="error" additivity="false">
+        </Logger>
+        <Logger name="TimeProfiler-InstancePersistence" level="error" additivity="false">
+        </Logger>
+        <Logger name="TimeProfiler-EventAudit" level="error" additivity="false">
+        </Logger>
+        <Logger name="TimeProfiler-EventAudit" level="error" additivity="false">
+        </Logger>
+
+        <!-- Email log file -->
+        <Logger name="org.joget.apps.app.lib.EmailTool" level="debug" additivity="true">
+            <AppenderRef ref="EMAIL"/>
+        </Logger>
+        <Logger name="org.joget.apps.app.lib.UserNotificationAuditTrail" level="debug" additivity="true">
+            <AppenderRef ref="EMAIL"/>
+        </Logger>
+        <Logger name="org.joget.plugin.enterprise.ExportFormEmailTool" level="debug" additivity="true">
+            <AppenderRef ref="EMAIL"/>
+        </Logger>
+        
+        <!-- Root logger -->
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="LOGFILE"/>
+            <AppenderRef ref="LOGVIEWER"/>
+        </Root>
+    </Loggers>
+ 
+</Configuration>
