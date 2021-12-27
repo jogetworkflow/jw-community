@@ -1,8 +1,8 @@
 <div class="form-cell" ${elementMetaData!}>
 <#if element.properties.readonly! != 'true'>
     <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??)>
-        <#if request.getAttribute("currentLocale")!?starts_with("zh") >
-            <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
+        <#if locale! != ''>
+            <script type="text/javascript" src="${request.contextPath}/js/jquery/ui/i18n/jquery.ui.datepicker-${locale}.js"></script>
         </#if>
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js"></script>
         <link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/datePicker.css" />
