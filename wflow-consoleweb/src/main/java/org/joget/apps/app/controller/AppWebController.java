@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletOutputStream;
@@ -17,6 +18,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.FormDefinition;
@@ -38,7 +40,9 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.lib.RunProcess;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
@@ -82,6 +86,8 @@ public class AppWebController {
     private WorkflowUserManager workflowUserManager;
     @Autowired
     UserviewService userviewService;
+    @Autowired
+    UserviewDefinitionDao userviewDefinitionDao;
     @Autowired
     BuilderDefinitionDao builderDefinitionDao;
     @Autowired
@@ -490,9 +496,7 @@ public class AppWebController {
         } catch (Exception e){}
         
         if (!isAuthorize) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
-            response.setHeader("Cache-Control", "no-cache, no-store");
+            error404(request, response);
             return;
         }
         
@@ -596,9 +600,7 @@ public class AppWebController {
         } catch (Exception e){}
         
         if (!isAuthorize) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
-            response.setHeader("Cache-Control", "no-cache, no-store");
+            error404(request, response);
             return;
         }
         
@@ -648,5 +650,47 @@ public class AppWebController {
         }
         
         return filename;
+    }
+    
+    protected void error404(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.setDateHeader("Expires", System.currentTimeMillis() + 0);
+        response.setHeader("Cache-Control", "no-cache, no-store");
+        response.setContentType("text/html;charset=UTF-8");
+
+        //render userview 404 page if available
+        UserviewDefinition userviewDef = null;
+        String referer = request.getHeader("referer");
+        if (referer != null && !referer.isEmpty() && (referer.contains("/web/userview") || referer.contains("/web/embed/userview"))) {
+            referer = referer.substring(referer.indexOf("/userview/") + 10);
+            String[] temp = referer.split("/");
+            String appId = temp[0];
+            String userviewId = temp[1];
+            if (appId != null && userviewId != null) {
+                AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+                if (appDef != null) {
+                    userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+                }
+            }   
+        }
+        if (userviewDef == null) {
+            userviewDef = userviewService.getDefaultUserview();
+        }
+        if (userviewDef != null) {
+            AppDefinition appDef = userviewDef.getAppDefinition();
+            AppUtil.setCurrentAppDefinition(appDef);
+            Map requestParams = new HashMap();
+            requestParams.put("menuId", new String[]{"error404"});
+            Userview userview = userviewService.createUserview(appDef, userviewDef.getJson(), "error404", false, request.getContextPath(), requestParams, null, false);
+            UserviewThemeProcesser processer = new UserviewThemeProcesser(userview, request);
+            String view = processer.getView();
+            if (view != null && !view.startsWith("redirect:")) {
+                response.getWriter().write(processer.getHtml());
+            } else {
+                response.getWriter().write(UserviewUtil.renderJspAsString("error404.jsp", new HashMap()));
+            }
+        } else {
+            response.getWriter().write(UserviewUtil.renderJspAsString("error404.jsp", new HashMap()));
+        }
     }
 }
