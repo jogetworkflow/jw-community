@@ -17,6 +17,7 @@ jQuery(function($){
 		dateFormat: 'yy/mm/dd',
 		firstDay: 1,
 		isRTL: false,
-		showMonthAfterYear: true};
+		showMonthAfterYear: true,
+		yearSuffix: ''};
 	$.datepicker.setDefaults($.datepicker.regional['zh-TW']);
 });
