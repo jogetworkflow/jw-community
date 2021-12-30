@@ -3,8 +3,8 @@
 jQuery(function($){
 	$.datepicker.regional.nl = {
 		closeText: 'Sluiten',
-		prevText: '←',
-		nextText: '→',
+		prevText: '\u2190',
+		nextText: '\u2192',
 		currentText: 'Vandaag',
 		monthNames: ['januari', 'februari', 'maart', 'april', 'mei', 'juni',
 		'juli', 'augustus', 'september', 'oktober', 'november', 'december'],
@@ -21,3 +21,4 @@ jQuery(function($){
 		yearSuffix: ''};
 	$.datepicker.setDefaults($.datepicker.regional.nl);
 });
+
