@@ -2,19 +2,21 @@ package org.joget.logs;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 
-public class LogViewerThread extends Thread {
+public class LogViewerThread implements Runnable {
     private InputStream inputStream = null;
     private BufferedReader reader = null;
     private String currentFilename;
-    private String appId;
-    private String profile;
-    private LogViewerEndpoint endpoint;
+    private final String appId;
+    private final String profile;
+    private final LogViewerEndpoint endpoint;
 
     public LogViewerThread(String profile, String appId, LogViewerEndpoint endpoint) {
         this.appId = appId;
@@ -24,14 +26,12 @@ public class LogViewerThread extends Thread {
 
     @Override
     public void run() {
-        HostManager.setCurrentProfile(profile);
-        
         currentFilename = LogViewerAppender.getFileName(appId) + LogViewerAppender.LOG_ROLLING_EXT;
         readFile(currentFilename);
-        
+
         currentFilename = LogViewerAppender.getFileName(appId);
         readFile(currentFilename);
-        
+
         LogViewerAppender.registerEndpoint(profile, appId, endpoint);
         HostManager.resetProfile();
     }
@@ -56,7 +56,7 @@ public class LogViewerThread extends Thread {
                     LogUtil.error(LogViewerThread.class.getName(), e, "");
                 }
             }
-        } catch(Exception ex) { 
+        } catch(FileNotFoundException | UnsupportedEncodingException ex) { 
             if (LogUtil.isDebugEnabled(LogViewerThread.class.getName())) {
                 LogUtil.error(LogViewerThread.class.getName(), ex, "");
             }
@@ -68,7 +68,7 @@ public class LogViewerThread extends Thread {
                 if (inputStream != null) {
                     inputStream.close();
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
             }
             
             inputStream = null;
@@ -84,7 +84,7 @@ public class LogViewerThread extends Thread {
             if (inputStream != null) {
                 inputStream.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
         } finally {
             LogViewerAppender.removeEndpoint(profile, appId, endpoint);
             HostManager.resetProfile();
