@@ -17,14 +17,14 @@ import org.joget.commons.util.SecurityUtil;
 public class LogViewerEndpoint {
     
     protected Session session;
-    protected LogViewerThread loginViewer;
+    protected LogViewerThread logViewer;
     
     @OnOpen
     public void onOpen(Session session, @PathParam("appId") String appId, EndpointConfig config) throws IOException {
         appId = SecurityUtil.validateStringInput(appId);
         this.session = session;
-        this.loginViewer = new LogViewerThread(HostManager.getCurrentProfile(), appId, this);
-        Thread thread = new PluginThread(this.loginViewer);
+        this.logViewer = new LogViewerThread(HostManager.getCurrentProfile(), appId, this);
+        Thread thread = new PluginThread(this.logViewer);
         thread.setDaemon(true);
         thread.start();
     }
@@ -32,7 +32,7 @@ public class LogViewerEndpoint {
     @OnClose
     public void onClose(Session session) throws IOException {
         try {
-            this.loginViewer.close();
+            this.logViewer.close();
         } finally {
             HostManager.resetProfile();
         }
