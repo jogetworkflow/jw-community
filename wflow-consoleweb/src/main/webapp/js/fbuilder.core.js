@@ -332,7 +332,7 @@ FormBuilder = {
         if (elementObj['properties']['permission_rules'] !== undefined) {
             for (var key in Object.keys(elementObj['properties']['permission_rules'])) {
                 var rule = elementObj['properties']['permission_rules'][key];
-                if (rule['permission'] !== undefined && rule['permission']['className'] !== "") {
+                if (rule !== undefined && rule['permission'] !== undefined && rule['permission']['className'] !== "") {
                     var label = rule['permission']['className'];
                     if (FormBuilder.availablePermission[label]  !== undefined) {
                         label = FormBuilder.availablePermission[label];

@@ -215,7 +215,7 @@ PermissionManager = {
                     value = get_advtool_msg('adv.permission.unnamed');
                 }
                 obj['permission_name'] = value;
-                CustomBuilder.updateJson();
+                CustomBuilder.update();
                 return value;
             }, {
                 type: 'text',
@@ -284,7 +284,7 @@ PermissionManager = {
         ruleObj["permission_rules"].unshift(rule);
         var ruleElm = PermissionManager.renderRule(rule, true);
         PermissionManager.setActiveRule($(ruleElm));
-        CustomBuilder.updateJson();
+        CustomBuilder.update();
     },
     removeRule: function(rule) {
         var ruleObj = PermissionManager.getRuleElement();
@@ -308,7 +308,7 @@ PermissionManager = {
                     PermissionManager.setActiveRule($(PermissionManager.container).find(".permission_rules > .permission_rule"));
                 }
             }
-            CustomBuilder.updateJson();
+            CustomBuilder.update();
         }
     },
     editRule: function(rule) {
@@ -332,7 +332,7 @@ PermissionManager = {
             newRules.push($(this).data("obj"));
         });
         ruleObj["permission_rules"] = newRules;
-        CustomBuilder.updateJson();
+        CustomBuilder.update();
     },
     removeElementsPermission: function(key) {
         $(PermissionManager.container).find(".permission-table tbody tr").each(function() {

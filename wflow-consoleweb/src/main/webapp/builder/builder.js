@@ -1872,10 +1872,12 @@ _CustomBuilder = {
 
         $("#cbuilder-json").off("change.permissionViewInit");
         $("#cbuilder-json").on("change.permissionViewInit", function () {
-            view.html("");
-            $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
-            PermissionManager.render($(view));
-            $(view).find(".dt-loading").remove();
+            if (!$("body").hasClass("permission-builder-view")) {
+                view.html("");
+                $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+                PermissionManager.render($(view));
+                $(view).find(".dt-loading").remove();
+            }
         });
     },
     

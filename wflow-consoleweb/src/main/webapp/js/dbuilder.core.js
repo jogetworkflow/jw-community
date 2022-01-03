@@ -208,12 +208,12 @@ DatalistBuilder = {
         } else {
             CustomBuilder.Builder.frameBody.find(".dataList [data-placeholder-key]:not([data-cbuilder-sync])").each(function(){
                 if ($(this).closest("[data-cbuilder-replicate]").length === 0) {
-                    var key = $(this).attr("data-placeholder-key");
-                    var childs = CustomBuilder.data[key];
+                    var pkey = $(this).attr("data-placeholder-key");
+                    var childs = CustomBuilder.data[pkey];
                     if (childs !== null && childs !== undefined && childs.length > 0) {
                         var label = "";
-                        if (key === "columns" || key === "rowActions") {
-                            label = get_cbuilder_msg("dbuilder.type."+key);
+                        if (pkey === "columns" || pkey === "rowActions") {
+                            label = get_cbuilder_msg("dbuilder.type."+pkey);
                         } else {
                             label = $(this).attr("data-cbuilder-droparea-msg");
                         }
