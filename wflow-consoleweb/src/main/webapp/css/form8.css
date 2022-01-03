@@ -142,6 +142,9 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 }
+.form-section.no_label > .form-column:nth-child(2) > .subform-cell:first-child > .subform-container.no-frame:first-child {
+    margin-top: -20px;
+}
 
 /* input */
 input:not([type]),
