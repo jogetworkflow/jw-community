@@ -518,6 +518,14 @@ JsonTable.prototype = {
                     else {
                         col.width = Math.round(thisObject.width/gridColumns.length) - 20;
                     }
+                } else {
+                    if (typeof col.width == "string" && col.width.charAt(col.width.length-1) == "%") {
+                        try {
+                            col.width = ($("body").width() - 50) / 100 * parseInt(col.width.substring(0, col.width.length-1));
+                        } catch(err){
+                            col.width = 200;
+                        }
+                    }
                 }
                 col.process = handleRowSelection;
                 gridColumns[idx] = col;

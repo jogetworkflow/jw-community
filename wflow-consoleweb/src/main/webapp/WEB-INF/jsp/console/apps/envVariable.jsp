@@ -24,9 +24,9 @@
            checkboxCallback2="envVariableDelete"
            searchItems="filter|Filter"
            fields="['id','value','remarks']"
-           column1="{key: 'id', label: 'console.app.envVariable.common.label.id', sortable: true}"
-           column2="{key: 'value', label: 'console.app.envVariable.common.label.value', sortable: true}"
-           column3="{key: 'remarks', label: 'console.app.envVariable.common.label.remarks', sortable: false}"
+           column1="{key: 'id', label: 'console.app.envVariable.common.label.id', sortable: true, width: '10%'}"
+           column2="{key: 'value', label: 'console.app.envVariable.common.label.value', sortable: true, width: '40%'}"
+           column3="{key: 'remarks', label: 'console.app.envVariable.common.label.remarks', sortable: false, width: '40%'}"
            />
     </div>
     
