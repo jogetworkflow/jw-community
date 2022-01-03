@@ -2,8 +2,7 @@ package org.joget.apps.form.lib;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.temporal.WeekFields;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -30,6 +29,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 public class DatePicker extends Element implements FormBuilderPaletteElement, PwaOfflineResources {
     
     public static final String UTC_DATEFORMAT = "yyyy-MM-dd HH:mm";
+    public static final Set<String> SUPPORTED_LOCALE = new HashSet<>(Arrays.asList("ar", "cs", "de", "es", "fa", "fr", "he", "hr", "hu", "it", "ja", "ko", "ms", "nl", "pl", "pt-BR", "pt", "ro", "ru", "sl", "sv", "th", "tr", "uk", "vi", "zh-CN", "zh-TW"));
+
     private String format = null;
     
     @Override
@@ -81,6 +82,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
             setProperty("datePickerType", "dateTime");
         }
+        
+        dataModel.put("locale", getLocale());
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
@@ -449,5 +452,21 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js");
         
         return urls;
+    }
+    
+    public static String getLocale() {
+        String locale = AppUtil.getAppLocale();
+        if (locale != null && !locale.isEmpty()) {
+            locale = locale.replace("_", "-");
+            if (SUPPORTED_LOCALE.contains(locale)) {
+                return locale;
+            } else {
+                locale = locale.substring(0, 2);
+                if (SUPPORTED_LOCALE.contains(locale)) {
+                    return locale;
+                }
+            }
+        }   
+        return "";
     }
 }
