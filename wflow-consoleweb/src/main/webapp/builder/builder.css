@@ -289,6 +289,7 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder .drag-elements {
     padding-top: 0rem; 
+    z-index: 0;
 }
 #cbuilder .drag-elements > .header {
     background: #f5f5f5; 
