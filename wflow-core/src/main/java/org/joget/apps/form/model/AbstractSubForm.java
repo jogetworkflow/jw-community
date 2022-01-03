@@ -76,7 +76,6 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 if (wfAssignment == null) {
                     wfAssignment = (activityId != null && !activityId.isEmpty()) ? wm.getAssignment(activityId) : wm.getAssignmentByProcess(parentFormData.getProcessId());
                 }
-                json = AppUtil.processHashVariable(json, wfAssignment, StringUtil.TYPE_JSON, null);
             }
             
             // use the json definition to create the subform
