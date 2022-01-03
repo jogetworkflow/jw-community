@@ -9,6 +9,14 @@ UserviewBuilder = {
      * Intialize the builder, called from CustomBuilder.initBuilder
      */
     initBuilder: function (callback) {
+        $('#builderToolbar').prepend('<button id="save-content-btn" class="btn btn-success" style="display:none;"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button>');
+        
+        $('#builderToolbar').off("click");
+        $('#builderToolbar').on("click", function() {
+            UserviewBuilder.mode = "userview";
+            UserviewBuilder.load(CustomBuilder.data);
+        });
+        
         if (CustomBuilder.appPublished === "true") {
             $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("ubuilder.launch")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("ubuilder.launch")+'</span></button></div>');
             $("#launch-btn").on("click", function(){
@@ -628,6 +636,7 @@ UserviewBuilder = {
      * Load and render data, called from CustomBuilder.loadJson
      */
     load: function (data) {
+        $("body").removeClass("page-component-editor");
         if (UserviewBuilder.mode === "page") {
             if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
                 var self = CustomBuilder.Builder;
@@ -696,6 +705,9 @@ UserviewBuilder = {
      * Load and render content page, called from UserviewBuilder.load
      */
     loadContentPage : function() {
+        $("body").addClass("page-component-editor");
+        $("#save-content-btn").removeClass("hasChange");
+        
         $(".components-list > li").hide();
         $("[data-section='components-Page-Components']").show();
         
@@ -949,7 +961,7 @@ UserviewBuilder = {
         //breadcrumb
         html += '<ul class="breadcrumb" data-cbuilder-id="userview-breadcrumb" data-cbuilder-classname="userview-breadcrumb"><li><i class="fa fa-home"></i> <a href="*">'+get_cbuilder_msg('ubuilder.home')+'</a> <i class="fa fa-angle-right"></i></li><li><a>'+get_cbuilder_msg('ubuilder.page')+'</a></li></ul>';
         
-        html += '<div class="userview-body-content" data-cbuilder-id="userview-content" data-cbuilder-classname="userview-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" data-cbuilder-classname data-cbuilder-uneditable data-cbuilder-unselectable class="btn btn-primary">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
+        html += '<div class="userview-body-content" data-cbuilder-id="userview-content" data-cbuilder-classname="userview-content"><div class="center screenshot-hidden"><p>'+get_cbuilder_msg('ubuilder.content')+'</p><p id="btn_container" style="display:none"><button id="edit-content-btn" data-cbuilder-classname data-cbuilder-uneditable data-cbuilder-unselectable class="btn btn-success">'+get_cbuilder_msg('ubuilder.editContentLayout')+'</button></p></div></div>';
         html += '</main></div></div></div><div class="clearfix"></div>';
         
         //footer
@@ -1151,17 +1163,10 @@ UserviewBuilder = {
      */
     renderUserviewPage : function(element, elementObj, component, callback) {
         var html = '<div id="page" class="page-content-wrapper" data-cbuilder-uneditable data-cbuilder-unselectable>';
-        html += '<div class="bar-var" ><button id="save-content-btn" class="btn btn-success" style="background-color:#35950d;"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button></div>';
         html += '<div id="content"><main data-cbuilder-elements></main></div>';
         html += '</div>';
         
         var userviewElement = $(html);
-        
-        userviewElement.find("#save-content-btn").off("click");
-        userviewElement.find("#save-content-btn").on("click", function() {
-            UserviewBuilder.mode = "userview";
-            UserviewBuilder.load(CustomBuilder.data);
-        });
         
         $(element).replaceWith(userviewElement);
         UserviewBuilder.updateThemeStyle();
@@ -2043,5 +2048,7 @@ UserviewBuilder = {
      */            
     unloadBuilder : function() {
         $("#launch-btn").parent().remove();
+        $("body").removeClass("page-component-editor");
+        $("#save-content-btn").remove();
     } 
 }

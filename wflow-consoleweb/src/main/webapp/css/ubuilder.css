@@ -31,17 +31,7 @@ body {
     min-height: 200px;
 }
 #page.page-content-wrapper{
-    padding-top: 59px;
     min-height: 100vh;
-}
-.bar-var {
-    padding: 10px 20px;
-    border-bottom: 1px solid rgba(0,0,0,.0625);
-    position: fixed;
-    top:0;
-    width: 100%;
-    background: #cdd4da;
-    z-index: 1;
 }
 #page.page-content-wrapper main {
     padding: 20px;

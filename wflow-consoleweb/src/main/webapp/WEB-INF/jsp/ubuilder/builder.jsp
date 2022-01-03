@@ -56,7 +56,48 @@
         });
     </script>    
 </c:set>
-<c:set var="builderCSS" scope="request" value=""/>
+<c:set var="builderCSS" scope="request">
+    <style>
+        body.page-component-editor {
+            --builder-header-top-height: 55px;
+        }
+        body #save-content-btn {
+            display: none;
+        }
+        body.page-component-editor #save-content-btn{
+            display: inline-block !important;
+            margin-right: 30px;
+            animation: glowing 1600ms infinite;
+        }
+        body.page-component-editor #top-panel{
+            padding: 5px 0;
+        }
+        body.page-component-editor #top-panel-main{
+            padding-left: 15px !important;
+        }
+        body.page-component-editor #builderIcon,
+        body.page-component-editor #builderElementName {
+            display: none !important;
+        }
+        @keyframes glowing {
+            0% {
+              background-color: #28a745;
+              border-color: #28a745;
+              box-shadow: 0 0 3px #28a745;
+            }
+            50% {
+              background-color: #32cf56;
+              box-shadow: 0 0 20px #32cf56;
+              border-color: #32cf56;
+            }
+            100% {
+              background-color: #28a745;
+              box-shadow: 0 0 3px #28a745;
+              border-color: #28a745;
+            }
+        }
+    </style>    
+</c:set> 
 <c:set var="builderCode" scope="request" value="userview"/>
 <c:set var="builderColor" scope="request" value="#f3b328"/>
 <c:set var="builderIcon" scope="request" value="fas fa-desktop"/>
