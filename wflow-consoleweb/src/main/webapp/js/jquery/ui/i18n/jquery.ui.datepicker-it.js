@@ -10,7 +10,7 @@ jQuery(function($){
 			'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],
 		monthNamesShort: ['Gen','Feb','Mar','Apr','Mag','Giu',
 			'Lug','Ago','Set','Ott','Nov','Dic'],
-		dayNames: ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'],
+		dayNames: ['Domenica','Luned\u0026\u0023\u0032\u0033\u0036\u003b','Marted\u0026\u0023\u0032\u0033\u0036\u003b','Mercoled\u0026\u0023\u0032\u0033\u0036\u003b','Gioved\u0026\u0023\u0032\u0033\u0036\u003b','Venerd\u0026\u0023\u0032\u0033\u0036\u003b','Sabato'],
 		dayNamesShort: ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
 		dayNamesMin: ['Do','Lu','Ma','Me','Gi','Ve','Sa'],
 		weekHeader: 'Sm',
