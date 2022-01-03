@@ -1,7 +1,9 @@
 $(document).ready(function() {
-    $(".dataList table").each(function(){
-        responsiveTable($(this));
-        $(this).closest(".dataList").show();
+    $(".dataList").each(function(){
+        if ($(this).find("table.responsivetable").length > 0) {
+            responsiveTable($(this).find("table.responsivetable"));
+        }
+        $(this).show();
     });
 });
 /* ---------- Responsive Table -------------- */
@@ -66,53 +68,6 @@ function responsiveTable(table) {
         });
     }
     
-    if ($(respButtons).data("responsiveclass") !== undefined && $(respButtons).data("responsiveclass").trim() !== "") {
-        table.closest(".dataList").addClass($(respButtons).data("responsiveclass"));
-        
-        if (table.closest(".dataList").hasClass("card-label")) {
-            initCardLabelLayout(table);
-        }
-        if (table.hasClass('lg-card') || table.hasClass('md-card') || table.hasClass('sm-card')) {
-            $(table).find("tbody tr.space").remove();
-            for(var i = 0; i < 10; i++) {
-                $(table).find("tbody").append('<tr class="space"></tr>');
-            }
-        }
-        
-        var resize = function (event) {
-            setTimeout(function(){
-                $(".dataList table").each(function(){
-                    var width = $(window).width();
-                    var table = $(this);
-                    if (table.closest(".dataList").parent().closest(".dataList").length > 0) {
-                        width = table.closest(".dataList").parent().width();
-                    }
-
-                    table.closest(".dataList").removeClass("card-layout-active");
-                    if ((width < 768 && table.closest(".dataList").hasClass("sm-card")) 
-                            || (width < 992 && table.closest(".dataList").hasClass("md-card"))
-                            || (table.closest(".dataList").hasClass("lg-card"))) {
-                        table.closest(".dataList").addClass("card-layout-active");
-                    }
-                    if (width < 992) {
-                        $(respButtons).find(".search_trigger").removeClass("filter_show");
-                        $(filters).hide();
-                        $(respButtons).show();
-                        $(respButtons).find(".footable-button").hide();
-                    } else {
-                        $(respButtons).hide();
-                        $(filters).show();
-                    }
-                });
-            }, 10);
-        };
-        
-        $(window).off("resize.responsive-table");
-        $(window).on("resize.responsive-table", resize);
-        resize();
-        
-        return;
-    }
     var responsiveSetting = null;
     if ($(respButtons).data("responsivejson") !== "" && $(respButtons).data("responsivejson") !== undefined) {
         try {
@@ -120,72 +75,6 @@ function responsiveTable(table) {
         } catch (err) {}
     }
     initFooTable(table, respButtons, responsiveSetting);
-}
-
-function initCardLabelLayout(table) {
-    var headers = $(table).find("thead th");
-    $(table).find("tbody tr").each(function(){
-        var row = $(this);
-        var i = 0;
-        $(row).find("td").each(function(){
-            if (!$(this).is(".select_checkbox, .select_radio, .gap, .row_action")) {
-                var cell = $('<td class="card_layout_body_cell"></td>');
-                
-                if ($(headers[i]).attr("data-cbuilder-classname") !== undefined) {
-                    cell.removeAttr("data-cbuilder-classname");
-                    cell.removeAttr("data-cbuilder-id");
-                }
-                
-                var label = $('<div></div>')
-                                .html($(headers[i]).html())
-                                .attr("class", $(headers[i]).attr("class"))
-                                .attr("style", $(headers[i]).attr("style"))
-                                .removeClass("sortable");
-                
-                if (label.find("a").length > 0) {
-                    label.append(label.find("a").text());
-                    label.find("a").remove();
-                }
-                
-                cell.append(label);
-                cell.prepend(label.find(".overlay"));
-                
-                var value = $('<div></div>')
-                                .html($(this).html())
-                                .attr("class", $(this).attr("class"))
-                                .attr("style", $(this).attr("style"));
-                value.css("display", "");
-                cell.append(value);   
-                
-                if ($(this).attr("data-cbuilder-select") !== undefined) {
-                    cell.attr("data-cbuilder-select", $(this).attr("data-cbuilder-select"));
-                }
-                
-                //for builder
-                if ($(headers[i]).attr("data-cbuilder-mobile-invisible") !== undefined) {
-                    label.attr("data-cbuilder-mobile-invisible", "");
-                }
-                if ($(headers[i]).attr("data-cbuilder-tablet-invisible") !== undefined) {
-                    label.attr("data-cbuilder-tablet-invisible", "");
-                }
-                if ($(headers[i]).attr("data-cbuilder-desktop-invisible") !== undefined) {
-                    label.attr("data-cbuilder-desktop-invisible", "");
-                }
-                if ($(this).attr("data-cbuilder-mobile-invisible") !== undefined) {
-                    value.attr("data-cbuilder-mobile-invisible", "");
-                }
-                if ($(this).attr("data-cbuilder-tablet-invisible") !== undefined) {
-                    value.attr("data-cbuilder-tablet-invisible", "");
-                }
-                if ($(this).attr("data-cbuilder-desktop-invisible") !== undefined) {
-                    value.attr("data-cbuilder-desktop-invisible", "");
-                }
-                
-                $(this).before(cell);
-            }
-            i++;
-        });
-    });
 }
 
 function initFooTable(table, respButtons, responsiveSetting) {

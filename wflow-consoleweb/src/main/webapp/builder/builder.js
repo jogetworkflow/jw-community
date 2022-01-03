@@ -2414,6 +2414,9 @@ _CustomBuilder = {
                 if (ajaxObj.success) {
                     ajaxObj.success(CustomBuilder.cachedAjaxCalls[key].data);
                 }
+                if (ajaxObj.complete) {
+                    ajaxObj.complete();
+                }
                 return;
             } else {
                 delete CustomBuilder.cachedAjaxCalls[key];
@@ -3496,6 +3499,7 @@ _CustomBuilder.Builder = {
         {
             self.selectedEl = null;
             self.subSelectedEl = null;
+            self.selectedElData = null;
             $("#element-select-box").hide();
             
             if ($("body").hasClass("property-editor-right-panel")) {
@@ -3995,8 +3999,9 @@ _CustomBuilder.Builder = {
                                 if (isAlternativeDrop) {
                                     childs = elementsContainer.find('> [data-cbuilder-select]:visible');
                                 }
-
-                                if (childs.length > 0) {
+                                if (childs.length === 0 && $(elementsContainer).find('> [data-cbuilder-sample]').length === 1) {
+                                    elementsContainer.prepend(self.dragElement);
+                                } else if (childs.length > 0) {
                                     //when has childs, find child at x,y
                                     var child = null;
                                     var offset = null;
@@ -4042,7 +4047,7 @@ _CustomBuilder.Builder = {
                                             }
                                         }
                                     } else {
-                                        if (elementsContainer.is('[data-cbuilder-prepend]')) {
+                                        if (elementsContainer.is('[data-cbuilder-prepend]') || elementsContainer.is('[data-cbuilder-single]')) {
                                             elementsContainer.prepend(self.dragElement);
                                         } else {
                                             elementsContainer.append(self.dragElement);
@@ -4050,7 +4055,7 @@ _CustomBuilder.Builder = {
                                     }
                                 } else {
                                     //when empty
-                                    if (elementsContainer.is('[data-cbuilder-prepend]')) {
+                                    if (elementsContainer.is('[data-cbuilder-prepend]') || elementsContainer.is('[data-cbuilder-single]')) {
                                         elementsContainer.prepend(self.dragElement);
                                     } else {
                                         elementsContainer.append(self.dragElement);
@@ -4061,6 +4066,14 @@ _CustomBuilder.Builder = {
                         if (self.component.builderTemplate.dragging) {
                             self.dragElement = self.component.builderTemplate.dragging(self.dragElement, self.component);
                             self.dragElement.attr("data-cbuilder-dragelement", "true");
+                        }
+                        
+                        if (self.dragElement.closest('[data-cbuilder-replicate-origin]').length > 0) {
+                            var replicate = self.dragElement.closest('[data-cbuilder-replicate-origin]');
+                            var replicateHtml = $(replicate).html();
+                            var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
+                            $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
+                            $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
                         }
                         
                         var dragOffset = $(self.dragElement).offset();
@@ -4146,7 +4159,6 @@ _CustomBuilder.Builder = {
                     self.iconDrag.remove();
                     self.iconDrag = null;
                 }
-         
                 self.handleDropEnd();
             }
         });
@@ -4162,7 +4174,7 @@ _CustomBuilder.Builder = {
             if (!$(target).is("[data-cbuilder-classname]")) {
                 target = $(event.target).closest("[data-cbuilder-classname]");
             }
-            if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
+            if ($(event.target).closest('[data-cbuilder-classname], [data-cbuilder-select]').is('[data-cbuilder-select]')) {
                 target = $(event.target).closest("[data-cbuilder-select]");
             }
             if ($(event.target).is("[data-cbuilder-subelement]")) {
@@ -4184,7 +4196,7 @@ _CustomBuilder.Builder = {
                         }
                         if (self.mousedown) {
                             self.selectNode(target, true);
-                            if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
+                            if (self.selectedElData && self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
                                 $("#element-select-box").hide();
                                 if (self.subSelectedEl){
                                     self.dragElement = self.subSelectedEl;
@@ -4194,6 +4206,7 @@ _CustomBuilder.Builder = {
                                 self.isDragging = true;
                                 self.isMoved = false;
                                 self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+                                self.currentParentDataHolder = self.component.builderTemplate.getParentDataHolder(self.selectedElData, self.component);
                                 self.data = self.selectedElData;
                                 
                                 var x = 0;
@@ -4261,7 +4274,7 @@ _CustomBuilder.Builder = {
             if ($(target).is("[data-cbuilder-unselectable]")) {
                 return false;
             }
-            if ($(event.target).closest("[data-cbuilder-select]").length > 0) {
+            if ($(event.target).closest('[data-cbuilder-classname], [data-cbuilder-select]').is('[data-cbuilder-select]')) {
                 target = $(event.target).closest("[data-cbuilder-select]");
             }
             if ($(event.target).is("[data-cbuilder-subelement]")) {
@@ -4283,7 +4296,7 @@ _CustomBuilder.Builder = {
     highlightParent : function(target, event) {
         var self = CustomBuilder.Builder;
         
-        if ($(event.target).closest('[data-cbuilder-select]').length > 0) {
+        if ($(event.target).closest('[data-cbuilder-classname], [data-cbuilder-select]').is('[data-cbuilder-select]')) {
             target = $(event.target).closest('[data-cbuilder-select]');
         }
         if (!$(target).is('[data-cbuilder-classname]')) {
@@ -4329,7 +4342,7 @@ _CustomBuilder.Builder = {
     highlight : function(target, event) {
         var self = CustomBuilder.Builder;
         
-        if ($(event.target).closest('[data-cbuilder-select]').length > 0) {
+        if ($(event.target).closest('[data-cbuilder-classname], [data-cbuilder-select]').is('[data-cbuilder-select]')) {
             target = $(event.target).closest('[data-cbuilder-select]');
         }
         if ($(event.target).closest("[data-cbuilder-classname]").is("[data-cbuilder-subelement]")) {
@@ -4399,6 +4412,7 @@ _CustomBuilder.Builder = {
                             self.isDragging = true;
                             self.isMoved = false;
                             self.currentParent = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+                            self.currentParentDataHolder = self.component.builderTemplate.getParentDataHolder(self.selectedElData, self.component);
                             self.data = self.selectedElData;
 
                             var x = 0;
@@ -4739,6 +4753,7 @@ _CustomBuilder.Builder = {
             self.selectNode(false);
             
             self.currentParent = null;
+            self.currentParentDataHolder = null;
             self.component = self.getComponent($this.attr("element-class"));
             self.data = null;
             
@@ -4801,7 +4816,15 @@ _CustomBuilder.Builder = {
                 self.iconDrag = null;
             }
             if (self.dragElement) {
+                var replicate = self.dragElement.closest('[data-cbuilder-replicate-origin]');
                 self.dragElement.remove();
+                self.frameBody.find("[data-cbuilder-dragSubElement]").remove();
+                if (replicate.length > 0) {
+                    var replicateHtml = $(replicate).html();
+                    var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
+                    $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
+                    $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
+                }
                 $("#element-parent-box").hide();
                 self.dragElement = null;
             }
@@ -4841,7 +4864,15 @@ _CustomBuilder.Builder = {
                 var elementMouseIsOver = document.elementFromPoint(x, y);
                 
                 if (self.dragElement && elementMouseIsOver && elementMouseIsOver.tagName !== 'IFRAME') {
+                    var replicate = self.dragElement.closest('[data-cbuilder-replicate-origin]');
                     self.dragElement.remove();
+                    self.frameBody.find("[data-cbuilder-dragSubElement]").remove();
+                    if (replicate.length > 0) {
+                        var replicateHtml = $(replicate).html();
+                        var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
+                        $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
+                        $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
+                    }
                     $("#element-parent-box").hide();
                     self.dragElement = null;
                 } else {
@@ -4927,7 +4958,6 @@ _CustomBuilder.Builder = {
      */
     addElement : function(callback) {
         var self = CustomBuilder.Builder;
-        
         if (CustomBuilder.Builder.options.callbacks["addElement"] !== undefined && CustomBuilder.Builder.options.callbacks["addElement"] !== "") {
             CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["addElement"], [self.component, self.dragElement, function(elementObj){
                 if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
@@ -4938,7 +4968,7 @@ _CustomBuilder.Builder = {
                     
                 CustomBuilder.Builder.renderElement(elementObj, self.dragElement, self.component, true, null, callback);
             }]);
-        } else {
+        } else { 
             var classname = self.component.className;
             var properties = {};
             
@@ -4961,7 +4991,7 @@ _CustomBuilder.Builder = {
                 elementObj.x_offset = position.left;
                 elementObj.y_offset = position.top;
             }
-            
+     
             var childsDataHolder = self.component.builderTemplate.getChildsDataHolder(elementObj, self.component);
             var elements = [];
             if (self.component.builderTemplate[childsDataHolder] !== undefined) {
@@ -4984,7 +5014,12 @@ _CustomBuilder.Builder = {
                 parentDataArray = [];
                 data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)] = parentDataArray;
             }
-            parentDataArray.splice(index, 0, elementObj);
+            if ($(container).is('[data-cbuilder-single]')) {
+                parentDataArray.splice(0, parentDataArray.length, elementObj);
+                $(container).find("> [data-cbuilder-classname]").remove();
+            } else {
+                parentDataArray.splice(index, 0, elementObj);
+            }
             
             if (self.component.builderTemplate.afterAddElement !== undefined) {
                 self.component.builderTemplate.afterAddElement(elementObj, self.component);
@@ -5039,13 +5074,14 @@ _CustomBuilder.Builder = {
             var component = self.parseDataToComponent(elementObj);
 
             var parent = self.currentParent;
+            var parentDataHolder = self.currentParentDataHolder;
             if (parent.length === 0) {
                 parent = self.selectedEl.closest("body");
             }
-            var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+            var parentDataArray = $(parent).data("data")[parentDataHolder];
             if (parentDataArray === undefined) {
                 parentDataArray = [];
-                $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)] = parentDataArray;
+                $(parent).data("data")[parentDataHolder] = parentDataArray;
             }
             var oldIndex = $.inArray(elementObj, parentDataArray);
             if (oldIndex !== -1) {
@@ -5058,12 +5094,17 @@ _CustomBuilder.Builder = {
                 newParentDataArray = [];
                 $(newParent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)] = newParentDataArray;
             }
-            var prev = $(self.dragElement).prev("[data-cbuilder-classname]");
-            var newIndex = 0;
-            if ($(prev).length > 0) {
-                newIndex = $.inArray($(prev).data("data"), newParentDataArray) + 1;
+            if ($(self.dragElement).parent().is('[data-cbuilder-single]')) {
+                newParentDataArray.splice(0, newParentDataArray.length, elementObj);
+                $(self.dragElement).parent().find("> [data-cbuilder-classname]").not(self.dragElement).remove();
+            } else {
+                var prev = $(self.dragElement).prev("[data-cbuilder-classname]");
+                var newIndex = 0;
+                if ($(prev).length > 0) {
+                    newIndex = $.inArray($(prev).data("data"), newParentDataArray) + 1;
+                }
+                newParentDataArray.splice(newIndex, 0, elementObj);
             }
-            newParentDataArray.splice(newIndex, 0, elementObj);
 
             self.checkVisible(parent);
             self.checkVisible(newParent);
@@ -5133,7 +5174,7 @@ _CustomBuilder.Builder = {
         if (html !== undefined) {
             temp = $(html);
             
-            //if properties has tagName
+            //if properties has 
             var props = self.parseElementProps(elementObj);
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
@@ -5245,7 +5286,7 @@ _CustomBuilder.Builder = {
     /*
      * Used to apply element styling based on properties
      */
-    handleStylingProperties: function(element, properties, prefix, cssStyleClass) {
+    handleStylingProperties: function(element, properties, prefix, cssStyleClass, disableImportant) {
         element.removeAttr("data-cbuilder-mobile-invisible");
         element.removeAttr("data-cbuilder-tablet-invisible");
         element.removeAttr("data-cbuilder-desktop-invisible");
@@ -5272,7 +5313,7 @@ _CustomBuilder.Builder = {
                 var temp = "";
                 for (var v in values) {
                     if (values[v] !== "") {
-                        if (values[v].indexOf("!important") === -1) {
+                        if (values[v].indexOf("!important") === -1 && (disableImportant === undefined || disableImportant === true)) {
                             values[v] += " !important";
                         }
                         temp += values[v] + ";";
@@ -5280,7 +5321,7 @@ _CustomBuilder.Builder = {
                 }
                 return temp;
             } else {
-                return key.replace(prefix, "") + ":" + value + " !important;";
+                return key.replace(prefix, "") + ":" + value + ((disableImportant === undefined || disableImportant === true)?" !important":"")+";";
             }
         };
         
@@ -5918,6 +5959,16 @@ _CustomBuilder.Builder = {
      * Trigger a change when there is a canvas change happen
      */
     triggerChange : function() {
+        var self = CustomBuilder.Builder;
+        
+        self.frameBody.find('[data-cbuilder-replicate-origin]').each(function(){
+            var replicate = $(this);
+            var replicateHtml = $(replicate).html();
+            var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
+            $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
+            $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
+        });
+        
         CustomBuilder.Builder.triggerEvent("change.builder");
     },
     

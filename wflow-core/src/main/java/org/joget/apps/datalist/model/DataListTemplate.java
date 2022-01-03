@@ -1,0 +1,411 @@
+package org.joget.apps.datalist.model;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
+import org.displaytag.pagination.SmartListHelper;
+import org.displaytag.properties.TableProperties;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.DefaultHref;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.service.DataListDecorator;
+import org.joget.apps.datalist.service.DataListService;
+import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.ExtDefaultPlugin;
+import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.joget.apps.datalist.service.JsonUtil;
+import org.joget.commons.util.LogUtil;
+
+public abstract class DataListTemplate extends ExtDefaultPlugin implements PropertyEditable {
+    private DataList datalist;
+    private DataListDecorator decorator;
+    private Map<String, String> styles = new HashMap<String, String>();
+    private Set<String> styleKeys = new HashSet<String>();
+    
+    public DataList getDatalist() {
+        return datalist;
+    }
+
+    public void setDatalist(DataList datalist) {
+        this.datalist = datalist;
+        this.decorator = new DataListDecorator(datalist);
+    }
+    
+    public abstract String getTemplate();
+    
+    public String getTemplate(Map data, String templatePath, String translationPath) {
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+
+        if (data == null) {
+            data = new HashMap();
+        }
+        
+        data.put("element", this);
+
+        String content = pluginManager.getPluginFreeMarkerTemplate(data, getClassName(), templatePath, translationPath);
+        return content;
+    }
+    
+    public String render() {
+        styles.put("MOBILE_STYLE", "");
+        styles.put("TABLET_STYLE", "");
+        styles.put("STYLE", "");
+        String template = getTemplate();
+        
+        setProperty("contextPath", WorkflowUtil.getHttpServletRequest().getContextPath());
+        template = fillTemplateProps(template);
+        template = fillData(template, null);
+        template = clean(template);
+        
+        return template + renderPagination();
+    }
+    
+    public Map<String, String> getStyles() {
+        return styles;
+    }
+    
+    public String renderPagination() {
+        int size = getDatalist().getSize();
+        int pageSize = getDatalist().getPageSize();
+        String pageValue = getDatalist().getDataListParamString(TableTagParameters.PARAMETER_PAGE);
+        int page = 1;
+        
+        try {
+            page = Integer.parseInt(pageValue);
+        } catch(NumberFormatException e) {}
+        
+        
+        TableProperties props = TableProperties.getInstance(WorkflowUtil.getHttpServletRequest());
+        SmartListHelper listHelper = new SmartListHelper(getDatalist().getRows(), size, pageSize, props, true);
+        listHelper.setCurrentPage(page);
+        
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String url = "?";
+        String qs = request.getQueryString();
+        if (qs != null && !qs.isEmpty()) {
+            url += qs;
+        }
+        
+        DefaultHref href = new DefaultHref(url);
+        href.removeParameter("OWASP_CSRFTOKEN");
+        
+        return "<div class=\"template_pagelinks\">" + listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p")+"</div>");
+    }
+    
+    public String fillTemplateProps(String template) {
+        //find normal variables
+        Pattern pattern = Pattern.compile("\\{\\{(.+?)\\}\\}");
+        Matcher matcher = pattern.matcher(template);
+        
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            String key = matcher.group(1);
+            if (getProperties().containsKey(key)){
+                String value = getPropertyString(key);
+                template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+            }
+        }
+        return template;
+    }
+    
+    public String clean(String template) {
+        //find template variables
+        Pattern pattern = Pattern.compile("\\{\\{([a-zA-Z0-9-_]+)(|.+?)\\}\\}([\\s\\S]+?)\\{\\{\\1\\}\\}", Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(template);
+        
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            template = template.replaceAll(StringUtil.escapeRegex(replace), "");
+        }
+        
+        //find normal variables
+        Pattern pattern2 = Pattern.compile("\\{\\{([a-zA-Z0-9-_]+)(|.+?)\\}\\}");
+        Matcher matcher2 = pattern2.matcher(template);
+
+        while (matcher2.find()) {
+            String replace = matcher2.group(0);
+            template = template.replaceAll(StringUtil.escapeRegex(replace), "");
+        }
+        
+        return template;
+    }
+    
+    public String fillData(String template, Object data) {
+        //find template variables
+        Pattern pattern = Pattern.compile("\\{\\{([a-zA-Z0-9-_]+)(|.+?)\\}\\}(([\\s\\S]+?)\\{\\{\\1\\}\\}|)", Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(template);
+        
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            String key = matcher.group(1);
+            String props = matcher.group(2);
+            String childtemplate = matcher.group(4);
+            
+            String value = "";
+            if ("rows".equals(key)) {
+                DataListCollection rows = getDatalist().getRows();
+                if (rows != null && !rows.isEmpty()) {
+                    for (Object r : rows) {
+                        decorator.initRow(r, 0, 0);
+                        value += fillData(childtemplate, r);
+                    }
+                }
+                applyStyles("", key, props, getProperties());
+            } else if ("rowActions".equals(key) || key.startsWith("rowAction_")) {
+                value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getRowActionPlaceholder(key), data);
+            } else if ("columns".equals(key) || key.startsWith("column_")) {
+                value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getColumnPlaceholder(key), data);
+            } else {
+                continue;
+            }
+            template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+        }
+        
+        if (data != null) {
+            //find normal variables
+            Pattern pattern2 = Pattern.compile("\\{\\{([a-zA-Z0-9-_]+)(|.+?)\\}\\}");
+            Matcher matcher2 = pattern2.matcher(template);
+
+            while (matcher2.find()) {
+                String replace = matcher2.group(0);
+                String key = matcher2.group(1);
+                String props = matcher2.group(2);
+                String value = "";
+                if ("body".equals(key)) {
+                    if (data instanceof DataListColumn) {
+                        DataListColumn col = (DataListColumn) data;
+                        value = decorator.formatColumn(col, decorator.getCurrentRowObject(), decorator.evaluate(col.getName()));
+                    } else if (data instanceof DataListAction) {
+                        DataListAction a = (DataListAction) data;
+                        value = decorator.generateLink(a);
+                    }
+                } else if ("selector".equals(key)) {
+                    value += "";
+                } else {
+                    value = (String) DataListService.evaluateColumnValueFromRow(data, key);
+                }
+                if (value != null) {
+                    template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+                }
+            }
+        }
+        
+        return template;
+    }
+    
+    public String fillDatalistObjects(String key, String props, String template, Object[] objects, Object data) {
+        String replace = "";
+        String childtemplate = "";
+        String value = "";
+        
+        if (template == null) {
+            template = "";
+        }
+        
+        String innerKey = StringUtil.escapeRegex(key.substring(0, key.length() -1));
+        if (template.contains("{{"+innerKey+"}}") || template.contains("{{"+innerKey+" ")) {
+            Pattern pattern = Pattern.compile("\\{\\{"+innerKey+"(|.+?)\\}\\}([\\s\\S]+?)\\{\\{"+innerKey+"\\}\\}", Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(template);
+
+            while (matcher.find()) {
+                replace = matcher.group(0);
+                childtemplate = matcher.group(2);
+                break;
+            }
+            
+            if (childtemplate.isEmpty()) {
+                pattern = Pattern.compile("\\{\\{"+innerKey+"(|.+?)\\}\\}");
+                matcher = pattern.matcher(template);
+
+                while (matcher.find()) {
+                    replace = matcher.group(0);
+                    break;
+                }
+            }
+        } else {
+            replace = template;
+            childtemplate = template;
+        }
+        
+        if (childtemplate.isEmpty()) {
+            childtemplate = "{{body}}";
+        }
+        if (objects != null) {
+            for (Object o : objects) {
+                String temp = fillData(childtemplate, o);
+                temp = applyStyles(temp, key, props, o);
+                value += " " + temp;
+            }
+        }
+        template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+        
+        return template;
+    }
+    
+    public String applyStyles(String html, String key, String props, Object data) {
+        html = html.trim();
+        
+        String cssClass = "ph_" + key + " ";
+        String attrs = "";
+        String stylesStr = "";
+        String id = "";
+        
+        String styleProps = "";
+        Map properties = null;
+        
+        if (props != null && !props.isEmpty()) {
+            Pattern pattern = Pattern.compile("([a-zA-Z0-9-_]+)=\"(.+?)\"");
+            Matcher matcher = pattern.matcher(props);
+            while (matcher.find()) {
+                String attr = matcher.group(0);
+                String name = matcher.group(1);
+                String value = matcher.group(2);
+                if (name.startsWith("attr-")) {
+                    if (name.equals("attr-class")) {
+                        cssClass += value + " ";
+                    } else if (name.equals("attr-style")) {
+                        stylesStr += value;
+                        if (!stylesStr.endsWith(";")) {
+                            stylesStr += ";";
+                        }
+                    } else {
+                        attrs += attr.substring(5) + " ";
+                    }
+                } else if (name.equals("data-cbuilder-style")) {
+                    styleProps = value;
+                }
+            }
+        }
+        
+        if (data instanceof DataListColumn) {
+            DataListColumn c = (DataListColumn) data;
+            if (c.getStyle() != null && !c.getStyle().isEmpty()) {
+                stylesStr += c.getStyle();
+                if (!stylesStr.endsWith(";")) {
+                    stylesStr += ";";
+                }
+            }
+            
+            id = c.getPropertyString("id");
+            cssClass += c.getPropertyString("id") + " ";
+            if (html.startsWith("<th")) {
+                cssClass += "column_header column_" + c.getName() + " header_"+id+" ";
+                if (c.getHeaderAlignment() != null && !c.getHeaderAlignment().isEmpty()) {
+                    cssClass += c.getHeaderAlignment() + " ";
+                }
+            } else {
+                cssClass += "column_body column_" + c.getName() + " body_"+id+" ";
+                if (c.getAlignment() != null && !c.getAlignment().isEmpty()) {
+                    cssClass += c.getAlignment() + " ";
+                }
+            }
+            if (c.getWidth() != null && !c.getWidth().isEmpty()) {
+                stylesStr += "width:"+c.getWidth()+";";
+            }
+            properties = c.getProperties();
+        } else if (data instanceof DataListAction) {
+            DataListAction a = (DataListAction) data;
+            id = a.getPropertyString("id");
+            cssClass += a.getPropertyString("id") + " ";
+            if (html.startsWith("<th")) {
+                cssClass += "rowaction_header header_"+id+" ";
+            } else {
+                cssClass += "rowaction_body body_"+id+" ";
+            }
+            properties = a.getProperties();
+        } else {
+            properties = (Map) data;
+        }
+        
+        Pattern pattern = Pattern.compile("^<([a-zA-Z0-9]+)(| .+?)>");
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            String tag = matcher.group(1);
+            String tagAttrs = matcher.group(2);
+            String result = replace;
+            
+            if (tagAttrs.contains("class=\"")) {
+                result = result.replace("class=\"", "class=\"" + cssClass);
+            } else if (tagAttrs.contains("class='")) {
+                result = result.replace("class='", "class='" + cssClass);
+            } else {
+                attrs += "class=\""+cssClass+"\" ";
+            }
+            if (tagAttrs.contains("style=\"")) {
+                result = result.replace("style=\"", "style=\"" + stylesStr);
+            } else if (tagAttrs.contains("style='")) {
+                result = result.replace("style='", "style='" + stylesStr);
+            } else {
+                attrs += "style=\""+stylesStr+"\" ";
+            }
+            if (!attrs.isEmpty()) {
+                result = result.replace("<"+tag, "<"+tag+" "+attrs);
+            }
+            html = html.replace(replace, result);
+        }
+        
+        if (!styleKeys.contains(key)) {
+            if (styleProps.isEmpty()) {
+                styleProps = "[{}]";
+                if (data instanceof DataListAction) {
+                    styleProps = "[{}, {prefix : 'link', class : 'a'}]";
+                }
+            }
+            try {
+                JSONArray arr = new JSONArray(styleProps);
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject o = arr.getJSONObject(i);
+                    String prefix = "";
+                    String styleClass = "";
+
+                    if (o.has("prefix")) {
+                        prefix = o.getString("prefix");
+                    }
+                    if (!prefix.isEmpty()) {
+                        prefix += "-";
+                    }
+                    if (o.has("class")) {
+                        styleClass = o.getString("class");
+                    }
+                    
+                    String listStyle = styleClass;
+                    String listPrefix = prefix;
+                    if (!html.isEmpty()) {
+                        if (listStyle.contains(" ")) {
+                            listStyle = listStyle.replaceFirst(" ", StringUtil.escapeRegex(".ph_"+key+" "));
+                        } else {
+                            listStyle += ".ph_" + key;
+                        }
+                        listPrefix = key + "-" + listPrefix;
+                    }
+                    JsonUtil.generateBuilderProperties(getDatalist().getProperties(), new String[]{listPrefix});
+                    DataList.generateStyle(styles, getDatalist().getProperties(), ".dataList#dataList_"+datalist.getId()+" "+listStyle, listPrefix.toUpperCase().replace("-", "_"));
+                    
+                    if (!id.isEmpty()) {
+                        if (styleClass.contains(" ")) {
+                            styleClass = styleClass.replaceFirst(" ", StringUtil.escapeRegex("."+id+" "));
+                        } else {
+                            styleClass += "." + id;
+                        }
+                    }
+                    JsonUtil.generateBuilderProperties(properties, new String[]{prefix});
+                    DataList.generateStyle(styles, properties, ".dataList#dataList_"+datalist.getId()+" "+styleClass, prefix.toUpperCase().replace("-", "_"));
+                }
+                styleKeys.add(key);
+            } catch (Exception e) {
+                LogUtil.error(getClassName(), e, "");
+            }
+        }
+        
+        return html;
+    }
+}

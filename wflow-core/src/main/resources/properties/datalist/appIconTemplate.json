@@ -1,0 +1,96 @@
+[
+    {
+        "title": "@@datalist.appIconTemplate.config@@",
+        "properties": [
+            {
+                "label": "@@datalist.simpleCardTemplate.columns@@",
+                "type" : "header"
+            },
+            {
+                "name": "columns_mobile",
+                "label": "@@datalist.simpleCardTemplate.columns_mobile@@",
+                "type" : "selectbox",
+                "options" : [
+                    {
+                        "value" : "col-sm-12",
+                        "label" : "1"
+                    },
+                    {
+                        "value" : "col-sm-6",
+                        "label" : "2"
+                    },
+                    {
+                        "value" : "col-sm-4",
+                        "label" : "3"
+                    },
+                    {
+                        "value" : "col-sm-3",
+                        "label" : "4"
+                    },
+                    {
+                        "value" : "col-sm-2",
+                        "label" : "6"
+                    }
+                ],
+                "value": "col-sm-12"
+            },
+            {
+                "name": "columns_tablet",
+                "label": "@@datalist.simpleCardTemplate.columns_tablet@@",
+                "type" : "selectbox",
+                "options" : [
+                    {
+                        "value" : "col-md-12",
+                        "label" : "1"
+                    },
+                    {
+                        "value" : "col-md-6",
+                        "label" : "2"
+                    },
+                    {
+                        "value" : "col-md-4",
+                        "label" : "3"
+                    },
+                    {
+                        "value" : "col-md-3",
+                        "label" : "4"
+                    },
+                    {
+                        "value" : "col-md-2",
+                        "label" : "6"
+                    }
+                ],
+                "value": "col-md-6"
+            },
+            {
+                "name": "columns_desktop",
+                "label": "@@datalist.simpleCardTemplate.columns_desktop@@",
+                "type" : "selectbox",
+                "options" : [
+                    {
+                        "value" : "col-lg-12",
+                        "label" : "1"
+                    },
+                    {
+                        "value" : "col-lg-6",
+                        "label" : "2"
+                    },
+                    {
+                        "value" : "col-lg-4",
+                        "label" : "3"
+                    },
+                    {
+                        "value" : "col-lg-3",
+                        "label" : "4"
+                    },
+                    {
+                        "value" : "col-lg-2",
+                        "label" : "6"
+                    }
+                ],
+                "value": "col-lg-3"
+            }
+        ]
+    }
+]
+

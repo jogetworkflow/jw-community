@@ -181,6 +181,7 @@ body.rtl .dataList span.pagelinks{
     border-right: 1px solid #dee2e6;
     border-top: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2px;
 }
 .dataList span.pagelinks strong{
     border: 1px solid #1890ff;
@@ -236,6 +237,10 @@ body.rtl .dataList span.pagelinks{
         display: inline-block;
         width: calc(100% - 200px);
     }
+    .dataList .template_pagelinks span.pagelinks{
+        display: block;
+        width: 100%;
+    }
     .dataList .exportlinks{
         width: 200px;
         display: inline-block
@@ -263,4 +268,37 @@ body.rtl .dataList span.pagelinks{
     display: block;
     clear: both;
     float: none;
+}
+.rtl .dataList th.dataListAlignRight,
+.dataList th.dataListAlignLeft,
+.rtl .dataList td.dataListAlignRight,
+.dataList td.dataListAlignLeft {
+    text-align: left;
+}
+.rtl .dataList th.dataListAlignLeft,
+.dataList th.dataListAlignRight,
+.rtl .dataList td.dataListAlignLeft,
+.dataList td.dataListAlignRight {
+    text-align: right;
+}
+.rtl .dataList th.dataListAlignCenter,
+.dataList th.dataListAlignCenter,
+.rtl .dataList td.dataListAlignCenter,
+.dataList td.dataListAlignCenter {
+    text-align: center;
+}
+.dataList a.rowaction_body:not(.stretched-link) {
+    z-index: 2;
+    position: relative;
+}
+.dataList .stretched-link {
+    height: 0px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0px !important;
+    display: inherit !important;
+}
+.dataList .dropdown-menu a {
+    display: block;
 }

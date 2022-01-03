@@ -32,14 +32,17 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListFilterType;
+import org.joget.apps.datalist.model.DataListTemplate;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.DefaultPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -179,7 +182,7 @@ public class DatalistBuilderWebController {
         
         return view;
     }
-
+    
     @RequestMapping("/json/console/app/(*:appId)/(~:appVersion)/builder/actions")
     public void getBuilderDataActionList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, HttpServletRequest request) throws Exception {
         appService.getAppDefinition(appId, appVersion);
@@ -287,6 +290,29 @@ public class DatalistBuilderWebController {
         }
         
         jsonObject.write(writer);
+    }
+    
+    @RequestMapping(value = "/dbuilder/getRenderingTemplate", method = RequestMethod.POST)
+    public void getRenderingTemplate(ModelMap model, Writer writer, @RequestParam("json") String json) throws Exception {
+        try {
+            json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
+            JSONObject obj = new JSONObject(json);
+        
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            if (obj.has("className")) {
+                String className = obj.getString("className");
+                DataListTemplate template = (DataListTemplate) pluginManager.getPlugin(className);
+                if (template != null) {
+                    if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
+                        JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
+                        template.setProperties(PropertyUtil.getProperties(objProperty));
+                    }
+                    writer.write(template.getTemplate());
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(DatalistBuilderWebController.class.getName(), e, "");
+        }
     }
     
     @RequestMapping(value = "/dbuilder/getFormatterTemplate", method = RequestMethod.POST)

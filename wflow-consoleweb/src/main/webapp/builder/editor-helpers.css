@@ -62,13 +62,28 @@ body.is-dragging [data-cbuilder-droparea][data-cbuilder-droparea-msg]:after {
     justify-content: center;
     font-weight: normal;
 }
+body [data-cbuilder-replicate] {
+    opacity: 0.5;
+    pointer-events: none !important;
+}
+body.is-dragging [data-cbuilder-replicate] *{
+    pointer-events: none !important;
+}
+body.is-dragging [data-cbuilder-replicate] [data-cbuilder-droparea]:after,
 body.is-dragging [data-cbuilder-dragelement] [data-cbuilder-droparea]:after {
-    display: none;
+    display: none !important;
 }
 body.screenshot-in-progress .screenshot-hidden,
 body.screenshot-in-progress [data-cbuilder-element-invisible],
 body.screenshot-in-progress [data-cbuilder-invisible] {
     display:none;
+}
+body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbuilder-classname],
+* + [data-cbuilder-sample]{
+    display: none !important;
+}
+[data-cbuilder-sample] {
+    opacity: 0.5;
 }
 [data-cbuilder-disabled] {
     pointer-events: none;

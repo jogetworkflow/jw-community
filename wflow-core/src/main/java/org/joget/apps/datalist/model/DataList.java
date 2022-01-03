@@ -15,6 +15,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class DataList {
@@ -49,6 +50,8 @@ public class DataList {
     private DataListAction[] actions;
     private DataListAction[] rowActions;
     private DataListColumn[] columns;
+    private Map<String, DataListColumn[]> columnPlaceholders = new HashMap<String, DataListColumn[]>();
+    private Map<String, DataListAction[]> rowActionPlaceholders = new HashMap<String, DataListAction[]>();
     private String[] filterTemplates;
     private String injectedHTML;
     private DataListBinder binder;
@@ -81,7 +84,7 @@ public class DataList {
     private Map<String, String[]> requestParamMap = null;
     private boolean isAuthorized = true;
     private String unauthorizedMsg = null;
-    private DataListAction cardAction = null;
+    private DataListTemplate template = null;
     
     private Map<String, Object> properties;
     
@@ -90,7 +93,7 @@ public class DataList {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
     }
     
     public Object getProperty(String property) {
@@ -210,6 +213,20 @@ public class DataList {
     }
 
     public DataListColumn[] getColumns() {
+        DataListTemplate template = getTemplate();
+        if (template != null) {
+            String tHtml = template.getTemplate();
+            Collection<DataListColumn> newColumns = new ArrayList<DataListColumn>();
+            
+            for (String key : columnPlaceholders.keySet()) {
+                if (tHtml.contains("{{"+key+"}}") || tHtml.contains("{{"+key+" ")) {
+                    newColumns.addAll(Arrays.asList(columnPlaceholders.get(key)));
+                }
+            }
+            
+            return newColumns.toArray(new DataListColumn[0]);
+        }
+        
         return columns;
     }
 
@@ -230,6 +247,29 @@ public class DataList {
         }
         
         this.columns = columns;
+    }
+    
+    public DataListColumn[] getColumnPlaceholder(String key) {
+        return columnPlaceholders.get(key);
+    }
+
+    public void setColumnPlaceholder(String key, DataListColumn[] tempColumns) {
+        if (tempColumns != null && tempColumns.length > 0) {
+            for (DataListColumn c : tempColumns) {
+                if (c.getFormats() != null && !c.getFormats().isEmpty()) {
+                    for (DataListColumnFormat f : c.getFormats()) {
+                        if (f instanceof DataListColumnFormatDefault) {
+                            ((DataListColumnFormatDefault) f).setDatalist(this);
+                        }
+                    }
+                }
+                if (c.getAction() != null && c.getAction() instanceof DataListActionDefault) {
+                    ((DataListActionDefault) c.getAction()).setDatalist(this);
+                }
+            }
+        }
+        
+        this.columnPlaceholders.put(key, tempColumns);
     }
 
     public DataListFilter[] getFilters() {
@@ -308,9 +348,57 @@ public class DataList {
     }
 
     public DataListAction[] getRowActions() {
-        if (getBinder() != null) {
-            String key = getBinder().getPrimaryKeyColumnName();
-            String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+        DataListTemplate template = getTemplate();
+        if (template != null) {
+            String tHtml = template.getTemplate();
+            Collection<DataListAction> newRowActions = new ArrayList<DataListAction>();
+            
+            for (String key : rowActionPlaceholders.keySet()) {
+                if (tHtml.contains("{{"+key+"}}") || tHtml.contains("{{"+key+" ")) {
+                    newRowActions.addAll(Arrays.asList(getRowActionPlaceholder(key)));
+                }
+            }
+            
+            return newRowActions.toArray(new DataListAction[0]);
+        } else {
+            if (getBinder() != null) {
+                String key = getBinder().getPrimaryKeyColumnName();
+                String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+                String queryString = "";
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                if (request !=null) {
+                    queryString = request.getQueryString();
+                    if (queryString == null) {
+                        queryString = "";
+                    }
+                }
+                for (int i = 0; i <  rowActions.length; i++) {
+                    DataListAction r = rowActions[i];
+                    if (r.getHref() == null || (r.getHref() != null && r.getHref().isEmpty())) {
+                        r.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + r.getPropertyString("id")));
+                        if (r.getTarget() == null || (r.getTarget() != null && r.getTarget().isEmpty())) {
+                            r.setProperty("target", "_self");
+                        }
+                        if (r.getHrefParam() == null || (r.getHrefParam() != null && r.getHrefParam().isEmpty())) {
+                            r.setProperty("hrefParam", keyParam);
+                        }
+                        if (r.getHrefColumn() == null || (r.getHrefColumn() != null && r.getHrefColumn().isEmpty())) {
+                            r.setProperty("hrefColumn", key);
+                        }
+                    }
+                    rowActions[i] = r;
+                }
+            }
+        }
+        
+        return rowActions;
+    }
+    
+    public DataListAction[] getRowActionPlaceholder(String key) {
+        DataListAction[] tempRowActions = rowActionPlaceholders.get(key);
+        if (getBinder() != null && tempRowActions != null && tempRowActions.length > 0) {
+            String pkey = getBinder().getPrimaryKeyColumnName();
+            String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + pkey);
             String queryString = "";
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request !=null) {
@@ -319,8 +407,8 @@ public class DataList {
                     queryString = "";
                 }
             }
-            for (int i = 0; i <  rowActions.length; i++) {
-                DataListAction r = rowActions[i];
+            for (int i = 0; i <  tempRowActions.length; i++) {
+                DataListAction r = tempRowActions[i];
                 if (r.getHref() == null || (r.getHref() != null && r.getHref().isEmpty())) {
                     r.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + r.getPropertyString("id")));
                     if (r.getTarget() == null || (r.getTarget() != null && r.getTarget().isEmpty())) {
@@ -330,14 +418,26 @@ public class DataList {
                         r.setProperty("hrefParam", keyParam);
                     }
                     if (r.getHrefColumn() == null || (r.getHrefColumn() != null && r.getHrefColumn().isEmpty())) {
-                        r.setProperty("hrefColumn", key);
+                        r.setProperty("hrefColumn", pkey);
                     }
                 }
-                rowActions[i] = r;
+                tempRowActions[i] = r;
             }
         }
         
-        return rowActions;
+        return tempRowActions;
+    }
+
+    public void setRowActionPlaceholder(String key, DataListAction[] tempRowActions) {
+        if (tempRowActions != null && tempRowActions.length > 0) {
+            for (DataListAction a : tempRowActions) {
+                if (a instanceof DataListActionDefault) {
+                    ((DataListActionDefault) a).setDatalist(this);
+                }
+            }
+        }
+        
+        this.rowActionPlaceholders.put(key, tempRowActions);
     }
     
     public DataListAction getColumnAction(DataListColumn column) {
@@ -627,11 +727,6 @@ public class DataList {
                         break;
                     }
                 }
-            }
-            
-            //look for card action
-            if ("card_action".equalsIgnoreCase(actionParamValue) && isHavingCardAction()) {
-                actionResult = getCardAction().executeAction(this, selectedKeys);
             }
         }
         return actionResult;
@@ -939,49 +1034,6 @@ public class DataList {
         this.responsiveJson = responsiveJson;
     }
     
-    public DataListAction getCardAction() {
-        if (cardAction == null) {
-            Map actionObj = (Map) getProperty("card_click_action");
-            if ("true".equalsIgnoreCase(getPropertyString("card_clickable")) && actionObj != null && actionObj.get("className") != null) {
-                PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-                cardAction = (DataListAction) pluginManager.getPlugin(actionObj.get("className").toString());
-                if (cardAction != null) {
-                    cardAction.setProperties((Map) actionObj.get("properties"));
-                    cardAction.setProperty("id", "card_action");
-                    
-                    if (cardAction.getHref() == null || (cardAction.getHref() != null && cardAction.getHref().isEmpty())) {
-                        String key = getBinder().getPrimaryKeyColumnName();
-                        String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
-                        String queryString = "";
-                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                        if (request !=null) {
-                            queryString = request.getQueryString();
-                            if (queryString == null) {
-                                queryString = "";
-                            }
-                        }
-
-                        cardAction.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + cardAction.getPropertyString("id")));
-                        if (cardAction.getTarget() == null || (cardAction.getTarget() != null && cardAction.getTarget().isEmpty())) {
-                            cardAction.setProperty("target", "_self");
-                        }
-                        if (cardAction.getHrefParam() == null || (cardAction.getHrefParam() != null && cardAction.getHrefParam().isEmpty())) {
-                            cardAction.setProperty("hrefParam", keyParam);
-                        }
-                        if (cardAction.getHrefColumn() == null || (cardAction.getHrefColumn() != null && cardAction.getHrefColumn().isEmpty())) {
-                            cardAction.setProperty("hrefColumn", key);
-                        }
-                    }
-                }
-            }
-        }
-        return cardAction;
-    }
-    
-    public boolean isHavingCardAction() {
-        return getCardAction() != null;
-    }
-    
     /**
      * Retrieve current request map
      * @return 
@@ -1028,35 +1080,43 @@ public class DataList {
         styles.put("TABLET_STYLE", "");
         styles.put("STYLE", "");
         
-        generateStyle(styles, getProperties(), ".dataList .filter-cell", "FILTER_");
-        generateStyle(styles, getProperties(), ".dataList table .column_header", "COLUMN_HEADER_");
-        generateStyle(styles, getProperties(), ".dataList table .column_body", "COLUMN_");
-        generateStyle(styles, getProperties(), ".dataList table .rowaction_header", "ROWACTION_HEADER_");
-        generateStyle(styles, getProperties(), ".dataList table .rowaction_body", "ROWACTION_");
-        generateStyle(styles, getProperties(), ".dataList .actions .btn", "ACTION_");
-        generateStyle(styles, getProperties(), ".dataList.card-layout-active tbody tr", "CARD_");
+        generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" .filter-cell", "FILTER_");
+        generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" .actions .btn", "ACTION_");
+        if (getTemplate() == null) {
+            generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" table .column_header", "COLUMNS_HEADER_");
+            generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" table .column_body", "COLUMNS_");
+            generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" table .rowaction_header", "ROWACTIONS_HEADER_");
+            generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" table .rowaction_body", "ROWACTIONS_");
+            generateStyle(styles, getProperties(), ".dataList#dataList_"+id+" table .rowaction_body a", "ROWACTIONS_LINK_");
+            
+            if (getColumns() != null) {
+                for (DataListColumn column : getColumns()) {
+                    generateStyle(styles, column.getProperties(), ".dataList#dataList_"+id+" table .column_header.header_"+ column.getPropertyString("id"), "HEADER_");
+                    generateStyle(styles, column.getProperties(), ".dataList#dataList_"+id+" table .column_body.body_"+ column.getPropertyString("id"), "");
+                }
+            }
+            if (getRowActions() != null) {
+                for (DataListAction action : getRowActions()) {
+                    generateStyle(styles, action.getProperties(), ".dataList#dataList_"+id+" table .rowaction_header.header_"+ action.getPropertyString("id"), "HEADER_");
+                    generateStyle(styles, action.getProperties(), ".dataList#dataList_"+id+" table .rowaction_body.body_"+ action.getPropertyString("id"), "");
+                    generateStyle(styles, action.getProperties(), ".dataList#dataList_"+id+" table .rowaction_body.body_"+ action.getPropertyString("id") + " a", "LINK_");
+                }
+            }
+        } else {
+            Map<String, String> templateStyles = getTemplate().getStyles();
+            for (String key : templateStyles.keySet()) {
+                styles.put(key, styles.get(key) + " " + templateStyles.get(key));
+            }
+        }
         
         if (getFilters() != null) {
             for (DataListFilter filter : getFilters()) {
-                generateStyle(styles, filter.getProperties(), ".dataList .filter-cell."+ filter.getPropertyString("id"), "");
-            }
-        }
-        if (getColumns() != null) {
-            for (DataListColumn column : getColumns()) {
-                generateStyle(styles, column.getProperties(), ".dataList table .column_header.header_"+ column.getPropertyString("id"), "HEADER_");
-                generateStyle(styles, column.getProperties(), ".dataList table .column_body.body_"+ column.getPropertyString("id"), "");
-            }
-        }
-        if (getRowActions() != null) {
-            for (DataListAction action : getRowActions()) {
-                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_header.header_"+ action.getPropertyString("id"), "HEADER_");
-                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_body.body_"+ action.getPropertyString("id"), "");
-                generateStyle(styles, action.getProperties(), ".dataList table .rowaction_body.body_"+ action.getPropertyString("id") + " a", "LINK_");
+                generateStyle(styles, filter.getProperties(), ".dataList#dataList_"+id+" .filter-cell."+ filter.getPropertyString("id"), "");
             }
         }
         if (getActions() != null) {
             for (DataListAction action : getActions()) {
-                generateStyle(styles, action.getProperties(), ".dataList .actions .btn."+ action.getPropertyString("id"), "");
+                generateStyle(styles, action.getProperties(), ".dataList#dataList_"+id+" .actions .btn."+ action.getPropertyString("id"), "");
             }
         }
         
@@ -1068,6 +1128,29 @@ public class DataList {
             css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
         }
         return css;
+    }
+    
+    public DataListTemplate getTemplate() {
+        if (template == null) {
+            Map templateObj = (Map) getProperty("template");
+            if (templateObj != null && templateObj.get("className") != null) {
+                PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                template = (DataListTemplate) pluginManager.getPlugin(templateObj.get("className").toString());
+                if (template != null) {
+                    template.setDatalist(this);
+                    template.setProperties((Map) templateObj.get("properties"));
+                }
+            }
+        }
+        return template;
+    }
+    
+    public String getHtml() {
+        DataListTemplate template = getTemplate();
+        if (template != null) {
+            return template.render();
+        }
+        return "";
     }
     
     public boolean getNoExport() {
@@ -1088,7 +1171,7 @@ public class DataList {
         return noExport;
     }
     
-    protected static void generateStyle(Map<String, String> styles, Map<String, Object> props, String cssClass, String prefix) {
+    public static void generateStyle(Map<String, String> styles, Map<String, Object> props, String cssClass, String prefix) {
         String[] views = new String[]{"MOBILE_STYLE", "TABLET_STYLE", "STYLE"};
         
         if (props != null) {

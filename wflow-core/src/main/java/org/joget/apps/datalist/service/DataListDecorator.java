@@ -143,30 +143,6 @@ public class DataListDecorator extends CheckboxTableDecorator {
         // handle formatting
         String text = formatColumn(column, row, columnValue);
 
-        // strip tags if media type is not HTML
-        if (text != null) {
-            if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-                text = StringUtil.stripAllHtmlTag(text, false);
-                text = StringEscapeUtils.unescapeXml(text);
-            } else {
-                if (text.equals(StringUtil.stripAllHtmlTag(text, false))) { //check it is not html text
-                    text = StringUtil.escapeString(text, StringUtil.TYPE_NL2BR, null);
-                }
-            }
-        }
-
-        // handle links
-        DataListAction action = dataList.getColumnAction(column);
-        if (text != null && action != null && action.getHref() != null && action.getHref().trim().length() > 0 && MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            String href = action.getHref();
-            String target = action.getTarget();
-            String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : "";
-            String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : "";
-            String confirm = action.getConfirmation();
-            String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm, action.getPropertyString("cssClasses"));
-            text = link;
-        }
-
         return text;
     }
 
@@ -180,19 +156,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (actions != null) {
             int i = 0;
             for (DataListAction action : actions) {
-                String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
-                String link = "";
-                if (isRowActionVisible(action)) {
-                    String linkCss = action.getPropertyString("cssClasses");
-                    
-                    if (!action.getPropertyString("BUILDER_GENERATED_LINK_CSS").isEmpty()) {
-                        linkCss = action.getPropertyString("BUILDER_GENERATED_LINK_CSS");
-                    }
-                    
-                    linkCss += " link_" + action.getPropertyString("id");
-                    
-                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), linkCss);
-                }
+                String link = generateLink(action);
                 
                 if ("true".equals(dataList.getPropertyString("rowActionsMode"))) {
                     if (!link.isEmpty()) {
@@ -212,19 +176,6 @@ public class DataListDecorator extends CheckboxTableDecorator {
         return output;
     }
     
-    /**
-     * Decorator method to display card action
-     * @return
-     */
-    public Object getCardAction() {
-        String output = "";
-        DataListAction action = dataList.getCardAction();
-        if (action != null) {
-            output = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), " ", action.getConfirmation(), "card-action-link");
-        }
-        return output;
-    }
-
     protected DataListColumn findColumn(String columnName) {
         boolean skipHidden = false;
         String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
@@ -247,6 +198,23 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
         
         return column;
+    }
+    
+    public String generateLink(DataListAction action) {
+        String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
+        String link = "";
+        if (isRowActionVisible(action)) {
+            String linkCss = action.getPropertyString("cssClasses");
+
+            if (!action.getPropertyString("BUILDER_GENERATED_LINK_CSS").isEmpty()) {
+                linkCss = action.getPropertyString("BUILDER_GENERATED_LINK_CSS");
+            }
+
+            linkCss += " link_" + action.getPropertyString("id");
+
+            link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation(), linkCss);
+        }
+        return link;
     }
 
     protected String generateLink(String href, String target, String hrefParam, String hrefColumn, String text, String confirmation) {
@@ -355,11 +323,36 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
 
         String text = (result != null) ? result.toString() : null;
+        
+        // strip tags if media type is not HTML
+        if (text != null) {
+            if (tableModel != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+                text = StringUtil.stripAllHtmlTag(text, false);
+                text = StringEscapeUtils.unescapeXml(text);
+            } else {
+                if (text.equals(StringUtil.stripAllHtmlTag(text, false))) { //check it is not html text
+                    text = StringUtil.escapeString(text, StringUtil.TYPE_NL2BR, null);
+                }
+            }
+        }
+
+        // handle links
+        DataListAction action = dataList.getColumnAction(column);
+        if (text != null && action != null && action.getHref() != null && action.getHref().trim().length() > 0 && (tableModel == null || MediaTypeEnum.HTML.equals(tableModel.getMedia()))) {
+            String href = action.getHref();
+            String target = action.getTarget();
+            String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : "";
+            String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : "";
+            String confirm = action.getConfirmation();
+            String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm, action.getPropertyString("cssClasses"));
+            text = link;
+        }
+        
         return text;
     }
     
     @Override
-    protected Object evaluate(String propertyName) {
+    public Object evaluate(String propertyName) {
         return DataListService.evaluateColumnValueFromRow(getCurrentRowObject(), propertyName);
     }
     

@@ -241,6 +241,10 @@ div.exportlinks > a span {
     .dataList span.pagelinks{
         width: calc(100% - 180px);
     }
+    .dataList .template_pagelinks span.pagelinks{
+        display: block;
+        width: 100%;
+    }
 }
 .dataList span.pagelinks a, .dataList span.pagelinks strong, .dataList span.pagelinks > span{
     border-left: 1px solid #dee2e6;

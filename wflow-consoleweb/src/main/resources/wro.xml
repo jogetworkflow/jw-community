@@ -74,14 +74,12 @@
     <group name="userview.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/css/userview.css</css>
         <css>/css/admin_bar.css</css>
     </group>
     <group name="userview_v5.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/css/userview_v5.css</css>
     </group>
     <group name="userview_print.min">
@@ -101,7 +99,6 @@
     <group name="universal.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
@@ -126,7 +123,6 @@
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/progressive/css/form.css</css>
@@ -151,7 +147,6 @@
     <group name="xadmin.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/xadmin/lib/layui/css/layui.css</css>
         <css>/xadmin/css/xadmin.css</css>
@@ -173,7 +168,6 @@
         <css>/ajaxuniversal/css/ajaxtheme.css</css>
         <css>/css/form8.css</css>
         <css>/css/datalist8.css</css>
-        <css>/css/datalist_cardlayout.css</css>
         <css>/css/userview8.css</css>
     </group>    
     <group name="ajaxuniversal.min">

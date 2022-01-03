@@ -14,6 +14,7 @@ DatalistBuilder = {
     availableFilters : {},
     availableFormatters : {},
     availableColumns : null,
+    template : "", 
 
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -37,7 +38,6 @@ DatalistBuilder = {
         }, function() {
             CustomBuilder.Builder.setHead('<link data-footable-style href="' + CustomBuilder.contextPath + '/js/footable/footable.core.min.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
-            CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist_cardlayout.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-dbuilder-style href="' + CustomBuilder.contextPath + '/css/dbuilder.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<script data-footable-script src="' + CustomBuilder.contextPath + '/js/footable/footable.js"/>');
@@ -51,7 +51,8 @@ DatalistBuilder = {
             DatalistBuilder.initFilterList(deferreds);
             DatalistBuilder.initFormatterList(deferreds);
             
-            $(CustomBuilder.Builder.iframe).on("change.builder", function(){
+            $(CustomBuilder.Builder.iframe).off("change.builder, resize.builder");
+            $(CustomBuilder.Builder.iframe).on("change.builder, resize.builder", function(){
                 DatalistBuilder.refreshTableLayout();
             });
             
@@ -171,23 +172,63 @@ DatalistBuilder = {
     renderPermissionElements: function (tbody, key) {
         //set header for web & export
         var thead = $(tbody).closest("table").find("thead tr");
-        if ($(thead).find("th.export").length === 0) {
+        
+        var hasExport = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
+        var exportHtml = '';
+        var exportHtmlOther = '';
+        if (hasExport && $(thead).find("th.export").length === 0) {
             $(thead).append('<th class="export" width="30%">'+get_advtool_msg('adv.permission.export')+'</th>');
             $(thead).find(".authorized").text(get_advtool_msg('adv.permission.web'));
+            
+            exportHtml = '<td class="export"></td>';
+            exportHtmlOther = '<td style="background:#fff;"></td>';
         }
         
-        if (CustomBuilder.data.columns !== undefined && CustomBuilder.data.columns.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.columns")+'</td><td class="authorized"></td><td class="export"></td></tr>');
-            
-            var childs = CustomBuilder.data.columns;
-            if (childs !== null && childs !== undefined && childs.length > 0) {
-                $.each(childs, function(i, child){
-                    PermissionManager.renderElement(child, tbody, key);
-                });
+        if (hasExport) {
+            if (CustomBuilder.data.columns !== undefined && CustomBuilder.data.columns.length > 0) {
+                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.columns")+'</td><td class="authorized"></td>'+exportHtml+'</tr>');
+
+                var childs = CustomBuilder.data.columns;
+                if (childs !== null && childs !== undefined && childs.length > 0) {
+                    $.each(childs, function(i, child){
+                        PermissionManager.renderElement(child, tbody, key);
+                    });
+                }
             }
+            if (CustomBuilder.data.rowActions !== undefined && CustomBuilder.data.rowActions.length > 0) {
+                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.rowActions")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+
+                var childs = CustomBuilder.data.rowActions;
+                if (childs !== null && childs !== undefined && childs.length > 0) {
+                    $.each(childs, function(i, child){
+                        PermissionManager.renderElement(child, tbody, key);
+                    });
+                }
+            }
+        } else {
+            CustomBuilder.Builder.frameBody.find(".dataList [data-placeholder-key]:not([data-cbuilder-sync])").each(function(){
+                if ($(this).closest("[data-cbuilder-replicate]").length === 0) {
+                    var key = $(this).attr("data-placeholder-key");
+                    var childs = CustomBuilder.data[key];
+                    if (childs !== null && childs !== undefined && childs.length > 0) {
+                        var label = "";
+                        if (key === "columns" || key === "rowActions") {
+                            label = get_cbuilder_msg("dbuilder.type."+key);
+                        } else {
+                            label = $(this).attr("data-cbuilder-droparea-msg");
+                        }
+                        
+                        $(tbody).append('<tr class="header"><td>'+label+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+                        
+                        $.each(childs, function(i, child){
+                            PermissionManager.renderElement(child, tbody, key);
+                        });
+                    }
+                }
+            });
         }
         if (CustomBuilder.data.filters !== undefined && CustomBuilder.data.filters.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.filters")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
+            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.filters")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
             
             var childs = CustomBuilder.data.filters;
             if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -197,7 +238,7 @@ DatalistBuilder = {
             }
         }
         if (CustomBuilder.data.actions !== undefined && CustomBuilder.data.actions.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.actions")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
+            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.actions")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
             
             var childs = CustomBuilder.data.actions;
             if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -206,16 +247,7 @@ DatalistBuilder = {
                 });
             }
         }
-        if (CustomBuilder.data.rowActions !== undefined && CustomBuilder.data.rowActions.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.rowActions")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
-            
-            var childs = CustomBuilder.data.rowActions;
-            if (childs !== null && childs !== undefined && childs.length > 0) {
-                $.each(childs, function(i, child){
-                    PermissionManager.renderElement(child, tbody, key);
-                });
-            }
-        }
+        
     },
     
     /*
@@ -230,7 +262,8 @@ DatalistBuilder = {
         }
         var deferreds = [];
         
-        DatalistBuilder.retrieveColumns(deferreds);   
+        DatalistBuilder.retrieveColumns(deferreds);  
+        DatalistBuilder.retrieveTemplate(CustomBuilder.data, deferreds);  
         
         var self = CustomBuilder.Builder;
             
@@ -249,12 +282,15 @@ DatalistBuilder = {
             selectedElIndex = self.frameBody.find(selectedELSelector).index(self.selectedEl);
         } 
         
-        
         $.when.apply($, deferreds).then(function() {
             self.frameBody.html("");
             self.selectNode(false);
             $("#element-highlight-box").hide();
-
+            
+            var cdeferreds = [];
+            var d = $.Deferred();
+            cdeferreds.push(d);
+            
             var html = '<div class="dataList" style="display:block !important;" data-cbuilder-uneditable data-cbuilder-classname="org.joget.apps.datalist.model.DataList" >\
                             <form class="filter_form"><div class="filters" data-cbuilder-columns_filters data-cbuilder-filters data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragFiltersHere')+'"></div></form>\
                             <div class="footable-buttons" style="display:none">\
@@ -262,34 +298,57 @@ DatalistBuilder = {
                                 <button class="collapseAll footable-button"><i></i> Collapse All</button>\
                                 <span class="search_trigger">Search <i></i></span>\
                             </div>\
-                            <form>\
-                                <table class="xrounded_shadowed expandfirst">\
-                                    <thead>\
-                                        <tr data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-prepend  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragColumnsHere')+'">\
-                                            <th class="gap">&nbsp;</th><th class="row_action_container row_action" data-cbuilder-all_actions data-cbuilder-rowActions  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragRowActionsHere')+'"></th>\
-                                        </tr>\
-                                    </thead>\
-                                    <tbody>\
-                                        <tr class="odd"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
-                                        <tr class="even"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
-                                        <tr class="odd"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
-                                        <tr class="even"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
-                                        <tr class="odd"><td class="gap">&nbsp;</td><td class="row_action_container row_action"></td></tr>\
-                                    </tbody>\
-                                </table>\
+                            <form>'+DatalistBuilder.convertTemplate(DatalistBuilder.template, CustomBuilder.data)+'\
                                 <div class="actions bottom left" data-cbuilder-all_actions data-cbuilder-actions  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragActionsHere')+'"></div>\
                             </form>\
                         </div>';
-
+            
             self.frameBody.append(html);
             self.frameBody.find(".dataList").data("data", CustomBuilder.data);
             self.frameBody.find(".dataList").attr("data-cbuilder-id", CustomBuilder.data.id);
-
-            $("#iframe-wrapper").show();
             
-            var cdeferreds = [];
-            var d = $.Deferred();
-            cdeferreds.push(d);
+            self.frameBody.find(".dataList [data-placeholder-key]:not([data-cbuilder-sync])").each(function(){
+                if ($(this).closest("[data-cbuilder-replicate]").length === 0) {
+                    var key = $(this).attr("data-placeholder-key");
+                    var objs = CustomBuilder.data[key];
+                    if (objs !== null && objs !== undefined) {
+                        for (var i in objs) {
+                            var data = objs[i];
+                            var component = self.parseDataToComponent(data);
+                            
+                            var temp = $('<span></span>');
+                            if ($(this).is("tr")) {
+                                temp = $('<td></td>');
+                            } else if ($(this).is("ul") || $(this).is("ol")) {
+                                temp = $('<li></li>');
+                            }
+                            
+                            if ($(this).find('> [data-cbuilder-sample]').length > 0) {
+                                $(this).find('> [data-cbuilder-sample]').before(temp);
+                            } else {
+                                $(this).append(temp);
+                            }
+                            
+                            var syncElements = [];
+                            var se = $(temp).clone();
+                            self.frameBody.find(".dataList [data-placeholder-key=\""+key+"\"][data-cbuilder-sync]").each(function(){
+                                var seTemp = $(se).clone();
+                                syncElements.push(seTemp);
+                                if ($(this).find('> [data-cbuilder-sample]').length > 0) {
+                                    $(this).find('> [data-cbuilder-sample]').before(seTemp);
+                                } else {
+                                    $(this).append(seTemp);
+                                }
+                            });
+                            if (syncElements.length > 0) {
+                                $(temp).data("syncElements", syncElements);
+                            }
+                            
+                            self.renderElement(data, temp, component, null, cdeferreds);
+                        }
+                    }
+                }
+            });
             
             for (var i in CustomBuilder.data.filters) {
                 var data = CustomBuilder.data.filters[i];
@@ -299,16 +358,6 @@ DatalistBuilder = {
                 self.frameBody.find(".filters").append(temp);
                 self.renderElement(data, temp, component, null, cdeferreds);
             }
-            
-            for (var i in CustomBuilder.data.columns) {
-                var data = CustomBuilder.data.columns[i];
-                
-                var component = self.parseDataToComponent(data);
-                var temp = $('<th></th>');
-                self.frameBody.find("table thead tr .gap").before(temp);
-                self.renderElement(data, temp, component, null, cdeferreds);
-            }
-            
             for (var i in CustomBuilder.data.actions) {
                 var data = CustomBuilder.data.actions[i];
                 
@@ -318,20 +367,11 @@ DatalistBuilder = {
                 self.renderElement(data, temp, component, null, cdeferreds);
             }
             
-            for (var i in CustomBuilder.data.rowActions) {
-                var data = CustomBuilder.data.rowActions[i];
-                
-                var component = self.parseDataToComponent(data);
-                var temp = $('<div></div>');
-                self.frameBody.find("th.row_action_container").append(temp);
-                self.renderElement(data, temp, component, null, cdeferreds);
-            }
-            
             d.resolve();
             
             $.when.apply($, cdeferreds).then(function() {
                 DatalistBuilder.refreshTableLayout();
-
+                
                 var dlComponent = self.parseDataToComponent(CustomBuilder.data);
                 DatalistBuilder.updateDatalistStyle(self.frameBody.find(".dataList"), CustomBuilder.data, dlComponent);
 
@@ -356,8 +396,267 @@ DatalistBuilder = {
                         self.selectNode(element);
                     }
                 }
+                $("#iframe-wrapper").show();
             });
         });
+    },
+    
+    convertTemplate : function(html, data) {
+        html = html.replace(/\{\{contextPath\}\}/g, CustomBuilder.contextPath);
+        html = html.replace(/~\{~\{/g, "{{");
+        html = html.replace(/~\}~\}/g, "}}");
+        html = DatalistBuilder.fillTemplateProps(html, data);
+        html = DatalistBuilder.fillPlaceholders(html, data);
+        return html;
+    },
+    
+    fillTemplateProps : function(html, data) {
+        var newHtml = html;
+        if (data.template !== undefined && data.template !== null) {
+            var regexp = (/\{\{([a-zA-Z0-9-_]+)\}\}/gm);
+            while ((match = regexp.exec(html)) !== null) {
+                var replace = match[0];
+                if (replace !== "" && replace !== undefined) {
+                    var key = match[1];
+                    var value = null;
+                    if (data.template !== undefined && data.template !== null && data.template.properties[key] !== undefined && data.template.properties[key] !== null) {
+                        value = data.template.properties[key];
+                    }
+                    if (value !== null && value !== undefined) {
+                        newHtml = newHtml.replace(replace, value);
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return newHtml;
+    },
+    
+    fillPlaceholders : function(html, data) {
+        var regexp = (/\{\{([a-zA-Z0-9-_]+)(| .+?|\|\|.+?)\}\}([\s\S]+?)\{\{\1\}\}/gm);
+        var newHtml = html;
+        while ((match = regexp.exec(html)) !== null) {
+            var replace = match[0];
+            if (replace !== "" && replace !== undefined) {
+                var key = match[1];
+                var props = match[2];
+                var childtemplate = match[3];
+                
+                var result = DatalistBuilder.fillPlaceholder(childtemplate, data, key, props);
+                if (result !== null) {
+                    newHtml = newHtml.replace(replace, result);
+                }
+            } else {
+                break;
+            }
+        }
+        
+        regexp = (/\{\{([a-zA-Z0-9-_]+)(| .+?|\|\|.+?)\}\}/gm);
+        html = newHtml;
+        while ((match = regexp.exec(html)) !== null) {
+            var replace = match[0];
+            if (replace !== "" && replace !== undefined) {
+                var key = match[1];
+                var props = match[2];
+                
+                var result = DatalistBuilder.fillPlaceholder("", data, key, props);
+                if (result !== null) {
+                    newHtml = newHtml.replace(replace, result);
+                }
+            } else {
+                break;
+            }
+        }
+        return newHtml;
+    },
+    
+    fillPlaceholder: function(html, data, key, props) {
+        var sample = null;
+        if (props.indexOf("||") !== -1) {
+            var temp = props.split("||");
+            props = temp[0];
+            sample = temp[1];
+        }
+        var result = null;
+        if (key === "columns" || key.indexOf("column_") === 0 || key === "rowActions" || key.indexOf("rowAction_") === 0) {
+            if (key === "rowActions" && props.indexOf("data-cbuilder-sync") === -1) {
+                props += " data-cbuilder-all_actions data-cbuilder-rowActions data-cbuilder-droparea-msg=\""+get_cbuilder_msg('dbuilder.dragRowActionsHere')+"\"";
+            } else if (key.indexOf("rowAction_") === 0 && props.indexOf("data-cbuilder-sync") === -1) {
+                props += " data-cbuilder-all_actions data-cbuilder-rowActions data-cbuilder-single";
+            } else if (key === "columns" && props.indexOf("data-cbuilder-sync") === -1) {
+                props += " data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-droparea-msg=\""+get_cbuilder_msg('dbuilder.dragColumnsHere')+"\"";
+            } else if (key.indexOf("column_") === 0 && props.indexOf("data-cbuilder-sync") === -1) {
+                props += " data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-single";
+            }
+            
+            //check has child key
+            var innerkey = key.substring(0, key.length -1); 
+            if (html.indexOf("{{"+innerkey+"}}") !== -1 || html.indexOf("{{"+innerkey+" ") !== -1 || html.indexOf("{{"+innerkey+"||") !== -1) {
+                var childTemplate = null;
+                var childProps = null;
+                var replace = null;
+                var regexp = (/\{\{([a-zA-Z0-9-_]+)(| .+?|\|\|.+?)\}\}([\s\S]+?)\{\{\1\}\}/gm);
+                while ((match = regexp.exec(html)) !== null) {
+                    replace = match[0];
+                    if (replace !== "" && replace !== undefined) {
+                        if (match[1] === innerkey) { 
+                            childProps = match[2];
+                            childTemplate = match[3];
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                if (childTemplate === null) {
+                    regexp = (/\{\{([a-zA-Z0-9-_]+)(| .+?|\|\|.+?)\}\}/gm);
+                    while ((match = regexp.exec(html)) !== null) {
+                        replace = match[0];
+                        if (replace !== "" && replace !== undefined) {
+                            if (match[1] === innerkey) {
+                                childProps = match[2];
+                                childTemplate = "{{body}}";
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                var newHtml = html.trim();
+                
+                var tags = ["span", "th", "td", "li"];
+                for (var t in tags) {
+                    var temp = newHtml.replace(replace, '<'+tags[t]+' class="childplaceholder"></'+tags[t]+'>');
+                    if ($(temp).is(".childplaceholder") || $(temp).find(".childplaceholder").length > 0) {
+                        newHtml = temp;
+                        break;
+                    }
+                }
+                newHtml = $(DatalistBuilder.fillPlaceholders(newHtml));
+                
+                var childTemp = $(newHtml);
+                var temp = $('<div></div>');
+                if ($(childTemp).is("tr")) {
+                    temp = $('<table></table>');
+                } else if ($(childTemp).is("td") || $(childTemp).is("th")) {
+                    temp = $('<tr></tr>');
+                } else if ($(childTemp).is("li")) {
+                    temp = $('<ul></ul>');
+                }
+                
+                var placeholder;
+                if ($(childTemp).hasClass("childplaceholder")) {
+                    $(temp).append('<div class="'+key+'" data-placeholder-key="'+key+'" '+props+'></div>');
+                    placeholder = $(temp).find("> ."+key);
+                    $(placeholder).append($(childTemp));
+                } else {
+                    $(temp).append(childTemp);
+                    placeholder = $(temp).find(".childplaceholder").parent();
+                    $(placeholder).addClass(key);
+                    $(placeholder).attr("data-placeholder-key", key);
+                     
+                    var regexp = (/(([a-zA-Z0-9-_]+)="(.+?)"|[a-zA-Z0-9-_]+)/gm);
+                    while ((match = regexp.exec(props)) !== null) {
+                        var attr = match[0];
+                        if (attr !== "" && attr !== undefined) {
+                            if (attr.indexOf("=") !== -1) { 
+                                $(placeholder).attr(match[2], match[3]);
+                            } else {
+                                $(placeholder).attr(attr, "");
+                            }
+                        }
+                    }
+                }
+                
+                //render sample
+                $(placeholder).attr("data-placeholder-template", DatalistBuilder.escapePlaceholder(childTemplate));
+                if (childTemplate !== "{{body}}") {
+                    var sample = $(DatalistBuilder.fillPlaceholders(childTemplate));
+                    $(sample).attr("data-cbuilder-sample", "");
+                    $(temp).find('.childplaceholder').before($(sample));
+                }
+                $(temp).find('.childplaceholder').remove();
+                
+                result = $(temp).html();
+            } else if (html.trim().length > 0) {
+                var childTemplate = html;
+                var temp = $('<div><div class="'+key+'" data-placeholder-key="'+key+'" '+props+'></div></div>');
+                var placeholder = $(temp).find("> ."+key);
+                $(placeholder).attr("data-placeholder-template", DatalistBuilder.escapePlaceholder(childTemplate));
+                var sample = $(DatalistBuilder.fillPlaceholders(childTemplate));
+                $(sample).attr("data-cbuilder-sample", "");
+                $(placeholder).append($(sample));
+                
+                result = $(temp).html();
+            } else {
+                if (sample !== null) {
+                    var temp = $('<div>'+sample+'</div>');
+                    $(temp).find("> *").attr("data-cbuilder-sample", "");
+                    sample = $(temp).html();
+                } else {
+                    sample = "";
+                }
+                result = '<div class="'+key+'" data-placeholder-key="'+key+'" '+props+' data-placeholder-template="'+DatalistBuilder.escapePlaceholder('{{body}}')+'">'+sample+'</div>';
+            }
+        } else if (key === "rows") {
+            var html = DatalistBuilder.fillPlaceholders(html);
+            
+            var childTemp = $(html);
+            var clone = $('<div></div>');
+            if ($(childTemp).is("tr")) {
+                clone = $('<table></table>');
+            } else if ($(childTemp).is("td") || $(childTemp).is("th")) {
+                clone = $('<tr></tr>');
+            } else if ($(childTemp).is("li")) {
+                clone = $('<ul></ul>');
+            }
+            $(clone).append(childTemp);
+            if (props.indexOf('data-cbuilder-sync') === -1) {
+                $(childTemp).attr("data-cbuilder-replicate-origin", "rows");
+            }
+            if (props.indexOf('data-cbuilder-style') !== -1) {
+                $(childTemp).attr("data-cbuilder-select", CustomBuilder.data.id);
+            }
+            var regexp = (/(([a-zA-Z0-9-_]+)="(.+?)"|[a-zA-Z0-9-_]+)/gm);
+            while ((match = regexp.exec(props)) !== null) {
+                var attr = match[0];
+                if (attr !== "" && attr !== undefined) {
+                    if (attr.indexOf("=") !== -1) { 
+                        $(childTemp).attr(match[2], match[3]);
+                    } else {
+                        $(childTemp).attr(attr, "");
+                    }
+                }
+            }
+            result = $(clone).html();
+            var copyTemp = $(html);
+            $(clone).html('');
+            $(clone).append(copyTemp);
+            for (var i = 0; i < 4; i++) {
+                if (props.indexOf('data-cbuilder-sync') === -1) {
+                    $(copyTemp).attr("data-cbuilder-replicate", "rows");
+                }
+                result += $(clone).html();
+            }
+        } else if (key === "selector"){
+            result = "";
+        } else {
+            if (sample !== "") {
+                result = sample;
+            }
+            if (data !== undefined && data[key] !== undefined && data[key] !== null) {
+                result = data[key];
+            }
+        }
+        
+        return result;
+    },
+    
+    escapePlaceholder : function(html) {
+        html = html.replace(/\{\{/g, "~{~{");
+        html = html.replace(/\}\}/g, "~}~}");
+        return html;
     },
     
     /*
@@ -372,6 +671,74 @@ DatalistBuilder = {
             return self.getComponent("org.joget.apps.datalist.model.DataList");
         } else {
             return self.getComponent(data.name);
+        }
+    },
+    
+    /*
+     * Retrive template syntax based on the template property
+     */
+    retrieveTemplate : function(data, deferreds) {
+        if (data.template !== undefined && data.template !== null && data.template.className !== undefined && data.template.className !== "") {
+            var wait = $.Deferred();
+            deferreds.push(wait);
+            
+            CustomBuilder.cachedAjax({
+                type: "POST",
+                data: {
+                    "json": JSON.encode(data.template)
+                },
+                url: CustomBuilder.contextPath + '/web/dbuilder/getRenderingTemplate',
+                dataType : "text",
+                beforeSend: function (request) {
+                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    DatalistBuilder.template = response;
+                },
+                error: function() {
+                    //ignore
+                },
+                complete: function() {
+                    wait.resolve();
+                }
+            });
+        } else {
+            DatalistBuilder.template = '<table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
+                                            <thead>\
+                                                {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
+                                                    <tr>\
+                                                        {{column}}\
+                                                            <th>{{label||Sample Label}}<span class="overlay"></span></th>\
+                                                        {{column}}\
+                                                        <th class="gap"></th>\
+                                                        {{rowActions data-cbuilder-sort-horizontal data-cbuilder-style="[{\'class\' : \'.rowAction_body\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'.rowAction_header\', \'label\' : \'Header\'}, {\'prefix\' : \'link\', \'class\' : \'.rowAction_body > a\', \'label\' : \'Link\'}]"}}\
+                                                            <th>\
+                                                                {{rowAction}}\
+                                                                    <div class="rowAction rowAction_header">{{header_label|| }}<span class="overlay"></span></div>\
+                                                                {{rowAction}}\
+                                                            </th>\
+                                                        {{rowActions}}\
+                                                    </tr>\
+                                                {{columns}}\
+                                            </thead>\
+                                            <tbody>\
+                                                {{rows data-cbuilder-sync}}\
+                                                    {{columns data-cbuilder-sync}}\
+                                                        <tr>\
+                                                            {{column}}\
+                                                                <td>{{body||Sample Value}}</td>\
+                                                            {{column}}\
+                                                            <td class="gap"></td>\
+                                                            {{rowActions data-cbuilder-sync}}\
+                                                                <td>\
+                                                                    {{rowAction}}<div class="rowAction rowAction_body">{{body}}</div>{{rowAction}}\
+                                                                </td>\
+                                                            {{rowActions}}\
+                                                        </tr>\
+                                                    {{columns}}\
+                                                {{rows}}\
+                                            </tbody>\
+                                        </table>';
         }
     },
     
@@ -454,10 +821,21 @@ DatalistBuilder = {
                         }
                     },
                     'getParentDataHolder' : function(elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
-                            return "filters";
+                        var self = CustomBuilder.Builder;
+                        var parent = null;
+                        if (self.dragElement) {
+                            parent = self.dragElement.parent();
+                        } else if (self.selectedEl) {
+                            parent = self.selectedEl.parent();
+                        }
+                        if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('column_') === 0) {
+                            return $(parent).attr('data-placeholder-key');
                         } else {
-                            return "columns";
+                            if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                                return "filters";
+                            } else {
+                                return "columns";
+                            }
                         }
                     },
                     'getLabel' : function(elementObj, component) {
@@ -472,131 +850,16 @@ DatalistBuilder = {
                         }
                     },
                     'dragging' : function(dragElement, component) {
-                        if ($(dragElement).parent().is("tr")) {
-                            //is column
-                            var tr = $(dragElement).parent();
-                            var table = tr.closest("table");
+                        if ($(dragElement).parent().is("[data-placeholder-key]")) {
+                            dragElement = DatalistBuilder.draggingElement(dragElement, component);
+                        } else if (!$(dragElement).is("span.filter-cell")) { //is filter
+                            var replace = $('<span class="filter-cell "><input type="text" size="10" placeholder="'+UI.escapeHTML(component.label)+'"/></span></div>');
+                            dragElement.replaceWith(replace);
+                            dragElement = replace;
                             
-                            if (table.closest(".dataList").hasClass("card-layout-active")) {
-                                //card layout
-                                if (!$(dragElement).is("td")) {
-                                    var replace = $('<td data-cbuilder-id="new-dragging">'+UI.escapeHTML(component.label)+'</td>');
-                                    dragElement.replaceWith(replace);
-                                    dragElement = replace;
-                                } else {
-                                    var id = $(dragElement).attr("data-cbuilder-select");
-                                    
-                                    if (id !== undefined) {
-                                        //move header & tbody together
-                                        var index = tr.find("td").index(dragElement);
-                                        var cindex = table.find("thead tr th").index(table.find("thead tr th[data-cbuilder-id='"+id+"']"));
-                                        if (cindex < index) {
-                                            index++;
-                                        }
-                                        
-                                        var th = table.find("thead tr").find("[data-cbuilder-id='"+id+"']");
-                                        if (index === 0) {
-                                            table.find("thead tr").prepend(th);
-                                        } else {
-                                            table.find("thead tr").find("th:eq("+(index - 1)+")").after(th);
-                                        }
-                                        
-                                        table.find("tbody tr").each(function(){
-                                            var ctr = $(this);
-                                            if (!ctr.is(tr)) {
-                                                var td = ctr.find("[data-cbuilder-select='"+id+"']");
-
-                                                if (index === 0) {
-                                                    ctr.prepend(td);
-                                                } else {
-                                                    ctr.find("td:eq("+(index - 1)+")").after(td);
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            } else {
-                                //table layout
-                                if (!$(dragElement).is("th")) {
-                                    var replace = $('<th data-cbuilder-id="new-dragging">'+UI.escapeHTML(component.label)+'</th>');
-                                    dragElement.replaceWith(replace);
-                                    dragElement = replace;
-
-                                    //add tbody td
-                                    var index = tr.find("th").index(dragElement);
-                                    table.find("tbody tr").each(function(){
-                                        var ctr = $(this);
-                                        var td = $('<td class="dragging" data-cbuilder-select="new-dragging">'+UI.escapeHTML(component.label)+'</td>');
-                                        if (index === 0) {
-                                            ctr.prepend(td);
-                                        } else {
-                                            ctr.find("td:eq("+(index - 1)+")").after(td);
-                                        }
-                                    });
-                                } else {
-                                    var id = $(dragElement).attr("data-cbuilder-id");
-
-                                    //move tbody td together
-                                    var index = tr.find("th").index(dragElement);
-                                    var cindex = table.find("tbody tr:eq(0) td").index(table.find("tbody tr:eq(0) td[data-cbuilder-select='"+id+"']"));
-                                    if (cindex < index) {
-                                        index++;
-                                    }
-
-                                    table.find("tbody tr").each(function(){
-                                        var ctr = $(this);
-                                        var td = ctr.find("[data-cbuilder-select='"+id+"']");
-
-                                        if (index === 0) {
-                                            ctr.prepend(td);
-                                        } else {
-                                            ctr.find("td:eq("+(index - 1)+")").after(td);
-                                        }
-                                    });
-                                }
-                            }
-                        } else {
-                            //is filter
-                            if (!$(dragElement).is("span.filter-cell")) {
-                                var replace = $('<span class="filter-cell "><input type="text" size="10" placeholder="'+UI.escapeHTML(component.label)+'"/></span></div>');
-                                dragElement.replaceWith(replace);
-                                dragElement = replace;
-                                
-                                //remove tbody temporary td if exist
-                                $(dragElement).closest(".dataList").find("td.dragging").remove();
-                            }
+                            CustomBuilder.Builder.frameBody.find("[data-cbuilder-dragSubElement]").remove();
                         }
                         return dragElement;
-                    },
-                    'afterMoved' : function(element, elementObj, component) {
-                        if ($(element).parent().is("tr")) {
-                            var tr = $(element).parent();
-                            var table = tr.closest("table");
-                            
-                            //move tbody td together
-                            var index = tr.find("th").index(element);
-                            var cindex = table.find("tbody tr:eq(0) td.column_body").index(table.find("tbody tr:eq(0) td.column_body[data-cbuilder-select='"+elementObj.id+"']"));
-                            if (cindex < index) {
-                                index++;
-                            }
-
-                            table.find("tbody tr").each(function(){
-                                var ctr = $(this);
-                                var td = ctr.find("td.column_body[data-cbuilder-select='"+elementObj.id+"']");
-
-                                if (index === 0) {
-                                    ctr.prepend(td);
-                                } else {
-                                    ctr.find("td.column_body:eq("+(index - 1)+")").after(td);
-                                }
-                            });
-                        } 
-                    },
-                    'getPasteTemporaryNode' : function(elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
-                            return '<th></th>';
-                        }
-                        return '<div></div>';
                     },
                     'customPropertiesData' : function(props, elementObj, component) {
                         if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
@@ -617,14 +880,8 @@ DatalistBuilder = {
                         if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
                             return component.builderTemplate.stylePropertiesDefinition;
                         } else {
-                            return component.builderTemplate.tableStylePropertiesDefinition;
+                            return DatalistBuilder.getElementStylePropertiesDefinition(elementObj, component);
                         }
-                    },
-                    'isSubSelectAllowActions' : function(elementObj, component) {
-                        if (CustomBuilder.data.responsive_layout === "card-layout") {
-                            return true;
-                        }
-                        return false;
                     },
                     'isPastable' : function(elementObj, component){
                         var copied = CustomBuilder.getCopiedElement();
@@ -640,7 +897,6 @@ DatalistBuilder = {
                             DatalistBuilder.renderColumnPermission(elementObj, row, permissionObj, key, level);
                         }
                     },
-                    'tableStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.tableStylePropertiesDefinition()),
                     'navigable' : false,
                     'dragHtml' : '<span></span>'
                 }
@@ -685,24 +941,42 @@ DatalistBuilder = {
             builderTemplate : {
                 'getStylePropertiesDefinition' : function(elementObj, component) {
                     var selectedEl = CustomBuilder.Builder.selectedEl;
-                    if ($(selectedEl).is(".column_header")) {
-                        return component.builderTemplate.columnStylePropertiesDefinition;
-                    } else if ($(selectedEl).is(".rowaction_header")) {
-                        return component.builderTemplate.rowActionStylePropertiesDefinition;
-                    } else if ($(selectedEl).is(".filter-cell")) {
+                    if ($(selectedEl).is(".filter-cell")) {
                         return component.builderTemplate.filterStylePropertiesDefinition;
                     } else if ($(selectedEl).is(".btn")) {
                         return component.builderTemplate.actionStylePropertiesDefinition;
-                    } else {
-                        return component.builderTemplate.cardStylePropertiesDefinition;
+                    } else if ($(CustomBuilder.Builder.highlightEl).is("[data-cbuilder-style]") || $(selectedEl).parent().is("[data-placeholder-key]")) {
+                        var styleConfig = null;
+                        if ($(selectedEl).parent().is("[data-cbuilder-style]")) {
+                            try {
+                                styleConfig = eval($(selectedEl).parent().attr('data-cbuilder-style'));
+                            } catch (err){}
+                        } else if ($(CustomBuilder.Builder.highlightEl).is("[data-cbuilder-style]")) {
+                            try {
+                                styleConfig = eval($(CustomBuilder.Builder.highlightEl).attr('data-cbuilder-style'));
+                            } catch (err){}
+                        }
+                        var key = "";
+                        var prefix = "";
+                        if (!$(selectedEl).parent().is("[data-placeholder-key]")) {
+                            for (var i in styleConfig) {
+                                if (styleConfig[i].prefix !== undefined && styleConfig[i].prefix !== null && styleConfig[i].prefix !== "") {
+                                    key += styleConfig[i].prefix;
+                                }
+                            }
+                        } else {
+                            key = $(selectedEl).parent().attr("data-placeholder-key");
+                            prefix = key;
+                        }
+                        if (component.builderTemplate[key+"StylePropertiesDefinition"] === undefined) {
+                            component.builderTemplate[key+"StylePropertiesDefinition"] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition(prefix, styleConfig));
+                        }
+                        return component.builderTemplate[key+"StylePropertiesDefinition"];
                     }
                 },
-                'isSubSelectAllowActions' : function(elementObj, component) {
-                    return true;
-                },
                 'getLabel' : function(elementObj, component) {
-                    if (CustomBuilder.Builder.highlightEl !== null && $(CustomBuilder.Builder.highlightEl).is("tr")) {
-                        return get_cbuilder_msg('dbuilder.card');
+                    if (CustomBuilder.Builder.highlightEl !== null && $(CustomBuilder.Builder.highlightEl).is("[data-cbuilder-highlight]")) {
+                        return $(CustomBuilder.Builder.highlightEl).attr('data-cbuilder-highlight');
                     } else {
                         return "";
                     }
@@ -714,22 +988,8 @@ DatalistBuilder = {
                     }
                     return false;
                 },
-                'isSupportProperties' : function(elementObj, component) {
-                    var selectedEl = CustomBuilder.Builder.subSelectedEl;
-                    if ($(selectedEl).length > 0 && $(selectedEl).is("tr")) {
-                        return true;
-                    }
-                    return this.supportProperties;
-                },
-                'customPropertyOptions' : function(elementOptions, element, elementObj, component) {
-                    return component.builderTemplate.cardPropertiesDefinition;
-                },
-                'cardStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("card")),
-                'columnStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("column")),
-                'rowActionStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("rowaction")),
-                'filterStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("filter")),
-                'actionStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.datalistStylePropertiesDefinition("action")),
-                'cardPropertiesDefinition' : $.extend(true, [], DatalistBuilder.cardPropertiesDefinition()),
+                'filterStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition("filter")),
+                'actionStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition("action")),
                 'draggable' : false,
                 'movable' : false,
                 'deletable' : false,
@@ -782,132 +1042,34 @@ DatalistBuilder = {
                                 }
                             },
                             'getParentDataHolder' : function(elementObj, component) {
-                                if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) !== -1) {
-                                    return "rowActions";
+                                var self = CustomBuilder.Builder;
+                                var parent = null;
+                                if (self.dragElement) {
+                                    parent = self.dragElement.parent();
+                                } else if (self.selectedEl) {
+                                    parent = self.selectedEl.parent();
+                                }
+                                if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('column_') === 0) {
+                                    return $(parent).attr('data-placeholder-key');
                                 } else {
-                                    return "actions";
+                                    if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) !== -1) {
+                                        return "rowActions";
+                                    } else {
+                                        return "actions";
+                                    }
                                 }
                             },
                             'dragging' : function(dragElement, component) {
-                                if ($(dragElement).parent().is(".row_action_container")) {
-                                    var th = $(dragElement).parent();
-                                    var table = th.closest("table");
+                                if ($(dragElement).parent().is("[data-placeholder-key]")) {
+                                    dragElement = DatalistBuilder.draggingElement(dragElement, component);
+                                } else if (!$(dragElement).is("button")) { //is action
+                                    var replace = $('<button class="form-button btn button">'+UI.escapeHTML(component.label)+'</button>');
+                                    dragElement.replaceWith(replace);
+                                    dragElement = replace;
 
-                                    //is row action
-                                    if (table.closest(".dataList").hasClass("card-layout-active")) {
-                                        //card layout
-                                        if (!$(dragElement).is("div")) {
-                                            var replace = $('<div data-cbuilder-id="new-dragging"><a href="#" class="btn btn-sm btn-primary">'+UI.escapeHTML(component.label)+'</a></div>');
-                                            dragElement.replaceWith(replace);
-                                            dragElement = replace;
-                                        } else {
-                                            var id = $(dragElement).attr("data-cbuilder-select");
-
-                                            if (id !== undefined) {
-                                                //move header & tbody together
-                                                var index = th.find("> div").index(dragElement);
-                                                var cindex = table.find("thead tr th.row_action_container > div").index(table.find("thead tr th.row_action_container > div[data-cbuilder-id='"+id+"']"));
-                                                if (cindex < index) {
-                                                    index++;
-                                                }
-                                                
-                                                var thra = table.find("thead tr th.row_action_container").find("> div[data-cbuilder-id='"+id+"']");
-                                                if (index === 0) {
-                                                    table.find("thead tr th.row_action_container").prepend(thra);
-                                                } else {
-                                                    table.find("thead tr th.row_action_container").find("> div:eq("+(index - 1)+")").after(thra);
-                                                }
-
-                                                table.find("tbody tr").each(function(){
-                                                    var ctr = $(this).find("td.row_action_container");
-                                                    if (!ctr.is(th)) {
-                                                        var ra = ctr.find("[data-cbuilder-select='"+id+"']");
-
-                                                        if (index === 0) {
-                                                            ctr.prepend(ra);
-                                                        } else {
-                                                            ctr.find("> div:eq("+(index - 1)+")").after(ra);
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    } else {
-                                        //table layout
-                                        if (!$(dragElement).is("div")) {
-                                            var replace = $('<div data-cbuilder-id="new-dragging"><a href="#" class="btn btn-sm btn-primary">'+UI.escapeHTML(component.label)+'</a></div>');
-                                            dragElement.replaceWith(replace);
-                                            dragElement = replace;
-
-                                            //add tbody td
-                                            var index = th.find("> div").index(dragElement);
-                                            table.find("tbody tr").each(function(){
-                                                var ctr = $(this).find("td.row_action_container");
-                                                var ra = $('<div class="dragging" data-cbuilder-select="new-dragging"><a href="#" class="btn btn-sm btn-primary">'+UI.escapeHTML(component.label)+'</a></div>');
-                                                if (index === 0) {
-                                                    ctr.prepend(ra);
-                                                } else {
-                                                    ctr.find("> div:eq("+(index - 1)+")").after(ra);
-                                                }
-                                            });
-                                        } else {
-                                            var id = $(dragElement).attr("data-cbuilder-id");
-
-                                            //move tbody td together
-                                            var index = th.find("> div").index(dragElement);
-                                            var cindex = table.find("tbody tr:eq(0) td.row_action_container > div").index(table.find("tbody tr:eq(0) td.row_action_container > div[data-cbuilder-select='"+id+"']"));
-                                            if (cindex < index) {
-                                                index++;
-                                            }
-
-                                            table.find("tbody tr").each(function(){
-                                                var ctr = $(this).find("td.row_action_container");
-                                                var ra = ctr.find("[data-cbuilder-select='"+id+"']");
-
-                                                if (index === 0) {
-                                                    ctr.prepend(ra);
-                                                } else {
-                                                    ctr.find("> div:eq("+(index - 1)+")").after(ra);
-                                                }
-                                            });
-                                        }
-                                    }
-                                } else {
-                                    //is action
-                                    if (!$(dragElement).is("button")) {
-                                        var replace = $('<button class="form-button btn button">'+UI.escapeHTML(component.label)+'</button>');
-                                        dragElement.replaceWith(replace);
-                                        dragElement = replace;
-
-                                        //remove tbody temporary row action if exist
-                                        $(dragElement).closest(".dataList").find("td.row_action_container .dragging").remove();
-                                    }
+                                    CustomBuilder.Builder.frameBody.find("[data-cbuilder-dragSubElement]").remove();
                                 }
                                 return dragElement;
-                            },
-                            'afterMoved' : function(element, elementObj, component) {
-                                if ($(element).parent().is("th")) {
-                                    var th = $(element).parent();
-                                    var table = th.closest("table");
-
-                                    //move tbody row action together
-                                    var index = th.find("> div").index(element);
-                                    var cindex = table.find("tbody tr:eq(0) td.row_action_container > div").index(table.find("tbody tr:eq(0) td.row_action_container > div[data-cbuilder-select='"+elementObj.id+"']"));
-                                    if (cindex < index) {
-                                        index++;
-                                    }
-
-                                    table.find("tbody tr").each(function(){
-                                        var ctr = $(this).find("td.row_action_container");
-                                        var ra = ctr.find("[data-cbuilder-select='"+elementObj.id+"']");
-
-                                        if (index === 0) {
-                                            ctr.prepend(ra);
-                                        } else {
-                                            ctr.find("> div:eq("+(index - 1)+")").after(ra);
-                                        }
-                                    });
-                                }
                             },
                             'customPropertiesData' : function(props, elementObj, component) {
                                 if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
@@ -926,15 +1088,12 @@ DatalistBuilder = {
                             },
                             'getStylePropertiesDefinition' : function(elementObj, component) {
                                 if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
-                                    return component.builderTemplate.tableStylePropertiesDefinition;
+                                    return DatalistBuilder.getElementStylePropertiesDefinition(elementObj, component);
                                 } else {
                                     return component.builderTemplate.stylePropertiesDefinition;
                                 }
                             },
                             'isSubSelectAllowActions' : function(elementObj, component) {
-                                if (CustomBuilder.data.responsive_layout === "card-layout") {
-                                    return true;
-                                }
                                 return false;
                             },
                             'isPastable' : function(elementObj, component){
@@ -944,7 +1103,6 @@ DatalistBuilder = {
                                 }
                                 return false;
                             },
-                            'tableStylePropertiesDefinition' : $.extend(true, [], DatalistBuilder.tableStylePropertiesDefinition()),
                             'navigable' : false,
                             'dragHtml' : '<span></span>'
                         }
@@ -1003,22 +1161,20 @@ DatalistBuilder = {
     addElement : function(component, dragElement, callback) {
         var parentArray;
         var type = "";
-        if ($(dragElement).parent().is("[data-cbuilder-filters]")) {
+        if ($(dragElement).parent().is('[data-placeholder-key]')) {
+            var key = $(dragElement).parent().attr('data-placeholder-key');
+            if (CustomBuilder.data[key] === undefined) {
+                CustomBuilder.data[key] = [];
+            }
+            if (key === "rowActions" || key.indexOf("rowAction_") === 0) {
+                type = "rowAction";
+            } else {
+                type = "column";
+            }
+            parentArray = CustomBuilder.data[key];
+        } else if ($(dragElement).parent().is("[data-cbuilder-filters]")) {
             parentArray = CustomBuilder.data.filters;
             type = "filter";
-        } else if ($(dragElement).parent().is("[data-cbuilder-columns]")) {
-            parentArray = CustomBuilder.data.columns;
-            type = "column";
-            
-            //remove tbody temporary td
-            $(dragElement).closest("table").find("tbody td.dragging").remove();
-        } else if ($(dragElement).parent().is("[data-cbuilder-rowActions]")) {
-            parentArray = CustomBuilder.data.rowActions;
-            type = "rowAction";
-            
-            //remove tbody temporary row actions
-            $(dragElement).closest("table").find("tbody td.row_action_container .dragging").remove();
-            
         } else if ($(dragElement).parent().is("[data-cbuilder-actions]")) {
             parentArray = CustomBuilder.data.actions;
             type = "action";
@@ -1045,8 +1201,8 @@ DatalistBuilder = {
             }
         } else {
             elementObj.className = component.className;
-            elementObj.label = component.label;
             elementObj.properties = $.extend(true, {}, component.properties);
+            elementObj.properties.label = component.label;
             
             if (type === "rowAction") {
                 elementObj.properties['link-css-display-type'] = 'btn btn-sm btn-primary';
@@ -1055,10 +1211,130 @@ DatalistBuilder = {
 
         var index = 0;
         var container = $(dragElement).parent().closest("[data-cbuilder-"+component.builderTemplate.getParentContainerAttr(elementObj, component)+"]");
-        index = $(container).find("> *").index(dragElement);
-        parentArray.splice(index, 0, elementObj);
+        if ($(container).is('[data-cbuilder-single]')) {
+            parentArray.splice(0,parentArray.length, elementObj);
+            $(container).find("> [data-cbuilder-classname]").remove();
+        } else {
+            index = $(container).find("> *").index(dragElement);
+            parentArray.splice(index, 0, elementObj);
+        }
 
         callback(elementObj);
+    },
+    
+    draggingElement : function(dragElement, component) {
+        var key = $(dragElement).parent().attr('data-placeholder-key');
+        var data = component.label;
+        var rowData = DatalistBuilder.sampleData;
+        if (rowData !== undefined && rowData !== null 
+                && rowData[component.className] !== undefined && rowData[component.className] !== null && rowData[component.className] !== "") {
+            data = rowData[component.className];
+        }
+
+        var id = $(dragElement).attr("data-cbuilder-id");
+        var elementObj = $(dragElement).data("data");
+        var value = $(dragElement).attr("data-cbuilder-value");
+        if (value !== undefined) {
+            data = value;
+        } else if (key.indexOf("rowAction") === 0) {
+            data = '<a href="#">' + data + '</a>';
+        }
+        
+        var obj;
+        if (elementObj !== null && elementObj !== undefined) {
+            if (elementObj.propertie !== null && elementObj.propertie !== undefined) {
+                obj = $.extend(true, {}, elementObj.propertie);
+            } else {
+                obj = $.extend(true, {}, elementObj);
+            }
+            obj['body'] = data;
+        } else {
+            obj = {
+                label : component.label,
+                body : data
+            };
+        }
+        
+        var html = DatalistBuilder.convertTemplate($(dragElement).parent().attr('data-placeholder-template'), obj);
+        var replace = $(html);
+
+        var syncElements = $(dragElement).data("syncElements");
+        
+        $(dragElement).replaceWith(replace);
+        dragElement = replace;
+        
+        DatalistBuilder.updateStyle(dragElement, obj, component, $(dragElement).parent());
+        
+        if (CustomBuilder.Builder.frameBody.find(".dataList [data-placeholder-key=\""+key+"\"][data-cbuilder-sync]").length > 0) {
+            var index = $(dragElement).parent().find("> *").index($(dragElement));
+            if (syncElements === undefined || syncElements === null || syncElements.length === 0) {
+                syncElements = [];
+                CustomBuilder.Builder.frameBody.find(".dataList [data-placeholder-key=\""+key+"\"][data-cbuilder-sync]").each(function(){
+                    var dragHtml = DatalistBuilder.convertTemplate($(this).attr('data-placeholder-template'), obj);
+                    var subDragElement = $(dragHtml);
+                    $(subDragElement).attr('data-cbuilder-dragSubElement', '');
+                    syncElements.push(subDragElement);
+                    if (index === 0) {
+                        $(this).prepend(subDragElement);
+                    } else {
+                        $(this).find('> *:eq('+(index-1)+')').after(subDragElement);
+                    }
+                    
+                    if (key.indexOf("rowAction") === 0) {
+                        var width = $(dragElement).width();
+                        var synceWidth = $(subDragElement).width();
+                        if (synceWidth > width) {
+                            $(dragElement).width(synceWidth);
+                        } else {
+                            $(subDragElement).width(width);
+                        }
+                    }
+                    
+                    DatalistBuilder.updateStyle(subDragElement, obj, component, $(dragElement).parent());
+                });
+            } else {
+                //move to the index
+                for (var i in syncElements) {
+                    var cIndex = $(syncElements[i]).parent().find('> *').index($(syncElements[i]));
+                    if (index === 0) {
+                        $(syncElements[i]).parent().prepend(syncElements[i]);
+                    } else if (cIndex < index) {
+                        $(syncElements[i]).parent().find('> *:eq('+(index)+')').after(syncElements[i]);
+                    } else {
+                        $(syncElements[i]).parent().find('> *:eq('+(index-1)+')').after(syncElements[i]);
+                    }
+                    
+                    if (key.indexOf("rowAction") === 0) {
+                        var width = $(dragElement).width();
+                        var synceWidth = $(syncElements[i]).width();
+                        if (synceWidth > width) {
+                            $(dragElement).width(synceWidth);
+                        } else {
+                            $(syncElements[i]).width(width);
+                        }
+                    }
+                    DatalistBuilder.updateStyle(syncElements[i], obj, component, $(dragElement).parent());
+                }
+            }
+        }
+        
+        $(dragElement).attr("data-cbuilder-id", id);
+        $(dragElement).attr("data-cbuilder-label", component.label);
+        if (syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
+            $(dragElement).data("syncElements", syncElements);
+        }
+        if (value !== undefined){
+            $(dragElement).attr("data-cbuilder-value", value);
+        }
+        if (elementObj !== undefined) {
+            $(dragElement).attr("data-cbuilder-classname", component.className);
+            $(dragElement).data("data", elementObj);
+            CustomBuilder.Builder.selectedEl = dragElement;
+        }
+        
+        DatalistBuilder.adjustTableOverlaySize($(dragElement).closest(".dataList"));
+        
+        return dragElement;
     },
     
     /*
@@ -1078,7 +1354,6 @@ DatalistBuilder = {
      */
     renderElement : function(element, elementObj, component, callback) {
         DatalistBuilder.destroyFootable($(element).closest("table"));
-        
         var deferrer = $.Deferred();
         
         if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
@@ -1105,13 +1380,61 @@ DatalistBuilder = {
     updateDatalistStyle : function(element, elementObj, component, deferrer) {
         var builder = CustomBuilder.Builder;
         
-        builder.handleStylingProperties(element, elementObj, "card", ".dataList.card-layout-active tbody tr");
         builder.handleStylingProperties(element, elementObj, "filter", ".dataList .filter-cell");
-        builder.handleStylingProperties(element, elementObj, "column-header", ".dataList table .column_header");
-        builder.handleStylingProperties(element, elementObj, "column", ".dataList table .column_body");
-        builder.handleStylingProperties(element, elementObj, "rowaction-header", ".dataList table .rowaction_header");
-        builder.handleStylingProperties(element, elementObj, "rowaction", ".dataList table .rowaction_body");
         builder.handleStylingProperties(element, elementObj, "action", ".dataList .actions .btn");
+        
+        var proceededKey = [];
+        $(element).find('[data-placeholder-key]:not([data-cbuilder-sync]), [data-cbuilder-style]').each(function(){
+            var key = $(this).attr('data-placeholder-key');
+            var checkingKey = key;
+            if (checkingKey === undefined && $(this).is('[data-cbuilder-style]')) {
+                try {
+                    checkingKey = "";
+                    var styleConfig = eval($(this).attr('data-cbuilder-style'));
+                    for (var i in styleConfig) {
+                        if (styleConfig[i].prefix !== undefined) {
+                            checkingKey += styleConfig[i].prefix;
+                        }
+                    }
+                } catch (err){}
+            }
+            if ($.inArray(checkingKey, proceededKey) === -1) {
+                var styleConfig = null;
+                if ($(this).is("[data-cbuilder-style]")) {
+                    try {
+                        styleConfig = eval($(this).attr('data-cbuilder-style'));
+                    } catch (err){}
+                }
+                if (styleConfig === null) {
+                    styleConfig = [{}];
+                }
+                for (var i in styleConfig) {
+                    var cssStyle = "";
+                    var prefix = "";
+                    
+                    if (key !== undefined) {     
+                        prefix = key;
+                        cssStyle = ".ph_" + key;
+                        if (styleConfig[i].class !== undefined) {
+                            if (styleConfig[i].class.indexOf(" ") !== -1) {
+                                cssStyle = styleConfig[i].class.replace(" ", cssStyle + " ");
+                            } else {
+                                cssStyle = styleConfig[i].class + cssStyle;
+                            }
+                        }
+                        if (styleConfig[i].prefix !== undefined) {
+                            prefix = key + "-" + styleConfig[i].prefix;
+                        }
+                    } else {
+                        cssStyle = styleConfig[i].class;
+                        prefix = styleConfig[i].prefix;
+                    }
+                    
+                    builder.handleStylingProperties(element, elementObj, prefix, ".dataList " + cssStyle, false);
+                }
+                proceededKey.push(checkingKey);
+            }
+        });
         
         if (deferrer !== undefined) {
             deferrer.resolve({element : element});
@@ -1122,54 +1445,7 @@ DatalistBuilder = {
      * Rendering column, call form DatalistBuilder.renderElement
      */
     renderColumn : function(element, elementObj, component, deferrer) {
-        var builder = CustomBuilder.Builder;
-        
-        var table = $(element).closest("table");
-        
-        if (element.is("td")) {
-            //is card layout, add th and remove this
-            var newTh = $('<th data-cbuilder-id="new-dragging">'+UI.escapeHTML(component.label)+'</th>');
-            var prev = element.prev("td[data-cbuilder-select]");
-            if (prev.length > 0) {
-                var prevId = prev.data('cbuilder-select');
-                table.find("thead tr th[data-cbuilder-id='"+prevId+"']").after(newTh);
-            } else {
-                table.find("thead tr").prepend(newTh);
-            }
-            element.remove();
-            element = newTh;
-        }
-        
-        var th = element;
-        
-        th.addClass("column_header column_" + elementObj.name);
-        
-        if (elementObj.sortable === "true") {
-            th.addClass("sortable");
-            th.html('<a href="#">'+elementObj.label+'</a><span class="overlay"></span>');
-        } else {
-            th.html(elementObj.label+'<span class="overlay"></span>');
-        }
-        th.data("name", elementObj.label);
-        if (elementObj.headerAlignment !== undefined && elementObj.headerAlignment !== "") {
-            th.addClass(elementObj.headerAlignment);
-        }
-        if (elementObj.width !== undefined && elementObj.width !== "") {
-            th.css("width", elementObj.width);
-        }
-        if (elementObj.hidden !== undefined && elementObj.hidden === "true") {
-            th.find(".overlay").attr("data-cbuilder-element-invisible", "");
-        }
-        
-        builder.handleStylingProperties(th, elementObj, "header");
-        
-        var style = "";
-        if (elementObj.style !== undefined && elementObj.style !== "") {
-            var style = elementObj.style;
-            if (style.substr(style.length - 1) !== ";") {
-                style += ";";
-            }
-        }
+        var self = CustomBuilder.Builder;
         
         var value = elementObj.label;
         var rowData = DatalistBuilder.sampleData;
@@ -1181,53 +1457,11 @@ DatalistBuilder = {
             rowData = {};
         }
         
-        var index = th.parent().find("th").index(th);
-        
-        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"], .card_layout_body_cell').remove();
-        table.find("tbody tr").each(function(){
-            var tr = $(this);
-            var label = "<span class=\"value\">" + value + "</span>";
-            if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
-                label = '<a href="#">'+ label + '</a>';
-            }
-
-            var td = $('<td data-cbuilder-select="'+elementObj.id+'" >'+label+'</td>');
-            td.addClass("column_body column_" + elementObj.name);
-
-            if (elementObj.alignment !== undefined && elementObj.alignment !== "") {
-                td.addClass(elementObj.alignment);
-            }
-            if (elementObj.width !== undefined && elementObj.width !== "") {
-                td.css("width", elementObj.width);
-            }
-            if (style !== "") {
-                var orgStyle = td.attr("style");
-                if (orgStyle === undefined) {
-                    orgStyle = "";
-                }
-                td.attr("style", style + orgStyle);
-            }
-            if (elementObj.hidden !== undefined && elementObj.hidden === "true") {
-                td.attr("data-cbuilder-element-invisible", "");
-            }
-
-            builder.handleStylingProperties(td, elementObj);
-            if (index === 0) {
-                tr.prepend(td);
-            } else {
-                tr.find("td:eq("+(index-1)+")").after(td);
-            }
-        });
-
-        DatalistBuilder.adjustTableOverlaySize(table);
-        deferrer.resolve({element : element});
-        
-        
-        
+        var formatDeferrer = $.Deferred();
         if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
             var colStr = JSON.encode(elementObj);
             var rowStr = JSON.encode(rowData);
-            
+
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
@@ -1246,16 +1480,64 @@ DatalistBuilder = {
                     if (response.formatted !== undefined && response.formatted !== "") {
                         var formatted = $('<div>' + response.formatted + '</div>');
                         formatted.find("link, script").remove();
-                        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"] span.value').html(formatted.html());
-                    } else {
-                        table.find('tbody tr [data-cbuilder-select="'+elementObj.id+'"] span.value').html(elementObj.label);
+                        value = formatted.html();
                     }
                 },
                 error: function() {
                     //ignore
+                },
+                complete: function() {
+                    formatDeferrer.resolve();
                 }
             });
+        } else {
+            formatDeferrer.resolve();
         }
+
+        $.when.apply($, [formatDeferrer]).then(function() {
+            var obj = $.extend(true, {}, elementObj);
+            obj.body = '<span>' + value + '</span>';
+            var html = DatalistBuilder.convertTemplate($(element).parent().attr('data-placeholder-template'), obj);
+            var replace = $(html);
+            
+            var syncElements = $(element).data("syncElements");
+            element.replaceWith(replace);
+            element = replace;
+            
+            DatalistBuilder.updateStyle(element, elementObj, component, $(element).parent());
+            
+            $(element).attr("data-cbuilder-value", value);
+            if (syncElements !== null && syncElements !== undefined) {
+                //update sync element
+                for (var i in syncElements) {
+                    var syncHtml = DatalistBuilder.convertTemplate($(syncElements[i]).parent().attr('data-placeholder-template'), obj);
+                    var syncReplace = $(syncHtml);
+                    syncElements[i].replaceWith(syncReplace);
+                    syncElements[i] = syncReplace;
+                    
+                    DatalistBuilder.updateStyle(syncElements[i], elementObj, component, $(element).parent());
+                }
+                $(element).data("syncElements", syncElements);
+            }
+
+            //check all attribute of parent
+            $.each($(element).parent()[0].attributes, function() {
+                if(this.specified && this.name.indexOf("attr-") === 0) {
+                    var n = this.name.substring(5);
+                    var orgAttr = $(element).attr(n);
+                    if (orgAttr !== undefined) {
+                        orgAttr += " " + this.value;
+                    } else {
+                        orgAttr = this.value;
+                    }
+                    $(element).attr(n, orgAttr);
+                }
+            });
+            
+            DatalistBuilder.adjustTableOverlaySize($(element).closest(".dataList"));
+            
+            deferrer.resolve({element : element});  
+        });
     },
     
     /*
@@ -1313,101 +1595,196 @@ DatalistBuilder = {
      * Rendering row action, call form DatalistBuilder.renderElement
      */
     renderRowActions : function(element, elementObj, component, deferrer) {
-        var builder = CustomBuilder.Builder;
+        var self = CustomBuilder.Builder;
         
-        var table = $(element).closest("table");
+        var obj;
+        if (elementObj.properties !== null && elementObj.properties !== undefined) {
+            obj = $.extend(true, {}, elementObj.properties);
+        } else {
+            obj = $.extend(true, {}, elementObj);
+        }
+        var value = '<a href="#">' + obj.label + '</a>';
         
-        if (element.closest("td").length > 0) {
-            //is card layout, add to th and remove this
-            var prev = element.prev("[data-cbuilder-select]");
-            if (prev.length > 0) {
-                var prevId = prev.data('cbuilder-select');
-                table.find("thead tr th.row_action_container div[data-cbuilder-id='"+prevId+"']").after(element);
-            } else {
-                table.find("thead tr th.row_action_container").prepend(element);
+        obj.body = value;
+        
+        var html = DatalistBuilder.convertTemplate($(element).parent().attr('data-placeholder-template'), obj);
+        var replace = $(html);
+
+        var syncElements = $(element).data("syncElements");
+        element.replaceWith(replace);
+        element = replace;
+        
+        DatalistBuilder.updateStyle(element, elementObj, component, $(element).parent());
+        
+        var width = $(element).width();
+
+        $(element).attr("data-cbuilder-value", value);
+        if (syncElements !== null && syncElements !== undefined) {
+            //update sync element
+            for (var i in syncElements) {
+                var syncHtml = DatalistBuilder.convertTemplate($(syncElements[i]).parent().attr('data-placeholder-template'), obj);
+                var syncReplace = $(syncHtml);
+                syncElements[i].replaceWith(syncReplace);
+                syncElements[i] = syncReplace;
+                
+                DatalistBuilder.updateStyle(syncElements[i], elementObj, component, $(element).parent());
+                
+                var synceWidth = $(syncReplace).width();
+                if (synceWidth > width) {
+                    $(element).width(synceWidth);
+                } else {
+                    $(syncReplace).width(width);
+                }
             }
+            $(element).data("syncElements", syncElements);
         }
-        
-        var ra = element;
-        ra.css("width", "auto");
-        ra.addClass("rowaction_header header_" + elementObj.id);
-        
-        var label = elementObj.label;
-        if (elementObj.properties.label !== undefined && elementObj.properties.label !== "") {
-            label = elementObj.properties.label;
-        }
-        
-        var headerLabel = elementObj.properties.header_label;
-        if (headerLabel === undefined || headerLabel === null || headerLabel === "") {
-            headerLabel = "&nbsp;";
-        }
-        ra.html(headerLabel+'<span class="overlay"></span>');
-        
-        builder.handleStylingProperties(ra, elementObj.properties, "header");
-        
-        var width = ra.width();
-        
-        var index = ra.parent().find("> div").index(ra);
-        
-        table.find('tbody tr td.row_action_container .row_action_inner > div').unwrap();
-        table.find('tbody tr td.row_action_container .row_action_inner').remove();
-        table.find('tbody tr td.row_action_container [data-cbuilder-select="'+elementObj.id+'"]').remove();
-        table.find("tbody tr").each(function(){
-            var tr = $(this);
-            var td = tr.find("td.row_action_container");
-            var nra = $('<div data-cbuilder-select="'+elementObj.id+'"><a href="#">'+label+'</a></div>');
-            nra.addClass("rowaction_body body_" + elementObj.id);
-            
-            builder.handleStylingProperties(nra, elementObj.properties);
-            builder.handleStylingProperties(nra.find("a"), elementObj.properties, "link");
-            
-            if (index === 0) {
-                td.prepend(nra);
-            } else {
-                td.find("> div:eq("+(index-1)+")").after(nra);
+
+        //check all attribute of parent
+        $.each($(element).parent()[0].attributes, function() {
+            if(this.specified && this.name.indexOf("attr-") === 0) {
+                var n = this.name.substring(5);
+                var orgAttr = $(element).attr(n);
+                if (orgAttr !== undefined) {
+                    orgAttr += " " + this.value;
+                } else {
+                    orgAttr = this.value;
+                }
+                $(element).attr(n, orgAttr);
             }
         });
-        
-        var bodyWidth = table.find('tbody tr:eq(0) td.row_action_container [data-cbuilder-select="'+elementObj.id+'"]').width();
-        if (bodyWidth > width) {
-            width = bodyWidth;
-        }
-        ra.width(width);
-        table.find('tbody tr td.row_action_container [data-cbuilder-select="'+elementObj.id+'"]').width(width);
-        
-        DatalistBuilder.adjustTableOverlaySize(table);
-        
+
+        DatalistBuilder.adjustTableOverlaySize($(element).closest(".dataList"));
+
         deferrer.resolve({element : element});
+    },
+    
+    updateStyle : function(element, elementObj, component, parent) {
+        var self = CustomBuilder.Builder;
+        if (elementObj !== undefined && elementObj.id !== undefined) {
+            if ($(parent).is('[data-placeholder-key]')) {
+                $(element).addClass("ph_" + $(parent).attr('data-placeholder-key'));
+            }
+            
+            var styleProperties = elementObj;
+            if (elementObj.id.indexOf("column") === 0) {
+                var style = "";
+                if (elementObj.style !== undefined && elementObj.style !== "") {
+                    var style = elementObj.style;
+                    if (style.substr(style.length - 1) !== ";") {
+                        style += ";";
+                    }
+                }
+                
+                if (element.is("th")) {
+                    element.addClass("column_header column_" + elementObj.name);
+                    
+                    if (elementObj.sortable === "true") {
+                        element.addClass("sortable");
+                        var overlay = $(element).find(".overlay");
+                        element.html('<a href="#">'+elementObj.label+'</a>');
+                        if (overlay.length > 0) {
+                            element.append(overlay);
+                        }
+                    }
+                    if (elementObj.headerAlignment !== undefined && elementObj.headerAlignment !== "") {
+                        element.addClass(elementObj.headerAlignment);
+                    }
+                    if (elementObj.width !== undefined && elementObj.width !== "") {
+                        element.css("width", elementObj.width);
+                    }
+                    if (elementObj.hidden !== undefined && elementObj.hidden === "true") {
+                        if (element.find(".overlay").length > 0) {
+                            element.find(".overlay").attr("data-cbuilder-element-invisible", "");
+                        } else {
+                            element.attr("data-cbuilder-element-invisible", "");
+                        }
+                    }
+                } else {
+                    element.addClass("column_body column_" + elementObj.name);
+                    if (elementObj.alignment !== undefined && elementObj.alignment !== "") {
+                        element.addClass(elementObj.alignment);
+                    }
+                    if (elementObj.width !== undefined && elementObj.width !== "") {
+                        element.css("width", elementObj.width);
+                    }
+                    if (style !== "") {
+                        var orgStyle = element.attr("style");
+                        if (orgStyle === undefined) {
+                            orgStyle = "";
+                        }
+                        element.attr("style", style + orgStyle);
+                    }
+                    if (elementObj.hidden !== undefined && elementObj.hidden === "true") {
+                        element.attr("data-cbuilder-element-invisible", "");
+                    }
+                }
+            } else {
+                styleProperties = elementObj.properties;
+            }
+            
+            var styleConfig = null;
+            if ($(parent).is("[data-cbuilder-style]")) {
+                try {
+                    styleConfig = eval($(parent).attr('data-cbuilder-style'));
+                } catch (err){}
+            }
+            if (styleConfig === null) {
+                styleConfig = [{}];
+                if (elementObj.id.indexOf("rowAction") === 0) {
+                    styleConfig.push({
+                        class : 'a',
+                        prefix : 'link'
+                    });
+                }
+            }
+            for (var i in styleConfig) {
+                var styleElement = null;
+                if (styleConfig[i].class !== undefined) {
+                    if ($(element).is(styleConfig[i].class)) {
+                        styleElement = $(element);
+                    } else if (styleConfig[i].class.indexOf(" ") !== -1) {
+                        if ($(element).find(styleConfig[i].class.substring(styleConfig[i].class.indexOf(" ") + 1)).length > 0) {
+                            styleElement = $(element).find(styleConfig[i].class.substring(styleConfig[i].class.indexOf(" ") + 1));
+                        } else if ($(element).find(styleConfig[i].class).length > 0) {
+                            styleElement = $(element).find(styleConfig[i].class);
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                } else {
+                    styleElement = $(element);
+                }
+                self.handleStylingProperties(styleElement, styleProperties, styleConfig[i].prefix);
+            }
+        }
     },
     
     /*
      * Used to render the invibility flag overlay
      */
-    adjustTableOverlaySize : function(table) {
-        var height = $(table).height();
-        var thHeight = $(table).find("thead").height();
-        var bottom = height - thHeight;
-        $(table).find("thead .overlay").each(function(){
-            $(this).css("bottom", "-" + bottom + "px");
-        });
+    adjustTableOverlaySize : function(datalist) {
+        var table = $(datalist).find("table");
+        if ($(table).length > 0) {
+            var height = $(table).height();
+            var thHeight = $(table).find("thead").height();
+            var bottom = height - thHeight;
+            $(table).find("thead .overlay").each(function(){
+                $(this).css("bottom", "-" + bottom + "px");
+            });
+        }
     },
     
     /*
      * A callback method called from the default component.builderTemplate.unload method
      */
     unloadElement : function(element, elementObj, component) {
-        if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
-            var table = $(element).closest("table");
-            table.find("tbody tr").each(function(){
-                var tr = $(this);
-                tr.find("td[data-cbuilder-select='"+elementObj.id+"']").remove();
-            });
-        } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
-            var table = $(element).closest("table");
-            table.find("tbody tr").each(function(){
-                var tr = $(this);
-                tr.find("td.row_action_container [data-cbuilder-select='"+elementObj.id+"']").remove();
-            });
+        var syncElements = $(element).data("syncElements");
+        if (syncElements !== null && syncElements !== undefined) {
+            for (var i in syncElements) {
+                $(syncElements[i]).remove();
+            }
         }
     },
     
@@ -1452,29 +1829,60 @@ DatalistBuilder = {
     pasteElement : function(element, elementObj, component, copiedObj, copiedComponent) {
         var builder = CustomBuilder.Builder;
         
-        if (component.builderTemplate.getParentDataHolder(elementObj, component) !== copiedComponent.builderTemplate.getParentDataHolder(copiedObj, copiedComponent)) {
+        if (copiedObj.id.indexOf(DatalistBuilder.columnPrefix) === 0 || copiedObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
             var parent = builder.frameBody.find(".dataList");
-            if (copiedObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
-                var parentDataArray = $(parent).data("data")[copiedComponent.builderTemplate.getParentDataHolder(copiedObj, copiedComponent)];
-                parentDataArray.push(copiedObj);
-
-                var temp = $('<th></th>');
-                var container = null;
-                if ($(parent).is("[data-cbuilder-"+copiedComponent.builderTemplate.getParentContainerAttr(copiedObj, copiedComponent)+"]")) {
-                    container = $(parent);
-                } else {
-                    container = $(parent).find("[data-cbuilder-"+copiedComponent.builderTemplate.getParentContainerAttr(copiedObj, copiedComponent)+"]:eq(0)");
-                }
-
-                if (container.length > 0) {
-                    container.find(".gap").before(temp);
-                }
-            
-                builder.component = copiedComponent;
-                builder.renderElement(copiedObj, temp, copiedComponent, true);
-            } else {
-                builder._pasteNode(parent, copiedObj, copiedComponent);
+            var parentDataHolder = component.builderTemplate.getParentDataHolder(elementObj, component)
+            if (component.builderTemplate.getParentContainerAttr(elementObj, component) !== copiedComponent.builderTemplate.getParentContainerAttr(copiedObj, copiedComponent)) {
+                parentDataHolder = copiedComponent.builderTemplate.getParentDataHolder(copiedObj, copiedComponent);
             }
+            
+            var parentDataArray = $(parent).data("data")[parentDataHolder];
+            var container = builder.frameBody.find(".dataList").find('[data-placeholder-key="'+parentDataHolder+'"]:not([data-cbuilder-sync])');
+            if ($(container).length > 1) {
+                container = $(container[0]);
+            }
+            var temp = $('<div></div>');
+            if ($(container).is('tr')) {
+                temp = $('<td></td>');
+            } else if ($(container).is('ul') || $(container).is('ol')) {
+                temp = $('<li></li>');
+            }
+            if ($(container).is('[data-cbuilder-single]')) {
+                parentDataArray.splice(0, parentDataArray.length, copiedObj);
+                $(container).find("> [data-cbuilder-classname]").remove();
+                $(container).prepend(temp);
+            } else {
+                var index = $(container).find("> [data-cbuilder-classname]").index(element);
+                if (index === -1) {
+                    parentDataArray.push(copiedObj);
+                    if ($(container).find("> [data-cbuilder-sample]").length > 0) {
+                        $(container).find("> [data-cbuilder-sample]").before(temp);
+                    }
+                } else {
+                    parentDataArray.splice(index+1, 0, copiedObj);
+                    $(element).after(temp);
+                }
+            }
+            
+            var syncContainers = builder.frameBody.find(".dataList [data-placeholder-key=\""+parentDataHolder+"\"][data-cbuilder-sync]");
+            if (syncContainers.length > 0) {
+                var syncElements = [];
+                var syncIndex = $(container).find("> *").index(temp);
+                var se = $(temp).clone();
+                syncContainers.each(function(){
+                    var seTemp = $(se).clone();
+                    syncElements.push(seTemp);
+                    if (syncIndex === 0) {
+                        $(this).prepend(seTemp);
+                    } else {
+                        $(this).find("> *:eq("+(syncIndex-1)+")").after(seTemp);
+                    }
+                });
+                $(temp).data("syncElements", syncElements);
+            }
+            
+            builder.component = copiedComponent;
+            builder.renderElement(copiedObj, temp, copiedComponent, true);
         } else {
             builder._pasteNode(element, copiedObj, copiedComponent);
         }
@@ -1512,24 +1920,6 @@ DatalistBuilder = {
         
         if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
             dl.find('> *:eq(1)').text(elementObj.name);
-            if ($(element).closest(".card-layout-active").length === 0) {
-                var sortable = get_cbuilder_msg('dbuilder.unsortable');
-                if (elementObj.sortable === "true") {
-                    sortable = get_cbuilder_msg('dbuilder.sortable');
-                }
-                dl.append('<dt><i class="las la-sort" title="'+get_cbuilder_msg('dbuilder.sortable')+'"></i></dt><dd>'+sortable+'</dd>');
-                var exportable = get_cbuilder_msg('dbuilder.exportable');
-                if ((elementObj.hidden === "true" && elementObj.include_export !== "true") ||
-                    (elementObj.hidden !== "true" && elementObj.exclude_export === "true")) {
-                    exportable = get_cbuilder_msg('dbuilder.unexportable');
-                }
-                dl.append('<dt><i class="las la-file-export" title="'+get_cbuilder_msg('dbuilder.exportable')+'"></i></dt><dd>'+exportable+'</dd>');
-                var width = get_cbuilder_msg("dbuilder.default");
-                if (elementObj.width !== undefined && elementObj.width !== "") {
-                    width = elementObj.width;
-                }
-                dl.append('<dt><i class="las la-ruler-horizontal" title="'+get_cbuilder_msg('dbuilder.width')+'"></i></dt><dd>'+width+'</dd>');
-            }
             var action = "-";
             if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
                 action = elementObj.action.className;
@@ -1585,15 +1975,17 @@ DatalistBuilder = {
      * It used to render the permission option of a column
      */
     renderColumnPermission : function (elementObj, row, permissionObj, key, level) {
-        $(row).append('<td class="authorized" width="30%"><div class="authorized-btns btn-group"></div></td>');
-        $(row).append('<td class="export" width="30%"><div class="authorized-export-btns btn-group"></div></td>');
+        var hasExport = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
         
+        $(row).append('<td class="authorized" width="30%"><div class="authorized-btns btn-group"></div></td>');
         $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
-            
-        $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
-        $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
+        if (hasExport) {
+            $(row).append('<td class="export" width="30%"><div class="authorized-export-btns btn-group"></div></td>');
+            $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
+            $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
+        }
         
         if (permissionObj["hidden"] === "true") {
             $(row).find(".authorized-btns .hidden-btn").addClass("active");
@@ -1660,10 +2052,18 @@ DatalistBuilder = {
      * Save properties from properties view
      */
     saveBuilderProperties : function(container, properties) {
+        var templateJson = "";
+        if (CustomBuilder.data.template !== undefined && CustomBuilder.data.template !== null) {
+            templateJson = JSON.encode(CustomBuilder.data.template);
+        }
         CustomBuilder.data = $.extend(CustomBuilder.data, properties);
-        CustomBuilder.update();
+        if (templateJson !== JSON.encode(CustomBuilder.data.template)) {
+            CustomBuilder.loadJson(CustomBuilder.data, false);
+        } else {
+            DatalistBuilder.refreshTableLayout();
+        }
         
-        DatalistBuilder.refreshTableLayout();
+        CustomBuilder.update();
     },
     
     /*
@@ -1686,6 +2086,13 @@ DatalistBuilder = {
                         name  : 'name',
                         required : 'true',
                         type : 'textfield'
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.template'),
+                        name: 'template',
+                        type: 'elementselect',
+                        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListTemplate',
+                        url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions'
                     },
                     {
                         label : get_cbuilder_msg('dbuilder.hidePageSizeSelector'),
@@ -1790,7 +2197,10 @@ DatalistBuilder = {
                         type : 'checkbox',
                         options : [
                             {label : '', value : 'true'}
-                        ]
+                        ],
+                        control_field: 'template',
+                        control_value: '',
+                        control_use_regex: 'false'
                     },
                     {
                         label: get_cbuilder_msg('dbuilder.responsive'),
@@ -1805,25 +2215,15 @@ DatalistBuilder = {
                         options : [
                             {value : 'true', label : ''}
                         ]
-                    },
+                    }, 
                     {
                         label: get_cbuilder_msg('dbuilder.disableResponsive'),
                         name: 'disableResponsive',
                         type: 'checkbox',
                         options : [
                             {value : 'true', label : ''}
-                        ]
-                    }, 
-                    {
-                        label: get_cbuilder_msg('dbuilder.responsiveLayout'),
-                        name: 'responsive_layout',
-                        type: 'selectbox',
-                        options : [
-                            {value : '', label : get_cbuilder_msg('dbuilder.classicDropdown')},
-                            {value : 'card-layout', label : get_cbuilder_msg('dbuilder.card')}
                         ],
-                        value: 'card-layout',
-                        control_field: 'disableResponsive',
+                        control_field: 'template',
                         control_value: '',
                         control_use_regex: 'false'
                     },
@@ -1841,34 +2241,8 @@ DatalistBuilder = {
                             {label : get_cbuilder_msg('dbuilder.mobile')},
                             {label : get_cbuilder_msg('dbuilder.tablet')}
                         ],
-                        control_field: 'responsive_layout',
+                        control_field: 'template',
                         control_value: '',
-                        control_use_regex: 'false',
-                        developer_mode : 'advanced'
-                    }, 
-                    {
-                        label: get_cbuilder_msg('dbuilder.displayAsCard'),
-                        name: 'card_layout_display',
-                        type: 'checkbox',
-                        options : [
-                            {value : 'lg-card', label : get_cbuilder_msg('cbuilder.desktop')},
-                            {value : 'md-card', label : get_cbuilder_msg('cbuilder.tablet')},
-                            {value : 'sm-card', label : get_cbuilder_msg('cbuilder.mobile')}
-                        ],
-                        value: 'sm-card',
-                        control_field: 'responsive_layout',
-                        control_value: 'card-layout',
-                        control_use_regex: 'false'
-                    }, 
-                    {
-                        label: get_cbuilder_msg('dbuilder.showHeaderAsLabel'),
-                        name: 'card_layout_label',
-                        type: 'checkbox',
-                        options : [
-                            {value : 'card-label', label : ''}
-                        ],
-                        control_field: 'responsive_layout',
-                        control_value: 'card-layout',
                         control_use_regex: 'false',
                         developer_mode : 'advanced'
                     }
@@ -2346,17 +2720,20 @@ DatalistBuilder = {
         var type = "";
         if (target.is("[data-cbuilder-filters]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "filters";
-        } else if (target.is("[data-cbuilder-columns]") & target.find("[data-cbuilder-classname]").length > 0) {
-            type = "columns";
-        } else if (target.is("[data-cbuilder-rowActions]") & target.find("[data-cbuilder-classname]").length > 0) {
-            type = "rowActions";
         } else if (target.is("[data-cbuilder-actions]") & target.find("[data-cbuilder-classname]").length > 0) {
             type = "actions";
+        } else if (target.is("[data-placeholder-key]") & target.find("[data-cbuilder-classname]").length > 0) {
+            type = target.attr("data-placeholder-key");
         }
         
         if (type !== "") {
             var rid = "r" + (new Date().getTime());
-            var label = get_cbuilder_msg("dbuilder.type." + type);
+            var label = "";
+            if (type === "filters" || type === "actions" || type === "columns" || type === "rowActions") {
+                label = get_cbuilder_msg("dbuilder.type." + type);
+            } else {
+                label = target.attr("data-cbuilder-droparea-msg");
+            }
             var li = $('<li class="tree-viewer-node"><label>'+label +'</label><input type="checkbox" id="'+rid+'" checked/></li>');
             
             if (target.is("[data-cbuilder-rowActions]")) {
@@ -2370,167 +2747,62 @@ DatalistBuilder = {
         return container;
     },
     
-     /*
-     * used to prepare properties definition for card
-     */
-    cardPropertiesDefinition : function() {
-        return [
-            {
-                title : get_cbuilder_msg('dbuilder.cardSetting'),
-                properties:[
-                    {
-                        name : 'card_clickable',
-                        label : get_cbuilder_msg('dbuilder.card.clickable'),
-                        type : 'checkbox',
-                        options : [
-                            {value : 'true', label : ''}
-                        ]
-                    },
-                    {
-                        name : 'card_click_action',
-                        label : get_cbuilder_msg('dbuilder.card.clickaction'),
-                        type : 'elementselect',
-                        options_callback : function(props, values) {
-                            var options = [{label : '', value : ''}];
-                            var actions = DatalistBuilder.availableActions;
-                            for(var e in actions){
-                                var action = actions[e];
-                                if (action.supportColumn) {
-                                    options.push({label : UI.escapeHTML(action.label), value : action.className});
-                                }
-                            }
-                            return options;
-                        },
-                        url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions',
-                        control_field: "card_clickable",
-                        control_value: "true",
-                        control_use_regex: "false"
-                    }
-                ]
-            }
-        ];
-    },
-    
-    /*
-     * used to prepare properties definition for action
-     */
-    datalistStylePropertiesDefinition : function(type) {
-        var self = DatalistBuilder;
-        
-        if (self[type + 'StylePropertiesDefinitionObj'] === undefined) {
-            self[type + 'StylePropertiesDefinitionObj'] = [];
-            
-            var orig = CustomBuilder.Builder.stylePropertiesDefinition();
-            
-            for (var i in orig) {
-                if (type === "column" || type === "rowaction") {
-                    var tablebody = $.extend(true, {}, orig[i]);
-                    tablebody.title = tablebody.title + " ("+get_cbuilder_msg('dbuilder.body')+")";
-                    for (var j in tablebody.properties) {
-                        if (tablebody.properties[j].name) {
-                            tablebody.properties[j].name = tablebody.properties[j].name.replace('style', type+'-style');
-                        }
-                    }
-                    self[type + 'StylePropertiesDefinitionObj'].push(tablebody);
-                    
-                    var header = $.extend(true, {}, orig[i]);
-                    header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
-                    for (var j in header.properties) {
-                        if (header.properties[j].name) {
-                            header.properties[j].name = header.properties[j].name.replace('style', type+'-header-style');
-                        }
-                    }
-                    self[type + 'StylePropertiesDefinitionObj'].push(header);
-                } else {
-                    var header = $.extend(true, {}, orig[i]);
-                    for (var j in header.properties) {
-                        if (header.properties[j].name) {
-                            header.properties[j].name = header.properties[j].name.replace('style', type+'-style');
-                        }
-                    }
 
-                    self[type + 'StylePropertiesDefinitionObj'].push(header);
-                }
-            }
-        }
-        
-        return self[type + 'StylePropertiesDefinitionObj'];
-    },
-    
     /*
-     * used to prepare properties definition for table header/body
+     * Used to prepare the style definition
      */
-    tableStylePropertiesDefinition : function() {
+    generateStylePropertiesDefinition : function(prefix, configs) {
         var self = DatalistBuilder;
         
-        if (self.tableStylePropertiesDefinitionObj === undefined) {
-            self.tableStylePropertiesDefinitionObj = [];
-            
-            var orig = CustomBuilder.Builder.stylePropertiesDefinition();
-            
-            for (var i in orig) {
-                var tablebody = $.extend(true, {}, orig[i]);
-                tablebody.title = tablebody.title + " ("+get_cbuilder_msg('dbuilder.body')+")";
-                self.tableStylePropertiesDefinitionObj.push(tablebody);
-                
-                var header = $.extend(true, {}, orig[i]);
-                header.title = header.title + " ("+get_cbuilder_msg('dbuilder.header')+")";
-                for (var j in header.properties) {
-                    if (header.properties[j].name) {
-                        header.properties[j].name = header.properties[j].name.replace('style', 'header-style');
+        var orig = CustomBuilder.Builder.stylePropertiesDefinition();
+        var properties = [];
+        
+        if (configs === null || configs === undefined) {
+            configs = [{}];
+        }
+        
+        for (var i in orig) {
+            for (var j in configs) {
+                var p = $.extend(true, {}, orig[i]);
+                if (configs[j].label !== undefined) {
+                    p.title = p.title + " ("+configs[j].label+")";
+                }
+                var newPrefix = prefix;
+                if (newPrefix === undefined || newPrefix === null) {
+                    newPrefix = "";
+                }
+                if (configs[j].prefix !== undefined) {
+                    if (newPrefix !== "") {
+                        newPrefix += "-";
+                    }
+                    newPrefix += configs[j].prefix;
+                }
+                if (newPrefix !== "") {
+                    for (var k in p.properties) {
+                        if (p.properties[k].name) {
+                            p.properties[k].name = p.properties[k].name.replace('style', newPrefix+'-style');
+                        }
                     }
                 }
-                self.tableStylePropertiesDefinitionObj.push(header);
+                properties.push(p);
             }
         }
-        
-        return self.tableStylePropertiesDefinitionObj;
+        return properties;
     },
     
-    /*
-     * Update card layout based on properties
-     */
-    cardLayoutResponsive : function(table) {
-        var self = CustomBuilder.Builder;
-        var width = $(self.iframe.contentWindow).width();
-        table.closest(".dataList").removeClass("card-layout-active");
-        table.find("thead [data-cbuilder-invisible]").removeAttr("data-cbuilder-invisible");
-        table.find("tbody tr").removeAttr("data-cbuilder-columns_filters");
-        table.find("tbody tr").removeAttr("data-cbuilder-columns");
-        table.find("tbody tr").removeAttr("data-cbuilder-prepend");
-        table.find("tbody tr").removeAttr("data-cbuilder-alternative-drop");
-        table.find("tbody tr").removeAttr("data-cbuilder-select");
-        table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-all_actions");
-        table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-rowactions");
-        table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-alternative-drop");
-        table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-sort-horizontal");
-        table.find("tbody tr .row_action_container div").each(function(){
-           $(this).css("width", $(this).data("builder-width")); 
-           $(this).data("builder-width", "");
-        });
-        
-        if ((width < 768 && table.closest(".dataList").hasClass("sm-card")) 
-                || (width < 992 && table.closest(".dataList").hasClass("md-card"))
-                || (table.closest(".dataList").hasClass("lg-card"))) {
-            table.closest(".dataList").addClass("card-layout-active");
-            
-            table.find("tbody tr").attr("data-cbuilder-columns_filters", "");
-            table.find("tbody tr").attr("data-cbuilder-columns", "");
-            table.find("tbody tr").attr("data-cbuilder-prepend", "");
-            table.find("tbody tr").attr("data-cbuilder-alternative-drop", "");
-            table.find("tbody tr").attr("data-cbuilder-select", CustomBuilder.data.id);
-            table.find("tbody tr .row_action_container").attr("data-cbuilder-all_actions", "");
-            table.find("tbody tr .row_action_container").attr("data-cbuilder-rowactions", "");
-            table.find("tbody tr .row_action_container").attr("data-cbuilder-alternative-drop", "");
-            table.find("tbody tr .row_action_container").attr("data-cbuilder-sort-horizontal", "");
-            table.find("tbody tr .row_action_container div").each(function(){
-                var cssWidth = $(this).css("width");
-                if (cssWidth !== "") {
-                    $(this).data("builder-width", cssWidth); 
-                }
-                $(this).css("width", ""); 
-            });
+    getElementStylePropertiesDefinition(elementObj, component) {
+        var styleConfig = null;
+        var selectedEl = CustomBuilder.Builder.selectedEl;
+        if ($(selectedEl).parent().is("[data-cbuilder-style]")) {
+            try {
+                styleConfig = eval($(selectedEl).parent().attr('data-cbuilder-style'));
+            } catch (err){}
         }
+        var key = $(selectedEl).parent().attr("data-placeholder-key");
+        if (component.builderTemplate[key+"StylePropertiesDefinition"] === undefined) {
+            component.builderTemplate[key+"StylePropertiesDefinition"] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition("", styleConfig));
+        }
+        return component.builderTemplate[key+"StylePropertiesDefinition"];
     },
     
     /*
@@ -2555,22 +2827,6 @@ DatalistBuilder = {
             $(table).unbind("footable_expand_first_row");
             $(table).unbind("footable_expand_all");
             $(table).unbind("footable_collapse_all");
-        } else {
-            table.closest(".dataList").removeClass("card-layout-active");
-            table.find("thead [data-cbuilder-invisible]").removeAttr("data-cbuilder-invisible");
-            table.find("tbody tr").removeAttr("data-cbuilder-columns_filters");
-            table.find("tbody tr").removeAttr("data-cbuilder-columns");
-            table.find("tbody tr").removeAttr("data-cbuilder-prepend");
-            table.find("tbody tr").removeAttr("data-cbuilder-alternative-drop");
-            table.find("tbody tr").removeAttr("data-cbuilder-select");
-            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-all_actions");
-            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-rowactions");
-            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-alternative-drop");
-            table.find("tbody tr .row_action_container").removeAttr("data-cbuilder-sort-horizontal");
-            table.find("tbody tr .row_action_container div").each(function(){
-               $(this).css("width", $(this).data("builder-width")); 
-               $(this).data("builder-width", "");
-            });
         }
     },
     
@@ -2579,41 +2835,21 @@ DatalistBuilder = {
      */
     refreshTableLayout : function() {
         var self = CustomBuilder.Builder;
-        var table = self.frameBody.find(".dataList table");
-        if (self.iframe.contentWindow.footable) {
-            if (table.length > 0) {
-                DatalistBuilder.destroyFootable(table);
-                table.closest(".dataList").removeClass("card-layout lg-card md-card sm-card card-label card-layout-active");
-                table.find(".card_layout_body_cell").remove();
-                $(self.iframe.contentWindow).off("resize.card-responsive");
-                
-                if (CustomBuilder.data.disableResponsive !== "true") {
-                    if (CustomBuilder.data.responsive_layout !== undefined && CustomBuilder.data.responsive_layout !== "") {
-                        var css = CustomBuilder.getPropString(CustomBuilder.data.responsive_layout);
-                        
-                        var viewport = CustomBuilder.getPropString(CustomBuilder.data.card_layout_display).split(";");
-                        css += " " + viewport.join(" ");
-                        table.closest(".dataList").addClass(css);
-                        
-                        if (CustomBuilder.data.card_layout_label === "card-label") {
-                            table.closest(".dataList").addClass("card-label");
-                            self.iframe.contentWindow.initCardLabelLayout(table);
-                        }
-                        
-                        $(self.iframe.contentWindow).on("resize.card-responsive", function(){
-                            DatalistBuilder.cardLayoutResponsive(table);
-                        });
-                        DatalistBuilder.cardLayoutResponsive(table);
-                    } else {
+        var table = self.frameBody.find(".dataList table.responsivetable");
+        if (table.length > 0) {
+            if (self.iframe.contentWindow.footable) {
+                if (table.length > 0) {
+                    DatalistBuilder.destroyFootable(table);
+                    if (CustomBuilder.data.disableResponsive !== "true") {
                         self.iframe.contentWindow.initFooTable(table, self.frameBody.find(".dataList .footable-buttons"), CustomBuilder.data.responsiveView, true);
                     }
+                    $(self.iframe.contentWindow).trigger("resize");
                 }
-                $(self.iframe.contentWindow).trigger("resize");
+            } else {
+                setTimeout(function(){
+                    DatalistBuilder.refreshTableLayout();
+                }, 100);
             }
-        } else {
-            setTimeout(function(){
-                DatalistBuilder.refreshTableLayout();
-            }, 100);
         }
     },
     

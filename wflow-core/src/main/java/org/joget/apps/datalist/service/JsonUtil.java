@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -186,7 +186,7 @@ public class JsonUtil {
             }
             
             object.setProperties(PropertyUtil.getProperties(obj));
-            JsonUtil.generateBuilderProperties(object.getProperties(), new String[]{"", "filter-", "column-header-", "column-", "rowaction-header", "rowaction-", "action-", "card-"});
+            JsonUtil.generateBuilderProperties(object.getProperties(), new String[]{"", "filter-", "columns-header-", "columns-", "rowActions-header-", "rowActions-link-", "rowActions-", "action-", "card-"});
             
             if (obj.has("permission_rules")) {
                 JSONArray permissionRules = obj.getJSONArray("permission_rules");
@@ -227,6 +227,7 @@ public class JsonUtil {
                 Collection<DataListColumn> columns = parseColumnsFromJsonObject(obj, permissionKey);
                 DataListColumn[] temp = (DataListColumn[]) columns.toArray(new DataListColumn[columns.size()]);
                 object.setColumns(temp);
+                object.setColumnPlaceholder("columns", temp);
 
                 //set actions
                 Collection<DataListAction> actions = parseActionsFromJsonObject(obj, permissionKey);
@@ -237,11 +238,28 @@ public class JsonUtil {
                 Collection<DataListAction> rowActions = parseRowActionsFromJsonObject(obj, permissionKey);
                 DataListAction[] temp3 = (DataListAction[]) rowActions.toArray(new DataListAction[rowActions.size()]);
                 object.setRowActions(temp3);
+                object.setRowActionPlaceholder("rowActions", temp3);
 
                 //set filters
                 Collection<DataListFilter> filters = parseFiltersFromJsonObject(obj, permissionKey);
                 DataListFilter[] temp4 = (DataListFilter[]) filters.toArray(new DataListFilter[filters.size()]);
                 object.setFilters(temp4);
+                
+                //set column placeholder
+                Iterator<String> keys = obj.keys();
+
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.startsWith("column_")) {
+                        Collection<DataListColumn> cols = parseColumnsFromJsonArray(obj.getJSONArray(key), permissionKey);
+                        DataListColumn[] t = (DataListColumn[]) cols.toArray(new DataListColumn[cols.size()]);
+                        object.setColumnPlaceholder(key, t);
+                    } else if (key.startsWith("rowAction_")) {
+                        Collection<DataListAction> acts = parseRowActionsFromJsonArray(obj.getJSONArray(key), permissionKey);
+                        DataListAction[] t = (DataListAction[]) acts.toArray(new DataListAction[acts.size()]);
+                        object.setRowActionPlaceholder(key, t);
+                    }
+                }
             } else {
                 object.setColumns(new DataListColumn[0]);
                 object.setActions(new DataListAction[0]);
@@ -376,6 +394,48 @@ public class JsonUtil {
                 }
             }
         }
+        return property;
+    }
+    
+    /**
+     * Used to retrieves datalist row actions from JSON Array
+     * @param Array
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static Collection<DataListAction> parseRowActionsFromJsonArray(JSONArray actions, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
+        Collection<DataListAction> property = new ArrayList<DataListAction>();
+        
+        for (int i = 0; i < actions.length(); i++) {
+            JSONObject action = actions.getJSONObject(i);
+            boolean isHidden = false;
+            if (!Permission.DEFAULT.equals(permissionKey)) {
+                if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
+                    JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                    if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                        isHidden = true;
+                    }
+                }
+            } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+                isHidden = true;
+            }
+
+            if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {
+                String className = action.getString(PROPERTY_CLASS_NAME);
+                DataListAction dataListAction = (DataListAction) loadPlugin(className);
+                if (dataListAction != null) {
+                    dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
+                    dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
+
+                    JsonUtil.generateBuilderProperties(dataListAction.getProperties(), new String[]{"", "header-", "link-"});
+
+                    property.add(dataListAction);
+                }
+            }
+        }
+        
         return property;
     }
     
@@ -561,6 +621,27 @@ public class JsonUtil {
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
+    public static Collection<DataListColumn> parseColumnsFromJsonArray(JSONArray columns, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
+        Collection<DataListColumn> property = new ArrayList<DataListColumn>();
+        
+        for (int i = 0; i < columns.length(); i++) {
+            JSONObject column = columns.getJSONObject(i);
+            DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
+
+            property.add(dataListColumn);
+        }
+        return property;
+    }
+    
+    /**
+     * Used to retrieves datalist column from JSON Object
+     * @param obj
+     * @param permissionKey
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static DataListColumn parseColumnFromJsonObject(JSONObject column, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         DataListColumn dataListColumn = new DataListColumn();
                 
@@ -705,7 +786,7 @@ public class JsonUtil {
             listId = StringUtil.escapeString(listId, StringUtil.TYPE_JSON, null);
             name = StringUtil.escapeString(name, StringUtil.TYPE_JSON, null);
             desc = StringUtil.escapeString(desc, StringUtil.TYPE_JSON, null);
-            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[],\"responsive_layout\":\"card-layout\",\"responsive_layout\":\"sm-card\"}";
+            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}";
         }
 
         return json;
@@ -802,16 +883,18 @@ public class JsonUtil {
     public static void generateBuilderProperties(Map<String, Object> props, String[] prefixes) {
         for (String prefix : prefixes) {
             String propKey = "BUILDER_GENERATED_" + prefix.toUpperCase().replace("-", "_");
-            Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(props, prefix);
-            
-            props.put(propKey + "CSS", styles.get("cssClass"));
-            props.put(propKey + "ATTR", styles.get("attr"));
-            props.put(propKey + "MOBILE_STYLE", styles.get("mobileStyle"));
-            props.put(propKey + "TABLET_STYLE", styles.get("tabletStyle"));
-            props.put(propKey + "STYLE", styles.get("desktopStyle"));
-            props.put(propKey + "HOVER_MOBILE_STYLE", styles.get("hoverMobileStyle"));
-            props.put(propKey + "HOVER_TABLET_STYLE", styles.get("hoverTabletStyle"));
-            props.put(propKey + "HOVER_STYLE", styles.get("hoverDesktopStyle"));
+            if (!props.containsKey(propKey + "CSS")) {
+                Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(props, prefix);
+
+                props.put(propKey + "CSS", styles.get("cssClass"));
+                props.put(propKey + "ATTR", styles.get("attr"));
+                props.put(propKey + "MOBILE_STYLE", styles.get("mobileStyle"));
+                props.put(propKey + "TABLET_STYLE", styles.get("tabletStyle"));
+                props.put(propKey + "STYLE", styles.get("desktopStyle"));
+                props.put(propKey + "HOVER_MOBILE_STYLE", styles.get("hoverMobileStyle"));
+                props.put(propKey + "HOVER_TABLET_STYLE", styles.get("hoverTabletStyle"));
+                props.put(propKey + "HOVER_STYLE", styles.get("hoverDesktopStyle"));
+            }
         }
     }
 }

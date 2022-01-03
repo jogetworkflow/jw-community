@@ -18,35 +18,35 @@ body{
 td + .gap, th + .gap {
     display:none;
 }
-.dataList thead th.row_action_container div a {
+.dataList thead th.rowActions div a {
     color:transparent;
     opacity: 0;
     font-weight: normal;
     pointer-events: none;
 }
-.dataList thead th.row_action_container,
-.dataList tbody td.row_action_container
+.dataList thead th.rowActions,
+.dataList tbody td.rowActions
 {
     white-space: nowrap;
     padding:0;
     min-width:50px;
 }
-.dataList thead th.row_action_container div,
-.dataList tbody td.row_action_container div {
+.dataList thead th.rowActions div,
+.dataList tbody td.rowActions div {
     display: inline-block;
     height: 100%;
     padding: 5px 10px;
 }
-.dataList thead th.row_action_container div{
+.dataList thead th.rowActions div{
     padding: 10px;
 }
 .dataList thead th[data-cbuilder-classname],
-.dataList thead th.row_action_container div[data-cbuilder-classname]
+.dataList thead th.rowActions div[data-cbuilder-classname]
 {
     position: relative;
 }
 .dataList thead th[data-cbuilder-classname] .overlay,
-.dataList thead th.row_action_container div[data-cbuilder-classname] .overlay
+.dataList thead th.rowActions div[data-cbuilder-classname] .overlay
 {
     position: absolute;
     top: 0;
@@ -55,28 +55,37 @@ td + .gap, th + .gap {
     bottom: -175px;
     display: block;
 }
-.card-layout.card-layout-active thead .overlay{
-    display:none !important;
-}
-.card-layout.card-layout-active.card-label td.card_layout_body_cell .overlay{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0 !important;
-    display: block;
-}
-body.is-dragging tr[data-cbuilder-droparea] th:not(.row_action_container), 
+body.is-dragging tr[data-cbuilder-droparea] th:not(.rowActions), 
 body.is-dragging th[data-cbuilder-droparea]{
     background: rgba(0, 123, 255, 0.2);
+}
+body.is-dragging [data-cbuilder-replicate] {
+    display: none !important;
 }
 .dataList .column-hidden {
     display: table-cell;
 }
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.stretched-link:after{
+    display: none;
+}
 body:not(.show-node-details) .dataList thead th[data-cbuilder-classname][data-cbuilder-element-invisible]::after,
-body:not(.show-node-details) .dataList thead th.row_action_container div[data-cbuilder-classname][data-cbuilder-invisible]::after {
+body:not(.show-node-details) .dataList thead th.rowActions div[data-cbuilder-classname][data-cbuilder-invisible]::after {
     bottom: -175px;
     height: auto;
+}
+.dropdown-menu[data-placeholder-key] {
+    display: block !important;
+}
+[data-cbuilder-replicate] .dropdown-menu[data-placeholder-key] {
+    display: none !important;
 }
 
 /* responsive layout */
@@ -89,31 +98,6 @@ table.breakpoint th .overlay{
 .footable-row-detail-cell-actions .row_action_inner > div{
     margin-right: 5px;
 }
-.card-layout.card-layout-active .rowaction_body{
-    padding: 0;
-}
-.card-layout.card-layout-active .row_action_container{
-    display: block;
-    white-space: normal;
-}
-body:not(.show-node-details) .card-layout:not(.card-layout-active) tbody td[data-cbuilder-element-invisible]:after{
-    display: none;
-}
 .footable-visible[data-cbuilder-element-invisible]:after{
     display:none !important;
-}
-@media (min-width: 992px) {
-    body:not(.show-node-details) .card-layout.card-layout-active [data-cbuilder-desktop-invisible]{
-        display: block !important;
-    }
-}
-@media (min-width: 768px) and (max-width: 991px) {
-    body:not(.show-node-details) .card-layout.card-layout-active [data-cbuilder-tablet-invisible]{
-        display: block !important;
-    }
-}
-@media (max-width: 767px) {
-    body:not(.show-node-details) .card-layout.card-layout-active [data-cbuilder-mobile-invisible]{
-        display: block !important;
-    }
 }

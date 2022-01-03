@@ -12,7 +12,7 @@
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
 
-<div class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
+<div id="dataList_${dataList.id}" class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/footable.min.js?build=<fmt:message key="build.number"/>" defer></script>
@@ -96,6 +96,10 @@
                         <div class="datalist-error"><c:out value="${dataList.binder.properties.errorMsg}"/></div>
                     </c:if>
                         
+                    <c:set var="templateHtml">
+                        ${dataList.html}
+                    </c:set>    
+                        
                     <style>
                         ${dataList.styles}
                     </style>    
@@ -142,95 +146,100 @@
                                 </div>
                             </c:if>        
                         </c:if>
-                        <div class="footable-buttons" 
-                             data-responsiveclass="${dataList.properties.responsive_layout} ${dataList.properties.card_layout_label} ${fn:replace(dataList.properties.card_layout_display, ';', ' ')}" 
-                             data-disableresponsive="${dataList.disableResponsive}" 
-                             data-searchpopup="${dataList.responsiveSearchPopup}" 
-                             data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
-                            <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
-                            <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
-                            <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
-                        </div>
-                        <div class="table-wrapper">
-                        <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed ${fn:replace(dataList.properties.card_layout_display, ';', ' ')} ${ataList.properties.card_layout_label}" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
-                            <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
-                                <c:choose>
-                                    <c:when test="${selectionType eq 'single'}">
-                                        <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
-                            <c:forEach items="${dataList.columns}" var="column">
-                                <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
-                                <c:set var="columnHiddenCss" value=""/>
-                                <c:set var="columnMedia" value="all"/>
-                                <c:choose> 
-                                    <c:when test="${column.hidden}">
-                                        <c:set var="columnHiddenCss" value=" column-hidden"/>
-                                        <c:if test="${column.properties.include_export ne 'true'}">
-                                            <c:set var="columnMedia" value="html"/>
-                                        </c:if>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:if test="${column.properties.exclude_export eq 'true'}">
-                                            <c:set var="columnMedia" value="html"/>
-                                        </c:if>
-                                    </c:otherwise>
-                                </c:choose>
-                                <display:column
-                                    property="column(${column.name})"
-                                    title="${columnLabel}"
-                                    sortable="${column.sortable}"
-                                    headerClass="column_header column_${column.name} ${columnHiddenCss} ${column.headerAlignment} header_${column.properties.id} ${column.properties.BUILDER_GENERATED_HEADER_CSS}"
-                                    class="column_body  column_${column.name} ${columnHiddenCss} ${column.alignment} body_${column.properties.id} ${column.properties.BUILDER_GENERATED_CSS}"
-                                    style="${column.style}"
-                                    media="${columnMedia}"
-                                    />
-                            </c:forEach>
-                            <c:if test="${dataList.havingCardAction}">
-                                <display:column property="cardAction" title="" sortable="false" headerClass="column_header column-hidden" class="column_body card-action column-hidden" media="html" />
-                            </c:if>
-                            <c:if test="${!empty dataListRows[0] && !empty dataList.rowActions[0]}">
-                                <c:set var="actionTitle" value="" />
-                                <c:set var="firstCssClass" value="" />
-                                <c:forEach items="${dataList.rowActions}" var="rowAction" varStatus="rowActionStatus" >
-                                    <c:set var="headerTitle" value=""/>
-                                    <c:if test="${!empty rowAction.properties.header_label}">
-                                        <c:set var="headerTitle" value="${rowAction.properties.header_label}"/>
-                                    </c:if>
-                                    <c:choose>
-                                        <c:when test="${rowActionStatus.index == 0}">
-                                            <c:set var="actionTitle" value="${headerTitle}" />
-                                            <c:set var="firstHeaderCssClass" value="rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
-                                            <c:set var="firstBodyCssClass" value="rowaction_body body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
-                                        </c:otherwise>
-                                     </c:choose>
-                                </c:forEach>
-                                <c:if test="${!empty dataList.properties.rowActionsMode && dataList.properties.rowActionsMode eq 'true'}">
-                                    <c:set var="actionTitle" value=""/>
-                                    <c:set var="firstHeaderCssClass" value="rowaction_header"/>
-                                    <c:set var="firstBodyCssClass" value="rowaction_body"/>
-                                </c:if>
-                                <display:column headerClass="row_action ${firstHeaderCssClass}" class="row_action ${firstBodyCssClass}" property="actions" media="html" title="${actionTitle}"/>
-                            </c:if>
-                            <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
-                                <c:choose>
-                                    <c:when test="${selectionType eq 'single'}">
-                                        <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
-                        </display:table>
-                        </div>
+                        
+                        <c:choose>
+                            <c:when test="${!empty templateHtml}">
+                                <c:out value="${templateHtml}" escapeXml="false"/>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="footable-buttons" 
+                                    data-disableresponsive="${dataList.disableResponsive}" 
+                                    data-searchpopup="${dataList.responsiveSearchPopup}"
+                                    data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
+                                    <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
+                                    <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
+                                    <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
+                                </div>
+                                <div class="table-wrapper">
+                                   <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
+                                       <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
+                                           <c:choose>
+                                               <c:when test="${selectionType eq 'single'}">
+                                                   <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
+                                               </c:when>
+                                               <c:otherwise>
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                               </c:otherwise>
+                                           </c:choose>
+                                       </c:if>
+                                       <c:forEach items="${dataList.columns}" var="column">
+                                           <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
+                                           <c:set var="columnHiddenCss" value=""/>
+                                           <c:set var="columnMedia" value="all"/>
+                                           <c:choose> 
+                                               <c:when test="${column.hidden}">
+                                                   <c:set var="columnHiddenCss" value=" column-hidden"/>
+                                                   <c:if test="${column.properties.include_export ne 'true'}">
+                                                       <c:set var="columnMedia" value="html"/>
+                                                   </c:if>
+                                               </c:when>
+                                               <c:otherwise>
+                                                   <c:if test="${column.properties.exclude_export eq 'true'}">
+                                                       <c:set var="columnMedia" value="html"/>
+                                                   </c:if>
+                                               </c:otherwise>
+                                           </c:choose>
+                                           <display:column
+                                               property="column(${column.name})"
+                                               title="${columnLabel}"
+                                               sortable="${column.sortable}"
+                                               headerClass="column_header column_${column.name} ${columnHiddenCss} ${column.headerAlignment} header_${column.properties.id} ${column.properties.BUILDER_GENERATED_HEADER_CSS}"
+                                               class="column_body  column_${column.name} ${columnHiddenCss} ${column.alignment} body_${column.properties.id} ${column.properties.BUILDER_GENERATED_CSS}"
+                                               style="${column.style}"
+                                               media="${columnMedia}"
+                                               />
+                                       </c:forEach>
+                                       <c:if test="${!empty dataListRows[0] && !empty dataList.rowActions[0]}">
+                                           <c:set var="actionTitle" value="" />
+                                           <c:set var="firstCssClass" value="" />
+                                           <c:forEach items="${dataList.rowActions}" var="rowAction" varStatus="rowActionStatus" >
+                                               <c:set var="headerTitle" value=""/>
+                                               <c:if test="${!empty rowAction.properties.header_label}">
+                                                   <c:set var="headerTitle" value="${rowAction.properties.header_label}"/>
+                                               </c:if>
+                                               <c:choose>
+                                                   <c:when test="${rowActionStatus.index == 0}">
+                                                       <c:set var="actionTitle" value="${headerTitle}" />
+                                                       <c:set var="firstHeaderCssClass" value="rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
+                                                       <c:set var="firstBodyCssClass" value="rowaction_body body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
+                                                   </c:when>
+                                                   <c:otherwise>
+                                                       <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
+                                                   </c:otherwise>
+                                                </c:choose>
+                                           </c:forEach>
+                                           <c:if test="${!empty dataList.properties.rowActionsMode && dataList.properties.rowActionsMode eq 'true'}">
+                                               <c:set var="actionTitle" value=""/>
+                                               <c:set var="firstHeaderCssClass" value="rowaction_header"/>
+                                               <c:set var="firstBodyCssClass" value="rowaction_body"/>
+                                           </c:if>
+                                           <display:column headerClass="row_action ${firstHeaderCssClass}" class="row_action ${firstBodyCssClass}" property="actions" media="html" title="${actionTitle}"/>
+                                       </c:if>
+                                       <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
+                                           <c:choose>
+                                               <c:when test="${selectionType eq 'single'}">
+                                                   <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
+                                               </c:when>
+                                               <c:otherwise>
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                               </c:otherwise>
+                                           </c:choose>
+                                       </c:if>
+                                   </display:table>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>      
+                        
                         <!-- Display Buttons -->
                         <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                             <c:if test="${!empty dataList.actions}">
