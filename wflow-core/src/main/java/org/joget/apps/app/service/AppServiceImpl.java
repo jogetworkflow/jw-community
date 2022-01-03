@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -1243,7 +1242,12 @@ public class AppServiceImpl implements AppService {
                 
             } else {
                 // create app
-                appDefinitionDao.saveOrUpdate(appDefinition);
+                try {
+                    AppUtil.setCurrentAppDefinition(appDefinition);
+                    appDefinitionDao.saveOrUpdate(appDefinition);
+                } finally {
+                    AppUtil.resetAppDefinition();
+                }
             }
         }
 
