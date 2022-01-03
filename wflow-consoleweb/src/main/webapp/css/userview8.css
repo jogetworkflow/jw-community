@@ -838,6 +838,9 @@ body.horizontal_menu #header-info{
     -webkit-animation: button-ripple var(--ripple-duration) ease-in;
     animation: button-ripple var(--ripple-duration) ease-in;
 }
+.btn.btn-link, .btn.btn-link.focus, .btn.btn-link:focus, .btn.btn-link:active {
+    box-shadow:none;
+}
 @-webkit-keyframes button-ripple {
   0% {
     background-size: 0% 0%, 0% 0%;
