@@ -3,6 +3,21 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.26
+=================
+97031d563 Fixed: wflow-core - Log Viewer - Logs of creating new app is appeared in wrong app log viewer. @7.0-SNAPSHOT
+9ee74a58b Fixed: wflow-commons - Logs - Upgraded log4j to version 2.17.1 to fix CVE-2021-44832 vulnerability. @7.0-SNAPSHOT
+d314a7b49 Modified: jw-community - Logs - Upgraded to log4j 2.17.0 @8.0-SNAPSHOT
+4fa4654cb Modified: wflow-consoleweb - Date Picker - Support more locales. @7.0-SNAPSHOT
+f9f1e25e4 Modified: wflow-consoleweb - File Upload - Show proper error 404 page when file not found. @7.0-SNAPSHOT
+97a580b26 Fixed: wflow-commons - Hash Variable required HttpServletRequest object can't work in PluginThread. 7.0-SNAPSHOT
+e8a5b64ff Modified: wflow-wfengine - Performance - Blocking when generating IDs in DODSUtilities.getNext. @7.0-SNAPSHOT
+dad180cc3 Fixed: wflow-consoleweb - Datalist Builder - When all columns set to not export in permission, the export result exported all columns including the actions column. @7.0-SNAPSHOT
+bf37cdb63 Fixed: wflow-core - Email Tool - Can't attach attachment with URL which required nonce verification. @7.0-SNAPSHOT
+6b146ab25 Fixed: wflow-core - FormPdfUtil - Fail to createPdf when list > td contain special character. #T491 @7.0-SNASPHOT
+abcacca82 Fixed: wflow-consoleweb - Progressive/Universal Theme - UX - Extra padding in the navbar. @7.0-SNASPSHOT
+46b5d0fe7 Added: wflow-core - Added an option to set default schema on datasource.properties file to handle when user role is DBA. #T741 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.25
 =================
 33e0d3004 Fixed: wflow-plugin-base - Plugin Manager - Plugin file change monitor should only reload changed plugin. @7.0-SNAPSHOT
