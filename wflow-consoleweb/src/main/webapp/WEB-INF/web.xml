@@ -167,6 +167,7 @@
     <filter>
 	<filter-name>MultipartFilter</filter-name>
 	<filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>multipartResolverBeanName</param-name>
             <param-value>multipartResolver</param-value>
