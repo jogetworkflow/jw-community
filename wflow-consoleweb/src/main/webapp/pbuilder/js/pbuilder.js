@@ -276,9 +276,12 @@ ProcessBuilder = {
         
         if (id !== "") {
             ProcessBuilder.generateProcessData(id);
-            CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
-                ProcessBuilder.validate();
-            });
+            
+            if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData.properties !== undefined) {
+                CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+                    ProcessBuilder.validate();
+                });
+            }
         } else {
             window.location.hash = "process1";
         }
@@ -1353,6 +1356,7 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         
         self.selectNode(false);
+        CustomBuilder.Builder.selectedEl= self.frameBody.find(".process");
         self._showPropertiesPanel(self.frameBody.find(".process"), ProcessBuilder.currentProcessData, self.getComponent('process'));
     },
     
