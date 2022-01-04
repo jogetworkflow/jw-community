@@ -120,19 +120,19 @@
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/mariadb-noinstall-${mariadb.version}-win32.zip" dest="downloads/mariadb-noinstall-${mariadb.version}-win32.zip" username="public" password="public" usetimestamp="true" />
-                                <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.zip" dest="downloads/jre${jre.version}.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
                                 
                                 <untar compression="gzip" dest="target">
                                     <fileset dir="downloads/">
                                         <include name="apache-tomcat-${tomcat.version}.tar.gz" />
                                         <include name="apache-ant-${apache-ant.version}-bin.tar.gz" />
+                                        <include name="jre${jre.version}.tar.gz" />
                                     </fileset>
                                 </untar>
 
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
                                         <include name="mariadb-noinstall-${mariadb.version}-win32.zip" />
-                                        <include name="jre${jre.version}.zip" />
                                     </fileset>
                                 </unzip>
 
