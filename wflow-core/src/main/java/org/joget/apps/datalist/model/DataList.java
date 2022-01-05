@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.displaytag.tags.TableTagParameters;
@@ -217,10 +221,17 @@ public class DataList {
         if (template != null) {
             String tHtml = template.getTemplate();
             Collection<DataListColumn> newColumns = new ArrayList<DataListColumn>();
-            
-            for (String key : columnPlaceholders.keySet()) {
-                if (tHtml.contains("{{"+key+"}}") || tHtml.contains("{{"+key+" ")) {
+            Set<String> added = new HashSet<String>();
+                    
+            //find column variables and make sure it follow sequence
+            Pattern pattern = Pattern.compile("\\{\\{(column[a-zA-Z0-9-_]+)(|.+?)\\}\\}(([\\s\\S]+?)\\{\\{\\1\\}\\}|)", Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(tHtml);
+
+            while (matcher.find()) {
+                String key = matcher.group(1);
+                if (columnPlaceholders.containsKey(key) && !added.contains(key)) {
                     newColumns.addAll(Arrays.asList(columnPlaceholders.get(key)));
+                    added.add(key);
                 }
             }
             
@@ -472,6 +483,7 @@ public class DataList {
                     ((DataListActionDefault) a).setDatalist(this);
                 }
             }
+            setRowActionPlaceholder("rowActions", rowActions);
         }
         
         this.rowActions = rowActions;
@@ -1147,7 +1159,7 @@ public class DataList {
     
     public String getHtml() {
         DataListTemplate template = getTemplate();
-        if (template != null) {
+        if (template != null && !(getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) != null && getDataListParam(TableTagParameters.PARAMETER_EXPORTING) != null)) { //when it is not export
             return template.render();
         }
         return "";

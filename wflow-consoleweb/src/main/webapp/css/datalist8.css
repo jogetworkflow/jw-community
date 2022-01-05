@@ -237,10 +237,6 @@ body.rtl .dataList span.pagelinks{
         display: inline-block;
         width: calc(100% - 200px);
     }
-    .dataList .template_pagelinks span.pagelinks{
-        display: block;
-        width: 100%;
-    }
     .dataList .exportlinks{
         width: 200px;
         display: inline-block

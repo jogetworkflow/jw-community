@@ -1165,6 +1165,10 @@ form.form .btn {
 #content .main-body-content.Dashboard .reset_position:hover{
     color: var(--theme-link-active, var(--theme-color4, #0f9aee));
 }
+#content .grid-stack-item-body .pagelinks{
+    display: block;
+    width: 100%;
+}
 
 /* columns & components */
 .ContainerComponent {

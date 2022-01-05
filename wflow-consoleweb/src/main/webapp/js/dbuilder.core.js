@@ -173,20 +173,14 @@ DatalistBuilder = {
         //set header for web & export
         var thead = $(tbody).closest("table").find("thead tr");
         
-        var hasExport = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
-        var exportHtml = '';
-        var exportHtmlOther = '';
-        if (hasExport && $(thead).find("th.export").length === 0) {
-            $(thead).append('<th class="export" width="30%">'+get_advtool_msg('adv.permission.export')+'</th>');
-            $(thead).find(".authorized").text(get_advtool_msg('adv.permission.web'));
-            
-            exportHtml = '<td class="export"></td>';
-            exportHtmlOther = '<td style="background:#fff;"></td>';
-        }
+        var isTemplate = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
         
-        if (hasExport) {
+        $(thead).append('<th class="export" width="30%">'+get_advtool_msg('adv.permission.export')+'</th>');
+        $(thead).find(".authorized").text(get_advtool_msg('adv.permission.web'));
+        
+        if (isTemplate) {
             if (CustomBuilder.data.columns !== undefined && CustomBuilder.data.columns.length > 0) {
-                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.columns")+'</td><td class="authorized"></td>'+exportHtml+'</tr>');
+                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.columns")+'</td><td class="authorized"></td><td class="export"></td></tr>');
 
                 var childs = CustomBuilder.data.columns;
                 if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -196,7 +190,7 @@ DatalistBuilder = {
                 }
             }
             if (CustomBuilder.data.rowActions !== undefined && CustomBuilder.data.rowActions.length > 0) {
-                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.rowActions")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+                $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.rowActions")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
 
                 var childs = CustomBuilder.data.rowActions;
                 if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -218,7 +212,12 @@ DatalistBuilder = {
                             label = $(this).attr("data-cbuilder-droparea-msg");
                         }
                         
-                        $(tbody).append('<tr class="header"><td>'+label+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+                        if (pkey.indexOf("column") === 0) {
+                            $(tbody).append('<tr class="header"><td>'+label+'</td><td class="authorized"></td><td class="export"></td></tr>');
+                        } else {
+                            $(tbody).append('<tr class="header"><td>'+label+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
+                        }
+                        
                         
                         $.each(childs, function(i, child){
                             PermissionManager.renderElement(child, tbody, key);
@@ -228,7 +227,7 @@ DatalistBuilder = {
             });
         }
         if (CustomBuilder.data.filters !== undefined && CustomBuilder.data.filters.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.filters")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.filters")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
             
             var childs = CustomBuilder.data.filters;
             if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -238,7 +237,7 @@ DatalistBuilder = {
             }
         }
         if (CustomBuilder.data.actions !== undefined && CustomBuilder.data.actions.length > 0) {
-            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.actions")+'</td><td class="authorized"></td>'+exportHtmlOther+'</tr>');
+            $(tbody).append('<tr class="header"><td>'+get_cbuilder_msg("dbuilder.type.actions")+'</td><td class="authorized"></td><td style="background:#fff;"></td></tr>');
             
             var childs = CustomBuilder.data.actions;
             if (childs !== null && childs !== undefined && childs.length > 0) {
@@ -483,11 +482,17 @@ DatalistBuilder = {
             if (key === "rowActions" && props.indexOf("data-cbuilder-sync") === -1) {
                 props += " data-cbuilder-all_actions data-cbuilder-rowActions data-cbuilder-droparea-msg=\""+get_cbuilder_msg('dbuilder.dragRowActionsHere')+"\"";
             } else if (key.indexOf("rowAction_") === 0 && props.indexOf("data-cbuilder-sync") === -1) {
-                props += " data-cbuilder-all_actions data-cbuilder-rowActions data-cbuilder-single";
+                props += " data-cbuilder-all_actions data-cbuilder-rowActions";
+                if (props.indexOf("data-cbuilder-multiple") === -1) {
+                    props += " data-cbuilder-single";
+                }
             } else if (key === "columns" && props.indexOf("data-cbuilder-sync") === -1) {
                 props += " data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-droparea-msg=\""+get_cbuilder_msg('dbuilder.dragColumnsHere')+"\"";
             } else if (key.indexOf("column_") === 0 && props.indexOf("data-cbuilder-sync") === -1) {
-                props += " data-cbuilder-columns_filters data-cbuilder-columns data-cbuilder-single";
+                props += " data-cbuilder-columns_filters data-cbuilder-columns";
+                if (props.indexOf("data-cbuilder-multiple") === -1) {
+                    props += " data-cbuilder-single";
+                }
             }
             
             //check has child key
@@ -647,6 +652,9 @@ DatalistBuilder = {
             }
             if (data !== undefined && data[key] !== undefined && data[key] !== null) {
                 result = data[key];
+            }
+            if (result === null) {
+                result = "";
             }
         }
         
@@ -1236,8 +1244,12 @@ DatalistBuilder = {
         var value = $(dragElement).attr("data-cbuilder-value");
         if (value !== undefined) {
             data = value;
-        } else if (key.indexOf("rowAction") === 0) {
+        }
+        
+        if (key.indexOf("rowAction") === 0) {
             data = '<a href="#">' + data + '</a>';
+        } else if (key.indexOf("column") === 0) {
+            data = '<span>' + data + '</span>';
         }
         
         var obj;
@@ -1975,17 +1987,13 @@ DatalistBuilder = {
      * It used to render the permission option of a column
      */
     renderColumnPermission : function (elementObj, row, permissionObj, key, level) {
-        var hasExport = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
-        
         $(row).append('<td class="authorized" width="30%"><div class="authorized-btns btn-group"></div></td>');
         $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
         $(row).find(".authorized-btns").append('<button type="button" class="btn btn-outline-success btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
-        if (hasExport) {
-            $(row).append('<td class="export" width="30%"><div class="authorized-export-btns btn-group"></div></td>');
-            $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
-            $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
-        }
+        $(row).append('<td class="export" width="30%"><div class="authorized-export-btns btn-group"></div></td>');
+        $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm visible-btn" >'+get_cbuilder_msg("ubuilder.visible")+'</button>');
+        $(row).find(".authorized-export-btns").append('<button type="button" class="btn btn-outline-info btn-sm hidden-btn" >'+get_cbuilder_msg("ubuilder.hidden")+'</button>');
         
         if (permissionObj["hidden"] === "true") {
             $(row).find(".authorized-btns .hidden-btn").addClass("active");
@@ -2092,6 +2100,9 @@ DatalistBuilder = {
                         name: 'template',
                         type: 'elementselect',
                         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListTemplate',
+                        options_extra : [
+                            {value : '', label : get_cbuilder_msg('dbuilder.classicTable')}
+                        ],
                         url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions'
                     },
                     {

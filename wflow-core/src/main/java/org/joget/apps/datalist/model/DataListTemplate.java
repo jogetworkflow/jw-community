@@ -1,15 +1,19 @@
 package org.joget.apps.datalist.model;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.displaytag.pagination.SmartListHelper;
+import org.displaytag.properties.MediaTypeEnum;
 import org.displaytag.properties.TableProperties;
 import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.Anchor;
 import org.displaytag.util.DefaultHref;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.service.DataListDecorator;
@@ -97,7 +101,32 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         DefaultHref href = new DefaultHref(url);
         href.removeParameter("OWASP_CSRFTOKEN");
         
-        return "<div class=\"template_pagelinks\">" + listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p")+"</div>");
+        String exportLinks = "";
+        if (!getDatalist().getNoExport()) {
+            Iterator iterator = MediaTypeEnum.iterator();
+
+            while (iterator.hasNext()){
+                MediaTypeEnum currentExportType = (MediaTypeEnum) iterator.next();
+
+                if (props.getAddExport(currentExportType)){
+
+                    if (!exportLinks.isEmpty()){
+                        exportLinks += props.getExportBannerSeparator();
+                    }
+
+                    href.addParameter(getDatalist().getDataListEncodedParamName(TableTagParameters.PARAMETER_EXPORTTYPE), currentExportType.getCode());
+
+                    // export marker
+                    href.addParameter(TableTagParameters.PARAMETER_EXPORTING, "1");
+
+                    Anchor anchor = new Anchor(href, props.getExportLabel(currentExportType));
+                    exportLinks += anchor.toString();
+                }
+            }
+            exportLinks = MessageFormat.format(props.getExportBanner(), new String[]{exportLinks});
+        }
+        
+        return "<div class=\"template_pagelinks\">" + listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p")) + exportLinks + "</div>";
     }
     
     public String fillTemplateProps(String template) {
