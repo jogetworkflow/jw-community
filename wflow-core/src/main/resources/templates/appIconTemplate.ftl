@@ -15,7 +15,7 @@
                         </div>
                     {{column}}
                 {{columns}}
-                {{rowAction_card data-cbuilder-name="@@datalist.simpleCardTemplate.cardAction@@" attr-class="stretched-link"}}
+                {{rowAction_card data-cbuilder-droparea-msg="@@datalist.simpleCardTemplate.cardAction@@" attr-class="stretched-link"}}
                 {{rowActions data-cbuilder-sort-horizontal}}
                     <div class="card-actions">
                         {{rowAction}}
