@@ -5921,7 +5921,7 @@ public class ConsoleWebController {
         data = new HashMap();
         data.put("value", "process");
         data.put("label", "Process Builder");
-        data.put("icon", "fas fa-th-list");
+        data.put("icon", "fas fa-project-diagram");
         data.put("color", "#dc4438");
         PackageDefinition packageDefinition = appDef.getPackageDefinition();
         if (packageDefinition != null) {

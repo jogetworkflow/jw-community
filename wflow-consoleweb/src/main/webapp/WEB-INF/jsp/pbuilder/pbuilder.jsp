@@ -52,7 +52,7 @@
 </c:set>    
 <c:set var="builderCode" scope="request" value="process"/>
 <c:set var="builderColor" scope="request" value="#dc4438"/>
-<c:set var="builderIcon" scope="request" value="fas fa-th-list"/>
+<c:set var="builderIcon" scope="request" value="fas fa-project-diagram"/>
 <c:set var="builderDefJson" scope="request" value="${json}"/>
 <c:set var="builderCanvas" scope="request" value=""/>
 <c:set var="builderConfig" scope="request">
