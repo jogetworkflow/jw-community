@@ -5,6 +5,7 @@ https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
 CHANGES IN 7.0.26
 =================
+198ddd7b0 Modified: wflow-install - Upgraded to OpenJDK 11.0.13 due to JRE 11.0.2 crashed on log4j version 2. @7.0-SNAPSHOT
 decc9fcba Fixed: wflow-consoleweb - Presence Indicator can't load on EAP, Websphere and Weblogic. @7.0-SNAPSHOT
 97031d563 Fixed: wflow-core - Log Viewer - Logs of creating new app is appeared in wrong app log viewer. @7.0-SNAPSHOT
 9ee74a58b Fixed: wflow-commons - Logs - Upgraded log4j to version 2.17.1 to fix CVE-2021-44832 vulnerability. @7.0-SNAPSHOT
