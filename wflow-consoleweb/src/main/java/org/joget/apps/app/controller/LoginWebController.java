@@ -8,6 +8,7 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
@@ -237,6 +238,32 @@ public class LoginWebController {
             return "mobile/mLogin";
         } else if (savedUrl.contains(request.getContextPath() + "/mobile")) {
             return "mobile/mLogin";
+        }
+        
+        UserviewDefinition userviewDef = userviewService.getDefaultUserview();
+        if (userviewDef != null) {
+            AppDefinition appDef = userviewDef.getAppDefinition();
+            AppUtil.setCurrentAppDefinition(appDef);
+            map.addAttribute("appId", appDef.getId());
+            map.addAttribute("appDefinition", appDef);
+            map.addAttribute("appVersion", appDef.getVersion());
+            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewDef.getId(), appDef);
+            if (userview != null) {
+                String json = userview.getJson();
+                Userview userviewObject = userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), null, false);
+                UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+                map.addAttribute("userview", userviewObject);
+                map.addAttribute("processer", processer);
+                String view = processer.getLoginView();
+                if (view != null) {
+                    if (view.startsWith("redirect:")) {
+                        map.clear();
+                    }
+                    return view;
+                }
+            }
+
+            return "ubuilder/login";
         }
 
         return "login";
