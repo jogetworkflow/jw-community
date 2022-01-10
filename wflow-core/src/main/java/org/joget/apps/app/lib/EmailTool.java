@@ -85,7 +85,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             final String fromStr = WorkflowUtil.processVariable(from, formDataTable, wfAssignment);
             
             // create the email message
-            final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, fromStr);
+            final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, fromStr, getPropertyString("p12"), getPropertyString("storepass"), getPropertyString("alias"));
             if (email == null) {
                 return null;
             }

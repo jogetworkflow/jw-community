@@ -4433,7 +4433,7 @@ public class ConsoleWebController {
 
         Map<String, String> settingMap = new HashMap<String, String>();
         for (Setting setting : settingList) {
-            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(setting.getProperty()) || SetupManager.SMTP_PASSWORD.equals(setting.getProperty())) {
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(setting.getProperty()) || SetupManager.SMTP_PASSWORD.equals(setting.getProperty()) || "smtpStorepass".equals(setting.getProperty())) {
                 settingMap.put(setting.getProperty(), SetupManager.SECURE_VALUE);
             } else {
                 settingMap.put(setting.getProperty(), setting.getValue());
@@ -4518,7 +4518,7 @@ public class ConsoleWebController {
                 workflowManager.internalMigrateProcessHistories();
             }
             
-            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName)) {
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName) || "smtpStorepass".equals(paramName)) {
                 if (!SetupManager.SECURE_VALUE.equals(paramValue)) {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }

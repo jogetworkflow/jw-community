@@ -141,6 +141,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     String parameterName = (String) props.get("parameterName");
                     String passoverMethod = (String) props.get("passoverMethod");
                     String isHtml = (String) props.get("isHtml");
+                    String p12 = (String) props.get("p12");
+                    String storepass = (String) props.get("storepass");
+                    String alias = (String) props.get("alias");
 
                     Map<String, String> replace = null;
                     if ("true".equalsIgnoreCase(isHtml)) {
@@ -178,7 +181,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                 
                                 if (wfAssignment != null) {
                                     // create the email message
-                                    HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from);
+                                    HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from, p12, storepass, alias);
                                     if (email == null) {
                                         return;
                                     }

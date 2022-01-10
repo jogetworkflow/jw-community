@@ -1191,6 +1191,10 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static HtmlEmail createEmail(String host, String port, String security, String username, String password, String form) throws EmailException {
+        return createEmail(host, port, security, username, password, form, null, null, null);
+    }
+    
+    public static HtmlEmail createEmail(String host, String port, String security, String username, String password, String form, String p12, String storepass, String alias) throws EmailException {
         //use system setting if host is empty
         if (host == null || host.isEmpty()) {
             SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
@@ -1200,6 +1204,12 @@ public class AppUtil implements ApplicationContextAware {
             username = setupManager.getSettingValue("smtpUsername");
             password = setupManager.getSettingValue("smtpPassword");
             form = setupManager.getSettingValue("smtpEmail");
+            
+            if (p12 == null || p12.isEmpty()) {
+                p12 = setupManager.getSettingValue("smtpP12");
+                storepass = SecurityUtil.decrypt(setupManager.getSettingValue("smtpStorepass"));
+                alias = setupManager.getSettingValue("smtpIssuerAlias");
+            }
         }
         
         if (host == null || host.isEmpty() || form == null || form.isEmpty()) {
@@ -1207,7 +1217,12 @@ public class AppUtil implements ApplicationContextAware {
             return null;
         }
         
-        HtmlEmail email = new HtmlEmail();
+        HtmlEmail email = null;
+        if (p12 != null && !p12.isEmpty() && storepass != null && !storepass.isEmpty() && alias != null && !alias.isEmpty()) {
+            email = ((HtmlEmail) new DigitalSignedHtmlEmail(p12, storepass, alias, form));
+        } else {
+            email = new HtmlEmail();
+        }
         email.setHostName(host);
         if (port != null && port.length() != 0) {
             email.setSmtpPort(Integer.parseInt(port));

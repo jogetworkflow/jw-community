@@ -510,6 +510,37 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpP12"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.p12path"/></label>
+                        <span class="form-input">
+                            <input id="smtpP12" type="text" name="smtpP12" value="<c:out value="${settingMap['smtpP12']}"/>"/>
+                            <i><span class="ftl_label"><fmt:message key="app.emailtool.p12path.desc"/></span></i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpStorepass"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.storepass"/></label>
+                        <span class="form-input">
+                            <input id="smtpStorepass" type="password" name="smtpStorepass" value="<c:out value="${settingMap['smtpStorepass']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpIssuerAlias"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.issuerAlias"/></label>
+                        <span class="form-input">
+                            <input id="smtpIssuerAlias" type="text" name="smtpIssuerAlias" value="<c:out value="${settingMap['smtpIssuerAlias']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>" />
             </div>

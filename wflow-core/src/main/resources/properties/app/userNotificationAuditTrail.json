@@ -125,6 +125,26 @@
         name : 'password',
         label : '@@app.usernotificationaudittrail.password@@',
         type : 'password'
+    },
+    {
+        label : '@@app.emailtool.digitalSignature@@',
+        type : 'header'
+    },
+    {
+        name : 'p12',
+        label : '@@app.emailtool.p12path@@',
+        description : '@@app.emailtool.p12path.desc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'storepass',
+        label : '@@app.emailtool.storepass@@',
+        type : 'password'
+    },
+    {
+        name : 'alias',
+        label : '@@app.emailtool.issuerAlias@@',
+        type : 'textfield'
     }],
     validators : [{  
         type : 'AJAX',
