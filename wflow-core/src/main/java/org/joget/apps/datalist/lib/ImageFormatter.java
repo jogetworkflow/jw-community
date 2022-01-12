@@ -52,7 +52,7 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         String style = "";
         
         if(!height.isEmpty() && !width.isEmpty()){
-            style = "style=\"max-height:"+height+";max-width:"+width+"; \"";
+            style = "height:"+height+";width:"+width+";background-size:cover;display:inline-block;";
         }
         
         if (value != null && !((String) value).isEmpty()) {
@@ -91,7 +91,7 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                         }
                         
                         if(!height.isEmpty() && !width.isEmpty()){
-                            result += "<img src=\""+imgPath+"\" "+style+" />";                            
+                            result += "<div style=\"background-image:url('"+imgPath+"');"+style+"\" /></div>";                            
                         }else{
                             result += "<img src=\""+imgPath+"thumb.jpg.\" />";
                         }
@@ -114,7 +114,11 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                             result += "<a href=\""+v+"\" target=\"_blank\" \"> ";                            
                         }
                         
-                        result += "<img src=\""+v+"\" "+style+" />";   
+                        if(!height.isEmpty() && !width.isEmpty()){
+                            result += "<div style=\"background-image:url('"+v+"');"+style+"\" /></div>";   
+                        } else {
+                            result += "<img src=\""+v+"\"/>";  
+                        }
                         
                         if(!fullsize.isEmpty()){
                             result += "</a> ";                            
@@ -125,7 +129,11 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         }
         
         if (result.isEmpty() && !getPropertyString("defaultImage").isEmpty()) {
-            result += "<img src=\""+getPropertyString("defaultImage")+"\" "+style+">";  
+            if(!height.isEmpty() && !width.isEmpty()){
+                result += "<div style=\"background-image:url('"+getPropertyString("defaultImage")+"');"+style+"\" /></div>";   
+            } else {
+                result += "<img src=\""+getPropertyString("defaultImage")+"\" "+style+">";  
+            }
         }
         
         return result;
