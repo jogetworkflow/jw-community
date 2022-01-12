@@ -940,7 +940,7 @@ ProcessBuilder = {
         
         if (mapping.type === "") {
             delete CustomBuilder.data['participants'][id];
-        } if (mapping.type === "plugin") {
+        } if (mapping.type === "plugin" && (mapping.value === "" || mapping.value === undefined)) {
             mapping.properties = {};
         }
     },
@@ -1521,7 +1521,7 @@ ProcessBuilder = {
         var xpdlProcessesAttrs = ProcessBuilder.getArray(cloneProcessData['ExtendedAttributes'], 'ExtendedAttribute');
         for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
-                xpdlProcessesAttrs[p]['-Value'] = id + "_" + xpdlProcessesAttrs[p]['-Value'].replaceAll(";", ";"+ id + "_");
+                xpdlProcessesAttrs[p]['-Value'] = id + "_" + xpdlProcessesAttrs[p]['-Value'].replace(/;/g, ";"+ id + "_");
             } else if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
                 xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID=", "JaWE_GRAPH_PARTICIPANT_ID="+id + "_" );
             }
@@ -4171,9 +4171,9 @@ ProcessBuilder = {
                 $(dl).append('<dt><i class="las la-shapes" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+type)+'</dd>');
 
                 if (elementObj.properties.mapping_type === "user") {
-                    $(dl).append('<dt><i class="las la-user" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_users.replace(';', ', ')+'</dd>');
-                } else if (elementObj.properties.mapping_type === "groups") {
-                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_groups.replace(';', ', ')+'</dd>');
+                    $(dl).append('<dt><i class="las la-user" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_users.replace(/;/g, ', ')+'</dd>');
+                } else if (elementObj.properties.mapping_type === "group") {
+                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_groups.replace(/;/g, ', ')+'</dd>');
                 } else if (elementObj.properties.mapping_type === "department" || elementObj.properties.mapping_type === "hod") {
                     $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_department+'</dd>');
                 } else if (elementObj.properties.mapping_type === "performer") {
@@ -4194,7 +4194,7 @@ ProcessBuilder = {
                     }
                     $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.represent')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+r)+'</dd>');    
                 } else if (elementObj.properties.mapping_type === "plugin") {
-                    var label = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
+                    var label = ProcessBuilder.availableTools[elementObj.properties.mapping_plugin["className"]];
                     if (label === undefined) {
                         label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
                     }
