@@ -3962,7 +3962,7 @@ ProcessBuilder = {
                 $(view).find(".cbuilder-node-details-list").removeClass("active");
                 $(this).addClass("active");
                 var id = $(this).attr("data-cbuilder-select");
-                var node = self.frameBody.find("#"+id);
+                var node = self.frameBody.find("[data-cbuilder-id='"+id+"']");
                 self.selectNode(node);
             });
             
@@ -4047,6 +4047,15 @@ ProcessBuilder = {
         var id = obj.properties.id;
         if (obj.className === "start") {
             id = "runProcess";
+        }
+        
+        if (self.selectedEl) {
+            var selectedData = $(self.selectedEl).data("data");
+            if (selectedData.properties.id === id) {
+                $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
+                var listId = $(list).attr("id");
+                $('[aria-controls="'+listId+'"]').tab('show');
+            }
         }
         
         var label = "";
