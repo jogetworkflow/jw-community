@@ -149,7 +149,9 @@
                         
                         <c:choose>
                             <c:when test="${!empty templateHtml}">
-                                <c:out value="${templateHtml}" escapeXml="false"/>
+                                <div class="table-wrapper">
+                                    <c:out value="${templateHtml}" escapeXml="false"/>
+                                </div>
                             </c:when>
                             <c:otherwise>
                                 <div class="footable-buttons" 
@@ -396,7 +398,7 @@
         });
     });
     function toggleAll(element) {
-        var table = $(element).closest("table");
+        var table = $(element).closest("form");
         if ($(element).is(":checked")) {
             $(table).find("input[type=checkbox]").prop("checked", true);
         } else {
@@ -404,7 +406,7 @@
         }
     }
     function showConfirm(element, message) {
-        var table = $(element).parent().parent().find('table');
+        var table = $(element).closest("form");
         if ($(table).find("input[type=checkbox][name|=d]:checked, input[type=radio][name|=d]:checked").length > 0) {
             return confirm(message);
         } else {

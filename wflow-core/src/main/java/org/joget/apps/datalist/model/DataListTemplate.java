@@ -16,6 +16,7 @@ import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.Anchor;
 import org.displaytag.util.DefaultHref;
 import org.joget.apps.app.service.AppUtil;
+import static org.joget.apps.datalist.model.DataList.CHECKBOX_PREFIX;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.commons.util.StringUtil;
@@ -192,6 +193,8 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
                 value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getRowActionPlaceholder(key), data);
             } else if ("columns".equals(key) || key.startsWith("column_")) {
                 value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getColumnPlaceholder(key), data);
+            } else if ("selector".equals(key)) {
+                value += populateSelector(props, childtemplate, data);
             } else {
                 continue;
             }
@@ -215,9 +218,9 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
                     } else if (data instanceof DataListAction) {
                         DataListAction a = (DataListAction) data;
                         value = decorator.generateLink(a);
+                    } else {
+                        value = (String) DataListService.evaluateColumnValueFromRow(data, key);
                     }
-                } else if ("selector".equals(key)) {
-                    value += "";
                 } else {
                     value = (String) DataListService.evaluateColumnValueFromRow(data, key);
                 }
@@ -228,6 +231,40 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         }
         
         return template;
+    }
+    
+    public String populateSelector(String props, String template, Object data) {
+        String html = "";
+        if (!getDatalist().getCheckboxPosition().equals(DataList.CHECKBOX_POSITION_NO)) {
+            String key = getDatalist().getBinder().getPrimaryKeyColumnName();
+            String param = getDatalist().getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+            String value = (String) DataListService.evaluateColumnValueFromRow(data, key);
+            String type = "radio";
+            String id = type + "_" + param + "_" + value;
+            String header = "";
+            if (getDatalist().getSelectionType().equals(DataList.SELECTION_TYPE_MULTIPLE)) {
+                type = "checkbox";
+                header = "<label><input type='checkbox' onclick='toggleAll(this)'/><i></i></label>";
+            }
+            String body = "<label><input type=\""+type+"\" name=\"" + StringUtil.escapeString(param, StringUtil.TYPE_XML, null) + "\" ";
+            body += "id=\"" + StringUtil.escapeString(id, StringUtil.TYPE_XML, null) + "\" ";
+            body += "value=\"" + StringUtil.escapeString(value, StringUtil.TYPE_XML, null) + "\"/><i></i></label>";
+            
+            if (template != null && !template.isEmpty()) {
+                Map<String, String> obj = new HashMap<String, String>();
+                obj.put("body", body);
+                obj.put("id", StringUtil.escapeString(id, StringUtil.TYPE_XML, null));
+                obj.put("name", StringUtil.escapeString(param, StringUtil.TYPE_XML, null));
+                obj.put("value", StringUtil.escapeString(value, StringUtil.TYPE_XML, null));
+                obj.put("type", StringUtil.escapeString(type, StringUtil.TYPE_XML, null));
+                obj.put("header", header);
+                html = fillData(template, obj);
+            } else {
+                html = body;
+            }
+            html = applyStyles(html, "selector", props, null);
+        }
+        return html;
     }
     
     public String fillDatalistObjects(String key, String props, String template, Object[] objects, Object data) {
@@ -314,44 +351,46 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             }
         }
         
-        if (data instanceof DataListColumn) {
-            DataListColumn c = (DataListColumn) data;
-            if (c.getStyle() != null && !c.getStyle().isEmpty()) {
-                stylesStr += c.getStyle();
-                if (!stylesStr.endsWith(";")) {
-                    stylesStr += ";";
+        if (data != null) {
+            if (data instanceof DataListColumn) {
+                DataListColumn c = (DataListColumn) data;
+                if (c.getStyle() != null && !c.getStyle().isEmpty()) {
+                    stylesStr += c.getStyle();
+                    if (!stylesStr.endsWith(";")) {
+                        stylesStr += ";";
+                    }
                 }
-            }
-            
-            id = c.getPropertyString("id");
-            cssClass += c.getPropertyString("id") + " ";
-            if (html.startsWith("<th")) {
-                cssClass += "column_header column_" + c.getName() + " header_"+id+" ";
-                if (c.getHeaderAlignment() != null && !c.getHeaderAlignment().isEmpty()) {
-                    cssClass += c.getHeaderAlignment() + " ";
+
+                id = c.getPropertyString("id");
+                cssClass += c.getPropertyString("id") + " ";
+                if (html.startsWith("<th")) {
+                    cssClass += "column_header column_" + c.getName() + " header_"+id+" ";
+                    if (c.getHeaderAlignment() != null && !c.getHeaderAlignment().isEmpty()) {
+                        cssClass += c.getHeaderAlignment() + " ";
+                    }
+                } else {
+                    cssClass += "column_body column_" + c.getName() + " body_"+id+" ";
+                    if (c.getAlignment() != null && !c.getAlignment().isEmpty()) {
+                        cssClass += c.getAlignment() + " ";
+                    }
                 }
+                if (c.getWidth() != null && !c.getWidth().isEmpty()) {
+                    stylesStr += "width:"+c.getWidth()+";max-width:"+c.getWidth()+";";
+                }
+                properties = c.getProperties();
+            } else if (data instanceof DataListAction) {
+                DataListAction a = (DataListAction) data;
+                id = a.getPropertyString("id");
+                cssClass += a.getPropertyString("id") + " ";
+                if (html.startsWith("<th")) {
+                    cssClass += "rowaction_header header_"+id+" ";
+                } else {
+                    cssClass += "rowaction_body body_"+id+" ";
+                }
+                properties = a.getProperties();
             } else {
-                cssClass += "column_body column_" + c.getName() + " body_"+id+" ";
-                if (c.getAlignment() != null && !c.getAlignment().isEmpty()) {
-                    cssClass += c.getAlignment() + " ";
-                }
+                properties = (Map) data;
             }
-            if (c.getWidth() != null && !c.getWidth().isEmpty()) {
-                stylesStr += "width:"+c.getWidth()+";";
-            }
-            properties = c.getProperties();
-        } else if (data instanceof DataListAction) {
-            DataListAction a = (DataListAction) data;
-            id = a.getPropertyString("id");
-            cssClass += a.getPropertyString("id") + " ";
-            if (html.startsWith("<th")) {
-                cssClass += "rowaction_header header_"+id+" ";
-            } else {
-                cssClass += "rowaction_body body_"+id+" ";
-            }
-            properties = a.getProperties();
-        } else {
-            properties = (Map) data;
         }
         
         Pattern pattern = Pattern.compile("^<([a-zA-Z0-9]+)(| .+?)>");
@@ -382,7 +421,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             html = html.replace(replace, result);
         }
         
-        if (!styleKeys.contains(key)) {
+        if (properties != null && !styleKeys.contains(key)) {
             if (styleProps.isEmpty()) {
                 styleProps = "[{}]";
                 if (data instanceof DataListAction) {

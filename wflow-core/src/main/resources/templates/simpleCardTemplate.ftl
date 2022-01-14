@@ -2,7 +2,12 @@
     {{rows data-cbuilder-highlight="@@datalist.simpleCardTemplate.card@@" data-cbuilder-style="[{'prefix' : 'card', 'class' : '.card', 'label' : '@@datalist.simpleCardTemplate.card@@'}]"}}
         <div class="col-12 {{columns_mobile}} {{columns_tablet}} {{columns_desktop}} p-2">
             {{selector}}
-            <div class="card" >
+                <input type="{{type}}" name="{{name}}" id="{{id}}" value="{{value}}" style="display:none"/>
+            {{selector}}
+            <div class="card data-row" >
+                {{selector}}
+                    <label for="{{id}}" class="stretched-link"></label>
+                {{selector}}
                 <#if element.properties.image! == 'true'>
                     {{column_image data-cbuilder-droparea-msg="@@datalist.simpleCardTemplate.image@@" attr-class="card-img-top"||<svg class="bd-placeholder-img" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image cap"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">@@datalist.simpleCardTemplate.image@@</text></svg>}}
                 </#if>

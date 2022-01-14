@@ -1,9 +1,8 @@
 package org.joget.apps.datalist.lib;
 
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.datalist.model.DataListTemplate;
 
-public class AppIconTemplate extends DataListTemplate {
+public class AppIconTemplate extends SimpleCardTemplate {
 
     @Override
     public String getName() {
