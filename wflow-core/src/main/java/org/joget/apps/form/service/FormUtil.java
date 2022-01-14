@@ -1079,6 +1079,8 @@ public class FormUtil implements ApplicationContextAware {
                 String binderValue = formData.getLoadBinderDataProperty(element, id);
                 if (binderValue != null) {
                     value = binderValue;
+                } else if (paramName.equals(FormUtil.PROPERTY_ID) && formData.getPrimaryKeyValue() != null && !formData.getPrimaryKeyValue().isEmpty()) {
+                    value = formData.getPrimaryKeyValue();
                 }
             }
         }
