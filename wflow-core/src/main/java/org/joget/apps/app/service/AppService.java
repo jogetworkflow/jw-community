@@ -475,6 +475,15 @@ public interface AppService {
      * @return
      */
     byte[] getAppDefinitionXml(String appId, Long version);
+    
+    /**
+     * Get App definition XML
+     * @param appId
+     * @param version
+     * @param backwardCompatible
+     * @return
+     */
+    byte[] getAppDefinitionXml(String appId, Long version, boolean backwardCompatible);
 
     /**
      * Export an app version in ZIP format into an OutputStream

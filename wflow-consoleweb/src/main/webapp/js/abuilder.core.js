@@ -62,6 +62,8 @@ AppBuilder = {
             return false;
         });
         
+        AppBuilder.view = getUrlParam('view');
+        
         callback();
     },
     
@@ -79,6 +81,13 @@ AppBuilder = {
         
         $("#builder_canvas").css("opacity", "0.3");
         CustomBuilder.getBuilderItems(AppBuilder.renderBuilders);
+        
+        if (AppBuilder.view !== "") {
+            setTimeout(function(){
+                $("[data-cbuilder-view='"+AppBuilder.view+"']").trigger("click");
+                AppBuilder.view = "";
+            }, 1500);
+        }
     },
     
     /*

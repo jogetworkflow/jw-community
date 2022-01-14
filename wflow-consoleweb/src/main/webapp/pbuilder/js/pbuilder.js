@@ -20,6 +20,9 @@ ProcessBuilder = {
             })
         }
         
+        ProcessBuilder.view = getUrlParam('view');
+        ProcessBuilder.preSelect = getUrlParam('id');
+        
         CustomBuilder.Builder.init({
             "enableViewport" : false,
             callbacks : {
@@ -272,6 +275,7 @@ ProcessBuilder = {
      * Based on selection and url hash, construct the process data from spdl data and view the process in canvas 
      */
     viewProcess : function() {
+        var self = CustomBuilder.Builder;
         var id = window.location.hash.replace("#", "");
         
         if (id !== "") {
@@ -280,6 +284,17 @@ ProcessBuilder = {
             if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData.properties !== undefined) {
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
                     ProcessBuilder.validate();
+                    
+                    setTimeout(function(){
+                        if (ProcessBuilder.preSelect !== "") {
+                            var node = self.frameBody.find("[data-cbuilder-id='"+ProcessBuilder.preSelect+"']");
+                            self.selectNode(node);
+                            ProcessBuilder.preSelect = "";
+                        }
+                        if (ProcessBuilder.view !== "") {
+                            $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
+                        }
+                    }, 1000);
                 });
             }
         } else {

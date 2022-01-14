@@ -1932,6 +1932,17 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     public byte[] getAppDefinitionXml(String appId, Long version) {
+        return getAppDefinitionXml(appId, version, true);
+    }
+    
+    /**
+     * Get App definition XML
+     * @param appId
+     * @param version
+     * @param backwardCompatible
+     * @return
+     */
+    public byte[] getAppDefinitionXml(String appId, Long version, boolean backwardCompatible) {
         byte[] appDefinitionXml = null;
 
         ByteArrayOutputStream baos = null;
@@ -1963,28 +1974,30 @@ public class AppServiceImpl implements AppService {
             value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentBag", "java.util.ArrayList");
             value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentMap", "java.util.HashMap");
             
-            //for backward compatible
-            value = commentTag(value, "disableSaveAsDraft");
-            value = commentTag(value, "meta");
-            if (value.indexOf("<formDefinitionList>") > 0) {
-                int start = value.indexOf("<formDefinitionList>");
-                int end = value.indexOf("</formDefinitionList>");
-                value = value.substring(0, start - 1) + commentTag(value.substring(start, end-1), "description") + value.substring(end);
+            if (backwardCompatible) {
+                //for backward compatible
+                value = commentTag(value, "disableSaveAsDraft");
+                value = commentTag(value, "meta");
+                if (value.indexOf("<formDefinitionList>") > 0) {
+                    int start = value.indexOf("<formDefinitionList>");
+                    int end = value.indexOf("</formDefinitionList>");
+                    value = value.substring(0, start - 1) + commentTag(value.substring(start, end-1), "description") + value.substring(end);
+                }
+                int afterMessagePos = 14;
+                if (value.indexOf("<messageList/>") > 0) {
+                    afterMessagePos += value.indexOf("<messageList/>");
+                }else{
+                    afterMessagePos += value.indexOf("</messageList>");
+                }
+                value = value.substring(0, afterMessagePos) + commentTag(value.substring(afterMessagePos+1), "description");
+
+                value = value.replace("<resourceList>", "<!--resourceList>");
+                value = value.replace("</resourceList>", "</resourceList-->");
+                value = value.replace("<resourceList/>", "<!--resourceList/-->");
+                value = value.replace("<builderDefinitionList>", "<!--builderDefinitionList>");
+                value = value.replace("</builderDefinitionList>", "</builderDefinitionList-->");
+                value = value.replace("<builderDefinitionList/>", "<!--builderDefinitionList/-->");
             }
-            int afterMessagePos = 14;
-            if (value.indexOf("<messageList/>") > 0) {
-                afterMessagePos += value.indexOf("<messageList/>");
-            }else{
-                afterMessagePos += value.indexOf("</messageList>");
-            }
-            value = value.substring(0, afterMessagePos) + commentTag(value.substring(afterMessagePos+1), "description");
-            
-            value = value.replace("<resourceList>", "<!--resourceList>");
-            value = value.replace("</resourceList>", "</resourceList-->");
-            value = value.replace("<resourceList/>", "<!--resourceList/-->");
-            value = value.replace("<builderDefinitionList>", "<!--builderDefinitionList>");
-            value = value.replace("</builderDefinitionList>", "</builderDefinitionList-->");
-            value = value.replace("<builderDefinitionList/>", "<!--builderDefinitionList/-->");
             
             return value.getBytes("UTF-8");
         } catch (Exception ex) {

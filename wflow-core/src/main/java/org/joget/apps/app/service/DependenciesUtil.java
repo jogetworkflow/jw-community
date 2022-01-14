@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import org.joget.apps.app.model.CustomBuilder;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -85,7 +86,7 @@ public class DependenciesUtil {
         } else {
             appVersion = Long.parseLong(version);
         }
-        byte[] defXml = appService.getAppDefinitionXml(appId, appVersion);
+        byte[] defXml = appService.getAppDefinitionXml(appId, appVersion, false);
         JSONArray usages = new JSONArray();
         
         try {
@@ -136,7 +137,7 @@ public class DependenciesUtil {
                         obj.put("label", where.getTextContent());
                         obj.put("type", "process_activity");
                         obj.put("category", ResourceBundleUtil.getMessage("dependency.usage.activities"));
-                        obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/processes/"+ids[0]+"?tab=activityList&activityDefId="+ids[1]);
+                        obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/process/builder#"+ids[0]+"?view=listViewer&id="+ids[1]);
                     } else if ("pluginProperties".equals(nNode.getNodeName())) {
                         if ("pluginDefaultProperties".equals(nNode.getParentNode().getNodeName())) {
                             Element parent = (Element) nNode.getParentNode();
@@ -147,7 +148,7 @@ public class DependenciesUtil {
                             obj.put("label", label.getTextContent());
                             obj.put("type", "plugin_default_properties");
                             obj.put("category", ResourceBundleUtil.getMessage("dependency.usage.pluginDefault"));
-                            obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/properties?tab=pluginDefault&plugin="+className);
+                            obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/builders?view=pluginDefaultProperties&plugin="+className);
                         } else {
                             Element parent = (Element) nNode.getParentNode().getParentNode();
                             Node where = parent.getElementsByTagName("string").item(0);
@@ -159,11 +160,11 @@ public class DependenciesUtil {
                             if ("packageParticipant".equals(nNode.getParentNode().getNodeName())) {
                                 obj.put("type", "process_participant");
                                 obj.put("category", ResourceBundleUtil.getMessage("dependency.usage.participants"));
-                                obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/processes/"+ids[0]+"?tab=participantList&participantId="+ids[1]);
+                                obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/processes/"+ids[0]+"?view=listViewer&id="+ids[1]);
                             } else {
                                 obj.put("type", "process_tool");
                                 obj.put("category", ResourceBundleUtil.getMessage("dependency.usage.tools"));
-                                obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/processes/"+ids[0]+"?tab=toolList&activityDefId="+ids[1]);
+                                obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/processes/"+ids[0]+"?view=listViewer&id="+ids[1]);
                             }
                         }
                     } else if ("json".equals(nNode.getNodeName())) {
@@ -180,15 +181,29 @@ public class DependenciesUtil {
                             nodeType = "userview";
                         } else if ("datalistDefinition".equals(nNode.getParentNode().getNodeName())) {
                             nodeType = "datalist";
+                        } else if ("builderDefinition".equals(nNode.getParentNode().getNodeName())) {
+                            nodeType = "cbuilder";
                         }
                         
                         if (nodeType.equals(type) && keyword.equals(id)) {
                             continue;
                         }
                         
-                        obj.put("type", nodeType);
-                        obj.put("category", ResourceBundleUtil.getMessage("dependency.usage."+nodeType));
-                        obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/"+nodeType+"/builder/"+id);
+                        if ("cbuilder".equals(nodeType)) {
+                            Node builderTypeNode = parent.getElementsByTagName("type").item(0);
+                            String builderType = builderTypeNode.getTextContent();
+                            CustomBuilder cbuilder = CustomBuilderUtil.getBuilder(builderType);
+                            if (cbuilder == null || (builderType.equals(type) && keyword.equals(id))) {
+                                continue;
+                            }
+                            obj.put("type", builderType);
+                            obj.put("category", cbuilder.getObjectLabel());
+                            obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/cbuilder/"+builderType+"/design/"+id);
+                        } else {
+                            obj.put("type", nodeType);
+                            obj.put("category", ResourceBundleUtil.getMessage("dependency.usage."+nodeType));
+                            obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/"+nodeType+"/builder/"+id);
+                        }
                     }
                     
                     if ("pluginProperties".equals(nNode.getNodeName()) || "json".equals(nNode.getNodeName())) {
