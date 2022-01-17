@@ -575,7 +575,7 @@ public class AppUtil implements ApplicationContextAware {
 
                             String hashVariableClass = pluginPrefixMap.get(prefix);
                             if (hashVariableClass != null) {
-                                tempVar = tempVar.replaceFirst(prefix + ".", "");
+                                tempVar = tempVar.replaceFirst(StringUtil.escapeRegex(prefix + "."), "");
 
                                 HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariableClass);
                                 if (cachedPlugin == null) {
