@@ -90,6 +90,7 @@ public class DigitalSignedHtmlEmail extends HtmlEmail {
     }
     
     public final void readCertificateDetailsP12(String p12Path, String storePassword, String issuer, String formAddress) {
+        FileInputStream input = null;
         try {
             // validate input
             String normalizedJksPath = Normalizer.normalize(p12Path, Normalizer.Form.NFKC);
@@ -103,7 +104,8 @@ public class DigitalSignedHtmlEmail extends HtmlEmail {
             KeyStore keyStore = KeyStore.getInstance("pkcs12");
 
             // Provide location of Java Keystore and password for access
-            keyStore.load(new FileInputStream(p12Path), storePassword.toCharArray());
+            input = new FileInputStream(p12Path);
+            keyStore.load(input, storePassword.toCharArray());
             
             if (keyStore.containsAlias(issuer)) {
                 Certificate[] chain = keyStore.getCertificateChain(issuer);
@@ -128,6 +130,12 @@ public class DigitalSignedHtmlEmail extends HtmlEmail {
             }
         } catch (Exception e) {
             LogUtil.error(DigitalSignedHtmlEmail.class.getName(), e, p12Path);
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (Exception e) {}
+            }
         }
     }
 }
