@@ -104,6 +104,9 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         
         String exportLinks = "";
         if (!getDatalist().getNoExport()) {
+            if (MediaTypeEnum.getSize() == 4) {
+                MediaTypeEnum.registerMediaType("pdf");
+            }
             Iterator iterator = MediaTypeEnum.iterator();
 
             while (iterator.hasNext()){
