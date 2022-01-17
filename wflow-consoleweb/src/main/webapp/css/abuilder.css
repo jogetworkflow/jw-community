@@ -77,6 +77,17 @@ body {--builder-left-panel-width: 0px !important;}
     #builders > div:nth-child(n+8){border-top:0; padding-top: 0px !important;}
     #builders > div:nth-child(n+9){border-top:1px solid #ccc; padding-top: 20px !important;}
 }
+@media screen and (min-width:3335px) {
+    #builders-seperator > span {left:calc((100% - 30px)/8 + 14px);}
+    #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/8 * 2) + 13px);}
+    #builders-seperator > span:nth-child(3) {left:calc(((100% - 30px)/8 * 3) + 13px);}
+    #builders-seperator > span:nth-child(4) {left:calc(((100% - 30px)/8 * 4) + 13px);}
+    #builders-seperator > span:nth-child(5) {left:calc(((100% - 30px)/8 * 5) + 13px);}
+    #builders-seperator > span:nth-child(6) {left:calc(((100% - 30px)/8 * 6) + 13px);}
+    #builders > div:nth-child(n+9){border-top:0; padding-top: 0px !important;}
+    #builders > div:nth-child(n+10){border-top:1px solid #ccc; padding-top: 20px !important;}
+    #builders {grid-template-columns: repeat(auto-fill, minmax(calc((100vw - 65px)/9),1fr));}
+}
 .nv-tags {
     font-size: 10px;
     line-height: 14px; 
