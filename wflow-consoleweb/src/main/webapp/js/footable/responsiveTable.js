@@ -13,9 +13,11 @@ function responsiveTable(table) {
         return;
     }
     if ($(respButtons).data("searchpopup") === true) {
-        $(respButtons).find(".search_trigger i").remove();
         var filters = table.closest(".dataList").find(".filters");
         $(filters).hide();
+        
+        var trigger = $(filters).prev('a');
+        $(trigger).parent().addClass("popup");
         
         var tableId = $(table).attr("id");
         if ($("#"+tableId+"_filterpopup").length > 0) {
@@ -43,29 +45,18 @@ function responsiveTable(table) {
                 }
             }
         );
-        $(respButtons).find(".search_trigger").off("click");
-        $(respButtons).find(".search_trigger").on("click", function(){
-            $("#"+tableId+"_filterpopup").append($("#"+tableId).closest(".dataList").find(".filter_form"));
-            $("#"+tableId+"_filterpopup").find("form .filters").show();
-            searchPopup.show();
-            searchPopup.center('x');
-            searchPopup.center('y');
-        });
-    } else {
-        var filters = $(table).closest(".dataList").find(".filters");
-        $(filters).hide();
-        
-        $(respButtons).find(".search_trigger").off("click");
-        $(respButtons).find(".search_trigger").on("click", function(){
-            if ($(this).hasClass("filter_show")) {
-                $(filters).hide();
-                $(this).removeClass("filter_show");
-            } else {
-                $(filters).show();
-                $(this).addClass("filter_show");
-            }
-            return false;
-        });
+
+        //delay to override the original event
+        setTimeout(function(){
+            $(trigger).off("click");
+            $(trigger).on("click", function(){
+                $("#"+tableId+"_filterpopup").append($("#"+tableId).closest(".dataList").find(".filter_form"));
+                $("#"+tableId+"_filterpopup").find("form .filters").show();
+                searchPopup.show();
+                searchPopup.center('x');
+                searchPopup.center('y');
+            });
+        }, 10);
     }
     
     var responsiveSetting = null;
@@ -224,21 +215,13 @@ function initFooTable(table, respButtons, responsiveSetting) {
     });
     
     var buttons = table.closest(".dataList").find(".footable-buttons");
-    var filters = table.closest(".dataList").find(".filters");
     
     $(table).off("footable_breakpoint");
     $(table).on("footable_breakpoint", function (event) {
         if($(this).hasClass("breakpoint")) {
-            $(buttons).find(".search_trigger").removeClass("filter_show");
-            buttons.show();
-            filters.hide();
-            
             if ($(table).hasClass("expandfirst")) {
                 $(table).find("tbody tr:eq(0):not(.footable-detail-show) .footable-toggle").attr("data-cbuilder-unselectable", "").trigger("click");
             }
-        } else {
-            buttons.hide();
-            filters.show();
         }
     });
     $(table).trigger("footable_breakpoint");

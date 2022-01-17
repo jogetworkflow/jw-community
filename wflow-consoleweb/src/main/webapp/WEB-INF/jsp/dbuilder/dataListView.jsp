@@ -112,6 +112,7 @@
                             </p>    
                         </c:if>    
                         <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="POST">
+                            <a class="mobile_search_trigger" title="<ui:msgEscHTML key="dbuilder.filter"/>"><i class="fas fa-filter"></i> <fmt:message key="dbuilder.filter"/></a>
                             <div class="filters">
                                 <c:forEach items="${dataList.filterTemplates}" var="template">
                                     ${template}
@@ -160,7 +161,6 @@
                                     data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
                                     <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
                                     <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
-                                    <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
                                 </div>
                                 <div class="table-wrapper">
                                    <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
@@ -312,8 +312,13 @@
     $(document).ready(function() {
         $("#filters_${dataListId}").submit(function(e) {
             e.preventDefault();
+            $("#filters_${dataListId}").removeClass("show");
             DataListUtil.submitForm(this);
         });
+        $('.mobile_search_trigger').off("click").on("click", function(){
+            $("#filters_${dataListId}").toggleClass("show");
+        });
+        $("form[name='form_${dataListId}'] button:not(.footable-button)").off("click");
         $("form[name='form_${dataListId}'] button:not(.footable-button)").on("click", function(){
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");

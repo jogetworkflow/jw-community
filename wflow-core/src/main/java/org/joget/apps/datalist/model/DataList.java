@@ -832,7 +832,7 @@ public class DataList {
                     cssClass = "hidden-filter";
                 }
                 String label = filterList[i].getLabel();
-                templates.add("<span class=\"filter-cell "+cssClass+" "+ filterList[i].getPropertyString("id") + " " + filterList[i].getPropertyString("BUILDER_GENERATED_CSS") +" \" " + filterList[i].getPropertyString("BUILDER_GENERATED_ATTR") + " >"+filterList[i].getType().getTemplate(this, filterList[i].getName(), label)+"</span>");
+                templates.add("<span class=\"filter-cell "+cssClass+" "+ filterList[i].getPropertyString("id") + " " + filterList[i].getPropertyString("BUILDER_GENERATED_CSS") +" \" " + filterList[i].getPropertyString("BUILDER_GENERATED_ATTR") + " ><label class=\"mobile_label\">"+label+"</label>"+filterList[i].getType().getTemplate(this, filterList[i].getName(), label)+"</span>");
             }
             filterTemplates = (String[]) templates.toArray(new String[0]);
         }

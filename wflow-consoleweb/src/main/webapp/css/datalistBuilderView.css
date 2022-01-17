@@ -293,3 +293,78 @@
 .dataList .dropdown-menu a {
     display: block;
 }
+
+
+.filter_form .mobile_search_trigger,
+.search_filter_popup .filter_form.popup .mobile_search_trigger,
+.nesteddl_container .mobile_search_trigger,
+.filter_form .filters .filter-cell .mobile_label{
+    display: none;
+}
+@media (max-width: 767px) {
+    .filter_form .mobile_search_trigger {
+        display: block;
+        text-align: right;
+        margin-bottom: 5px;
+    }
+    .filter_form:not(.popup) .mobile_search_trigger:after {
+        content: "";
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        background: #000;
+        opacity: 0.05;
+        z-index: 1099;
+        display: none;
+        top: 0;
+        left: 0;
+    }
+    .filter_form.show:not(.popup) .mobile_search_trigger:after{
+        display: block;
+    }
+    .filter_form:not(.popup) .filters {
+        position: fixed;
+        height: 100vh;
+        width: 0vw;
+        right: -80px;
+        top: 0;
+        background: #fefefe;
+        border-left: 1px solid #ccc; 
+        z-index: 1100;
+        padding: 20px;
+        box-sizing: border-box;
+        box-shadow: -7px 3px 13px -2px rgba(0,0,0,0.75);
+        overflow: auto;
+        transition: 0.5s all ease-in-out;
+        box-sizing: border-box;
+    }
+    .filter_form.show:not(.popup) .filters {
+        right: 0px;
+        width: 80vw;
+    }
+    .filter_form:not(.popup) .filters .filter-cell {
+        display: block;
+        padding: 10px 0px 15px;
+        margin-left: 0;
+    }
+    .filter_form:not(.popup) .filters .filter-cell > input,
+    .filter_form:not(.popup) .filters .filter-cell > select:not([name$='-ps']) {
+        width: 100%;
+    }
+    .filter_form:not(.popup) .filters .filter-cell + .filter-cell {
+        border-top: 1px solid #ddd;
+    }
+    .filter_form:not(.popup) .filters .filter-cell input {
+        margin-top: 5px;
+    }
+    .filter_form:not(.popup) .filters .filter-cell .mobile_label {
+        display: block;
+        font-size: 80%;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .filter_form:not(.popup) .filters .filter-cell span[class*='label'],
+    .filter_form:not(.popup) .filters .filter-cell span[class*='Label']{
+        display: none;
+    }
+}
