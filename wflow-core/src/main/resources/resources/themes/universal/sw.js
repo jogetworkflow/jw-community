@@ -444,6 +444,7 @@ function sendFormDataToServer(savedRequest){
 
         getCsrfToken()
             .then(function(json){
+                var requestUrl = savedRequest.url;
                 var payload = savedRequest.payload;
 
                 var method = savedRequest.method;
