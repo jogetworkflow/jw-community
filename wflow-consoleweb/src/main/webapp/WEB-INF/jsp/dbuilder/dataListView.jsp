@@ -15,11 +15,7 @@
 <div id="dataList_${dataList.id}" class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
-            <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/footable.min.js?build=<fmt:message key="build.number"/>" defer></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>" defer></script>
-            <script>
-                loadCSS("${pageContext.request.contextPath}/js/footable/footable.core.min.css?build=<fmt:message key="build.number"/>");
-            </script>
             <link rel="preload" href="${pageContext.request.contextPath}/js/footable/fonts/footable.woff" as="font" crossorigin />
             
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
@@ -111,7 +107,7 @@
                                 <fmt:message key="dbuilder.pleaseSubmitFilter"/>
                             </p>    
                         </c:if>    
-                        <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="POST">
+                        <form name="filters_${dataListId}" data-searchpopup="${dataList.responsiveSearchPopup}" class="filter_form" id="filters_${dataListId}" action="?" method="POST">
                             <a class="mobile_search_trigger" title="<ui:msgEscHTML key="dbuilder.filter"/>"><i class="fas fa-filter"></i> <fmt:message key="dbuilder.filter"/></a>
                             <div class="filters">
                                 <c:forEach items="${dataList.filterTemplates}" var="template">
@@ -155,14 +151,7 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <div class="footable-buttons" 
-                                    data-disableresponsive="${dataList.disableResponsive}" 
-                                    data-searchpopup="${dataList.responsiveSearchPopup}"
-                                    data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
-                                    <button class="expandAll footable-button"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
-                                    <button class="collapseAll footable-button"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
-                                </div>
-                                <div class="table-wrapper">
+                                <div class="table-wrapper" data-disableresponsive="${dataList.disableResponsive}">
                                    <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                                        <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                                            <c:choose>

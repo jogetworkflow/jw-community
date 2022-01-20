@@ -1,25 +1,23 @@
 $(document).ready(function() {
     $(".dataList").each(function(){
-        if ($(this).find("table.responsivetable").length > 0) {
-            responsiveTable($(this).find("table.responsivetable"));
+        if ($(this).find("> form > .table-wrapper > table.responsivetable").length > 0) {
+            responsiveTable($(this));
         }
+        popupFilter($(this));
         $(this).show();
     });
+    responsiveTemplate();
 });
-/* ---------- Responsive Table -------------- */
-function responsiveTable(table) {
-    var respButtons = table.closest(".dataList").find(".footable-buttons");
-    if ($(respButtons).data("disableresponsive") === true) {
-        return;
-    }
-    if ($(respButtons).data("searchpopup") === true) {
-        var filters = table.closest(".dataList").find(".filters");
+function popupFilter(datalist) {
+    var filterForm = $(datalist).find('.filter_form');
+    if ($(filterForm).data("searchpopup") === true) {
+        var filters = $(filterForm).find(".filters");
         $(filters).hide();
         
         var trigger = $(filters).prev('a');
         $(trigger).parent().addClass("popup");
         
-        var tableId = $(table).attr("id");
+        var tableId = $(datalist).attr("id");
         if ($("#"+tableId+"_filterpopup").length > 0) {
             $("#"+tableId+"_filterpopup").closest("table.boxy-wrapper").remove();
         }
@@ -58,213 +56,91 @@ function responsiveTable(table) {
             });
         }, 10);
     }
-    
-    var responsiveSetting = null;
-    if ($(respButtons).data("responsivejson") !== "" && $(respButtons).data("responsivejson") !== undefined) {
-        try {
-            responsiveSetting = eval($(respButtons).data("responsivejson"));
-        } catch (err) {}
-    }
-    initFooTable(table, respButtons, responsiveSetting);
 }
-
-function initFooTable(table, respButtons, responsiveSetting) {
-    var phoneCols = 1;
-    var phoneVisibleCols = [];
-    var tabletCols = 4;
-    var tabletVisibleCols = [];
-    
-    if (responsiveSetting !== undefined && responsiveSetting !== null) {
-        if (responsiveSetting[0].columns !== "") {
-            if (!isNaN(responsiveSetting[0].columns)) {
-                try {
-                    phoneCols = parseInt(responsiveSetting[0].columns);
-                }catch (err){
-                }
-            } else {
-                var temp = responsiveSetting[0].columns.split(";");
-                for (var i in temp) {
-                    if (table.find("th.column_"+temp[i]).length > 0) {
-                        phoneVisibleCols.push(temp[i]);
-                    }
-                }
-            }
-        }
-        if (responsiveSetting[1].columns !== "") {
-            if (!isNaN(responsiveSetting[1].columns)) {
-                try {
-                    tabletCols = parseInt(responsiveSetting[1].columns);
-                }catch (err){
-                }
-            } else {
-                var temp = responsiveSetting[1].columns.split(";");
-                for (var i in temp) {
-                    if (table.find("th.column_"+temp[i]).length > 0) {
-                        tabletVisibleCols.push(temp[i]);
-                    }
-                }
-            }
-        }
-    }
-    
-    var cols = $(table).find("th").filter(":not('.select_radio, .select_checkbox, .row_action, .column-hidden')");
-    var hiddenCols = $(table).find("th.column-hidden");
-    var select = $(table).find("th.select_radio, th.select_checkbox");
-    var rowAction = $(table).find("th.row_action");
-    //hide all columns by default to phone & tablet
-    $(cols).data("hide", "phone,tablet");
-    
-    $(cols).each(function () {
-        $(this).data("hide", "phone,tablet");
-        if ($(this).find("script, style").length > 0) {
-            var temp = $('<div>'+$(this).html()+'</div>');
-            temp.find("script, style").remove();
-            
-            $(this).data("name", temp.text());
-        }
-    });
-    
-    //show 4 column if it is tablet
-    if (tabletVisibleCols.length === 0) {
-        $(cols).filter(":lt("+tabletCols+")").each(function () {
-            $(this).data("hide", "phone");
-        });
-    } else {
-        for (var i in tabletVisibleCols) {
-            $(cols).filter(".column_"+tabletVisibleCols[i]).each(function () {
-                $(this).data("hide", "phone");
-            });
-        }
-    }
-
-    //show 1 column if it is phone
-    if (phoneVisibleCols.length === 0) {
-        $(cols).filter(":lt("+phoneCols+")").each(function () {
-            $(this).data("hide", "");
-        });
-    } else {
-        for (var i in phoneVisibleCols) {
-            $(cols).filter(".column_"+phoneVisibleCols[i]).each(function () {
-                $(this).data("hide", "");
-            });
-        }
-    }
-
-    //checkbox & radio
-    $(select).data("hide", "phone,tablet");
-    $(select).data("ignore", true);
-    $(select).filter(":eq(0)").each(function () {
-        $(this).data("hide", "");
-    });
-    $(select).css("width", "40px");
-
-    //hide all row action from phone and tablet and add it back by event
-    $(rowAction).each(function () {
-        $(this).data("hide", "phone,tablet");
-        $(this).data("value", "jq_dlist_row_action");
-    });
-    
-    $(hiddenCols).each(function () {
-        $(this).data("hide", "all");
-        $(this).data("ignore", true);
-    });
-
-    //wrap all row action in data in extra .class so that it can be differentia and remove later
-    $(table).find("td.row_action:not(.row_action_container)").wrapInner('<span class="row_action_inner"></span>');
-
-    //add row action into detail view with better layout
-    $(table).off("footable_row_detail_updated");
-    $(table).on("footable_row_detail_updated", function (event) {
-        //remove row action from detail
-        $(event.detail).find(".row_action_inner").each(function(){
-            $(this).parent().parent().remove();
-        });
-        
-        //copy css classes
-        var rowCols = $(event.row).find("td:not(.footable-visible)");
-        var rowHeaders = $(event.row).closest("table").find("th:not(.footable-visible)");
-        
-        var i = 0;
-        $(event.detail).find(".footable-row-detail-row").each(function(){
-            if ($(rowCols[i]).attr("data-cbuilder-select") !== undefined) {
-                $(this).attr("data-cbuilder-select", $(rowCols[i]).attr("data-cbuilder-select"));
-            }
-            if ($(rowHeaders[i]).find('[data-cbuilder-element-invisible]').length > 0) {
-                $(this).find(".footable-row-detail-name").prepend("<span class=\"anchor\"><span data-cbuilder-element-invisible></span></span>");
-                $(this).find('[data-cbuilder-element-invisible]').css({
-                    "width" : $(this).width() + "px",
-                    "height" : $(this).height() + "px",
-                    "position" : "absolute",
-                    "min-height" : "auto"
+function responsiveTemplate() {
+    var resize = function (event) {
+        setTimeout(function(){
+            $(".dataList").each(function(){
+                var dl = this;
+                var width = $(this).parent().width();
+                
+                $(this).find('*[class]').each(function(){
+                    updateClasses(this, dl, width);
                 });
-            }
-            $(this).find(".footable-row-detail-name").addClass($(rowHeaders[i]).attr("class"));
-            $(this).find(".footable-row-detail-value").addClass($(rowCols[i]).attr("class"));
-            
-            i++;
-        });
-
-        var actions = $('<div class="footable-row-detail-cell-actions"></div>');
-        $(event.row).find(".row_action").each(function(){
-            var html = $(this).html();
-            $(actions).append(html);
-            $(actions).find(".row_action_inner > div").attr("style", "");
-        });
-        $(actions).find("a").addClass("form-button button btn btn-xs");
-        $(event.detail).find(".footable-row-detail-cell").append(actions);
-    });
-    
-    var buttons = table.closest(".dataList").find(".footable-buttons");
-    
-    $(table).off("footable_breakpoint");
-    $(table).on("footable_breakpoint", function (event) {
-        if($(this).hasClass("breakpoint")) {
-            if ($(table).hasClass("expandfirst")) {
-                $(table).find("tbody tr:eq(0):not(.footable-detail-show) .footable-toggle").attr("data-cbuilder-unselectable", "").trigger("click");
-            }
-        }
-    });
-    $(table).trigger("footable_breakpoint");
-    
-    $(buttons).find(".expandAll").off("click");
-    $(buttons).find(".expandAll").on("click", function(){
-        $(table).find("tr:not(.footable-detail-show) .footable-toggle").trigger("click");
-        return false;
-    });
-    
-    $(buttons).find(".collapseAll").off("click");
-    $(buttons).find(".collapseAll").on("click", function(){
-        $(table).find("tr.footable-detail-show .footable-toggle").trigger("click");
-        return false;
-    });
-
-    //toggle
-    $(cols).filter(":eq(0)").data("toggle", "true");
-    
-    var _fooTableArgs = {
-        breakpoints: { // The different screen resolution breakpoints
-            phone: 480,
-            tablet: 600
-        }
+                updateClasses(this, dl, width);
+                
+                $(this).removeClass("size_xl size_lg size_md size_sm");
+                if (width >= 960) {
+                    $(this).addClass("size_xl");
+                } else if (width >= 720) {
+                    $(this).addClass("size_lg");
+                } else if (width >= 540) {
+                    $(this).addClass("size_md");
+                } else {
+                    $(this).addClass("size_sm");
+                }
+            });
+        }, 10);
     };
-    
-    if ((typeof _customFooTableArgs) !== "undefined") {
-        _fooTableArgs = _customFooTableArgs;
+
+    $(window).off("resize.responsive-datalist");
+    $(window).on("resize.responsive-datalist", resize);
+    resize();
+}
+function updateClasses(el, datalist, width) {
+    if (!$(el).closest(".dataList").is($(datalist))) {
+        return;
     }
     
-    if (responsiveSetting !== undefined && responsiveSetting !== null) {
-        if (responsiveSetting[0].breakpoint !== "") {
-            try {
-                var phone = parseInt(responsiveSetting[0].breakpoint);
-                _fooTableArgs['breakpoints']['phone'] = phone;
-            }catch (err){}
-        }
-        if (responsiveSetting[1].breakpoint !== "") {
-            try {
-                var tablet = parseInt(responsiveSetting[1].breakpoint);
-                _fooTableArgs['breakpoints']['tablet'] = tablet;
-            }catch (err){}
-        }
+    var classes = $(el).attr('class');
+                    
+    //reset all classes
+    classes = classes.replaceAll(/-xlxx/g, '-xl');
+    classes = classes.replaceAll(/-lgxx/g, '-lg');
+    classes = classes.replaceAll(/-mdxx/g, '-md');
+
+    if (width < 960) {
+        classes = classes.replaceAll(/-xl/g, '-xlxx');
     }
-    $(table).footable(_fooTableArgs);
+    if (width < 720) {
+        classes = classes.replaceAll(/-lg/g, '-lgxx');
+    }
+    if (width < 540) {
+        classes = classes.replaceAll(/-md/g, '-mdxx');
+    }
+    $(el).attr('class', classes);
+}
+function responsiveTable(datalist) {
+    if ($(datalist).find("> form > .table-wrapper, > .table-wrapper").data("disableresponsive") === true) {
+        $(datalist).find("> form > .table-wrapper > table.responsivetable, > .table-wrapper > table.responsivetable").removeClass("responsivetable");
+        return;
+    }
+    
+    var id = $(datalist).attr("id");
+    
+    var resize = function () {
+        setTimeout(function(){
+            $(".dataList#"+id).each(function(){
+                var width = $(datalist).parent().width();
+                var table = $(datalist).find("> form > .table-wrapper > table.responsivetable, > .table-wrapper > table.responsivetable");
+                if (width < 540) {
+                    $(table).find('> tbody > tr > td.column_body').each(function(){
+                        if ($(this).find('> .cell-label').length === 0) {
+                            $(this).prepend('<label class="cell-label"></label>');
+                            var index = $(this).parent().find("td").index(this);
+                            var th = $(table).find('> thead > tr > th:eq('+index+')');
+                            $(this).find('> .cell-label').text($(th).text());
+                            $(this).find('> .cell-label').addClass($(th).attr('class'));
+                        }
+                    });
+                } else {
+                    $(table).find('> tbody > tr > td > .cell-label').remove();
+                }
+            });
+        }, 2);
+    };
+
+    $(window).off("resize."+id);
+    $(window).on("resize."+id, resize);
+    resize();
 }

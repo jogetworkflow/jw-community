@@ -2218,14 +2218,6 @@ DatalistBuilder = {
                         name: 'responsive',
                         type: 'header',
                         description: get_cbuilder_msg('dbuilder.responsive.desc')
-                    },
-                    {
-                        label: get_cbuilder_msg('dbuilder.searchPopup'),
-                        name: 'searchPopup',
-                        type: 'checkbox',
-                        options : [
-                            {value : 'true', label : ''}
-                        ]
                     }, 
                     {
                         label: get_cbuilder_msg('dbuilder.disableResponsive'),
@@ -2237,25 +2229,6 @@ DatalistBuilder = {
                         control_field: 'template',
                         control_value: '',
                         control_use_regex: 'false'
-                    },
-                    {
-                        label: get_cbuilder_msg('dbuilder.responsiveView'),
-                        name: 'responsiveView',
-                        description : get_cbuilder_msg('dbuilder.responsiveView.desc'),
-                        type: 'gridfixedrow',
-                        columns : [
-                            {key : 'view', label : get_cbuilder_msg('dbuilder.view')},
-                            {key : 'breakpoint', label : get_cbuilder_msg('dbuilder.breakpoint'), type : 'number'},
-                            {key : 'columns', label : get_cbuilder_msg('dbuilder.columns')}
-                        ],
-                        rows: [
-                            {label : get_cbuilder_msg('dbuilder.mobile')},
-                            {label : get_cbuilder_msg('dbuilder.tablet')}
-                        ],
-                        control_field: 'template',
-                        control_value: '',
-                        control_use_regex: 'false',
-                        developer_mode : 'advanced'
                     }
                 ]
             }
