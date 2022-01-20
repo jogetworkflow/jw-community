@@ -3,6 +3,15 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.27
+=================
+5bd6f3d02 Fixed: wflow-core - Userview - Theme inbox does not load in IE11. T610 @7.0-SNAPSHOT
+26351f8ed Fixed: wflow-core - PWA - Offline submission is not working due to regression of 896c1b11. T638 @7.0-SNAPSHOT
+756ba1771 Fixed: wflow-core - Run Process - Does not handle recordId parameter correctly due to regression on 86f5c26. @7.0-SNAPSHOT Fixed: wflow-core - FormUtil - getElementPropertyValue method does not return primary key value correctly for id field when load binder return null. @7.0-SNAPSHOT
+61eaa6334 Fixed: wflow-consoleweb - Multi Tools - Property Editor ElementSelect throws 404 not found mode-undefined.js. @7.0-SNAPSHOT
+0c21a3f3d Modified: wflow-consoleweb - Login - Using default landing app as default login page. T565 @7.0-SNAPSHOT
+cc18c341c Fixed: wflow-consoleweb - Admin Bar - Edit User - multi selectbox selected background color is block by background color. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.26
 =================
 198ddd7b0 Modified: wflow-install - Upgraded to OpenJDK 11.0.13 due to JRE 11.0.2 crashed on log4j version 2. @7.0-SNAPSHOT
