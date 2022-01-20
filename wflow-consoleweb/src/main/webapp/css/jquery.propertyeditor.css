@@ -1920,7 +1920,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     background: #fff;
     border-color: transparent;
 }
-.editor-panel-mode .property-grid .property-input .property-type-grid-row-header{
+.property-grid .property-input .property-type-grid-row-header{
     display: none !important;
 }
 .editor-panel-mode .property-grid .property-input .property-type-grid-action-column{
