@@ -81,4 +81,9 @@ public class SimpleTensorFlowAIDecisionPlugin extends RulesDecisionPlugin {
     public String getDeveloperMode() {
         return "advanced";
     }
+    
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"fas fa-robot\"></i>";
+    }
 }

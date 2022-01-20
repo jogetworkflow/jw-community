@@ -34,6 +34,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.CustomPluginInterface;
 import org.joget.plugin.base.DefaultPlugin;
+import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -124,6 +125,10 @@ public class PropertyJsonController {
                     } else {
                         option.put("developer_mode", "");
                     }
+                    if (p instanceof ExtDefaultPlugin) {
+                        option.put("icon", ((ExtDefaultPlugin) p).getPluginIcon());
+                    }
+                    
                     list.add(option);
                 }
             }

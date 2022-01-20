@@ -2488,6 +2488,59 @@ ProcessBuilder = {
             element.append("<div class='node_limit'>" + elementObj.properties.limit + ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase() + "</div>");
         }
         
+        if ((elementObj.className === "activity" || elementObj.className === "start") 
+                && elementObj.properties !== undefined && elementObj.properties.mapping_formId !== undefined
+                && elementObj.properties.mapping_formId !== "") {
+            element.append('<div class="node_mapping"><i class="fas fa-file-alt" style="color:#3f84f4;"></i></div>');
+            element.find('.node_mapping').attr('title', ProcessBuilder.availableForms[elementObj.properties.mapping_formId]);
+        } else if (elementObj.className === "route" && elementObj.properties !== undefined
+                && elementObj.properties.mapping_plugin !== undefined && elementObj.properties.mapping_plugin.className !== undefined
+                 && elementObj.properties.mapping_plugin.className !== "") {
+            var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin.className];
+            if (plugin === undefined) {
+                element.append('<div class="node_mapping"><i class="las la-exclamation-triangle" style="color:red;"></i></div>');
+                element.find('.node_mapping').attr('title', elementObj.properties.mapping_plugin.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")");
+            } else {
+                var icon = plugin.icon;
+                if (icon === undefined || icon === "") {
+                    icon = '<i class="las la-cog"></i>';
+                }
+                element.append('<div class="node_mapping" style="color:#394249;">'+icon+'</div>');
+                element.find('.node_mapping').attr('title', plugin.label);
+            }
+        } else if (elementObj.className === "tool" && elementObj.properties !== undefined
+                && elementObj.properties.tools !== undefined && elementObj.properties.tools.length > 0) {
+            var icon = "";
+            var label = "";
+            for (var i in elementObj.properties.tools) {
+                if (label !== "") {
+                    label += "\n";
+                }
+                if (elementObj.properties.tools.length > 1) {
+                    label += (parseInt(i) + 1) + ". ";
+                }
+                var p = elementObj.properties.tools[i];
+                var plugin = ProcessBuilder.availableTools[p.className];
+                if (plugin === undefined) {
+                    icon = '<i class="las la-exclamation-triangle" style="color:red;"></i>';
+                    label += p.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                } else {
+                    if (icon === "" && plugin.icon !== undefined && plugin.icon !== "") {
+                        icon = plugin.icon;
+                    }
+                    label += plugin.label;
+                }
+            }
+            if (icon === undefined || icon === "") {
+                icon = '<i class="las la-cog"></i>';
+            }
+            if (elementObj.properties.tools.length > 1) {
+                icon += " " + elementObj.properties.tools.length;
+            }
+            element.append('<div class="node_mapping" style="color:#394249;">'+icon+'</div>');
+            element.find('.node_mapping').attr('title', label);
+        }
+        
         element.addClass("node " + elementObj.className);
         element.attr("id", elementObj.properties.id);
         
@@ -3514,7 +3567,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableParticipantPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
                         }
                         return options;
                     },
@@ -3642,7 +3695,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableDecisionPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
                         }
                         return options;
                     },
@@ -3848,7 +3901,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableTools = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableTools[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableTools[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -3869,7 +3922,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableDecisionPlugin = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableDecisionPlugin[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableDecisionPlugin[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -3890,7 +3943,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableParticipantPlugin = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableParticipantPlugin[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableParticipantPlugin[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4149,9 +4202,11 @@ ProcessBuilder = {
                         if (toolsLabel !== "") {
                             toolsLabel += "<br/>";
                         }
-                        var label = ProcessBuilder.availableTools[className];
-                        if (label === undefined) {
+                        var plugin = ProcessBuilder.availableTools[className];
+                        if (plugin === undefined) {
                             label = className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                        } else {
+                            label = plugin.label;
                         }
                         toolsLabel += count + ". " +label;
                         count++;
@@ -4163,9 +4218,11 @@ ProcessBuilder = {
             if (elementObj.properties.mapping_plugin !== undefined 
                     && elementObj.properties.mapping_plugin["className"] !== undefined 
                     && elementObj.properties.mapping_plugin["className"] !== "") {
-                var label = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
-                if (label === undefined) {
+                var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
+                if (plugin === undefined) {
                     label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                } else {
+                    label = plugin.label;
                 }
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+label+'</dd>');
             }
@@ -4218,9 +4275,11 @@ ProcessBuilder = {
                     }
                     $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.represent')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+r)+'</dd>');    
                 } else if (elementObj.properties.mapping_type === "plugin") {
-                    var label = ProcessBuilder.availableTools[elementObj.properties.mapping_plugin["className"]];
-                    if (label === undefined) {
+                    var plugin = ProcessBuilder.availableParticipantPlugin[elementObj.properties.mapping_plugin["className"]];
+                    if (plugin === undefined) {
                         label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                    } else {
+                        label = plugin.label;
                     }
                     $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+label+'</dd>');
                 }

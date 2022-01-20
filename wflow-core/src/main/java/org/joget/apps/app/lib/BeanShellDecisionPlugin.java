@@ -69,4 +69,9 @@ public class BeanShellDecisionPlugin extends DecisionPluginDefault {
     public String getDeveloperMode() {
         return "advanced";
     }
+    
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"las la-code\"></i>";
+    }
 }

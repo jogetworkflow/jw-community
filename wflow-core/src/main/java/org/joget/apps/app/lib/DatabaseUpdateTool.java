@@ -123,4 +123,9 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
     public String getDeveloperMode() {
         return "advanced";
     }
+    
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"fas fa-database\"></i>";
+    }
 }

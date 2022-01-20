@@ -51,6 +51,11 @@ public abstract class DataListActionDefault extends ExtDefaultPlugin implements 
         return "";
     }
     
+    @Override
+    public String getPluginIcon() {
+        return getIcon();
+    }
+    
     public String getDefaultPropertyValues(){
         if (!DataListActionDefault.defaultPropertyValues.containsKey(getClassName())) {
             DataListActionDefault.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));

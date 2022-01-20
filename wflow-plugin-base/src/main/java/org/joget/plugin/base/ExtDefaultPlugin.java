@@ -91,4 +91,8 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
     public boolean isHiddenPlugin() {
         return this instanceof HiddenPlugin;
     }
+    
+    public String getPluginIcon() {
+        return "";
+    }
 }

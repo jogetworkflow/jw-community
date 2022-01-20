@@ -189,6 +189,11 @@ public abstract class PageComponent extends ExtElement {
      * @return
      */
     public abstract String getCategory();
+    
+    @Override
+    public String getPluginIcon() {
+        return getIcon();
+    }
 
     /**
      * Icon path to be displayed in Userview Builder palette 

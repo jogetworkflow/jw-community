@@ -302,4 +302,8 @@ public class JsonTool extends DefaultApplicationPlugin {
         return "advanced";
     }
 
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"fas fa-link\"></i>";
+    }
 }

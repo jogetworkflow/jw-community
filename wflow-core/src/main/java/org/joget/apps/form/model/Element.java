@@ -593,4 +593,12 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         }
         return permissionKeys.get(formData);
     }
+    
+    @Override
+    public String getPluginIcon() {
+        if (this instanceof FormBuilderPaletteElement) {
+            return ((FormBuilderPaletteElement) this).getFormBuilderIcon();
+        }   
+        return "";
+    }
 }

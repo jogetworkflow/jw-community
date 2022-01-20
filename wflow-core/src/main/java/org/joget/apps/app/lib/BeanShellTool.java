@@ -77,4 +77,9 @@ public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin
     public String getDeveloperMode() {
         return "advanced";
     }
+    
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"las la-code\"></i>";
+    }
 }

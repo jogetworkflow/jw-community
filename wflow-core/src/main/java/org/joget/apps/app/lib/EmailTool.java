@@ -244,4 +244,9 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
+    
+    @Override
+    public String getPluginIcon() {
+        return "<i class=\"las la-envelope\"></i>";
+    }
 }
