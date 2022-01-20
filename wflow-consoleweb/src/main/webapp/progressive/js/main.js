@@ -329,7 +329,7 @@ function setFontSize(size) {
     function loadInboxData() {
         $(".inbox-notification .loading").show();
         var url = $(".inbox-notification").data("url");
-        $.getJSON(url + "&_t=" + (new Date()), {},
+        $.getJSON(url + "&_t=" + (new Date()).getTime(), {},
             function(data) {
                 var count = 0;
                 if (data.count !== undefined) {
