@@ -1045,15 +1045,12 @@ ProcessBuilder = {
             }
             formMapping.autoContinue = (activity.properties['mapping_autoContinue'] === "true");
             
-            var mapping = CustomBuilder.data['activityPlugins'][id];
-            if (mapping !== undefined) {
-                if (activity.properties['mapping_modifier'] !== undefined 
-                        && activity.properties['mapping_modifier']['className'] !== undefined 
-                        && activity.properties['mapping_modifier']['className'] !== "" ) {
-                    CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_modifier']);
-                } else {
-                    delete CustomBuilder.data['activityPlugins'][id];
-                }
+            if (activity.properties['mapping_modifier'] !== undefined 
+                    && activity.properties['mapping_modifier']['className'] !== undefined 
+                    && activity.properties['mapping_modifier']['className'] !== "" ) {
+                CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_modifier']);
+            } else if (CustomBuilder.data['activityPlugins'][id] !== undefined) {
+                delete CustomBuilder.data['activityPlugins'][id];
             }
         } else if (activity.className === "tool") {
             var mapping = CustomBuilder.data['activityPlugins'][id];
@@ -1095,6 +1092,7 @@ ProcessBuilder = {
                     CustomBuilder.data['activityPlugins'][id] = mapping;
                 }
                 mapping = $.extend(true, {}, activity.properties['mapping_plugin']);
+                CustomBuilder.data['activityPlugins'][id] = mapping;
             } else if (mapping !== undefined){
                 delete CustomBuilder.data['activityPlugins'][id];
             }
