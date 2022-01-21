@@ -240,30 +240,32 @@ public class LoginWebController {
             return "mobile/mLogin";
         }
         
-        UserviewDefinition userviewDef = userviewService.getDefaultUserview();
-        if (userviewDef != null) {
-            AppDefinition appDef = userviewDef.getAppDefinition();
-            AppUtil.setCurrentAppDefinition(appDef);
-            map.addAttribute("appId", appDef.getId());
-            map.addAttribute("appDefinition", appDef);
-            map.addAttribute("appVersion", appDef.getVersion());
-            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewDef.getId(), appDef);
-            if (userview != null) {
-                String json = userview.getJson();
-                Userview userviewObject = userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), null, false);
-                UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
-                map.addAttribute("userview", userviewObject);
-                map.addAttribute("processer", processer);
-                String view = processer.getLoginView();
-                if (view != null) {
-                    if (view.startsWith("redirect:")) {
-                        map.clear();
+        if (!savedUrl.contains("/web/console")) {
+            UserviewDefinition userviewDef = userviewService.getDefaultUserview();
+            if (userviewDef != null) {
+                AppDefinition appDef = userviewDef.getAppDefinition();
+                AppUtil.setCurrentAppDefinition(appDef);
+                map.addAttribute("appId", appDef.getId());
+                map.addAttribute("appDefinition", appDef);
+                map.addAttribute("appVersion", appDef.getVersion());
+                UserviewDefinition userview = userviewDefinitionDao.loadById(userviewDef.getId(), appDef);
+                if (userview != null) {
+                    String json = userview.getJson();
+                    Userview userviewObject = userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), null, false);
+                    UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+                    map.addAttribute("userview", userviewObject);
+                    map.addAttribute("processer", processer);
+                    String view = processer.getLoginView();
+                    if (view != null) {
+                        if (view.startsWith("redirect:")) {
+                            map.clear();
+                        }
+                        return view;
                     }
-                    return view;
                 }
-            }
 
-            return "ubuilder/login";
+                return "ubuilder/login";
+            }
         }
 
         return "login";
