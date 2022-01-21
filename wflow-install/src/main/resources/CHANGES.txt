@@ -5,6 +5,7 @@ https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
 CHANGES IN 7.0.27
 =================
+0fa986a76 Fixed: wflow-consoleweb - Regression of 0c21a3f3. No way to access console login page. @7.0-SNAPSHOT
 5bd6f3d02 Fixed: wflow-core - Userview - Theme inbox does not load in IE11. T610 @7.0-SNAPSHOT
 26351f8ed Fixed: wflow-core - PWA - Offline submission is not working due to regression of 896c1b11. T638 @7.0-SNAPSHOT
 756ba1771 Fixed: wflow-core - Run Process - Does not handle recordId parameter correctly due to regression on 86f5c26. @7.0-SNAPSHOT Fixed: wflow-core - FormUtil - getElementPropertyValue method does not return primary key value correctly for id field when load binder return null. @7.0-SNAPSHOT
