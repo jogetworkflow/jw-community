@@ -64,10 +64,10 @@ function responsiveTemplate() {
                 var dl = this;
                 var width = $(this).parent().width();
                 
-                $(this).find('*[class]').each(function(){
-                    updateClasses(this, dl, width);
-                });
-                updateClasses(this, dl, width);
+//                $(this).find('*[class]').each(function(){
+//                    updateClasses(this, dl, width);
+//                });
+//                updateClasses(this, dl, width);
                 
                 $(this).removeClass("size_xl size_lg size_md size_sm");
                 if (width >= 960) {
