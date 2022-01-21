@@ -145,8 +145,11 @@ public class JsonApiUtil {
 
             String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
             if (jsonResponse != null && !jsonResponse.isEmpty()) {
+                jsonResponse = jsonResponse.trim();
                 if (jsonResponse.startsWith("[") && jsonResponse.endsWith("]")) {
                     jsonResponse = "{ \"response\" : " + jsonResponse + " }";
+                } else if (!jsonResponse.startsWith("{") && !jsonResponse.endsWith("}")) {
+                    jsonResponse = "{ \"response\" : \"" + jsonResponse + "\" }";
                 }
                 if ("true".equalsIgnoreCase(properties.get("debugMode").toString())) {
                     LogUtil.info(JsonApiUtil.class.getName(), jsonResponse);
