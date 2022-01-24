@@ -283,3 +283,15 @@ a {
 #adminBar {
     display:none;
 }
+@media (min-width: 1921px) {
+    .horizontal_menu .navbar-inner,
+    .horizontal_menu #sidebar #navigation,
+    .horizontal_menu #content{
+        max-width: 1920px;
+        margin: auto;
+    }
+    body:not(.horizontal_menu) #page,
+    body:not(.horizontal_menu) header.navbar .navbar-inner{
+        max-width: 1920px;
+    }
+}
