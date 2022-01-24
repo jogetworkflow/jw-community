@@ -8725,7 +8725,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var field = $("#" + this.id);
         if ($(this.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode) {
             var initial = "";
-            if (thisObj.value !== undefined && thisObj.value !== null && thisObj.value.className !== undefined && thisObj.value.className !== "" && $(field).closest(".element-pages").length === 0) {
+            if (thisObj.value !== undefined && thisObj.value !== null && thisObj.value.className !== undefined && thisObj.value.className !== "" && $(field).closest(".element-pages, .property-type-repeater").length !== 0) {
                 initial = "initial";
             }
             field.closest(".property-editor-property").append("<div class=\"element-pages\" style=\"display:none;\"><div class=\"anchor property-editor-page "+initial+"\" data-page=\""+this.page.id+"\" anchorField=\""+this.id+"\" style=\"display:none\"></div></div>");
@@ -8897,9 +8897,6 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $(anchor).parent(".element-pages").show();
         }
 
-        if ($("#" + this.id).closest(".element-pages").length === 0) {
-            $(anchor).next().addClass("collapsed");
-        }
         $(anchor).removeClass("partialLoad");
         
         thisObj.editorObject.refresh();
@@ -9124,7 +9121,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $(currentPage).after("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+thisObj.id+"\" style=\"display:none\"></div>");
         }
         
-        thisObj.loadValues();
+        thisObj.loadValues(true);
         
         $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .deleterow");
         $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
@@ -9147,12 +9144,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             }
         });
     },
-    loadValues : function() {
+    loadValues : function(init) {
         var thisObj = this;
         
         if (!((typeof thisObj.value) === "undefined") && thisObj.value !== null && thisObj.value.length > 0) {
+            var collapse = thisObj.value.length > 1;
             $.each(thisObj.value, function(i, v) {
-                thisObj.addRow(null, v);
+                thisObj.addRow(null, v, init, collapse);
             });
         } else {
             thisObj.addRow(null);
@@ -9161,7 +9159,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             thisObj.handleAjaxOptions(this.properties.options);
         }
     },
-    addRow : function(before, value) {
+    addRow : function(before, value, init, collapse) {
         var thisObj = this;
         
         var row = $('<div class="repeater-row property-editor-property" style="margin-bottom:0px;"><div class="actions expand-compress property-label-container"><div class="property-label" style="display:none"></div><div class="num"></div></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
@@ -9194,7 +9192,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         if ($(this.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode) {
             var initial = "";
-            if (valueString !== "") {
+            if (init === true && $("#" + this.id).closest(".element-pages, .property-type-repeater").length !== 0 && valueString !== "") {
                 initial = "initial";
             }
             $(row).find(".inputs").append("<div class=\"element-pages\" style=\"display:none;\"><div class=\"anchor property-editor-page "+initial+"\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div></div>");
@@ -9223,11 +9221,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         $(field).chosen({ width: "54%", placeholder_text: " " });
 
         if (!$(field).hasClass("hidden") && !((typeof $(field).val()) === "undefined") && $(field).val() !== null) {
-            thisObj.renderPages($(field));
+            thisObj.renderPages($(field), collapse);
         }
 
+        $(row).data("collapse", collapse);
         $(field).change(function() {
-            thisObj.renderPages($(field));
+            thisObj.renderPages($(field), $(row).data("collapse"));
+            $(row).data("collapse", false);
         });
         this.updateRows();
     },
@@ -9293,7 +9293,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             });
         }
     },
-    renderPages: function(field) {
+    renderPages: function(field, collapse) {
         var thisObj = this;
         var id = $(field).attr("id");
         var value = $(field).filter(":not(.hidden)").val();
@@ -9390,7 +9390,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                         //trigger a change event for fields depended on this element select field
                         $(temp).find('[name]').trigger("change");
                     } else {
-                        thisObj.renderPropertiesPages(id, row, anchor, newOptions, propertyValues, elementdata, value);
+                        thisObj.renderPropertiesPages(id, row, anchor, newOptions, propertyValues, elementdata, value, collapse);
                     }
                 }
                 thisObj.editorObject.refresh();
@@ -9399,7 +9399,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             });
         }
     },
-    renderPropertiesPages : function(id, row, anchor, newOptions, propertyValues, elementdata, value) {
+    renderPropertiesPages : function(id, row, anchor, newOptions, propertyValues, elementdata, value, collapse) {
         var thisObj = this;
         
         //handle keep_value_on_change equal to true with new added property default value
@@ -9444,7 +9444,9 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $(anchor).parent(".element-pages").show();
         }
 
-        $(anchor).next().addClass("collapsed");
+        if (collapse === true) {
+            $(anchor).next().addClass("collapsed");
+        }
         $(anchor).removeClass("partialLoad");
         
         thisObj.editorObject.refresh();
