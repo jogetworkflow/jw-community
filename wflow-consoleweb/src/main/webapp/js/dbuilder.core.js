@@ -36,11 +36,9 @@ DatalistBuilder = {
                 "renderTreeMenuAdditionalNode" : "DatalistBuilder.renderTreeMenuAdditionalNode"
             }
         }, function() {
-            CustomBuilder.Builder.setHead('<link data-footable-style href="' + CustomBuilder.contextPath + '/js/footable/footable.core.min.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-dbuilder-style href="' + CustomBuilder.contextPath + '/css/dbuilder.css" rel="stylesheet" />');
-            CustomBuilder.Builder.setHead('<script data-footable-script src="' + CustomBuilder.contextPath + '/js/footable/footable.js"/>');
             CustomBuilder.Builder.setHead('<script data-responsive-script src="' + CustomBuilder.contextPath + '/js/footable/responsiveTable.js"/>');
             
             var deferreds = [];
@@ -292,12 +290,7 @@ DatalistBuilder = {
             
             var html = '<div class="dataList" style="display:block !important;" data-cbuilder-uneditable data-cbuilder-classname="org.joget.apps.datalist.model.DataList" >\
                             <form class="filter_form"><div class="filters" data-cbuilder-columns_filters data-cbuilder-filters data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragFiltersHere')+'"></div></form>\
-                            <div class="footable-buttons" style="display:none">\
-                                <button class="expandAll footable-button"><i></i> Expand All</button>\
-                                <button class="collapseAll footable-button"><i></i> Collapse All</button>\
-                                <span class="search_trigger">Search <i></i></span>\
-                            </div>\
-                            <form>'+DatalistBuilder.convertTemplate(DatalistBuilder.template, CustomBuilder.data)+'\
+                            <form><div class="table-wrapper">'+DatalistBuilder.convertTemplate(DatalistBuilder.template, CustomBuilder.data)+'</div>\
                                 <div class="actions bottom left" data-cbuilder-all_actions data-cbuilder-actions  data-cbuilder-sort-horizontal data-cbuilder-droparea-msg="'+get_cbuilder_msg('dbuilder.dragActionsHere')+'"></div>\
                             </form>\
                         </div>';
@@ -711,6 +704,10 @@ DatalistBuilder = {
                 }
             });
         } else {
+            data.template = {
+                className : '',
+                properties : {}
+            };
             DatalistBuilder.template = '<table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
                                             <thead>\
                                                 {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
@@ -1365,7 +1362,6 @@ DatalistBuilder = {
      * A callback method called from the default component.builderTemplate.render method
      */
     renderElement : function(element, elementObj, component, callback) {
-        DatalistBuilder.destroyFootable($(element).closest("table"));
         var deferrer = $.Deferred();
         
         if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
@@ -2065,13 +2061,12 @@ DatalistBuilder = {
             templateJson = JSON.encode(CustomBuilder.data.template);
         }
         CustomBuilder.data = $.extend(CustomBuilder.data, properties);
+        CustomBuilder.update();
         if (templateJson !== JSON.encode(CustomBuilder.data.template)) {
             CustomBuilder.loadJson(CustomBuilder.data, false);
         } else {
             DatalistBuilder.refreshTableLayout();
         }
-        
-        CustomBuilder.update();
     },
     
     /*
@@ -2229,6 +2224,15 @@ DatalistBuilder = {
                         control_field: 'template',
                         control_value: '',
                         control_use_regex: 'false'
+                    }, 
+                    {
+                        label: get_cbuilder_msg('dbuilder.responsiveMode'),
+                        name: 'responsiveMode',
+                        type: 'selectbox',
+                        options : [
+                            {value : '', label : get_cbuilder_msg('dbuilder.responsiveFollowWindowWidth')},
+                            {value : 'parent', label : get_cbuilder_msg('dbuilder.responsiveFollowParentWidth')}
+                        ]
                     }
                 ]
             }
@@ -2790,51 +2794,16 @@ DatalistBuilder = {
     },
     
     /*
-     * Remove footable attributes/styles/classes
-     */
-    destroyFootable : function(table) {
-        if ($(table).hasClass("footable")) {
-            $(table).off("footable_breakpoint");
-            $(table).parent().find(".footable-buttons").hide();
-            $(table).parent().parent().find(".filters").show();
-            $(table).removeClass("footable-loaded footable phone tablet breakpoint default");
-            $(table).find(".footable-row-detail, .footable-toggle").remove();
-            $(table).find("tr").removeClass("footable-detail-show");
-            $(table).find('th,td').removeClass("footable-visible footable-first-column footable-last-column")
-                    .data("hide", "")
-                    .show();
-            $(table).find("tr").removeData("detail_created");
-            $(table).unbind("footable_initialize");
-            $(table).unbind("footable_resize");
-            $(table).unbind("footable_redraw");
-            $(table).unbind("footable_toggle_row");
-            $(table).unbind("footable_expand_first_row");
-            $(table).unbind("footable_expand_all");
-            $(table).unbind("footable_collapse_all");
-        }
-    },
-    
-    /*
      * Refresh table layout based on Properties
      */
     refreshTableLayout : function() {
         var self = CustomBuilder.Builder;
+        var datalist = self.frameBody.find(".dataList");
         var table = self.frameBody.find(".dataList table.responsivetable");
         if (table.length > 0) {
-            if (self.iframe.contentWindow.footable) {
-                if (table.length > 0) {
-                    DatalistBuilder.destroyFootable(table);
-                    if (CustomBuilder.data.disableResponsive !== "true") {
-                        self.iframe.contentWindow.initFooTable(table, self.frameBody.find(".dataList .footable-buttons"), CustomBuilder.data.responsiveView, true);
-                    }
-                    $(self.iframe.contentWindow).trigger("resize");
-                }
-            } else {
-                setTimeout(function(){
-                    DatalistBuilder.refreshTableLayout();
-                }, 100);
-            }
+            self.iframe.contentWindow.responsiveTable($(datalist));
         }
+        self.iframe.contentWindow.responsiveTemplate();
     },
     
     /*

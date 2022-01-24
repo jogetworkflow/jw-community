@@ -62,22 +62,37 @@ function responsiveTemplate() {
         setTimeout(function(){
             $(".dataList").each(function(){
                 var dl = this;
-                var width = $(this).parent().width();
+                var mode = $(this).data("responsivemode");
                 
-//                $(this).find('*[class]').each(function(){
-//                    updateClasses(this, dl, width);
-//                });
-//                updateClasses(this, dl, width);
-                
-                $(this).removeClass("size_xl size_lg size_md size_sm");
-                if (width >= 960) {
-                    $(this).addClass("size_xl");
-                } else if (width >= 720) {
-                    $(this).addClass("size_lg");
-                } else if (width >= 540) {
-                    $(this).addClass("size_md");
+                if (mode === "parent") {
+                    var width = $(this).parent().width();
+                    $(this).find('*[class]').each(function(){
+                        updateClasses(this, dl, width);
+                    });
+                    updateClasses(this, dl, width);
+
+                    $(this).removeClass("size_xl size_lg size_md size_sm");
+                    if (width >= 960) {
+                        $(this).addClass("size_xl");
+                    } else if (width >= 720) {
+                        $(this).addClass("size_lg");
+                    } else if (width >= 540) {
+                        $(this).addClass("size_md");
+                    } else {
+                        $(this).addClass("size_sm");
+                    }
                 } else {
-                    $(this).addClass("size_sm");
+                    var width = $(window).width();
+                    $(this).removeClass("size_xl size_lg size_md size_sm");
+                    if (width >= 992) {
+                        $(this).addClass("size_xl");
+                    } else if (width >= 768) {
+                        $(this).addClass("size_lg");
+                    } else if (width >= 576) {
+                        $(this).addClass("size_md");
+                    } else {
+                        $(this).addClass("size_sm");
+                    }
                 }
             });
         }, 10);
@@ -121,9 +136,19 @@ function responsiveTable(datalist) {
     var resize = function () {
         setTimeout(function(){
             $(".dataList#"+id).each(function(){
-                var width = $(datalist).parent().width();
+                var mode = $(this).data("responsivemode");
+                var isMobile = false;
+                if (mode === "parent") {
+                    var width = $(datalist).parent().width();
+                    isMobile = (width < 540);
+                } else {
+                    var width = $(window).width();
+                    isMobile = (width < 576);
+                }
+                
                 var table = $(datalist).find("> form > .table-wrapper > table.responsivetable, > .table-wrapper > table.responsivetable");
-                if (width < 540) {
+                
+                if (isMobile) {
                     $(table).find('> tbody > tr > td.column_body').each(function(){
                         if ($(this).find('> .cell-label').length === 0) {
                             $(this).prepend('<label class="cell-label"></label>');

@@ -12,7 +12,7 @@
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
 
-<div id="dataList_${dataList.id}" class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
+<div id="dataList_${dataList.id}" data-responsivemode="${dataList.responsiveMode}" class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>" defer></script>
@@ -307,8 +307,8 @@
         $('.mobile_search_trigger').off("click").on("click", function(){
             $("#filters_${dataListId}").toggleClass("show");
         });
-        $("form[name='form_${dataListId}'] button:not(.footable-button)").off("click");
-        $("form[name='form_${dataListId}'] button:not(.footable-button)").on("click", function(){
+        $("form[name='form_${dataListId}'] button").off("click");
+        $("form[name='form_${dataListId}'] button").on("click", function(){
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
             var href = $(this).data("href");

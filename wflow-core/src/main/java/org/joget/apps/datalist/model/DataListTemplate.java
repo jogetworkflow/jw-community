@@ -102,6 +102,8 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         DefaultHref href = new DefaultHref(url);
         href.removeParameter("OWASP_CSRFTOKEN");
         
+        String pageNav = listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p"));
+        
         String exportLinks = "";
         if (!getDatalist().getNoExport()) {
             if (MediaTypeEnum.getSize() == 4) {
@@ -130,7 +132,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             exportLinks = MessageFormat.format(props.getExportBanner(), new String[]{exportLinks});
         }
         
-        return "<div class=\"template_pagelinks\">" + listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p")) + exportLinks + "</div>";
+        return "<div class=\"template_pagelinks\">" + pageNav + exportLinks + "</div>";
     }
     
     public String fillTemplateProps(String template) {
@@ -245,7 +247,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             String type = "radio";
             String id = type + "_" + param + "_" + value;
             String header = "";
-            if (getDatalist().getSelectionType().equals(DataList.SELECTION_TYPE_MULTIPLE)) {
+            if (!getDatalist().getSelectionType().equals(DataList.SELECTION_TYPE_SINGLE)) {
                 type = "checkbox";
                 header = "<label><input type='checkbox' onclick='toggleAll(this)'/><i></i></label>";
             }
@@ -271,6 +273,10 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
     }
     
     public String fillDatalistObjects(String key, String props, String template, Object[] objects, Object data) {
+        if (objects == null || objects.length == 0) {
+            return "";
+        }
+        
         String replace = "";
         String childtemplate = "";
         String value = "";

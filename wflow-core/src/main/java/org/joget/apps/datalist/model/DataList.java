@@ -1046,6 +1046,10 @@ public class DataList {
         this.responsiveJson = responsiveJson;
     }
     
+    public String getResponsiveMode() {
+        return getPropertyString("responsiveMode");
+    }
+    
     /**
      * Retrieve current request map
      * @return 
@@ -1133,11 +1137,20 @@ public class DataList {
         }
         
         String css = styles.get("STYLE");
-        if (!styles.get("TABLET_STYLE").isEmpty()) {
-            css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
-        }
-        if (!styles.get("MOBILE_STYLE").isEmpty()) {
-            css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+        if ("parent".equals(getPropertyString("responsiveMode"))) {
+            if (!styles.get("TABLET_STYLE").isEmpty()) {
+                css += " " + styles.get("TABLET_STYLE").replaceAll(StringUtil.escapeRegex(".dataList"), StringUtil.escapeRegex(".dataList.size_md"));
+            }
+            if (!styles.get("MOBILE_STYLE").isEmpty()) {
+                css += " " + styles.get("MOBILE_STYLE").replaceAll(StringUtil.escapeRegex(".dataList"), StringUtil.escapeRegex(".dataList.size_sm"));
+            }
+        } else {
+            if (!styles.get("TABLET_STYLE").isEmpty()) {
+                css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
+            }
+            if (!styles.get("MOBILE_STYLE").isEmpty()) {
+                css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+            }
         }
         return css;
     }
