@@ -12,8 +12,14 @@
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  
     </c:if>
+        <style>
+            .exportlinks { display: none }
+        </style>
+        <div id="listGridPopup">
+            <c:set scope="request" var="dataListId" value="${dataList.id}"/>
+            <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
+        </div>
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
-        
         <script>
         $(document).ready(function() {   
             // hide submit button and add insert button
@@ -29,12 +35,13 @@
             var gridId = "<ui:stripTag html="${id}"/>";
 
             // click handler
-            $(button).click(function(e) {
+            $(button).off("click");
+            $(button).on("click", function(e) {
                 e.preventDefault();
                 
                 var data = getSelectedData();
                 
-                if (window.parent && $("th.select_checkbox").length > 0) {
+                if (window.parent && $(".select_checkbox, .ph_selector input[type='checkbox'], input[type='checkbox'].ph_selector").length > 0) {
                     var json = $("iframe#<ui:stripTag html="${param._frameId}" />", window.parent.document).attr("_cachedSelection");
                     if (json !== undefined) {
                         var cachedData = JSON.parse(json);
@@ -71,14 +78,15 @@
                         }
                     </c:otherwise>
                 </c:choose>
+                return false;
             });
             
             //to support presist selection for checkbox
-            if (window.parent && $("th.select_checkbox").length > 0) {
+            if (window.parent && $(".select_checkbox, .ph_selector input[type='checkbox'], input[type='checkbox'].ph_selector").length > 0) {
                 var iframe = $("iframe#<ui:stripTag html="${param._frameId}"/>", window.parent.document);
                 
                 //cache selection on sorting, filter and change page
-                $("th a, .pagelinks a, .filter-cell input[type=submit]").click(function() {
+                $(".table-wrapper a, .pagelinks a, .filter-cell input[type=submit]").click(function() {
                     cacheSelection(iframe);
                     return true;
                 });
@@ -127,15 +135,6 @@
         }
         
         function getSelectedData() {
-            // get selected checkboxes
-            var selected = new Array();
-            $("#listGridPopup tbody tr").each(function(idx, row) {
-                var input = $(row).find("input:checkbox, input:radio");
-                if (input.length > 0 && input.is(":checked")) {
-                    selected.push(idx);
-                }
-            });
-
             // find columns in datalist
             var columns = new Array();
             var json = "(${json})";
@@ -148,45 +147,39 @@
             // get selected rows
             // formulate result
             var data = new Array();
-            for (var i = 0; i < selected.length; i++) {
-                var idx = selected[i];
-                var row = $("#listGridPopup tbody tr:eq("+idx+")");
-                var result = new Object();
-                var id = $(row).find('input:checkbox, input:radio').val();
-                $(row).find("td").each(function(idx2, col) {
-                    if (idx2 > 0) {
-                        if (columns[idx2-1]) {
-                            var prop = columns[idx2-1].name;
-                            var val = $('<div>'+$(col).html()+'</div>');
-                            $(val).find(".footable-toggle").remove();
-                            if ($(val).find("*").length > 0) { //check if html
-                                result[prop] = $(val).html();
-                                if ($(val).find("br.nl2br").length > 0) {
-                                    result[prop] = result[prop].replace(/<br class="nl2br"\s*[\/]*>/gi, "\n");
-                                }
-                            } else {
-                                result[prop] = htmlDecode($(val).html());
-                            }
+            $("#listGridPopup .dataList .table-wrapper input:checkbox[name], #listGridPopup .dataList .table-wrapper input:radio[name]").each(function(idx, input) {
+                if ($(input).is(":checked")) {
+                    var row = null;
+                    if ($(input).next('.data-row').length > 0) {
+                        row = $(input).next('.data-row');
+                    } else {      
+                        row = $(input).closest(".data-row, tr");
+                    }
+                    
+                    var result = new Object();
+                    var id = $(input).val();
+                    
+                    for (var i in columns) {
+                        var col = $(row).find(".column_body.column_"+columns[i].name+".body_"+columns[i].id);
+                        if (col.length > 0) {
+                            var prop = columns[i].name;
+                            var val = $('<div>'+$(col).html().replace(/<br class="nl2br"\s*[\/]*>/gi, "\n")+'</div>');
+                            $(val).find(".label").remove();
+                            result[prop] = htmlDecode($(val).text());
                         }
                     }
-                });
-                if (result["id"] !== undefined) {
-                    result["id"] = id;
+            
+                    if (result["id"] !== undefined) {
+                        result["id"] = id;
+                    }
+                    var json = JSON.stringify(result);
+                    var d = new Object();
+                    d['id'] = id;
+                    d['result'] = json;
+                    data.push(d);
                 }
-                var json = JSON.stringify(result);
-                var d = new Object();
-                d['id'] = id;
-                d['result'] = json;
-                data.push(d);
-            }
+            });
             return data;
         }
         </script>
-        <style>
-            .exportlinks { display: none }
-        </style>
-        <div id="listGridPopup">
-            <c:set scope="request" var="dataListId" value="${dataList.id}"/>
-            <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
-        </div>
 <commons:popupFooter /> 
