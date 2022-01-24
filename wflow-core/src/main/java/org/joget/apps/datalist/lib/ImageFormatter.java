@@ -52,7 +52,7 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         String style = "";
         
         if(!height.isEmpty() && !width.isEmpty()){
-            style = "height:"+height+";width:"+width+";background-size:cover;display:inline-block;";
+            style = "height:"+height+";width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";
         }
         
         if (value != null && !((String) value).isEmpty()) {
