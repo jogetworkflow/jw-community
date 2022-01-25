@@ -2,6 +2,19 @@
     "optionGroup" : {
         "@@assist.EnvironmentVariable@@" : [
             {
+                "value" : "#appVariable.KEY#",
+                "label" : "@@assist.EnvironmentVariableValue@@",
+                "syntax" : [
+                    "#appVariable.",
+                    {
+                        "placeholder" : "KEY",
+                        "option" : "environmentVariable",
+                        "required" : true
+                    },
+                    "#"
+                ]
+            },
+            {
                 "value" : "#envVariable.KEY#",
                 "label" : "@@assist.EnvironmentVariableValue@@",
                 "syntax" : [
