@@ -173,8 +173,10 @@ DatalistBuilder = {
         
         var isTemplate = CustomBuilder.Builder.frameBody.find("table.defaulttemplate").length > 0;
         
-        $(thead).append('<th class="export" width="30%">'+get_advtool_msg('adv.permission.export')+'</th>');
-        $(thead).find(".authorized").text(get_advtool_msg('adv.permission.web'));
+        if ($(thead).find('.export').length === 0) {
+            $(thead).append('<th class="export" width="30%">'+get_advtool_msg('adv.permission.export')+'</th>');
+            $(thead).find(".authorized").text(get_advtool_msg('adv.permission.web'));
+        }
         
         if (isTemplate) {
             if (CustomBuilder.data.columns !== undefined && CustomBuilder.data.columns.length > 0) {
