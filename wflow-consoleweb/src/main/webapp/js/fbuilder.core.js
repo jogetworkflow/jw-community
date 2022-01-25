@@ -109,6 +109,13 @@ FormBuilder = {
         if (component.className === "org.joget.apps.form.model.Form") {
             component.builderTemplate.parentContainerAttr = "";
             component.builderTemplate.childsContainerAttr = "sections";
+            component.builderTemplate.getStylePropertiesDefinition = function(elementObj, component) {
+                var selectedEl = CustomBuilder.Builder.selectedEl;
+                if ($(selectedEl).is(".form-section")) {
+                    return component.builderTemplate.sectionStylePropertiesDefinition;
+                }
+            };
+            component.builderTemplate.sectionStylePropertiesDefinition = $.extend(true, [], self.generateStylePropertiesDefinition("section", [{}, {'prefix' : 'header', 'label' : get_cbuilder_msg('ubuilder.header')}]));
         } else if (component.className === "org.joget.apps.form.model.Section") {
             component.builderTemplate.parentContainerAttr = "sections";
             component.builderTemplate.childsContainerAttr = "columns";
@@ -131,6 +138,7 @@ FormBuilder = {
                 }
             };
             component.builderTemplate.renderPermission = FormBuilder.renderPermission;
+            component.builderTemplate.stylePropertiesDefinition = $.extend(true, [], self.generateStylePropertiesDefinition("", [{}, {'prefix' : 'header', 'label' : get_cbuilder_msg('ubuilder.header')}]));
         } else if (component.className === "org.joget.apps.form.model.Column") {
             component.builderTemplate.parentContainerAttr = "columns";
             component.builderTemplate.childsContainerAttr = "elements";
@@ -220,7 +228,7 @@ FormBuilder = {
                         wrapper.find("form").attr("data-cbuilder-uneditable", "").attr("data-cbuilder-sections", "");
                         newElement = wrapper.find("form");
                         $(wrapper).find("> *:not(form)").remove();
-                        $(newElement).find("> *:not(.form-section)").remove();
+                        $(newElement).find("> *:not(.form-section):not(style)").remove();
                         
                         $(element).replaceWith(wrapper);
                     } else {
@@ -251,7 +259,7 @@ FormBuilder = {
      */
     selectElement : function(element, elementObj, component) {
         if (elementObj.className === "org.joget.apps.form.model.Section") {
-            $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="'+get_cbuilder_msg("fbuilder.addColumn")+'"><i class="las la-columns"></i></a>');
+            $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="'+get_cbuilder_msg("fbuilder.addColumn")+'"><i class="las la-columns"></i></a><a id="default-style-btn" href="" title="'+get_cbuilder_msg('style.defaultStyles')+'" style=""><i class="las la-palette"></i></a>');
             
             $("#element-select-box #element-bottom-actions").append('<a id="add-section-btn" href="" title="'+get_cbuilder_msg("fbuilder.addSection")+'"><i class="las la-plus"></i></a>');
             
@@ -272,6 +280,19 @@ FormBuilder = {
                 FormBuilder.addSection();
                 
                 event.preventDefault();
+                return false;
+            });
+            
+            $("#default-style-btn").off("click");
+            $("#default-style-btn").on("click", function(){
+                var builder = CustomBuilder.Builder;
+                $("body").removeClass("no-right-panel");
+                $("#element-properties-tab-link").hide();
+                $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
+                
+                builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find(".dataList"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
+                $("#style-properties-tab-link a").trigger("click");
+                
                 return false;
             });
         }

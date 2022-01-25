@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
@@ -229,5 +230,33 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             }
         }
         return false;
+    }
+    
+    @Override
+    public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
+        Map<String, String> styles = super.getElementStyles(styleClass, attrs);
+        
+        //section header styles
+        Map<String, String> sectionHeaderAttrs = AppPluginUtil.generateAttrAndStyles(getProperties(), "header-");
+        if (!sectionHeaderAttrs.get("desktopStyle").isEmpty()) {
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("desktopStyle") + "} ");
+        }
+        if (!sectionHeaderAttrs.get("tabletStyle").isEmpty()) {
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("tabletStyle") + "} ");
+        }
+        if (!sectionHeaderAttrs.get("mobileStyle").isEmpty()) {
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("mobileStyle") + "} ");
+        }
+        if (!sectionHeaderAttrs.get("hoverDesktopStyle").isEmpty()) {
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverDesktopStyle") + "} ");
+        }
+        if (!sectionHeaderAttrs.get("hoverTabletStyle").isEmpty()) {
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverTabletStyle") + "} ");
+        }
+        if (!sectionHeaderAttrs.get("hoverMobileStyle").isEmpty()) {
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverMobileStyle") + "} ");
+        } 
+        
+        return styles;
     }
 }

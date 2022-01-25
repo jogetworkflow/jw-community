@@ -274,46 +274,72 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return html;
     }
     
+    public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
+        Map<String, String> styles = new HashMap<String, String>();
+        styles.put("DESKTOP", "");
+        styles.put("TABLET", "");
+        styles.put("MOBILE", "");
+        
+        if (!attrs.get("desktopStyle").isEmpty()) {
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + "{" + attrs.get("desktopStyle") + "} ");
+        }
+        if (!attrs.get("tabletStyle").isEmpty()) {
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + "{" + attrs.get("tabletStyle") + "} ");
+        }
+        if (!attrs.get("mobileStyle").isEmpty()) {
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + "{" + attrs.get("mobileStyle") + "} ");
+        }
+        if (!attrs.get("hoverDesktopStyle").isEmpty()) {
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover{" + attrs.get("hoverDesktopStyle") + "} ");
+        }
+        if (!attrs.get("hoverTabletStyle").isEmpty()) {
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover{" + attrs.get("hoverTabletStyle") + "} ");
+        }
+        if (!attrs.get("hoverMobileStyle").isEmpty()) {
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover{" + attrs.get("hoverMobileStyle") + "} ");
+        }      
+        
+        return styles;
+    }
+    
     public String decorateWithBuilderProperties(String html, FormData formData) {
-        Map<String, String> styles = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
+        Map<String, String> attrs = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
         
         String builderStyles = "";
-        String cssClass = styles.get("cssClass");
+        String cssClass = attrs.get("cssClass");
+        String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
         
-        if (!styles.get("desktopStyle").isEmpty() || !styles.get("tabletStyle").isEmpty() || !styles.get("mobileStyle").isEmpty()) {
-            String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
+        Map<String, String> styles = getElementStyles(styleClass, attrs);
+        
+        if (!styles.get("DESKTOP").isEmpty() || !styles.get("TABLET").isEmpty() || !styles.get("MOBILE").isEmpty()) {
             cssClass += " " + styleClass;
-
-            builderStyles = "<style id=\""+styleClass+"\">";
-            if (!styles.get("desktopStyle").isEmpty()) {
-                builderStyles += "." + styleClass + "{" + styles.get("desktopStyle") + "} ";
+            if (!styles.get("DESKTOP").isEmpty()) {
+                builderStyles += styles.get("DESKTOP");
             }
-            if (!styles.get("tabletStyle").isEmpty()) {
-                builderStyles += "@media (max-width: 991px) {." + styleClass + "{" + styles.get("tabletStyle") + "}} ";
+            if (!styles.get("TABLET").isEmpty()) {
+                builderStyles += " @media (max-width: 991px) {" + styles.get("TABLET") + "} ";
             }
-            if (!styles.get("mobileStyle").isEmpty()) {
-                builderStyles += "@media (max-width: 767px) {." + styleClass + "{" + styles.get("mobileStyle") + "}} ";
+            if (!styles.get("MOBILE").isEmpty()) {
+                builderStyles += " @media (max-width: 767px) {" + styles.get("MOBILE") + "} ";
             }
-            if (!styles.get("hoverDesktopStyle").isEmpty()) {
-                builderStyles += "." + styleClass + ":hover{" + styles.get("hoverDesktopStyle") + "} ";
-            }
-            if (!styles.get("hoverTabletStyle").isEmpty()) {
-                builderStyles += "@media (max-width: 991px) {." + styleClass + ":hover{" + styles.get("hoverTabletStyle") + "}} ";
-            }
-            if (!styles.get("hoverMobileStyle").isEmpty()) {
-                builderStyles += "@media (max-width: 767px) {." + styleClass + ":hover{" + styles.get("hoverMobileStyle")+ "}} ";
-            }
-            builderStyles += "</style>";
         }
         
-        if (!cssClass.isEmpty() || !styles.get("attr").isEmpty()) {
+        if (!cssClass.isEmpty() || !attrs.get("attr").isEmpty()) {
             int index = html.indexOf("class=");
-            html = html.substring(0, index) + styles.get("attr") + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
+            if (this instanceof Form) {
+                index = html.indexOf("class=\"form-container");
+            }
+            html = html.substring(0, index) + attrs.get("attr") + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
         }
         
         if (!builderStyles.isEmpty()) {
-            int index = html.lastIndexOf("</div>");
-            html = html.substring(0, index) + builderStyles + "</div>";
+            if (this instanceof Form) {
+                int index = html.lastIndexOf("</form>");
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></form>";
+            } else {
+                int index = html.lastIndexOf("</div>");
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";
+            }
         }
         
         return html;

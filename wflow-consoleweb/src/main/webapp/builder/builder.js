@@ -5958,6 +5958,48 @@ _CustomBuilder.Builder = {
     },
     
     /*
+     * Used to prepare the style definition
+     */
+    generateStylePropertiesDefinition : function(prefix, configs) {
+        var self = CustomBuilder.Builder;
+        
+        var orig = self.stylePropertiesDefinition();
+        var properties = [];
+        
+        if (configs === null || configs === undefined) {
+            configs = [{}];
+        }
+        
+        for (var i in orig) {
+            for (var j in configs) {
+                var p = $.extend(true, {}, orig[i]);
+                if (configs[j].label !== undefined) {
+                    p.title = p.title + " ("+configs[j].label+")";
+                }
+                var newPrefix = prefix;
+                if (newPrefix === undefined || newPrefix === null) {
+                    newPrefix = "";
+                }
+                if (configs[j].prefix !== undefined) {
+                    if (newPrefix !== "") {
+                        newPrefix += "-";
+                    }
+                    newPrefix += configs[j].prefix;
+                }
+                if (newPrefix !== "") {
+                    for (var k in p.properties) {
+                        if (p.properties[k].name) {
+                            p.properties[k].name = p.properties[k].name.replace('style', newPrefix+'-style');
+                        }
+                    }
+                }
+                properties.push(p);
+            }
+        }
+        return properties;
+    },
+    
+    /*
      * Trigger a change when there is a canvas change happen
      */
     triggerChange : function() {
