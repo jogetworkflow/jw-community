@@ -1037,6 +1037,7 @@ td.error .chosen-container, td.error input {
 .pewrapper a {
     cursor:pointer; 
     position:relative;
+    display: inline-block;
 }
 .pewrapper a ul {
     display:none; 
@@ -1047,6 +1048,8 @@ td.error .chosen-container, td.error input {
     z-index: 1; 
     border: 1px solid #eaeef0; 
     border-bottom:0;
+    padding: 0;
+    margin-top: -3px;
 }
 .pewrapper a ul li {
     padding: 5px 10px; 
@@ -1088,15 +1091,29 @@ td.error .chosen-container, td.error input {
 .pewrapper span.label {
     display: none;
     position: absolute;
-    font-size: 11px;
+    font-size: 80%;
     font-weight: 600;
     transform: translateX(-100%);
+    margin-top: -3px;
+}
+.pewrapper td span.label{
+    transform: none; 
+    bottom: 33px;
+}
+.editor-panel-mode.narrow.wider .input-fields > div > input,
+.editor-panel-mode.narrow.wider .input-fields > div > select{
+    display: inline-block !important;
+}
+.editor-panel-mode.narrow:not(.wider) .pewrapper span.label {
+    transform: none;
+    margin-top: -42px;
+    width: 100%;
 }
 .pewrapper input, .pewrapper select {
     margin-right:5px;
     margin-top: 8px !important;
 }
-.pewrapper .small,
+.pewrapper .small:not(.button),
 .pewrapper .small + span.label{
     width:15%; 
     min-width:80px;
@@ -1195,21 +1212,21 @@ td.error .chosen-container, td.error input {
     width: 100%;
     float: none;
 }
-.property-editor-container.narrow input:not([type]),
-.property-editor-container.narrow input[type=text],
-.property-editor-container.narrow input[type=password],
-.property-editor-container.narrow input[type=email],
-.property-editor-container.narrow input[type=url],
-.property-editor-container.narrow input[type=time],
-.property-editor-container.narrow input[type=date],
-.property-editor-container.narrow input[type=datetime],
-.property-editor-container.narrow input[type=datetime-local],
-.property-editor-container.narrow input[type=tel],
-.property-editor-container.narrow input[type=number],
-.property-editor-container.narrow input[type=search],
-.property-editor-container.narrow input[type=file],
-.property-editor-container.narrow .property-input select,
-.property-editor-container.narrow .property-input textarea{
+.property-editor-container.narrow:not(.wider) input:not([type]),
+.property-editor-container.narrow:not(.wider) input[type=text],
+.property-editor-container.narrow:not(.wider) input[type=password],
+.property-editor-container.narrow:not(.wider) input[type=email],
+.property-editor-container.narrow:not(.wider) input[type=url],
+.property-editor-container.narrow:not(.wider) input[type=time],
+.property-editor-container.narrow:not(.wider) input[type=date],
+.property-editor-container.narrow:not(.wider) input[type=datetime],
+.property-editor-container.narrow:not(.wider) input[type=datetime-local],
+.property-editor-container.narrow:not(.wider) input[type=tel],
+.property-editor-container.narrow:not(.wider) input[type=number],
+.property-editor-container.narrow:not(.wider) input[type=search],
+.property-editor-container.narrow:not(.wider) input[type=file],
+.property-editor-container.narrow:not(.wider) .property-input select,
+.property-editor-container.narrow:not(.wider) .property-input textarea{
     max-width: 100%;
     width: 100%;
 }
@@ -1629,7 +1646,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     color:#ffffff;
     border-radius: 5px 5px 0 0;
 }
-.editor-panel-mode .element-pages a:not([class^=chosen]):not([class^=property-type-grid-action]){
+.editor-panel-mode .element-pages a.openbuilder{
     color:#fff;
 }
 .editor-panel-mode .element-pages .element-pages,
