@@ -1026,6 +1026,10 @@ PropertyEditor.Util = {
                 fieldIds.push(fieldId);
             }
         }
+        var referenceKey = "";
+        if (reference !== undefined && reference !== null && reference !== "") {
+            referenceKey = "__" + reference;
+        }
         for (var i in fieldIds) {
             var selector = "";
             var fieldId = fieldIds[i];
@@ -1041,8 +1045,8 @@ PropertyEditor.Util = {
             } else {
                 selector = "[name=\"" + fields[fieldId].id + "\"]";
             }
-            $(field.editor).off("change."+field.id, selector);
-            $(field.editor).on("change."+field.id, selector, function() {
+            $(field.editor).off("change."+field.id+referenceKey, selector);
+            $(field.editor).on("change."+field.id+referenceKey, selector, function() {
                 //delay to make sure show/hide dynamic field is complete before make an ajax call when there is a change event 
                 // (in case, the ajax call and the show/hide dynamic field is listen on same field)
                 setTimeout(function(){
