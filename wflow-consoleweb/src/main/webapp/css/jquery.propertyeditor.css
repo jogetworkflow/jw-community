@@ -994,7 +994,7 @@ td.error .chosen-container, td.error input {
     border-radius: 5px;
     border: 1px solid #ddd;
     float: right;
-    font-size: 11px;
+    font-size: 13px;
 }
 .pebutton.addrow{
     float:left;
@@ -1183,9 +1183,6 @@ td.error .chosen-container, td.error input {
 .css-styles-container .style-group .style-group-input-container{
     display: flex;
     flex-wrap: wrap;
-}
-.css-styles-container .style-group .style-group-input-container .property-label {
-    font-size: 80%;
 }
 .css-styles-container .style-group .style-group-input-container .input1 {
     width: 50%;
@@ -1504,9 +1501,6 @@ body .ui-dialog .button_form.ui-dialog-content{
     background: #fff;
     height: 100% !important;
 }
-.editor-panel-mode.narrow {
-    font-size: 11px;
-}
 .editor-panel-mode.narrow .property-label {
     padding-top: 0px;
 }
@@ -1557,7 +1551,6 @@ body .ui-dialog .button_form.ui-dialog-content{
     text-rendering: auto;
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 11px;
 }
 .editor-panel-mode .property-editor-page-title:after,
 .editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
@@ -1608,7 +1601,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .property-editor-property.property-type-header .property-label-container .property-label{
     padding: 0 0 2px;
     background: none;
-    font-size: 12px;
     text-transform: uppercase;
     color: #030248;
     border-bottom: 2pt dotted #aaa;
@@ -1834,7 +1826,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs{
     padding: 0px 19px 0px 40px;
-    font-size: 80%;     
 }
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property{
     max-width: 100%;
