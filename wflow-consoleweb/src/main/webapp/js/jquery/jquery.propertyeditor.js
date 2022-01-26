@@ -836,6 +836,15 @@ PropertyEditor.Util = {
                 var targetField = fields[fieldId];
                 var data = targetField.getData(true);
                 var targetValue = data[fieldId];
+                
+                if (targetField.properties.type === "password") {
+                    var wrapper = $('#' + targetField.id + '_input');
+                    if (targetValue.indexOf("%%%%****SECURE_VALUE****-") === 0 && $(wrapper).find(".property-input-error.encrypted").length === 0) {
+                        $(wrapper).append('<div class="property-input-error encrypted">'+get_peditor_msg("peditor.password")+'</div>');
+                    } else {
+                        $(wrapper).find(".property-input-error.encrypted").remove();
+                    }
+                }
 
                 if (childField !== "") {
                     if ($.isArray(targetValue)) { //is grid
