@@ -448,6 +448,9 @@ header.navbar .dropdown-menu a span.time{
 .line-wrap .line.center {
     margin: 3px 0
 }
+body.sidebar-toggled .hi-trigger {
+    pointer-events: none;
+}
 @media (max-width:1279px) {
     .hi-trigger.toggled:before {
         -webkit-transform: scale(1);

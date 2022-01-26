@@ -104,7 +104,7 @@ if ((typeof _customFooTableArgs) === "undefined") {
             if ($(".ma-backdrop").length === 0) {
                 var backdrop = '<div class="ma-backdrop" />';
                 $("body").addClass("sidebar-toggled");
-                $("header.navbar").append(backdrop);
+                $("body").prepend(backdrop);
                 $(this).addClass("toggled");
                 $("#sidebar").addClass("toggled");
                 location.hash = 'menu';
@@ -119,13 +119,14 @@ if ((typeof _customFooTableArgs) === "undefined") {
             }
             
             if ($(".ma-backdrop").is(":visible")) {
+                $("body").off("click.sidebar-toggled");
                 $("body").on("click.sidebar-toggled", function(e) {
                     var container = $("#sidebar");
                     if (($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") && !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 && !container.is(e.target) && container.has(e.target).length === 0)) {
                         $("body").removeClass("sidebar-toggled");
                         $(".ma-backdrop").remove();
                         $("#sidebar, #sidebar-trigger").removeClass("toggled");
-                        $("body").off(".sidebar-toggled");
+                        $("body").off("click.sidebar-toggled");
                         $(window).unbind('hashchange.menu');
                         location.hash = originalHash;
                         return false;
