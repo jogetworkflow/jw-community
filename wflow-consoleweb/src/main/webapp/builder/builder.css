@@ -439,9 +439,13 @@ body.right-panel-resizing #right-panel-resize-block{
 #cbuilder:not(.default-builder) #builder_canvas {
     top: 90px;
     top: calc(var(--builder-content-top) + 25px);
-    overflow: auto;
+    overflow: visible;
     height: calc( 100vh - 25px - (85px + 30px));
     height: calc( 100vh - 25px - (var(--builder-content-top) + var(--builder-bottom-panel-height)));
+}
+#cbuilder:not(.default-builder) #builder_canvas > div {
+    height: calc(100vh - 150px);
+    overflow: auto;
 }
 #cbuilder #builder_canvas > div:not(#iframe-wrapper) {
     overflow: auto;
@@ -2145,10 +2149,10 @@ body.quick-nav-shown #builder-quick-nav {
     overflow: hidden;
     z-index: 9000 !important;
 }
-.boxy-wrapper tbody tr:nth-child(1),
-.boxy-wrapper tbody tr:nth-child(3),
-.boxy-wrapper tbody tr td.left,
-.boxy-wrapper tbody tr td.right {
+.boxy-wrapper > tbody > tr:nth-child(1),
+.boxy-wrapper > tbody > tr:nth-child(3),
+.boxy-wrapper > tbody > tr td.left,
+.boxy-wrapper > tbody > tr td.right {
     display:none;
 }
 .boxy-wrapper .title-bar {
@@ -2172,6 +2176,19 @@ body.quick-nav-shown #builder-quick-nav {
 }
 .boxy-modal-blackout {
     opacity: 0.3 !important;
+}
+.boxy-wrapper.property-boxy-wrapper .title-bar {
+    height: 34px;
+    padding: 6px;
+    background: #394249;
+    color: #fff;
+}
+.boxy-wrapper.property-boxy-wrapper .title-bar > h2 {
+    height: 23px;
+    padding: 5px 15px 5px 5px;
+}
+.boxy-wrapper.property-boxy-wrapper .title-bar .close {
+    top:8px;
 }
 
 /* Popup content */
