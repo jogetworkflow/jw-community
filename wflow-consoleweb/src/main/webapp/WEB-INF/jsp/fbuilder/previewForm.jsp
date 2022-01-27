@@ -10,14 +10,11 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         
-        <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form8.css" rel="stylesheet" />
-        <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
-        <script src="${pageContext.request.contextPath}/wro/common.js"></script>
-        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/popper.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
+        <link href="${pageContext.request.contextPath}/wro/ajaxuniversal.preload.min.css" rel="stylesheet" />
+        <script src="${pageContext.request.contextPath}/wro/form_common.js"></script>
+        <script src="${pageContext.request.contextPath}/wro/ajaxuniversal.min.js"></script>
+        
+        <script>loadCSS("/jw/wro/ajaxuniversal.min.css")</script>
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
@@ -60,7 +57,6 @@
     <body>
 
         <fieldset id="form-canvas">
-
             <c:out value="${elementTemplate}" escapeXml="false" />
 
             <p>&nbsp;</p>
