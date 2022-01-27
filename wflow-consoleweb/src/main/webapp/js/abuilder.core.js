@@ -96,7 +96,7 @@ AppBuilder = {
     renderBuilders: function(data) {
         var self = AppBuilder;
         
-        $("#builder_canvas").html('<div class="canvas-header"><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div><div id="builders"><div id="builders-seperator"></div></div>');
+        $("#builder_canvas").html('<div><div class="canvas-header"><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div><div id="builders"><div id="builders-seperator"></div></div></div>');
         
         $("#builder_canvas").find('.search-container input').off("keyup change");
         $("#builder_canvas").find('.search-container input').on("keyup change", function(){
