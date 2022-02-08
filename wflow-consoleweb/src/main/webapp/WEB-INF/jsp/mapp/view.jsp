@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@page import="org.joget.apps.userview.model.UserviewMenu"%>
 <%@page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@page import="org.joget.commons.util.LogUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
 
 <c:set var="bodyId" scope="request" value=""/>
@@ -118,13 +119,11 @@
         <div class="uview_body">
             ${bodyContent}  
             <c:if test="${!empty bodyError}">
-                ${bodyError}
-                <pre>
+                <c:out value="${bodyError}" escapeXml="true"/>
                 <%
                     Exception e = (Exception)pageContext.findAttribute("bodyError");
-                    e.printStackTrace(new java.io.PrintWriter(out));
+                    LogUtil.error("/jsp/mapp/view.jsp", e, "Error rendering mobile view");
                 %>
-                </pre>
             </c:if>
             <div class="clearfix"></div>  
         </div>

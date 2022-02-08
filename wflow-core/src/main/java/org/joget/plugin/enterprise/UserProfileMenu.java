@@ -202,6 +202,9 @@ public class UserProfileMenu extends UserviewMenu {
                     }
                 } catch (Exception e) { }
             }
+        } else {
+            viewForm(null);
+            return;
         }
         UserSecurity us = DirectoryUtil.getUserSecurity();
         
