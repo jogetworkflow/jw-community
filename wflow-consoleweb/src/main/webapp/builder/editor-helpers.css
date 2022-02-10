@@ -367,3 +367,10 @@ body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details 
     background-color: rgba(0, 0, 0, 0.15);
     outline: 1px solid slategrey; 
 }
+[data-cbuilder-classname] a:not([data-cbuilder-classname]),
+[data-cbuilder-classname] button:not([data-cbuilder-classname]),
+[data-cbuilder-classname] input:not([data-cbuilder-classname]),
+[data-cbuilder-classname] textarea:not([data-cbuilder-classname]),
+[data-cbuilder-classname] select:not([data-cbuilder-classname]){
+    pointer-events: none;
+}
