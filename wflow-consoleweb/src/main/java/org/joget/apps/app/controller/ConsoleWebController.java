@@ -5869,8 +5869,19 @@ public class ConsoleWebController {
         data.put("icon", "fas fa-file-alt");
         data.put("color", "#3f84f4");
         if (appDef.getFormDefinitionList() != null) {
+            List<FormDefinition> list = new ArrayList<FormDefinition>();
+            list.addAll(appDef.getFormDefinitionList());
+            
+            Collections.sort(list, new Comparator<FormDefinition>() {
+
+                @Override
+                public int compare(FormDefinition o1, FormDefinition o2) {
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                }
+            });
+            
             elementsArr = new JSONArray();
-            for (FormDefinition e : appDef.getFormDefinitionList()) {
+            for (FormDefinition e : list) {
                 obj = new HashMap();
                 obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/form/builder/" + e.getId());
@@ -5888,8 +5899,19 @@ public class ConsoleWebController {
         data.put("icon", "fas fa-table");
         data.put("color", "#6638b6");
         if (appDef.getDatalistDefinitionList() != null) {
+            List<DatalistDefinition> list = new ArrayList<DatalistDefinition>();
+            list.addAll(appDef.getDatalistDefinitionList());
+            
+            Collections.sort(list, new Comparator<DatalistDefinition>() {
+
+                @Override
+                public int compare(DatalistDefinition o1, DatalistDefinition o2) {
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                }
+            });
+            
             elementsArr = new JSONArray();
-            for (DatalistDefinition e : appDef.getDatalistDefinitionList()) {
+            for (DatalistDefinition e : list) {
                 obj = new HashMap();
                 obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/datalist/builder/" + e.getId());
@@ -5906,8 +5928,19 @@ public class ConsoleWebController {
         data.put("icon", "fas fa-desktop");
         data.put("color", "#f3b328");
         if (appDef.getUserviewDefinitionList() != null) {
+            List<UserviewDefinition> list = new ArrayList<UserviewDefinition>();
+            list.addAll(appDef.getUserviewDefinitionList());
+            
+            Collections.sort(list, new Comparator<UserviewDefinition>() {
+
+                @Override
+                public int compare(UserviewDefinition o1, UserviewDefinition o2) {
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                }
+            });
+            
             elementsArr = new JSONArray();
-            for (UserviewDefinition e : appDef.getUserviewDefinitionList()) {
+            for (UserviewDefinition e : list) {
                 obj = new HashMap();
                 obj.put("id", e.getId());
                 obj.put("url", baseUrl + "/userview/builder/" + e.getId());
@@ -5927,8 +5960,19 @@ public class ConsoleWebController {
         if (packageDefinition != null) {
             Long packageVersion = packageDefinition.getVersion();
             Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
+            
+            List<WorkflowProcess> list = new ArrayList<WorkflowProcess>();
+            list.addAll(processList);
+            Collections.sort(list, new Comparator<WorkflowProcess>() {
+
+                @Override
+                public int compare(WorkflowProcess o1, WorkflowProcess o2) {
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                }
+            });
+            
             elementsArr = new JSONArray();
-            for (WorkflowProcess p : processList) {
+            for (WorkflowProcess p : list) {
                 obj = new HashMap();
                 obj.put("id", p.getIdWithoutVersion());
                 obj.put("url", baseUrl + "/process/builder#" + p.getIdWithoutVersion());
@@ -5939,15 +5983,27 @@ public class ConsoleWebController {
         }
         jsonArr.put(data);
         
+        List<BuilderDefinition> list = new ArrayList<BuilderDefinition>();
+        if (appDef.getBuilderDefinitionList() != null) {
+            list.addAll(appDef.getBuilderDefinitionList());
+        }
+        Collections.sort(list, new Comparator<BuilderDefinition>() {
+
+            @Override
+            public int compare(BuilderDefinition o1, BuilderDefinition o2) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            }
+        });
+        
         for (CustomBuilder cb : CustomBuilderUtil.getBuilderList().values()) {
             Map cdata = new HashMap();
             cdata.put("value", cb.getObjectName());
             cdata.put("label", cb.getLabel());
             cdata.put("icon", cb.getIcon());
             cdata.put("color", cb.getColor());
-            if (appDef.getBuilderDefinitionList() != null) {
+            if (!list.isEmpty()) {
                 elementsArr = new JSONArray();
-                for (BuilderDefinition e : appDef.getBuilderDefinitionList()) {
+                for (BuilderDefinition e : list) {
                     if (cb.getObjectName().equals(e.getType())) {
                         obj = new HashMap();
                         obj.put("id", e.getId());
