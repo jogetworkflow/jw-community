@@ -2003,6 +2003,12 @@ UserviewBuilder = {
                 menuId = menuObj.properties.customId;
             }
             menuId = "/" + menuId;
+        } else if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
+            var menuObj = UserviewBuilder.selectedMenu;
+            if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
+                menuId = menuObj.properties.customId;
+            }
+            menuId = "/" + menuId;
         } else {
             menuId = "";
         }
