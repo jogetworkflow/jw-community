@@ -854,39 +854,43 @@ PropertyEditor.Util = {
                         }
                         targetValue = values.join(";");
                     } else {
-                        //it is element select, simply validate the properties fields before make ajax call to prevent unnecessary call
-                        if (childField === "className" && (targetValue === undefined || targetValue === null || targetValue[childField] === undefined || targetValue[childField] === null || targetValue[childField] === "")) {
-                            return;
-                        } else if (childField === "properties") {
-                            try {
-                                if (targetField.pageOptions.propertiesDefinition !== undefined && targetField.pageOptions.propertiesDefinition !== null) {
-                                    if (!$(targetField.editor).find(".anchor[anchorField=\"" + targetField.id + "\"]").hasClass("partialLoad")) {
-                                        var errors = [];
-                                        $.each(targetField.pageOptions.propertiesDefinition, function(i, page) {
-                                            var p = page.propertyEditorObject;
-                                            p.validate(targetValue[childField], errors, true);
-                                        });
-                                        if (errors.length > 0) {
-                                            //there is required field leave empty, don't make the call until all field are filled.
-                                            return;
+                        if (!targetField.isHidden()) {
+                            //it is element select, simply validate the properties fields before make ajax call to prevent unnecessary call
+                            if (childField === "className" && (targetValue === undefined || targetValue === null || targetValue[childField] === undefined || targetValue[childField] === null || targetValue[childField] === "")) {
+                                return;
+                            } else if (childField === "properties") {
+                                try {
+                                    if (targetField.pageOptions.propertiesDefinition !== undefined && targetField.pageOptions.propertiesDefinition !== null) {
+                                        if (!$(targetField.editor).find(".anchor[anchorField=\"" + targetField.id + "\"]").hasClass("partialLoad")) {
+                                            var errors = [];
+                                            $.each(targetField.pageOptions.propertiesDefinition, function(i, page) {
+                                                var p = page.propertyEditorObject;
+                                                p.validate(targetValue[childField], errors, true);
+                                            });
+                                            if (errors.length > 0) {
+                                                //there is required field leave empty, don't make the call until all field are filled.
+                                                return;
+                                            }
                                         }
+                                    } else {
+                                        //the element select field not ready yet, this call will trigger again later when it is ready.
+                                        return;
                                     }
-                                } else {
-                                    //the element select field not ready yet, this call will trigger again later when it is ready.
+                                } catch (err) {
+                                    //if error then don't make the ajax call
                                     return;
                                 }
-                            } catch (err) {
-                                //if error then don't make the ajax call
-                                return;
                             }
-                        }
-                        
-                        if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
-                            targetValue = "";
-                        } else if ($.type(targetValue[childField]) === "string") {
-                            targetValue = targetValue[childField];
+
+                            if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
+                                targetValue = "";
+                            } else if ($.type(targetValue[childField]) === "string") {
+                                targetValue = targetValue[childField];
+                            } else {
+                                targetValue = JSON.encode(targetValue[childField]);
+                            }
                         } else {
-                            targetValue = JSON.encode(targetValue[childField]);
+                            targetValue = "";
                         }
                     }
                 } else if (targetValue === null || targetValue === undefined) {
