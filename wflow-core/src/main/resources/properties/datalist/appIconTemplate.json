@@ -12,27 +12,27 @@
                 "type" : "selectbox",
                 "options" : [
                     {
-                        "value" : "col-sm-12",
+                        "value" : "col-12",
                         "label" : "1"
                     },
                     {
-                        "value" : "col-sm-6",
+                        "value" : "col-6",
                         "label" : "2"
                     },
                     {
-                        "value" : "col-sm-4",
+                        "value" : "col-4",
                         "label" : "3"
                     },
                     {
-                        "value" : "col-sm-3",
+                        "value" : "col-3",
                         "label" : "4"
                     },
                     {
-                        "value" : "col-sm-2",
+                        "value" : "col-2",
                         "label" : "6"
                     }
                 ],
-                "value": "col-sm-12"
+                "value": "col-12"
             },
             {
                 "name": "columns_tablet",
