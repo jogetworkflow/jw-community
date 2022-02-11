@@ -448,10 +448,10 @@ header.navbar .dropdown-menu a span.time{
 .line-wrap .line.center {
     margin: 3px 0
 }
-body.sidebar-toggled .hi-trigger {
-    pointer-events: none;
-}
-@media (max-width:1279px) {
+@media (max-width:1279px) {   
+    body.sidebar-toggled .hi-trigger {
+        pointer-events: none;
+    }
     .hi-trigger.toggled:before {
         -webkit-transform: scale(1);
         -ms-transform: scale(1);
