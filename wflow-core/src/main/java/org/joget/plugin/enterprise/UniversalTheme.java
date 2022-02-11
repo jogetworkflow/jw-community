@@ -612,8 +612,13 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             data.put("header_name_inner_after", UserviewUtil.getTemplate(this, data, "/templates/" + getPathName() + "Theme_horizontalMenu.ftl"));
         }
         
+        String sidebarToggled = "";
+        if (data.get("body_classes").toString().contains("sidebar-toggled")) {
+            sidebarToggled = "toggled";
+        }
+        
         data.put("header_classes", "navbar");
-        data.put("header_inner_before", "<div class=\"navbar-inner\"><div class=\"container-fluid\"><div class=\"hi-trigger ma-trigger\" id=\"sidebar-trigger\"><div class=\"line-wrap\"><div class=\"line top\"></div><div class=\"line center\"></div><div class=\"line bottom\"></div></div></div>");
+        data.put("header_inner_before", "<div class=\"navbar-inner\"><div class=\"container-fluid\"><div class=\"hi-trigger ma-trigger "+sidebarToggled+"\" id=\"sidebar-trigger\"><div class=\"line-wrap\"><div class=\"line top\"></div><div class=\"line center\"></div><div class=\"line bottom\"></div></div></div>");
         data.put("header_inner_after", "</div></div>" + getPropertyString("subheader"));
         data.put("header_link_classes", "brand");
         data.put("header_info_classes", "inline-block");
@@ -815,7 +820,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             }
             
-            html += "<li class=\"mm-profile user-link\">\n"
+            html += "<li class=\"mm-profile user-link type-"+getPropertyString("userImage")+"\">\n"
                   + "    <a class=\"dropdown\">\n"
                   + "        "+profileImageTag+"\n"  
                   + "	     <span>" + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "</span>\n"
@@ -862,7 +867,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\""+url+"\" /> ";
             }
             
-            html += "<li class=\"mm-profile user-link\">\n"
+            html += "<li class=\"mm-profile user-link type-"+getPropertyString("userImage")+"\">\n"
                   + "    <a href=\"" + data.get("login_link") + "\" >\n"
                   + "        "+profileImageTag+"\n" 
                   + "	     <span>Visitor</span>\n"  

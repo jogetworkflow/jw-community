@@ -10,6 +10,10 @@
             label : '@@theme.progressive.menu.sideMenu@@'
         },
         {
+            value : 'minimized',
+            label : '@@theme.ajaxUniversalTheme.menu.minimizedSideMenu@@'
+        },
+        {
             value : 'true',
             label : '@@theme.progressive.menu.horizontalMenu@@'
         },
@@ -124,6 +128,16 @@
     {
         name : 'dx8primaryColor',
         label : '@@ubuilder.primaryColor@@',
+        type : 'color'
+    },
+    {
+        name : 'dx8headingBgColor',
+        label : '@@ubuilder.headingBgColor@@',
+        type : 'color'
+    },
+    {
+        name : 'dx8headingFontColor',
+        label : '@@ubuilder.headingFontColor@@',
         type : 'color'
     },
     {

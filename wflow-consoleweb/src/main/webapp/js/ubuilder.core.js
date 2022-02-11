@@ -1106,6 +1106,12 @@ UserviewBuilder = {
             if (props.dx8primaryColor !== undefined  && props.dx8primaryColor !== "") {
                 css += "--theme-primary:"+props.dx8primaryColor+";";
             }
+            if (props.dx8headingBgColor !== undefined  && props.dx8headingBgColor !== "") {
+                css += "--theme-heading-bg:"+props.dx8headingBgColor+";";
+            }
+            if (props.dx8headingFontColor !== undefined  && props.dx8headingFontColor !== "") {
+                css += "--theme-heading-color:"+props.dx8headingFontColor+";";
+            }
             if (props.dx8fontColor !== undefined  && props.dx8fontColor !== "") {
                 css += "--theme-font-color:"+props.dx8fontColor+";";
             }

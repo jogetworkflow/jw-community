@@ -71,8 +71,13 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if (showHomeBanner()) {
                 data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
             }
+            
+            String backdrop = "";
+            if (data.get("body_classes").toString().contains("sidebar-toggled")) {
+                backdrop = "<div class=\"ma-backdrop\"></div>";
+            }
 
-            data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
+            data.put("body_inner_before", backdrop + "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
             return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
         }
     }
@@ -115,6 +120,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             data.put("combine_single_menu_category", true);
             return null;
         } else {
+            if ("minimized".equals(getPropertyString("horizontal_menu"))) {
+                data.put("body_classes", data.get("body_classes").toString() + " sidebar-toggled");
+                setProperty("horizontal_menu", "");
+            }
+            
             if (!getPropertyString("logo").isEmpty()) {
                 data.put("brand_logo", "<div class=\"logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>");
             } else {
@@ -321,6 +331,12 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         }
         if (!getPropertyString("dx8primaryColor").isEmpty()) {
             css += "--theme-primary:"+getPropertyString("dx8primaryColor")+ ";";
+        }
+        if (!getPropertyString("dx8headingBgColor").isEmpty()) {
+            css += "--theme-heading-bg:"+getPropertyString("dx8headingBgColor")+ ";";
+        }
+        if (!getPropertyString("dx8headingFontColor").isEmpty()) {
+            css += "--theme-heading-color:"+getPropertyString("dx8headingFontColor")+ ";";
         }
         if (!getPropertyString("dx8fontColor").isEmpty()) {
             css += "--theme-font-color:"+getPropertyString("dx8fontColor")+ ";";

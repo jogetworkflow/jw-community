@@ -257,7 +257,7 @@ header.navbar .dropdown-menu a span.time{
 }
 #sidebar .nav > li > a > span:not(.badge) {
     min-height: 35px;
-    padding: 6px 0 6px 49px;
+    padding: 6px 0 6px 50px;
     position: relative;
     display: block;
     white-space: pre-line;
@@ -384,6 +384,23 @@ header.navbar .dropdown-menu a span.time{
 #sidebar .nav-tabs.user-menu .mm-profile > a{
     padding: 25px 15px;
     cursor: pointer;
+}
+#sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
+    content: '\f007';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 25px;
+    display: block;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 9px;
+    transform: translateY(-50%);
 }
 
 /* sidebar trigger */
@@ -593,6 +610,17 @@ ul.breadcrumb i.fa-angle-right{
     clear:both;
     content:"";
     display: block;
+}
+#content main > [class*="-body-content"] > div > h1, 
+#content main > [class*="_menu_body"] > div > h1,
+#content main > [class*="-body-content"] > div > h2, 
+#content main > [class*="_menu_body"] > div > h2,
+#content main > [class*="-body-content"] > div > h3, 
+#content main > [class*="_menu_body"] > div > h3,
+.form-section-title,
+#content .grid-stack-item .grid-stack-item-header{
+    background-color: var(--theme-heading-bg);
+    color: var(--theme-heading-color);
 }
 
 /* footer */

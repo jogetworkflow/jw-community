@@ -111,8 +111,8 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 #content main > [class*="_menu_body"] > div > h2,
 #content main > [class*="-body-content"] > div > h3, 
 #content main > [class*="_menu_body"] > div > h3{
-    background-color: var(--theme-sidebar, var(--theme-color5,#fff));
-    color: var(--theme-color2, #ffffff);
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
     font-size: 20px; 
     border-radius: 3px 3px 0 0; 
     padding: 15px 10px;
@@ -163,8 +163,8 @@ body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-co
     box-shadow: 0 10px 10px rgb(0 0 0 / 15%);
 }
 .form-section-title{
-    background-color: var(--theme-sidebar, var(--theme-color5,#fff));
-    color: var(--theme-color2, #ffffff);
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
     font-size: 16px; 
     border-radius: 3px 3px 0 0; 
     padding: 10px;
@@ -394,7 +394,8 @@ body#login #loginForm table td input[type='submit']{
 }
 #content .grid-stack-item .grid-stack-item-header{
     border-bottom: 1px solid #cfdbe2;
-    background-color: var(--theme-sidebar, var(--theme-color5,#fff));
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
 }
 #content .grid-stack-item .grid-stack-item-header h4{
     color: var(--theme-color2, #ffffff);
