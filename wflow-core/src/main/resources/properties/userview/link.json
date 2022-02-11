@@ -40,6 +40,10 @@
         {
             value : 'iframe',
             label : '@@userview.link.iframe@@'
+        },
+        {
+            value : 'script',
+            label : '@@userview.link.script@@'
         }],
         required : 'True',
         value : 'blank'
