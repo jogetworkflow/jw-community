@@ -248,6 +248,7 @@ header.navbar .dropdown-menu a span.time{
     transition: all .3s ease;
     text-decoration: none;
     opacity: 0.8;
+    cursor: pointer;
 }
 #sidebar .nav > li > a:hover {
     color: var(--theme-sidebar-active-link, var(--theme-color3 ,#313435));
