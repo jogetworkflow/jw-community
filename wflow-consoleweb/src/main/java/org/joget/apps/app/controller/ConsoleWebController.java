@@ -5865,7 +5865,7 @@ public class ConsoleWebController {
         
         Map data = new HashMap();
         data.put("value", "form");
-        data.put("label", "Form Builder");
+        data.put("label", ResourceBundleUtil.getMessage("fbuilder.title"));
         data.put("icon", "fas fa-file-alt");
         data.put("color", "#3f84f4");
         if (appDef.getFormDefinitionList() != null) {
@@ -5895,7 +5895,7 @@ public class ConsoleWebController {
         
         data = new HashMap();
         data.put("value", "datalist");
-        data.put("label", "Datalist Builder");
+        data.put("label", ResourceBundleUtil.getMessage("dbuilder.title"));
         data.put("icon", "fas fa-table");
         data.put("color", "#6638b6");
         if (appDef.getDatalistDefinitionList() != null) {
@@ -5924,7 +5924,7 @@ public class ConsoleWebController {
         
         data = new HashMap();
         data.put("value", "userview");
-        data.put("label", "Userview Builder");
+        data.put("label", ResourceBundleUtil.getMessage("ubuilder.title"));
         data.put("icon", "fas fa-desktop");
         data.put("color", "#f3b328");
         if (appDef.getUserviewDefinitionList() != null) {
@@ -5953,7 +5953,7 @@ public class ConsoleWebController {
         
         data = new HashMap();
         data.put("value", "process");
-        data.put("label", "Process Builder");
+        data.put("label", ResourceBundleUtil.getMessage("pbuilder.title"));
         data.put("icon", "fas fa-project-diagram");
         data.put("color", "#dc4438");
         PackageDefinition packageDefinition = appDef.getPackageDefinition();
