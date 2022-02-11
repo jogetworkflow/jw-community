@@ -1934,6 +1934,7 @@ body.quick-nav-shown #builder-quick-nav {
 }
 #quick-nav-bar:not(.active) #builder-menu ul.app_tools li a {
     color:#394249;
+    cursor: pointer;
 }
 #builder-menu ul.app_tools li a{
     color: #fff;
