@@ -558,8 +558,10 @@ AjaxComponent = {
         var action = eventObj.action;
         if (action === "hide") {
             $(element).hide();
+            AjaxComponent.scrollIntoViewport($(".main-component"));
         } else if (action === "show") {
             $(element).show();
+            AjaxComponent.scrollIntoViewport($(element));
         } else if (action === "reload") {
             var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
             if (currentAjaxUrl === undefined) {
@@ -567,6 +569,7 @@ AjaxComponent = {
             }
             AjaxComponent.call(element, currentAjaxUrl, "GET", null);
             $(element).show();
+            AjaxComponent.scrollIntoViewport($(element));
         } else if (action === "parameters") {
             var url = $(element).closest("[data-ajax-component]").data("ajax-url");
             if (url === undefined || url === null) {
@@ -575,6 +578,7 @@ AjaxComponent = {
             var newUrl = AjaxComponent.updateUrlParams(url, eventObj.parameters, urlParams);
             AjaxComponent.call(element, newUrl, "GET", null, null, null, true);
             $(element).show();
+            AjaxComponent.scrollIntoViewport($(element));
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
                 AjaxComponent.call($("#content"), window.location.href, "GET", null);
@@ -592,6 +596,7 @@ AjaxComponent = {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             AjaxComponent.call($(element), url, "GET", null, null, null, true);
             $(element).show();
+            AjaxComponent.scrollIntoViewport($(element));
         }
     },
     
@@ -768,6 +773,20 @@ AjaxComponent = {
             }
         }
         return "";
+    },
+    
+    scrollIntoViewport : function (element) {
+        let elementTop = $(element).offset().top;
+        let elementBottom = elementTop + $(element).outerHeight();
+
+        let viewportTop = $(element).scrollTop();
+        let viewportBottom = viewportTop + $(element).height();
+
+        if (!(elementBottom > viewportTop && elementTop < viewportBottom)){
+            $("html, body").animate({
+                scrollTop: elementTop - 50
+            }, 1000);
+        }
     }
 };
 
