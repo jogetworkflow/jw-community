@@ -12,7 +12,7 @@
         <RollingFile
             name="LOGFILE"
             fileName="${LOGDIR}/joget.log"
-            filePattern="${LOGDIR}/joget.log.%d{yyyyMMdd}.gz"
+            filePattern="${LOGDIR}/joget.log.%d{yyyyMMdd}-%i.gz"
             ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%-5p %d{dd MMM yyyy HH:mm:ss} %c - %m%n</Pattern>
