@@ -1232,9 +1232,6 @@ td.error .chosen-container, td.error input {
     font-size: 11px;
     line-height: 1.5;
 }
-.property-editor-container.narrow .property-input.builder-link > .chosen-container{
-    width: calc(100% - 16px) !important;
-}
 .property-editor-container.narrow input[type=number].withUnitSlector {
     width: 55%;
     max-width: 120px;
@@ -1250,6 +1247,11 @@ td.error .chosen-container, td.error input {
     padding-left: 6px;
     padding-right: 6px;
     border-radius: 0.25rem !important;
+}
+.builder-link a.openbuilder{
+    position: absolute;
+    right: 50px;
+    top: 7px;
 }
 /* field */
 .property-editor-container select {
