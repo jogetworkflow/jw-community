@@ -282,6 +282,7 @@ body.rtl .dataList span.pagelinks{
 .dataList td.dataListAlignCenter {
     text-align: center;
 }
+.dataList .rowaction_body a:not(.stretched-link),
 .dataList a.rowaction_body:not(.stretched-link) {
     z-index: 2;
     position: relative;
@@ -335,9 +336,11 @@ body.rtl .dataList span.pagelinks{
     padding: 10px;
     background: transparent;
     border:1px;
-    border-bottom:0px;
     border-color: #d4d4d4;
     border-style: solid;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
 }
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr + tr.nesteddl_row,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr + tr.nesteddl_row {
@@ -346,18 +349,46 @@ body.rtl .dataList span.pagelinks{
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr + tr.nesteddl_row.active,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr + tr.nesteddl_row.active {
     display:block !important;
-    border-top: 0px;
 }
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr:first-child,
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr:first-child{
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio {
+    height: 0px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0px !important;
+    display: inherit !important;
 }
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr:last-child,
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr:last-child{
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-bottom-width:1px;
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox input,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio input,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox input,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio input{
+    display: none !important;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i ,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: "";
+    background-color: rgba(0,0,0,0);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > :checked + i,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > :checked + i,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > :checked + i,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > :checked + i {
+    box-shadow: 0px 0px 8px 0 rgb(0 67 255 / 70%) !important;
 }
 
 .filter_form .mobile_search_trigger,
