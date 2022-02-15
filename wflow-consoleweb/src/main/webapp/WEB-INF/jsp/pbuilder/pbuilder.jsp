@@ -72,7 +72,8 @@
                 "zoomPlus" : "ProcessBuilder.zoomPlus",
                 "builderBeforeSave" : "ProcessBuilder.beforeSaveValidation",
                 "listViewerViewInit" : "ProcessBuilder.listViewerViewInit",
-                "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed"
+                "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",
+                "saveEditProperties" : "ProcessBuilder.saveEditProperties",
             }
         },
         "advanced_tools" : {

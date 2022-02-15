@@ -2914,7 +2914,7 @@ ProcessBuilder = {
         
         // remove unused endpoints
         var endpoints = ProcessBuilder.jsPlumb.getEndpoints($(source));
-        if (endpoints.length > 0) {
+        if (endpoints !== undefined && endpoints.length > 0) {
             for (var i=0; i<endpoints.length; i++) {
                 if (endpoints[i].connections.length === 0) {
                     ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
@@ -2922,7 +2922,7 @@ ProcessBuilder = {
             }
         }
         endpoints = ProcessBuilder.jsPlumb.getEndpoints($(target));
-        if (endpoints.length > 0) {
+        if (endpoints !== undefined && endpoints.length > 0) {
             for (var i=0; i<endpoints.length; i++) {
                 if (endpoints[i].connections.length === 0) {
                     ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
@@ -4374,5 +4374,66 @@ ProcessBuilder = {
                 });
             });
         });
-    }        
+    },
+    
+    /*
+     * A callback method called from CustomBuilder.applyElementProperties when properties saved
+     */
+    saveEditProperties : function(container, elementProperty, elementObj, element) {
+        if (elementProperty.id !== $(element).attr("id")) {
+            if (elementObj.process !== "process") {
+                var self = CustomBuilder.Builder;
+                
+                ProcessBuilder.jsPlumb.unbind("connection");
+                ProcessBuilder.jsPlumb.unbind("connectionDetached");
+                ProcessBuilder.jsPlumb.unbind();
+                
+                // update transition
+                var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(element)});
+                var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(element)});
+                var transition = [];
+                
+                for (var i in sourceConnSet) {
+                    var data = $(sourceConnSet[i].canvas).data("data");
+                    data.properties.from = elementProperty.id;
+                    data['xpdlObj']['-From'] = elementProperty.id;
+                    ProcessBuilder.jsPlumb.detach(sourceConnSet[i]);
+                    transition.push(data);
+                }
+                for (var i in targetConnSet) {
+                    var data = $(targetConnSet[i].canvas).data("data");
+                    data.properties.to = elementProperty.id;
+                    data['xpdlObj']['-To'] = elementProperty.id;
+                    ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
+                    transition.push(data);
+                }
+                
+                $(element).attr("id", elementProperty.id);
+                
+                for (var i in transition) {
+                    var data = transition[i];
+                    var childComponent = self.parseDataToComponent(data);
+                    var temp = $('<div></div>');
+                    $(element).closest(".process").append(temp);
+                    self.renderElement(data, temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
+                }
+                
+                // bind event handling to new or moved connections
+                ProcessBuilder.jsPlumb.bind("connection", function(info) {
+                    var connection = info.connection;
+                    ProcessBuilder.addConnection(connection);
+                });
+
+                // bind event handling to detached connections
+                ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
+                    var connection = info.connection;
+                    if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
+                        ProcessBuilder.showConnectionDialog(connection);
+                    } else {
+                        ProcessBuilder.removeConnection(connection);
+                    }
+                });
+            }
+        }
+    }
 };
