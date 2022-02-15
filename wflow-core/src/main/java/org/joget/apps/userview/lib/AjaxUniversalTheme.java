@@ -72,12 +72,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
             }
             
-            String backdrop = "";
-            if (data.get("body_classes").toString().contains("sidebar-toggled")) {
-                backdrop = "<div class=\"ma-backdrop\"></div>";
-            }
-
-            data.put("body_inner_before", backdrop + "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
+            data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
             return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
         }
     }
@@ -121,7 +116,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             return null;
         } else {
             if ("minimized".equals(getPropertyString("horizontal_menu"))) {
-                data.put("body_classes", data.get("body_classes").toString() + " sidebar-toggled");
+                data.put("body_classes", data.get("body_classes").toString() + " sidebar-minimized");
                 setProperty("horizontal_menu", "");
             }
             

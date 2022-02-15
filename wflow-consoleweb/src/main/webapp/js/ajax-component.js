@@ -179,7 +179,7 @@ AjaxComponent = {
         }
         
         if ($(".ma-backdrop").is(":visible")) {
-            $("body").trigger("click.sidebar-toggled");
+            $(".ma-backdrop").trigger("click.sidebar-toggled");
         }
         
         if (!AjaxComponent.isCurrentUserviewUrl(url)) {

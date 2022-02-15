@@ -91,48 +91,36 @@ if ((typeof _customFooTableArgs) === "undefined") {
         initMenu();
 
         //open menu
-        var originalHash = '';
         $("#sidebar-trigger").on("click", function() {
-            originalHash = location.hash.replace('#', '');
-            $(window).bind('hashchange.menu', function(event) {
-                var hash = location.hash.replace('#', '');
-                if (hash !== 'menu' && $(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
-                    $(".ma-backdrop").trigger("click");
+            if ($("body").width() >= 1280) {
+                $("body").toggleClass("sidebar-minimized");
+            } else {
+                if (!$("body").hasClass("sidebar-toggled")) {
+                    if ($(".ma-backdrop").length === 0){
+                        var backdrop = '<div class="ma-backdrop" />';
+                        $("body").prepend(backdrop);
+                    }
+                    $("body").addClass("sidebar-toggled");
+                    $(this).addClass("toggled");
+                    $("#sidebar").addClass("toggled");
+                } else {
+                    $("body").removeClass("sidebar-toggled");
+                    $(".ma-backdrop").remove();
+                    $("#sidebar, #sidebar-trigger").removeClass("toggled");
                 }
-            });
-            
-            if ($(".ma-backdrop").length === 0) {
-                var backdrop = '<div class="ma-backdrop" />';
-                $("body").addClass("sidebar-toggled");
-                $("body").prepend(backdrop);
-                $(this).addClass("toggled");
-                $("#sidebar").addClass("toggled");
-                location.hash = 'menu';
-            } else if ($(".ma-backdrop").length > 0 && !$(".ma-backdrop").is(":visible")) {
+            }
+            return false;
+        });
+        
+        $("body").off("click.sidebar-toggled");
+        $("body").on("click.sidebar-toggled", ".ma-backdrop", function(e) {
+            var container = $("#sidebar");
+            if (($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") && !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 && !container.is(e.target) && container.has(e.target).length === 0)) {
                 $("body").removeClass("sidebar-toggled");
                 $(".ma-backdrop").remove();
                 $("#sidebar, #sidebar-trigger").removeClass("toggled");
-                $("body").off(".sidebar-toggled");
-                $(window).unbind('hashchange.menu');
-                location.hash = originalHash;
-                return false;
             }
-            
-            if ($(".ma-backdrop").is(":visible")) {
-                $("body").off("click.sidebar-toggled");
-                $("body").on("click.sidebar-toggled", function(e) {
-                    var container = $("#sidebar");
-                    if (($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") && !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 && !container.is(e.target) && container.has(e.target).length === 0)) {
-                        $("body").removeClass("sidebar-toggled");
-                        $(".ma-backdrop").remove();
-                        $("#sidebar, #sidebar-trigger").removeClass("toggled");
-                        $("body").off("click.sidebar-toggled");
-                        $(window).unbind('hashchange.menu');
-                        location.hash = originalHash;
-                        return false;
-                    }
-                });
-            }
+            return false;
         });
 
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {

@@ -214,7 +214,6 @@ header.navbar .dropdown-menu a span.time{
 /* side navigation */
 #navigation {
     height: calc(100vh - 65px);
-    width: 280px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -224,6 +223,9 @@ header.navbar .dropdown-menu a span.time{
     touch-action: auto;
     -ms-touch-action: auto;
     position: relative;
+}
+body:not(.horizontal_menu) #navigation {
+    width: 280px;
 }
 #navigation:hover {
     overflow-y: auto;
@@ -469,9 +471,6 @@ header.navbar .dropdown-menu a span.time{
     margin: 3px 0
 }
 @media (max-width:1279px) {   
-    body.sidebar-toggled .hi-trigger {
-        pointer-events: none;
-    }
     .hi-trigger.toggled:before {
         -webkit-transform: scale(1);
         -ms-transform: scale(1);
@@ -520,44 +519,44 @@ header.navbar .dropdown-menu a span.time{
     }
 }
 @media (min-width:1280px) {
-    body.sidebar-toggled #page {
+    body.sidebar-minimized #page {
         padding-left: 65px;
     }
-    body.sidebar-toggled header.navbar {
+    body.sidebar-minimized header.navbar {
         width: calc(100% - 65px);
     }
-    body.sidebar-toggled #sidebar {
+    body.sidebar-minimized #sidebar {
         width: 65px;
     }
-    body.sidebar-toggled #sidebar .nav > li > a > span {
+    body.sidebar-minimized #sidebar .nav > li > a > span {
         white-space: nowrap;
     }
-    body.sidebar-toggled #sidebar .nav > li > ul,
-    body.sidebar-toggled #sidebar .nav > li.toggled > ul {
+    body.sidebar-minimized #sidebar .nav > li > ul,
+    body.sidebar-minimized #sidebar .nav > li.toggled > ul {
         display: none !important;
     }
-    body.sidebar-toggled #sidebar li a.dropdown:after{
+    body.sidebar-minimized #sidebar li a.dropdown:after{
         display: none
     }
-    body.sidebar-toggled .sidebar_brand #header-link{
+    body.sidebar-minimized .sidebar_brand #header-link{
         visibility: hidden;
     }
-    body.sidebar-toggled #sidebar:hover .sidebar_brand #header-link{
+    body.sidebar-minimized #sidebar:hover .sidebar_brand #header-link{
         visibility: visible;
     }
-    body.sidebar-toggled #sidebar:hover {
+    body.sidebar-minimized #sidebar:hover {
         width: 280px;
     }
-    body.sidebar-toggled #sidebar:hover .nav > li > a > span {
+    body.sidebar-minimized #sidebar:hover .nav > li > a > span {
         white-space: pre-line;
     }
-    body.sidebar-toggled #sidebar:hover .nav > li.toggled > ul {
+    body.sidebar-minimized #sidebar:hover .nav > li.toggled > ul {
         display: block !important;
     }
-    body.sidebar-toggled #sidebar:hover li a.dropdown:after{
+    body.sidebar-minimized #sidebar:hover li a.dropdown:after{
         display: block;
     }
-    body.sidebar-toggled .ma-backdrop{
+    body.sidebar-minimized .ma-backdrop{
         display: none !important;
     }
 }
