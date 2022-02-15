@@ -2326,14 +2326,68 @@ _CustomBuilder = {
                 $(page).find(".property-editor-property").each(function () {
                     var element = $(this);
                     element.addClass("property-search-hide");
-                    if ($(element).find(".property-label").text().toLowerCase().indexOf(searchText) > -1) { 
-                       element.removeClass("property-search-hide");
+                    
+                    var show = false;
+                    if (CustomBuilder.isSearchMatch($(element).find(".property-label").text(), searchText)) { 
+                       show = true;
+                    }
+                    if (!show) {
+                        $(element).find("input[name], textarea[name], select[name], .ace_editor, .tinymce").each(function(){
+                            if ($(this).is('.ace_editor')) {
+                                var id = $(this).attr('id');
+                                var codeeditor = ace.edit(id);
+                                var value = codeeditor.getValue();
+                                if (CustomBuilder.isSearchMatch(value, searchText)) {
+                                    show = true;
+                                    return false;
+                                }
+                            } else if ($(this).is('.tinymce')) {
+                                var value = tinyMCE.editors[$(this).attr('id')].getContent();
+                                if (CustomBuilder.isSearchMatch(value, searchText)) {
+                                    show = true;
+                                    return false;
+                                }
+                            } else if ($(this).is('[type="checkbox"]') || $(this).is('[type="radio"]')) {
+                                if ($(this).is(":checked")) {
+                                    var label = ""; 
+                                    if ($(this).parent().find("span").length > 0) {
+                                        label = $(this).parent().find("span").text();
+                                    }
+                                    
+                                    if (CustomBuilder.isSearchMatch($(this).val(), searchText)) {
+                                        show = true;
+                                        return false;
+                                    } else if (CustomBuilder.isSearchMatch(label, searchText)) {
+                                        show = true;
+                                        return false;
+                                    }
+                                }
+                            } else if ($(this).is('select')) {
+                                var label = ""; 
+                                if ($(this).find("option:selected").length > 0) {
+                                    label = $(this).find("option:selected").text();
+                                }
+                                if (CustomBuilder.isSearchMatch(label, searchText)) {
+                                    show = true;
+                                    return false;
+                                }
+                            } else if (CustomBuilder.isSearchMatch($(this).val(), searchText)) {
+                                show = true;
+                                return false;
+                            }
+                        });
+                    }
+                    if (show) {
+                        element.removeClass("property-search-hide");
                     }
                 });
             }
             
             if ($(page).find(".property-editor-property:not(.property-search-hide)").length > 0) {
-                $(page).removeClass("property-search-hide collapsed");
+                $(page).removeClass("property-search-hide");
+                if (searchText !== "") {
+                    $(page).removeClass("collapsed");
+                }
             } else {
                 $(page).addClass("property-search-hide");
             }
@@ -2343,6 +2397,10 @@ _CustomBuilder = {
         } else {
             $(this).next("button").hide();
         }
+    },
+    
+    isSearchMatch : function(str, searchText) {
+        return str !== null && str !== undefined && str.toLowerCase().indexOf(searchText) > -1;
     },
     
     /*
