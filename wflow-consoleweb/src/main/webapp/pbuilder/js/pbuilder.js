@@ -3240,12 +3240,17 @@ ProcessBuilder = {
             for (var a in xpdlActivities) {
                 var activityInvalid = false;
                 var deadlineInvalid = false;
+                var startInvalid = false;
                 
                 var act = xpdlActivities[a];
                 var aid = act['-Id'];
                 if ((fromTransition[aid] === undefined && $.inArray(aid, ends) === -1)
                         || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
                     activityInvalid = true;
+                }
+                
+                if ($.inArray(aid, starts) !== -1 && toTransition[aid] !== undefined && toTransition[aid].length > 0) {
+                    startInvalid = true;
                 }
                 
                 var xpdlDeadlines = ProcessBuilder.getArray(act['Deadline']);
@@ -3269,19 +3274,23 @@ ProcessBuilder = {
                     }
                 }
                 
-                if (activityInvalid || deadlineInvalid) {
+                if (activityInvalid || deadlineInvalid || startInvalid) {
                     // only show in current process in canvas
                     if (ProcessBuilder.currentProcessData.properties.id === xpdlProcess['-Id']) {
                         var $node = self.frameBody.find("#"+ aid);
                         $node.addClass("invalidNode");
                         var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
                         var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
+                        var messageStart = get_cbuilder_msg("pbuilder.label.invalidStart");
                         var message = "";
                         if (activityInvalid) {
                             message += '<p>' + messageTransition +'</p>';
                         }
                         if (deadlineInvalid) {
                             message += '<p>' + messageDeadline +'</p>';
+                        }
+                        if (startInvalid) {
+                            message += '<p>' + messageStart +'</p>';
                         }
                         var $nodeMessage = $('<div class="invalidNodeMessage">' + message +'</div>');
                         $node.append($nodeMessage);
