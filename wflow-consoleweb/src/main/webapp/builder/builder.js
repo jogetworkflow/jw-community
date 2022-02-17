@@ -453,6 +453,14 @@ _CustomBuilder = {
             $("#toggleAutoApplyChange").attr("title", get_cbuilder_msg("cbuilder.enableAutoApplyChanges"));
         }
         
+        if (CustomBuilder.getBuilderSetting("expandProps") === true) {
+            $("#expand-all-props-btn").hide();
+            $("#collapse-all-props-btn").show();
+        } else {
+            $("#expand-all-props-btn").show();
+            $("#collapse-all-props-btn").hide();
+        }
+        
 //        var builderMode = $.localStorage.getItem("builderMode");
 //        if (builderMode === undefined || builderMode === null || builderMode === "" || !(builderMode === "mode-basic" || builderMode === "mode-advanced")) {
 //            builderMode = "mode-basic";
@@ -1421,6 +1429,10 @@ _CustomBuilder = {
                 CustomBuilder.adjustPropertyPanelSize();
             }
             
+            if (CustomBuilder.getBuilderSetting("expandProps") === true) {
+                $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").removeClass("collapsed");
+            }
+        
             $("#element-properties-tab-link").show();
         } else {
             // show popup dialog
@@ -2301,6 +2313,7 @@ _CustomBuilder = {
         $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").removeClass("collapsed");
         $("#expand-all-props-btn").hide();
         $("#collapse-all-props-btn").show();
+        CustomBuilder.setBuilderSetting("expandProps", true);
     },
     
     /*
@@ -2310,6 +2323,7 @@ _CustomBuilder = {
         $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").addClass("collapsed");
         $("#expand-all-props-btn").show();
         $("#collapse-all-props-btn").hide();
+        CustomBuilder.setBuilderSetting("expandProps", false);
     },
     
     /*
@@ -5952,6 +5966,10 @@ _CustomBuilder.Builder = {
         
         if ($("body").hasClass("max-property-editor")) {
             CustomBuilder.adjustPropertyPanelSize();
+        }
+        
+        if (CustomBuilder.getBuilderSetting("expandProps") === true) {
+            $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").removeClass("collapsed");
         }
     },
     
