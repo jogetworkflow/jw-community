@@ -671,7 +671,9 @@ public class UserviewThemeProcesser {
                     content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
                     content += "</div>\n";
                 }
-                
+                if (userview.getCurrent().getUserview() == null) {
+                    userview.getCurrent().setUserview(userview);
+                }
                 UserviewPage page = new UserviewPage(userview.getCurrent());
                 content += page.render();
             } else {

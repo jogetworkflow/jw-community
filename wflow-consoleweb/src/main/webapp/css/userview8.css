@@ -1220,6 +1220,12 @@ form.form .btn {
         max-width: 100% !important;
     }
 }
+.InformationTileComponent .acSparkline-initialized,
+.InformationTileComponent a:not(.stretched-link),
+.InformationTileComponent button{
+    position: relative;
+    z-index: 20;
+}
 
 /* quick edit & analyzer */
 .quickEdit, #form-canvas .quickEdit{
