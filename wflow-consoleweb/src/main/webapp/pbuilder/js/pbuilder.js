@@ -606,6 +606,9 @@ ProcessBuilder = {
                 if (!ProcessBuilder.readonly) {
                     //find mapping
                     ProcessBuilder.populateActivityMapping(obj);
+                    if (obj.className === "start") {
+                        ProcessBuilder.populateParticipantMapping(obj);
+                    }
                 }
             }
         }
@@ -656,11 +659,6 @@ ProcessBuilder = {
             }
 
             process['transitions'].push(transition);
-        }
-        
-        if (!ProcessBuilder.readonly) {
-            //find whitelist mapping
-            ProcessBuilder.populateParticipantMapping(ProcessBuilder.currentProcessData);
         }
     },
     
@@ -844,8 +842,6 @@ ProcessBuilder = {
                 ProcessBuilder.setArray(transitionXpdlObj, 'ExtendedAttributes', 'ExtendedAttribute', extendedAttribute); 
             }
             ProcessBuilder.setArray(xpdlProcess, 'Transitions', 'Transition', xpdlTransitions);
-            
-            ProcessBuilder.updateParticipantMapping(data);
         }
         
         //remove participants not used by any processes
@@ -881,32 +877,32 @@ ProcessBuilder = {
      * Set the participant mapping to object properties
      */
     populateParticipantMapping : function (participant) {
-        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "process")?"processStartWhiteList":participant.properties.id);
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "start")?"processStartWhiteList":participant.properties.id);
         var mapping = CustomBuilder.data['participants'][id];
         if (mapping !== undefined) {
-            participant.properties['mapping_type'] = mapping.type; //user, group, department, hod, performer, workflow variable, plugin, role, 
+            participant.properties['mapping_par_type'] = mapping.type; //user, group, department, hod, performer, workflow variable, plugin, role, 
             if (mapping.type === "user") {
-                participant.properties['mapping_users'] = mapping.value;
+                participant.properties['mapping_par_users'] = mapping.value;
             } else if (mapping.type === "group") {
-                participant.properties['mapping_groups'] = mapping.value;
+                participant.properties['mapping_par_groups'] = mapping.value;
             } else if (mapping.type === "department" || mapping.type === "hod") {
-                participant.properties['mapping_department'] = mapping.value;
+                participant.properties['mapping_par_department'] = mapping.value;
             } else if (mapping.type === "requester" || mapping.type === "requesterHod" || mapping.type === "requesterHodIgnoreReportTo" || mapping.type === "requesterSubordinates" || mapping.type === "requesterDepartment") {
-                participant.properties['mapping_type'] = "performer";
-                participant.properties['mapping_performer_type'] = mapping.type;
-                participant.properties['mapping_performer_act'] = mapping.value;
+                participant.properties['mapping_par_type'] = "performer";
+                participant.properties['mapping_par_performer_type'] = mapping.type;
+                participant.properties['mapping_par_performer_act'] = mapping.value;
             } else if (mapping.type === "workflowVariable") {
                 var temp = mapping.value.split(",");
-                participant.properties['mapping_workflowVariable'] = temp[0];
-                participant.properties['mapping_wv_type'] = temp[1];
+                participant.properties['mapping_par_workflowVariable'] = temp[0];
+                participant.properties['mapping_par_wv_type'] = temp[1];
             } else if (mapping.type === "plugin") {
-                participant.properties['mapping_plugin'] = {
+                participant.properties['mapping_par_plugin'] = {
                     className : mapping.value,
                     properties : mapping.properties
                 };
             } else if (mapping.type === "role") {
-                participant.properties['mapping_type'] = "";
-                participant.properties['mapping_role'] = mapping.value;
+                participant.properties['mapping_par_type'] = "";
+                participant.properties['mapping_par_role'] = mapping.value;
             }
 
             participant.mapping = mapping;
@@ -917,7 +913,7 @@ ProcessBuilder = {
      * Update the participant mapping back to data
      */
     updateParticipantMapping : function (participant) {
-        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "process")?"processStartWhiteList":participant.properties.id);
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "start")?"processStartWhiteList":participant.properties.id);
         var mapping = CustomBuilder.data['participants'][id];
         if (mapping === undefined) {
             mapping = {};
@@ -925,32 +921,32 @@ ProcessBuilder = {
         }
         mapping.type = "";
         
-        if (participant.properties['mapping_type'] === "user" && participant.properties['mapping_users'] !== "") {
+        if (participant.properties['mapping_par_type'] === "user" && participant.properties['mapping_par_users'] !== "") {
             mapping.type = "user";
-            mapping.value = participant.properties['mapping_users'];
-        } else if (participant.properties['mapping_type'] === "group" && participant.properties['mapping_groups'] !== "") {
+            mapping.value = participant.properties['mapping_par_users'];
+        } else if (participant.properties['mapping_par_type'] === "group" && participant.properties['mapping_par_groups'] !== "") {
             mapping.type = "group";
-            mapping.value = participant.properties['mapping_groups'];
-        } else if ((participant.properties['mapping_type'] === "department" || participant.properties['mapping_type'] === "hod") && participant.properties['mapping_department'] !== "") {
-            mapping.type = participant.properties['mapping_type'];
-            mapping.value = participant.properties['mapping_department'];
-        } else if (participant.properties['mapping_type'] === "performer" && participant.properties['mapping_performer_type'] !== "") {
-            mapping.type = participant.properties['mapping_performer_type'];
-            mapping.value = participant.properties['mapping_performer_act'];
-        } else if (participant.properties['mapping_type'] === "workflowVariable") {
+            mapping.value = participant.properties['mapping_par_groups'];
+        } else if ((participant.properties['mapping_par_type'] === "department" || participant.properties['mapping_par_type'] === "hod") && participant.properties['mapping_par_department'] !== "") {
+            mapping.type = participant.properties['mapping_par_type'];
+            mapping.value = participant.properties['mapping_par_department'];
+        } else if (participant.properties['mapping_par_type'] === "performer" && participant.properties['mapping_par_performer_type'] !== "") {
+            mapping.type = participant.properties['mapping_par_performer_type'];
+            mapping.value = participant.properties['mapping_par_performer_act'];
+        } else if (participant.properties['mapping_par_type'] === "workflowVariable") {
             mapping.type = "workflowVariable";
-            mapping.value = participant.properties['mapping_workflowVariable'] + "," + participant.properties['mapping_wv_type'];
-        } else if (participant.properties['mapping_type'] === "plugin") {
-            if (participant.properties['mapping_plugin'] !== undefined
-                    && participant.properties['mapping_plugin']['className'] !== undefined
-                    && participant.properties['mapping_plugin']['className'] !== "") {
+            mapping.value = participant.properties['mapping_par_workflowVariable'] + "," + participant.properties['mapping_par_wv_type'];
+        } else if (participant.properties['mapping_par_type'] === "plugin") {
+            if (participant.properties['mapping_par_plugin'] !== undefined
+                    && participant.properties['mapping_par_plugin']['className'] !== undefined
+                    && participant.properties['mapping_par_plugin']['className'] !== "") {
                 mapping.type = "plugin";
-                mapping.value = participant.properties['mapping_plugin']['className'];
-                mapping.properties = $.extend(true, {}, participant.properties['mapping_plugin']['properties']);
+                mapping.value = participant.properties['mapping_par_plugin']['className'];
+                mapping.properties = $.extend(true, {}, participant.properties['mapping_par_plugin']['properties']);
             }
-        } else if (participant.className === "process" && participant.properties['mapping_type'] === "" && participant.properties['mapping_role'] !== "") {
+        } else if (participant.className === "start" && participant.properties['mapping_par_type'] === "" && participant.properties['mapping_par_role'] !== "") {
             mapping.type = "role";
-            mapping.value = participant.properties['mapping_role'];
+            mapping.value = participant.properties['mapping_par_role'];
         }
         
         if (mapping.type === "") {
@@ -971,17 +967,17 @@ ProcessBuilder = {
             var formMapping = CustomBuilder.data['activityForms'][id];
             
             if (formMapping !== undefined) {
-                activity.properties['mapping_type'] = formMapping.type;
-                activity.properties['mapping_formId'] = formMapping.formId;
-                activity.properties['mapping_formUrl'] = formMapping.formUrl;
-                activity.properties['mapping_formIFrameStyle'] = formMapping.formIFrameStyle;
-                activity.properties['mapping_disableSaveAsDraft'] = formMapping.disableSaveAsDraft + "";
-                activity.properties['mapping_autoContinue'] = formMapping.autoContinue + "";
+                activity.properties['mapping_act_type'] = formMapping.type;
+                activity.properties['mapping_act_formId'] = formMapping.formId;
+                activity.properties['mapping_act_formUrl'] = formMapping.formUrl;
+                activity.properties['mapping_act_formIFrameStyle'] = formMapping.formIFrameStyle;
+                activity.properties['mapping_act_disableSaveAsDraft'] = formMapping.disableSaveAsDraft + "";
+                activity.properties['mapping_act_autoContinue'] = formMapping.autoContinue + "";
                         
                 activity.formMapping = formMapping;
             }
             if (mapping !== undefined) {
-                activity.properties['mapping_modifier'] = {
+                activity.properties['mapping_act_modifier'] = {
                     className : mapping.className,
                     properties : $.extend(true, {}, mapping.properties)
                 };
@@ -1002,7 +998,7 @@ ProcessBuilder = {
             }
         } else if (activity.className === "route") {
             if (mapping !== undefined) {
-                activity.properties['mapping_plugin'] = {
+                activity.properties['mapping_act_plugin'] = {
                     className : mapping.className,
                     properties : $.extend(true, {}, mapping.properties)
                 };
@@ -1026,29 +1022,29 @@ ProcessBuilder = {
                 formMapping = {};
                 CustomBuilder.data['activityForms'][id] = formMapping;
             }
-            formMapping.type = activity.properties['mapping_type'];
+            formMapping.type = activity.properties['mapping_act_type'];
             if (formMapping.type === undefined) {
                 formMapping.type = "SINGLE";
             }
             if (formMapping.type === "SINGLE") {
-                formMapping.formId = (activity.properties['mapping_formId'] !== undefined)?activity.properties['mapping_formId']:"";
-                formMapping.disableSaveAsDraft = (activity.properties['mapping_disableSaveAsDraft'] === "true");
+                formMapping.formId = (activity.properties['mapping_act_formId'] !== undefined)?activity.properties['mapping_act_formId']:"";
+                formMapping.disableSaveAsDraft = (activity.properties['mapping_act_disableSaveAsDraft'] === "true");
                 
                 delete formMapping['formUrl'];
                 delete formMapping['formIFrameStyle'];
             } else {
-                formMapping.formUrl = (activity.properties['mapping_formUrl'] !== undefined)?activity.properties['mapping_formUrl']:"";
-                formMapping.formIFrameStyle = (activity.properties['mapping_formIFrameStyle'] !== undefined)?activity.properties['mapping_formIFrameStyle']:"";
+                formMapping.formUrl = (activity.properties['mapping_act_formUrl'] !== undefined)?activity.properties['mapping_act_formUrl']:"";
+                formMapping.formIFrameStyle = (activity.properties['mapping_act_formIFrameStyle'] !== undefined)?activity.properties['mapping_act_formIFrameStyle']:"";
             
                 delete formMapping['formUrl'];
                 delete formMapping['disableSaveAsDraft'];
             }
-            formMapping.autoContinue = (activity.properties['mapping_autoContinue'] === "true");
+            formMapping.autoContinue = (activity.properties['mapping_act_autoContinue'] === "true");
             
-            if (activity.properties['mapping_modifier'] !== undefined 
-                    && activity.properties['mapping_modifier']['className'] !== undefined 
-                    && activity.properties['mapping_modifier']['className'] !== "" ) {
-                CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_modifier']);
+            if (activity.properties['mapping_act_modifier'] !== undefined 
+                    && activity.properties['mapping_act_modifier']['className'] !== undefined 
+                    && activity.properties['mapping_act_modifier']['className'] !== "" ) {
+                CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_act_modifier']);
             } else if (CustomBuilder.data['activityPlugins'][id] !== undefined) {
                 delete CustomBuilder.data['activityPlugins'][id];
             }
@@ -1084,14 +1080,14 @@ ProcessBuilder = {
             }
         } else if (activity.className === "route") {
             var mapping = CustomBuilder.data['activityPlugins'][id];
-            if (activity.properties['mapping_plugin'] !== undefined 
-                    && activity.properties['mapping_plugin']['className'] !== undefined
-                    && activity.properties['mapping_plugin']['className'] !== "") {
+            if (activity.properties['mapping_act_plugin'] !== undefined 
+                    && activity.properties['mapping_act_plugin']['className'] !== undefined
+                    && activity.properties['mapping_act_plugin']['className'] !== "") {
                 if (mapping === undefined) {
                     mapping = {};
                     CustomBuilder.data['activityPlugins'][id] = mapping;
                 }
-                mapping = $.extend(true, {}, activity.properties['mapping_plugin']);
+                mapping = $.extend(true, {}, activity.properties['mapping_act_plugin']);
                 CustomBuilder.data['activityPlugins'][id] = mapping;
             } else if (mapping !== undefined){
                 delete CustomBuilder.data['activityPlugins'][id];
@@ -1349,6 +1345,8 @@ ProcessBuilder = {
                     if (connSet.length > 0) {
                         actId = $(connSet[0].target).attr("id");
                     }
+                    
+                    ProcessBuilder.updateParticipantMapping(activity);
                 } else {
                     var connSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
                     if (connSet.length > 0) {
@@ -1457,7 +1455,7 @@ ProcessBuilder = {
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
         
         var emptyProcess = {
-            "ExtendedAttributes": {
+            "eendedAttributes": {
                 "ExtendedAttribute": [
                     {
                         "-Name": "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER",
@@ -1695,7 +1693,7 @@ ProcessBuilder = {
             'navigable' : false,
             'renderNodeAdditional' : false,
             'render' : ProcessBuilder.renderProcess,
-            'getStylePropertiesDefinition' : ProcessBuilder.getProcessStartWhiteListDef
+            'supportStyle' : false
         }});
     
         //Participant
@@ -2487,17 +2485,17 @@ ProcessBuilder = {
         }
         
         if ((elementObj.className === "activity" || elementObj.className === "start") 
-                && elementObj.properties !== undefined && elementObj.properties.mapping_formId !== undefined
-                && elementObj.properties.mapping_formId !== "") {
+                && elementObj.properties !== undefined && elementObj.properties.mapping_act_formId !== undefined
+                && elementObj.properties.mapping_act_formId !== "") {
             element.append('<div class="node_mapping"><i class="fas fa-file-alt" style="color:#3f84f4;"></i></div>');
-            element.find('.node_mapping').attr('title', ProcessBuilder.availableForms[elementObj.properties.mapping_formId]);
+            element.find('.node_mapping').attr('title', ProcessBuilder.availableForms[elementObj.properties.mapping_act_formId]);
         } else if (elementObj.className === "route" && elementObj.properties !== undefined
-                && elementObj.properties.mapping_plugin !== undefined && elementObj.properties.mapping_plugin.className !== undefined
-                 && elementObj.properties.mapping_plugin.className !== "") {
-            var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin.className];
+                && elementObj.properties.mapping_act_plugin !== undefined && elementObj.properties.mapping_act_plugin.className !== undefined
+                 && elementObj.properties.mapping_act_plugin.className !== "") {
+            var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_act_plugin.className];
             if (plugin === undefined) {
                 element.append('<div class="node_mapping"><i class="las la-exclamation-triangle" style="color:red;"></i></div>');
-                element.find('.node_mapping').attr('title', elementObj.properties.mapping_plugin.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")");
+                element.find('.node_mapping').attr('title', elementObj.properties.mapping_act_plugin.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")");
             } else {
                 var icon = plugin.icon;
                 if (icon === undefined || icon === "") {
@@ -3467,6 +3465,7 @@ ProcessBuilder = {
     getProcessStartWhiteListDef : function(elementObj, component) {
         var def = ProcessBuilder.getParticipantDef(elementObj, component);
         
+        def[0].title = get_cbuilder_msg("pbuilder.label.processStartWhiteList")
         def[0].properties[0].options.unshift({value : "", label : get_cbuilder_msg("pbuilder.label.type.role")});
         
         return def;
@@ -3480,7 +3479,7 @@ ProcessBuilder = {
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
                 properties: [{
-                    name: 'mapping_type',
+                    name: 'mapping_par_type',
                     label: get_cbuilder_msg("cbuilder.type"),
                     type : 'selectbox',
                     options : [
@@ -3493,34 +3492,34 @@ ProcessBuilder = {
                         {value : "plugin", label : get_cbuilder_msg("pbuilder.label.plugin")}
                     ]
                 },{
-                    name : 'mapping_users',
+                    name : 'mapping_par_users',
                     label : get_cbuilder_msg("pbuilder.label.users"),
                     type : 'multiselect',
                     required : 'True',
                     options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getUsers',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'user',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_groups',
+                    name : 'mapping_par_groups',
                     label : get_cbuilder_msg("pbuilder.label.groups"),
                     type : 'multiselect',
                     required : 'True',
                     options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.GroupPermission/service?action=getGroups',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'group',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_department',
+                    name : 'mapping_par_department',
                     label : get_cbuilder_msg("pbuilder.label.department"),
                     type : 'selectbox',
                     required : 'True',
                     options_ajax : CustomBuilder.contextPath + '/web/json/plugin/org.joget.apps.userview.lib.DepartmentPermission/service?action=getDepts',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'department|hod',
                     control_use_regex: 'true'
                 },{
-                    name : 'mapping_performer_type',
+                    name : 'mapping_par_performer_type',
                     label : get_cbuilder_msg("pbuilder.label.performerType"),
                     type : 'selectbox',
                     required : 'True',
@@ -3531,28 +3530,28 @@ ProcessBuilder = {
                         {value : "requesterSubordinates" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterSubordinates")},
                         {value : "requesterDepartment" , label : get_cbuilder_msg("pbuilder.label.performerType.requesterDepartment")}
                     ],
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'performer',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_performer_act',
+                    name : 'mapping_par_performer_act',
                     label : get_cbuilder_msg("pbuilder.label.performerActivity"),
                     type : 'selectbox',
                     options_callback : "ProcessBuilder.getActivitiesOptions",
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'performer',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_workflowVariable',
+                    name : 'mapping_par_workflowVariable',
                     label : get_cbuilder_msg("pbuilder.label.workflowVariable"),
                     type : 'selectbox',
                     required : 'True',
                     options_callback : "ProcessBuilder.getWorkflowVariablesOptions",
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'workflowVariable',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_wv_type',
+                    name : 'mapping_par_wv_type',
                     label : get_cbuilder_msg("pbuilder.label.workflowVariableRepresent"),
                     type : 'selectbox',
                     required : 'True',
@@ -3562,11 +3561,11 @@ ProcessBuilder = {
                         {value : "department" , label : get_cbuilder_msg("pbuilder.label.department")},
                         {value : "hod" , label : get_cbuilder_msg("pbuilder.label.hod")}
                     ],
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'workflowVariable',
                     control_use_regex: 'false'
                 },{
-                    name: 'mapping_plugin',
+                    name: 'mapping_par_plugin',
                     label: get_cbuilder_msg("pbuilder.label.plugin"),
                     type : 'elementselect',
                     required : 'True',
@@ -3579,11 +3578,11 @@ ProcessBuilder = {
                         return options;
                     },
                     url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: 'plugin',
                     control_use_regex: 'false'
                 },{
-                    name: 'mapping_role',
+                    name: 'mapping_par_role',
                     label: get_cbuilder_msg("pbuilder.label.type.role"),
                     type : 'selectbox',
                     options : [
@@ -3591,7 +3590,7 @@ ProcessBuilder = {
                         {value : "loggedInUser" , label : get_cbuilder_msg("pbuilder.label.loggedInUser")},
                         {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")}
                     ],
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_par_type',
                     control_value: '',
                     control_use_regex: 'false'
                 }]
@@ -3609,7 +3608,7 @@ ProcessBuilder = {
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
                 properties: [{
-                    name: 'mapping_type',
+                    name: 'mapping_act_type',
                     label: get_cbuilder_msg("cbuilder.type"),
                     type : 'selectbox',
                     options : [
@@ -3617,7 +3616,7 @@ ProcessBuilder = {
                         {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")},
                     ]
                 },{
-                    name : 'mapping_formId',
+                    name : 'mapping_act_formId',
                     label : get_cbuilder_msg("pbuilder.label.formName"),
                     type : 'selectbox',
                     options_callback : function(props, values) {
@@ -3628,29 +3627,29 @@ ProcessBuilder = {
                         }
                         return options;
                     },
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_act_type',
                     control_value: 'SINGLE',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_formIFrameStyle',
+                    name : 'mapping_act_formIFrameStyle',
                     label : get_cbuilder_msg("pbuilder.label.iframeStyle"),
                     type : 'codeeditor',
                     mode : 'css',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_act_type',
                     control_value: 'EXTERNAL',
                     control_use_regex: 'false'
                 },{
-                    name: 'mapping_disableSaveAsDraft',
+                    name: 'mapping_act_disableSaveAsDraft',
                     label: get_cbuilder_msg("pbuilder.label.removeSaveAsDraftButton"),
                     type : 'checkbox',
                     options : [
                         {value : "true", label : ''}
                     ],
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_act_type',
                     control_value: 'SINGLE',
                     control_use_regex: 'false'
                 },{
-                    name: 'mapping_autoContinue',
+                    name: 'mapping_act_autoContinue',
                     label: get_cbuilder_msg("pbuilder.label.showNextAssignment"),
                     type : 'checkbox',
                     options : [
@@ -3662,7 +3661,7 @@ ProcessBuilder = {
         
         if (Object.keys(ProcessBuilder.availableAssignmentFormModifier).length > 0) {
             def[0].properties.push({
-                name: 'mapping_modifier',
+                name: 'mapping_act_modifier',
                 label: get_cbuilder_msg("pbuilder.label.moreSettings"),
                 type : 'elementselect',
                 options_callback : function(props, values) {
@@ -3695,7 +3694,7 @@ ProcessBuilder = {
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
                 properties: [{
-                    name: 'mapping_plugin',
+                    name: 'mapping_act_plugin',
                     label: get_cbuilder_msg("pbuilder.label.plugin"),
                     type : 'elementselect',
                     options_callback : function(props, values) {
@@ -3721,7 +3720,7 @@ ProcessBuilder = {
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
                 properties: [{
-                    name: 'mapping_type',
+                    name: 'mapping_act_type',
                     label: get_cbuilder_msg("cbuilder.type"),
                     type : 'selectbox',
                     options : [
@@ -3729,7 +3728,7 @@ ProcessBuilder = {
                         {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")},
                     ]
                 },{
-                    name : 'mapping_formId',
+                    name : 'mapping_act_formId',
                     label : get_cbuilder_msg("pbuilder.label.formName"),
                     type : 'selectbox',
                     options_callback : function(props, values) {
@@ -3740,19 +3739,19 @@ ProcessBuilder = {
                         }
                         return options;
                     },
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_act_type',
                     control_value: 'SINGLE',
                     control_use_regex: 'false'
                 },{
-                    name : 'mapping_formIFrameStyle',
+                    name : 'mapping_act_formIFrameStyle',
                     label : get_cbuilder_msg("pbuilder.label.iframeStyle"),
                     type : 'codeeditor',
                     mode : 'css',
-                    control_field: 'mapping_type',
+                    control_field: 'mapping_act_type',
                     control_value: 'EXTERNAL',
                     control_use_regex: 'false'
                 },{
-                    name: 'mapping_autoContinue',
+                    name: 'mapping_act_autoContinue',
                     label: get_cbuilder_msg("pbuilder.label.showNextAssignment"),
                     type : 'checkbox',
                     options : [
@@ -3764,7 +3763,7 @@ ProcessBuilder = {
         
         if (Object.keys(ProcessBuilder.availableStartProcessFormModifier).length > 0) {
             def[0].properties.push({
-                name: 'mapping_modifier',
+                name: 'mapping_act_modifier',
                 label: get_cbuilder_msg("pbuilder.label.moreSettings"),
                 type : 'elementselect',
                 options_callback : function(props, values) {
@@ -3778,6 +3777,8 @@ ProcessBuilder = {
                 url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
             });
         }
+        
+        def.push(ProcessBuilder.getProcessStartWhiteListDef(elementObj, component)[0]);
         
         return def;
     },
@@ -4101,6 +4102,9 @@ ProcessBuilder = {
         }
         
         if (start !== undefined) {
+            var clone = $.extend(true, {}, start);
+            clone.className = "processStartWhitelist";
+            ProcessBuilder.renderListViewerDetails($(view), clone);
             ProcessBuilder.renderListViewerDetails($(view), start);
         }
     },
@@ -4111,7 +4115,7 @@ ProcessBuilder = {
     renderListViewerDetails : function(container, obj) {
         var self = CustomBuilder.Builder;
         
-        var listName = (obj.className === "start" || obj.className === "activity")?"activitie":obj.className;
+        var listName = (obj.className === "start" || obj.className === "activity")?"activitie":(obj.className === "processStartWhitelist"?"participant":obj.className);
         var list = $(container).find("#"+listName+"s-list-tab");
         
         var detailsDiv = $('<div class="cbuilder-node-details"><dl class=\"cbuilder-node-details-list\"></dl></div>');
@@ -4120,10 +4124,6 @@ ProcessBuilder = {
         dl.attr("data-cbuilder-select", obj.properties.id);
         
         var id = obj.properties.id;
-        if (obj.className === "start") {
-            id = "runProcess";
-        }
-        
         if (self.selectedEl) {
             var selectedData = $(self.selectedEl).data("data");
             if (selectedData.properties.id === id) {
@@ -4133,11 +4133,17 @@ ProcessBuilder = {
             }
         }
         
+        if (obj.className === "start") {
+            id = "runProcess";
+        }
+        
         var label = "";
         if (obj.properties.label !== undefined && obj.properties.label !== "") {
             label = obj.properties.label + ' (' + id + ')';
         } else if (obj.className === "start") {
             label = get_cbuilder_msg("pbuilder.label.runProcess") + ' (' + id + ')';
+        } else if (obj.className === "processStartWhitelist") {
+            label = get_cbuilder_msg("pbuilder.label.processStartWhiteList");
         } else {
             label = id;
         }
@@ -4180,21 +4186,21 @@ ProcessBuilder = {
             if (elementObj.properties.limit !== undefined && elementObj.properties.limit !== "") {
                 $(dl).append('<dt><i class="las la-user-clock" title="'+get_cbuilder_msg('pbuilder.label.sla')+'"></i></dt><dd>'+elementObj.properties.limit+ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase()+'</dd>');
             }
-            if (elementObj.properties.mapping_type === "SINGLE" 
-                    && elementObj.properties.mapping_formId !== undefined && elementObj.properties.mapping_formId !== "") {
-                var label = ProcessBuilder.availableForms[elementObj.properties.mapping_formId];
+            if (elementObj.properties.mapping_act_type === "SINGLE" 
+                    && elementObj.properties.mapping_act_formId !== undefined && elementObj.properties.mapping_act_formId !== "") {
+                var label = ProcessBuilder.availableForms[elementObj.properties.mapping_act_formId];
                 $(dl).append('<dt><i class="las la-file-alt" title="'+get_cbuilder_msg('pbuilder.label.form')+'"></i></dt><dd>'+label+'</dd>');
-            } else if (elementObj.properties.mapping_formUrl !== undefined && elementObj.properties.mapping_formUrl !== "") {
-                $(dl).append('<dt><i class="las la-link" title="'+get_cbuilder_msg('pbuilder.label.url')+'"></i></dt><dd>'+elementObj.properties.mapping_formUrl+'</dd>');
+            } else if (elementObj.properties.mapping_act_formUrl !== undefined && elementObj.properties.mapping_act_formUrl !== "") {
+                $(dl).append('<dt><i class="las la-link" title="'+get_cbuilder_msg('pbuilder.label.url')+'"></i></dt><dd>'+elementObj.properties.mapping_act_formUrl+'</dd>');
             }
-            if (elementObj.properties.mapping_modifier !== undefined 
-                    && elementObj.properties.mapping_modifier["className"] !== undefined 
-                    && elementObj.properties.mapping_modifier["className"] !== "") {
-                var label = elementObj.properties.mapping_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
-                if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_modifier["className"]];
-                } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_modifier["className"]]
+            if (elementObj.properties.mapping_act_modifier !== undefined 
+                    && elementObj.properties.mapping_act_modifier["className"] !== undefined 
+                    && elementObj.properties.mapping_act_modifier["className"] !== "") {
+                var label = elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
+                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]];
+                } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
+                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]]
                 }
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.moreSettings')+'"></i></dt><dd>'+label+'</dd>');
             }
@@ -4222,12 +4228,12 @@ ProcessBuilder = {
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+toolsLabel+'</dd>');
             }
         } else if (elementObj.className === "route") {
-            if (elementObj.properties.mapping_plugin !== undefined 
-                    && elementObj.properties.mapping_plugin["className"] !== undefined 
-                    && elementObj.properties.mapping_plugin["className"] !== "") {
-                var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_plugin["className"]];
+            if (elementObj.properties.mapping_act_plugin !== undefined 
+                    && elementObj.properties.mapping_act_plugin["className"] !== undefined 
+                    && elementObj.properties.mapping_act_plugin["className"] !== "") {
+                var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_act_plugin["className"]];
                 if (plugin === undefined) {
-                    label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                    label = elementObj.properties.mapping_act_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
                 } else {
                     label = plugin.label;
                 }
@@ -4250,45 +4256,52 @@ ProcessBuilder = {
                 label = $("#processes_list option[value='"+label+"']").text();
             }
             $(dl).append('<dt><i class="las la-th-list" title="'+get_cbuilder_msg('pbuilder.label.process')+'"></i></dt><dd>'+label+'</dd>');
-        } else if (elementObj.className === "participant") {
-            var type = elementObj.properties.mapping_type;
+        } else if (elementObj.className === "participant" || elementObj.className === "processStartWhitelist") {
+            var type = elementObj.properties.mapping_par_type;
             if (type !== undefined && type !== "") {
                 if (type === "user" || type === "group") {
                     type += "s";
                 }
                 $(dl).append('<dt><i class="las la-shapes" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+type)+'</dd>');
 
-                if (elementObj.properties.mapping_type === "user") {
-                    $(dl).append('<dt><i class="las la-user" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_users.replace(/;/g, ', ')+'</dd>');
-                } else if (elementObj.properties.mapping_type === "group") {
-                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_groups.replace(/;/g, ', ')+'</dd>');
-                } else if (elementObj.properties.mapping_type === "department" || elementObj.properties.mapping_type === "hod") {
-                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_department+'</dd>');
-                } else if (elementObj.properties.mapping_type === "performer") {
-                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.performerType.'+elementObj.properties.mapping_performer_type)+'</dd>');
+                if (elementObj.properties.mapping_par_type === "user") {
+                    $(dl).append('<dt><i class="las la-user" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_par_users.replace(/;/g, ', ')+'</dd>');
+                } else if (elementObj.properties.mapping_par_type === "group") {
+                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_par_groups.replace(/;/g, ', ')+'</dd>');
+                } else if (elementObj.properties.mapping_par_type === "department" || elementObj.properties.mapping_par_type === "hod") {
+                    $(dl).append('<dt><i class="las la-users" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+elementObj.properties.mapping_par_department+'</dd>');
+                } else if (elementObj.properties.mapping_par_type === "performer") {
+                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.'+type)+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.performerType.'+elementObj.properties.mapping_par_performer_type)+'</dd>');
                     var options = ProcessBuilder.getActivitiesOptions();
-                    var label = elementObj.properties.mapping_performer_act;
+                    var label = elementObj.properties.mapping_par_performer_act;
                     for (var o in options) {
                         if (options[o].value === label) {
                             label = options[o].label;
                         }
                     }
                     $(dl).append('<dt><i class="las la-check-square" title="'+get_cbuilder_msg('pbuilder.label.activity')+'"></i></dt><dd>'+label+'</dd>');
-                } else if (elementObj.properties.mapping_type === "workflowVariable") {
-                    $(dl).append('<dt><i class="las la-font" title="'+get_cbuilder_msg('pbuilder.label.variable')+'"></i></dt><dd>'+elementObj.properties.mapping_workflowVariable+'</dd>');
-                    var r = elementObj.properties.mapping_wv_type;
+                } else if (elementObj.properties.mapping_par_type === "workflowVariable") {
+                    $(dl).append('<dt><i class="las la-font" title="'+get_cbuilder_msg('pbuilder.label.variable')+'"></i></dt><dd>'+elementObj.properties.mapping_par_workflowVariable+'</dd>');
+                    var r = elementObj.properties.mapping_par_wv_type;
                     if (r === "user" || r === "group") {
                         r += "s";
                     }
                     $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.represent')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+r)+'</dd>');    
-                } else if (elementObj.properties.mapping_type === "plugin") {
-                    var plugin = ProcessBuilder.availableParticipantPlugin[elementObj.properties.mapping_plugin["className"]];
+                } else if (elementObj.properties.mapping_par_type === "plugin") {
+                    var plugin = ProcessBuilder.availableParticipantPlugin[elementObj.properties.mapping_par_plugin["className"]];
                     if (plugin === undefined) {
-                        label = elementObj.properties.mapping_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                        label = elementObj.properties.mapping_par_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
                     } else {
                         label = plugin.label;
                     }
                     $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.plugin')+'"></i></dt><dd>'+label+'</dd>');
+                } 
+            } else if (elementObj.className === "processStartWhitelist") {
+                $(dl).append('<dt><i class="las la-shapes" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.type.role')+'</dd>');
+                if (elementObj.properties['mapping_par_role'] === undefined || elementObj.properties['mapping_par_role'] === "") {
+                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.type.role')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.type.role.everyone')+'</dd>'); 
+                } else {
+                    $(dl).append('<dt><i class="las la-user-tie" title="'+get_cbuilder_msg('pbuilder.label.type.role')+'"></i></i></dt><dd>'+get_cbuilder_msg('pbuilder.label.'+elementObj.properties['mapping_par_role'])+'</dd>'); 
                 }
             }
         }
