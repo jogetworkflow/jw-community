@@ -52,9 +52,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.transaction.TransactionManager;
@@ -72,11 +70,8 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
-import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.HostManager;
 import org.joget.commons.util.PagedList;
-import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
@@ -965,7 +960,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 errors = errors.replaceAll("<br>", "\r\n");
             }
             LogUtil.error(getClass().getName(), ex, errors);
-            throw new RuntimeException(errors, ex);
+            throw new DesignInvalidException(errors, ex);
         } catch (Exception ex) {
 
             LogUtil.error(getClass().getName(), ex, "");
