@@ -46,12 +46,12 @@ public class JsonApiUtil {
             HttpClientBuilder httpClientBuilder = HttpClients.custom();
             URL urlObj = new URL(jsonUrl);
 
-            if ("https".equals(urlObj.getProtocol()) && "true".equalsIgnoreCase("allowedUntrustedCert")) {
-                SSLContextBuilder builder = new SSLContextBuilder();
-                builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
-                httpClientBuilder.setSSLSocketFactory(sslsf);
-            }
+//            if ("https".equals(urlObj.getProtocol()) && "true".equalsIgnoreCase("allowedUntrustedCert")) {
+//                SSLContextBuilder builder = new SSLContextBuilder();
+//                builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+//                SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
+//                httpClientBuilder.setSSLSocketFactory(sslsf);
+//            }
 
             client = httpClientBuilder.build();
 

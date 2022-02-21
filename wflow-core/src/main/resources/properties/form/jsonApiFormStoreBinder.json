@@ -100,15 +100,6 @@
         }]
     },
     {
-        "name" : "allowedUntrustedCert",
-        "label" : "@@datalist.jsonapibinder.allowedUntrustedCert@@",
-        "type" : "checkbox",
-        "options" : [{
-            "value" : "true",
-            "label" : ""
-        }]
-    },
-    {
         "name" : "useDifferentApiForUpdate",
         "label" : "@@form.jsonapibinder.store.useDifferentApiForUpdate@@",
         "type" : "checkbox",
