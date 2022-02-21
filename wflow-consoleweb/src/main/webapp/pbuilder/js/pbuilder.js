@@ -79,7 +79,12 @@ ProcessBuilder = {
             CustomBuilder.Builder.bindEvent("nodeAdditionalSelected nodeAdditionalAdded nodeAdditionalRemoved nodeAdditionalModeChanged", ProcessBuilder.refreshConnections);
             
             $(window).off('hashchange');
-            $(window).on('hashchange', ProcessBuilder.viewProcess);
+            $(window).on('hashchange', function(){
+                var id = window.location.hash.replace("#", "");
+                if ((ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
+                    ProcessBuilder.viewProcess();
+                }
+            });
 
             var deferreds = [];
             
@@ -278,29 +283,27 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         var id = window.location.hash.replace("#", "");
         
-        if ((ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
-            if (id !== "") {
-                ProcessBuilder.generateProcessData(id);
-                
-                if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData.properties !== undefined) {
-                    CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
-                        ProcessBuilder.validate();
-                        
-                        setTimeout(function(){
-                            if (ProcessBuilder.preSelect !== "") {
-                                var node = self.frameBody.find("[data-cbuilder-id='"+ProcessBuilder.preSelect+"']");
-                                self.selectNode(node);
-                                ProcessBuilder.preSelect = "";
-                            }
-                            if (ProcessBuilder.view !== "") {
-                                $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
-                            }
-                        }, 1000);
-                    });
-                }
-            } else {
-                window.location.hash = "process1";
+        if (id !== "") {
+            ProcessBuilder.generateProcessData(id);
+
+            if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData.properties !== undefined) {
+                CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
+                    ProcessBuilder.validate();
+
+                    setTimeout(function(){
+                        if (ProcessBuilder.preSelect !== "") {
+                            var node = self.frameBody.find("[data-cbuilder-id='"+ProcessBuilder.preSelect+"']");
+                            self.selectNode(node);
+                            ProcessBuilder.preSelect = "";
+                        }
+                        if (ProcessBuilder.view !== "") {
+                            $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
+                        }
+                    }, 1000);
+                });
             }
+        } else {
+            window.location.hash = "process1";
         }
     },
     
