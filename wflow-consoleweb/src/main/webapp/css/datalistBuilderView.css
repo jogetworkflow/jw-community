@@ -278,3 +278,6 @@
     padding-right: 10px;
     vertical-align: baseline;
 }
+#preview .dataList {
+    pointer-events: none;
+}
