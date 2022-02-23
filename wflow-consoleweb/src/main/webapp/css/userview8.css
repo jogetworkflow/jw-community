@@ -618,10 +618,10 @@ ul.breadcrumb i.fa-angle-right{
 #content main > [class*="_menu_body"] > div > h2,
 #content main > [class*="-body-content"] > div > h3, 
 #content main > [class*="_menu_body"] > div > h3,
-.form-section-title,
-#content .grid-stack-item .grid-stack-item-header{
-    background-color: var(--theme-heading-bg);
-    color: var(--theme-heading-color);
+#content .grid-stack-item .grid-stack-item-header,
+.userProfile-body-header{
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
 }
 
 /* footer */
@@ -1048,6 +1048,17 @@ body#login #loginForm table td input[type='submit'] {
 /* USERVIEW MENUS */
 
 /* userview profile */
+.userProfile-body-content{
+    padding-top: 0px !important;
+}
+.userProfile-body-header{
+    padding: 15px 10px !important;
+    font-size: 20px !important;
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff)) !important;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 20px;
+}
 form.form{
     font-size: 13px;
 }
@@ -1066,19 +1077,31 @@ form.form fieldset {
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
     padding-bottom: 20px;
+    margin: 0px;
 }
 form.form fieldset legend {
     padding: 0.75rem 1.25rem;
     margin-bottom: 0;
-    background-color: rgba(0, 0, 0, 0.03);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
+    border-radius: 3px 3px 0 0;
     display: block;
     margin-bottom: 20px;
     font-size: inherit;
     width: calc(100% + 2px);
     box-sizing: border-box;
     float: left;
+    position: relative;
+}
+form.form fieldset legend:after{
+    content: "";
+    position: absolute;
+    background: #fff;
+    opacity: 0.15;
+    top:0;
+    left:0;
+    right: 0px;
+    bottom:0px;
 }
 form.form fieldset + fieldset{
     margin-top: 25px;
@@ -1106,6 +1129,7 @@ form.form fieldset .form-row > label{
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
     min-height: 34px;
+    font-weight: bold;
 }
 form.form fieldset .form-row > .form-input {
     white-space: normal;
@@ -1164,25 +1188,25 @@ form.form .btn {
     background-color: var(--theme-content-background, #ffffff);
     border: 1px solid rgba(0,0,0,.0625)!important;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 5px 5px 0 0;
     box-shadow: 2px 2px 5px rgb(0 0 0 / 41%);
 }
 #content .grid-stack-item-loading{
     opacity: 0.3;
 }
 #content .grid-stack-item .grid-stack-item-header{
-    background-color: var(--theme-content-background, #ffffff);
-    padding: 10px;
-    border-radius: 10px 0px 0px;
+    border-bottom: 1px solid #cfdbe2;
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
 }
 #content .grid-stack-item .grid-stack-item-header h4{
-    color: var(--theme-font-color, #72777a);
-    font-weight: 400;
+    color: var(--theme-color2, #ffffff);
+    padding: 10px;
 }
 #content .grid-stack-item-header-action{
     color: var(--theme-link, var(--theme-color3, #007bff)) ;
     opacity: 0.8;
-    top: 15px;
+    top: 11px;
     margin-right: 15px;
 }
 #content .grid-stack-item-header-action:hover{
@@ -1201,6 +1225,14 @@ form.form .btn {
 #content .grid-stack-item-body .pagelinks{
     display: block;
     width: 100%;
+}
+.grid-stack-item-body > .main-body-content > [class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content){
+    border: 0;
+    padding: 10px;
+    box-shadow: none;
+}
+.fc-theme-bootstrap > .fc-view-harness{
+    background-color: var(--theme-content-background, #ffffff);
 }
 
 /* columns & components */
