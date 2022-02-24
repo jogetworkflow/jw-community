@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
@@ -133,6 +135,7 @@ public class FormPdfUtil {
                         + "]";
                 
                 String legalHtml = html.replaceAll(pattern, "");
+                legalHtml = toXHTML(legalHtml);
             
                 final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 documentBuilderFactory.setValidating(false);
@@ -153,6 +156,12 @@ public class FormPdfUtil {
             LogUtil.error(FormPdfUtil.class.getName(), e, "");
         }
         return null;
+    }
+    
+    public static String toXHTML(String html) {
+        final Document document = Jsoup.parse(html);
+        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);    
+        return document.html();
     }
     
     /**

@@ -1,3 +1,6 @@
+#preview .dataList {
+    pointer-events: none;
+}
 .dataList {
     display: none;
 }
