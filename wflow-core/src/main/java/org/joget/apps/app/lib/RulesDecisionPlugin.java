@@ -171,12 +171,10 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                 } else if ("false".equals(operation)) {
                     result = variable.equalsIgnoreCase("false") || variable.equals("0");
                 } else if ("contains".equals(operation)) {
-                    if (variable.contains(";")) {
-                        String[] list = variable.split(";");
-                        result = ArrayUtils.contains(list, value);
-                    } else {
-                        result = variable.contains(value);
-                    }
+                    result = variable.contains(value);
+                } else if ("listContains".equals(operation)) {
+                    String[] list = variable.split(";");
+                    result = ArrayUtils.contains(list, value);
                 } else if ("in".equals(operation)) {
                     String[] list = value.split(";");
                     result = ArrayUtils.contains(list, variable);
