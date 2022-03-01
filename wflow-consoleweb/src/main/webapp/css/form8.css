@@ -75,6 +75,12 @@
 .subform-cell + .form-cell{
     margin-top: 15px;
 }
+.form-cell + .form-cell.customHtml.no_label,
+.subform-cell + .subform-cell.customHtml.no_label,
+.form-cell + .subform-cell.customHtml.no_label,
+.subform-cell + .form-cell.customHtml.no_label{
+    margin-top: 0px;
+}
 body .subform-cell > .subform-container.has-frame, .form-cell > .subform-container.has-frame{
     width: 100%;
 }

@@ -3077,7 +3077,7 @@ _CustomBuilder.Builder = {
                         //TODO: if differrent, need add it?
                     }
                     
-                    if ($(this).outerHeight(true) === 0) {
+                    if ($(this).outerHeight(false) === 0) {
                         $(this).attr("data-cbuilder-invisible", "");
                     }
                     i++;
@@ -5519,7 +5519,7 @@ _CustomBuilder.Builder = {
             if ($(node).is('div, p') && $(temp).html() === "") {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
-                var height = $(node).outerHeight();
+                var height = $(node).outerHeight(false);
                 if ($(node).find("> .cbuilder-node-details").length > 0) {
                     height = height - $(node).find("> .cbuilder-node-details").outerHeight();
                 }
