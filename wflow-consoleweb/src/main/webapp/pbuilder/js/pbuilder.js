@@ -1460,7 +1460,7 @@ ProcessBuilder = {
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
         
         var emptyProcess = {
-            "eendedAttributes": {
+            "ExtendedAttributes": {
                 "ExtendedAttribute": [
                     {
                         "-Name": "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER",
