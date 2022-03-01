@@ -1091,10 +1091,10 @@ body:not(#login).embeded  #content > main > table{
     border:0;
     padding:0;
 }
-/*
+
 #form-canvas .label {
     text-align: left;
-}*/
+}
 
 .waves-input-wrapper .waves-button-input {
     font-style: normal;
