@@ -6746,7 +6746,7 @@ PropertyEditor.Type.SelectBox.prototype = {
                     }
                     
                     if (builder === "process") {
-                        url += "?processId=" + value;
+                        url += "#" + value;
                     } else {
                         url += "/" + value;
                     }
