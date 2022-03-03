@@ -1736,7 +1736,8 @@ ProcessBuilder = {
             'render' : ProcessBuilder.renderParticipant,
             'dragging' : ProcessBuilder.dragParticipant,
             'unload' : ProcessBuilder.unloadParticipant,
-            'getStylePropertiesDefinition' : ProcessBuilder.getParticipantDef
+            'getStylePropertiesDefinition' : ProcessBuilder.getParticipantDef,
+            'dropEnd' : ProcessBuilder.dropParticipantEnd
         }});
         
         //Activity
@@ -2689,6 +2690,12 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
         ProcessBuilder.jsPlumb.repaintEverything();
+        return dragElement;
+    },
+    
+    //To reposition the connections after moved participant
+    dropParticipantEnd : function(dragElement) {
+        ProcessBuilder.refreshConnections();
         return dragElement;
     },
     
