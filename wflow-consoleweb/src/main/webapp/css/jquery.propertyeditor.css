@@ -645,6 +645,16 @@ td.error .chosen-container, td.error input {
 .property-editor-container .ace_editor {
     overflow:visible;
 }
+.property-editor-container .ace_text-input{
+    opacity: 0  !important;
+    font-size: 1px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    min-width: 0px !important;
+    min-height: 0px !important;
+    height: 1px !important;
+    width: 1px !important;
+}
 .property-editor-container .property-type-codeeditor {
     overflow:hidden;
 }
