@@ -12,7 +12,6 @@
     border-radius: 3px 3px 0px 0px;
     padding-bottom: 20px;
     box-shadow: 0 10px 10px rgb(0 0 0 / 15%);
-    z-index: 2;
 }
 .subform-section {
     position: relative;
@@ -21,6 +20,9 @@
     background-color: #fff;
     background-clip: border-box;
     padding-bottom: 20px;
+}
+.form-column > .form-cell > .subform-container > .subform-section,
+.form-column > .subform-cell > .subform-container > .subform-section {
     z-index: 2;
 }
 .form-section-title,
