@@ -66,11 +66,11 @@
     <distributionManagement>
         <repository>
             <id>internal</id>
-            <url>dav:http://dev.joget.org/archiva/repository/internal/</url>
+            <url>dav:https://dev.joget.org/archiva/repository/internal/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>http://dev.joget.org/archiva/repository/snapshots</url>
+            <url>https://dev.joget.org/archiva/repository/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
