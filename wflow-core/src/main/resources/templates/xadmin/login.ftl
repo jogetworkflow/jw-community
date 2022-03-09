@@ -26,6 +26,22 @@ ${login_before!}
         ${login_form_inner_after!}
     </form>
     ${login_form_after!}
+    <script>
+        $(function(){
+            $("#loginForm input[type='submit']").click(function(){
+                $.blockUI({ css: { 
+                    border: 'none', 
+                    padding: '15px', 
+                    backgroundColor: '#000', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: .3, 
+                    color: '#fff' 
+                }, message : "<h1>@@form.form.message.wait@@</h1>" }); 
+                return true;
+            });
+        });
+    </script>
 </div>
 ${login_after!}
 
