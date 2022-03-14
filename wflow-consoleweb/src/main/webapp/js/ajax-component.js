@@ -23,35 +23,39 @@ AjaxComponent = {
      * Override the behaviour of an AJAX supported component
      */
     initContent : function(element) {
-        AjaxComponent.overrideButtonEvent(element);
-        AjaxComponent.overrideDatalistButtonEvent(element);
-        AjaxComponent.overrideFormEvent(element);
-        AjaxComponent.initEventsListening(element);
-        
-        if (window["AdminBar"] !== undefined) {
-            AdminBar.initQuickEditMode();
-        }
+        setTimeout(function(){
+            AjaxComponent.overrideButtonEvent(element);
+            AjaxComponent.overrideDatalistButtonEvent(element);
+            AjaxComponent.overrideFormEvent(element);
+            AjaxComponent.initEventsListening(element);
+
+            if (window["AdminBar"] !== undefined) {
+                AdminBar.initQuickEditMode();
+            }
+        },1);
     },
     
     /*
      * Override the link behaviour
      */
     overrideLinkEvent : function(element) {
-        $(element).on("click", "a[href]", function(e){
-            var a = $(this);
-            var href = $(a).attr("href");
-            var target = $(a).attr("target");
-            var onclick = $(a).attr("onclick");
-            if (onclick === undefined && AjaxComponent.isCurrentUserviewUrl(href) && !AjaxComponent.isDatalistExportLink(a)
-                    && (target === null || target === undefined || target === "" || target === "_top" || target === "_parent" || target === "_self")) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                AjaxComponent.call($(a), href, "GET", null);
-                return false;
-            }
-            return true;
-        });
+        setTimeout(function(){
+            $(element).on("click", "a[href]", function(e){
+                var a = $(this);
+                var href = $(a).attr("href");
+                var target = $(a).attr("target");
+                var onclick = $(a).attr("onclick");
+                if (onclick === undefined && AjaxComponent.isCurrentUserviewUrl(href) && !AjaxComponent.isDatalistExportLink(a)
+                        && (target === null || target === undefined || target === "" || target === "_top" || target === "_parent" || target === "_self")) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    AjaxComponent.call($(a), href, "GET", null);
+                    return false;
+                }
+                return true;
+            });
+        },1);
     },
     
     /*
@@ -78,7 +82,7 @@ AjaxComponent = {
                 });
             }
         });
-        
+
         //remove pagination if only 1 page
         if ($(element).find(".dataList .pagelinks a").length === 0) {
             $(element).find(".dataList .pagelinks").css("visibility", "hidden");
