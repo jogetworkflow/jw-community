@@ -21,7 +21,7 @@ public class HostManager implements ApplicationContextAware {
     public static final String REQUEST_HOST_INITIALIZED = "REQUEST_HOST_INITIALIZED";
 
     protected static final ThreadLocal currentHost = new ThreadLocal();
-    protected static final ThreadLocal currentProfile = new ThreadLocal();
+    protected static final ThreadLocal currentProfile = new InheritableThreadLocal();
     protected static final ThreadLocal previousProfile = new ThreadLocal();
     protected static String contextPath;
 

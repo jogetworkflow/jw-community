@@ -81,6 +81,7 @@ import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
@@ -115,6 +116,7 @@ public class AppDevUtil {
     protected static Random random = new Random();
     
     static ThreadLocal importApp = new ThreadLocal();
+    static ThreadLocal backgroundSync = new ThreadLocal();
     
     private static final boolean GIT_DISABLED;
 
@@ -838,7 +840,10 @@ public class AppDevUtil {
             // add git object
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request != null) {
-                gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+                gitCommitMap = getBackgroundSync();
+                if (gitCommitMap == null) {
+                    gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+                }
             }
             if (gitCommitMap == null) {
                 gitCommitMap = new LinkedHashMap<>();
@@ -853,7 +858,7 @@ public class AppDevUtil {
             gitCommitHelper.setLocalGit(localGit);
             gitCommitHelper.setGit(git);
             gitCommitHelper.setCommitMessage(commitMessage);   
-            if (request != null) {
+            if (request != null && getBackgroundSync() == null) {
                 request.setAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST, gitCommitMap);        
             }
         } catch (IOException | IllegalStateException | GitAPIException | URISyntaxException ex) {
@@ -866,7 +871,10 @@ public class AppDevUtil {
         Map<String, GitCommitHelper> gitCommitMap = null;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {        
-            gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+            gitCommitMap = getBackgroundSync();
+            if (gitCommitMap == null) {
+                gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+            }
         }
         if (gitCommitMap == null) {
             gitCommitMap = fileInitCommit(appDef, "");
@@ -1480,20 +1488,46 @@ public class AppDevUtil {
         // check if project dir exists
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, appVersion);
+        boolean isAppDefExist = true;
         if (appDef == null) {
             appDef = AppDevUtil.createDummyAppDefinition(appId, appVersion);
+            isAppDefExist = false;
         }
         
         File projectDir = null;
         if (appDef.getVersion() != null) {
-            projectDir = AppDevUtil.fileGetFileObject(appDef, "appDefinition.xml", false);
+            String baseDir = AppDevUtil.getAppDevBaseDirectory();
+            String projectDirName = getAppGitDirectory(appDef);
+            projectDir = new File(baseDir, projectDirName);
         }
         
         if (projectDir == null || !projectDir.exists()) {
-            // first time init project files
-            LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef);
-            appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), true);
-            LogUtil.info(AppDevUtil.class.getName(), "Git project init complete for app " + appDef);
+            if (projectDir != null) {
+                projectDir.mkdirs();
+            }
+            //if not new app or during setup & not current userview app id, run it in background
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (isAppDefExist && !(request != null && 
+                    (request.getRequestURI().contains("/userview/"+appId+"/") || 
+                     request.getRequestURI().contains("/setup/init") || 
+                     request.getRequestURI().contains("/web/desktop")))) {
+                // first time init project files in background
+                final AppDefinition syncAppDef = appDef;
+                Thread bgSync = new PluginThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dirSyncAppInBackground(syncAppDef);
+                    }
+                });
+                bgSync.setDaemon(true);
+                bgSync.start();
+            } else {
+                // first time init project files
+                LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef);
+                appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), true);
+                LogUtil.info(AppDevUtil.class.getName(), "Git project init complete for app " + appDef);
+            }
+            return null;
         }
         
         // compare from app last modified date
@@ -1528,6 +1562,54 @@ public class AppDevUtil {
             LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
         }
         return updatedAppDef;
+    }
+    
+    public static void dirSyncAppInBackground(AppDefinition appDef) {
+        try {
+            Map<String, GitCommitHelper> gitCommitMap = new LinkedHashMap<String, GitCommitHelper>();
+            setBackgroundSync(gitCommitMap);
+
+            AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
+            LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef + " in background.");
+            appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), true);
+
+            if (gitCommitMap != null && !gitCommitMap.isEmpty()) {
+                for (String appId: gitCommitMap.keySet()) {
+                    GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
+
+                    if (gitCommitHelper != null) {
+                        try {
+                            Git git = gitCommitHelper.getGit();
+                            AppDefinition gitAppDef = gitCommitHelper.getAppDefinition();
+
+                            // perform commit
+                            String commitMessage = gitCommitHelper.getCommitMessage();
+                            if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
+                                // sync plugins
+                                if (gitCommitHelper.isSyncPlugins()) {
+                                    AppDevUtil.syncAppPlugins(gitAppDef);
+                                }
+
+                                // sync resources
+                                if (gitCommitHelper.isSyncResources()) {
+                                    AppDevUtil.syncAppResources(gitAppDef);
+                                }
+
+                                AppDevUtil.gitPullAndCommit(gitAppDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
+                            }
+                        } finally {
+                            gitCommitHelper.clean();
+                        }
+                    }
+                }
+            }
+
+            LogUtil.info(AppDevUtil.class.getName(), "Git project init complete for app " + appDef);
+        } catch (Exception ex) {
+            LogUtil.error(AppDevUtil.class.getName(), ex, "");
+        } finally {
+            setBackgroundSync(null);
+        }
     }
 
     public static AppDefinition createDummyAppDefinition(String appId, Long appVersion) {
@@ -1963,5 +2045,13 @@ public class AppDevUtil {
 
     public static boolean isImportApp() throws BeansException {
         return importApp.get() != null;
+    }
+    
+    public static void setBackgroundSync(Map<String, GitCommitHelper> gitCommitMapp) throws BeansException {
+        backgroundSync.set(gitCommitMapp);
+    }
+
+    public static Map<String, GitCommitHelper> getBackgroundSync() throws BeansException {
+        return (Map<String, GitCommitHelper>) backgroundSync.get();
     }
 }
