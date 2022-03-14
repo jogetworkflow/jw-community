@@ -914,7 +914,23 @@ body.horizontal_menu #header-info{
     background-color: var(--theme-button-bg, #348fe2);
     color: #fff;
 }
-
+#content main .btn-group > .btn {
+    border-radius: 0;
+}
+#content main .btn-group > .btn:first-child {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius:0.25rem;
+}
+#content main .btn-group > .btn:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+#content main .btn-group > .btn + .btn {
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%);
+}
+#content main .btn-group > .btn.active {
+    box-shadow: inset 8px 8px 20px 5px rgb(0 0 0 / 30%);
+}
 /* scrollbar */
 * {
     scrollbar-color: rgba(0, 0, 0, 0.15) #fff;
@@ -1262,6 +1278,7 @@ form.form .btn {
 /* quick edit & analyzer */
 .quickEdit, #form-canvas .quickEdit{
     position: absolute;
+    z-index: 3;
 }
 body.quickEditModeActive fieldset#form-canvas, 
 body.quickEditModeActive fieldset#form-canvas .subform-container, 
@@ -1284,6 +1301,7 @@ body.quickEditModeActive #content > main:after{
     bottom: 0;
     content: "";
     pointer-events: none;
+    z-index: 3;
 }
 #navigation .menu.analyzer, 
 .form-section.analyzer, 
