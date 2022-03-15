@@ -21,14 +21,14 @@ ${menus!}
 <#if preloadUrl??>
     <script>
         if (window.frameElement !== null && $("body", window.parent.document).hasClass("index-window")) {
-            window.location = '${preloadUrl}';
+            window.location = '${preloadUrl?js_string}';
         } else {
             $(function(){
                 function initTheme() {
                     setTimeout(function(){
                         layui.use(['layer', 'element'], function(){
                             if (layer !== undefined && element !== undefined ) {
-                                xadmin.add_tab('${preloadLabel}','${preloadUrl}',true);
+                                xadmin.add_tab('${preloadLabel}','${preloadUrl?js_string}',true);
                             } else {
                                 initTheme();
                             }
