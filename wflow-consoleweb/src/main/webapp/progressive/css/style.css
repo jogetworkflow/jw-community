@@ -1647,9 +1647,6 @@ body #form-canvas .form-section:not(.form-section-empty) + .form-section.no_labe
     padding-top: 0px;
     border-top:0px !important;
 }
-body #form-canvas .form-section.no_label:not(.form-section-empty) + .form-section.no_label, body #form-canvas .subform-section.no_label:not(.subform-section-empty) + .subform-section.no_label {
-    margin-top: -10px !important;
-}
 body #form-canvas .form-section + .form-section.no_label{
     box-shadow: 1px 1.5px 1px 1px #ddd !important;
 }

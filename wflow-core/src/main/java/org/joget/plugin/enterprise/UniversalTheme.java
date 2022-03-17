@@ -210,10 +210,12 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String backgroundColor = "#FFFFFF";
         String scope = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
         userviewName = StringUtil.stripAllHtmlTag(userviewName);
+        userviewName = userviewName.replaceAll(StringUtil.escapeRegex("&#xa0;"), " ");
+        userviewName = userviewName.trim();
         String shortName = (userviewName.length() > 12) ? userviewName.substring(0, 10) + ".." : userviewName;
         String manifest = "{\n" +
-            "  \"short_name\": \"" + shortName + "\",\n" +
-            "  \"name\": \"" + userviewName + "\",\n" +
+            "  \"short_name\": \"" + StringUtil.escapeString(shortName, StringUtil.TYPE_JSON, null) + "\",\n" +
+            "  \"name\": \"" + StringUtil.escapeString(userviewName, StringUtil.TYPE_JSON, null) + "\",\n" +
             "  \"icons\": [\n" +
             "    {\n" +
             "      \"src\": \"" + icon + "\",\n" +

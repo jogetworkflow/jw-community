@@ -20,5 +20,21 @@ ${login_form_before!}
         </td></tr>
     </table>
     ${login_form_inner_after!}
+    <script>
+        $(function(){
+            $("#loginForm input[name='submit']").click(function(){
+                $.blockUI({ css: { 
+                    border: 'none', 
+                    padding: '15px', 
+                    backgroundColor: '#000', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: .3, 
+                    color: '#fff' 
+                }, message : "<h1>@@form.form.message.wait@@</h1>" }); 
+                return true;
+            });
+        });
+    </script>
 </form>
 ${login_form_after!}
