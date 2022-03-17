@@ -6,6 +6,11 @@
         type : 'textfield'
     },
     {
+        name : 'bcc',
+        label : '@@app.emailtool.bcc@@',
+        type : 'textfield'
+    },
+    {
         name : 'subject',
         label : '@@app.usernotificationaudittrail.subject@@',
         type : 'textfield',
@@ -145,6 +150,20 @@
         name : 'alias',
         label : '@@app.emailtool.issuerAlias@@',
         type : 'textfield'
+    },
+    {
+        label : '@@app.emailtool.error@@',
+        type : 'header'
+    },
+    {
+        name : 'retryCount',
+        label : '@@app.emailtool.retryCount@@',
+        type : 'number'
+    },
+    {
+        name : 'retryInterval',
+        label : '@@app.emailtool.retryInterval@@',
+        type : 'number'
     }],
     validators : [{  
         type : 'AJAX',

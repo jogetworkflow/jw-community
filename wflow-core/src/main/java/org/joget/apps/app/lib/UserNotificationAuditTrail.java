@@ -113,7 +113,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
         if ((smtpHost != null && !smtpHost.isEmpty()) || (setupSmtpHost != null && !setupSmtpHost.isEmpty())) {
             final String profile = DynamicDataSourceManager.getCurrentProfile();            
             new PluginThread(new Runnable() {
-
+                int retry = 0;
                 public void run() {
                     WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
 
@@ -132,6 +132,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     
                     String from = (String) props.get("from");
                     String cc = (String) props.get("cc");
+                    String bcc = (String) props.get("bcc");
 
                     String subject = (String) props.get("subject");
                     String emailMessage = (String) props.get("emailMessage");
@@ -153,6 +154,21 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     
                     String activityInstanceId = wfActivity.getId();
                     String link = getLink(base, url, passoverMethod, parameterName, activityInstanceId);
+                    
+                    String retryCountStr = (String) props.get("retryCount");
+                    String retryIntervalStr = (String) props.get("retryInterval");
+                    int retryCount = 0;
+                    long retryInterval = 10000;
+                    try {
+                        if (retryCountStr != null && !retryCountStr.isEmpty()) {
+                            retryCount = Integer.parseInt(retryCountStr);
+                        }
+                        if (retryIntervalStr != null && !retryIntervalStr.isEmpty()) {
+                            retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
+                        }
+                    } catch (Exception e) {
+                        LogUtil.debug(EmailTool.class.getName(), e.getLocalizedMessage());
+                    }
                     
                     try {
                         for (String username : users) {
@@ -190,6 +206,12 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, auditTrail.getAppDef());
                                         for (String address : ccs) {
                                             email.addCc(StringUtil.encodeEmail(address));
+                                        }
+                                    }
+                                    if (bcc != null && bcc.length() != 0) {
+                                        Collection<String> ccs = AppUtil.getEmailList(null, bcc, wfAssignment, auditTrail.getAppDef());
+                                        for (String address : ccs) {
+                                            email.addBcc(StringUtil.encodeEmail(address));
                                         }
                                     }
                                     
@@ -261,11 +283,26 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         AppUtil.emailAttachment(props, wfAssignment, auditTrail.getAppDef(), email);
 
                                         try {
-                                            LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=" + email.getSubject());
+                                            LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
                                             email.send();
                                             LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
                                         } catch (EmailException ex) {
                                             LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
+                                            while (retry < retryCount) {
+                                                retry++;
+                                                try {
+                                                    LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email attempt " + retry + " after " + (retryInterval/1000) + " seconds");
+                                                    Thread.sleep(retryInterval);
+                                                } catch (Exception e) {}
+
+                                                try {
+                                                    LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email attempt " + retry + ": Sending email from=" + email.getFromAddress().toString() + ", to=" + emailToOutput + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
+                                                    email.sendMimeMessage();
+                                                    break;
+                                                } catch (EmailException ex2) {
+                                                    LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Sending email attempt " + retry + " failure.");
+                                                }
+                                            }
                                         }
                                     }
                                     

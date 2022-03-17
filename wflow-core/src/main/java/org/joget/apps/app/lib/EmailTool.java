@@ -127,9 +127,27 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             final String profile = DynamicDataSourceManager.getCurrentProfile();
             
             AppUtil.emailAttachment(properties, wfAssignment, appDef, email);
+            
+            String retryCountStr = (String) properties.get("retryCount");
+            String retryIntervalStr = (String) properties.get("retryInterval");
+            int retryCount = 0;
+            long retryInterval = 10000;
+            try {
+                if (retryCountStr != null && !retryCountStr.isEmpty()) {
+                    retryCount = Integer.parseInt(retryCountStr);
+                }
+                if (retryIntervalStr != null && !retryIntervalStr.isEmpty()) {
+                    retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
+                }
+            } catch (Exception e) {
+                LogUtil.debug(EmailTool.class.getName(), e.getLocalizedMessage());
+            }
+            
+            final int emailRetryCount = retryCount;
+            final long emailRetryInterval = retryInterval;
 
             Thread emailThread = new PluginThread(new Runnable() {
-
+                int retry = 0;
                 public void run() {
                     try {
                         LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + email.getFromAddress().toString() + ", to=" + to + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
@@ -137,6 +155,22 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                         LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());
                     } catch (EmailException ex) {
                         LogUtil.error(EmailTool.class.getName(), ex, "");
+                        
+                        while (retry < emailRetryCount) {
+                            retry++;
+                            try {
+                                LogUtil.info(EmailTool.class.getName(), "EmailTool Attempt " + retry + " after " + (emailRetryInterval/1000) + " seconds");
+                                Thread.sleep(emailRetryInterval);
+                            } catch (Exception e) {}
+                            
+                            try {
+                                LogUtil.info(EmailTool.class.getName(), "EmailTool Attempt " + retry + ": Sending email from=" + email.getFromAddress().toString() + ", to=" + to + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
+                                email.sendMimeMessage();
+                                break;
+                            } catch (EmailException ex2) {
+                                LogUtil.error(EmailTool.class.getName(), ex, "EmailTool Attempt " + retry + " failure.");
+                            }
+                        }
                     }
                 }
             });
