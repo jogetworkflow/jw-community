@@ -156,8 +156,8 @@
             <version>1.8</version>
         </dependency>
         <dependency>
-            <groupId>org.simpleframework</groupId>
-            <artifactId>simple-xml</artifactId>
+            <groupId>com.carrotsearch.thirdparty</groupId>
+            <artifactId>simple-xml-safe</artifactId>
             <version>2.7.1</version>
         </dependency>
         <dependency>
