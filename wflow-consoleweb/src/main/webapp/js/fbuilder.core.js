@@ -726,12 +726,231 @@ FormBuilder = {
      * A callback method from CustomBuilder.switchView to render table usage view
      */
     tableUsageViewInit: function(view) {
-        $(view).html('<div class="column_names"><h3>'+get_advtool_msg('adv.tool.Table.Columns')+'</h3>\
-            <div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>\
-            <div class="sameapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage')+'</h3>\
-            <div class="usage_content"></div></div>\
-            <div class="diffapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage.otherApp')+'</h3>\
-            <div class="usage_content"></div></div>');
+        $(view).html('<div class="tabs"><ul class="nav nav-tabs nav-fill" id="form-erd-tabs" role="tablist"></ul><div class="tab-content"></div></div>');
+        
+        $(view).find('.tabs > ul').append('<li id="diagram-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-toggle="tab" href="#diagram-tab" role="tab" aria-controls="diagram-tab" aria-selected="true"><i class="las la-project-diagram"></i> <span>'+get_cbuilder_msg('fbuilder.erd')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="desc-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#desc-tab" role="tab" aria-controls="desc-tab"><i class="las la-list"></i> <span>'+get_cbuilder_msg('fbuilder.relationship.desc')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="columns-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#columns-tab" role="tab" aria-controls="columns-tab"><i class="las la-th"></i> <span>'+get_advtool_msg('adv.tool.Table.Columns')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="usage-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#usage-tab" role="tab" aria-controls="usage-tab"><i class="la la-binoculars"></i> <span>'+get_advtool_msg('adv.tool.Table.Usage')+'</span></a></li>');
+        
+        $(view).find('.tabs > .tab-content').append('<div id="diagram-tab" class="tab-pane fade active show"><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>');
+        $(view).find('.tabs > .tab-content').append('<div id="desc-tab" class="tab-pane fade"><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>');
+        $(view).find('.tabs > .tab-content').append('<div id="columns-tab" class="tab-pane fade"><div class="column_names"><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div></div>');
+        $(view).find('.tabs > .tab-content').append('<div id="usage-tab" class="tab-pane fade"><div class="sameapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage')+'</h3><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div><div class="diffapp_usage"><h3>'+get_advtool_msg('adv.tool.Table.Usage.otherApp')+'</h3><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div></div>');
+        
+        CustomBuilder.cachedAjax({
+            method: "POST",
+            url: CustomBuilder.contextPath + '/web/json/app'+CustomBuilder.appPath+'/form/erd',
+            dataType : "json",
+            success: function(data) {
+                if (data.entities !== undefined) {
+                    $('#diagram-tab').append('<div class="diagram-actions"><a class="btn btn-secondary btn-sm expandAll"><i class="las la-expand-arrows-alt"></i> '+get_cbuilder_msg('fbuilder.expandAll')+'</a> <a class="btn btn-secondary btn-sm collapseAll"><i class="las la-compress-arrows-alt"></i> '+get_cbuilder_msg('fbuilder.collapseAll')+'</a></div>');
+                    $('#diagram-tab').append('<div id="diagram-grid" class="row"><div class="col"><div class="row"></div><div class="row"></div><div class="row"></div></div><div class="col"><div class="row"></div><div class="row"></div><div class="row"></div></div><div class="col"><div class="row"></div><div class="row"></div><div class="row"></div></div></div>');
+                    
+                    var entities = Object.keys(data.entities)
+                        .map(function(key) {
+                            return data.entities[key];
+                        });
+    
+                    function compare( a, b ) {
+                        if (Object.keys(a.hasMany).length < Object.keys(b.hasMany).length){
+                            return 1;
+                        }
+                        if (Object.keys(a.hasMany).length > Object.keys(b.hasMany).length){
+                            return -1;
+                        }
+                        return 0;
+                    }
+
+                    entities.sort(compare);
+                    
+                    //prepare grid
+                    for (var i = 3; (i * i) < entities.length ;i++) {
+                        $("#diagram-grid").append($("#diagram-grid .col:eq(0)").clone());
+                        $("#diagram-grid .col").append('<div class="row"></div>');
+                    }
+
+                    function findEmptyCell(x, y) {
+                        if ($('#diagram-grid .col:eq('+x+') .row:eq('+y+') .entity-container').length === 0) {
+                            return [x, y];
+                        } else {
+                            var limit = $('#diagram-grid .col').length;
+                            for (var i=y-1; i<=y+1; i++) {
+                                for (var j=x-1; j<=x+1; j++) {
+                                    if (j >= 0 && i >= 0 && j < limit && i < limit 
+                                            && !((j === x && (i === y-1 || i === y+1))) //not putting on direct top & bottom
+                                            && $('#diagram-grid .col:eq('+j+') .row:eq('+i+') .entity-container').length === 0) {
+                                        return [j, i];
+                                    }
+                                }
+                            }
+                            return findEmptyCell(x+1, y+1);
+                        }
+                    }
+
+                    function systemField(entity, fieldId, entityContainer) {
+                        var field = entity.fields[fieldId];
+                        if (field === undefined) {
+                            field = {
+                                id : fieldId,
+                                pluginClassName : "",
+                                pluginLabel : get_cbuilder_msg('fbuilder.systemField')
+                            };
+                        }
+                        renderField(entity, field, entityContainer, false);
+                    }
+
+                    function renderField(entity, field, entityContainer, checkSystemField) {
+                        var systemFields = ["id", "dateCreated", "dateModified", "createdBy", "createdByName", "modifiedBy", "modifiedByName"];
+                        if (checkSystemField === false || (checkSystemField === undefined && systemFields.indexOf(field.id) === -1)) {
+                            var label = field.id;
+                            entityContainer.find(".fields").append('<div id="'+entity.tableName+'_field_'+field.id+'" class="field"><span class="label">'+label+'</span><span class="type">'+field.pluginLabel+'</span></div>');
+                        }
+                    }
+                    
+                    jsPlumb.unbind();
+                    jsPlumb.detachEveryConnection();
+                    jsPlumb.deleteEveryEndpoint();
+                    jsPlumb.reset();
+                    jsPlumb.importDefaults({
+                        Container: "diagram-grid",
+                        Anchor: "Continuous",
+                        Endpoint: ["Dot", {radius: 4}],
+                        PaintStyle: {strokeStyle: "#0047ad", lineWidth: 2, outlineWidth: 15, outlineColor: 'transparent'},
+                        ConnectionOverlays: [
+                            ["Arrow", {
+                                location: -16,
+                                id: "end",
+                                length: 15,
+                                width: 20,
+                                foldback: 0.1,
+                                direction: -1
+                            }],
+                            ["Arrow", {
+                                location: 15,
+                                id : "start",
+                                length: 0.5,
+                                width: 15,
+                                foldback: 1
+                            }]
+                        ],
+                        ConnectionsDetachable: false
+                    });
+
+                    var connected = [];
+                    function drawConnection(entity1, entityField1, entity2, entityField2) {
+                        if (connected.indexOf(entity1 + ":"+ entityField1 + " >> " + entity2 + ":" + entityField2) === -1) {
+                            connected.push(entity1 + ":"+ entityField1 + " >> " + entity2 + ":" + entityField2);
+                            
+                            if ($("#" + entity2 + "_field_" + entityField2).length === 0 && $("#" + entity2 + "_container").length > 0) {
+                                systemField(data.entities[entity2], entityField2, $("#" + entity2 + "_container"));
+                            }
+
+                            $("#" + entity1 + "_field_" + entityField1).addClass("connection_endpoint");
+                            $("#" + entity2 + "_field_" + entityField2).addClass("connection_endpoint");
+
+                            try {
+                                jsPlumb.connect({
+                                    source: $("#" + entity1 + "_field_" + entityField1),
+                                    target: $("#" + entity2 + "_field_" + entityField2),
+                                    connector: ["Flowchart", {midpoint: (Math.random() * 0.6 + 0.3)}]
+                                });
+                            } catch (err) {}
+                        }
+                    }
+
+                    function placeEntity(entity, x, y) {
+                        if (x === undefined) {
+                            x = Math.round($("#diagram-grid .col").length/2) - 1;
+                            y = x;
+                        }
+                        if ($('#diagram-grid #'+entity.tableName+'_container').length === 0) {
+                            var cellPos = findEmptyCell(x, y);
+                            var cell = $('#diagram-grid .col:eq('+cellPos[0]+') .row:eq('+cellPos[1]+')');
+
+                            var entityContainer = $('<div id="'+entity.tableName+'_container" class="entity-container"><h5>'+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><div class="fields"></div><div class="forms"><label>Forms:</label> <ul></ul></div></div>');
+                            $(cell).append(entityContainer);
+                            
+                            if (entity.tableName === CustomBuilder.data.properties.tableName) {
+                                $(entityContainer).addClass("current");
+                            }
+
+                            //render fields
+                            systemField(entity, "id", entityContainer);
+                            for (const f in entity.fields) {
+                                renderField(entity, entity.fields[f], entityContainer);
+                            }
+                            systemField(entity, "dateCreated", entityContainer);
+                            systemField(entity, "dateModified", entityContainer);
+                            systemField(entity, "createdBy", entityContainer);
+                            systemField(entity, "createdByName", entityContainer);
+                            systemField(entity, "modifiedBy", entityContainer);
+                            systemField(entity, "modifiedByName", entityContainer);
+                            
+                            for (const f in entity.forms) {
+                                entityContainer.find(".forms ul").append('<li><a href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/form/builder/'+f+'">'+entity.forms[f]+'</a></li>');
+                            }
+
+                            for (const h in entity.hasMany) {
+                                placeEntity(data.entities[entity.hasMany[h].entity], cellPos[0], cellPos[1]);
+
+                                drawConnection(entity.tableName, entity.hasMany[h].fieldId, entity.hasMany[h].entity, entity.hasMany[h].entityFieldId);
+                            }
+                            for (const h in entity.ownBy) {
+                                placeEntity(data.entities[entity.ownBy[h].entity], cellPos[0], cellPos[1]);
+
+                                drawConnection(entity.ownBy[h].entity, entity.ownBy[h].entityFieldId, entity.tableName, entity.ownBy[h].fieldId);
+                            }
+                        }
+                    }
+
+                    for (const i in entities) {
+                        var entity = entities[i];
+                        var desc = $('<div id="'+entity.tableName+'_desc"><h5><i class="las la-table"></i> '+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><ul class="relations"></ul></div>');
+
+                        for (const h in entity.hasMany) {
+                            $(desc).find('.relations').append('<li>'+get_cbuilder_msg('fbuilder.relation', [entity.label, data.entities[entity.hasMany[h].entity].label])+'</li>');
+                        }
+
+                        $("#desc-tab").append(desc);
+
+                        placeEntity(entity);
+                    }
+                    
+                    setTimeout(function(){
+                        jsPlumb.repaintEverything();
+                    }, 5);
+                    
+                    $(".entity-container h5").off("click")
+                    $(".entity-container h5").on("click", function(){
+                        $(this).parent().toggleClass("showDetails");
+                        jsPlumb.repaintEverything();
+                    });
+                    
+                    $(".entity-container a").off("click");
+                    $(".entity-container a").on("click", function(){
+                        CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
+                        return false;
+                    });
+                    
+                    $('#diagram-tab a.expandAll').off("click");
+                    $('#diagram-tab a.expandAll').on("click", function(){
+                        $('#diagram-grid .entity-container').addClass("showDetails");
+                        jsPlumb.repaintEverything();
+                    });
+                    $('#diagram-tab a.collapseAll').off("click");
+                    $('#diagram-tab a.collapseAll').on("click", function(){
+                        $('#diagram-grid .entity-container').removeClass("showDetails");
+                        jsPlumb.repaintEverything();
+                    });
+                } else {
+                    $(view).find("#diagram-tab .usage_content, #desc-tab .usage_content").html('<p>'+get_cbuilder_msg('fbuilder.noData')+'</p>');
+                }
+            },
+            complete: function() {
+                $(view).find("#diagram-tab .usage_content, #desc-tab .usage_content").remove();
+            }
+        });
         
         CustomBuilder.cachedAjax({
             method: "POST",
@@ -765,6 +984,13 @@ FormBuilder = {
         
         Usages.render($(view).find('.sameapp_usage .usage_content'), CustomBuilder.data.properties.tableName, "table", CustomBuilder.advancedToolsOptions);
         Usages.renderOtherApp($(view).find('.diffapp_usage .usage_content'), CustomBuilder.data.properties.tableName, "table", CustomBuilder.advancedToolsOptions);
+    },
+    
+    tableUsageViewBeforeClosed: function(view) {
+        jsPlumb.unbind();
+        jsPlumb.detachEveryConnection();
+        jsPlumb.deleteEveryEndpoint();
+        jsPlumb.reset();
     },
     
     /*
@@ -936,5 +1162,10 @@ FormBuilder = {
     unloadBuilder : function() {
         $("#tooltip-btn, #table-usage-btn").remove();
         $("#generator-btn").parent().remove();
+        
+        jsPlumb.unbind();
+        jsPlumb.detachEveryConnection();
+        jsPlumb.deleteEveryEndpoint();
+        jsPlumb.reset();
     } 
 }

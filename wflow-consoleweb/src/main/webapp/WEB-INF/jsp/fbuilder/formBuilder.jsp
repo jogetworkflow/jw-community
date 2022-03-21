@@ -6,6 +6,7 @@
 <c:set var="builderI18N" scope="request" value=""/>
 <c:set var="builderJS" scope="request">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/fbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
     <script>
         $(function () {  
         <c:forEach items="${palette.elementCategoryMap}" var="categoryRow">
@@ -61,6 +62,30 @@
 <c:set var="builderCSS" scope="request">
     <style>
         .usage_content {margin-bottom: 25px;}
+        #tableUsageView .tab-pane {padding: 20px;}
+        #tableUsageView h5 .tableName {color: grey; font-size: 60%; text-transform: none;}
+        #desc-tab .relations{padding: 0 0 20px 24px;}
+        .diagram-actions {text-align: right;}
+        .diagram-actions a {cursor: pointer;}
+        #diagram-grid {position: relative;}
+        #diagram-grid .col .row {padding: 50px 20px;}
+        #diagram-grid .col:nth-child(even) {padding-top: 30px;}
+        #diagram-grid .col .row:nth-child(even) {padding-left:50px;}
+        #diagram-grid .entity-container {max-width: 350px; margin: auto; border: 1px solid #333; border-radius: 5px; overflow: hidden; position: relative;}
+        #diagram-grid .entity-container h5 {text-align: center; padding: 20px; cursor: pointer; margin-bottom: 0; background: #e9f2ff;}
+        #diagram-grid .entity-container.current h5 {background: #d9f8ea;}
+        #diagram-grid .entity-container h5 span {display: block;}
+        #diagram-grid .entity-container .forms {display: none; padding: 10px; border-top: 1px solid #ccc;}
+        #diagram-grid .entity-container .forms ul {margin-bottom: 0;}
+        #diagram-grid .entity-container .fields {border-top: 1px solid #ccc; height: auto; display: block; min-width: 350px;}
+        #diagram-grid .entity-container .field:nth-child(odd){background: #f3f3f3;}
+        #diagram-grid .entity-container .field span {display: inline-block; padding: 5px 10px; box-sizing: border-box; width: 60%; word-break: break-all; vertical-align: middle;}
+        #diagram-grid .entity-container .field span.type {width: 40%; word-break: normal; font-weight: 300;}
+        #diagram-grid .entity-container.showDetails .fields {border-top: 1px solid #ccc; height: auto; display: block; min-width: 350px;}
+        #diagram-grid .entity-container:not(.showDetails) .fields{border-top:0px; max-height: 100%; min-width: 0; position: absolute; visibility: hidden; top:0; left:0; right: 0; bottom: 0; display: flex; align-content: space-around; flex-direction: column; justify-content: space-evenly;}
+        #diagram-grid .entity-container:not(.showDetails) .field:not(.connection_endpoint) {display: none;}
+        #diagram-grid .entity-container:not(.showDetails) .connection_endpoint {height: 20px !important; overflow: hidden;}
+        #diagram-grid .entity-container.showDetails .forms {display: block; background: #fdfbe9;}
     </style>    
 </c:set>
 <c:set var="builderCode" scope="request" value="form"/>

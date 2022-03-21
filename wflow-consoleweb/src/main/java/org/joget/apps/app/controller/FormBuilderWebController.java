@@ -1,5 +1,6 @@
 package org.joget.apps.app.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
@@ -28,6 +29,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
+import org.joget.apps.form.service.FormERD;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -410,6 +412,17 @@ public class FormBuilderWebController {
         }
         
         jsonArray.write(writer);
+    }
+    
+    @RequestMapping("/json/app/(*:appId)/(~:version)/form/erd")
+    public void formERD(Writer writer, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef != null) {
+            FormERD erd = new FormERD(appDef);
+            writer.write(erd.getJson());
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "App does not exist.");
+        }
     }
     
     @RequestMapping("/json/app/(*:appId)/(~:appVersion)/form/(*:formId)/columns")

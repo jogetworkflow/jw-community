@@ -18,6 +18,12 @@ var <c:out value="${name}"/>_lang = {
     lang_file_name : '<c:out value="${name}"/>.properties'
 }
 
-function get_<c:out value="${name}"/>_msg(key){
-    return (<c:out value="${name}"/>_lang[key] !== undefined) ? <c:out value="${name}"/>_lang[key] : '??'+key+'??';
+function get_<c:out value="${name}"/>_msg(key, args){
+    var msg = (<c:out value="${name}"/>_lang[key] !== undefined) ? <c:out value="${name}"/>_lang[key] : '??'+key+'??';
+    if (args !== undefined && args.length > 0) {
+        for (var i in args) {
+            msg = msg.replace('{'+i+'}', args[i]);
+        }
+    }
+    return msg;
 }
