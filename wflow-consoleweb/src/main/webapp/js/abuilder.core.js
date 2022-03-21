@@ -126,7 +126,7 @@ AppBuilder = {
                 $("#builder_canvas").find("li.item").each(function(){
                     var match = false;
                     if (searchText !== "") {
-                        $(this).find('span.item-label').each(function(){
+                        $(this).find('span.item-label, span.item-id').each(function(){
                             if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
                                 match = true;
                             }
@@ -204,7 +204,7 @@ AppBuilder = {
                         itemClass = "has-sublabel";
                         subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
                     }
-                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
+                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-id">'+builder.elements[j].id+'</span><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');

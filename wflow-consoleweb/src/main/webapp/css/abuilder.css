@@ -14,13 +14,14 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type ul li {position: relative; border:1px solid #fff; border-radius: 3px; background: #fff;}
 .builder-type ul li a {padding: 10px; text-decoration: none; color: #000; display: block;}
 .builder-type ul li + li {margin-top: 5px;}
+.builder-type ul li a .item-id {display:block; color: #0069d9; font-size:12px;}
 .builder-type ul li a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px; text-align: right; position: absolute; right: 10px; top: 50%; width: 30%; word-break: break-all; transform: translateY(-50%); padding-right: 15px;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
 .builder-type ul li.has-sublabel a {position: relative;}
 .builder-type ul li.has-sublabel a .item-label {max-width: 70%; padding-right: 10px; display: inline-block;}
 .builder-type ul li.message{color: #888; font-style: italic;}
 #builder_canvas .canvas-header {padding: 0 30px 0 !important;}
-.builder-actions {visibility: hidden; position: absolute; right: 1px; top:6px; display:block;}
+.builder-actions {visibility: hidden; position: absolute; right: 1px; top:14px; display:block;}
 .builder-type ul li .builder-actions a {color: #0069d9; font-size: 16px; padding-right: 2px; padding: 2px; border: 0; display: inline-block; cursor: pointer;}
 .builder-type ul li .builder-actions a.disabled {color:#ccc; cursor: default;}
 .builder-type ul li .builder-actions a.launch {visibility: visible;}
