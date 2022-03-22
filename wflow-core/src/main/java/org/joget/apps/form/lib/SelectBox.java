@@ -68,6 +68,9 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             if (FormUtil.isAjaxOptionsSupported(this, formData)) {
                 FormAjaxOptionsBinder ab = (FormAjaxOptionsBinder) getOptionsBinder();
                 String[] controlValues = FormUtil.getRequestParameterValues(getControlElement(formData), formData);
+                if (controlValues.length == 1 && controlValues[0].contains(";")) {
+                    controlValues = controlValues[0].split(";"); //to consistent the behaviour with FormUtil.getAjaxOptionsBinderData line 2013
+                }
                 FormRowSet rowSet = ab.loadAjaxOptions(controlValues);
                 if (rowSet != null) {
                     formData.setOptionsBinderData(getOptionsBinder(), rowSet);
