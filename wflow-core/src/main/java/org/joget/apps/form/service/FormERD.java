@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +16,7 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataListBinder;
 import static org.joget.apps.datalist.service.JsonUtil.parseBinderFromJsonObject;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.Grid;
 import org.joget.apps.form.lib.SelectBox;
 import org.joget.apps.form.model.AbstractSubForm;
@@ -34,6 +36,7 @@ public class FormERD {
     protected static final String[] FORM_ID_KEYS = new String[]{"formDefId", "formId", "formdefid", "formid", "form"};
     protected static final String[] DATALIST_ID_KEYS = new String[]{"listId", "datalistDefId", "datalistdefid", "listid", "list"};
     protected static final String[] FK_KEYS = new String[]{"foreignKey", "idColumn", "idField", "valueColumn", "valueField"};
+    protected static final String[] PROP_KEYS = new String[]{"sql", "script"};
     
     public FormERD(AppDefinition appDef) {
         this.appDef = appDef;
@@ -106,8 +109,11 @@ public class FormERD {
                         }
                     } else if (field instanceof SelectBox) {
                         FormBinder binder = (FormBinder) field.getOptionsBinder();
-                        if (binder != null) {
-                            Relation r = getRelationFromBinder(binder, entity.getTableName(), id, true);
+                        Relation r = getRelationFromBinder(binder, entity.getTableName(), id, true);
+                        if (r != null) {
+                            relations.add(r);
+                        } else {
+                            r = getTempRelationFromBinder(binder.getProperties(), "", entity.getTableName(), id, true);
                             if (r != null) {
                                 relations.add(r);
                             }
@@ -119,17 +125,23 @@ public class FormERD {
             } else if (field instanceof Grid || field instanceof GridInnerDataRetriever) {
                 Relation r = null;
                 FormBinder loadBinder = (FormBinder) field.getLoadBinder();
-                if (loadBinder != null) {
-                    r = getRelationFromBinder(loadBinder, entity.getTableName(), "id", false);
-                }
+                FormBinder storeBinder = null;
+                r = getRelationFromBinder(loadBinder, entity.getTableName(), "id", false);
                 if (r == null) {
-                    FormBinder storeBinder = (FormBinder) field.getStoreBinder();
-                    if (storeBinder != null) {
-                        r = getRelationFromBinder(storeBinder, entity.getTableName(), "id", false);
-                    }
+                    storeBinder = (FormBinder) field.getStoreBinder();
+                    r = getRelationFromBinder(storeBinder, entity.getTableName(), "id", false);
                 }
                 if (r != null) {
                     relations.add(r);
+                } else {
+                    r = getTempRelationFromBinder(loadBinder.getProperties(), "", entity.getTableName(), "id", false);
+                    if (r != null) {
+                        relations.add(r);
+                    }
+                    r = getTempRelationFromBinder(storeBinder.getProperties(), "", entity.getTableName(), "id", false);
+                    if (r != null) {
+                        relations.add(r);
+                    }
                 }
             } else if (field instanceof AbstractSubForm) {
                 String subformId = field.getPropertyString("formDefId");
@@ -155,38 +167,38 @@ public class FormERD {
     }
     
     protected Relation getRelationFromBinder(FormBinder binder, String entity, String field, boolean hasMany) {
-        String formId = null;
-        String fk = null;
-        
-        for (String k : FORM_ID_KEYS) {
-            if (binder.getProperties().containsKey(k)) {
-                formId = binder.getPropertyString(k);
-                break;
-            }
-        }
-        
-        if (formId != null && !formId.isEmpty()) {
-            for (String k : FK_KEYS) {
+        if (binder != null) {
+            String formId = null;
+            String fk = null;
+
+            for (String k : FORM_ID_KEYS) {
                 if (binder.getProperties().containsKey(k)) {
-                    fk = binder.getPropertyString(k);
+                    formId = binder.getPropertyString(k);
                     break;
                 }
             }
-            
-            if (hasMany && (fk == null || fk.isEmpty())) {
-                fk = "id";
-            }
-            
-            if (fk != null && !fk.isEmpty()) {
-                if (hasMany) {
-                    return new Relation(formId, "", fk, "", entity, field);
-                } else {
-                    return new Relation("", entity, field, formId, "", fk);
+
+            if (formId != null && !formId.isEmpty()) {
+                for (String k : FK_KEYS) {
+                    if (binder.getProperties().containsKey(k)) {
+                        fk = binder.getPropertyString(k);
+                        break;
+                    }
+                }
+
+                if (hasMany && (fk == null || fk.isEmpty())) {
+                    fk = "id";
+                }
+
+                if (fk != null && !fk.isEmpty()) {
+                    if (hasMany) {
+                        return new Relation(formId, "", fk, "", entity, field);
+                    } else {
+                        return new Relation("", entity, field, formId, "", fk);
+                    }
                 }
             }
         }
-        
-        //TODO: get relation from jdbc binder/beanshell? but how to extract formId/tablename & foreign key from query/code?
         
         return null;
     }
@@ -235,18 +247,18 @@ public class FormERD {
                                 }
                             }
                             
-                            if (formId != null && !formId.isEmpty()) {
-                                for (String k : FK_KEYS) {
-                                    if (element.getProperties().containsKey(k)) {
-                                        fk = element.getPropertyString(k);
-                                        break;
-                                    }
+                            for (String k : FK_KEYS) {
+                                if (element.getProperties().containsKey(k)) {
+                                    fk = element.getPropertyString(k);
+                                    break;
                                 }
-                                
-                                if (hasMany && (fk == null || fk.isEmpty())) {
-                                    fk = "id";
-                                }
+                            }
 
+                            if (hasMany && (fk == null || fk.isEmpty())) {
+                                fk = "id";
+                            }
+                            
+                            if (formId != null && !formId.isEmpty()) {
                                 if (fk != null && !fk.isEmpty()) {
                                     if (hasMany) {
                                         return new Relation(formId, "", fk, "", entity, field);
@@ -254,9 +266,12 @@ public class FormERD {
                                         return new Relation("", entity, field, formId, "", fk);
                                     }
                                 }
+                            } else {
+                                Relation r = getTempRelationFromBinder(binder.getProperties(), fk, entity, field, hasMany);
+                                if (r != null) {
+                                    relations.add(r);
+                                }
                             }
-                            
-                            //TODO: get relation from jdbc binder/beanshell? but how to extract formId/tablename & foreign key from query/code?
                         }
                     } catch (Exception e) {
                         LogUtil.error(FormERD.class.getName(), e, "");
@@ -268,9 +283,32 @@ public class FormERD {
         return null;
     }
     
+    protected Relation getTempRelationFromBinder(Map<String, Object> properties, String fk, String entity, String field, boolean hasMany){
+        if (properties != null) {
+            for (String k : PROP_KEYS) {
+                if (properties.containsKey(k)) {
+                    Relation r = null;
+                    if (hasMany) {
+                        r = new Relation("", "", fk, "", entity, field);
+                    } else {
+                        r = new Relation("", entity, field, "", "", fk);
+                    }
+                    r.setTemp(k, properties.get(k).toString());
+                    return r;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
     protected void populateRelations() {
         if (!relations.isEmpty()) {
             for (Relation r : relations) {
+                if (r.getTemp() != null && !r.getTemp().isEmpty()) {
+                    processTempRelation(r);
+                }
+                
                 Entity e = null;
                 if (!r.getParentEntity().isEmpty()) {
                     e = entities.get(r.getParentEntity());
@@ -283,7 +321,7 @@ public class FormERD {
                         }
                     }
                 }
-                
+
                 if (e != null) {
                     Entity hasMany = null;
                     if (!r.getEntity().isEmpty()) {
@@ -297,11 +335,103 @@ public class FormERD {
                             }
                         }
                     }
-                    
+
                     if (hasMany != null) {
                         hasMany.addOwnBy(new Relation("", "", r.getEntityFieldId(), "", r.getParentEntity(), r.getFieldId()));
                         e.addHasMany(r);
                     }
+                }
+            }
+        }
+    }
+    
+    protected void processTempRelation(Relation r) {
+        String[] temp = r.getTemp().split("[^a-zA-Z0-9_\\?]");
+        List<String> tempData = Arrays.asList(temp);
+        String key = r.getTempKey();
+        Map<String, String> tableNames = new LinkedHashMap<String, String>();
+        String entity = null;
+        String fk = null;
+        
+        for (Entity en : entities.values()) {
+            if (tempData.contains(en.getTableName())) {
+                tableNames.put(en.getTableName(), en.getTableName());
+            } else if (tempData.contains(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME+en.getTableName())) {    
+                tableNames.put(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME+en.getTableName(), en.getTableName());
+            } else {
+                for (String formId : en.getForms().keySet()) {
+                    if (tempData.contains(formId)) {
+                        tableNames.put(formId, en.getTableName());
+                    }
+                }
+            }
+        }
+        
+        if (r.getEntity().isEmpty()) {
+            fk = r.getEntityFieldId();
+        } else {
+            fk = r.getFieldId();
+        }
+        
+        if (!fk.isEmpty()) {
+            if (tableNames.size() == 1) {
+                entity = tableNames.keySet().iterator().next();
+            } else {
+                for (String tn : tableNames.values()) {
+                    Entity e = entities.get(tn);
+                    if (e.hasField(fk)) {
+                        entity = e.getTableName();
+                        break;
+                    }
+                }
+            }
+        } else {
+            int index = tempData.size();
+            int end = tempData.size();
+            boolean sql = false;
+            if (key.equals("sql") || r.getTemp().contains("javax.sql.DataSource")) {
+                if (tempData.contains("?")) {
+                    end = tempData.lastIndexOf("?");
+                }
+                sql = true;
+                index = -1;
+            }
+            
+            for (String tn : tableNames.keySet()) {
+                Entity e = entities.get(tableNames.get(tn));
+                
+                List<String> limitedTempData = new ArrayList<String>();
+                int start = tempData.indexOf(tn) + 1;
+                limitedTempData = tempData.subList(start, end);
+                
+                for (String fid : e.getFields().keySet()) {
+                    int newIndex = -1;
+                    if (limitedTempData.contains(fid)) {
+                        newIndex = tempData.indexOf(fid);
+                    } else if (limitedTempData.contains(FormDataDaoImpl.FORM_PREFIX_COLUMN+fid)) {
+                        newIndex = tempData.indexOf(FormDataDaoImpl.FORM_PREFIX_COLUMN+fid);
+                    }
+                    if (newIndex != -1 && newIndex > start && newIndex < end) {
+                        if ((sql && newIndex > index) || newIndex < index) { // if sql, the field need to closest to ? / {foreignKey}
+                            index = newIndex;
+                            fk = fid;
+                            entity = e.getTableName();
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (entity != null && !entity.isEmpty()) {
+            if (r.getEntity().isEmpty()) {
+                r.setEntity(entity);
+                if (r.getEntityFieldId().isEmpty()) {
+                    r.setEntityFieldId(fk);
+                }
+            } else {
+                r.setParentEntity(entity);
+                if (r.getFieldId().isEmpty()) {
+                    r.setFieldId(fk);
                 }
             }
         }
@@ -364,6 +494,10 @@ public class FormERD {
             ((HashMap<String, String>) this.get("forms")).put(id, label);
         }
         
+        public Map<String, String> getForms() {
+            return (HashMap<String, String>) this.get("forms");
+        }
+        
         public boolean hasForm(String id) {
             return ((HashMap<String, Field>) this.get("forms")).containsKey(id);
         }
@@ -372,6 +506,10 @@ public class FormERD {
             if (!hasField(id)) {
                 ((HashMap<String, Field>) this.get("fields")).put(id, field);
             }
+        }
+        
+        public Map<String, Field> getFields() {
+            return (HashMap<String, Field>) this.get("fields");
         }
         
         public boolean hasField(String id) {
@@ -451,6 +589,14 @@ public class FormERD {
         public String getEntityFieldId() {
             return this.containsKey("entityFieldId")?((String) this.get("entityFieldId")):"";
         }
+        
+        public String getTemp() {
+            return this.get("tempData");
+        }
+        
+        public String getTempKey() {
+            return this.get("tempDataKey");
+        }
 
         public void setFieldId(String fieldId) {
             this.put("fieldId", fieldId);
@@ -464,10 +610,21 @@ public class FormERD {
             this.put("entity", entity);
         }
         
+        public void setEntityFieldId(String entityFieldId) {
+            this.put("entityFieldId", entityFieldId);
+        }
+        
+        public void setTemp(String key, String temp) {
+            this.put("tempData", temp);
+            this.put("tempDataKey", key);
+        }
+        
         public void clean() {
             this.remove("parentFormId");
             this.remove("parentEntity");
             this.remove("entityFormId");
+            this.remove("tempData");
+            this.remove("tempDataKey");
         }
     }
 }
