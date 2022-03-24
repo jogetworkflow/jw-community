@@ -1,9 +1,11 @@
 package org.joget.workflow.model.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.directory.model.service.DirectoryUtil;
@@ -131,6 +133,15 @@ public class WorkflowUserManager {
                     User user = directoryManager.getUserByUsername(username);
                 
                     setCurrentThreadUser(user);
+                    
+                    Collection<String> results = new ArrayList<String>();
+                    Collection<Role> roles = user.getRoles();
+                    if (roles != null && !roles.isEmpty()) {
+                        for (Role role : roles) {
+                            results.add(role.getId());
+                        }
+                        currentThreadUserRoles.set(results);
+                    }
                     return user;
                 }
             }
