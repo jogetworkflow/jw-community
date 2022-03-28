@@ -136,7 +136,7 @@ public class JsonTool extends DefaultApplicationPlugin {
                 String name  = mapping.get("name").toString();
                 String value = mapping.get("value").toString();
                 if (name != null && !name.isEmpty() && value != null && !value.isEmpty()) {
-                    request.setHeader(name, value);
+                    request.setHeader(name, WorkflowUtil.processVariable(value, "", wfAssignment));
                     if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
                         LogUtil.info(JsonTool.class.getName(), "Adding request header " + name + " : " + value);
                     }

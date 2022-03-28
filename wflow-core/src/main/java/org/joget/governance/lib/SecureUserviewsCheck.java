@@ -5,16 +5,19 @@ import java.util.Date;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.governance.model.GovAppHealthCheck;
 import org.joget.governance.model.GovHealthCheckAbstract;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 
-public class SecureUserviewsCheck extends GovHealthCheckAbstract {
+public class SecureUserviewsCheck extends GovHealthCheckAbstract implements GovAppHealthCheck {
 
     @Override
     public String getName() {
@@ -68,7 +71,7 @@ public class SecureUserviewsCheck extends GovHealthCheckAbstract {
             for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
                 if (!hasPermissionSet(userviewDef)) {
                     hasNonPermisisonSet = true;
-                    result.addDetail(ResourceBundleUtil.getMessage("secureUserviewsCheck.fail", new String[]{appDef.getName(), StringUtil.stripAllHtmlTag(userviewDef.getName())}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/userview/builder/"+userviewDef.getId(), null);
+                    result.addDetailWithAppId(ResourceBundleUtil.getMessage("secureUserviewsCheck.fail", new String[]{appDef.getName(), StringUtil.stripAllHtmlTag(userviewDef.getName())}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/userview/builder/"+userviewDef.getId(), null, appDef.getAppId());
                 }
             }
         }
@@ -127,5 +130,31 @@ public class SecureUserviewsCheck extends GovHealthCheckAbstract {
         }
         
         return false;
+    }
+
+    @Override
+    public GovHealthCheckResult performAppCheck(String appId, String version) {
+        GovHealthCheckResult result = new GovHealthCheckResult();
+        
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        AppService appService = (AppService) ac.getBean("appService");
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        boolean hasNonPermisisonSet = false;
+
+        for (UserviewDefinition userviewDef : appDef.getUserviewDefinitionList()) {
+            if (!hasPermissionSet(userviewDef)) {
+                hasNonPermisisonSet = true;
+                result.addDetail(ResourceBundleUtil.getMessage("secureUserviewsCheck.fail", new String[]{appDef.getName(), StringUtil.stripAllHtmlTag(userviewDef.getName())}), "/web/console/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/userview/builder/" + userviewDef.getId(), null);
+            }
+        }
+
+        if (hasNonPermisisonSet) {
+            result.setStatus(GovHealthCheckResult.Status.FAIL);
+        } else {
+            result.setStatus(GovHealthCheckResult.Status.PASS);
+        }
+
+        return result;
     }
 }

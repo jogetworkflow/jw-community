@@ -15,11 +15,13 @@ public class GovHealthCheckResult {
         private String detail;
         private String link;
         private String linkLabel;
+        private String appId;
 
-        public Detail(String detail, String link, String linkLabel) {
+        public Detail(String detail, String link, String linkLabel, String appId) {
             this.detail = detail;
             this.link = link;
             this.linkLabel = linkLabel;
+            this.appId = appId;
         }
         
         public String getDetail() {
@@ -44,6 +46,14 @@ public class GovHealthCheckResult {
 
         public void setLinkLabel(String linkLabel) {
             this.linkLabel = linkLabel;
+        }
+
+        public String getAppId() {
+            return appId;
+        }
+
+        public void setAppId(String appId) {
+            this.appId = appId;
         }
     }
     
@@ -111,7 +121,14 @@ public class GovHealthCheckResult {
         if (this.details == null) {
             this.details = new ArrayList<Detail>();
         }
-        this.details.add(new Detail(detail, link, linkLabel));
+        this.details.add(new Detail(detail, link, linkLabel, null));
+    }
+    
+    public void addDetailWithAppId(String detail, String link, String linkLabel, String appId) {
+        if (this.details == null) {
+            this.details = new ArrayList<Detail>();
+        }
+        this.details.add(new Detail(detail, link, linkLabel, appId));
     }
 
     public String getMoreInfo() {

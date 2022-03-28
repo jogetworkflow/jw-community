@@ -5,15 +5,18 @@ import java.util.Date;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.governance.model.GovAppHealthCheck;
 import org.joget.governance.model.GovHealthCheckAbstract;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.joget.workflow.model.WorkflowParticipant;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.springframework.context.ApplicationContext;
 
-public class SecureProcessesCheck extends GovHealthCheckAbstract {
+public class SecureProcessesCheck extends GovHealthCheckAbstract implements GovAppHealthCheck {
 
     @Override
     public String getName() {
@@ -73,7 +76,7 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract {
                     //check process start whitelist
                     if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), "processStartWhiteList") == null){
                         hasNotMapped = true;
-                        result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null);
+                        result.addDetailWithAppId(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null, appDef.getName());
                     }
                     
                     //check participant mapping
@@ -82,7 +85,7 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract {
                         if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), p.getId()) == null) {
                             if (workflowManager.participantHasActivities(wp.getId(), p.getId())) {
                                 hasNotMapped = true;
-                                result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), p.getName(), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null);
+                                result.addDetailWithAppId(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), p.getName(), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null, appDef.getAppId());
                             }
                         }
                     }
@@ -95,6 +98,48 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract {
             result.setStatus(GovHealthCheckResult.Status.PASS);
         }
         
+        return result;
+    }
+
+    @Override
+    public GovHealthCheckResult performAppCheck(String appId, String version) {
+        GovHealthCheckResult result = new GovHealthCheckResult();
+
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        AppService appService = (AppService) ac.getBean("appService");
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        boolean hasNotMapped = false;
+        PackageDefinition packageDefinition = appDef.getPackageDefinition();
+        if (packageDefinition != null) {
+            Long packageVersion = packageDefinition.getVersion();
+            Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageVersion.toString());
+            for (WorkflowProcess wp : processList) {
+                //check process start whitelist
+                if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), "processStartWhiteList") == null) {
+                    hasNotMapped = true;
+                    result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"), wp.getName()}), "/web/console/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/process/builder#" + wp.getIdWithoutVersion(), null);
+                }
+
+                //check participant mapping
+                Collection<WorkflowParticipant> participantList = workflowManager.getProcessParticipantDefinitionList(wp.getId());
+                for (WorkflowParticipant p : participantList) {
+                    if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), p.getId()) == null) {
+                        if (workflowManager.participantHasActivities(wp.getId(), p.getId())) {
+                            hasNotMapped = true;
+                            result.addDetail(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), p.getName(), wp.getName()}), "/web/console/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/process/builder#" + wp.getIdWithoutVersion(), null);
+                        }
+                    }
+                }
+            }
+        }
+        if (hasNotMapped) {
+            result.setStatus(GovHealthCheckResult.Status.FAIL);
+        } else {
+            result.setStatus(GovHealthCheckResult.Status.PASS);
+        }
         return result;
     }
 }

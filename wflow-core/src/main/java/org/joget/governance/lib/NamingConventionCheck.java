@@ -9,6 +9,7 @@ import java.util.Set;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.model.AbstractSubForm;
@@ -19,10 +20,12 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.governance.model.GovAppHealthCheck;
 import org.joget.governance.model.GovHealthCheckAbstract;
 import org.joget.governance.model.GovHealthCheckResult;
+import org.springframework.context.ApplicationContext;
 
-public class NamingConventionCheck extends GovHealthCheckAbstract {
+public class NamingConventionCheck extends GovHealthCheckAbstract implements GovAppHealthCheck {
 
     @Override
     public String getName() {
@@ -114,7 +117,7 @@ public class NamingConventionCheck extends GovHealthCheckAbstract {
                                 String exist = checkDuplicateMap.get(c.toLowerCase());
                                 if (exist != null && !exist.equals(c)) {
                                     result.setStatus(GovHealthCheckResult.Status.WARN);
-                                    result.addDetail(ResourceBundleUtil.getMessage("namingConventionCheck.msg", new String[]{appDef.getName(), formDef.getName(), exist}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/form/builder/"+formDef.getId(), null);
+                                    result.addDetailWithAppId(ResourceBundleUtil.getMessage("namingConventionCheck.msg", new String[]{appDef.getName(), formDef.getName(), exist}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/form/builder/"+formDef.getId(), null, appDef.getName());
                                 } else {
                                     checkDuplicateMap.put(c.toLowerCase(), c);
                                 }
@@ -147,5 +150,22 @@ public class NamingConventionCheck extends GovHealthCheckAbstract {
                 }
             }
         }
+    }
+
+    @Override
+    public GovHealthCheckResult performAppCheck(String appId, String version) {
+        GovHealthCheckResult result = new GovHealthCheckResult();
+        result.setStatus(GovHealthCheckResult.Status.PASS);
+
+        Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
+        
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        AppService appService = (AppService) ac.getBean("appService");
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
+
+        checkFormFieldIds(appDef, tables, result, formService);
+        return result;
     }
 }
