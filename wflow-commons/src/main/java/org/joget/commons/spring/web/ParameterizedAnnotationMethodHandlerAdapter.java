@@ -1,10 +1,13 @@
 package org.joget.commons.spring.web;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -12,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,6 +36,17 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
         return super.handle(request, response, handler);
     }
 
+    @Override
+    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object target, String objectName) throws Exception {
+        // CUSTOM: Workaround fix for CVE-2022-22965 https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement#suggested-workarounds
+        ServletRequestDataBinder binder = super.createBinder(request, target, objectName);
+        String[] fields = binder.getDisallowedFields();
+        List<String> fieldList = new ArrayList(fields != null ? Arrays.asList(fields) : Collections.emptyList());
+        fieldList.addAll(Arrays.asList("class.*", "Class.*", "*.class.*", "*.Class.*"));
+        binder.setDisallowedFields(fieldList.toArray(new String[] {}));
+        return binder;
+    }    
+    
     private class ParameterizedPathServletRequest extends HttpServletRequestWrapper {
 
         private Map<String, String[]> parameters = null;
