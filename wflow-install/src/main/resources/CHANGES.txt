@@ -3,6 +3,30 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.28
+=================
+248a5a785 Fixed: wflow-core - Section - Show section when column label is exist, even not having any input field. @7.0-SNASPHOT #T902
+c7b427f31 Modified: wflow-install - Update Apache Tomcat to 8.5.78 for CVE-2021-44228. @7.0-SNAPSHOT
+1d9c64416 Fixed: wflow-commons - More fail-safe workaround fix for CVE-2022-22965 @7.0-SNAPSHOT
+95652b98b Fixed: wflow-core - Custom Html - JS to create dynamic input field causing form corrupted. T898 @7.0-SNAPSHOT
+bf4467573 Fixed: wflow-commons - Workaround fixes for CVE-2022-22965. @7.0-SNAPSHOT
+5adad2e84 Modified: wflow-consoleweb - Update jQuery UI to 1.13.1 to prevent CVE-2021-41184, CVE-2021-41183 & CVE-2021-41182. @7.0-SNAPSHOT
+1e71b17bb Fixed: wflow-directory - Fix API Builder startProcessByUser bypassing Process Start White List. @7.0-SNAPSHOT #T853
+7dc553892 Fixed: wflow-core - Select Box - Options validation with multiple AJAX dependency values will fail validation. T833 @7.0-SNAPSHOT
+7d60c3432 Fixed: wflow-core - FormPdfUtil - fix unable to see radio button value in PDF when "Display Field as Label When Readonly?" is checked. @7.0-SNAPSHOT
+a94443e70 Modified: wflow-install - Update Apache Tomcat to 8.5.76 for CVE-2022-23181. @7.0-SNAPSHOT
+b6ba95c2a Modified: wflow-wfenigne -Security - Update Simple XML for CVE-2017-1000190. @7.0-SNAPSHOT
+437c9c8b9 Fixed: wflow-core - Xadmin Theme - Home page url redirection is not escape correctly. @7.0-SNAPSHOT
+b8a8d9847 Fixed: wflow-consoleweb - Userview - Prevent login form double submission causing redirection to app center. T794 @7.0-SNAPSHOT
+2b4efb9a1 Fixed: wflow-core - Userview Theme - PWA title showing html entity. @7.0-SNAPSHOT
+e3de7c7f8 Fixed: wflow-consoleweb - Progressive Theme - Subform section miss-aligned. T783 @7.0-SNAPSHOT
+e83965945 Fixed: wflow-core - Simple Rule Decision Plugin - Inconsistent result for `Contains` operator. T749 @7.0-SNAPSHOT
+d157e377b Fixed: wflow-consoleweb - Datalist Builder - When in preview, when click "next page" button, will see tomcat 400 bad request page. @7.0-SNAPSHOT
+8785e542b Fixed: wflow-consoleweb - Added %i on filePattern so when rollover will not override existing joget.log file. #T709 @7.0-SNAPSHOT.
+0b563cd81 Fixed: wflow-core - FormPdfUtil - Exception when having non wellformed HTML.  @7.0-SNAPSHOT
+08594a528 Fixed: jw-community - Security - Upgrade xercesImpl to 2.12.2 for CVE-2022-23437.  @7.0-SNAPSHOT
+a4141a6ab Fixed: wflow-consoleweb - Form - Rich Text Editor - Not able to preview uploaded image. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.27
 =================
 0fa986a76 Fixed: wflow-consoleweb - Regression of 0c21a3f3. No way to access console login page. @7.0-SNAPSHOT
