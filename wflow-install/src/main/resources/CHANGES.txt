@@ -2,6 +2,43 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.35
+=================
+23d650bc8 Modified: wflow-install - Update Apache Tomcat to 8.5.78 for CVE-2022-22965. @6.0-SNAPSHOT
+c1a4ab0ba Fixed: wflow-core - FormPdfUtil - Exception when having non wellformed HTML.  @7.0-SNAPSHOT 
+71d611495 Fixed: wflow-commons - More fail-safe workaround fix for CVE-2022-22965 @7.0-SNAPSHOT
+3ef3a71e7 Fixed: wflow-commons - Workaround fixes for CVE-2022-22965. @7.0-SNAPSHOT
+7f1104cf6 Fixed: wflow-core - Custom Html - JS to create dynamic input field causing form corrupted. T898 @7.0-SNAPSHOT 
+47d6316b6 Modified: wflow-consoleweb - Login - Using default landing app as default login page. T565 @7.0-SNAPSHOT
+e9c8f343b Fixed: wflow-consoleweb - Userview - Prevent login form double submission causing redirection to app center. T794 @7.0-SNAPSHOT 
+4c00776ee Modified: jw-community - Update repository URL to https. @6.0-SNAPSHOT
+e03121960 Fixed: wflow-consoleweb/wflow-wfengine - Switch Profile - Deadline checker did not stop for previous profile and start with new profile. @7.0-SNAPSHOT 
+dda79e803 Fixed: wflow-commons - Hash Variable required HttpServletRequest object can't work in PluginThread. 7.0-SNAPSHOT
+a6d7a4954 Modified: wflow-wfengine - Performance - Blocking when generating IDs in DODSUtilities.getNext. @7.0-SNAPSHOT
+e5081f35e Modified: wflow-core/wflow-commons - Upgrade Commons BeanUtils for CVE-2014-0114 and CVE-2019-10086 & Upgrade Commons Collections for CVE-2015-6420 and CVE-2017-15708. @7.0-SNAPSHOT
+b9f763c01 Modified: wflow-wfengine - Update bsh to 2.0b6 for vulnerability CVE-2016-2510. @7.0-SNAPSHOT
+0aa8871e5 Modified: wflow-commons - Upgraded Spring LDAP Core to 2.3.4.RELEASE and slf4j dependency to 1.7.25 @7.0-SNAPSHOT
+e6e877a9d Modified: wflow-consoleweb - Upgraded MySQL JDBC in Community Edition to 8.0.26 @7.0-SNAPSHOT
+547c8e36c Modified: wflow-commons - Upgraded Tomcat JDBC Pool Package to 8.5.72 @7.0-SNAPSHOT
+1ef3a170c Modified: wflow-core - Upgraded commons-compress for CVE-2021-35515, CVE-2021-35517 and CVE-2021-36090 @7.0-SNAPSHOT
+899feb18b Modified: wflow-core - Update jstl to 1.2 for vulnerability CVE-2015-0254. @7.0-SNAPSHOT
+6ed83c927 Modified: wflow-commons - Update commons-email to 1.5 for vulnerability CVE-2017-9801. @7.0-SNAPSHOT
+9ca4d4138 Modified: wflow-core - Update POI to 4.1.2 for vulnerability CVE-2019-12415 & XML Beans to 3.1.0 for vulnerability CVE-2021-23926. @7.0-SNAPSHOT
+c339724d7 Modified: wflow-jdbc - Security - Upgrade ojdbc6 12.1.0.2 to ojdbc8 21.1.0.0. @7.0-SNAPSHOT.
+80ea143c1 Fixed: wflow-consoleweb - Datasource & Profile: If user save as new profile, properties file created but empty. #T217 @7.0-SNAPSHOT.
+6c48d9e37 Fixed: wflow-consoleweb - Audit Trail - The paging number are not showing correct results when there is a filter value. GH #55 @8.0-SNAPSHOT
+3a9fd5246 Fixed: wflow-core - Update AppWebController.java in order to fix Resource Permission. PR #53 @7.0-SNAPSHOT
+878e8e08c Modified: wflow-core - JSON Tool - Removed unused streamToString method @7.0-SNAPSHOT
+18598dabb Fixed: wflow-core - Security - Reflected XSS in App Name. #T149 @7.0-SNAPSHOT
+745084610 Fixed: wflow-plugin-base - Plugin - Prevent NPE when label is return null. #9199 @7.0-SNAPSHOT
+f38a2e4ad Fixed: wflow-commons - StringUtil getUrlParams not working on parameters with same name. @7.0-SNAPSHOT
+f66ad9544 Fixed: wflow-core: Resources could not upload filenames with spaces. #T91 @7.0-SNAPSHOT
+1d00e6cfd Fixed: wflow-consoleweb - Unable to download datalist csv file if System Locale = french. #T85  @7.0-SNAPSHOT
+e4540cc6a Fixed: wflow-core - JSON Tool/SOAP Tool - storeToForm() method throw cast exception when response only return single row. #8999 @7.0-SNAPSHOT
+403668197 Fixed: wflow-engine - Deadlines - DeadlineChecker throws NullPointerException after a tenant is removed #8944 @7.0-SNAPSHOT
+e409a9459 Fixed: wflow-core - Form Builder - OSGI plugin having extra properties added in multi tenant environment. @7.0-SNAPSHOT
+aa92a109a Modified: wflow-core - Universal/Progressive Theme - Disable zoom in effect of login form in Safari mobile. #8768 @7.0-SNAPSHOT
+
 CHANGES IN 6.0.34
 =================
 08356db1b Fixed: wflow-core - MobileUtil - Prevent Regex DOS. @7.0-SNAPSHOT
