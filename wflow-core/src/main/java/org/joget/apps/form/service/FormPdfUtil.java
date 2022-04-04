@@ -26,6 +26,9 @@ import com.lowagie.text.pdf.ITextCustomFontResolver;
 import com.lowagie.text.pdf.ITextCustomOutputDevice;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
@@ -107,12 +110,24 @@ public class FormPdfUtil {
             ITextRenderer r = getRenderer();
             synchronized (r) {
                 html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
+
+                // XML 1.0
+                // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+                String pattern = "[^"
+                        + "\u0009\r\n"
+                        + "\u0020-\uD7FF"
+                        + "\uE000-\uFFFD"
+                        + "\ud800\udc00-\udbff\udfff"
+                        + "]";
+                
+                String legalHtml = html.replaceAll(pattern, "");
+                legalHtml = toXHTML(legalHtml);
             
                 final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 documentBuilderFactory.setValidating(false);
                 DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
                 builder.setEntityResolver(FSEntityResolver.instance());
-                org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(html.getBytes("UTF-8")));
+                org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(legalHtml.getBytes("UTF-8")));
 
                 r.setDocument(xmlDoc, null);
 
@@ -127,6 +142,12 @@ public class FormPdfUtil {
             LogUtil.error(FormPdfUtil.class.getName(), e, "");
         }
         return null;
+    }
+    
+    public static String toXHTML(String html) {
+        final Document document = Jsoup.parse(html);
+        document.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        return document.html();
     }
     
     /**
