@@ -2,6 +2,7 @@ package org.joget.apps.app.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import org.joget.commons.util.StringUtil;
 import org.simpleframework.xml.Element;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.NotBlank;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.RegExp;
@@ -94,7 +95,7 @@ public class AbstractVersionedObject implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return StringUtil.stripAllHtmlTag(name);
     }
 
     public void setName(String name) {

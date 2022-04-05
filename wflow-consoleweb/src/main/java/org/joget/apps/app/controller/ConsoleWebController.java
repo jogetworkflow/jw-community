@@ -1355,6 +1355,8 @@ public class ConsoleWebController {
                 copy = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             }
             
+            appDefinition.setName(StringUtil.stripAllHtmlTag(appDefinition.getName()));
+            
             Collection<String> errors = appService.createAppDefinition(appDefinition, copy);
             if (!errors.isEmpty()) {
                 model.addAttribute("errors", errors);
@@ -4061,7 +4063,7 @@ public class ConsoleWebController {
     public void consoleProfileChange(Writer writer, @RequestParam("profileName") String profileName) {
         if (!HostManager.isVirtualHostEnabled()) {
             SecurityUtil.validateStringInput(profileName);
-            DynamicDataSourceManager.changeProfile(profileName);
+            WorkflowUtil.switchProfile(profileName);
         }
     }
 
@@ -4089,6 +4091,7 @@ public class ConsoleWebController {
                     DynamicDataSourceManager.writeProperty(paramName, paramValue);
                 }
             }
+            WorkflowUtil.switchProfile(profileName);
         }
     }
 

@@ -145,7 +145,7 @@ public class CustomPdfViewer implements BinaryExportView {
      * @return "application/pdf"
      */
     public String getMimeType() {
-        return "application/pdf"; //$NON-NLS-1$
+        return "application/pdf;charset=UTF-8"; //$NON-NLS-1$
     }
 
     /**

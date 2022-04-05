@@ -193,7 +193,7 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             FormRowSet rowSet = new FormRowSet();
 
-            if (multirowBaseObjectName != null && multirowBaseObjectName.trim().length() > 0) {
+            if (multirowBaseObjectName != null && multirowBaseObjectName.trim().length() > 0 && getObjectFromMap(multirowBaseObjectName, object) != null && getObjectFromMap(multirowBaseObjectName, object).getClass().isArray()) {
                 Object[] baseObjectArray = (Object[]) getObjectFromMap(multirowBaseObjectName, object);
                 if (baseObjectArray != null && baseObjectArray.length > 0) {
                     rowSet.setMultiRow(true);
@@ -296,30 +296,4 @@ public class JsonTool extends DefaultApplicationPlugin {
         return row;
     }
 
-    protected String streamToString(InputStream in) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            StringBuilder sb = new StringBuilder();
-
-            String line = null;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    LogUtil.error(getClass().getName(), e, "");
-                }
-            }
-
-            return sb.toString();
-        } catch (Exception e) {
-            LogUtil.error(JsonTool.class.getName(), e, "");
-        }
-        return "";
-    }
 }

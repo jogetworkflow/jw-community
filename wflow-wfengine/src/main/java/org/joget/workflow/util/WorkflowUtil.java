@@ -14,8 +14,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.FileStore;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -381,5 +385,18 @@ public class WorkflowUtil implements ApplicationContextAware {
             LogUtil.error(WorkflowUtil.class.getName(), e, "Error retrieve absence users replaced by" + username);
         }
         return null;
+    }
+    
+    public static void switchProfile(String profileName) {
+        if (!HostManager.isVirtualHostEnabled()) {
+            SecurityUtil.validateStringInput(profileName);
+            DeadlineThreadManager.startThread(-1);
+            
+            DynamicDataSourceManager.changeProfile(profileName);
+            
+            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            workflowManager.internalUpdateDeadlineChecker();
+            FileStore.updateFileSizeLimit();
+        }
     }
 }

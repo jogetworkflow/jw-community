@@ -115,7 +115,7 @@ public class CustomExcelHssfView implements BinaryExportView {
      * @see org.displaytag.export.BaseExportView#getMimeType()
      */
     public String getMimeType() {
-        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     }
 
     public void doExport(OutputStream out) throws JspException {

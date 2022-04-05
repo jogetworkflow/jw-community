@@ -76,22 +76,8 @@ public class AuditTrialJsonController {
             data.put("timestamp", TimeZoneUtil.convertToTimeZone(auditTrail.getTimestamp(), null, AppUtil.getAppDateFormat()));
             jsonObject.accumulate("data", data);
         }
-
-        if (dateFrom != null && dateFrom.trim().length() > 0 && dateTo != null && dateTo.trim().length() > 0) {
-            String[] dateFroms = dateFrom.split("-");
-            String[] dateTos = dateTo.split("-");
-
-            Calendar dateFromCal = Calendar.getInstance();
-            dateFromCal.set(Integer.parseInt(dateFroms[0]), Integer.parseInt(dateFroms[1]) - 1, Integer.parseInt(dateFroms[2]), 0, 0, 0);
-
-            Calendar dateToCal = Calendar.getInstance();
-            dateToCal.set(Integer.parseInt(dateTos[0]), Integer.parseInt(dateTos[1]) - 1, Integer.parseInt(dateTos[2]), 23, 59, 59);
-
-            jsonObject.accumulate("total", auditTrailDao.count("where timestamp >= ? and timestamp <=?", new Object[]{dateFromCal.getTime(), dateToCal.getTime()}));
-        } else {
-            jsonObject.accumulate("total", auditTrailDao.count("", null));
-        }
-
+        
+        jsonObject.accumulate("total", auditTrailDao.count(condition, args.toArray()));
         jsonObject.accumulate("start", start);
         jsonObject.accumulate("sort", sort);
         jsonObject.accumulate("desc", desc);

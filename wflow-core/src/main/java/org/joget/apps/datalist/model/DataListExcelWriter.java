@@ -44,10 +44,10 @@ public class DataListExcelWriter {
         
         headerStyle = (XSSFCellStyle) wb.createCellStyle();
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerStyle.setFillForegroundColor(HSSFColor.DARK_BLUE.index);
+        headerStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.DARK_BLUE.getIndex());
         headerFont = wb.createFont();
         headerFont.setBold(true);
-        headerFont.setColor(HSSFColor.WHITE.index);
+        headerFont.setColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
         headerStyle.setFont(headerFont);
     }
     

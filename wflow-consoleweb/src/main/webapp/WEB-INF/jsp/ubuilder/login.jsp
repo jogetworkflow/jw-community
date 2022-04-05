@@ -148,6 +148,19 @@
                         $(document).ready(
                             function() {
                                 $("#j_username").focus();
+                                
+                                $("#loginForm input[name='submit']").click(function(){
+                                    $.blockUI({ css: { 
+                                        border: 'none', 
+                                        padding: '15px', 
+                                        backgroundColor: '#000', 
+                                        '-webkit-border-radius': '10px', 
+                                        '-moz-border-radius': '10px', 
+                                        opacity: .3, 
+                                        color: '#fff' 
+                                    }, message : "<h1><ui:msgEscJS key="form.form.message.wait" /></h1>" }); 
+                                    return true;
+                                });
                             }
                         );
                     </script>

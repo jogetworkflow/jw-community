@@ -1205,14 +1205,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     columnsName.addAll(row.keySet());
                 }
             }
-            
+            Pattern pattern = Pattern.compile("^[0-9a-zA-Z_\\-]+$");
             for (Object column : columnsName) {
                 String columnName = (String) column;
                 if (columnName != null && !columnName.isEmpty() && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)
                          && !FormUtil.PROPERTY_CREATED_BY.equals(columnName) && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(columnName)
                          && !FormUtil.PROPERTY_MODIFIED_BY.equals(columnName) && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(columnName)) {
                     String lowerCasePropName = columnName.toLowerCase();
-                    if (!lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
+                    
+                    if (pattern.matcher(columnName).matches() && !lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
                         columnList.add(columnName);
                         lowerCaseColumnSet.add(lowerCasePropName);
                     }
@@ -1245,7 +1246,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
             tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
         }
-
+        
+        Pattern pattern = Pattern.compile("^[0-9a-zA-Z_\\-]+$");
+        
         // get forms mapped to the table name
         columnList = formColumnCache.get(tableName);
         if (columnList == null) {
@@ -1260,7 +1263,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         Form form = (Form) getFormService().createElementFromJson(json, false);
                         Collection<String> tempColumnList = new HashSet<String>();
                         findAllElementIds(form, tempColumnList);
-                        
+
                         LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
                         for (String c : tempColumnList) {
                             if (!c.isEmpty()) {
@@ -1270,12 +1273,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                                     columnList.remove(exist);
                                 }
                                 checkDuplicateMap.put(c.toLowerCase(), c);
-                                columnList.add(c);
+                                
+                                if (pattern.matcher(c).matches()) {
+                                    columnList.add(c);
+                                }
                             }
                         }
                     }
                 }
-                
+                                    
                 //remove predefined column
                 columnList.remove(FormUtil.PROPERTY_ID);
                 columnList.remove(FormUtil.PROPERTY_DATE_CREATED);

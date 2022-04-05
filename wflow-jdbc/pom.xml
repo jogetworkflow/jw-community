@@ -34,9 +34,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>12.1.0.2</version>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>21.1.0.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -49,11 +49,11 @@
     <distributionManagement>
         <repository>
             <id>internal</id>
-            <url>dav:http://dev.joget.org/archiva/repository/internal/</url>
+            <url>dav:https://dev.joget.org/archiva/repository/internal/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>http://dev.joget.org/archiva/repository/snapshots</url>
+            <url>https://dev.joget.org/archiva/repository/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

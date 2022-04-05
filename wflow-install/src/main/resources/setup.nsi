@@ -166,8 +166,8 @@ Section "Joget Workflow" SecJoget
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.41\webapps\jw.war
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner.war apache-tomcat-8.5.41\webapps\jwdesigner.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.78\webapps\jw.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner.war apache-tomcat-8.5.78\webapps\jwdesigner.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -182,9 +182,9 @@ Section "Joget Workflow" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-8.5.41\webapps"
-  File /oname=apache-tomcat-8.5.41\webapps\jw.war apache-tomcat-8.5.41\webapps\jw.war
-  File /oname=apache-tomcat-8.5.41\webapps\jwdesigner.war apache-tomcat-8.5.41\webapps\jwdesigner.war
+  CreateDirectory "$INSTDIR\apache-tomcat-8.5.78\webapps"
+  File /oname=apache-tomcat-8.5.78\webapps\jw.war apache-tomcat-8.5.78\webapps\jw.war
+  File /oname=apache-tomcat-8.5.78\webapps\jwdesigner.war apache-tomcat-8.5.78\webapps\jwdesigner.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -215,7 +215,7 @@ Section "Apache Tomcat 8" SecTomcat
 
 ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-8.5.41
+  File /r /x *.war apache-tomcat-8.5.78
   File tomcat8-run.bat
   File tomcat8-stop.bat
   File joget-start.bat
@@ -283,6 +283,9 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.78\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+    StrCpy $EXISTING_TOMCAT_VERSION "8.5.78"  
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.41\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "8.5.41"  
@@ -348,10 +351,10 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.8.0_112"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.41\webapps\jw"
-  RmDir /r "$INSTDIR\apache-tomcat-8.5.41\webapps\jwdesigner"
-  Delete "$INSTDIR\apache-tomcat-8.5.41\webapps\jw.war"
-  Delete "$INSTDIR\apache-tomcat-8.5.41\webapps\jwdesigner.war"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.78\webapps\jw"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.78\webapps\jwdesigner"
+  Delete "$INSTDIR\apache-tomcat-8.5.78\webapps\jw.war"
+  Delete "$INSTDIR\apache-tomcat-8.5.78\webapps\jwdesigner.war"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"

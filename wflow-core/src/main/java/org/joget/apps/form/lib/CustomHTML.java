@@ -2,6 +2,7 @@ package org.joget.apps.form.lib;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,9 +17,13 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.StringUtil;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.springframework.util.ReflectionUtils;
 
 public class CustomHTML extends Element implements FormBuilderPaletteElement, FormContainer {
-
+    protected static Whitelist whitelist = null;
+    
     @Override
     public String getName() {
         return "Custom HTML";
@@ -41,6 +46,8 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
         String customHTML = (String) getProperty("value");
 
         if (customHTML != null && !customHTML.isEmpty()) {
+            customHTML = stripNoneInputTag(customHTML);
+            
             //input field
             Pattern pattern = Pattern.compile("<input[^>]*>");
             Matcher matcher = pattern.matcher(customHTML);
@@ -87,6 +94,28 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
             }
         }
         return fieldNames;
+    }
+    
+    /**
+     * Removed all HTML tags not in the allowed map from the content
+     * @param content
+     * @param allowedTag
+     * @return 
+     */
+    public String stripNoneInputTag(String content) {
+        if (content != null && !content.isEmpty()) {
+            if (whitelist == null) {
+                whitelist = Whitelist.none().addAttributes(":all","name");
+                whitelist.addTags("input");
+                whitelist.addTags("textarea");
+                whitelist.addTags("select");
+                java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
+                ReflectionUtils.makeAccessible(field);
+                ReflectionUtils.setField(field, whitelist, new HashMap());
+            }
+            content = Jsoup.clean(content, whitelist);
+        }
+        return content;
     }
 
     @Override

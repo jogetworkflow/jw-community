@@ -106,7 +106,7 @@ public class CustomXmlViewer implements TextExportView {
     @Override
     public String getMimeType()
     {
-        return "text/xml"; 
+        return "text/xml;charset=UTF-8"; 
     }
     
     public void doExport(Writer out) throws IOException, JspException

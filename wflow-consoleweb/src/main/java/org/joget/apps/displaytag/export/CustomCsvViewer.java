@@ -108,33 +108,6 @@ public class CustomCsvViewer implements TextExportView {
     
     @Override
     public String getMimeType() {
-        String localeCode = AppUtil.getAppLocale();
-        
-        try{
-            if (!"en_US".equals(localeCode)) {
-                Locale locale = null;
-                String[] temp = localeCode.split("_");
-
-                if (temp.length == 1) {
-                    locale = new Locale(temp[0]);
-                } else if (temp.length == 2) {
-                    locale = new Locale(temp[0], temp[1]);
-                } else if (temp.length == 3) {
-                    locale = new Locale(temp[0], temp[1], temp[2]);
-                }
-
-                if (locale != null) {    
-                    String charset = Utils.getCharset(locale);
-
-                    if (charset != null && !charset.isEmpty()) {
-                        return "text/csv;charset=" + charset;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            //ignore
-        }
-        
         return "text/csv;charset=UTF-8"; //$NON-NLS-1$
     }
     

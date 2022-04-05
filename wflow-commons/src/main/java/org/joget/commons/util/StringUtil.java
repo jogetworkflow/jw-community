@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -173,7 +174,7 @@ public class StringUtil {
                         
                         String[] values = (String[]) result.get(key);
                         if (values != null) {
-                            List temp = Arrays.asList(values);
+                            List<String> temp = new ArrayList<String>(Arrays.asList(values));
                             temp.add(value);
                             values = (String[]) temp.toArray(new String[0]);
                         } else {
