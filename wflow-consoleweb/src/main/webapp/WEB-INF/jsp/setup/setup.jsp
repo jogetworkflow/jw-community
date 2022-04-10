@@ -194,7 +194,8 @@
 
             </div>
         </div>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-3.5.1.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-3.0.1.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
         <script type="text/javascript">
             var Setup = {

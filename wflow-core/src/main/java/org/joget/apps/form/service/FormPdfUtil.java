@@ -447,6 +447,21 @@ public class FormPdfUtil {
                             count += 1;
                         }
                     }
+                } else {
+                    if (count > 0) {
+                        replaceLabel += ", ";
+                    }
+                    String span = "";
+                    Pattern patternSpan = Pattern.compile("<span(.*?)>(.|\\s)*?</span>");
+                    Matcher matcherSpan = patternSpan.matcher(inputStringLabel);
+                    if (matcherSpan.find()) {
+                        span = matcherSpan.group(0);
+                        span = span.replaceAll("<(.*?)span>", "");
+                        span = span.replaceAll("</span(.*?)>", "");
+                        span = span.trim();
+                    }
+                    replaceLabel += span;
+                    count += 1;
                 }
             }
             if (count > 0) {
