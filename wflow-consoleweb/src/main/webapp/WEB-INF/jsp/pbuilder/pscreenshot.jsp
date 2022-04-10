@@ -17,9 +17,9 @@
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script src="${pageContext.request.contextPath}/js/JSON.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery/jquery-3.5.1.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-3.0.1.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.13.1.custom.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
         <script src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
