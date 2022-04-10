@@ -9,7 +9,7 @@
 
         <c:url var="url" value="" />
         <c:set var="builderMode" value="${param.builderMode == 'true'}"/>
-        <form:form id="createForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/submit?builderMode=${builderMode}" method="POST" commandName="formDefinition" cssClass="form blockui">
+        <form:form id="createForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/submit?builderMode=${builderMode}" method="POST" modelAttribute="formDefinition" cssClass="form blockui">
             <input type="hidden" name="activityDefId" value="<c:out value="${activityDefId}"/>"/>
             <input type="hidden" name="processDefId" value="<c:out value="${processDefId}"/>"/>
             <form:errors path="*" cssClass="form-errors"/>

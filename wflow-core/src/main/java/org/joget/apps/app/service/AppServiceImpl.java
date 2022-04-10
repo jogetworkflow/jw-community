@@ -651,6 +651,7 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     @Override
+    @Transactional
     public WorkflowProcessResult submitFormToStartProcess(String appId, String version, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId, String formUrl) {
         if (formData == null) {
             formData = new FormData();
@@ -673,6 +674,7 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     @Override
+    @Transactional
     public WorkflowProcessResult submitFormToStartProcess(String appId, String version, PackageActivityForm startFormDef, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId) {
         WorkflowProcessResult result = null;
         if (formData == null) {
@@ -1470,6 +1472,7 @@ public class AppServiceImpl implements AppService {
         }
         return packageDef;
     }
+    
     //----- Console form management use cases ------
     @Resource
     FormDefinitionDao formDefinitionDao;
@@ -1575,6 +1578,7 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     @Override
+    @Transactional
     public FormData submitForm(String appId, String version, String formDefId, FormData formData, boolean ignoreValidation) {
         Form form = loadFormByFormDefId(appId, version, formDefId, formData, null);
         if (form != null) {
@@ -1592,6 +1596,7 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     @Override
+    @Transactional
     public FormData submitForm(Form form, FormData formData, boolean ignoreValidation) {
         if (form != null) {
             try {
@@ -1956,9 +1961,8 @@ public class AppServiceImpl implements AppService {
             }
             if (appDef != null && appDef.getPackageDefinition() != null && appDef.getPackageDefinition() instanceof HibernateProxy) {
                 PackageDefinition packageDef = (PackageDefinition)((HibernateProxy)appDef.getPackageDefinition()).getHibernateLazyInitializer().getImplementation();
-                Collection<PackageDefinition> tempPackageDefinitionList = new ArrayList<>();
-                tempPackageDefinitionList.add(packageDef);
-                appDef.setPackageDefinitionList(tempPackageDefinitionList);
+                appDef.getPackageDefinitionList().clear();
+                appDef.getPackageDefinitionList().add(packageDef);
             }
             
             RegistryMatcher m = new RegistryMatcher();

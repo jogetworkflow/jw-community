@@ -3,10 +3,13 @@ package org.joget.apps.app.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.joget.apps.app.model.AbstractVersionedObject;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * DAO to load/store VersionedObjects objects
@@ -113,7 +116,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         }
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -140,7 +143,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         Query q = findSession().createQuery(query);
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -150,22 +153,15 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         return ((Long) q.iterate().next()).longValue();
     }
 
-    /**
+    /**gigi
      * Gets the latest version for an object
      * @param id
      * @return
      */
     public Long getLatestVersion(final String id) {
-        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?";
-        Object[] params = {id};
+        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?1";
         Query q = findSession().createQuery(query);
-        if (params != null) {
-            int i = 0;
-            for (Object param : params) {
-                q.setParameter(i, param);
-                i++;
-            }
-        }
+        q.setParameter(1, id);
         Long value = (Long) q.iterate().next();
         return (value != null) ? value.longValue() : new Long(0);
     }
@@ -215,17 +211,18 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
     protected String generateQueryCondition(String id, String appId, Long version, String name) {
         // formulate query and parameters
         String query = " where 1=1";
+        int ordinalParameter = 1;
         if (id != null && !id.trim().isEmpty()) {
-            query += " and id=?";
+            query += " and id=?" + ordinalParameter++;
         }
         if (appId != null && !appId.trim().isEmpty()) {
-            query += " and appId=?";
+            query += " and appId=?" + ordinalParameter++;
         }
         if (version != null) {
-            query += " and version=?";
+            query += " and version=?" + ordinalParameter++;
         }
         if (name != null && !name.trim().isEmpty()) {
-            query += " and name like ?";
+            query += " and name like ?" + ordinalParameter++;
         }
         return query;
     }

@@ -1,5 +1,7 @@
 package org.joget.apps.form.dao;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
@@ -80,4 +82,14 @@ public class XMLUtil {
             }
         }
     }
+    
+    public static InputStream documentToInputStream(Document doc)
+            throws TransformerException, IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        DOMSource xmlSource = new DOMSource(doc);
+        StreamResult outputTarget = new StreamResult(outputStream);
+        TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
+        InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
+        return is;
+    }    
 }

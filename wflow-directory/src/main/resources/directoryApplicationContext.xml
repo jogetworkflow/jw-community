@@ -11,7 +11,7 @@
     <import resource="classpath:commonsApplicationContext.xml" />
     <import resource="classpath:pluginBaseApplicationContext.xml" />
 
-    <bean id="directorySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="directorySessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -31,6 +31,9 @@
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jta</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
@@ -106,6 +109,9 @@
         <property name="organizationDao" ref="organizationDao" />
         <property name="gradeDao" ref="gradeDao" />
         <property name="roleDao" ref="roleDao" />
+    </bean>
+
+    <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager">
     </bean>
 
     <aop:config>

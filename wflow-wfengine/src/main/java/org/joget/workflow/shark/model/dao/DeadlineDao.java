@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.workflow.shark.model.CustomActivityPersistenceObject;
@@ -52,18 +52,18 @@ public class DeadlineDao extends AbstractSpringDao {
     
     public Collection<String> getProcessIdsWithDeadlines(Long timeLimitBoundary) {
         Session session = findSession();
-        String query = "SELECT distinct e.activity.processId FROM " + ENTITY_NAME + " e where e.activity.state.name like ?";
+        String query = "SELECT distinct e.activity.processId FROM " + ENTITY_NAME + " e where e.activity.state.name like ?1";
         
         if (timeLimitBoundary != null) {
-            query += "and e.timeLimit <= ?";
+            query += "and e.timeLimit <= ?2";
         }
 
         Query q = session.createQuery(query);
         
-        q.setParameter(0, "open.%");
+        q.setParameter(1, "open.%");
         
         if (timeLimitBoundary != null) {
-            q.setParameter(1, timeLimitBoundary);
+            q.setParameter(2, timeLimitBoundary);
         }
 
         return q.list();

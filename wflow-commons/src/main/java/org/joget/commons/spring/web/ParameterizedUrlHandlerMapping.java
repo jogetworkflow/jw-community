@@ -5,7 +5,8 @@ import org.springframework.util.PathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.Iterator;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 /*
 Copyright 2007, Carbon Five, Inc.
@@ -17,7 +18,6 @@ writing, software distributed under the License is distributed on an "AS IS" BAS
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
  */
-import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping;
 
 /**
  * Substitute for Spring's SimpleUrlHandlerMapping that is capable of parsing parameters out of
@@ -63,7 +63,7 @@ import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMa
  * <p>Since parsing parameterized URLs requires a custom path matcher, this class does not support setting
  * the <code>pathMatcher</code> property.  Attempts to do so will be ignored.</p>
  */
-public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapping { //SimpleUrlHandlerMapping {
+public class ParameterizedUrlHandlerMapping extends RequestMappingHandlerMapping {
 
     public static final String PATH_PARAMETERS = "ParameterizedUrlHandlerMapping.path-parameters";
     private ParameterizedPathMatcher pathMatcher = null;
@@ -79,32 +79,15 @@ public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapp
     public void setPathMatcher(PathMatcher pathMatcher) {
         // do not replace parameterized matcher
     }
+    
+    @Override
+    protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServletRequest request) {
+        // set parameters from the URL path
+        String pattern = info.getPatternValues().iterator().next();
+        Map<String, String> parameters = pathMatcher.namedParameters(pattern, lookupPath);
+        request.setAttribute(PATH_PARAMETERS, parameters);
 
-    protected Object lookupHandler(String urlPath, HttpServletRequest request) {
-        Object handler = null;
-
-        Map<String, Object> handlerMap = (Map<String, Object>) getHandlerMap();
-
-        // Pattern match?
-        Map<String, String> bestParameters = parameterCache.get(urlPath);
-        String bestPathMatch = pathCache.get(urlPath);
-        if (bestPathMatch == null || bestParameters == null) {
-            for (Iterator it = handlerMap.keySet().iterator(); it.hasNext();) {
-                String registeredPath = (String) it.next();
-                Map<String, String> parameters = pathMatcher.namedParameters(registeredPath, urlPath);
-                if ((parameters != null) && (bestPathMatch == null || bestPathMatch.length() <= registeredPath.length())) {
-                    bestPathMatch = registeredPath;
-                    bestParameters = parameters;
-                }
-            }
-            pathCache.put(urlPath, bestPathMatch);
-            parameterCache.put(urlPath, bestParameters);
-        }
-        if (bestPathMatch != null) {
-            handler = handlerMap.get(bestPathMatch);
-            exposePathWithinMapping(this.pathMatcher.extractPathWithinPattern(bestPathMatch, urlPath), urlPath, request);
-            request.setAttribute(PATH_PARAMETERS, bestParameters);
-        }
-        return handler;
+        super.handleMatch(info, lookupPath, request);
     }
+
 }

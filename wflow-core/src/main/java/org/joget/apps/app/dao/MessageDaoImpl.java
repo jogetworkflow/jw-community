@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.ehcache.Element;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.service.AppDevUtil;
@@ -114,7 +114,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         q.setFirstResult(0);
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;

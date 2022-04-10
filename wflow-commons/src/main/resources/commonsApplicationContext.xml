@@ -95,7 +95,7 @@
     -->
     
     <!-- Hibernate SessionFactory -->
-    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -107,6 +107,9 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jta</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
@@ -116,7 +119,7 @@
     <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="cache">
-            <ref local="longTermCache" />
+            <ref bean="longTermCache" />
         </property>
     </bean>
 
@@ -134,7 +137,7 @@
         <property name="setupDao" ref="setupDao"/>
         <property name="setupManagerHelper" ref="setupManagerHelper"/>
         <property name="cache">
-            <ref local="setupManagerCache" />
+            <ref bean="setupManagerCache" />
         </property>
     </bean>
 
@@ -162,7 +165,7 @@
     <bean id="longTermCache" class="org.joget.commons.util.LongTermCache" depends-on="setupManager">
         <property name="setupManager" ref="setupManager"/>
         <property name="cacheObject">
-            <ref local="longTermCacheObject" />
+            <ref bean="longTermCacheObject" />
         </property>
     </bean>
     

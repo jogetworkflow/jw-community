@@ -22,7 +22,7 @@
     
     <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
         <property name="cacheObject">
-            <ref local="fluCache" />
+            <ref bean="fluCache" />
         </property>
     </bean>
 
@@ -79,7 +79,7 @@
         <property name="formPersistentClassCache" ref="formSessionFactoryCache" />
     </bean>
     
-    <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -91,6 +91,9 @@
                 <prop key="hibernate.hbm2ddl.auto"></prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jta</prop>                
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
                 <prop key="hibernate.query.plan_cache_max_size">16</prop>
@@ -153,7 +156,7 @@
         <property name="sessionFactory" ref="appSessionFactory"/>
     </bean>
 
-    <bean id="appSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="appSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <qualifier value="app"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -180,6 +183,9 @@
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jta</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
@@ -187,7 +193,7 @@
     </bean>
     
     <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <qualifier value="report"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -205,6 +211,9 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jta</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>

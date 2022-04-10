@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,8 +33,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.InvalidMappingException;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
@@ -42,9 +45,9 @@ import org.hibernate.mapping.Component;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.tool.hbm2ddl.ImportSqlCommandExtractor;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -63,7 +66,7 @@ import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONObject;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -322,7 +325,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         try {
             String query = "SELECT e FROM " + tableName + " e ";
             if (condition != null) {
-                query += condition;
+                String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+                query += newCondition;
             }
 
             if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
@@ -348,7 +352,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
 
             if (params != null) {
-                int i = 0;
+                int i = 1;
                 for (Object param : params) {
                     q.setParameter(i, param);
                     i++;
@@ -410,10 +414,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + condition));
+            String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+            Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + newCondition));
 
             if (params != null) {
-                int i = 0;
+                int i = 1;
                 for (Object param : params) {
                     q.setParameter(i, param);
                     i++;
@@ -469,13 +474,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? order by e.dateCreated";
+            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?1 order by e.dateCreated";
 
             Query q = session.createQuery(processQuery(query));
 
             q.setFirstResult(0);
             q.setMaxResults(1);
-            q.setParameter(0, value);
+            q.setParameter(1, value);
 
             if (q.list().size() > 0) {
                 return ((String) q.iterate().next());
@@ -860,7 +865,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 }
             }
 
-            Configuration configuration = null;
+            Metadata metadata = null;
             if (pc == null) {
                 try {
                     // locate entity hbm mapping file
@@ -869,10 +874,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     File mappingFile = new File(path, filename);
                     if (mappingFile.exists()) {
                         // load existing mapping
-                        configuration = new Configuration().configure();
-                        configuration.addFile(mappingFile);
-                        configuration.buildMappings();
-                        pc = configuration.getClassMapping(entityName);
+                        MetadataSources metadataSources = createMetadataSources();
+                        metadataSources.addFile(mappingFile);
+                        metadata = metadataSources.buildMetadata();
+                        
+                        pc = metadata.getEntityBinding(entityName);
                         if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                             LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
                         }
@@ -963,10 +969,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     //remove persistentClassCache
                     formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
                     clearJoinCache(entityName);
-                } else if (configuration != null && sf == null) {
+                } else if (metadata != null && sf == null) {
                     //no change, use existing mapping file if session factory not exist
                     LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " get session factory");
-                    sf = getSessionFactory(entityName, cacheKey, actionType, configuration);
+                    sf = getSessionFactory(entityName, cacheKey, actionType, metadata);
                 }
             }
         }
@@ -1007,17 +1013,31 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return sf;
     }
     
-    protected SessionFactory createSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
+    protected MetadataSources createMetadataSources() {
         // create configuration
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
         
+        // set datasource
+        DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
+        configuration.getProperties().put(Environment.DATASOURCE, dataSource);
+        configuration.getProperties().put(Environment.ALLOW_UPDATE_OUTSIDE_TRANSACTION, true);
         Properties properties = getProperties();
+        
+        // set schema from datasource properties
         String workflowSchema = (String) properties.get("workflowSchema");
         if (workflowSchema != null && !workflowSchema.isEmpty()) {
             configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));
         }
+        
+        final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        MetadataSources metadataSources = new MetadataSources(sr);
+        return metadataSources;
+    }
+        
+    protected SessionFactory createSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
+        MetadataSources metadataSources = createMetadataSources();
         
         // get columns
         Collection<String> formFields;
@@ -1086,59 +1106,62 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
 
             // add mapping to config
-            configuration.addFile(mappingFile);
+            metadataSources.addFile(mappingFile);
         } else {
-            configuration.addDocument(document);
+            InputStream is = null;
+            try {
+                is = XMLUtil.documentToInputStream(document);
+                metadataSources.addInputStream(is);
+            } catch (TransformerException e) {
+                throw new HibernateException("Unable to read document", e);
+            } catch (IOException e) {
+                throw new HibernateException("Unable to read document", e);
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException ex) {
+                    // ignore
+                }
+            }
         }
         
         String cacheKey = getSessionFactoryCacheKey(entityName, tableName, rowSet);
-        SessionFactory sf = getSessionFactory(entityName, cacheKey, actionType, configuration);
+        Metadata metadata = metadataSources.buildMetadata();
+        SessionFactory sf = getSessionFactory(entityName, cacheKey, actionType, metadata);
         
         return sf;
     }
-    
-    protected SessionFactory createJoinSessionFactory(String[] entities) throws HibernateException {
-        // create configuration
-        Configuration configuration = new Configuration();
-        configuration.setProperty("show_sql", "false");
-        configuration.setProperty("cglib.use_reflection_optimizer", "true");
 
-        Properties properties = getProperties();
-        String workflowSchema = (String) properties.get("workflowSchema");
-        if (workflowSchema != null && !workflowSchema.isEmpty()) {
-            configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));
-        }
+    protected SessionFactory createJoinSessionFactory(String[] entities) throws HibernateException {
+        // create metadatasources
+        MetadataSources metadataSources = createMetadataSources();
         
         String path = getFormMappingPath();
         for (String e : entities) {
             String filename = e + ".hbm.xml";
             File mappingFile = new File(path, filename);
-
-            configuration.addFile(mappingFile);
+            metadataSources.addFile(mappingFile);
         }
         
         String cacheKey = getJoinSessionFactoryCacheKey(entities);
-        SessionFactory sf = getJoinSessionFactory(entities, cacheKey, configuration);
+        Metadata metadata = metadataSources.buildMetadata();
+        SessionFactory sf = getJoinSessionFactory(entities, cacheKey, metadata);
         
         return sf;
     }
     
-    protected SessionFactory getSessionFactory(final String entityName, String cacheKey, int actionType, final Configuration configuration) {
-        // set datasource
-        DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
-        configuration.getProperties().put(Environment.DATASOURCE, dataSource);
-        
-        // build session factory
-        final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-        SessionFactory sf = configuration.buildSessionFactory(sr);
+    protected SessionFactory getSessionFactory(final String entityName, String cacheKey, int actionType, final Metadata metadata) {
+        SessionFactory sf = metadata.buildSessionFactory();
         sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory created");
 
         // update schema
-        internalUpdateSchema(sf, sr, configuration, entityName);
+        internalUpdateSchema(sf, metadata, entityName);
         
         if (actionType == ACTION_TYPE_LOAD) {
-            PersistentClass pc = configuration.getClassMapping(entityName);
+            PersistentClass pc = metadata.getEntityBinding(entityName);
             // save into cache
             formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
         }
@@ -1151,19 +1174,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return sf;
     }
     
-    protected SessionFactory getJoinSessionFactory(final String[] entities, String cacheKey, final Configuration configuration) {
-        // set datasource
-        DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
-        configuration.getProperties().put(Environment.DATASOURCE, dataSource);
-        
-        // build session factory
-        final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-        SessionFactory sf = configuration.buildSessionFactory(sr);
+    protected SessionFactory getJoinSessionFactory(final String[] entities, String cacheKey, final Metadata metadata) {
+        SessionFactory sf = metadata.buildSessionFactory();
         sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory created");
 
         // update schema
-        internalUpdateSchema(sf, sr, configuration, entities.toString());
+        internalUpdateSchema(sf, metadata, entities.toString());
         
         // save into cache
         joinFormSessionFactoryCache.remove(cacheKey);
@@ -1176,12 +1193,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     /**
      * Trigger actual Hibernate schema update
      * @param sf
-     * @param sr
-     * @param configuration
+     * @param metadata
      * @param entityName
      * @throws HibernateException 
      */
-    protected void internalUpdateSchema(final SessionFactory sf, final ServiceRegistry sr, final Configuration configuration, final String entityName) throws HibernateException {
+    protected void internalUpdateSchema(final SessionFactory sf, final Metadata metadata, final String entityName) throws HibernateException {
         // check table exists
         final Set tableSet = new HashSet();
         if (!entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
@@ -1214,7 +1230,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (tableSet.isEmpty()) {
             // table does not exist, create it
             try {
-                new SchemaExport(sr, configuration).setImportSqlCommandExtractor(sr.getService(ImportSqlCommandExtractor.class)).execute(false, true, false, true);
+                new SchemaExport().create(EnumSet.of(TargetType.DATABASE), metadata);
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema created");
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error creating schema");
@@ -1222,7 +1238,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         } else {
             // table exists, update it
             try {
-                new SchemaUpdate(sr, configuration).execute(false, true);
+                new SchemaUpdate().execute(EnumSet.of(TargetType.DATABASE), metadata);                
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error updating schema");
             }
@@ -1536,7 +1552,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             
             String conditionQuery = "";
             if (condition != null && !condition.isEmpty()) {
-                conditionQuery = " " + condition;
+                String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+                conditionQuery = " " + newCondition;
             }
             String havingConditionQuery = "";
             if (havingCondition != null && !havingCondition.isEmpty()) {
@@ -1585,7 +1602,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 q.setMaxResults(rows);
             }
 
-            int i = 0;
+            int i = 1;
             if (params != null) {
                 for (Object param : params) {
                     q.setParameter(i, param);
@@ -1655,7 +1672,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             
             String conditionQuery = "";
             if (condition != null && !condition.isEmpty()) {
-                conditionQuery = " " + condition;
+                String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+                conditionQuery = " " + newCondition;
             }
             String havingConditionQuery = "";
             if (havingCondition != null && !havingCondition.isEmpty()) {
@@ -1689,7 +1707,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             
             Query q = session.createQuery(processQuery(query));
 
-            int i = 0;
+            int i = 1;
             if (params != null) {
                 for (Object param : params) {
                     q.setParameter(i, param);

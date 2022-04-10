@@ -27,6 +27,7 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
+            System.out.println("===== Initializing WebApplicationContext =====");            
             LogUtil.info(getClass().getName(), "===== Initializing WebApplicationContext =====");
             super.contextInitialized(event);
         } catch(Exception e) {
@@ -34,7 +35,10 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
                 LogUtil.error(getClass().getName(), e, "===== Error initializing WebApplicationContext =====");
             } else {
                 Exception exceptionToLog = (e instanceof BeanCreationException) ? null : e;
-                LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+                if (exceptionToLog != null) {
+                    LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+                    exceptionToLog.printStackTrace();
+                }
             }
             contextDestroyed(event);
         }

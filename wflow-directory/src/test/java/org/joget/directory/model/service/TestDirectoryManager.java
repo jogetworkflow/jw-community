@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:directoryApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:testDirectoryApplicationContext.xml"})
 public class TestDirectoryManager {
 
     public static final String TEST_ORGANIZATION = "TEST_ORGANIZATION";
@@ -71,14 +71,14 @@ public class TestDirectoryManager {
 
     @After
     public void tearDown() {
-        deleteDepartment(TEST_DEPARTMENT_CHILD);
-        deleteDepartment(TEST_DEPARTMENT_PARENT);
-        deleteOrganization(TEST_ORGANIZATION);
-        deleteGroup(TEST_GROUP);
         deleteUser(TEST_USER);
         deleteUser(TEST_DEPARTMENT_PARENT_HOD);
         deleteUser(TEST_DEPARTMENT_CHILD_HOD);
         deleteUser(TEST_USER_HOD);
+        deleteGroup(TEST_GROUP);
+        deleteDepartment(TEST_DEPARTMENT_CHILD);
+        deleteDepartment(TEST_DEPARTMENT_PARENT);
+        deleteOrganization(TEST_ORGANIZATION);
     }
 
     @Test

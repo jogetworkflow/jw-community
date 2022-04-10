@@ -3,13 +3,14 @@ package org.joget.commons.spring.model;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.Collection;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import java.util.List;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
+import org.hibernate.query.Query;
+import org.joget.commons.util.StringUtil;
 
 public abstract class AbstractSpringDao extends HibernateDaoSupport {
 
@@ -62,8 +63,9 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
     }
 
     protected Collection find(final String entityName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         Session session = findSession();
-        String query = "SELECT e FROM " + entityName + " e " + condition;
+        String query = "SELECT e FROM " + entityName + " e " + newCondition;
 
         if (sort != null && !sort.equals("")) {
             String filteredSort = filterSpace(sort);
@@ -83,7 +85,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
         }
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -94,11 +96,12 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
     }
 
     protected Long count(final String entityName, final String condition, final Object[] params) {
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         Session session = findSession();
-        Query q = session.createQuery("SELECT COUNT(*) FROM " + entityName + " e " + condition);
+        Query q = session.createQuery("SELECT COUNT(*) FROM " + entityName + " e " + newCondition);
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -106,7 +109,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
         }
         
         List result = q.list();
-        if (!condition.contains(" group by ")) {
+        if (!newCondition.contains(" group by ")) {
             return (Long) result.get(0);
         } else {
             return new Long(result.size());

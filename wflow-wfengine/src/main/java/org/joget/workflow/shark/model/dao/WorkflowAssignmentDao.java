@@ -9,10 +9,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
@@ -570,10 +571,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     
     public Collection<String> getPackageDefIds(String packageId) {
         Session session = findSession();
-        String query = "SELECT distinct e.processDefId FROM SharkProcess e WHERE e.processDefId like ?";
+        String query = "SELECT distinct e.processDefId FROM SharkProcess e WHERE e.processDefId like ?1";
         Query q = session.createQuery(query);
         
-        q.setParameter(0, packageId + "#%");
+        q.setParameter(1, packageId + "#%");
 
         return q.list();
     }
@@ -581,7 +582,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     protected Collection find(final String entityName, final String customField, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         Session session = findSession();
         String query = "SELECT e.processId, e.processDefId, e.processName, e.resourceRequesterId, s.name";
-        query += customField + " FROM " + entityName + " e " + condition;
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        query += customField + " FROM " + entityName + " e " + newCondition;
 
         if (sort != null && !sort.equals("")) {
             String filteredSort = filterSpace(sort);
@@ -601,7 +603,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         }
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -774,12 +776,12 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
      */
     public Collection<String> getMigrateProcessInstances(String packageId){
         Session session = findSession();
-        String query = "SELECT e.id" + " FROM MigrateProcess e WHERE e.name like ? and e.state in (1000000, 1000002, 1000004) ORDER BY e.oid";
+        String query = "SELECT e.id" + " FROM MigrateProcess e WHERE e.name like ?1 and e.state in (1000000, 1000002, 1000004) ORDER BY e.oid";
 
         Query q = session.createQuery(query);
         q.setFirstResult(0);
 
-        q.setParameter(0, packageId + "#%");
+        q.setParameter(1, packageId + "#%");
 
         return q.list();
     }
@@ -790,12 +792,12 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     
     public Set<String> getUsedVersion(String packageId) {
         Session session = findSession();
-        String query = "SELECT e.processDefId" + " FROM MigrateActivity e WHERE e.processDefId like ?";
+        String query = "SELECT e.processDefId" + " FROM MigrateActivity e WHERE e.processDefId like ?1";
 
         Query q = session.createQuery(query);
         q.setFirstResult(0);
 
-        q.setParameter(0, packageId + "#%");
+        q.setParameter(1, packageId + "#%");
 
         return new HashSet<String>(q.list());
     }
