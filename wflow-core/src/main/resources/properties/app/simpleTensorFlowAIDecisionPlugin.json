@@ -4,14 +4,14 @@
         "name" : "tensorflow",
         "label" : "@@app.simpletfai.tensorflow@@",
         "type" : "custom",
-        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.SimpleTensorFlowAIDecisionPlugin/service?mode=tensorflow&processId=%s&actId=%s",
+        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.SimpleTensorFlowAIDecisionPlugin/service?mode=tensorflow&processId=[PROCESS_ID]&actId=[ACTIVITY_ID]",
         "required" : "True"
     },
     {
         "name" : "rules",
         "label" : "@@app.rulesdecision.rules@@",
         "type" : "custom",
-        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.SimpleTensorFlowAIDecisionPlugin/service?mode=rules&processId=%s&actId=%s",
+        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.SimpleTensorFlowAIDecisionPlugin/service?mode=rules&processId=[PROCESS_ID]&actId=[ACTIVITY_ID]",
         "required" : "True"
     }]
 }]

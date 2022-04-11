@@ -1,7 +1,6 @@
 package org.joget.apps.app.lib;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +10,6 @@ import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.workflow.model.DecisionResult;
-import org.joget.workflow.util.WorkflowUtil;
 
 public class SimpleTensorFlowAIDecisionPlugin extends RulesDecisionPlugin {
     @Override
@@ -41,17 +39,7 @@ public class SimpleTensorFlowAIDecisionPlugin extends RulesDecisionPlugin {
 
     @Override
     public String getPropertyOptions() {
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        
-        String processId = "";
-        String actId = "";
-        if (request.getRequestURL().indexOf("/plugin/configure") != -1) {
-            String[] parts = request.getRequestURL().toString().split("/");
-            processId = parts[10];
-            actId = parts[12];
-        }
-        
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/simpleTensorFlowAIDecisionPlugin.json", new String[]{processId, actId, processId, actId}, true, null);
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/simpleTensorFlowAIDecisionPlugin.json", null, true, null);
     }
     
     @Override

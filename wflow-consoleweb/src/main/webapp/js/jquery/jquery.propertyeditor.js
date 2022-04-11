@@ -472,12 +472,24 @@ PropertyEditor.Util = {
             }
         } catch (err) {};
     },
+    setUrlVariables : function(variables) {
+        PropertyEditor.Util.UrlVariables = variables;
+    },
     replaceContextPath: function(string, contextPath) {
         if (string === null) {
             return string;
         }
         var regX = /\[CONTEXT_PATH\]/g;
-        return string.replace(regX, contextPath);
+        string = string.replace(regX, contextPath);
+        
+        //replace url variable
+        if (PropertyEditor.Util.UrlVariables !== undefined) {
+            for (var property in PropertyEditor.Util.UrlVariables) {
+                string = string.replace(new RegExp('\\\['+property+'\\\]', 'g'), PropertyEditor.Util.UrlVariables[property]);
+            }
+        }
+        
+        return string;
     },
     getTypeObject: function(page, number, prefix, properties, value, defaultValue) {
         var type = properties.type.toLowerCase();

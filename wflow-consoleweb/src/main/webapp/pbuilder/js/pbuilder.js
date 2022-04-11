@@ -3470,11 +3470,22 @@ ProcessBuilder = {
         }
         return conditions;
     },
+            
+    setUrlVariables : function(elementObj) {
+        if (PropertyEditor) {
+            PropertyEditor.Util.setUrlVariables({
+                "PROCESS_ID" : ProcessBuilder.currentProcessData.properties.id,
+                "ACTIVITY_ID" : elementObj.properties.id
+            });
+        }
+    },        
     
     /*
      * Get the mapping properties options for process start whitelist
      */                
     getProcessStartWhiteListDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
+        
         var def = ProcessBuilder.getParticipantDef(elementObj, component);
         
         def[0].title = get_cbuilder_msg("pbuilder.label.processStartWhiteList")
@@ -3487,6 +3498,8 @@ ProcessBuilder = {
      * Get the mapping properties options for participant
      */   
     getParticipantDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
+        
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
@@ -3616,6 +3629,8 @@ ProcessBuilder = {
      * Get the mapping properties options for activity node
      */   
     getActivityDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
+        
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
@@ -3695,6 +3710,7 @@ ProcessBuilder = {
      * Get the mapping properties options for tool node
      */   
     getToolDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
         return ProcessBuilder.multiToolProps;
     },
     
@@ -3702,6 +3718,7 @@ ProcessBuilder = {
      * Get the mapping properties options for route node
      */   
     getRouteDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
@@ -3728,6 +3745,7 @@ ProcessBuilder = {
      * Get the mapping properties options for start node
      */   
     getStartDef : function(elementObj, component) {
+        ProcessBuilder.setUrlVariables(elementObj);
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
