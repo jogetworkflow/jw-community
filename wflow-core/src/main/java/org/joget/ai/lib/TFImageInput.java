@@ -65,7 +65,7 @@ public class TFImageInput implements TensorFlowInput {
             scale = Float.parseFloat(AppPluginUtil.getVariable(params.get("scale").toString(), variables));
         } catch (Exception e) {}
         
-        return TensorFlowUtil.imageInput(TensorFlowUtil.getInputStream(filename, form, recordId), 
+        return TensorFlowUtil.imageInput(TensorFlowUtil.getFilePath(filename, form, recordId), 
                 type, height, width, mean, scale, 
                 params.get("datatype").toString());
     }

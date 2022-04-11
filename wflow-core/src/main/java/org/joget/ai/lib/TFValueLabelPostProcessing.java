@@ -12,31 +12,31 @@ public class TFValueLabelPostProcessing implements TensorFlowPostProcessing {
 
     @Override
     public void runPostProcessing(Map params, Map<String, Object> tfVariables, Map<String, String> variables, Map<String, Object> tempDataHolder) throws IOException {
-        String name = params.get("name").toString();
-        String variable = params.get("variable").toString();
+        String name = (String) params.get("name");
+        String variable = (String) params.get("variable");
         
         float[] values = (float[]) tfVariables.get(variable);
-        String variable2 = params.get("variable2").toString();
+        String variable2 = (String) params.get("variable2");
         Integer number = null;
         
-        if (!variable2.isEmpty()) {
+        if (variable2 != null && !variable2.isEmpty()) {
             float[] values2 = (float[]) tfVariables.get(variable2);
             number = (int) values2[0];
         }
-        Boolean unique = params.get("unique") != null && "true".equalsIgnoreCase(params.get("unique").toString());
+        Boolean unique = params.get("unique") != null && "true".equalsIgnoreCase((String) params.get("unique"));
         
         Float threshold = null;
         try {
-            threshold = Float.parseFloat(AppPluginUtil.getVariable(params.get("threshold").toString(), variables));
+            threshold = Float.parseFloat(AppPluginUtil.getVariable((String) params.get("threshold"), variables));
         } catch (Exception e) {}
         
         float[] scores = null;
-        String variable3 = params.get("variable3").toString();
-        if (!variable3.isEmpty()) {
+        String variable3 = (String) params.get("variable3");
+        if (variable3 != null && !variable3.isEmpty()) {
             scores = (float[]) tfVariables.get(variable3);
         }
-
-        List<String> labels = TensorFlowUtil.getValueToLabelList(TensorFlowUtil.getInputStream(AppPluginUtil.getVariable(params.get("labels").toString(), variables), null, null), values, number, unique, threshold, scores);
+        
+        List<String> labels = TensorFlowUtil.getValueToLabelList(TensorFlowUtil.getInputStream(AppPluginUtil.getVariable((String) params.get("labels"), variables), null, null), values, number, unique, threshold, scores);
         String labelsStr = String.join(";", labels);
         tfVariables.put(name, labelsStr);
         TensorFlowUtil.debug("Post processing output ("+ name +") : ", labelsStr);

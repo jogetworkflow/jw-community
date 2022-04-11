@@ -14,6 +14,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.tensorflow.Tensor;
+import org.tensorflow.op.core.Constant;
 
 public class TFFileBytesInput implements TensorFlowInput {
     
@@ -49,7 +50,7 @@ public class TFFileBytesInput implements TensorFlowInput {
         
         InputStream inputStream = TensorFlowUtil.getInputStream(filename, form, recordId);
         try {
-            return Tensor.create(IOUtils.toByteArray(inputStream));
+            return Constant.vectorOf(null, IOUtils.toByteArray(inputStream)).asTensor();
         } finally {
             if (inputStream != null) {
                 inputStream.close();

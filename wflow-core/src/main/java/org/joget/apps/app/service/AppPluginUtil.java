@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
@@ -179,6 +180,12 @@ public class AppPluginUtil implements ApplicationContextAware {
         String transitions = "";
         
         String processId = SecurityUtil.validateStringInput(request.getParameter("processId"));
+        
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            processId = AppUtil.getProcessDefIdWithVersion(packageDef.getId(), packageDef.getVersion().toString(), processId);
+        }
         if (!processId.isEmpty()) {
             String actId = SecurityUtil.validateStringInput(request.getParameter("actId"));
             
