@@ -20,7 +20,6 @@
 
     <!-- Open paths -->        
     <security:http pattern="/web/login" security="none"/>
-    <security:http pattern="/web/mlogin" security="none"/>
     <security:http pattern="/web/userview/screenshot/**" security="none"/>
     <security:http pattern="/web/help/guide" security="none"/>
     <security:http pattern="/web/offline" security="none"/>
@@ -45,14 +44,6 @@
         <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/app/**/form/embed" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/app/**/datalist/embed" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
-        <security:intercept-url pattern="/web/mlogin/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER" />
-        <security:intercept-url pattern="/web/mobile" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/web/mobile/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
-        <security:intercept-url pattern="/web/mobilecache/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/web/embed/mobile" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/web/embed/mobile/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
-        <security:intercept-url pattern="/web/embed/mobilecache/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/web/mapp/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         
         <!-- Open JSON APIs: permissions controlled within assignment ownership, userview permission and process whitelist -->
         <security:intercept-url pattern="/web/json/app/**/form/options" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
