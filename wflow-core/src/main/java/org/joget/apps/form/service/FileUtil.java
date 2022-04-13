@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.FileManager;
+import org.joget.commons.util.SecurityUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -317,14 +317,11 @@ public class FileUtil implements ApplicationContextAware {
      */
     public static File getFile(String fileName, Element element, String primaryKeyValue) throws IOException {
         // validate input
-        String normalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFKC);
-        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
-            throw new SecurityException("Invalid filename " + normalizedFileName);
-        }
+        String normalizedFileName = SecurityUtil.normalizedFileName(fileName);
         
         // get file
         String path = getUploadPath(element, primaryKeyValue);
-        return new File(path + fileName);
+        return new File(path + normalizedFileName);
     }
     
     /**
@@ -337,13 +334,10 @@ public class FileUtil implements ApplicationContextAware {
      */
     public static File getFile(String fileName, String tableName, String primaryKeyValue) throws IOException {
         // validate input
-        String normalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFKC);
-        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
-            throw new SecurityException("Invalid filename " + normalizedFileName);
-        }
+        String normalizedFileName = SecurityUtil.normalizedFileName(fileName);
                 
         String path = getUploadPath(tableName, primaryKeyValue);
-        return new File(path + fileName);
+        return new File(path + normalizedFileName);
     }
     
     /**
@@ -443,14 +437,9 @@ public class FileUtil implements ApplicationContextAware {
      */
     public static String getUploadPath(String tableName, String primaryKeyValue) {
         // validate input
-        String normalizedTableName = Normalizer.normalize(tableName, Normalizer.Form.NFKC);
-        if (normalizedTableName.contains("../") || normalizedTableName.contains("..\\")) {
-            throw new SecurityException("Invalid tableName " + normalizedTableName);
-        }
-        String normalizedPrimaryKeyValue = Normalizer.normalize(primaryKeyValue, Normalizer.Form.NFKC);
-        if (normalizedPrimaryKeyValue.contains("../") || normalizedPrimaryKeyValue.contains("..\\")) {
-            throw new SecurityException("Invalid primaryKeyValue " + normalizedPrimaryKeyValue);
-        }
+        String normalizedTableName = SecurityUtil.normalizedFileName(tableName);
+        
+        String normalizedPrimaryKeyValue = SecurityUtil.normalizedFileName(primaryKeyValue);
 
         String formUploadPath = SetupManager.getBaseDirectory();
 
@@ -461,7 +450,7 @@ public class FileUtil implements ApplicationContextAware {
             formUploadPath = dataFileBasePath;
         }
 
-        return formUploadPath + File.separator + "app_formuploads" + File.separator + tableName + File.separator + primaryKeyValue + File.separator;
+        return formUploadPath + File.separator + "app_formuploads" + File.separator + normalizedTableName + File.separator + normalizedPrimaryKeyValue + File.separator;
     }
     
     /**

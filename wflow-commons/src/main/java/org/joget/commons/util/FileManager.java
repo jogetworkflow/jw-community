@@ -104,11 +104,6 @@ public class FileManager {
         if (path != null) {
             path = SecurityUtil.normalizedFileName(path);
             try {
-                try {
-                    path = URLDecoder.decode(path, "UTF-8");
-                } catch (Exception ex) {
-                    path = path.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
-                }
                 File file = new File(getBaseDirectory(), path);
                 if (file.exists() && !file.isDirectory()) {
                     return file;
