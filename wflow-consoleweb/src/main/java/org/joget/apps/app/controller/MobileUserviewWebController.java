@@ -65,6 +65,7 @@ public class MobileUserviewWebController {
 
         // validate input
         SecurityUtil.validateStringInput(appId);
+        SecurityUtil.validateStringInput(userviewId);
         SecurityUtil.validateStringInput(menuId);        
         SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);

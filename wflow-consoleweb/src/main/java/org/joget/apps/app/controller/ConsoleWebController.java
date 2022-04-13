@@ -1610,6 +1610,9 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/note/submit", method = RequestMethod.POST)
     @Transactional
     public String consoleAppNote(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "description") String description) {
+        appId = SecurityUtil.validateStringInput(appId);
+        version = SecurityUtil.validateStringInput(version);
+
         //Rename app
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
