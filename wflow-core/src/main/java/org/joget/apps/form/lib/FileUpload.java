@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.ehcache.Cache;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -38,8 +36,6 @@ import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
@@ -404,10 +400,8 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                     obj.write(response.getWriter());
                 } catch (Exception ex) {}
             } else if (filePath != null && !filePath.isEmpty()) {
-                String normalizedFilePath = Normalizer.normalize(filePath, Normalizer.Form.NFKC);
-                if (normalizedFilePath.contains("../") || normalizedFilePath.contains("..\\")) {
-                    throw new SecurityException("Invalid filePath " + normalizedFilePath);
-                }
+                String normalizedFilePath = SecurityUtil.normalizedFileName(filePath);
+                
                 File file = FileManager.getFileByPath(normalizedFilePath);
                 if (file != null) {
                     ServletOutputStream stream = response.getOutputStream();

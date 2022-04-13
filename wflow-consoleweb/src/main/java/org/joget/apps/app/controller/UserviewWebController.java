@@ -52,7 +52,8 @@ public class UserviewWebController {
         }
         
         // validate input
-        appId = SecurityUtil.validateStringInput(appId);        
+        appId = SecurityUtil.validateStringInput(appId); 
+        userviewId = SecurityUtil.validateStringInput(userviewId); 
         menuId = SecurityUtil.validateStringInput(menuId);        
         key = SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);

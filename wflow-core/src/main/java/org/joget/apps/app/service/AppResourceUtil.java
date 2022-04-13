@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.text.Normalizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -122,10 +121,7 @@ public class AppResourceUtil {
      */
     public static File getFile(String appId, String appVersion, String filename) {
         // validate input
-        String normalizedFileName = Normalizer.normalize(filename, Normalizer.Form.NFKC);
-        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
-            throw new SecurityException("Invalid filename " + normalizedFileName);
-        }
+        String normalizedFileName = SecurityUtil.normalizedFileName(filename);
         
         String path = appId + File.separator + appVersion + File.separator + normalizedFileName;
         if (path != null) {
