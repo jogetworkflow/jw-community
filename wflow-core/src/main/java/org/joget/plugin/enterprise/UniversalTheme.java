@@ -294,12 +294,17 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         Object[] arguments = new Object[]{
             request.getContextPath(),
             appUserviewId,
-            urlsToCache
+            urlsToCache,
+            getServiceWorkerTemplate(appId, userviewId, userviewKey)
         };
         
         String js = AppUtil.readPluginResource(getClass().getName(), "/resources/themes/universal/sw.js", arguments, false, "");
         return js;
-    }    
+    }  
+    
+    public String getServiceWorkerTemplate(String appId, String userviewId, String userviewKey) {
+        return "";
+    }
     
     @Override
     public String getCss(Map<String, Object> data) {

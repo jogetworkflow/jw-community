@@ -1,6 +1,9 @@
 <div id="ajaxtheme_loading_container">
+    <div id="ajaxtheme_loading_title">
+        ${title!}
+    </div>
     <div id="ajaxtheme_loading_menus">
-        ${menus!}"
+        ${menus!}
     </div>
     <div id="ajaxtheme_loading_content">
         ${userview_menu_alert!}

@@ -372,7 +372,7 @@ public class UserviewThemeProcesser {
         return bodyId;
     }
 
-    protected String getBodyClasses(String rightToLeft, String locale) {
+    public String getBodyClasses(String rightToLeft, String locale) {
         String classes = "";
         classes += ("true".equalsIgnoreCase(userview.getParamString("embed"))) ? "embeded " : "";
         classes += ("true".equalsIgnoreCase(rightToLeft) || locale.startsWith("ar")) ? "rtl " : "";
@@ -380,7 +380,7 @@ public class UserviewThemeProcesser {
         return classes;
     }
 
-    protected String getJogetHeader() {
+    public String getJogetHeader() {
         String cp = request.getContextPath();
         String bn = ResourceBundleUtil.getMessage("build.number");
         String html = "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.preload.js?build=" + bn + "\"></script>\n"
@@ -455,7 +455,7 @@ public class UserviewThemeProcesser {
         return html;
     }
 
-    protected String getJogetFooter() {
+    public String getJogetFooter() {
         String html = "";
         
         if (!"true".equalsIgnoreCase(theme.getPropertyString("disableHelpGuide"))) {
@@ -479,7 +479,7 @@ public class UserviewThemeProcesser {
         modelMap.put("appVersion", appDef.getVersion().toString());
         modelMap.put("userviewId", userview.getParamString("userviewId"));
         
-        if (!"true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
+        if (!"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !"true".equalsIgnoreCase(userview.getParamString("isTemplate"))) {
             html += UserviewUtil.renderJspAsString("ubuilder/adminBar.jsp", modelMap) + "\n\n";
         }
         
@@ -500,7 +500,7 @@ public class UserviewThemeProcesser {
         return html;
     }
 
-    protected String getTitle() {
+    public String getTitle() {
         String title = userview.getPropertyString("name");
         if (userview.getCurrent() != null) {
             title += "&nbsp;&gt;&nbsp;" + userview.getCurrent().getPropertyString("label");

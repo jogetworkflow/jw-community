@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.apps.userview.model.Userview;
@@ -47,6 +49,7 @@ import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -295,6 +298,32 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 String json = userviewDef.getJson();
                 UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
                 UserviewTheme theme = userviewSetting.getTheme();
+                if (theme instanceof AjaxUniversalTheme) {
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    Map requestParameters = new HashMap<String, Object>();
+                    requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
+                    requestParameters.put("contextPath", request.getContextPath());
+                    requestParameters.put("isPreview",false);
+                    requestParameters.put("embed", false);
+                    requestParameters.put("appId", appDef.getAppId());
+                    requestParameters.put("appVersion", appDef.getVersion().toString());
+
+                    Userview userview = new Userview();
+                    userview.setParams(requestParameters);
+
+                    try {
+                        //set userview properties
+                        JSONObject userviewObj = new JSONObject(json);
+                        userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
+
+                        userview.setCategories(new ArrayList<UserviewCategory>());
+                    } catch (Exception ex) {
+                        LogUtil.error(UserviewUtil.class.getName(), ex, "Create Userview Error!!");
+                    }
+                    
+                    userview.setSetting(userviewSetting);
+                    theme.setUserview(userview);
+                }
                 if (theme instanceof UserviewPwaTheme) {
                     serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId, userviewKey);
                 }

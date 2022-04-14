@@ -51,17 +51,19 @@ AjaxUniversalTheme = {
     callback : function(data) {
         if (data.indexOf("ajaxtheme_loading_container") !== -1) {
             var html = $(data);
+            var title = $(html).find("#ajaxtheme_loading_title");
             var menus = $(html).find("#ajaxtheme_loading_menus");
             var content = $(html).find("#ajaxtheme_loading_content");
 
-            AjaxUniversalTheme.renderAjaxContent(menus, content);
-        } else if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
+            AjaxUniversalTheme.renderAjaxContent(menus, content, title);
+        } else if (data.indexOf("<html") !== -1 && data.indexOf("</html>") !== -1) {
             //something wrong and caused the full html loaded
             var html = $(data);
+            var title = $(html).find("title");
             var menus = $(html).find("#category-container").wrap("<div>");
             var content = $(html).find("#content main");
-
-            AjaxUniversalTheme.renderAjaxContent(menus, content);
+            
+            AjaxUniversalTheme.renderAjaxContent(menus, content, title);
         }
     },
     
@@ -69,11 +71,13 @@ AjaxUniversalTheme = {
         alert(error.message);
     },
     
-    renderAjaxContent : function(menus, content) {
+    renderAjaxContent : function(menus, content, title) {
         //update body id according to url
         var currentPath = window.location.pathname;
         var menuId = currentPath.substring(currentPath.lastIndexOf("/") + 1);
         $("body").attr("id", menuId);
+        
+        $("title").html($(title).html());
         
         AjaxUniversalTheme.updateMenus(menus);
         $("#content main").html($(content).html());

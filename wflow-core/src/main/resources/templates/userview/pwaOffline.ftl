@@ -24,8 +24,6 @@
 <br/>
 <a href="${home_page_link!}">&laquo;@@pwa.offline.goBack@@</a>
 
-<link rel="stylesheet" type="text/css" href="${params.contextPath}/js/footable/footable.core.min.css?build=${build_number}">
-<script type="text/javascript" src="${params.contextPath}/js/footable/footable.min.js?build=${build_number}"></script>
 <script type="text/javascript" src="${params.contextPath}/js/footable/responsiveTable.js?build=${build_number}"></script>
 
 <script>
@@ -135,8 +133,6 @@
                                  + '</tr>';
                         $('table tbody').prepend($row);
                     }
-
-                    $(".dataList table").data('footable').redraw();
                 }
             }
         }

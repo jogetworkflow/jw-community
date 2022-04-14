@@ -403,7 +403,7 @@ public class UserviewService {
         }
         return userview;
     }
-
+    
     /**
      * Gets the id of an userview menu
      * @param menu

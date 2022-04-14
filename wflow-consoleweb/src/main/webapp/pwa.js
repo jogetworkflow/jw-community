@@ -3,38 +3,38 @@ PwaUtil = {
     applicationServerPublicKey: "BE54-RlSdVqGwlh_skZ4qQqP1tY7uNZrQbv3IJ_Rd2uRHsId8XjvH2CXav_5PkhrM1XvBLXJyi7tx6io5E3fegg",
 
     contextPath: "/jw",
-    
+
     userviewKey: "_",
-    
+
     homePageLink: "",
 
     serviceWorkerPath: "/jw/sw.js",
 
     subscriptionApiPath: "/jw/web/console/profile/subscription",
-    
+
     pushEnabled: true,
-    
+
     currentUsername: '',
-    
+
     onlineNotificationMessage: '',
-    
+
     offlineNotificationMessage: '',
-    
+
     loginPromptMessage: '',
-    
+
     syncingMessage: '',
-    
+
     syncFailedMessage: '',
-    
+
     syncSuccessMessage: '',
-    
+
     isEmbedded: false,
-    
+
     isOnline: null,
     greenColor: '#3c763d',
     redColor: '#a94442',
     darkColor : '#2d2d2d',
-    
+
     init: function () {
         Offline.options = {
             checkOnLoad: false,
@@ -47,55 +47,28 @@ PwaUtil = {
             requests: false,
             reconnect: false
         };
-        
+
         if (!navigator.serviceWorker || PwaUtil.isEmbedded) {
             return;
         }
-        
+
         $(document).ready(function(){
 
             /*
-            window.addEventListener('online', PwaUtil.handleConnection);
-            window.addEventListener('offline', PwaUtil.handleConnection);
+             window.addEventListener('online', PwaUtil.handleConnection);
+             window.addEventListener('offline', PwaUtil.handleConnection);
+             
+             //some browsers doesn't fire 'online' and 'offline' events reliably
+             setInterval(PwaUtil.handleConnection, 5000);
+             
+             PwaUtil.handleConnection();
+             */
 
-            //some browsers doesn't fire 'online' and 'offline' events reliably
-            setInterval(PwaUtil.handleConnection, 5000);
-            
-            PwaUtil.handleConnection();
-            */
-
-            $("form").submit(function(e){
-                var formData = $(this).serializeObject();
-                
-                var $submitButton = $('input[type=submit][clicked=true]');
-                formData[$submitButton.attr('name')] = $submitButton.val();
-                $('input[type=submit]').removeAttr("clicked");
-
-                $('form input[type=file]').each(function(i, elm){
-                    var $elm = $(elm);
-
-                    var id = elm.id;
-                    var dropzone = $elm.closest('.dropzone').get(0).dropzone;
-
-                    if(dropzone !== null && dropzone.files.length > 0){
-                        if(dropzone.files.length === 1){
-                            formData[id] = dropzone.files[0];
-                        }else{
-                            formData[id] = dropzone.files;
-                        }
-                    }
-                })
-
-                var msg = {
-                    formData: formData,
-                    formPageTitle: $('title').text(),
-                    formUserviewAppId: UI.userview_app_id,
-                    formUsername: PwaUtil.currentUsername
-                }
-                navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
+            $("form").submit(function (e) {
+                PwaUtil.submitForm(this);
             });
-            
-            $('form input[type=submit]').click(function() {
+
+            $('form input[type=submit]').click(function () {
                 $('input[type=submit]', $(this).parents('form')).removeAttr('clicked');
                 $(this).attr('clicked', 'true');
             });
@@ -119,7 +92,7 @@ PwaUtil = {
                     PwaUtil.hideOfflineIndicator();
                 }
             });
-            
+
             Offline.options = {
                 checkOnLoad: false,
                 checks: {
@@ -156,8 +129,41 @@ PwaUtil = {
             });
         });
     },
-    
-    showToast: function(message, bgColor, textColor) {
+
+    submitForm: function (form) {
+        var formData = $(form).serializeObject();
+
+        var $submitButton = $(form).find('input[type=submit][clicked=true]');
+        formData[$submitButton.attr('name')] = $submitButton.val();
+        $(form).find('input[type=submit]').removeAttr("clicked");
+
+        $(form).find('input[type=file]').each(function (i, elm) {
+            var $elm = $(elm);
+
+            var id = elm.id;
+            if ($elm.closest('.dropzone').length > 0 && $elm.closest('.dropzone').is(":visible")) {
+                var dropzone = $elm.closest('.dropzone').get(0).dropzone;
+
+                if (dropzone !== null && dropzone.files !== undefined && dropzone.files.length > 0) {
+                    if (dropzone.files.length === 1) {
+                        formData[id] = dropzone.files[0];
+                    } else {
+                        formData[id] = dropzone.files;
+                    }
+                }
+            }
+        });
+
+        var msg = {
+            formData: formData,
+            formPageTitle: $('title').text(),
+            formUserviewAppId: UI.userview_app_id,
+            formUsername: PwaUtil.currentUsername
+        }
+        navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
+    },
+
+    showToast: function (message, bgColor, textColor) {
         !PwaUtil.isEmbedded && $.toast({
             text: message,
             position: 'bottom-left',
@@ -176,13 +182,13 @@ PwaUtil = {
             }
             var forwardSlashindexes = indexesOf(PwaUtil.serviceWorkerPath, '/');
             var substringIndex = forwardSlashindexes[forwardSlashindexes.length - 2];
-            
+
             var swScope = PwaUtil.serviceWorkerPath.substring(0, substringIndex);
-            
+
             PwaUtil.registerBaseServiceWorker();
 
             console.log('registering service worker, scope: ' + swScope);
-            
+
             return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath, { scope: swScope })
                     .then(function (registration) {
                         var serviceWorker;
@@ -196,33 +202,33 @@ PwaUtil = {
                             serviceWorker = registration.active;
                             // console.log('Service worker active');
                         }
-                        
+
                         var afterActivated = function(){                            
                             if (PwaUtil.pushEnabled) {
                                 PwaUtil.subscribe(registration);
                             }
-                            
+
                             if (registration.sync) {
                                 registration.sync.register('sendFormData')
-                                    .then(function () {
-                                        console.log('sync event registered');
-                                    }).catch(function () {
-                                        // system was unable to register for a sync,
-                                        // this could be an OS-level restriction
-                                        console.log('sync registration failed');
-                                    });
+                                        .then(function () {
+                                            console.log('sync event registered');
+                                        }).catch(function () {
+                                    // system was unable to register for a sync,
+                                    // this could be an OS-level restriction
+                                    console.log('sync registration failed');
+                                });
                             }
-                            
+
                             console.log('Service worker successfully registered and activated.');
-                            
+
                             navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
                                 userviewKey: PwaUtil.userviewKey,
                                 homePageLink: PwaUtil.homePageLink
                             });
-                            
+
                             PwaUtil.updateServiceWorkerList();
                         }
-                        
+
                         if (serviceWorker && serviceWorker.state === "installing") {
                             serviceWorker.onstatechange = function(e) {
                                 if(e.target.state === 'activated'){
@@ -230,7 +236,7 @@ PwaUtil = {
                                 }
                             }
                         }
-                        
+
                         if (serviceWorker && (serviceWorker.state === "installed" || serviceWorker.state === "activated")) {
                             afterActivated();
                         }
@@ -243,7 +249,7 @@ PwaUtil = {
     registerBaseServiceWorker: function () {
         if (navigator.serviceWorker && !PwaUtil.isEmbedded) {
             console.log('registering base service worker, scope: ' + PwaUtil.contextPath + '/');
-            
+
             return navigator.serviceWorker.register(PwaUtil.contextPath + '/basesw.js', { scope: PwaUtil.contextPath + '/' })
                     .then(function (registration) {
                         var serviceWorker;
@@ -254,11 +260,11 @@ PwaUtil = {
                         } else if (registration.active) {
                             serviceWorker = registration.active;
                         }
-                        
+
                         var afterActivated = function(){
                             console.log('Base service worker successfully registered and activated.');
                         }
-                        
+
                         if (serviceWorker && serviceWorker.state === "installing") {
                             serviceWorker.onstatechange = function(e) {
                                 if(e.target.state === 'activated'){
@@ -266,7 +272,7 @@ PwaUtil = {
                                 }
                             }
                         }
-                        
+
                         if (serviceWorker && (serviceWorker.state === "installed" || serviceWorker.state === "activated")) {
                             afterActivated();
                         }
@@ -301,7 +307,7 @@ PwaUtil = {
                 })
                 .catch(function (err) {
                     console.warn('PushSubscription failed', err);
-                    return false; 
+                    return false;
                 });
     },
 
@@ -339,22 +345,22 @@ PwaUtil = {
         if(PwaUtil.isEmbedded){
             return;
         }
-        
+
         var $offlineIndicator = $('#offlineIndicator');
         if($offlineIndicator.length === 0){
             var html = '<div id="offlineIndicator" style="display: none; position: fixed; bottom: 60px; right: 10px; background: #009688; color: white; padding: 10px; box-shadow: #666 1px 1px 2px 1px; border-radius: 50%; z-index: 100000050; cursor: pointer;width: 20px; text-align: center; box-sizing: content-box;">'
-                     + '<a href="' + PwaUtil.contextPath + '/web/userview/' + UI.userview_app_id + '/' + UI.userview_id + '/_/pwaoffline">'
-                     + '<i style="xwidth: 15px; xheight: 15px; color: #fff; font-size: 17px;" class="fas fa-wifi"></i>'
-                     + '<i style="xwidth: 15px; xheight: 15px; color: rgba(255, 0, 0, 0.6); font-size: 30px; position: absolute; top: 5px; left: 6px; " class="fas fa-ban"></i>'
-                     + '</a>'
-                     + '</div>';
+                    + '<a href="' + PwaUtil.contextPath + '/web/userview/' + UI.userview_app_id + '/' + UI.userview_id + '/_/pwaoffline">'
+                    + '<i style="xwidth: 15px; xheight: 15px; color: #fff; font-size: 17px;" class="fas fa-wifi"></i>'
+                    + '<i style="xwidth: 15px; xheight: 15px; color: rgba(255, 0, 0, 0.6); font-size: 30px; position: absolute; top: 5px; left: 6px; " class="fas fa-ban"></i>'
+                    + '</a>'
+                    + '</div>';
             $('body').append(html);
             $offlineIndicator = $('#offlineIndicator');
         }
 
         $offlineIndicator.show();
     },
-    
+
     isReachable: function(url) {
         /**
          * Note: fetch() still "succeeds" for 404s on subdirectories,
@@ -370,58 +376,58 @@ PwaUtil = {
                 })
                 .catch(function (err) {
                     console.warn('isReachable failed ' + url, err);
-                    return false; 
+                    return false;
                 });
     },
-    
+
     handleConnection: function () {
         /*
-        //this snippet relies purely on "online" "offline" events to be triggered, then uses the ping method to determine online/offline 
-        PwaUtil.isReachable(PwaUtil.contextPath + '/images/v3/clear.gif').then(function (online) {
-            if (online) {
-                console.log("handleConnection", PwaUtil.isOnline, true);
-                if(PwaUtil.isOnline === false){
-                    PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
-
-                    navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
-                        sync: true
-                    });
-                }
-                PwaUtil.hideOfflineIndicator();
-                PwaUtil.isOnline = true;
-
-            } else {
-                console.log("handleConnection", PwaUtil.isOnline, false);
-                if(PwaUtil.isOnline === true){
-                    PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
-                }
-                PwaUtil.showOfflineIndicator();
-                PwaUtil.isOnline = false;
-            }
-        });
-        */
+         //this snippet relies purely on "online" "offline" events to be triggered, then uses the ping method to determine online/offline 
+         PwaUtil.isReachable(PwaUtil.contextPath + '/images/v3/clear.gif').then(function (online) {
+         if (online) {
+         console.log("handleConnection", PwaUtil.isOnline, true);
+         if(PwaUtil.isOnline === false){
+         PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
+         
+         navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
+         sync: true
+         });
+         }
+         PwaUtil.hideOfflineIndicator();
+         PwaUtil.isOnline = true;
+         
+         } else {
+         console.log("handleConnection", PwaUtil.isOnline, false);
+         if(PwaUtil.isOnline === true){
+         PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
+         }
+         PwaUtil.showOfflineIndicator();
+         PwaUtil.isOnline = false;
+         }
+         });
+         */
         /*
-        //this snippet relies purely on navigator.onLine to determine online/offline
-        if (navigator.onLine) {
-            console.log("handleConnection", PwaUtil.isOnline, true);
-            if(PwaUtil.isOnline === false){
-                PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
-                
-                navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
-                    sync: true
-                });
-            }
-            PwaUtil.hideOfflineIndicator();
-            PwaUtil.isOnline = true;
-        } else {
-            console.log("handleConnection", PwaUtil.isOnline, false);
-            if(PwaUtil.isOnline === true){
-                PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
-            }
-            PwaUtil.showOfflineIndicator();
-            PwaUtil.isOnline = false;
-        }
-        */
+         //this snippet relies purely on navigator.onLine to determine online/offline
+         if (navigator.onLine) {
+         console.log("handleConnection", PwaUtil.isOnline, true);
+         if(PwaUtil.isOnline === false){
+         PwaUtil.showToast(PwaUtil.onlineNotificationMessage, PwaUtil.greenColor, 'white');
+         
+         navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
+         sync: true
+         });
+         }
+         PwaUtil.hideOfflineIndicator();
+         PwaUtil.isOnline = true;
+         } else {
+         console.log("handleConnection", PwaUtil.isOnline, false);
+         if(PwaUtil.isOnline === true){
+         PwaUtil.showToast(PwaUtil.offlineNotificationMessage, PwaUtil.redColor, 'white');
+         }
+         PwaUtil.showOfflineIndicator();
+         PwaUtil.isOnline = false;
+         }
+         */
     },
 
     updateServiceWorkerList : function() {

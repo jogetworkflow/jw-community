@@ -26,6 +26,7 @@ var urlsToCache = [
     contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
+var template = '%s';
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -151,7 +152,7 @@ self.addEventListener('fetch', function (event) {
     if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
         return;
     }
-    
+
     var fetchRequest = event.request.clone();
 
     event.respondWith(
@@ -190,23 +191,38 @@ self.addEventListener('fetch', function (event) {
                 return response;
 
             }else{
+                if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
+                    return new Promise(function(resolve, reject) {
+                        caches.match(fetchRequest.url, {ignoreVary: true}).then(async function(response){
+                            if(response === undefined){
+                                var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
+                                resolve(offlineResponse);
+                            }else{
+                                if (template && template !== "") {
+                                    var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
+                                    if (isAjaxTheme === undefined || isAjaxTheme === null) {
+                                        var responseText = await response.clone().text();
+                                        var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
+                                        if (menuStartIndex !== -1) {
+                                            var titleStartIndex = responseText.indexOf("ajaxtheme_loading_title");
+                                            var contentStartIndex = responseText.indexOf("ajaxtheme_loading_content");
+                                            var title = responseText.substring(titleStartIndex + 34, menuStartIndex - 25);
+                                            var menus = responseText.substring(menuStartIndex + 25, contentStartIndex - 27);
+                                            var content = responseText.substring(contentStartIndex + 27, responseText.length - 40);
 
-                if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') > -1){
-                    //var response = new Response(new Blob(), { "status" : 404 });
-                    return null;
+                                            responseText = template.replace('{{TEMPLATE_TITLE}}', title);
+                                            responseText = responseText.replace('{{TEMPLATE_CONTENT}}', content);
+                                            responseText = responseText.replace('{{TEMPLATE_MENUS}}', menus);
+
+                                            response = new Response(responseText, response);
+                                        }
+                                    }
+                                }
+                                resolve(response);
+                            }
+                        })
+                    }); 
                 }
-
-                return new Promise(function(resolve, reject) {
-                    caches.match(event.request).then(function(response){
-                        if(response === undefined){
-                            var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
-                            resolve(offlineResponse);
-                        }else{
-                            resolve(response);
-                        }
-                    })
-                });                
-
             }
         })
     );
@@ -470,7 +486,7 @@ function sendFormDataToServer(savedRequest){
                     }
 
                     if(key === 'OWASP_CSRFTOKEN'){
-                        formDataObj.append('OWASP_CSRFTOKEN', json.tokenValue);
+                        //ignore
                     }else{
                         //check if File array
                         //if(Array.isArray(payload[key]) && payload[key][0] instanceof File){
@@ -483,6 +499,7 @@ function sendFormDataToServer(savedRequest){
                         }
                     }
                 }
+                formDataObj.append('OWASP_CSRFTOKEN', json.tokenValue);
 
                 fetch(requestUrl, {
                     headers: {

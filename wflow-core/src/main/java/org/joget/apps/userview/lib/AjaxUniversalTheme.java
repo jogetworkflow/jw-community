@@ -1,8 +1,12 @@
 package org.joget.apps.userview.lib;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
@@ -10,7 +14,9 @@ import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.directory.model.User;
 import org.joget.plugin.enterprise.UniversalTheme;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilderColorConfig {
@@ -222,7 +228,6 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if (isAjaxContent(data)) {
             return "";
         } else {
-            data.put("title", StringUtil.stripAllHtmlTag(userview.getPropertyString("name")));
             return super.getHead(data);
         }
     }
@@ -390,5 +395,104 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     protected boolean isCurrentUserviewUrl(String url) {
         return url.contains("/web/userview/"+userview.getParamString("appId")+"/"+userview.getParamString("userviewId"));
+    }
+    
+    @Override
+    public String getServiceWorkerTemplate(String appId, String userviewId, String userviewKey) {
+        // read template from cache
+        String key = "serviceWorkerTemplate:"+appId+":"+userviewId+":"+userviewKey;
+        String html = "";
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        if (cache != null) {
+            Element element = cache.get(key);
+            if (element != null) {
+                html = (String) element.getObjectValue();
+            }
+        }
+        if (html == null || html.isEmpty()) {
+            // not available in cache
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        
+            UserviewThemeProcesser processer = new UserviewThemeProcesser(userview, request);
+            processer.init();
+            
+            userview.getParams().put("isTemplate", "true");
+
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("processor", processer);
+            data.put("params", userview.getParams());
+            data.put("userview", userview);
+            data.put("appId", userview.getParamString("appId"));
+            data.put("is_login_page", false);
+            data.put("context_path", request.getContextPath());
+            data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
+            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
+            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+            String locale = AppUtil.getAppLocale();
+            String language = AppUtil.getAppLanguage();
+            data.put("locale", locale);
+            data.put("language", language);
+            data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
+            data.put("body_id", "offline");
+            data.put("body_classes", processer.getBodyClasses(rightToLeft, locale));
+            data.put("base_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/");
+            data.put("home_page_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/index");
+            data.put("title", "{{TEMPLATE_TITLE}}");
+            data.put("hide_nav", false);
+            data.put("nav_id", "navigation");
+            data.put("nav_classes", "nav-collapse sidebar-nav");
+            data.put("categories_container_id", "category-container");
+            data.put("categories_container_classes", "nav nav-tabs nav-stacked main-menu");
+            data.put("category_classes", "category");
+            data.put("first_category_classes", "first");
+            data.put("last_category_classes", "last");
+            data.put("current_category_classes", "current-category active");
+            data.put("combine_single_menu_category", false);
+            data.put("menus_container_classes", "menu-container");
+            data.put("menu_classes", "menu");
+            data.put("first_menu_classes", "first");
+            data.put("last_menu_classes", "last");
+            data.put("current_menu_classes", "current active");
+            data.put("main_container_id", "main");
+            data.put("sidebar_id", "sidebar");
+            data.put("content_id", "content");
+
+            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            User user = wum.getCurrentUser();
+            boolean isLoggedIn = user != null;
+            data.put("is_logged_in", isLoggedIn);
+            if (isLoggedIn) {
+                data.put("username", wum.getCurrentUsername());
+                data.put("user", user);
+                data.put("logout_link", request.getContextPath() + "/j_spring_security_logout");
+            } else {
+                data.put("login_link", "/web/ulogin/" + appId + "/" + userviewId + "/" + userviewKey + "/index");
+            }
+
+            data.put("content", "{{TEMPLATE_CONTENT}}");
+            data.put("metas", getMetas(data));
+            data.put("joget_header", processer.getJogetHeader());
+            data.put("js_css_lib", getJsCssLib(data));
+            data.put("fav_icon_link", getFavIconLink(data));
+            data.put("js", getJs(data));
+            data.put("css", getCss(data));
+            data.put("head", getHead(data));
+            data.put("categories_container_inner_after", "{{TEMPLATE_MENUS}}");
+            data.put("menus", getMenus(data));
+            data.put("header", getHeader(data));
+            data.put("footer", getFooter(data));
+            data.put("joget_footer", processer.getJogetFooter());
+            data.put("content_container", getContentContainer(data));
+
+            html = getLayout(data);
+            html = html.replaceAll("<textarea id=\\\"analyzerJson\\\".+</textarea>", ""); //remove analyzer to prevent serviceworker change
+            html = StringUtil.escapeString(html, StringUtil.TYPE_JAVASCIPT, null);
+            
+            if (cache != null) {
+                Element element = new Element(key, html);
+                cache.put(element);
+            }
+        }
+        return html;
     }
 }
