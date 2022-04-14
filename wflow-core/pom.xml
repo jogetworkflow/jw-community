@@ -234,6 +234,29 @@
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-platform</artifactId>
             <version>0.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.tensorflow</groupId>
+                    <artifactId>tensorflow-core-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>tensorflow-core-api</artifactId>
+            <version>0.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>tensorflow-core-api</artifactId>
+            <version>0.4.1</version>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>tensorflow-core-api</artifactId>
+            <version>0.4.1</version>
+            <classifier>windows-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
