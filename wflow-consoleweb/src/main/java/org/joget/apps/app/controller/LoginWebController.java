@@ -13,6 +13,7 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +71,8 @@ public class LoginWebController {
             }
             
             String[] urlKey = savedUrl.split("/");
-            String appId = urlKey[0];
-            String userviewId = urlKey[1];
+            String appId = SecurityUtil.validateStringInput(urlKey[0]);
+            String userviewId = SecurityUtil.validateStringInput(urlKey[1]);
 
             if (savedRequest == null) { //for userview logout
                 return "redirect:/web/" + embedPrefix + "userview/" + appId + "/" + userviewId;
