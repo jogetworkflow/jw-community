@@ -3619,8 +3619,26 @@ public class ConsoleWebController {
             LogUtil.error(ConsoleWebController.class.getName(), e, "");
         }
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+        
+        AppUtil.findMissingPlugins(appDef);
 
         return "console/apps/builders";
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/missingPlugins")
+    public void consoleBuilderMissingPlugins(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONObject jsonObject = new JSONObject();
+        if (appDef != null) {
+            List<String> missingPlugins = AppUtil.findMissingPlugins(appDef);
+            jsonObject.accumulate("result", missingPlugins);
+            jsonObject.accumulate("error", ResourceBundleUtil.getMessage("dependency.tree.warning.MissingPlugin"));
+        } else {
+            jsonObject.accumulate("error", "App not found!");
+        }
+        
+        AppUtil.writeJson(writer, jsonObject, callback);
     }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {

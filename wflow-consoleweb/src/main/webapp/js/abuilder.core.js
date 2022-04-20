@@ -82,6 +82,8 @@ AppBuilder = {
         $("#builder_canvas").css("opacity", "0.3");
         CustomBuilder.getBuilderItems(AppBuilder.renderBuilders);
         
+        $(".canvas-header .error.missingplugin").remove();
+        
         if (AppBuilder.view !== "") {
             setTimeout(function(){
                 $("[data-cbuilder-view='"+AppBuilder.view+"']").trigger("click");
@@ -219,6 +221,25 @@ AppBuilder = {
         
         $(window).off("resize.appbuilder");
         $(window).on("resize.appbuilder",  AppBuilder.resizeBuilders);
+        
+        setTimeout(function(){
+            CustomBuilder.cachedAjax({
+                type: "POST",
+                url: CustomBuilder.contextPath + '/web/json/console/app' + CustomBuilder.appPath + '/builders/missingPlugins',
+                dataType : "json",
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    if (response !== undefined && response.result !== undefined && response.result.length > 0) {
+                        $(".canvas-header").prepend('<div class="alert alert-warning error missingplugin" role="alert">'+response.error+'<ul></ul></div>');
+                        for (var i in response.result) {
+                            $(".canvas-header .missingplugin ul").append('<li>'+response.result[i]+'</li>');
+                        }
+                    }
+                }
+            });
+        },1);
     },
     
     /*

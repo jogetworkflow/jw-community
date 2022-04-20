@@ -47,10 +47,17 @@ import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.lib.EmailTool;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.DatalistDefinition;
+import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
+import org.joget.apps.app.model.PackageActivityPlugin;
+import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserReplacement;
+import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
@@ -83,6 +90,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.HtmlUtils;
@@ -1548,5 +1556,89 @@ public class AppUtil implements ApplicationContextAware {
         }
 
         return remoteAddr;
+    }
+    
+    public static List<String> findMissingPlugins(AppDefinition appDef) {
+        long start = System.nanoTime();
+        
+        List<String> missingPlugins = new ArrayList<String>();
+        
+        if (appDef == null) {
+            appDef = AppUtil.getCurrentAppDefinition();
+        }
+        
+        // combine all definitions into a string for matching
+        String concatAppDef = "";
+        if (appDef.getFormDefinitionList() != null) {
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getDatalistDefinitionList() != null) {
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getUserviewDefinitionList() != null) {
+            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            if (packageDef.getPackageActivityPluginMap() != null) {
+                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                    concatAppDef += o.getPluginName() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+            if (packageDef.getPackageParticipantMap() != null) {
+                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                    concatAppDef += o.getValue() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+        }
+
+        // get plugins list
+        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> pluginList = pluginManager.list(null);
+        Set<String> plugins = new HashSet<String>();
+
+        // look for plugins used in any definition file
+        for (Plugin plugin: pluginList) {
+            String pluginClassName = ClassUtils.getUserClass(plugin).getName();
+            plugins.add(pluginClassName);
+        }
+        
+        //find "className": "" 
+        Set<String> found = new HashSet<String>();
+        Pattern pattern = Pattern.compile("([\"'])className\\1\\s*:\\s*\\1([^\"']+)\\1");
+        Matcher matcher = pattern.matcher(concatAppDef);
+        while (matcher.find()) {
+            found.add(matcher.group(2));
+        }
+        
+        found.remove("org.joget.apps.userview.model.Userview");
+        found.remove("org.joget.apps.userview.model.UserviewCategory");
+        found.remove("org.joget.apps.userview.model.UserviewSetting");
+        found.remove("org.joget.apps.userview.model.UserviewPage");
+        found.remove("org.joget.apps.userview.model.UserviewLayout");
+        found.remove("org.joget.apps.userview.model.UserviewPermission");
+        
+        for (String p : found) {
+            if (p.contains(".") && !plugins.contains(p)) {
+                missingPlugins.add(p);
+            }
+        }
+        
+        Collections.sort(missingPlugins);
+        
+        return missingPlugins;
     }
 }
