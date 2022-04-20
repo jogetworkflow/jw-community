@@ -170,7 +170,7 @@ public class FormRow extends Properties {
     @Override
     public boolean equals(Object obj) {
         FormRow row = (FormRow) obj;
-        if (row.getId() != null && getId().equals(row.getId())) {
+        if (row.getId() != null && getId() != null && getId().equals(row.getId())) {
             return true;
         }
         return false;
