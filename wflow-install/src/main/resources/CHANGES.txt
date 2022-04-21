@@ -3,6 +3,13 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.29
+=================
+b664c9369 Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.2 and jackson-databind to 2.13.2.2 for CVE-2020-36518. @7.0-SNAPSHOT
+625665ce4 Fixed:jw-enterprise - Security - Prevent client-side HTTP parameter pollution vulnerability. T948 @7.0-SNAPSHOT
+11cd08b66 Fixed: wflow-commons - Security - Prevent file path traversal attacks vulnerability. T949 @7.0-SNAPSHOT
+892d44858 Modified: jw-community - Update commons-codec to 1.15 for VULNDB-93555, commons-validator to 1.5.1 for VULNDB-106409, javassist to 3.28.0-GA for VULNDB-163401, protobuf to 3.19.4 for VULNDB-258475, slf4j to 1.7.36 for VULNDB-175810, freemarker to 2.3.31 for VULNDB-72405. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.28
 =================
 248a5a785 Fixed: wflow-core - Section - Show section when column label is exist, even not having any input field. @7.0-SNASPHOT #T902
