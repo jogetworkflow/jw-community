@@ -1593,14 +1593,16 @@ public class AppUtil implements ApplicationContextAware {
         if (packageDef != null) {
             if (packageDef.getPackageActivityPluginMap() != null) {
                 for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                    concatAppDef += o.getPluginName() + "~~~";
+                    concatAppDef += "\"className\":\"" + o.getPluginName() + "\"~~~";
                     concatAppDef += o.getPluginProperties() + "~~~";
                 }
             }
             if (packageDef.getPackageParticipantMap() != null) {
                 for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                    concatAppDef += o.getValue() + "~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
+                    if (o.getType() != null && PackageParticipant.TYPE_PLUGIN.equals(o.getType())) {
+                        concatAppDef += "\"className\":\"" + o.getValue() + "\"~~~";
+                        concatAppDef += o.getPluginProperties() + "~~~";
+                    }
                 }
             }
         }
@@ -1623,6 +1625,8 @@ public class AppUtil implements ApplicationContextAware {
         while (matcher.find()) {
             found.add(matcher.group(2));
         }
+        
+        //TODO: can't find missing hash variable plugin. there is no good way to detect a missing hash variable syntax
         
         found.remove("org.joget.apps.userview.model.Userview");
         found.remove("org.joget.apps.userview.model.UserviewCategory");
