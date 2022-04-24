@@ -2857,7 +2857,7 @@ ProcessBuilder = {
             if (endpoints.length > 0) {
                 for (var i=0; i<endpoints.length; i++) {
                     if (endpoints[i].connections.length === 0) {
-                        ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                        ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
                     }
                 }
             }
@@ -2865,7 +2865,7 @@ ProcessBuilder = {
             if (endpoints.length > 0) {
                 for (var i=0; i<endpoints.length; i++) {
                     if (endpoints[i].connections.length === 0) {
-                        ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                        ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
                     }
                 }
             }
@@ -2927,7 +2927,7 @@ ProcessBuilder = {
         if (endpoints !== undefined && endpoints.length > 0) {
             for (var i=0; i<endpoints.length; i++) {
                 if (endpoints[i].connections.length === 0) {
-                    ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                    ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
                 }
             }
         }
@@ -2935,7 +2935,7 @@ ProcessBuilder = {
         if (endpoints !== undefined && endpoints.length > 0) {
             for (var i=0; i<endpoints.length; i++) {
                 if (endpoints[i].connections.length === 0) {
-                    ProcessBuilder.Util.deleteEndpoint(endpoints[i]);
+                    ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
                 }
             }
         }
@@ -4448,14 +4448,18 @@ ProcessBuilder = {
                 for (var i in sourceConnSet) {
                     var data = $(sourceConnSet[i].canvas).data("data");
                     data.properties.from = elementProperty.id;
-                    data['xpdlObj']['-From'] = elementProperty.id;
+                    if (data['xpdlObj'] !== undefined) { //end node is target, xpdl object is undefined
+                        data['xpdlObj']['-From'] = elementProperty.id;
+                    }
                     ProcessBuilder.jsPlumb.detach(sourceConnSet[i]);
                     transition.push(data);
                 }
                 for (var i in targetConnSet) {
                     var data = $(targetConnSet[i].canvas).data("data");
                     data.properties.to = elementProperty.id;
-                    data['xpdlObj']['-To'] = elementProperty.id;
+                    if (data['xpdlObj'] !== undefined) { //start node is source, xpdl object is undefined
+                        data['xpdlObj']['-To'] = elementProperty.id;
+                    }
                     ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
                     transition.push(data);
                 }
