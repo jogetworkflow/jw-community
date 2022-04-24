@@ -80,7 +80,11 @@
         #diagram-grid .entity-container .fields {border-top: 1px solid #ccc; height: auto; display: block; min-width: 350px;}
         #diagram-grid .entity-container .field:nth-child(odd){background: #f3f3f3;}
         #diagram-grid .entity-container .field span {display: inline-block; padding: 5px 10px; box-sizing: border-box; width: 60%; word-break: break-all; vertical-align: middle;}
+        #diagram-grid .entity-container .field span.label {position:relative; padding-left:25px;}
         #diagram-grid .entity-container .field span.type {width: 40%; word-break: normal; font-weight: 300;}
+        #diagram-grid .entity-container .field a {position:absolute; top:5px; left:6px;}
+        #diagram-grid .entity-container .field a:not(.indexed) {visibility:hidden; color:#333;}
+        #diagram-grid .entity-container .field:hover a:not(.indexed) {visibility:visible; cursor:pointer;}
         #diagram-grid .entity-container.showDetails .fields {border-top: 1px solid #ccc; height: auto; display: block; min-width: 350px;}
         #diagram-grid .entity-container:not(.showDetails) .fields{border-top:0px; max-height: 100%; min-width: 0; position: absolute; visibility: hidden; top:0; left:0; right: 0; bottom: 0; display: flex; align-content: space-around; flex-direction: column; justify-content: space-evenly;}
         #diagram-grid .entity-container:not(.showDetails) .field:not(.connection_endpoint) {display: none;}

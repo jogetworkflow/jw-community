@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
@@ -73,6 +75,8 @@ public class FormERD {
         if (entity == null) {
             entity = new Entity(formDef.getTableName());
             entities.put(formDef.getTableName(), entity);
+        
+            entity.addIndexes(CustomFormDataTableUtil.getIndexes(formDef.getAppDefinition(), formDef.getTableName()));
         }
 
         entity.setLabel(findCommonWords(entity.getLabel(), formDef.getName()));
@@ -109,13 +113,15 @@ public class FormERD {
                         }
                     } else if (field instanceof SelectBox) {
                         FormBinder binder = (FormBinder) field.getOptionsBinder();
-                        Relation r = getRelationFromBinder(binder, entity.getTableName(), id, true);
-                        if (r != null) {
-                            relations.add(r);
-                        } else {
-                            r = getTempRelationFromBinder(binder.getProperties(), "", entity.getTableName(), id, true);
+                        if (binder != null) {
+                            Relation r = getRelationFromBinder(binder, entity.getTableName(), id, true);
                             if (r != null) {
                                 relations.add(r);
+                            } else {
+                                r = getTempRelationFromBinder(binder.getProperties(), "", entity.getTableName(), id, true);
+                                if (r != null) {
+                                    relations.add(r);
+                                }
                             }
                         }
                     }
@@ -476,6 +482,7 @@ public class FormERD {
             this.put("fields", new HashMap<String, Field>());
             this.put("hasMany", new HashMap<String, Relation>());
             this.put("ownBy", new HashMap<String, Relation>());
+            this.put("indexes", new HashSet<String>());
         }
         
         public String getTableName() {
@@ -529,6 +536,12 @@ public class FormERD {
             if (!ownBy.containsKey(r.getEntity()) && !getTableName().equals(r.getEntity())) {
                 r.clean();
                 ownBy.put(r.getEntity(), r);
+            }
+        }
+        
+        public void addIndexes(Set<String> indexes) {
+            if (indexes != null) {
+                this.put("indexes", indexes);
             }
         }
     }

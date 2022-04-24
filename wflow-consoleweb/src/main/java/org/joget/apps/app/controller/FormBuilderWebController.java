@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -29,6 +32,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormERD;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
@@ -438,5 +442,25 @@ public class FormBuilderWebController {
         }
 
         jsonArray.write(writer);
+    }
+    
+    @RequestMapping(value = "/fbuilder/app/(*:appId)/(~:appVersion)/form/erd/indexes", method = RequestMethod.POST)
+    public void saveIndexes(Writer writer, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("indexes") String indexes) throws Exception {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "App does not exist.");
+        }
+        
+        JSONObject obj = new JSONObject(indexes);
+        Iterator keys = obj.keys();
+        while (keys.hasNext()) {
+            String tableName = SecurityUtil.validateStringInput((String) keys.next());
+            JSONArray arr = obj.getJSONArray(tableName);
+            String[] indexArray = new String[arr.length()];
+            for (int i = 0; i < arr.length(); i++) {
+                indexArray[i] = SecurityUtil.validateStringInput(arr.getString(i));
+            }
+            CustomFormDataTableUtil.createTableIndexes(appDef, tableName, indexArray);
+        }
     }
 }

@@ -1072,6 +1072,19 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         NodeList componentTags = document.getElementsByTagName("dynamic-component");
         Node node = componentTags.item(0);
         XMLUtil.removeChildren(node);
+        
+        Collection<String> indexesList = formColumnCache.getIndexes(tableName);
+        if (indexesList != null) {
+            NodeList nodeList = document.getElementsByTagName("property");
+            if (nodeList != null && nodeList.getLength() > 0) {
+                for (int j = 0; j < nodeList.getLength(); j++) {
+                    Element el = (Element) nodeList.item(j);
+                    if (el.hasAttribute("name") && indexesList.contains(el.getAttribute("name"))) {
+                        el.setAttribute("index", "idx_" + el.getAttribute("name"));
+                    }
+                }
+            }
+        }
 
         // add dynamic components
         for (String field : formFields) {
@@ -1087,6 +1100,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 element.setAttribute("column", columnName);
                 element.setAttribute("type", propType);
                 element.setAttribute("not-null", String.valueOf(false));
+                
+                if (indexesList != null && indexesList.contains(field)) {
+                    element.setAttribute("index", "idx_" + columnName);
+                }
+                
                 node.appendChild(element);
             }            
         }
@@ -1313,6 +1331,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public Collection<String> getFormDefinitionColumnNames(String tableName) {
         Collection<String> columnList;
+        Collection<String> indexesList;
         Map<String, String> checkDuplicateMap = new HashMap<String, String>();
 
         // strip table prefix
@@ -1322,9 +1341,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         // get forms mapped to the table name
         columnList = formColumnCache.get(tableName);
+        indexesList = formColumnCache.getIndexes(tableName);
         if (columnList == null) {
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
+            indexesList = new HashSet<String>();
 
             Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
             Collection<BuilderDefinition> builderDefs = getBuilderDefinitionDao().find(" and type = ? and id = ?", new String[]{CustomFormDataTableUtil.TYPE, FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName}, null, null, null, null, null);
@@ -1367,21 +1388,32 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     for (BuilderDefinition def : builderDefs) {
                         try {
                             JSONObject defObj = new JSONObject(def.getJson());
-                            JSONObject columnsObj = defObj.getJSONObject("columns");
-                            Iterator keys = columnsObj.keys();
-                            while (keys.hasNext()) {
-                                String c = (String) keys.next();
-                                if (!c.isEmpty()) {
-                                    String exist = checkDuplicateMap.get(c.toLowerCase());
-                                    if (exist != null && !exist.equals(c)) {
-                                        LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                        columnList.remove(exist);
+                            if (defObj.has("columns")) {
+                                JSONObject columnsObj = defObj.getJSONObject("columns");
+                                Iterator keys = columnsObj.keys();
+                                while (keys.hasNext()) {
+                                    String c = (String) keys.next();
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
+
+                                        if (pattern.matcher(c).matches()) {
+                                            columnList.add(c);
+                                        }
                                     }
-                                    checkDuplicateMap.put(c.toLowerCase(), c);
-                                    
-                                    if (pattern.matcher(c).matches()) {
-                                        columnList.add(c);
-                                    }
+                                }
+                            }
+                            
+                            if (defObj.has("indexes")) {
+                                JSONObject indexesObj = defObj.getJSONObject("indexes");
+                                Iterator ikeys = indexesObj.keys();
+                                while (ikeys.hasNext()) {
+                                    String c = (String) ikeys.next();
+                                    indexesList.add(c);
                                 }
                             }
                         } catch (Exception e) {
@@ -1401,6 +1433,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
+                formColumnCache.putIndexes(tableName, indexesList);
             }
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
         }

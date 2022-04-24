@@ -54,6 +54,63 @@ public class CustomFormDataTableUtil {
         }
     }
     
+    public static Set<String> createTableIndexes(AppDefinition appDef, String id, String[] indexes) {
+        Set<String> existIndexes = new HashSet<String>();
+        
+        if (appDef != null && id != null && !id.isEmpty() && indexes != null && indexes.length > 0) {
+            BuilderDefinition def = getDao().loadById(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + id, appDef);
+            try {
+                JSONObject defObj = null;
+
+                if (def == null) {
+                    def = new BuilderDefinition();
+                    def.setAppDefinition(appDef);
+                    def.setId(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + id);
+                    def.setName(id);
+                    def.setType(TYPE);
+                    defObj =  new JSONObject();
+                    defObj.put("columns", new JSONObject());
+
+                    JSONObject columnsObj = new JSONObject();
+                    for (String c : indexes) {
+                        columnsObj.put(c, new JSONObject());
+                        existIndexes.add(c);
+                    }
+                    defObj.put("indexes", columnsObj);
+
+                    def.setJson(defObj.toString());
+                    getDao().add(def);
+                } else {
+                    defObj =  new JSONObject(def.getJson());
+                    JSONObject columnsObj = defObj.getJSONObject("indexes");
+                    Iterator ikeys = columnsObj.keys();
+                    while (ikeys.hasNext()) {
+                        String c = (String) ikeys.next();
+                        existIndexes.add(c);
+                    }
+                    for (String c : indexes) {
+                        columnsObj.put(c, new JSONObject());
+                        existIndexes.add(c);
+                    }
+                    defObj.put("indexes", columnsObj);
+                    def.setJson(defObj.toString());
+                    getDao().update(def);
+                }
+                
+                // initialize db table by making a dummy load
+                String dummyKey = "xyz123";
+                FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+                formDataDao.clearFormTableCache(id);
+                formDataDao.loadWithoutTransaction(id, id, dummyKey);
+                
+            } catch (Exception e) {
+                LogUtil.error(CustomFormDataTableUtil.class.getName(), e, "fail to create table " + id);
+            }
+        }
+        
+        return existIndexes;
+    }
+    
     public static Set<String> getColumns(AppDefinition appDef, String id) {
         Set<String> columns = null;
         String def = getTableDefinition(appDef, id);
@@ -69,6 +126,27 @@ public class CustomFormDataTableUtil {
                 }
             } catch (Exception e) {
                 LogUtil.error(CustomFormDataTableUtil.class.getName(), e, "fail to retrieve columns for table " + id);
+            }
+        }
+        
+        return columns;
+    }
+    
+    public static Set<String> getIndexes(AppDefinition appDef, String id) {
+        Set<String> columns = null;
+        String def = getTableDefinition(appDef, id);
+        if (def != null && !def.isEmpty()) {
+            columns = new HashSet<String>();
+            try {
+                JSONObject defObj = new JSONObject(def);
+                JSONObject columnsObj = defObj.getJSONObject("indexes");
+                Iterator keys = columnsObj.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    columns.add(key);
+                }
+            } catch (Exception e) {
+                LogUtil.error(CustomFormDataTableUtil.class.getName(), e, "fail to retrieve indexes for table " + id);
             }
         }
         

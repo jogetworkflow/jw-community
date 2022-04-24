@@ -801,10 +801,16 @@ FormBuilder = {
                     }
 
                     function renderField(entity, field, entityContainer, checkSystemField) {
+                        var isIndex = false;
+                        
+                        if (field.id === "id" || (entity.indexes !== undefined && entity.indexes.indexOf(field.id) !== -1)) {
+                            isIndex = true;
+                        }
+                        
                         var systemFields = ["id", "dateCreated", "dateModified", "createdBy", "createdByName", "modifiedBy", "modifiedByName"];
                         if (checkSystemField === false || (checkSystemField === undefined && systemFields.indexOf(field.id) === -1)) {
                             var label = field.id;
-                            entityContainer.find(".fields").append('<div id="'+entity.tableName+'_field_'+field.id+'" class="field"><span class="label">'+label+'</span><span class="type">'+field.pluginLabel+'</span></div>');
+                            entityContainer.find(".fields").append('<div id="'+entity.tableName+'_field_'+field.id+'" class="field" data-field="'+field.id+'"><span class="label"><a class="markindex '+(isIndex?'indexed':'')+'" title="'+(isIndex?get_cbuilder_msg('fbuilder.indexedField'):get_cbuilder_msg('fbuilder.markAsIndexField'))+'"><i class="las la-key"></i></a> '+label+'</span><span class="type">'+field.pluginLabel+'</span></div>');
                         }
                     }
                     
@@ -836,7 +842,19 @@ FormBuilder = {
                         ],
                         ConnectionsDetachable: false
                     });
-
+                    
+                    var unindexed = {};
+                    
+                    function checkIndexField(entity, field) {
+                        if (!$("#" + entity + "_field_" + field + " .label .markindex").hasClass("indexed")) {
+                            if (unindexed[entity] === undefined) {
+                                unindexed[entity] = [field];
+                            } else if ($.inArray(field, unindexed[entity]) === -1) {
+                                unindexed[entity].push(field);
+                            }
+                        }
+                    }
+                    
                     var connected = [];
                     function drawConnection(entity1, entityField1, entity2, entityField2) {
                         if (connected.indexOf(entity1 + ":"+ entityField1 + " >> " + entity2 + ":" + entityField2) === -1) {
@@ -848,6 +866,9 @@ FormBuilder = {
 
                             $("#" + entity1 + "_field_" + entityField1).addClass("connection_endpoint");
                             $("#" + entity2 + "_field_" + entityField2).addClass("connection_endpoint");
+                            
+                            checkIndexField(entity1, entityField1);
+                            checkIndexField(entity2, entityField2);
 
                             try {
                                 jsPlumb.connect({
@@ -868,15 +889,16 @@ FormBuilder = {
                             var cellPos = findEmptyCell(x, y);
                             var cell = $('#diagram-grid .col:eq('+cellPos[0]+') .row:eq('+cellPos[1]+')');
 
-                            var entityContainer = $('<div id="'+entity.tableName+'_container" class="entity-container"><h5>'+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><div class="fields"></div><div class="forms"><label>Forms:</label> <ul></ul></div></div>');
+                            var entityContainer = $('<div id="'+entity.tableName+'_container" data-tablename="'+entity.tableName+'" class="entity-container"><h5>'+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><div class="fields"></div><div class="forms"><label>Forms:</label> <ul></ul></div></div>');
                             $(cell).append(entityContainer);
+                            $(entityContainer).data("entity", entity);
                             
                             if (entity.tableName === CustomBuilder.data.properties.tableName) {
                                 $(entityContainer).addClass("current");
                             }
 
                             //render fields
-                            systemField(entity, "id", entityContainer);
+                            systemField(entity, "id", entityContainer, true);
                             for (const f in entity.fields) {
                                 renderField(entity, entity.fields[f], entityContainer);
                             }
@@ -903,7 +925,46 @@ FormBuilder = {
                             }
                         }
                     }
-
+                    
+                    function markIndexes(indexes) {
+                        $.blockUI({ css: { 
+                            border: 'none', 
+                            padding: '15px', 
+                            backgroundColor: '#000', 
+                            '-webkit-border-radius': '10px', 
+                            '-moz-border-radius': '10px', 
+                            opacity: .3, 
+                            color: '#fff' 
+                        }, message : '<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>' }); 
+                        $.ajax({
+                            type: "POST",
+                            data: {
+                                "indexes": JSON.encode(indexes)
+                            },
+                            url: CustomBuilder.contextPath + '/web/fbuilder/app'+CustomBuilder.appPath+'/form/erd/indexes',
+                            dataType : "text",
+                            beforeSend: function (request) {
+                                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                            },
+                            success: function(res) {
+                                var keys = Object.keys(indexes);
+                                for (var k in keys) {
+                                    var temp = indexes[keys[k]];
+                                    for (var i in temp) {
+                                        $("#" + keys[k] + "_field_" + temp[i] + " .label .markindex").addClass("indexed");
+                                        $("#" + keys[k] + "_field_" + temp[i] + " .label .markindex").attr("title", get_cbuilder_msg('fbuilder.indexedField'));
+                                    }
+                                }
+                            },
+                            error: function() {
+                                alert(get_cbuilder_msg('fbuilder.indexFail'));
+                            },
+                            complete: function() {
+                                $.unblockUI();
+                            }
+                        });
+                    }
+                    
                     for (const i in entities) {
                         var entity = entities[i];
                         var desc = $('<div id="'+entity.tableName+'_desc"><h5><i class="las la-table"></i> '+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><ul class="relations"></ul></div>');
@@ -917,6 +978,23 @@ FormBuilder = {
                         placeEntity(entity);
                     }
                     
+                    if (Object.keys(unindexed).length > 0) {
+                        var alert = $('<div class="alert alert-info" role="alert" style="margin:20px 0;"><h5>'+get_cbuilder_msg('fbuilder.suggestion')+'</h5>'+get_cbuilder_msg('fbuilder.reletionUnindexField')+'<ul></ul><button class="btn btn-info">'+get_cbuilder_msg('fbuilder.proceed')+'</button></div>');
+                        var keys = Object.keys(unindexed);
+                        for (var k in keys) {
+                            var label = $("#diagram-grid #"+keys[k]+"_container").data('entity').label;
+                            for (var i in unindexed[keys[k]]) {
+                                $(alert).find("ul").append('<li>'+unindexed[keys[k]][i]+' ('+label+')</li>');
+                            }
+                        }
+                        $("#diagram-grid").before(alert);
+                        
+                        $(alert).find("button").on("click", function(){
+                            $(alert).remove();
+                            markIndexes(unindexed);
+                        });
+                    }
+                    
                     setTimeout(function(){
                         jsPlumb.repaintEverything();
                     }, 5);
@@ -927,9 +1005,23 @@ FormBuilder = {
                         jsPlumb.repaintEverything();
                     });
                     
-                    $(".entity-container a").off("click");
-                    $(".entity-container a").on("click", function(){
+                    $(".entity-container .forms a").off("click");
+                    $(".entity-container .forms a").on("click", function(){
                         CustomBuilder.ajaxRenderBuilder($(this).attr("href"));
+                        return false;
+                    });
+                    
+                    $(".entity-container .fields").off("click", "a.markindex:not(.indexed)");
+                    $(".entity-container .fields").on("click", "a.markindex:not(.indexed)", function(){
+                        var tableName = $(this).closest(".entity-container").data("tablename");
+                        var field = $(this).closest(".field").data("field");
+                        
+                        if (confirm(get_cbuilder_msg('fbuilder.indexFieldConfirm', [field]))) {
+                            var indexes = {}
+                            indexes[tableName] = [field];
+                            markIndexes(indexes);
+                        }
+                        
                         return false;
                     });
                     
