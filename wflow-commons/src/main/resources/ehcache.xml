@@ -61,7 +61,7 @@
     <cache name="org.joget.cache.RBM_CACHE"
         maxElementsInMemory="50000"
         eternal="true"
-        overflowToDisk="true"
+        overflowToDisk="false"
         />
     
     <cache name="org.joget.cache.SF_CACHE"
@@ -78,7 +78,7 @@
     <cache name="org.joget.cache.FLU_CACHE"
             maxElementsInMemory="10000"
             eternal="true"
-            overflowToDisk="true"/>
+            overflowToDisk="false"/>
     
     <!-- Cache for UserviewMenu content -->
     <cache name="org.joget.cache.USERVIEW_CACHE"
