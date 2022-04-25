@@ -2469,6 +2469,8 @@ ProcessBuilder = {
     renderActivity : function(element, elementObj, component, callback) {
         if (elementObj.className !== "end") {
             element.html('<div class="endleft endpoint"></div><div class="endtop endpoint"></div><div class="endright endpoint"></div><div class="endbottom endpoint"></div>');
+        } else {
+            element.html('<span></span>');
         }
         var label = "";
         
