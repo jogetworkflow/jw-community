@@ -2,7 +2,7 @@
  * Customised from https://github.com/givanz/VvvebJs
  */
 
-_CustomBuilder = {
+ _CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -2554,12 +2554,15 @@ _CustomBuilder = {
      */
     getScreenshot: function(target, callback, errorCallback) {
         var hasSvg = false;
-        if ($(target).find("svg").length > 0) {
+        if ($(target).find("svg[xmlns]").length > 0) {
             hasSvg = true;
-            $(target).find("svg").each(function(i, svg){
+            $(target).find("svg[xmlns]").each(function(i, svg){
+                $(svg).addClass("hided");
                 var newsvg = $(svg).clone().wrap('<p>').parent().html();
                 var $tempCanvas = $('<canvas class="screenshotSvg"></canvas>');
                 $tempCanvas.attr("style", $(svg).attr("style"));
+                $tempCanvas.attr("width", $(svg).width());
+                $tempCanvas.attr("height", $(svg).height());
                 $(svg).after($tempCanvas);
                 // fix duplicate xmlns
                 newsvg = newsvg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
