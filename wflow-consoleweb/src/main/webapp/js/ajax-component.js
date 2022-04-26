@@ -153,7 +153,7 @@ AjaxComponent = {
                      AjaxComponent.call($(form), newUrl, "GET", null);
                 } else {
                      var formData = new FormData($(form)[0]);
-                     var btn = $(this).find("input[type=submit][name]:focus, input[type=button][name]:focus, button[name]:focus" );
+                     var btn = $(this).find(document.activeElement);
                      if ($(btn).length === 0 && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
                          btn = $(this).find("input[type=submit][name], input[type=button][name], button[name]").eq(0);
                      }
