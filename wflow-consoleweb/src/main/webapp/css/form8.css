@@ -146,6 +146,10 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     box-shadow:none;
     background-color: transparent;
 }
+#section-more-actions {
+    box-shadow: none;
+    background-color: transparent;
+}
 .form-section, .subform-section {
     display: -webkit-box;
     display: -ms-flexbox;
