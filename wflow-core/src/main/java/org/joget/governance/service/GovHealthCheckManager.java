@@ -84,6 +84,8 @@ public class GovHealthCheckManager {
                 try {
                     HostManager.setCurrentProfile(profile);
                     initChecker();
+                } catch(Exception e) {
+                    LogUtil.error(getClass().getName(), e, "Error initializing GovHealthCheckManager for " + profile);                        
                 } finally {
                     HostManager.resetProfile();
                 }
