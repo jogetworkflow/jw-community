@@ -268,48 +268,56 @@ self.addEventListener('push', function (event) {
         badge = contextPath + '/images/v3/logo.png';
     }
     
-    connectCacheDB(function(store){
-        var request = store.get("serviceWorkerList");
-        request.onsuccess = function(){
-            var serviceWorkerList = this.result.serviceWorkerList;
-            
-            var options = {
-                body: text,
-                icon: icon,
-                badge: badge,
-                data: {
-                    url: url
-                }
-            };
+    event.waitUntil(new Promise(function(resolve, reject) {
+        connectCacheDB(function(store){
+            var request = store.get("serviceWorkerList");
+            request.onsuccess = function(){
+                var serviceWorkerList = this.result.serviceWorkerList;
 
-            var show = false;
-            if (serviceWorkerList.length <= 1) {
-                show = true;
-            } else if (url.indexOf('/web/userview/') !== -1) {
-                if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
+                var options = {
+                    body: text,
+                    icon: icon,
+                    badge: badge,
+                    data: {
+                        url: url
+                    }
+                };
+
+                var show = false;
+                if (serviceWorkerList.length <= 1) {
                     show = true;
-                }
-            }
-
-            if (!show) {
-                var found = false;
-                for (let i = 0; i < serviceWorkerList.length; i++) {
-                    const sw = serviceWorkerList[i];
-                    if (url.indexOf(sw) !== -1) {
-                        found = true;
-                        break;
+                } else if (url.indexOf('/web/userview/') !== -1) {
+                    if (url.indexOf(appUserviewId.replace('-', '/')) !== -1) {
+                        show = true;
                     }
                 }
-                if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
-                    show = true; //can't found the service worker for current url, use the first 1 to show
-                }
-            }
 
-            if (show) {
-                self.registration.showNotification(title, options);
-            }
-        };
-    }, 'readonly');
+                if (!show) {
+                    var found = false;
+                    for (let i = 0; i < serviceWorkerList.length; i++) {
+                        const sw = serviceWorkerList[i];
+                        if (url.indexOf(sw) !== -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
+                        show = true; //can't found the service worker for current url, use the first 1 to show
+                    }
+                }
+
+                if (show) {
+                    var notification = self.registration.showNotification(title, options);
+                    
+                    notification.then(function(result) {
+                        resolve(result);
+                    }, function(err) {
+                        reject(err);
+                    });
+                }
+            };
+        }, 'readonly');    
+    }));
 });
 
 self.addEventListener('notificationclick', function (event) {
