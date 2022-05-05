@@ -103,8 +103,6 @@ public class MissingPluginCheck extends GovHealthCheckAbstract implements GovApp
         List<String> plugins = AppUtil.findMissingPlugins(appDef);
         if (plugins != null && !plugins.isEmpty()) {
             result.setStatus(GovHealthCheckResult.Status.FAIL);
-            System.out.println(">>> " + appDef.getAppId());
-            System.out.println(">>> " + StringUtils.join(plugins, "</li><li>"));
             result.addDetailWithAppId(ResourceBundleUtil.getMessage("missingPluginCheck.msg", new String[]{appDef.getName(), StringUtils.join(plugins, "</li><li>")}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/builders", null, appDef.getAppId());
         }
     }
