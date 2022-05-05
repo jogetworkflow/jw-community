@@ -76,7 +76,7 @@ public class SecureProcessesCheck extends GovHealthCheckAbstract implements GovA
                     //check process start whitelist
                     if (packageDefinition.getPackageParticipant(wp.getIdWithoutVersion(), "processStartWhiteList") == null){
                         hasNotMapped = true;
-                        result.addDetailWithAppId(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null, appDef.getName());
+                        result.addDetailWithAppId(ResourceBundleUtil.getMessage("secureProcessesCheck.fail", new String[]{appDef.getName(), ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"), wp.getName()}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/process/builder#"+wp.getIdWithoutVersion(), null, appDef.getAppId());
                     }
                     
                     //check participant mapping
