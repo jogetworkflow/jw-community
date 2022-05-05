@@ -21,12 +21,14 @@ import static org.joget.apps.datalist.service.JsonUtil.parseBinderFromJsonObject
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.Grid;
 import org.joget.apps.form.lib.SelectBox;
+import org.joget.apps.form.lib.WorkflowFormBinder;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormReferenceDataRetriever;
+import org.joget.apps.form.model.FormERDEntityRetriever;
 import org.joget.apps.form.model.GridInnerDataRetriever;
 import org.joget.commons.util.LogUtil;
 import org.json.JSONObject;
@@ -57,39 +59,67 @@ public class FormERD {
                 }
             });
             
+            FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
+            Map<String, Entity> formToEntity = new HashMap<String, Entity>();
+            Map<String, Element> forms = new HashMap<String, Element>();
+            
             //create all entities first
             for (FormDefinition formDef : list) {
-                populateEntity(formDef);
+                Element form = formService.createElementFromJson(formDef.getJson(), false);
+                formToEntity.put(formDef.getId(), populateEntity(formDef, form));
+                forms.put(formDef.getId(), form);
             }
             
             for (FormDefinition formDef : list) {
-                populateFields(formDef);
+                populateFields(formToEntity.get(formDef.getId()), formDef, forms.get(formDef.getId()));
             }
             
             populateRelations();
         }
     }
     
-    protected void populateEntity(FormDefinition formDef) {
-        Entity entity = entities.get(formDef.getTableName());
-        if (entity == null) {
-            entity = new Entity(formDef.getTableName());
-            entities.put(formDef.getTableName(), entity);
+    protected Entity populateEntity(FormDefinition formDef, Element form) {
+        String tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME+formDef.getTableName();
+        boolean isExternal = false;
+        FormERDEntityRetriever retriever = null;
         
-            entity.addIndexes(CustomFormDataTableUtil.getIndexes(formDef.getAppDefinition(), formDef.getTableName()));
+        if (form.getLoadBinder() != null && !(form.getLoadBinder() instanceof WorkflowFormBinder) 
+                && form.getStoreBinder() != null && !(form.getStoreBinder() instanceof WorkflowFormBinder)) {
+            if (form.getLoadBinder() instanceof FormERDEntityRetriever) {
+                retriever = (FormERDEntityRetriever) form.getLoadBinder();
+                tableName = retriever.getEntityTable();
+            } else if (form.getStoreBinder() instanceof FormERDEntityRetriever) {
+                retriever = (FormERDEntityRetriever) form.getStoreBinder();
+                tableName = retriever.getEntityTable();
+            }
+            
+            isExternal = true;
+        }
+        
+        Entity entity = entities.get(tableName);
+        if (entity == null) {
+            if (retriever != null) {
+                entity = retriever.getEntity();
+            } else {
+                entity = new Entity(tableName);
+                
+                if (isExternal) {
+                    entity.setExternal(isExternal);
+                } else {
+                    entity.addIndexes(CustomFormDataTableUtil.getIndexes(formDef.getAppDefinition(), formDef.getTableName()));
+                }
+            }
+            entities.put(tableName, entity);
         }
 
         entity.setLabel(findCommonWords(entity.getLabel(), formDef.getName()));
-        
         entity.addForm(formDef.getId(), formDef.getName());
+        
+        return entity;
     }
     
-    protected void populateFields(FormDefinition formDef) {
-        Entity entity = entities.get(formDef.getTableName());
-        
+    protected void populateFields(Entity entity, FormDefinition formDef, Element form) {
         try {
-            FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
-            Element form = formService.createElementFromJson(formDef.getJson(), false);
             FormData formData = new FormData();
             formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, "true");
             
@@ -103,7 +133,7 @@ public class FormERD {
         if (field != null) {
             if (!(field instanceof FormContainer)) {
                 String id = field.getPropertyString(FormUtil.PROPERTY_ID);
-                if (id != null && !entity.hasField(id)) {
+                if (id != null && (!entity.hasField(id) || entity.getField(id).getPluginLabel().isEmpty())) {
                     Field entityField = new Field(id, field.getClassName(), field.getI18nLabel());
                     
                     if (field instanceof FormReferenceDataRetriever) {
@@ -132,19 +162,19 @@ public class FormERD {
                 Relation r = null;
                 FormBinder loadBinder = (FormBinder) field.getLoadBinder();
                 FormBinder storeBinder = null;
-                r = getRelationFromBinder(loadBinder, entity.getTableName(), "id", false);
+                r = getRelationFromBinder(loadBinder, entity.getTableName(), entity.getPrimaryKey(), false);
                 if (r == null) {
                     storeBinder = (FormBinder) field.getStoreBinder();
-                    r = getRelationFromBinder(storeBinder, entity.getTableName(), "id", false);
+                    r = getRelationFromBinder(storeBinder, entity.getTableName(), entity.getPrimaryKey(), false);
                 }
                 if (r != null) {
                     relations.add(r);
                 } else {
-                    r = getTempRelationFromBinder(loadBinder.getProperties(), "", entity.getTableName(), "id", false);
+                    r = getTempRelationFromBinder(loadBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
                     if (r != null) {
                         relations.add(r);
                     }
-                    r = getTempRelationFromBinder(storeBinder.getProperties(), "", entity.getTableName(), "id", false);
+                    r = getTempRelationFromBinder(storeBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
                     if (r != null) {
                         relations.add(r);
                     }
@@ -155,9 +185,9 @@ public class FormERD {
                 String spId = field.getPropertyString(AbstractSubForm.PROPERTY_SUBFORM_PARENT_ID);
                 
                 if (!spId.isEmpty()) {
-                    relations.add(new Relation("", entity.getTableName(), "id", subformId, "", spId));
+                    relations.add(new Relation("", entity.getTableName(), entity.getPrimaryKey(), subformId, "", spId));
                 } else {
-                    relations.add(new Relation(subformId, "", pdid, "", entity.getTableName(), "id"));
+                    relations.add(new Relation(subformId, "", pdid, "", entity.getTableName(), entity.getPrimaryKey()));
                 }
             }
             
@@ -174,29 +204,41 @@ public class FormERD {
     
     protected Relation getRelationFromBinder(FormBinder binder, String entity, String field, boolean hasMany) {
         if (binder != null) {
-            String formId = null;
-            String fk = null;
-
-            for (String k : FORM_ID_KEYS) {
-                if (binder.getProperties().containsKey(k)) {
-                    formId = binder.getPropertyString(k);
-                    break;
+            
+            if (binder instanceof FormERDEntityRetriever) {
+                String tableName = ((FormERDEntityRetriever) binder).getEntityTable();
+                if (!entities.containsKey(tableName)) {
+                    entities.put(tableName, ((FormERDEntityRetriever) binder).getEntity());
                 }
-            }
+                
+                String fk = ((FormERDEntityRetriever) binder).getForeignKey();
+                
+                if (fk != null && !fk.isEmpty()) {
+                    if (hasMany) {
+                        return new Relation("", tableName, fk, "", entity, field);
+                    } else {
+                        return new Relation("", entity, field, "", tableName, fk);
+                    }
+                }
+            } else {
+                String formId = null;
+                String fk = "";
 
-            if (formId != null && !formId.isEmpty()) {
-                for (String k : FK_KEYS) {
+                for (String k : FORM_ID_KEYS) {
                     if (binder.getProperties().containsKey(k)) {
-                        fk = binder.getPropertyString(k);
+                        formId = binder.getPropertyString(k);
                         break;
                     }
                 }
 
-                if (hasMany && (fk == null || fk.isEmpty())) {
-                    fk = "id";
-                }
+                if (formId != null && !formId.isEmpty()) {
+                    for (String k : FK_KEYS) {
+                        if (binder.getProperties().containsKey(k)) {
+                            fk = binder.getPropertyString(k);
+                            break;
+                        }
+                    }
 
-                if (fk != null && !fk.isEmpty()) {
                     if (hasMany) {
                         return new Relation(formId, "", fk, "", entity, field);
                     } else {
@@ -243,16 +285,24 @@ public class FormERD {
                         JSONObject obj = new JSONObject(json);
                         DataListBinder binder = parseBinderFromJsonObject(obj);
                         if (binder != null) {
-                            String formId = null;
-                            String fk = null;
+                            String formId = "";
+                            String tableName = "";
+                            String fk = "";
 
-                            for (String k : FORM_ID_KEYS) {
-                                if (binder.getProperties().containsKey(k)) {
-                                    formId = binder.getPropertyString(k);
-                                    break;
+                            if (binder instanceof FormERDEntityRetriever) {
+                                tableName = ((FormERDEntityRetriever) binder).getEntityTable();
+                                if (!entities.containsKey(tableName)) {
+                                    entities.put(tableName, ((FormERDEntityRetriever) binder).getEntity());
+                                }
+                            } else {
+                                for (String k : FORM_ID_KEYS) {
+                                    if (binder.getProperties().containsKey(k)) {
+                                        formId = binder.getPropertyString(k);
+                                        break;
+                                    }
                                 }
                             }
-                            
+
                             for (String k : FK_KEYS) {
                                 if (element.getProperties().containsKey(k)) {
                                     fk = element.getPropertyString(k);
@@ -260,17 +310,11 @@ public class FormERD {
                                 }
                             }
 
-                            if (hasMany && (fk == null || fk.isEmpty())) {
-                                fk = "id";
-                            }
-                            
-                            if (formId != null && !formId.isEmpty()) {
-                                if (fk != null && !fk.isEmpty()) {
-                                    if (hasMany) {
-                                        return new Relation(formId, "", fk, "", entity, field);
-                                    } else {
-                                        return new Relation("", entity, field, formId, "", fk);
-                                    }
+                            if ((formId != null && !formId.isEmpty()) || (tableName != null && !tableName.isEmpty())) {
+                                if (hasMany) {
+                                    return new Relation(formId, tableName, fk, "", entity, field);
+                                } else {
+                                    return new Relation("", entity, field, formId, tableName, fk);
                                 }
                             } else {
                                 Relation r = getTempRelationFromBinder(binder.getProperties(), fk, entity, field, hasMany);
@@ -343,6 +387,13 @@ public class FormERD {
                     }
 
                     if (hasMany != null) {
+                        if (r.getEntityFieldId().isEmpty()) {
+                            r.setEntityFieldId(entities.get(r.getEntity()).getPrimaryKey());
+                        }
+                        if (r.getFieldId().isEmpty()) {
+                            r.setFieldId(entities.get(r.getParentEntity()).getPrimaryKey());
+                        }
+                    
                         hasMany.addOwnBy(new Relation("", "", r.getEntityFieldId(), "", r.getParentEntity(), r.getFieldId()));
                         e.addHasMany(r);
                     }
@@ -362,8 +413,8 @@ public class FormERD {
         for (Entity en : entities.values()) {
             if (tempData.contains(en.getTableName())) {
                 tableNames.put(en.getTableName(), en.getTableName());
-            } else if (tempData.contains(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME+en.getTableName())) {    
-                tableNames.put(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME+en.getTableName(), en.getTableName());
+            } else if (en.getTableName().contains(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) && tempData.contains(en.getTableName().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length()))) {    
+                tableNames.put(en.getTableName().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length()), en.getTableName());
             } else {
                 for (String formId : en.getForms().keySet()) {
                     if (tempData.contains(formId)) {
@@ -462,6 +513,19 @@ public class FormERD {
     
     public String getJson() {
         try {
+            for (Entity e : entities.values()) {
+                if (e.getLabel().isEmpty()) {
+                    String label = e.getTableName();
+                    if (label.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
+                        label = label.substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
+                    }
+                    label = label.replaceAll("_", " ");
+                    label = String.join(" ", label.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])| "));
+                    label = label.substring(0, 1).toUpperCase() + label.substring(1);
+                    e.setLabel(label);
+                }
+            }
+            
             JSONObject obj = new JSONObject();
             obj.put("entities", entities);
             
@@ -473,7 +537,7 @@ public class FormERD {
         return null;
     }
     
-    public class Entity extends HashMap<String, Object> {
+    public static class Entity extends HashMap<String, Object> {
         
         public Entity(String tableName) {
             super();
@@ -482,7 +546,9 @@ public class FormERD {
             this.put("fields", new HashMap<String, Field>());
             this.put("hasMany", new HashMap<String, Relation>());
             this.put("ownBy", new HashMap<String, Relation>());
+            this.put("primaryKey", "id");
             this.put("indexes", new HashSet<String>());
+            this.put("external", false);
         }
         
         public String getTableName() {
@@ -510,7 +576,7 @@ public class FormERD {
         }
         
         public void addField(String id, Field field) {
-            if (!hasField(id)) {
+            if (!hasField(id) || getField(id).getPluginLabel().isEmpty()) {
                 ((HashMap<String, Field>) this.get("fields")).put(id, field);
             }
         }
@@ -521,6 +587,10 @@ public class FormERD {
         
         public boolean hasField(String id) {
             return ((HashMap<String, Field>) this.get("fields")).containsKey(id);
+        }
+        
+        public Field getField(String id) {
+            return ((HashMap<String, Field>) this.get("fields")).get(id);
         }
         
         public void addHasMany(Relation r) {
@@ -544,9 +614,25 @@ public class FormERD {
                 this.put("indexes", indexes);
             }
         }
+        
+        public void setExternal(Boolean isExternal) {
+            this.put("external", isExternal);
+        }
+        
+        public Boolean isExternal() {
+            return (Boolean) this.get("external");
+        }
+        
+        public void setPrimaryKey(String primaryKey) {
+            this.put("primaryKey", primaryKey);
+        }
+        
+        public String getPrimaryKey() {
+            return (String) this.get("primaryKey");
+        }
     }
     
-    public class Field extends HashMap<String, String> {
+    public static class Field extends HashMap<String, String> {
         public Field(String id, String className, String pluginLabel) {
             super();
             this.put("id", id);
@@ -567,7 +653,7 @@ public class FormERD {
         }
     }
     
-    public class Relation extends HashMap<String, String> {
+    public static class Relation extends HashMap<String, String> {
         
         public Relation(String parentFormId, String parentEntity, String fieldId, String entityFormId, String entity, String entityFieldId) {
             super();

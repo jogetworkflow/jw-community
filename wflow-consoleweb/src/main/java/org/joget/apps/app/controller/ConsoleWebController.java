@@ -55,11 +55,9 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
-import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
-import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -73,7 +71,10 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormERDEntityRetriever;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
+import org.joget.apps.form.service.FormERD;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.generator.service.GeneratorUtil;
@@ -92,7 +93,6 @@ import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
-import org.joget.workflow.model.WorkflowParticipant;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.CsvUtil;
@@ -121,7 +121,6 @@ import org.joget.directory.model.service.DirectoryManagerPlugin;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.logs.LogViewerAppender;
-import org.joget.workflow.model.ParticipantPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
@@ -3831,6 +3830,44 @@ public class ConsoleWebController {
                     m.put("value", t);
                     m.put("label", t);
                     jsonArray.put(m);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/binder/columns/options")
+    public void consoleFormBinderColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam String binderJson) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            if (binderJson != null && !binderJson.isEmpty()) {
+                JSONObject binderObj = new JSONObject(binderJson);
+                if (!binderObj.isNull(FormUtil.PROPERTY_CLASS_NAME)) {
+                    String className = binderObj.getString(FormUtil.PROPERTY_CLASS_NAME);
+                    if (className != null && className.trim().length() > 0) {
+                        FormBinder  binder = (FormBinder) pluginManager.getPlugin(className);
+                        if (binder != null && binder instanceof FormERDEntityRetriever) {
+                            // set child properties
+                            Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(binderObj);
+                            binder.setProperties(properties);
+                            
+                            for (String id : ((FormERDEntityRetriever) binder).getEntity().getFields().keySet()) {
+                                Map m = new HashMap();
+                                m.put("value", id);
+                                m.put("label", id);
+                                jsonArray.put(m);
+                            }
+                        }
+                    }
                 }
             }
         } catch (Exception e) {

@@ -39,6 +39,7 @@ FormBuilder = {
     load: function (data) {
         CustomBuilder.Builder.load(data, function(){
            FormBuilder.afterUpdate(); 
+           FormBuilder.retrieveExistingFieldIds();
         });
     },
     
@@ -187,6 +188,8 @@ FormBuilder = {
         if (elementObj.className === "org.joget.apps.form.model.Column") {
             //recalculate width
             FormBuilder.recalculateColumnWidth(element.parent().closest("[data-cbuilder-classname]"));
+        } else if (elementObj.className === "org.joget.apps.form.model.Form") {
+            FormBuilder.retrieveExistingFieldIds();
         }
     },
     
@@ -846,7 +849,7 @@ FormBuilder = {
                     var unindexed = {};
                     
                     function checkIndexField(entity, field) {
-                        if (!$("#" + entity + "_field_" + field + " .label .markindex").hasClass("indexed")) {
+                        if (!$("#" + entity + "_field_" + field + " .label .markindex").hasClass("indexed") && !$("#"+entity+"_container").hasClass("external")) {
                             if (unindexed[entity] === undefined) {
                                 unindexed[entity] = [field];
                             } else if ($.inArray(field, unindexed[entity]) === -1) {
@@ -889,27 +892,33 @@ FormBuilder = {
                             var cellPos = findEmptyCell(x, y);
                             var cell = $('#diagram-grid .col:eq('+cellPos[0]+') .row:eq('+cellPos[1]+')');
 
-                            var entityContainer = $('<div id="'+entity.tableName+'_container" data-tablename="'+entity.tableName+'" class="entity-container"><h5>'+entity.label+' <span class="tableName">('+entity.tableName+')</span></h5><div class="fields"></div><div class="forms"><label>Forms:</label> <ul></ul></div></div>');
+                            var entityContainer = $('<div id="'+entity.tableName+'_container" data-tablename="'+entity.tableName+'" class="entity-container '+((entity.external === true)?'external':'')+'"><h5>'+entity.label + ((entity.external === true && entity.tableName.indexOf("app_fd_") === 0)?'':' <span class="tableName">('+entity.tableName+')</span>') + '</h5><div class="fields"></div><div class="forms"><label>'+get_cbuilder_msg('fbuilder.forms')+':</label> <ul></ul></div></div>');
+                            if (entity.external === true) {
+                                $(entityContainer).find('h5').append('<i class="las la-exclamation-circle" title="'+get_cbuilder_msg('fbuilder.externalEntity')+'"></i>');
+                            }
                             $(cell).append(entityContainer);
                             $(entityContainer).data("entity", entity);
-                            
-                            if (entity.tableName === CustomBuilder.data.properties.tableName) {
-                                $(entityContainer).addClass("current");
-                            }
-
+                           
                             //render fields
-                            systemField(entity, "id", entityContainer, true);
+                            if (entity.external !== true) {
+                                systemField(entity, "id", entityContainer, true);
+                            }
                             for (const f in entity.fields) {
                                 renderField(entity, entity.fields[f], entityContainer);
                             }
-                            systemField(entity, "dateCreated", entityContainer);
-                            systemField(entity, "dateModified", entityContainer);
-                            systemField(entity, "createdBy", entityContainer);
-                            systemField(entity, "createdByName", entityContainer);
-                            systemField(entity, "modifiedBy", entityContainer);
-                            systemField(entity, "modifiedByName", entityContainer);
+                            if (entity.external !== true) {
+                                systemField(entity, "dateCreated", entityContainer);
+                                systemField(entity, "dateModified", entityContainer);
+                                systemField(entity, "createdBy", entityContainer);
+                                systemField(entity, "createdByName", entityContainer);
+                                systemField(entity, "modifiedBy", entityContainer);
+                                systemField(entity, "modifiedByName", entityContainer);
+                            }
                             
                             for (const f in entity.forms) {
+                                if (f === CustomBuilder.data.properties.id) {
+                                    $(entityContainer).addClass("current");
+                                }
                                 entityContainer.find(".forms ul").append('<li><a href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/form/builder/'+f+'">'+entity.forms[f]+'</a></li>');
                             }
 
@@ -1103,21 +1112,40 @@ FormBuilder = {
      * Utility method to retrieve all fields id of the current form table
      */
     retrieveExistingFieldIds : function() {
-        var tableName = CustomBuilder.data.properties['tableName'];
-        
-        CustomBuilder.cachedAjax({
-            url: CustomBuilder.contextPath + '/web/json/console/app/'+CustomBuilder.appId+'/'+CustomBuilder.appVersion+'/form/columns/options?tableName='+tableName,
-            dataType: "text",
-            success: function(data) {
-                if(data !== undefined && data !== null){
-                    var options = $.parseJSON(data);
-                    FormBuilder.existingFields = [];
-                    for (var o in options) {
-                        FormBuilder.existingFields.push(options[o]['value']);
+        if (CustomBuilder.data.properties['loadBinder'] !== undefined && CustomBuilder.data.properties['loadBinder']["className"] !== "") {
+            CustomBuilder.cachedAjax({
+                url: CustomBuilder.contextPath + '/web/json/console/app/'+CustomBuilder.appId+'/'+CustomBuilder.appVersion+'/form/binder/columns/options',
+                dataType: "text",
+                data : {
+                    "binderJson" : JSON.encode(CustomBuilder.data.properties['loadBinder'])
+                },
+                success: function(data) {
+                    if(data !== undefined && data !== null){
+                        var options = $.parseJSON(data);
+                        FormBuilder.existingFields = [];
+                        for (var o in options) {
+                            FormBuilder.existingFields.push(options[o]['value']);
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            var tableName = CustomBuilder.data.properties['tableName'];
+
+            CustomBuilder.cachedAjax({
+                url: CustomBuilder.contextPath + '/web/json/console/app/'+CustomBuilder.appId+'/'+CustomBuilder.appVersion+'/form/columns/options?tableName='+tableName,
+                dataType: "text",
+                success: function(data) {
+                    if(data !== undefined && data !== null){
+                        var options = $.parseJSON(data);
+                        FormBuilder.existingFields = [];
+                        for (var o in options) {
+                            FormBuilder.existingFields.push(options[o]['value']);
+                        }
+                    }
+                }
+            });
+        }
     },
     
     /*

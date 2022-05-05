@@ -73,6 +73,7 @@
         #diagram-grid .col .row:nth-child(even) {padding-left:50px;}
         #diagram-grid .entity-container {max-width: 350px; margin: auto; border: 1px solid #333; border-radius: 5px; overflow: hidden; position: relative;}
         #diagram-grid .entity-container h5 {text-align: center; padding: 20px; cursor: pointer; margin-bottom: 0; background: #e9f2ff;}
+        #diagram-grid .entity-container h5 .la-exclamation-circle {position: absolute; display: block; top: 3px; right: 3px; color: #fe9600;}
         #diagram-grid .entity-container.current h5 {background: #d9f8ea;}
         #diagram-grid .entity-container h5 span {display: block;}
         #diagram-grid .entity-container .forms {display: none; padding: 10px; border-top: 1px solid #ccc;}
@@ -84,7 +85,7 @@
         #diagram-grid .entity-container .field span.type {width: 40%; word-break: normal; font-weight: 300;}
         #diagram-grid .entity-container .field a {position:absolute; top:5px; left:6px;}
         #diagram-grid .entity-container .field a:not(.indexed) {visibility:hidden; color:#333;}
-        #diagram-grid .entity-container .field:hover a:not(.indexed) {visibility:visible; cursor:pointer;}
+        #diagram-grid .entity-container:not(.external) .field:hover a:not(.indexed) {visibility:visible; cursor:pointer;}
         #diagram-grid .entity-container.showDetails .fields {border-top: 1px solid #ccc; height: auto; display: block; min-width: 350px;}
         #diagram-grid .entity-container:not(.showDetails) .fields{border-top:0px; max-height: 100%; min-width: 0; position: absolute; visibility: hidden; top:0; left:0; right: 0; bottom: 0; display: flex; align-content: space-around; flex-direction: column; justify-content: space-evenly;}
         #diagram-grid .entity-container:not(.showDetails) .field:not(.connection_endpoint) {display: none;}

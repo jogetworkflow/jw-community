@@ -21,6 +21,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.lib.SubmitButton;
 import org.joget.apps.form.model.Column;
@@ -459,6 +460,9 @@ public class FormBuilderWebController {
             String[] indexArray = new String[arr.length()];
             for (int i = 0; i < arr.length(); i++) {
                 indexArray[i] = SecurityUtil.validateStringInput(arr.getString(i));
+            }
+            if (tableName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
+                tableName = tableName.substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
             }
             CustomFormDataTableUtil.createTableIndexes(appDef, tableName, indexArray);
         }
