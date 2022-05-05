@@ -133,14 +133,16 @@ public class WorkflowUserManager {
                     User user = directoryManager.getUserByUsername(username);
                 
                     setCurrentThreadUser(user);
-                    
-                    Collection<String> results = new ArrayList<String>();
-                    Collection<Role> roles = user.getRoles();
-                    if (roles != null && !roles.isEmpty()) {
-                        for (Role role : roles) {
-                            results.add(role.getId());
+
+                    if (user != null) {
+                        Collection<String> results = new ArrayList<String>();
+                        Collection<Role> roles = user.getRoles();
+                        if (roles != null && !roles.isEmpty()) {
+                            for (Role role : roles) {
+                                results.add(role.getId());
+                            }
+                            currentThreadUserRoles.set(results);
                         }
-                        currentThreadUserRoles.set(results);
                     }
                     return user;
                 }
