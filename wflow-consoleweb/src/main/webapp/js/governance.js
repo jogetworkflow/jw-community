@@ -202,7 +202,7 @@ GovernanceUtil = {
                         $(li).append('<a href="'+link+'"  target="_blank" class="btn btn-secondary btn-sm">'+btnLabel+'</a>');
                     }
 
-                    $(row).find('.details ul').append(li);
+                    $(row).find('.details > ul').append(li);
                 }
                 if (rowResult.moreInfo) {
                     $(row).find('.details').append('<div class="moreInfo"><a class="moreInfoBtn"><span class="show">More Info</span><span class="hide">Hide Info</span></a><div class="infoContent">'+rowResult.moreInfo+'</div></div>');

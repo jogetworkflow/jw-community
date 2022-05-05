@@ -117,7 +117,7 @@ public class NamingConventionCheck extends GovHealthCheckAbstract implements Gov
                                 String exist = checkDuplicateMap.get(c.toLowerCase());
                                 if (exist != null && !exist.equals(c)) {
                                     result.setStatus(GovHealthCheckResult.Status.WARN);
-                                    result.addDetailWithAppId(ResourceBundleUtil.getMessage("namingConventionCheck.msg", new String[]{appDef.getName(), formDef.getName(), exist}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/form/builder/"+formDef.getId(), null, appDef.getName());
+                                    result.addDetailWithAppId(ResourceBundleUtil.getMessage("namingConventionCheck.msg", new String[]{appDef.getName(), formDef.getName(), exist}), "/web/console/app/"+appDef.getAppId()+"/"+appDef.getVersion().toString()+"/form/builder/"+formDef.getId(), null, appDef.getAppId());
                                 } else {
                                     checkDuplicateMap.put(c.toLowerCase(), c);
                                 }
