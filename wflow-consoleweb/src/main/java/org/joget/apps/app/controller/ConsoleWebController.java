@@ -5749,16 +5749,20 @@ public class ConsoleWebController {
     }    
 
     @RequestMapping(value = "/console/profile/subscription", method = RequestMethod.POST)
-    public void profileSubscription(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "subscription") String subscription) throws IOException {
+    public void profileSubscription(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "subscription") String subscription, @RequestParam(value = "deviceId") String deviceId, @RequestParam(value = "appId") String appId, @RequestParam(value = "userviewId") String userviewId) throws IOException {
         // get current user
         User currentUser = userDao.getUser(workflowUserManager.getCurrentUsername());
         if (currentUser == null || workflowUserManager.isCurrentUserAnonymous()) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
+        
+        deviceId = SecurityUtil.validateStringInput(deviceId);
+        userviewId = SecurityUtil.validateStringInput(userviewId);
+        appId = SecurityUtil.validateStringInput(appId);
 
         // save subscription json to user metadata
-        Boolean result = PushServiceUtil.storeUserPushSubscription(currentUser.getUsername(), subscription);
+        Boolean result = PushServiceUtil.storeUserPushSubscription(currentUser.getUsername(), deviceId, appId, userviewId, subscription);
         if (result) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {

@@ -6,6 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Subscription;
@@ -13,6 +17,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.UserMetaData;
@@ -54,7 +59,7 @@ public class PushServiceUtil {
      * @param subscriptionJson
      * @return 
      */
-    public static Boolean storeUserPushSubscription(String username, String subscriptionJson) {
+    public static Boolean storeUserPushSubscription(String username, String deviceId, String appId, String userviewId, String subscriptionJson) {
         UserMetaDataDao userMetaDataDao = (UserMetaDataDao)AppUtil.getApplicationContext().getBean("userMetaDataDao");
         UserMetaData data = userMetaDataDao.getUserMetaData(username, WEBPUSH_SUBSCRIPTION_USER_METADATA);
         boolean isNew = false;
@@ -69,7 +74,19 @@ public class PushServiceUtil {
         if (subscriptions != null && !subscriptions.trim().isEmpty()) {
             subscriptionArray = StringUtils.delimitedListToStringArray(subscriptions, WEBPUSH_SUBSCRIPTION_DELIMITER);
         }
-        subscriptionArray = ArrayUtils.add(subscriptionArray, subscriptionJson);
+        
+        //remove same deviceId, appId, userviewId
+        Set<String> duplicate = new HashSet<String>();
+        for (String s : subscriptionArray) {
+            if (s.contains("::" + deviceId + "::" + appId+ "::" + userviewId)) {
+                duplicate.add(s);
+            }
+        }
+        for (String s : duplicate) {
+            subscriptionArray = ArrayUtils.removeAllOccurences(subscriptionArray, s);
+        }
+        
+        subscriptionArray = ArrayUtils.add(subscriptionArray, subscriptionJson + "::" + deviceId + "::" + appId+ "::" + userviewId);
         String newSubscriptions = StringUtils.arrayToDelimitedString(subscriptionArray, WEBPUSH_SUBSCRIPTION_DELIMITER);
         data.setValue(newSubscriptions);
         Boolean result = (isNew) ? userMetaDataDao.addUserMetaData(data) : userMetaDataDao.updateUserMetaData(data);
@@ -111,6 +128,12 @@ public class PushServiceUtil {
      * @return number of messages successfully sent
      */
     public static int sendUserPushNotification(String username, String title, String text, String url, String icon, String badge, boolean removeOnFailure) {
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        String appId = null;
+        if (appDef != null) {
+            appId = appDef.getAppId();
+        }
+        
         int result = 0;
         UserMetaDataDao userMetaDataDao = (UserMetaDataDao)AppUtil.getApplicationContext().getBean("userMetaDataDao");
         UserMetaData data = userMetaDataDao.getUserMetaData(username, WEBPUSH_SUBSCRIPTION_USER_METADATA);
@@ -120,22 +143,46 @@ public class PushServiceUtil {
             if (subscriptions != null && !subscriptions.trim().isEmpty()) {
                 subscriptionArray = StringUtils.delimitedListToStringArray(subscriptions, WEBPUSH_SUBSCRIPTION_DELIMITER);
             }
+            
+            //only send 1 per device
+            Map<String, String> uniqueDevice = new HashMap<String, String>();
+            
             for (String subscriptionJson: subscriptionArray) {
                 if (subscriptionJson != null && !subscriptionJson.isEmpty()) {
-                    boolean newResult = sendPushNotification(subscriptionJson, title, text, url, icon, badge);
-                    if (!newResult && removeOnFailure) {
-                        PushServiceUtil.removeUserPushSubscription(username, subscriptionJson);
+                    if (subscriptionJson.contains("::")) {
+                        String[] temp = subscriptionJson.split("::");
+                        if (uniqueDevice.containsKey(temp[1])) {
+                            if (url.contains("/web/userview/")) {
+                                if (url.contains("/web/userview/"+temp[2]+"/"+temp[3])) {
+                                    uniqueDevice.put(temp[1], subscriptionJson);
+                                }
+                            } else if (temp[2].equals(appId)) {
+                                uniqueDevice.put(temp[1], subscriptionJson);
+                            }
+                        } else {
+                            uniqueDevice.put(temp[1], subscriptionJson);
+                        }
+                    } else {
+                        uniqueDevice.put(subscriptionJson, subscriptionJson);
                     }
-                    if (newResult) {
-                        result++;
-                    }
+                }
+            }
+            
+            for (String k : uniqueDevice.keySet()) {
+                String subscriptionJson = uniqueDevice.get(k);
+                boolean newResult = sendPushNotification(subscriptionJson, title, text, url, icon, badge);
+                if (!newResult && removeOnFailure) {
+                    PushServiceUtil.removeUserPushSubscription(username, subscriptionJson);
+                }
+                if (newResult) {
+                    result++;
                 }
             }
         }
 
         return result;
     }
-
+    
     /**
      * Send web push message to specific subscription JSON
      * @param subscriptionJson
@@ -150,6 +197,9 @@ public class PushServiceUtil {
      */
     public static boolean sendPushNotification(String subscriptionJson, String title, String text, String url, String icon, String badge) throws BeansException, JsonSyntaxException {
         boolean result = false;
+        if (subscriptionJson.contains("::")) {
+            subscriptionJson = subscriptionJson.substring(0, subscriptionJson.indexOf("::"));
+        }
         Subscription subscription = new Gson().fromJson(subscriptionJson, Subscription.class);
         String endpoint = subscription.endpoint;
         String userPublicKey = subscription.keys.p256dh;

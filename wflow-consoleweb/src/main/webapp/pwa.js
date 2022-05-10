@@ -293,9 +293,16 @@ PwaUtil = {
                     return subscription;
                 })
                 .then(function (pushSubscription) {
-                    if (newSubscription) {
+                    var uuid = localStorage.getItem('deviceUUID');
+                    if (!uuid) {
+                        uuid = PwaUtil.uuid();
+                        localStorage.setItem('deviceUUID', uuid);
+                    }
+                    var localUuid = localStorage.getItem('deviceUUID_'+UI.userview_app_id+'_'+UI.userview_id);
+                    if (newSubscription || uuid !== localUuid) {
                         console.log('New PushSubscription : ' + JSON.stringify(pushSubscription));
-                        PwaUtil.storeSubscription(pushSubscription);
+                        PwaUtil.storeSubscription(pushSubscription, uuid);
+                        localStorage.setItem('deviceUUID_'+UI.userview_app_id+'_'+UI.userview_id, uuid);
                     }
                     return pushSubscription;
                 })
@@ -320,14 +327,17 @@ PwaUtil = {
         return outputArray;
     },
 
-    storeSubscription: function (pushSubscription) {
+    storeSubscription: function (pushSubscription, uuid) {
         console.log('Storing PushSubscription: ', JSON.stringify(pushSubscription));
         let formData = new FormData();
         formData.append('subscription', JSON.stringify(pushSubscription));
+        formData.append('deviceId', uuid);
+        formData.append('appId', UI.userview_app_id);
+        formData.append('userviewId', UI.userview_id);
         return fetch(PwaUtil.subscriptionApiPath + "?" + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue, {
             method: 'POST',
             credentials: "same-origin",
-            body: formData,
+            body: formData
         });
     },
 
@@ -434,6 +444,13 @@ PwaUtil = {
                 "serviceWorkerList": list
             });
         });
+    },
+    
+    uuid : function(){
+        return 'xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {  //xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        }).toUpperCase();
     }
 }
 
