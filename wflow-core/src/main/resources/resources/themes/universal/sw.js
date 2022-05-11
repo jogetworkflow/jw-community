@@ -314,6 +314,8 @@ self.addEventListener('push', function (event) {
                     }, function(err) {
                         reject(err);
                     });
+                } else {
+                    reject("");
                 }
             };
         }, 'readonly');    
