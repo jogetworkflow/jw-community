@@ -415,7 +415,10 @@ PropertyEditor.Util = {
                             }
                             
                             var targetField = fields[fieldId];
-                            var targetValue = targetField.value;
+                            var targetValue = "";
+                            if (!targetField.isHidden()) {
+                                targetValue = targetField.value;
+                            }
                             if (targetField.editor.find("#" + targetField.id).length > 0) {
                                 var data = targetField.getData(true);
                                 targetValue = data[fieldId];
@@ -6598,7 +6601,7 @@ PropertyEditor.Type.SelectBox.prototype = {
         if (this.value === null) {
             this.value = "";
         }
-
+        
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
         if (this.properties.options !== undefined && this.properties.options !== null) {
