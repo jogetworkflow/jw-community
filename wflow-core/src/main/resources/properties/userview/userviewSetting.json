@@ -29,6 +29,11 @@
         label: '@@ubuilder.description@@',
         required: 'false',
         type: 'textarea'
+    },
+    {
+        name: 'userview_category',
+        label: '@@ubuilder.category@@',
+        type: 'textfield'
     }, 
     {
         name: 'userview_thumbnail',

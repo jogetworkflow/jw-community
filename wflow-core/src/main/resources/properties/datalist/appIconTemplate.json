@@ -89,6 +89,12 @@
                     }
                 ],
                 "value": "col-lg-3"
+            },
+            {
+                "label" : "@@datalist.appIconTemplate.splitListByColumn@@",
+                "name"  : "splitListByColumn",
+                "type" : "selectbox",
+                "options_callback" : "DatalistBuilder.getColumnOptions"
             }
         ]
     }

@@ -2891,6 +2891,9 @@ public class AppServiceImpl implements AppService {
                             if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
                                 uvDef.setThumbnail(userviewSetting.getPropertyString("userview_thumbnail"));
                             }
+                            if (!userviewSetting.getPropertyString("userview_category").isEmpty()) {
+                                uvDef.setCategory(userviewSetting.getPropertyString("userview_category"));
+                            }
                             uvDef.setName(AppUtil.processHashVariable(uvDef.getName(), null, null, null, appDef));
                             uvDef.setDescription(AppUtil.processHashVariable(uvDef.getDescription(), null, null, null, appDef));
                             newUvDefList.add(uvDef);

@@ -1093,6 +1093,7 @@ public class WorkflowJsonController {
                 if (userviewDef.getThumbnail() != null && !userviewDef.getThumbnail().isEmpty()) {
                     userview.accumulate("imageUrl", userviewDef.getThumbnail());
                 }
+                userview.accumulate("category", (userviewDef.getCategory() != null)?userviewDef.getCategory():"");
                 userviews.put(userview);
             }
             app.put("userviews", userviews);

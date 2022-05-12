@@ -187,12 +187,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             String value = "";
             if ("rows".equals(key)) {
                 DataListCollection rows = getDatalist().getRows();
-                if (rows != null && !rows.isEmpty()) {
-                    for (Object r : rows) {
-                        decorator.initRow(r, 0, 0);
-                        value += fillData(childtemplate, r);
-                    }
-                }
+                value += fillRows(rows, childtemplate);
                 applyStyles("", key, props, getProperties());
             } else if ("rowActions".equals(key) || key.startsWith("rowAction_")) {
                 value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getRowActionPlaceholder(key), data);
@@ -236,6 +231,17 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         }
         
         return template;
+    }
+    
+    public String fillRows(DataListCollection rows, String childtemplate) {
+        String value = "";
+        if (rows != null && !rows.isEmpty()) {
+            for (Object r : rows) {
+                decorator.initRow(r, 0, 0);
+                value += fillData(childtemplate, r);
+            }
+        }
+        return value;
     }
     
     public String populateSelector(String props, String template, Object data) {
