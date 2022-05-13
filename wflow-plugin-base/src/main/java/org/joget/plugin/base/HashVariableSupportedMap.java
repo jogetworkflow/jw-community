@@ -111,25 +111,29 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
         return super.values();
     }
     
+    protected Boolean isInternal = null;
+
     @Override
     public Set<Map.Entry<K,V>> entrySet() {
-        boolean isInternal = false;
-        int i = 0;
-        for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
-            if (i++ < 2) {
-                continue;
+        if (isInternal == null) {
+            int i = 0;
+            for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
+                if (i++ < 2) {
+                    continue;
+                }
+                String className = elem.getClassName();
+                if (className.equalsIgnoreCase("org.joget.plugin.base.HashVariableSupportedMap")) {
+                    isInternal = true;
+                    break;
+                }
+                if (i == 5) {
+                    isInternal = false;
+                    break;
+                }
             }
-            String className = elem.getClassName();
-            if (className.equalsIgnoreCase("org.joget.plugin.base.HashVariableSupportedMap")) {
-                isInternal = true;
-                break;
+            if (!isInternal) {
+                processAllValues();
             }
-            if (i == 5) {
-                break;
-            }
-        }
-        if (!isInternal) {
-            processAllValues();
         }
         return super.entrySet();
     }

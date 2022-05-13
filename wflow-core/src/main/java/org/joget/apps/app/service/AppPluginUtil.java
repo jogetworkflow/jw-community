@@ -2,13 +2,16 @@ package org.joget.apps.app.service;
 
 import bsh.Interpreter;
 import com.google.gson.Gson;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.map.LRUMap;
 import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageDefinition;
@@ -257,8 +260,53 @@ public class AppPluginUtil implements ApplicationContextAware {
         }
     }
     
+    // least recently used (LRU) cache to hold generated styles
+    static Map<String, Map<String, String>> styleCache = Collections.synchronizedMap(new LRUMap<>(1000));
+
+    static String generateStyleCacheKey(Map properties, String prefix) {
+        String cacheKey = prefix + "::";
+        for (Object keyObj: properties.keySet()) {
+            String key = keyObj.toString();
+            if (key.startsWith(prefix) && !key.equals("elementUniqueKey")) { // ignore random generated elementUniqueKey
+                Object val = properties.get(keyObj);
+                String strVal = "";
+                if (val.getClass().isArray()) {
+                    // expand array
+                    for (Object el: (Object[])val) {
+                        if (el instanceof Map) {
+                            // recurse into map                            
+                            strVal = generateStyleCacheKey((Map)el, prefix);                            
+                        } else {
+                            strVal = Arrays.toString((Object[])el);
+                        }
+                    }
+                } else if (val instanceof Map) {
+                    // recurse into map 
+                    strVal = generateStyleCacheKey((Map)val, prefix);
+                } else {
+                    strVal = val.toString();
+                }
+                cacheKey += key + "="+ strVal + ";";
+            }
+        }
+        String hashedCacheKey = StringUtil.md5Base16Utf8(cacheKey); // hash to minimize memory usage
+        return hashedCacheKey;
+    }
+
     public static Map<String, String> generateAttrAndStyles(Map<String, Object> properties, String prefix) {
-        Map<String, String> result = new HashMap<String, String>();
+        
+        if (prefix == null) {
+            prefix = ""; 
+        }
+                
+        // lookup from LRU cache
+        String cacheKey = generateStyleCacheKey(properties, prefix);
+        Map<String, String> result = styleCache.get(cacheKey);
+        if (result != null) {
+            return result;
+        }
+
+        result = new HashMap<>();
         
         String desktopStyle = "";
         String tabletStyle = "";
@@ -268,10 +316,6 @@ public class AppPluginUtil implements ApplicationContextAware {
         String hoverMobileStyle = "";
         String cssClass = "";
         String attr = ""; 
-        
-        if (prefix == null) {
-            prefix = ""; 
-        }
         
         for (String key : properties.keySet()) {
             if ((key.startsWith(prefix+"css-") 
@@ -335,6 +379,9 @@ public class AppPluginUtil implements ApplicationContextAware {
         result.put("hoverMobileStyle", hoverMobileStyle);
         result.put("cssClass", cssClass);
         result.put("attr", attr);
+        
+        // save into cache
+        styleCache.put(cacheKey, result);
         
         return result;
     }

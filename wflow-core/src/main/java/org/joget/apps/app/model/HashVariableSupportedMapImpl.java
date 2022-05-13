@@ -28,6 +28,7 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
     public Object clone() {
         HashVariableSupportedMapImpl<K,V> clone = new HashVariableSupportedMapImpl<>(appDef, assignment, (HashMap<K,V>) ((HashMap) this.initialMap).clone());
         clone.putAll(this);
+        clone.isInternal = this.isInternal;
         return clone;
     }
 
