@@ -13,6 +13,7 @@ import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> implements MessageDao {
@@ -108,7 +109,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         final Object[] params = generateQueryParams(appDefinition).toArray();
 
         // execute query and return result
-        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + condition + " ORDER BY e.locale";
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + newCondition + " ORDER BY e.locale";
 
         Query q = findSession().createQuery(query);
         q.setFirstResult(0);
@@ -130,13 +132,14 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         final Object[] params = generateQueryParams(appDefinition).toArray();
 
         // execute query and return result
-        String query = "SELECT distinct e.messageKey FROM " + getEntityName() + " e " + condition + " ORDER BY e.messageKey";
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        String query = "SELECT distinct e.messageKey FROM " + getEntityName() + " e " + newCondition + " ORDER BY e.messageKey";
 
         Query q = findSession().createQuery(query);
         q.setFirstResult(0);
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
