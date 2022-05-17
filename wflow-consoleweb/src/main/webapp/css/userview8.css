@@ -1472,8 +1472,8 @@ body .ui-icon-closethick:before{
     content: 'x';
 }
 body.popupBody #main-body-header {
-    background: #37474F;
-    color: #fff;
+    background: var(--theme-heading-bg, var(--theme-color5,#fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
     padding: 15px;
     position: fixed;
     text-transform: uppercase;

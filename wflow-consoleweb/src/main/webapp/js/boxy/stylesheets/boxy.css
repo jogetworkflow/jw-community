@@ -26,10 +26,10 @@
 	
 	/* Title bar */
 	
-	.boxy-wrapper .title-bar { background-color: black; padding: 6px; position: relative; }
+	.boxy-wrapper .title-bar { background-color: #efefef; padding: 6px; position: relative; }
 	  .boxy-wrapper .title-bar.dragging { cursor: move; }
 	    .boxy-wrapper .title-bar h2 { font-size: 12px; color: white; line-height: 1; margin: 0; padding: 0; font-weight: normal; }
-	    .boxy-wrapper .title-bar .close { color: white; position: absolute; top: 6px; right: 6px; font-size: 90%; line-height: 1; opacity: 1; font-weight: normal; text-shadow: none }
+	    .boxy-wrapper .title-bar .close { color: rgba(0,0,0,.45); position: absolute; top: 6px; right: 6px; font-size: 90%; line-height: 1; opacity: 1; font-weight: 900; text-shadow: none }
 		
 	/* Content Region */
 	
