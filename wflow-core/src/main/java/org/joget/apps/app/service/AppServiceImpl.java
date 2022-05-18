@@ -1339,10 +1339,11 @@ public class AppServiceImpl implements AppService {
     @Transactional
     public void deleteAppDefinitionVersion(String appId, Long version) {
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, version);
+        if (appDef != null) {
+            appDefinitionDao.delete(appDef);
 
-        appDefinitionDao.delete(appDef);
-        
-        AppResourceUtil.deleteAppResources(appDef.getAppId(), appDef.getVersion().toString());
+            AppResourceUtil.deleteAppResources(appDef.getAppId(), appDef.getVersion().toString());
+        }
     }
 
     /**
@@ -1948,6 +1949,17 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     public byte[] getAppDefinitionXml(String appId, Long version, boolean backwardCompatible) {
+        AppDefinition appDef = getAppDefinition(appId, Long.toString(version));
+        return getAppDefinitionXml(appDef, backwardCompatible);
+    }
+    /**
+     * Get App definition XML
+     * @param appId
+     * @param version
+     * @param backwardCompatible
+     * @return
+     */
+    public byte[] getAppDefinitionXml(AppDefinition appDef, boolean backwardCompatible) {
         byte[] appDefinitionXml = null;
 
         ByteArrayOutputStream baos = null;
@@ -1955,7 +1967,6 @@ public class AppServiceImpl implements AppService {
         try {
             baos = new ByteArrayOutputStream();
 
-            AppDefinition appDef = getAppDefinition(appId, Long.toString(version));
             if (appDef instanceof HibernateProxy) {
                 appDef = (AppDefinition)((HibernateProxy)appDef).getHibernateLazyInitializer().getImplementation();
             }
