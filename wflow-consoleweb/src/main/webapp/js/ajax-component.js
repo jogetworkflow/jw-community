@@ -279,23 +279,84 @@ AjaxComponent = {
         
         fetch(url, args)
         .then(function (response) {
-            if (response.url.indexOf("/web/login") !== -1) {
-                document.location.href = url;
-                return null;
-            } else if ((method === "GET" || response.redirected) && response.status === 200) {
-                //only change url if is page change or main component
-                if (!isAjaxComponent || $(contentConatiner).hasClass("main-component")) {
-                    var resUrl = response.url;
-                    history.pushState({url: resUrl}, "", resUrl); //handled redirected URL
+            if (response.status === 403) {
+                if (AjaxComponent.retry !== true) {
+                    AjaxComponent.retry = true;
+                    //could be csrf token expired, retrieve new token and retry once
+                    $.ajax({
+                        type: 'POST',
+                        url: UI.base + "/csrf",
+                        headers: {
+                            "FETCH-CSRF-TOKEN-PARAM":"true",
+                            "FETCH-CSRF-TOKEN":"true"
+                        },
+                        success: function (response) {
+                            var temp = response.split(":");
+                            ConnectionManager.tokenValue = temp[1];
+                            JPopup.tokenValue = temp[1];
+
+                            $("iframe").each(function() {
+                                try {
+                                    if (this.contentWindow.ConnectionManager !== undefined) {
+                                        this.contentWindow.ConnectionManager.tokenValue = temp[1];
+                                    }
+                                    if (this.contentWindow.JPopup !== undefined) {
+                                        this.contentWindow.JPopup.tokenValue = temp[1];
+                                    }
+                                } catch(err) {}
+                            });
+
+                            AjaxComponent.call(element, url, method, formData, customCallback, customErrorCallback, isTriggerByEvent);
+                        },
+                        completed: function() {
+                            AjaxComponent.retry = false;
+                        }
+                    });
+                } else {
+                    document.location.href = url;
                 }
             }
-            return response.text();
+            
+            const disposition = response.headers.get('Content-Disposition');
+            if (disposition !== null && disposition.indexOf("attachment;") === 0) {
+                var filename = "download";
+                var i = disposition.toLowerCase().indexOf("utf-8''");
+                if (i !== -1) {
+                    filename = decodeURIComponent(disposition.substring(i+7));
+                } else {
+                    filename = disposition.split(/;(.+)/)[1].split(/=(.+)/)[1];
+                }
+        
+                //it is file
+                response.blob().then((b)=>{
+                        var a = document.createElement("a");
+                        a.href = URL.createObjectURL(b);
+                        a.setAttribute("download", filename);
+                        a.click();
+                    }
+                );
+        
+                $(contentConatiner).removeClass("ajaxloading");
+                return null;
+            } else {
+                if (response.url.indexOf("/web/login") !== -1) {
+                    document.location.href = url;
+                    return null;
+                } else if ((method === "GET" || response.redirected) && response.status === 200) {
+                    //only change url if is page change or main component
+                    if (!isAjaxComponent || $(contentConatiner).hasClass("main-component")) {
+                        var resUrl = response.url;
+                        history.pushState({url: resUrl}, "", resUrl); //handled redirected URL
+                    }
+                }
+                return response.text();
+            }
         })
         .then(function (data){
             if (data !== null) {
                 if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
                     //handle userview redirection with alert
-                    if (data.indexOf("<div>") === -1) {
+                    if (data.indexOf("<div") === -1) {
                         var part = AjaxComponent.getMsgAndRedirectUrl(data.substring(data.indexOf("alert")));
                         if (part[0] !== "") {
                             alert(part[0]);
