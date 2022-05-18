@@ -1612,7 +1612,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
             List<Map<String, Object>> rowSet = new ArrayList<Map<String, Object>>();
             for (Object o : result) {
-                Object[] arr = (o instanceof String) ? new Object[] { o } : (Object[]) o;
+                Object[] arr = (!o.getClass().isArray()) ? new Object[] { o } : (Object[]) o;
                 Map<String, Object> r = new HashMap<String, Object>();
                 for (int j = 0; j < alias.length; j++) {
                     Object tempValue = arr[j];
