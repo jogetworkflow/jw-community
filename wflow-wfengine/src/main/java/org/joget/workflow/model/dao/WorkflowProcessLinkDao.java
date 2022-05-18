@@ -2,12 +2,16 @@ package org.joget.workflow.model.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.collections.map.LRUMap;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
 
 public class WorkflowProcessLinkDao extends AbstractSpringDao {
@@ -63,11 +67,21 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         super.delete(ENTITY_NAME, wfProcessLink);
     }
     
+    // least recently used (LRU) cache to hold original IDs
+    static Map<String, Map<String, Collection<String>>> originalIdCache = Collections.synchronizedMap(new LRUMap(200));
+    
     public Map<String, Collection<String>> getOriginalIds(Collection<String> ids) {
         Map<String, Collection<String>> originalIds = new HashMap<String, Collection<String>>();
         Collection<String> existIds = new ArrayList<String>();
         
-        if (ids.size() > 0) {
+        if (ids.size() > 0) {            
+            // lookup from LRU cache
+            String cacheKey = StringUtil.md5Base16Utf8(DynamicDataSourceManager.getCurrentProfile() + "::" + ids.toString()); // hash to minimize memory usage
+            Map<String, Collection<String>> result = originalIdCache.get(cacheKey);
+            if (result != null) {
+                return result;
+            }
+            
             String conditions = "";
             Collection<WorkflowProcessLink> links = null;
             Collection<String> values = null;
@@ -115,6 +129,9 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
                     originalIds.put(id, pIds);
                 }
             }
+            
+            // save into cache
+            originalIdCache.put(cacheKey, originalIds);                       
         }
         
         return originalIds;

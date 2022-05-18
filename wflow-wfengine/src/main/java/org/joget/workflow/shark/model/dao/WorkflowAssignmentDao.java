@@ -353,8 +353,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     public Set<String> getAssignmentProcessIds(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
         
         //required to disable lazy loading 
-        String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
-        Collection<String> params = new ArrayList<String>();
+        String condition = "join e.process p join e.activity a join a.state s";
+        Collection<String> params = new ArrayList<>();
         
         condition += " where e.isValid is true";
         
@@ -389,20 +389,54 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 params.add(state + ".%");
             }
         }
-        Collection<SharkAssignment> shAss = find(ENTITY_NAME, condition, params.toArray(new String[0]), null, null, null, null);
-        Set<String> ass = new HashSet<String>();
-        
-        WorkflowManager wm = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-        
-        if (shAss != null && !shAss.isEmpty()) {
-            for (SharkAssignment s : shAss) {
-                ass.add(s.getProcess().getProcessId());
-            }
-        }
-        
+        Collection<String> shAss = findAssignmentProcessIds(condition, params.toArray(new String[0]), null, null, null, null);
+        Set<String> ass = new HashSet<>(shAss);        
         return ass;
     }
     
+    /**
+     * Retrieve Collection of assignment process IDs without populating other object attributes.
+     * @param condition
+     * @param params
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return 
+     */
+    protected Collection<String> findAssignmentProcessIds(final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        Session session = findSession();
+        String query = "SELECT p.processId FROM " + ENTITY_NAME + " e " + newCondition;
+
+        if (sort != null && !sort.equals("")) {
+            String filteredSort = filterSpace(sort);
+            query += " ORDER BY " + filteredSort;
+
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = session.createQuery(query);
+
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
+
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
+
+        if (params != null) {
+            int i = 1;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+
+        return q.list();
+    }    
+        
     public Collection<WorkflowAssignment> getAssignmentsByProcessIds(Collection<String> processIds, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
         //sorting
         if (sort != null && !sort.isEmpty()) {

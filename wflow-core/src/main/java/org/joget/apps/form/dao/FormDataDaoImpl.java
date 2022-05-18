@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
 import net.sf.ehcache.Cache;
+import org.apache.commons.collections.map.LRUMap;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.InvalidMappingException;
@@ -1773,13 +1775,25 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
     }
     
+    // least recently used (LRU) cache to hold processed queries
+    static Map<String, String> processedQueryCache = Collections.synchronizedMap(new LRUMap(200));
+    
     protected String processQuery(String query) {
         try {
+            // lookup from LRU cache
+            String cacheKey = StringUtil.md5Base16Utf8(query); // hash to minimize memory usage
+            String result = processedQueryCache.get(cacheKey);
+            if (result != null) {
+                return result;
+            }
+                
             Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
             Matcher matcher = pattern.matcher(query);
             while (matcher.find()) {
                 query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));
             }
+            // save into cache
+            processedQueryCache.put(cacheKey, query);                       
         } catch (Exception e) {
             LogUtil.error(query, e, query);
         }
