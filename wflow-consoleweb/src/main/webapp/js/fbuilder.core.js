@@ -293,7 +293,7 @@ FormBuilder = {
                 $("#element-properties-tab-link").hide();
                 $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
                 
-                builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find(".dataList"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
+                builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find("form"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
                 $("#style-properties-tab-link a").trigger("click");
                 
                 return false;
