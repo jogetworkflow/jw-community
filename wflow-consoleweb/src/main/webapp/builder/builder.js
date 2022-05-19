@@ -4685,7 +4685,7 @@ _CustomBuilder.Builder = {
         var component = CustomBuilder.paletteElements[className];
         
         if (component === undefined) {
-            return null;
+            component = CustomBuilder.Builder.missingComponent(className);
         }
         
         if (component.builderTemplate === undefined || component.builderTemplate.builderReady === undefined) {
@@ -4809,6 +4809,32 @@ _CustomBuilder.Builder = {
         }
         
         return component;
+    },
+    
+    missingComponent: function (className) {
+        CustomBuilder.Builder.frameBody.find("[data-cbuilder-classname='"+className+"']").attr("data-cbuilder-missing-plugin", "");
+        
+        CustomBuilder.initPaletteElement("", className, get_advtool_msg('dependency.tree.Missing.Plugin') + " ("+className+")", "", "", "", false, "", {builderTemplate: {
+            'render' : function(element, elementObj, component, callback) {
+                var newcallback = function(element) {
+                    $(element).attr("data-cbuilder-missing-plugin", "");
+                    callback(element);
+                };
+                if (CustomBuilder.Builder.options.callbacks["renderElement"] !== undefined && CustomBuilder.Builder.options.callbacks["renderElement"] !== "") {
+                    CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["renderElement"], [element, elementObj, component, newcallback]);
+                } else if (callback) {
+                    newcallback(element);
+                }
+            },
+            'supportProperties' : false,
+            'supportStyle' : false,
+            'draggable' : false,
+            'movable' : false,
+            'deletable' : true,
+            'copyable' : false,
+            'navigable' : true
+        }});
+        return CustomBuilder.paletteElements[className];
     },
 
     /*

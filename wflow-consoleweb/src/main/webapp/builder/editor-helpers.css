@@ -104,6 +104,11 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
     overflow: hidden;
     display: flex;
     align-items: center;}
+body [data-cbuilder-missing-plugin]::after {
+    background-color: #ffd6d6 !important;
+    border: 1px dashed #f00 !important;
+    color:#f00 !important;
+}
 body [data-cbuilder-invisible],
 body [data-cbuilder-element-invisible]{
     min-height: 35px;
