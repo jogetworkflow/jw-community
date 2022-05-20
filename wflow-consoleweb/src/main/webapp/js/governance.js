@@ -73,10 +73,12 @@ GovernanceUtil = {
     }, 
 
     activate: function(pluginclass, link) {
+        GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['activateConfirm'])) {
             ConnectionManager.post(UI.base + "/web/governance/activate", {
                 success : function(data) {
                     $(link).removeClass("deactivated");
+                    $.unblockUI();
                 }
             }, 
             {
@@ -86,10 +88,12 @@ GovernanceUtil = {
     },
 
     deactivate: function(pluginclass, link) {
+        GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['deactivateConfirm'])) {
             ConnectionManager.post(UI.base + "/web/governance/deactivate", {
                 success : function(data) {
                     $(link).addClass("deactivated");
+                    $.unblockUI();
                 }
             }, 
             {
@@ -99,29 +103,36 @@ GovernanceUtil = {
     },
 
     cleanDate: function() {
+        GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['deleteConfirm'])) {
             ConnectionManager.post(UI.base + "/web/governance/deleteData", {
                 success : function(data) {
                     alert(GovernanceUtil.msg['dataDeleted']);
+                    $.unblockUI();
                 }
             });
         }
     },
 
     runCheckNow : function() {
+        GovernanceUtil.blockUI();
         clearTimeout(GovernanceUtil.getResultTimeout);
         ConnectionManager.post(UI.base + "/web/governance/checkNow", {
             success : function(data) {
                 GovernanceUtil.updateResult(data);
                 GovernanceUtil.triggerNextRetrieveResult();
+                $.unblockUI();
             }
         });
     },
 
     updateInterval : function() {
+        GovernanceUtil.blockUI();
+
         ConnectionManager.post(UI.base + "/web/governance/updateInterval", {
             success : function(data) {
                 alert(GovernanceUtil.msg['intervalUpdated']);
+                $.unblockUI();
             }
         }, 
         {
@@ -333,5 +344,17 @@ GovernanceUtil = {
             $(container).find(".bar").css({ strokeDashoffset: pct});
             $(container).find(".progress_cont").attr('data-pct',number);
         }, 10);
+    },
+    
+    blockUI() {
+        $.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .3, 
+            color: '#fff' 
+        }, message : "<h1><i class=\"fas fa-spinner fa-spin\"></i></h1>" });
     }
 };
