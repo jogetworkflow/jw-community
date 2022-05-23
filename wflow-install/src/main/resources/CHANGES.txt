@@ -2,6 +2,78 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0-PREVIEW2
+============
+b3e4c970f Fixed: wflow-consoleweb - Governance Health Check - Added loading icon when action is performing. @8.0-SNAPSHOT
+9a353d984 Fixed: wflow-consoleweb - Form Builder - Default section style is not apply to canvas. @8.0-SNAPSHOT
+1a988f491 Fixed: wflow-consoleweb - Builder - Missing plugin element is not able to delete from canvas and also causing advanced tools not able to render. @8.0-SNAPSHOT
+bf2161c07 Modified: jw-community - Update apps and SQL files. @8.0-SNAPSHOT
+ffa843e51 Fixed: wflow-consoleweb - SPA Userview Theme - Download PDF List Action not working. @8.0-SNAPSHOT Fixed: wflow-consoleweb - SPA Userview Theme - CSRF token expired not handled correctly. @8.0-SNAPSHOT
+44d1100c0 Fixed: wflow-wfengine, wflow-core - Performance - Hotspots in WorkflowAssignmentDao.getAssignmentProcessIds, WorkflowProcessLinkDao.getOriginalIds, and FormDataDaoImpl.processQuery @8.0-SNAPSHOT
+dd6047dbc Fixed: wflow-core - FormDataDao - Can't handle single value non string result for custom find. @7.0-SNAPSHOT
+bde364f53 Modified: wflow-core - Governance Health Check - Check for orphaned form data tables. @8.0-SNAPSHOT
+5234f56ba Fixed: wflow-consoleweb - Manage Permission menu / Import menu have CSS issues. @8.0-SNAPSHOT
+07803dad2 Modified: wflow-plugin-base, wflow-core - Performance - Hotspots in HashVariableSupportedMap.entrySet and AppUtil.replaceAppMessages @8.0-SNAPSHOT
+75eaa9d2c Fixed: wflow-core - App Messages - Message listing throwing "Legacy-style query parameters (`?`) are no longer supported" after upgrade to Hibernate 5.6 @8.0-SNAPSHOT
+c34d67ce0 Fixed: wflow-consoleweb - Property Editor - Wrong dependency value was passed in PropertyEditor.Util.retrieveOptionsFromCallback when the dependency field is hidden. @8.0-SNAPSHOT
+bc48374b8 Modified: wflow-consoleweb - UI Builder - Capture category info. @8.0-SNAPSHOT Modified: wflow-core - List Builder - App Icon Template - Support split app list by column value. @8.0-SNAPSHOT
+37f380cdc Fixed: wflow-consoleweb - PWA - Regression of 6e92a55 - An extra updated notification is received. @7.0-SNAPSHOT
+3bc1cd42f Modified: wflow-core - Security - Upgraded to jose4j 0.7.11 for SNYK-JAVA-ORGBITBUCKETBC-30206 Elliptic Curve Key Disclosure @7.0-SNAPSHOT
+e0deaf75e Added: wflow-core - Governance Health Check - Add checking for missing plugins. @8.0-SNAPSHOT
+fcb9f5a37 Modified: wflow-consoleweb - Form Builder - Form ERD - Support rendering non default form data entity. @8.0-SNAPSHOT Modified: wflow-consoleweb - Form Builder - Support field ID auto complete dropdown option to display existing columns based on ERD entity. @8.0-SNAPSHOT
+8854c2587 Modified: wflow-core - Platform cannot start if there is an invalid profile in multi-tenant datasource properties @8.0-SNAPSHOT
+b10c910a8 Fixed: wflow-consoleweb - CRUD Menu - List More Action Button - Remove box-shadow and background color. @8.0-SNAPSHOT
+e27b40eb8 Fixed: wflow-consoleweb - Builders - Advanced Tools - Screenshot - Wired character rendered when having svg icons. @8.0-SNAPSHOT
+a8adbbf33 Fixed: wflow-consoleweb - CRUD Menu - Delete row record will redirect to wrong UI . @8.0-SNAPSHOT
+409720f19 Modified: wflow-consoleweb - Form Builder - Show empty option by default. @8.0-SNAPSHOT
+4280af1f9 Fixed: wflow-consoleweb - Process Builders - End node is missing after screenshot. @8.0-SNAPSHOT
+2e6be4599 Modified: wflow-commons, wflow-core - Upgraded gson to 2.9.0 for kubernetes dependency @8.0-SNAPSHOT
+d384ce4b7 Fixed: wflow-commons- Disk write failed for ehcache after Hibernate upgrade @8.0-SNAPSHOT
+629033bdf Fixed: wflow-consoleweb - Builders - Advanced Tools - Screenshot can't render non-latin characters correctly. @8.0-SNAPSHOT
+b09003615 Fixed: wflow-consoleweb - Process Builder - Can't drag to add new node after change id of node right after start node. @8.0-SNAPSHOT
+0f7051685 Fixed: wflow-consoleweb - App Composer - Display missing plugins alert. @8.0-SNAPSHOT
+2b13ea061 Fixed: wflow-core - Form - Prevent NPE when compare FormRow. @8.0-SNAPSHOT
+b664c9369 Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.2 and jackson-databind to 2.13.2.2 for CVE-2020-36518. @7.0-SNAPSHOT
+17eff39ae Fixed: wflow-core - Exclude unnecessary jar to reduce size. @8.0-SNAPSHOT
+76df9a23a Fixed: wflow-core - Userview - SPA - PWA offline support is not working. @8.0-SNAPSHOT
+625665ce4 Fixed:jw-enterprise - Security - Prevent client-side HTTP parameter pollution vulnerability. T948 @7.0-SNAPSHOT
+11cd08b66 Fixed: wflow-commons - Security - Prevent file path traversal attacks vulnerability. T949 @7.0-SNAPSHOT
+0f6ef0e11 Modified: jw-community - Upgraded to Apache Tomcat 9.0.62 @8.0-SNAPSHOT
+ba81c54a6 Fixed: wflow-consoleweb - Process Builder - Old builder link show 404 error. @8.0-SNAPSHOT
+0f87b2dd1 Fixed: wflow-core - Simple Tensorflow AI plugin - Update to tensorflow-core-platform version 0.4.1 equivalent to Tensorflow 2.7.1. @8.0-SNAPSHOT
+e94e38562 Fixed: wflow-core - Process Builder - Autocomplete workflow variable and transition dropdown missing. @8.0-SNAPSHOT
+909a62f25 Deleted: jw-community - Remove old unused wflow-designer and wflow-designerweb projects @8.0-SNAPSHOT
+e983383e3 Modified: jw-community - Remove old unused JQuery, JQuery UI and JQuery Mobile library versions @8.0-SNAPSHOT
+90bbe0be5 Modified: jw-community - Upgraded to Spring Framework 5.3.18, Spring Security 5.6.2, Spring LDAP 2.3.6 and Hibernate 5.6.7 @8.0-SNAPSHOT
+892d44858 Modified: jw-community - Update commons-codec to 1.15 for VULNDB-93555, commons-validator to 1.5.1 for VULNDB-106409, javassist to 3.28.0-GA for VULNDB-163401, protobuf to 3.19.4 for VULNDB-258475, slf4j to 1.7.36 for VULNDB-175810, freemarker to 2.3.31 for VULNDB-72405. @7.0-SNAPSHOT
+248a5a785 Fixed: wflow-core - Section - Show section when column label is exist, even not having any input field. @7.0-SNASPHOT #T902
+3232c3731 Modified: wflow-consoleweb - Manage Plugins - List is not sorted by plugin name. @8.0-SNAPSHOT
+c7b427f31 Modified: wflow-install - Update Apache Tomcat to 8.5.78 for CVE-2021-44228. @7.0-SNAPSHOT
+1d9c64416 Fixed: wflow-commons - More fail-safe workaround fix for CVE-2022-22965 @7.0-SNAPSHOT
+95652b98b Fixed: wflow-core - Custom Html - JS to create dynamic input field causing form corrupted. T898 @7.0-SNAPSHOT
+bf4467573 Fixed: wflow-commons - Workaround fixes for CVE-2022-22965. @7.0-SNAPSHOT
+5adad2e84 Modified: wflow-consoleweb - Update jQuery UI to 1.13.1 to prevent CVE-2021-41184, CVE-2021-41183 & CVE-2021-41182. @7.0-SNAPSHOT
+91c9889d0 Added: wflow-core - Governance Health Check for App. @8.0-SNAPSHOT
+1e71b17bb Fixed: wflow-directory - Fix API Builder startProcessByUser bypassing Process Start White List. @7.0-SNAPSHOT #T853
+2c73b0517 Added: wflow-core - Form Builder - ERD - Support extract relation from query and script. @8.0-SNAPSHOT
+7dc553892 Fixed: wflow-core - Select Box - Options validation with multiple AJAX dependency values will fail validation. T833 @7.0-SNAPSHOT
+7d60c3432 Fixed: wflow-core - FormPdfUtil - fix unable to see radio button value in PDF when "Display Field as Label When Readonly?" is checked. @7.0-SNAPSHOT
+3528c54c9 Added: wflow-core - Form Builder - ERD for form table relationship. @8.0-SNAPSHOT
+a545574e0 Modified: wflow-consoleweb - App Composer - Display id of builder items. @8.0-SNAPSHOT
+a94443e70 Modified: wflow-install - Update Apache Tomcat to 8.5.76 for CVE-2022-23181. @7.0-SNAPSHOT
+b6ba95c2a Modified: wflow-wfenigne -Security - Update Simple XML for CVE-2017-1000190. @7.0-SNAPSHOT
+ead72411d Modified: wflow-install - Update Apache Tomcat to 8.5.76 for CVE-2022-23181. @7.0-SNAPSHOT
+587a15943 Modified: wflow-core - Email Tool/ User Notification - Support resend email when failure. @8.0-SNAPSHOT
+437c9c8b9 Fixed: wflow-core - Xadmin Theme - Home page url redirection is not escape correctly. @7.0-SNAPSHOT
+5c11a6422 Fixed: wflow-consoleweb - Userview Theme - Button group style is incorrect. @8.0-SNAPSHOT Fixed: wflow-consoleweb - Userview Theme - Quick edit link is covered by form section. @8.0-SNAPSHOT
+12f62d598 Fixed: wflow-consoleweb - SPA - CRUD new button reload the whole page. @8.0-SNAPSHOT
+d5e28d22e Fixed: wflow-consoleweb - App Center - Assignment link pointed to wrong URL. @8.0-SNAPSHOT
+88a2fd9fa Modified: wflow-core - Change git init to background for better performance. @8.0-SNAPSHOT
+b8a8d9847 Fixed: wflow-consoleweb - Userview - Prevent login form double submission causing redirection to app center. T794 @7.0-SNAPSHOT
+2b4efb9a1 Fixed: wflow-core - Userview Theme - PWA title showing html entity. @7.0-SNAPSHOT
+0c146c966 Fixed: wflow-consoleweb - Form - Section style cut off spreadsheet dropdown menu. @8.0-SNAPSHOT
+e3de7c7f8 Fixed: wflow-consoleweb - Progressive Theme - Subform section miss-aligned. T783 @7.0-SNAPSHOT
+
 CHANGES IN 8.0-PREVIEW
 ======================
 - User Experience
