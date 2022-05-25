@@ -2,6 +2,9 @@ package org.springframework.orm.hibernate4;
 
 import java.util.Properties;
 
+/**
+ * Adapter for Hibernate 4 LocalSessionFactoryBean to provide backward compatibility for plugins using Hibernate 4
+ */
 public class LocalSessionFactoryBean extends org.springframework.orm.hibernate5.LocalSessionFactoryBean {
     
     @Override
