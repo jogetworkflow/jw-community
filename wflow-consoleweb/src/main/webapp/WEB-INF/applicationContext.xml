@@ -44,6 +44,7 @@
         <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/app/**/form/embed" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/app/**/datalist/embed" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mapp/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         
         <!-- Open JSON APIs: permissions controlled within assignment ownership, userview permission and process whitelist -->
         <security:intercept-url pattern="/web/json/app/**/form/options" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>

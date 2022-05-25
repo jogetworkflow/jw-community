@@ -160,7 +160,7 @@ PwaUtil = {
             formUserviewAppId: UI.userview_app_id,
             formUsername: PwaUtil.currentUsername
         }
-        navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
+        navigator.serviceWorker && navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
     },
 
     showToast: function (message, bgColor, textColor) {
