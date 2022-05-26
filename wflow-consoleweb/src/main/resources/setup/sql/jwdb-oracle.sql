@@ -4375,27 +4375,6 @@ Insert into SHKACTIVITYSTATES (KEYVALUE,NAME,OID,VERSION) values ('closed.aborte
   ;
 
 --------------------------------------------------------
---  DDL for Index I6_WF_HISTORY_ACTIVITY
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "I6_WF_HISTORY_ACTIVITY" ON "WF_HISTORY_ACTIVITY" ("ACTIVITYID") 
-  ;
-  
---------------------------------------------------------
---  DDL for Index I6_WF_HISTORY_PROCESS
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "I6_WF_HISTORY_PROCESS" ON "WF_HISTORY_PROCESS" ("PROCESSID") 
-  ;
-  
---------------------------------------------------------
---  DDL for Index I6_WF_PROCESS_LINK_HISTORY
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "I6_WF_PROCESS_LINK_HISTORY" ON "WF_PROCESS_LINK_HISTORY" ("PROCESSID") 
-  ;
-
---------------------------------------------------------
 --  Ref Constraints for Table APP_BUILDER
 --------------------------------------------------------
 
