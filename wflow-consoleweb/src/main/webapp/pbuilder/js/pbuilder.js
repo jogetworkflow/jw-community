@@ -661,6 +661,7 @@ ProcessBuilder = {
             transition.properties.style = style;
             if (transitionConditions !== "") {
                 transition.properties.conditions = JSON.decode(transitionConditions);
+                transition.properties.conditionHelper = "yes";
             }
 
             process['transitions'].push(transition);
@@ -2275,7 +2276,7 @@ ProcessBuilder = {
                     {
                         key : 'variable',
                         label : get_cbuilder_msg("pbuilder.label.variable"),
-                        options_callback : "ProcessBuilder.Util.getVariableOptions"
+                        options_callback : "ProcessBuilder.getWorkflowVariablesOptions"
                     },
                     {
                         key : 'operator',
@@ -4493,5 +4494,24 @@ ProcessBuilder = {
                 });
             }
         }
-    }
+        
+        if (elementObj.className === "transition") {
+            if (elementObj.properties.type === "CONDITION") {
+                if (elementObj.properties.conditionHelper === "yes") {
+                    elementObj.properties.condition = ProcessBuilder.buildConditions(elementObj.properties.conditions);
+                } else {
+                    if (elementObj.properties.conditions !== undefined) {
+                        delete elementObj.properties.conditions;
+                    }
+                }
+                elementObj.properties.exceptionName = "";
+            } else if (elementObj.properties.type === "EXCEPTION") {
+                elementObj.properties.condition = "";
+            } else {
+                elementObj.properties.condition = "";
+                elementObj.properties.exceptionName = "";
+            }
+
+        }
+    }    
 };
