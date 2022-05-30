@@ -127,7 +127,7 @@ public class ProcessBuilderWebController {
                     String xpdl = U.jsonToXml(newXpdlJson);
                     try {
                         // deploy package
-                        appService.deployWorkflowPackage(appId, version, xpdl.getBytes(), true);
+                        appService.deployWorkflowPackage(appId, version, xpdl.getBytes("UTF-8"), true);
                         } catch (Exception ex) {
                             success = false;
                             error = ex.getMessage().replace(":", "");
