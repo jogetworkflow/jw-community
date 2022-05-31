@@ -7,6 +7,37 @@ if ((typeof _customFooTableArgs) === "undefined") {
     };
 }
 
+function setCookie(cvalue) {
+    $.cookie("fontsize", cvalue);
+}
+
+function checkCookie() {
+    if ($('.adjustfontSize').length > 0) {
+        var fontSize = $.cookie("fontsize");
+        if (fontSize !== "" && fontSize !== null) {
+            setFontSize(fontSize); 
+        } else {
+            setFontSize('13');
+        }
+    }
+}
+
+function setFontSize(size) {
+    var fontClass = "";
+    $(".buttonFontSize").removeClass("activeFont");
+    if (size === '13') {
+        $('#smallFont').addClass("activeFont");
+    } else if (size === '17') {
+        fontClass = "mediumFontSize";
+        $('#mediumFont').addClass("activeFont");
+    } else {
+        fontClass = "largeFontSize";
+        $('#bigFont').addClass("activeFont");
+    }
+    $('body').removeClass("smallFontSize mediumFontSize largeFontSize");
+    $('body').addClass(fontClass);
+}
+
 ! function($) {
     var bsButton = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
     $.fn.bsButton = bsButton;
@@ -20,6 +51,22 @@ if ((typeof _customFooTableArgs) === "undefined") {
     })
 
     $(document).ready(function() {
+        checkCookie();
+        $('#smallFont').click(function () {
+            setCookie("13");
+            setFontSize("13");
+        });
+
+        $('#mediumFont').click(function () {
+            setFontSize("17");
+            setCookie("17");
+        });
+
+        $('#bigFont').click(function () {
+            setFontSize("20");
+            setCookie("20");
+        });
+        
         //fix tinymce position
         if ($(".tinymce").length > 0) {
             function overrideTinymce() {

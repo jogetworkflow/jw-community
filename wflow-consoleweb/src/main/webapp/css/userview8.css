@@ -1561,3 +1561,38 @@ body #ui-datepicker-div {
         width: 1855px;
     }
 }
+.adjustfontSize{
+    position: relative;
+    display: block;
+    padding: 0 10px 10px !important;
+    padding-right: 20px;
+}
+.buttonFontSize {
+    font-size: 20px !important;
+    color: #6c757d !important;
+    background-color: transparent !important;
+    margin-left: 1px !important;
+    padding: 2px 8px !important;
+    outline:none !important;
+    border: none !important;
+}
+.buttonFontSize.activeFont {
+    color: var(--theme-button-bg, #007bff) !important;
+}
+.largeFontSize #form-canvas *,
+.largeFontSize .fc-view-container *,
+.largeFontSize .userProfile-body-content *,
+.largeFontSize .dataList *,
+.largeFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5){
+    font-size: 20px !important;
+    line-height: 25px !important;
+}
+
+.mediumFontSize #form-canvas *,
+.mediumFontSize .fc-view-container *,
+.mediumFontSize .userProfile-body-content *,
+.mediumFontSize .dataList *,
+.mediumFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5){
+    font-size: 17px !important;
+    line-height: 20px !important;
+}

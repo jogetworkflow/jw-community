@@ -303,6 +303,15 @@
         }]
     },
     {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'enableResponsiveSwitch',
         label : '@@theme.progressive.enableResponsiveSwitch@@',
         type : 'checkbox',
