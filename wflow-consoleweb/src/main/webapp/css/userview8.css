@@ -755,7 +755,9 @@ body.horizontal_menu #header-info{
         display: none !important;
     }
     body.horizontal_menu #sidebar .nav > li.toggled:hover > ul,
-    body.horizontal_menu #sidebar li:hover > ul {
+    body.horizontal_menu #sidebar li:hover > ul,
+    body.horizontal_menu #sidebar .nav > li.toggled > ul.focusVisible,
+    body.horizontal_menu #sidebar li > ul.focusVisible{
         display: block !important;
         position: absolute;
         border: 1px solid rgba(0,0,0,.0625);

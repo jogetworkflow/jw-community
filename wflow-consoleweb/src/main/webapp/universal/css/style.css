@@ -944,7 +944,8 @@ body#login #page > footer {
         background-color: transparent;
         cursor: pointer;
     }
-    body.horizontal_menu #sidebar .nav>li:hover ul{
+    body.horizontal_menu #sidebar .nav>li:hover ul,
+    body.horizontal_menu #sidebar .nav>li ul.focusVisible{
         display:block  !important;
     }
     body.horizontal_menu #sidebar li ul>li>a, body.horizontal_menu #sidebar li ul>li>.sidemenu_inner {

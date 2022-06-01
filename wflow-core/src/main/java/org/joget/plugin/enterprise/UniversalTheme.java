@@ -746,7 +746,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
                 
                 html += "<li class=\"user-link dropdown\">\n"
-                      + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle type-"+getPropertyString("userImage")+"\">\n"
+                      + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle type-"+getPropertyString("userImage")+"\">\n"
                       + "	     " + profileImageTag + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";
@@ -828,7 +828,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             }
             
             html += "<li class=\"mm-profile user-link type-"+getPropertyString("userImage")+"\">\n"
-                  + "    <a class=\"dropdown\">\n"
+                  + "    <a class=\"dropdown\" href=\"javascript:;\">\n"
                   + "        "+profileImageTag+"\n"  
                   + "	     <span>" + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "</span>\n"
                   + "	     <small>" + email + "</small>\n"
@@ -938,11 +938,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 } catch (UnsupportedEncodingException e){}
             }
             html += "<li class=\"inbox-notification dropdown\" data-url=\"" + url + "\">\n"
-                  + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
+                  + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
                   + "	 <i class=\"fa fa-tasks white\"></i><span class=\"badge red\">0</span>\n"
                   + "    </a>\n"
                   + "    <ul class=\"dropdown-menu notifications\">\n"
-                  + "        <li class=\"dropdown-menu-title\"><span>" + ResourceBundleUtil.getMessage("theme.universal.inboxTaskMessage") + "</span><a href=\"#\" class=\"refresh\"><i class=\"fa fa-refresh\"></i></a></li>"
+                  + "        <li class=\"dropdown-menu-title\"><span>" + ResourceBundleUtil.getMessage("theme.universal.inboxTaskMessage") + "</span><a href=\"#\" class=\"refresh\" title=\"" + ResourceBundleUtil.getMessage("general.method.label.refresh") + "\"><i class=\"fa fa-refresh\"></i></a></li>"
                   + "        <li class=\"loading\"><a><span><i class=\"fa fa-spinner fa-spin fa-3x\"></i></span></a></li>\n"
                   + "        <li><a href=\"" + data.get("base_link") + INBOX + "\" class=\"dropdown-menu-sub-footer\">" + ResourceBundleUtil.getMessage("theme.universal.viewAllTask") + "</a></li>\n"  
                   + "    </ul>\n"
@@ -982,7 +982,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String html = "";
         if (!shortcutHtml.isEmpty()) {
             html = "<li class=\"shortcut-link dropdown\">\n"
-                  + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
+                  + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
                   + "	     <i class=\"fa fa-th-list white\"></i> " + getPropertyString("shortcutLinkLabel") + "\n"
                   + "	     <span class=\"caret\"></span>\n"
                   + "    </a>\n";
