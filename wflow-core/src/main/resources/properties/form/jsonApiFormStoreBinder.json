@@ -65,7 +65,7 @@
             "label" : "@@datalist.tfdlft.defaultValue@@"
         }],
         "control_field": "postMethod",
-        "control_value": "^(?!(custom|formPayload))$",
+        "control_value": "^(?!(formPayload|custom)$).*",
         "control_use_regex": "true"
     },
     {
