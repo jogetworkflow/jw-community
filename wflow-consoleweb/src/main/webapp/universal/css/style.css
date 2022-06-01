@@ -779,6 +779,10 @@ body#login #page > footer {
     padding: 8px 20px 8px 65px;
     display: block;
 }
+#sidebar li ul>li>a > span:first-child{
+    max-width: 140px;
+    display: inline-block;
+}
 .rtl #sidebar li ul>li>a, .rtl #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 65px 8px 20px;
 }

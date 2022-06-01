@@ -331,6 +331,10 @@ body:not(.horizontal_menu) #navigation {
     background: var(--theme-sidebar-active-link-bg, transparent) !important;
     opacity: 1 !important;
 }
+#sidebar .nav > li > ul > li > a > span:first-child {
+    max-width: 160px;
+    display: inline-block;
+}
 #sidebar li a.dropdown:after {
     position: absolute;
     top: 50%;
