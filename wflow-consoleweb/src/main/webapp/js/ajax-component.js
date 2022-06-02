@@ -6,13 +6,15 @@ AjaxComponent = {
      */
     initAjax : function(element) {
         AjaxComponent.currentUrlEventListening = [];
-        $(element).find("[data-ajax-component], [data-events-triggering], [data-events-listening]").each(function() {
+        $(element).find("[data-ajax-component], [data-ajax-component][data-events-triggering], [data-ajax-component][data-events-listening]").each(function() {
             AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
         });
         
-        AjaxComponent.triggerPageLoadedEvent();
-        AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
+        setTimeout(function(){
+            AjaxComponent.triggerPageLoadedEvent();
+            AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
+        }, 2);
         
         setTimeout(function(){
             $(window).trigger('resize'); //inorder for datalist to render in correct viewport
@@ -252,7 +254,7 @@ AjaxComponent = {
                 }
             }
             //check it is a link clicked event, trigger event and do nothing else
-            if ($(element).closest("[data-events-triggering]").length > 0 && method === "GET" && AjaxComponent.isLinkClickedEvent($(element).closest("[data-events-triggering]"), url)) {
+            if ($(element).closest("[data-ajax-component][data-events-triggering]").length > 0 && method === "GET" && AjaxComponent.isLinkClickedEvent($(element).closest("[data-ajax-component][data-events-triggering]"), url)) {
                 return;
             }
         } else {
@@ -383,10 +385,12 @@ AjaxComponent = {
                     customCallback();
                 }
                 
-                if (!isAjaxComponent) {
-                    AjaxComponent.triggerPageLoadedEvent();
-                }
-                AjaxComponent.triggerEvents(contentConatiner, url, method, formData);
+                setTimeout(function(){
+                    if (!isAjaxComponent) {
+                        AjaxComponent.triggerPageLoadedEvent();
+                    }
+                    AjaxComponent.triggerEvents(contentConatiner, url, method, formData);
+                }, 2);
                 
                 $(contentConatiner).removeClass("ajaxloading");
                 $(contentConatiner).removeAttr("data-content-placeholder");
@@ -462,7 +466,7 @@ AjaxComponent = {
             element = $(element).find(".main-component");
         }
         
-        if ($(element).is("[data-events-triggering]")) {
+        if ($(element).is("[data-ajax-component][data-events-triggering]")) {
             var events = $(element).data("events-triggering");
             var urlParams = {};
             if (url.indexOf("?") !== -1) {
@@ -599,7 +603,7 @@ AjaxComponent = {
      */
     initEventsListening : function(element) {
         var listen = function(component) {
-            if ($(component).is("[data-events-listening]") && !$(component).is("[data-events-listening-initialled]")) {
+            if ($(component).is("[data-ajax-component][data-events-listening]") && !$(component).is("[data-events-listening-initialled]")) {
                 var events = $(component).data("events-listening");
                 var id = $(component).attr("id");
                 for (var i in events) {
@@ -633,10 +637,10 @@ AjaxComponent = {
             }
         };
         
-        $(element).find("[data-events-listening]").each(function() {
+        $(element).find("[data-ajax-component][data-events-listening]").each(function() {
             listen($(this));
         });
-        if ($(element).is("[data-events-listening]")) {
+        if ($(element).is("[data-ajax-component][data-events-listening]")) {
             listen($(element));
         }
     },
