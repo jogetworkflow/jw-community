@@ -132,9 +132,9 @@ function setFontSize(size) {
 
         //for bootstrap dropdown
         $("body").on("focus", "a.dropdown-toggle", function(e){
-            if (isTabPress && !$(this).parent().hasClass("open")) {
-                $(".dropdown.open").removeClass("open");
-                $(this).parent().addClass("open");
+            if (isTabPress && !$(this).parent().hasClass("show")) {
+                $(".dropdown.open").removeClass("show");
+                $(this).trigger("click");
             }
         });
 

@@ -266,6 +266,7 @@ AjaxComponent = {
             contentPlaceholder = AjaxComponent.getContentPlaceholder(url);
         }
         $(contentConatiner).attr("data-content-placeholder", contentPlaceholder);
+        $(contentConatiner).removeAttr("aria-live");
         
         var args = {
             method : method,
@@ -651,6 +652,7 @@ AjaxComponent = {
         } else if (action === "show") {
             $(element).show();
             AjaxComponent.scrollIntoViewport($(element));
+            $(element).attr("aria-live", "polite");
         } else if (action === "reload") {
             var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
             if (currentAjaxUrl === undefined) {
@@ -659,6 +661,7 @@ AjaxComponent = {
             AjaxComponent.call(element, currentAjaxUrl, "GET", null);
             $(element).show();
             AjaxComponent.scrollIntoViewport($(element));
+            $(element).attr("aria-live", "polite");
         } else if (action === "parameters") {
             var url = $(element).closest("[data-ajax-component]").data("ajax-url");
             if (url === undefined || url === null) {
@@ -668,6 +671,7 @@ AjaxComponent = {
             AjaxComponent.call(element, newUrl, "GET", null, null, null, true);
             $(element).show();
             AjaxComponent.scrollIntoViewport($(element));
+            $(element).attr("aria-live", "polite");
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
                 AjaxComponent.call($("#content"), window.location.href, "GET", null);
@@ -686,6 +690,7 @@ AjaxComponent = {
             AjaxComponent.call($(element), url, "GET", null, null, null, true);
             $(element).show();
             AjaxComponent.scrollIntoViewport($(element));
+            $(element).attr("aria-live", "polite");
         }
     },
     

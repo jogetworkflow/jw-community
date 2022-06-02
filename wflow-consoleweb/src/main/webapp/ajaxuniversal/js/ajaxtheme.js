@@ -81,6 +81,7 @@ AjaxUniversalTheme = {
         
         AjaxUniversalTheme.updateMenus(menus);
         $("#content main").html($(content).html());
+        $("#content main").attr("aria-live", "polite");
 
         AjaxComponent.overrideFormEvent($("#category-container"));
         AjaxComponent.initContent($("#content main"));
