@@ -1288,6 +1288,18 @@ UserviewBuilder = {
                             control_value: 'redirectComponent|redirectPage',
                             control_use_regex: 'true',
                             required : 'True'
+                        },
+                        {
+                            name : 'disabledScrolling',
+                            label : get_cbuilder_msg("ubuilder.event.disabledScrolling"),
+                            type : 'checkbox',
+                            options : [{
+                                value : 'true',
+                                label : ''
+                            }],
+                            control_field: 'action',
+                            control_value: '^(show|reload|parameters|redirectComponent)$',
+                            control_use_regex: 'true'
                         }
                     ],
                     control_field: 'attr-data-ajax-component',

@@ -655,7 +655,9 @@ AjaxComponent = {
             AjaxComponent.scrollIntoViewport($(".main-component"));
         } else if (action === "show") {
             $(element).show();
-            AjaxComponent.scrollIntoViewport($(element));
+            if (eventObj.disabledScrolling === undefined || eventObj.disabledScrolling === "") {
+                AjaxComponent.scrollIntoViewport($(element));
+            }
             $(element).attr("aria-live", "polite");
         } else if (action === "reload") {
             var currentAjaxUrl = $(element).closest("[data-ajax-component]").data("ajax-url");
@@ -664,7 +666,9 @@ AjaxComponent = {
             }
             AjaxComponent.call(element, currentAjaxUrl, "GET", null);
             $(element).show();
-            AjaxComponent.scrollIntoViewport($(element));
+            if (eventObj.disabledScrolling === undefined || eventObj.disabledScrolling === "") {
+                AjaxComponent.scrollIntoViewport($(element));
+            }
             $(element).attr("aria-live", "polite");
         } else if (action === "parameters") {
             var url = $(element).closest("[data-ajax-component]").data("ajax-url");
@@ -674,7 +678,9 @@ AjaxComponent = {
             var newUrl = AjaxComponent.updateUrlParams(url, eventObj.parameters, urlParams);
             AjaxComponent.call(element, newUrl, "GET", null, null, null, true);
             $(element).show();
-            AjaxComponent.scrollIntoViewport($(element));
+            if (eventObj.disabledScrolling === undefined || eventObj.disabledScrolling === "") {
+                AjaxComponent.scrollIntoViewport($(element));
+            }
             $(element).attr("aria-live", "polite");
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
@@ -693,7 +699,9 @@ AjaxComponent = {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             AjaxComponent.call($(element), url, "GET", null, null, null, true);
             $(element).show();
-            AjaxComponent.scrollIntoViewport($(element));
+            if (eventObj.disabledScrolling === undefined || eventObj.disabledScrolling === "") {
+                AjaxComponent.scrollIntoViewport($(element));
+            }
             $(element).attr("aria-live", "polite");
         }
     },
