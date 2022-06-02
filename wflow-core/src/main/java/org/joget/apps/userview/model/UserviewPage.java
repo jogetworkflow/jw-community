@@ -29,6 +29,21 @@ public class UserviewPage {
         if (components != null) {
             for (PageComponent c : components) {
                 html += c.render();
+                
+                if (c instanceof UserviewMenu && c != menu) {
+                    UserviewMenu t = (UserviewMenu) c;
+                    if (!t.getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY).isEmpty() 
+                            && (!menu.getProperties().containsKey(UserviewMenu.ALERT_MESSAGE_PROPERTY) 
+                                || menu.getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY).isEmpty())) {
+                        menu.setProperty(UserviewMenu.ALERT_MESSAGE_PROPERTY, t.getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY));
+                    }
+                    if (!t.getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY).isEmpty()
+                            && (!menu.getProperties().containsKey(UserviewMenu.REDIRECT_URL_PROPERTY) 
+                                || menu.getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY).isEmpty())) {
+                        menu.setProperty(UserviewMenu.REDIRECT_URL_PROPERTY, t.getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY));
+                        menu.setProperty(UserviewMenu.REDIRECT_PARENT_PROPERTY, t.getPropertyString(UserviewMenu.REDIRECT_PARENT_PROPERTY));
+                    }
+                }
             }
         } else {
             html = menu.render();
