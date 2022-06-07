@@ -3,6 +3,15 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.30
+=================
+24dad94b4 Fixed: wflow-consoleweb - Userview Builder - Properties label correction. @7.0-SNAPSHOT
+adcc9feed Fixed: jw-community - Update GSON to 2.9.0 for CVE-2022-25647 & CVE-2022-25647. @7.0-SNAPSHOT
+dd6047dbc Fixed: wflow-core - FormDataDao - Can't handle single value non string result for custom find. @7.0-SNAPSHOT
+37f380cdc Fixed: wflow-consoleweb - PWA - Regression of 6e92a55 - An extra updated notification is received. @7.0-SNAPSHOT
+3bc1cd42f Modified: wflow-core - Security - Upgraded to jose4j 0.7.11 for SNYK-JAVA-ORGBITBUCKETBC-30206 Elliptic Curve Key Disclosure @7.0-SNAPSHOT
+30acacb58 Fixed: wflow-directory - Regression of 1e71b17bb. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.29
 =================
 b664c9369 Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.2 and jackson-databind to 2.13.2.2 for CVE-2020-36518. @7.0-SNAPSHOT
