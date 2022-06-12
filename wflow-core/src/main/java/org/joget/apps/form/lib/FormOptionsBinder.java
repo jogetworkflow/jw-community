@@ -1,6 +1,8 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
@@ -120,16 +122,35 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                         condition += " AND ";
                     }
                     
-                    if (dependencyValues.length > 0) {
-                        condition += "e.customProperties." + getProperty("groupingColumn").toString() + " in (";
-                        for (String s : dependencyValues) {
-                            condition += "?,";
-                        }
-                        condition = condition.substring(0, condition.length()-1) + ")";
-                        
-                        conditionParams = dependencyValues;
+                    if (getPropertyString("groupingColumn").contains(";")) {
+                        String sub = "";
+                        String[] groups = getPropertyString("groupingColumn").split(";");
+                        List<String> values = new ArrayList<>();
+                        for (int i = 0; i < groups.length; i++) {
+                            if (!sub.isEmpty()) {
+                                sub += " AND ";
+                            }
+                            if (dependencyValues.length > i && !dependencyValues[i].isEmpty()) {
+                                sub += "e.customProperties." + groups[i] + " = ?";
+                                values.add(dependencyValues[i]);
+                            } else {
+                                sub += "e.customProperties." + groups[i] + " is empty";
+                            }
+                        }   
+                        condition += sub;
+                        conditionParams = values.toArray(new String[0]);
                     } else {
-                        condition += "e.customProperties." + getProperty("groupingColumn").toString() + " is empty";
+                        if (dependencyValues.length > 0) {
+                            condition += "e.customProperties." + getProperty("groupingColumn").toString() + " in (";
+                            for (String s : dependencyValues) {
+                                condition += "?,";
+                            }
+                            condition = condition.substring(0, condition.length()-1) + ")";
+
+                            conditionParams = dependencyValues;
+                        } else {
+                            condition += "e.customProperties." + getProperty("groupingColumn").toString() + " is empty";
+                        }
                     }
                 }
 
@@ -160,8 +181,16 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                         String id = row.getProperty(idColumn);
                         String label = row.getProperty(labelColumn);
                         String grouping = "";
-                        if (groupingColumn != null && !groupingColumn.isEmpty() && row.containsKey(groupingColumn)) {
-                            grouping = row.getProperty(groupingColumn);
+                        if (groupingColumn != null && !groupingColumn.isEmpty()) {
+                            String[] groups = groupingColumn.split(";");
+                            for (String g : groups) {
+                                if (row.containsKey(g)) {
+                                    if (!grouping.isEmpty()) {
+                                        grouping += ";";
+                                    }
+                                    grouping += row.getProperty(g);
+                                }
+                            }
                         }
 
                         if (!exists.contains(id+":"+label+":"+grouping) && id != null && !id.isEmpty() && label != null && !label.isEmpty()) {

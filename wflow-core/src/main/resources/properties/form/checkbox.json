@@ -67,6 +67,7 @@
         name : 'controlField',
         label : '@@form.checkbox.controlField@@',
         type : 'autocomplete',
+        multivalues : 'true',
         options_callback : 'FormBuilder.getFieldOptions'
     },
     {

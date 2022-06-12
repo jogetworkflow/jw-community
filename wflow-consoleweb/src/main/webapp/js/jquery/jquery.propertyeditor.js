@@ -9650,14 +9650,36 @@ PropertyEditor.Type.AutoComplete.prototype = {
     },
     initScripting: function() {
         var thisObj = this;
-        $("#" + this.id).autocomplete({
+        
+        var args = {
             source: thisObj.source,
             minLength: 0,
             open: function() {
                 $(this).autocomplete('widget').css('z-index', 99999);
                 return false;
             }
-        });
+        };
+        
+        if (this.properties.multivalues !== undefined && this.properties.multivalues.toLowerCase() === "true") {
+            args['source'] = function( request, response ) {
+                response($.ui.autocomplete.filter(thisObj.source, thisObj.extractLast(request.term)));
+            };
+            args['select'] = function( event, ui ) {
+                var terms = thisObj.splitTerms(this.value);
+                terms.pop();
+                terms.push( ui.item.value );
+                this.value = terms.join("; ");
+                return false;
+            };
+        }
+        
+        $("#" + this.id).autocomplete(args);
+    },
+    splitTerms: function(val) {
+        return val.split( /;\s*/ );
+    },
+    extractLast: function( terms ) {
+        return this.splitTerms(terms).pop();
     }
 };
 PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.AutoComplete.prototype);

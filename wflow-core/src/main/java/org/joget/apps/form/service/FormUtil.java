@@ -19,7 +19,6 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -36,6 +35,7 @@ import org.joget.apps.form.lib.Grid;
 import org.joget.apps.form.lib.SelectBox;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.ElementArray;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormAction;
 import org.joget.apps.form.model.FormAjaxOptionsBinder;
@@ -1971,7 +1971,19 @@ public class FormUtil implements ApplicationContextAware {
             
             Element controlElement = ajaxElement.getControlElement(formData);
             if (controlElement != null) {
-                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+                String[] controlValues = null;
+                if (controlElement instanceof ElementArray) {
+                    List<String> values = new ArrayList<String>();
+                    for (Element e : controlElement.getChildren()) {
+                        String[] temp = FormUtil.getElementPropertyValues(e, formData);
+                        if (temp.length > 0) {
+                            values.addAll(Arrays.asList(temp));
+                        }
+                    }
+                    controlValues = values.toArray(new String[0]);
+                } else {
+                    controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+                }
 
                 FormAjaxOptionsBinder ajaxbinder = (FormAjaxOptionsBinder) element.getOptionsBinder();
                 FormRowSet rowSet = ajaxbinder.loadAjaxOptions(controlValues);

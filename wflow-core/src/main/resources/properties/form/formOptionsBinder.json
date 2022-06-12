@@ -20,7 +20,7 @@
     {
         name : 'groupingColumn',
         label : '@@form.defaultformoptionbinder.groupingColumn@@',
-        type : 'selectbox',
+        type : 'multiselect',
         options_ajax_on_change : 'formDefId',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
     },

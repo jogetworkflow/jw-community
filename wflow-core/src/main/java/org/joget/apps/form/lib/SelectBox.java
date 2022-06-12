@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.ElementArray;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormAjaxOptionsBinder;
 import org.joget.apps.form.model.FormAjaxOptionsElement;
@@ -67,11 +69,23 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             Set<String> allValues = new HashSet<String>();
             if (FormUtil.isAjaxOptionsSupported(this, formData)) {
                 FormAjaxOptionsBinder ab = (FormAjaxOptionsBinder) getOptionsBinder();
-                String[] controlValues = FormUtil.getRequestParameterValues(getControlElement(formData), formData);
-                if (controlValues.length == 1 && controlValues[0].contains(";")) {
-                    controlValues = controlValues[0].split(";"); //to consistent the behaviour with FormUtil.getAjaxOptionsBinderData line 2013
+                
+                List<String> controlValues = new ArrayList<String>();
+                Element controlElement = getControlElement(formData);
+                if (controlElement instanceof ElementArray) {
+                    for (Element e : controlElement.getChildren()) {
+                        controlValues.addAll(Arrays.asList(FormUtil.getRequestParameterValues(e, formData)));
+                    }
+                } else {
+                    controlValues.addAll(Arrays.asList(FormUtil.getRequestParameterValues(controlElement, formData)));
                 }
-                FormRowSet rowSet = ab.loadAjaxOptions(controlValues);
+                
+                if (controlValues.size() == 1 && controlValues.get(0).contains(";")) {
+                    controlValues.addAll(Arrays.asList(controlValues.get(0).split(";"))); //to consistent the behaviour with FormUtil.getAjaxOptionsBinderData line 2032
+                    controlValues.remove(0);
+                }
+                
+                FormRowSet rowSet = ab.loadAjaxOptions(controlValues.toArray(new String[0]));
                 if (rowSet != null) {
                     formData.setOptionsBinderData(getOptionsBinder(), rowSet);
                     for (FormRow r : rowSet) {
@@ -191,17 +205,44 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
     
     protected void dynamicOptions(FormData formData) {
         if (getControlElement(formData) != null) {
-            setProperty("controlFieldParamName", FormUtil.getElementParameterName(getControlElement(formData)));
+            if (getControlElement(formData) instanceof ElementArray) {
+                List<String> names = new ArrayList<String>();
+                for (Element e : getControlElement(formData).getChildren()) {
+                    names.add(FormUtil.getElementParameterName(e));
+                }
+                setProperty("controlFieldParamName", StringUtils.join(names, ";"));
+            } else {
+                setProperty("controlFieldParamName", FormUtil.getElementParameterName(getControlElement(formData)));
+            }
             
             FormUtil.setAjaxOptionsElementProperties(this, formData);
         }
     }
 
+    @Override
     public Element getControlElement(FormData formData) {
         if (controlElement == null) {
             if (getPropertyString("controlField") != null && !getPropertyString("controlField").isEmpty()) {
                 Form form = FormUtil.findRootForm(this);
-                controlElement = FormUtil.findElement(getPropertyString("controlField"), form, formData);
+                
+                if (getPropertyString("controlField").contains(";")) {
+                    String[] cf = getPropertyString("controlField").split(";");
+                    Collection<Element> elements = new ArrayList<Element>();
+                    for (String c : cf) {
+                        Element e = FormUtil.findElement(c.trim(), form, formData);
+                        if (e != null) {
+                            elements.add(e);
+                        }
+                    }
+                    if (elements.size() > 1) {
+                        controlElement = new ElementArray();
+                        controlElement.setChildren(elements);
+                    } else if (elements.size() == 1) {
+                        controlElement = elements.iterator().next();
+                    }
+                } else {
+                    controlElement = FormUtil.findElement(getPropertyString("controlField"), form, formData);
+                }
             }
         }
         return controlElement;

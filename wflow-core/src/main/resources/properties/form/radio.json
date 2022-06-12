@@ -66,6 +66,7 @@
         name : 'controlField',
         label : '@@form.radio.controlField@@',
         type : 'autocomplete',
+        multivalues : 'true',
         options_callback : 'FormBuilder.getFieldOptions'
     },
     {

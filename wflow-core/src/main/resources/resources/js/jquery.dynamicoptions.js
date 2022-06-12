@@ -3,11 +3,17 @@
         dynamicOptions : function(o){
             var target = this;
             if($(target)){
-                if ($(target).attr("name") === o.controlField) {
-                    return;
+                var cf = o.controlField.split(";");
+                
+                for (var i in cf) {
+                    if ($(target).attr("name") === cf[i]) {
+                        return;
+                    }
                 }
                 
-                FormUtil.setControlField(o.controlField);
+                for (var i in cf) {
+                    FormUtil.setControlField(cf[i]);
+                }
                 
                 var showHideChange = function() {
                     if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
@@ -29,14 +35,22 @@
                 }
                 
                 if (o.nonce === '') {
-                    $('body').off("change", '[name='+o.controlField+']:not(form)', showHideChange);
-                    $('body').on("change", '[name='+o.controlField+']:not(form)', showHideChange);
-                    $(parentSection).on("jsection:show", showHideChange);
+                    for (var i in cf) {
+                        $('body').off("change", '[name='+cf[i]+']:not(form)', showHideChange);
+                        $('body').on("change", '[name='+cf[i]+']:not(form)', showHideChange);
+                    }
+                    
+                    $(parentSection).off("jsection:show." + o.paramName);
+                    $(parentSection).on("jsection:show." + o.paramName, showHideChange);
                     showHideOption(target, o);
                 } else {
-                    $('body').off("change", '[name='+o.controlField+']:not(form)', ajaxChange);
-                    $('body').on("change", '[name='+o.controlField+']:not(form)', ajaxChange);
-                    $(parentSection).on("jsection:show", ajaxChange);
+                    for (var i in cf) {
+                        $('body').off("change", '[name='+cf[i]+']:not(form)', ajaxChange);
+                        $('body').on("change", '[name='+cf[i]+']:not(form)', ajaxChange);
+                    }
+                    
+                    $(parentSection).off("jsection:show." + o.paramName);
+                    $(parentSection).on("jsection:show." + o.paramName, ajaxChange);
                     ajaxOptions(target, o);
                 }
             }
@@ -45,19 +59,23 @@
     });
     
     function getValues(name) {
-        //get enabled input field oni
-        var el = $('[name=' + name + ']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var values = new Array();
+        var cf = name.split(";");
         
-        if ($(el).is("select")) {
-            el = $(el).find("option:selected");
-        } else if ($(el).is("input[type=checkbox], input[type=radio]")) {
-            el = $(el).filter(":checked");
-        } 
-        
-        $(el).each(function() {
-            values.push($(this).val());
-        });
+        for (var i in cf) {
+            //get enabled input field oni
+            var el = $('[name=' + cf[i] + ']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+
+            if ($(el).is("select")) {
+                el = $(el).find("option:selected");
+            } else if ($(el).is("input[type=checkbox], input[type=radio]")) {
+                el = $(el).filter(":checked");
+            } 
+
+            $(el).each(function() {
+                values.push($(this).val());
+            });
+        }
         
         return values;
     }
