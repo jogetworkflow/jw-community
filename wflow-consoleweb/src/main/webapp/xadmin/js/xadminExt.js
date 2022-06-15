@@ -56,6 +56,14 @@
     win.xadmin.closePopup = function(index) {
         layer.close(index);
     };
+    win.xadmin.redirect = function(title,url) {
+        var currentURL = window.location.href;
+        if (url.indexOf(currentURL.substring(currentURL.indexOf("/web/userview"), currentURL.lastIndexOf("/") + 1)) !== -1) { // if same userview page
+            xadmin.add_tab(title, url, true);
+        } else {
+            window.location = url;
+        }
+    };
     win.xadmin.tabTitle = function(tabId, title) {
         title = htmlDecode(title);
         if (title.trim().length > 0) {

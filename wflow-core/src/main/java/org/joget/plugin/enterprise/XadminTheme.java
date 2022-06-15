@@ -16,6 +16,7 @@ import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.lib.HtmlPage;
 import org.joget.apps.userview.lib.Link;
+import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -647,7 +648,7 @@ public class XadminTheme extends UniversalTheme {
     @Override
     public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
         String decoratedMenu = menu.getDecoratedMenu();
-        if ((menu instanceof Link) || decoratedMenu == null || decoratedMenu.isEmpty()) {
+        if (((menu instanceof Link) || ((menu instanceof CachedUserviewMenu) && ((CachedUserviewMenu) menu).instanceOf(Link.class))) || decoratedMenu == null || decoratedMenu.isEmpty()) {
             return getMenuHtml(category, menu, "", null);
         } else {
             return transformMenu(category, menu, decoratedMenu);
@@ -680,12 +681,12 @@ public class XadminTheme extends UniversalTheme {
             icon = "<i class=\"iconfont\">&#xe6b4;</i>";
         }
         String url = menu.getUrl();
-        if (menu instanceof Link) {
+        if ((menu instanceof Link) || ((menu instanceof CachedUserviewMenu) && ((CachedUserviewMenu) menu).instanceOf(Link.class))) {
             url = menu.getPropertyString("url");
             if ("blank".equals(menu.getPropertyString("target"))) {
                 onclick = "onclick=\"window.open('" + url + "');return false;\"";
             } else if ("self".equals(menu.getPropertyString("target"))) {
-                onclick = "onclick=\"window.location = '" + url + "';return false;\"";
+                onclick = "onclick=\"xadmin.redirect('"+StringUtil.stripAllHtmlTag(label)+"','" + url + "');return false;\"";
             }
         }
         if (category.getMenus().size() == 1) {
@@ -703,16 +704,18 @@ public class XadminTheme extends UniversalTheme {
         if (!isIndex()) {
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             String referer = request.getHeader("referer");
-            if (!"true".equalsIgnoreCase(userview.getParamString("embed")) && !(referer != null && referer.contains("/" + userview.getPropertyString("id") + "/"))) {
+            
+            String key = userview.getParamString("key");
+            if (key.isEmpty()) {
+                key = Userview.USERVIEW_KEY_EMPTY_VALUE;
+            }
+                
+            if (!"true".equalsIgnoreCase(userview.getParamString("embed")) && !(referer != null && referer.contains("/" + userview.getPropertyString("id") + "/" + key + "/"))) {
                 String url = request.getRequestURI();
                 if (url.contains("/" + userview.getPropertyString("id") + "/") && url.endsWith("/_index")) {
                     return null;
                 }
 
-                String key = userview.getParamString("key");
-                if (key.isEmpty()) {
-                    key = Userview.USERVIEW_KEY_EMPTY_VALUE;
-                }
                 url += (request.getQueryString() == null?"":("?" + StringUtil.decodeURL(request.getQueryString())));
                 try {
                     url = URLEncoder.encode(url, "UTF-8");

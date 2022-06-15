@@ -378,6 +378,10 @@ public class CachedUserviewMenu extends UserviewMenu {
         }
         return this.delegate.equals(target);
     }
+    
+    public boolean instanceOf(Class clazz) {
+        return clazz.isInstance(this.delegate);
+    }
 
     public int hashCode() {
         return this.delegate.hashCode();
