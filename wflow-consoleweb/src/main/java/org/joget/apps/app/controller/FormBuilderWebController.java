@@ -309,8 +309,14 @@ public class FormBuilderWebController {
                 FormRowSet rows = formData.getStoreBinderData(mainBinder);
                 
                 for (FormRow row : rows) {
+                    Map<String, String> decrypted = new HashMap<String, String>();
+                    
                     for (Object o : row.keySet()) {
-                        jsonResult.accumulate(o.toString(), row.get(o));
+                        Object value = row.get(o);
+                        jsonResult.accumulate(o.toString(), value);
+                        if (value instanceof String && SecurityUtil.hasSecurityEnvelope(value.toString())) {
+                            decrypted.put(o.toString(), SecurityUtil.decrypt(value.toString()));
+                        }
                     }
                     Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
                     if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
@@ -319,6 +325,9 @@ public class FormBuilderWebController {
                     Map<String, String[]> deleteFilePathMap = row.getDeleteFilePathMap();
                     if (deleteFilePathMap != null && !deleteFilePathMap.isEmpty()) {
                         jsonResult.put(FormUtil.PROPERTY_DELETE_FILE_PATH, deleteFilePathMap);
+                    }
+                    if (!decrypted.isEmpty()) {
+                        jsonResult.put(FormUtil.PROPERTY_DECRYPTED_DATA, decrypted);
                     }
                 }
                 

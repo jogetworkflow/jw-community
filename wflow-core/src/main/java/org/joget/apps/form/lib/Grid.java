@@ -21,6 +21,7 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,6 +145,17 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
 
                     } else {
                         rowSet = binderRowSet;
+                    }
+                    
+                    if (rowSet != null) {
+                        for (FormRow r : rowSet) {
+                            for (Object k : r.keySet()) {
+                                String value = r.getProperty(k.toString());
+                                if (SecurityUtil.hasSecurityEnvelope(value)) {
+                                    r.setProperty(k.toString(), SecurityUtil.decrypt(value));
+                                }
+                            }
+                        }
                     }
                 }
 

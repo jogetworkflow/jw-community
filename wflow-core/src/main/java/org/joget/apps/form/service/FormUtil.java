@@ -125,6 +125,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_TEMP_FILE_PATH = "_tempFilePathMap";
     public static final String PROPERTY_DELETE_FILE_PATH = "_deleteFilePathMap";
     public static final String PROPERTY_TEMP_REQUEST_PARAMS = "_tempRequestParamsMap";
+    public static final String PROPERTY_DECRYPTED_DATA = "_decryptedDataMap";
     public static final String PROPERTY_POST_PROCESSOR = "postProcessor";
     public static final String PROPERTY_POST_PROCESSOR_RUN_ON = "postProcessorRunOn";
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
