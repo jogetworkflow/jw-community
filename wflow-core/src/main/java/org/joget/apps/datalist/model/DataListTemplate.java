@@ -145,7 +145,19 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             String key = matcher.group(1);
             if (getProperties().containsKey(key)){
                 String value = getPropertyString(key);
+                if (key.startsWith("is") && (value.isEmpty() || value.equalsIgnoreCase("true"))) { //to support simple if true checking
+                    continue;
+                }
                 template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+            } else if (key.startsWith("list.")) { //to support populate list properties such as id
+                String skey = key.substring(5);
+                if (getDatalist() != null && getDatalist().getProperties().containsKey(skey)) {
+                    String value = getDatalist().getPropertyString(skey);
+                    if (skey.startsWith("is") && (value.isEmpty() || value.equalsIgnoreCase("true"))) {
+                        continue;
+                    }
+                    template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+                }
             }
         }
         return template;
@@ -195,6 +207,10 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
                 value += fillDatalistObjects(key, props, childtemplate, (Object[]) getDatalist().getColumnPlaceholder(key), data);
             } else if ("selector".equals(key)) {
                 value += populateSelector(props, childtemplate, data);
+            } else if (key.startsWith("is") && getProperties().containsKey(key)) { //to support simple if true checking
+                if (getPropertyString(key).equalsIgnoreCase("true")) {
+                    value = childtemplate;
+                } 
             } else {
                 continue;
             }

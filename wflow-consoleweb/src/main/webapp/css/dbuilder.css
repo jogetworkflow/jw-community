@@ -55,6 +55,9 @@ td + .gap, th + .gap {
     bottom: -175px;
     display: block;
 }
+.dataList div.rowActionsContainer div.rowActions a + a{
+    margin-left: 3px;
+}
 body.is-dragging tr[data-cbuilder-droparea] th:not(.rowActions), 
 body.is-dragging th[data-cbuilder-droparea]{
     background: rgba(0, 123, 255, 0.2);

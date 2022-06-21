@@ -24,6 +24,7 @@
         <js>/js/guiders/guiders-1.1.1.js</js>
         <js>/js/jquery/jquery.blockUI.js</js>
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
+        <js>/js/contactjs/contact.min.js</js>
     </group>
     <group name="advancedTool">
         <css>/js/at/usages.css</css>

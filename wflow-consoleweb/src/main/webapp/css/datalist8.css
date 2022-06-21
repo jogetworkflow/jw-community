@@ -401,6 +401,35 @@ body.rtl .dataList span.pagelinks{
     display: none;
 }
 @media (max-width: 767px) {
+    .dataList .swipeActions > .rowActionsContainer {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding:0 !important;
+        overflow:hidden;
+    }
+    .dataList .swipeActions > .rowActionsContainer > .rowActions {
+        transform: translateX(101%);
+        height: 100%;
+        font-size: 0px;
+        display: flex;
+    }
+    .dataList .swipeActions > .rowActionsContainer > .rowActions > a{
+        height: 100%;
+        box-sizing: content-box;
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0px;
+    }
+    .dataList .swipeActions * {
+        transition: transform 0.5s ease-in-out;
+    }
+    .dataList .swipeActions.swiped > .rowActionsContainer > .rowActions{
+        transform: translateX(0);
+    }
     .filter_form .mobile_search_trigger {
         display: block;
         text-align: right;
