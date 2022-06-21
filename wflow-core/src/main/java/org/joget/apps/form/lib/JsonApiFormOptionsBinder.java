@@ -70,12 +70,13 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
         String valuesStr = "";
         if (values != null && values.length > 0) {
             valuesStr =  StringUtils.join(values);
+            
+            //used for json api parameter passing using `{values[0]}`
+            for (int i = 0; i < values.length; i++) {
+                params.put("values["+i+"]", values[i]);
+            }
         }
         params.put("values", valuesStr);
-        
-        for (int i = 0; i < values.length; i++) {
-            params.put("values["+i+"]", values[i]);
-        }
         
         if ("true".equals(getPropertyString("addEmptyOption"))) {
             FormRow emptyRow = new FormRow();
