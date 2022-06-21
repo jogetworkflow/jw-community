@@ -1243,12 +1243,12 @@ DatalistBuilder = {
         var value = $(dragElement).attr("data-cbuilder-value");
         if (value !== undefined) {
             data = value;
-        }
-        
-        if (key.indexOf("rowAction") === 0) {
-            data = '<a href="#">' + data + '</a>';
-        } else if (key.indexOf("column") === 0) {
-            data = '<span>' + data + '</span>';
+        } else {  //data already having the a/span tag if getting from data-cbuilder-value
+            if (key.indexOf("rowAction") === 0) {
+                data = '<a href="#">' + data + '</a>';
+            } else if (key.indexOf("column") === 0) {
+                data = '<span>' + data + '</span>';
+            }
         }
         
         var obj;
