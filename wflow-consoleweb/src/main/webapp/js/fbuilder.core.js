@@ -772,6 +772,9 @@ FormBuilder = {
             if (dom.properties.permissionReadonlyHidden !== null && dom.properties.permissionReadonlyHidden !== undefined) {
                 properties.permissionReadonlyHidden = dom.properties.permissionReadonlyHidden;
             }
+            if ((properties['readonly'] === null || properties['readonly'] === undefined) && dom.properties['readonly'] !== undefined) { //permission readonly is always reset when edit hidden field due to no having readonly in property options
+                properties['readonly'] = dom.properties['readonly'];
+            }
             if (properties['readonly'] === "true") {
                 properties['permissionHidden'] = "";
             }
