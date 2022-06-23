@@ -6082,7 +6082,7 @@ PropertyEditor.Type.IconTextField.prototype = {
             
             if (iClass !== "") {
                 icon = $('<div></div>').append(i).html();
-                valueWithoutIcon = $(temp).html().substring(1);
+                valueWithoutIcon = $(temp).html().trim();
             }
         }
         
