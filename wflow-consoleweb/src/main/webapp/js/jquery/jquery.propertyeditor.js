@@ -489,6 +489,7 @@ PropertyEditor.Util = {
         if (PropertyEditor.Util.UrlVariables !== undefined) {
             for (var property in PropertyEditor.Util.UrlVariables) {
                 string = string.replace(new RegExp('\\\['+property+'\\\]', 'g'), PropertyEditor.Util.UrlVariables[property]);
+                string = string.replace(new RegExp('([?&]'+property+'=)([&]+.*)*$', 'g'), '$1' + PropertyEditor.Util.UrlVariables[property] + '$2');
             }
         }
         

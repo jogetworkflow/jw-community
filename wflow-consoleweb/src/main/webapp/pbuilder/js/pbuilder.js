@@ -3478,7 +3478,9 @@ ProcessBuilder = {
         if (PropertyEditor) {
             PropertyEditor.Util.setUrlVariables({
                 "PROCESS_ID" : ProcessBuilder.currentProcessData.properties.id,
-                "ACTIVITY_ID" : elementObj.properties.id
+                "ACTIVITY_ID" : elementObj.properties.id,
+                "processId" : ProcessBuilder.currentProcessData.properties.id,
+                "actId" : elementObj.properties.id
             });
         }
     },        
