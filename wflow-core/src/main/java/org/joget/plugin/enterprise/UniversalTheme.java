@@ -140,12 +140,16 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     
     @Override
     public String getMetas(Map<String, Object> data) {
+        String maxScale = "";
+        if (MobileUtil.isIOS()) { //used to prevent text field zoom on focus in ios
+            maxScale = ", maximum-scale=1";
+        }
 
         String meta = super.getMetas(data) + "\n";
         if ((Boolean) data.get("is_login_page")) {
-            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\">\n";
+            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1"+maxScale+", user-scalable=no\">\n";
         } else {
-            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+            meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1"+maxScale+"\">\n";
         }
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
         meta += getInternalMetas(data);

@@ -60,6 +60,22 @@ public class MobileUtil {
     }
     
     /**
+     * Checks whether the current request is being called from a IOS browser
+     * @return 
+     */
+    public static boolean isIOS() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        boolean isIOS = false;
+        if (request != null) {
+            String userAgent = request.getHeader("User-Agent");
+            if (userAgent != null) {
+                isIOS = userAgent.contains("Mobi") && (userAgent.contains("iPhone") || userAgent.contains("iPad") || userAgent.contains("iPod") || userAgent.contains("Mac"));
+            }
+        }
+        return isIOS;
+    }
+    
+    /**
      * Sets a flag to indicate whether or not the current request is a mobile view.
      * @param request 
      */

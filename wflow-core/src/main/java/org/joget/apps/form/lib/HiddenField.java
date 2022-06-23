@@ -85,4 +85,14 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
     public String getFormBuilderIcon() {
         return "<i class=\"fas fa-eye-slash\"></i>";
     }
+    
+    //Force to be readonly when it set to `Always Use Default Value`
+    @Override
+    public Boolean isReadonly(FormData formData) {
+        if ("valueOnly".equalsIgnoreCase(getPropertyString("useDefaultWhenEmpty"))) {
+            return true;
+        } else {
+            return super.isReadonly(formData);
+        }
+    }
 }

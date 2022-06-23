@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.HtmlPage;
 import org.joget.apps.userview.lib.Link;
 import org.joget.apps.userview.model.CachedUserviewMenu;
@@ -63,11 +64,15 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String getMetas(Map<String, Object> data) {
-
+        String maxScale = "";
+        if (MobileUtil.isIOS()) {
+            maxScale = ", maximum-scale=1"; //used to prevent text field zoom on focus in ios
+        }
+        
         String meta = "<meta charset=\"UTF-8\">\n"; 
         meta += "<meta name=\"renderer\" content=\"webkit|ie-comp|ie-stand\">\n";
         meta += "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n";
-        meta += "<meta name=\"viewport\" content=\"width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi\" />\n";
+        meta += "<meta name=\"viewport\" content=\"width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"+maxScale+", target-densitydpi=low-dpi\" />\n";
         meta += "<meta http-equiv=\"Cache-Control\" content=\"no-siteapp\" />";
                 
         meta += super.getInternalMetas(data) + "\n";        
