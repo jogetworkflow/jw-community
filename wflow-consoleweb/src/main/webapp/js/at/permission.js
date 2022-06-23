@@ -41,7 +41,7 @@ PermissionManager = {
                 } else {
                     propertiesDefinition = [
                         {
-                            title : get_advtool_msg('adv.tool.permission') + " (" + $(element).data("data").permission_name + ")",
+                            title : get_advtool_msg('adv.tool.permission') + " (" + $(element).data("data").properties.permission_name + ")",
                             properties : [{
                                 name : 'permission_key',
                                 type : 'hidden'
