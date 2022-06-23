@@ -32,6 +32,10 @@
             {
                 "value" : "#currentUser.roles#",
                 "label" : "@@assist.CurrentUser.roles@@"
+            },
+            {
+                "value" : "#currentUser.username#",
+                "label" : "@@assist.CurrentUser.username@@"
             }
         ]
     }
