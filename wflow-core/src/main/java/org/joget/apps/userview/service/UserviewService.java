@@ -292,10 +292,13 @@ public class UserviewService {
                                 hasPermis = true;
                             }
                             
+                            //handle for permission rule to override the default setting
                             if (ruleObj.has("hide") && "yes".equals(ruleObj.getString("hide"))) {
                                 category.setProperty("hide", "yes");
+                            } else { 
+                                category.setProperty("hide", "");
                             }
-                        } else {
+                        } else { //when no properties found for the category object
                             hasPermis = true;
                             category.setProperty("hide", "");
                         }
