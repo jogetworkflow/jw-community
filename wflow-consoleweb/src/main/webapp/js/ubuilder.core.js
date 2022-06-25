@@ -1730,8 +1730,9 @@ UserviewBuilder = {
                     permissionLabel.push(label);
                 }
                 if (elementObj['properties']['permission_rules'] !== undefined) {
-                    for (var key in Object.keys(elementObj['properties']['permission_rules'])) {
-                        var rule = elementObj['properties']['permission_rules'][key];
+                    var keys = Object.keys(elementObj['properties']['permission_rules']);
+                    for (var i in keys) {
+                        var rule = elementObj['properties']['permission_rules'][keys[i]];
                         if (rule['permission'] !== undefined && rule['permission']['className'] !== "") {
                             var label = rule['permission']['className'];
                             if (FormBuilder.availablePermission[label]  !== undefined) {

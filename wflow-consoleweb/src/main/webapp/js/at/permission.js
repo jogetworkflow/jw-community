@@ -329,7 +329,7 @@ PermissionManager = {
         var ruleObj = PermissionManager.getRuleElement();
         var newRules = [];
         $(PermissionManager.container).find(".permission_rules .sortable .permission_rule").each(function() {
-            newRules.push($(this).data("obj"));
+            newRules.push($(this).data("data")["properties"]);
         });
         ruleObj["permission_rules"] = newRules;
         CustomBuilder.update();
