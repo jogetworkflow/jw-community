@@ -46,6 +46,18 @@ GovernanceUtil = {
         $('.governance_report table').on("click", ".moreInfoBtn", function(){
             $(this).parent().toggleClass("show");
         });
+        
+        $('.governance_report table').on("click", ".btn-suppress", function(){
+            GovernanceUtil.suppress($(this).closest("li"));
+        });
+        
+        $('#status_selector').on("change", function(){
+            if ($(this).val() === "all") {
+                $('.governance_report').addClass("show-suppressed");
+            } else {
+                $('.governance_report').removeClass("show-suppressed");
+            }
+        });
 
         GovernanceUtil.triggerNextRetrieveResult();
 
@@ -98,6 +110,23 @@ GovernanceUtil = {
             }, 
             {
                 pluginClass : pluginclass
+            });
+        }
+    },
+    
+    suppress: function(item) {
+        GovernanceUtil.blockUI();
+        if (confirm(GovernanceUtil.msg['suppressConfirm'])) {
+            var pluginclass = $(item).closest("tr").attr("plugin-class");
+            ConnectionManager.post(UI.base + "/web/governance/suppress", {
+                success : function(data) {
+                    GovernanceUtil.updateResult(data);
+                    $.unblockUI();
+                }
+            }, 
+            {
+                pluginClass : pluginclass,
+                detail : $(item).find('.detail').html()
             });
         }
     },
@@ -211,6 +240,15 @@ GovernanceUtil = {
                             link = UI.base + link;
                         }
                         $(li).append('<a href="'+link+'"  target="_blank" class="btn btn-secondary btn-sm">'+btnLabel+'</a>');
+                    }
+                    
+                    if (rowResult.suppressable) {
+                        if (rowResult.details[i].suppressed) {
+                            $(li).addClass("suppressed");
+                            $(li).append('<span class="btn-suppress btn">'+GovernanceUtil.msg["suppressed"]+'</span>');
+                        } else {
+                            $(li).append('<a href="#" class="btn-suppress btn btn-warning btn-sm">'+GovernanceUtil.msg["suppress"]+'</a>');
+                        }
                     }
 
                     $(row).find('.details > ul').append(li);

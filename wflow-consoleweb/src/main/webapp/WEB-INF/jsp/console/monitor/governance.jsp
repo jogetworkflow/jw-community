@@ -35,6 +35,11 @@
                     </div>
                 </c:if>    
                 <div class="check_interval_container">
+                    <select id="status_selector">
+                        <option value="open" selected><fmt:message key="console.governance.showOpenOnly"/></option>
+                        <option value="all"><fmt:message key="console.governance.showAll"/></option>
+                    </select> 
+                    
                     <label><fmt:message key="console.governance.checkInterval"/></label>
                     <select id="check_interval">
                         <option value="0"><fmt:message key="console.governance.checkInterval.disabled"/></option>
@@ -109,7 +114,10 @@
             deactivateConfirm : '<ui:msgEscJS key="console.governance.deactivate.confirm"/>',
             deleteConfirm : '<ui:msgEscJS key="console.governance.deleteData.confirm"/>',
             dataDeleted : '<ui:msgEscJS key="console.governance.dataDeleted"/>',
-            view : '<ui:msgEscJS key="console.governance.view"/>'
+            view : '<ui:msgEscJS key="console.governance.view"/>',
+            suppress : '<ui:msgEscJS key="console.governance.suppress"/>',
+            suppressed : '<ui:msgEscJS key="console.governance.suppressed"/>',
+            suppressConfirm : '<ui:msgEscJS key="console.governance.suppress.confirm"/>'
         });
         GovernanceUtil.updateResult(${lastResult});
     });

@@ -62,6 +62,7 @@ public class SecureUserviewsCheck extends GovHealthCheckAbstract implements GovA
     @Override
     public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
+        result.setSuppressable(true);
         
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);

@@ -63,6 +63,7 @@ public class ProcessDataIntegrityCheck extends GovHealthCheckAbstract {
     public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
         result.setStatus(GovHealthCheckResult.Status.PASS);
+        result.setSuppressable(true);
         
         DataSource ds = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
 

@@ -75,6 +75,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
     @Override
     public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
+        result.setSuppressable(true);
         
         Set<String> tables = getTables();
         

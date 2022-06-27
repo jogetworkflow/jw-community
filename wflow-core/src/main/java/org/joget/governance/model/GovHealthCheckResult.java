@@ -16,6 +16,7 @@ public class GovHealthCheckResult {
         private String link;
         private String linkLabel;
         private String appId;
+        private Boolean suppressed = false;
 
         public Detail(String detail, String link, String linkLabel, String appId) {
             this.detail = detail;
@@ -55,6 +56,14 @@ public class GovHealthCheckResult {
         public void setAppId(String appId) {
             this.appId = appId;
         }
+
+        public Boolean getSuppressed() {
+            return suppressed;
+        }
+
+        public void setSuppressed(Boolean suppressed) {
+            this.suppressed = suppressed;
+        }
     }
     
     private Status status;
@@ -63,6 +72,7 @@ public class GovHealthCheckResult {
     private Collection<Detail> details;
     private String moreInfo;
     private Map<String, String> datas;
+    private Boolean suppressable = false;
 
     public Status getStatus() {
         return status;
@@ -162,6 +172,14 @@ public class GovHealthCheckResult {
             return this.datas.get(key);
         }
         return null;
+    }
+
+    public Boolean getSuppressable() {
+        return suppressable;
+    }
+
+    public void setSuppressable(Boolean suppressable) {
+        this.suppressable = suppressable;
     }
 }
 

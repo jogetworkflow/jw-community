@@ -71,6 +71,7 @@ public class NamingConventionCheck extends GovHealthCheckAbstract implements Gov
     public GovHealthCheckResult performCheck(Date lastCheck, long intervalInMs, GovHealthCheckResult prevResult) {
         GovHealthCheckResult result = new GovHealthCheckResult();
         result.setStatus(GovHealthCheckResult.Status.PASS);
+        result.setSuppressable(true);
         
         Set<String> checked = new HashSet<String>();
         Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();

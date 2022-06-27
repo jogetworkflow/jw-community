@@ -10,6 +10,7 @@ import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.joget.governance.service.GovHealthCheckManager;
 import org.joget.plugin.base.Plugin;
@@ -134,6 +135,12 @@ public class GovernanceController {
     @RequestMapping(value = "/governance/deactivate", method = RequestMethod.POST)
     public void deactivate(Writer writer, @RequestParam("pluginClass") String pluginClass) throws IOException, JSONException {
         govHealthCheckManager.deactivate(pluginClass);
+    }
+    
+    @RequestMapping(value = "/governance/suppress", method = RequestMethod.POST)
+    public void suppress(Writer writer, @RequestParam("pluginClass") String pluginClass, @RequestParam("detail") String detail) throws IOException, JSONException {
+        String json = govHealthCheckManager.suppress(pluginClass, StringUtil.stripAllHtmlTag(detail));
+        writer.write(json);
     }
     
     @RequestMapping(value = "/governance/deleteData", method = RequestMethod.POST)

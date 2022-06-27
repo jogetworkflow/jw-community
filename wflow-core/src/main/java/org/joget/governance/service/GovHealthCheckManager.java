@@ -40,6 +40,7 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.governance.model.GovHealthCheck;
 import org.joget.governance.model.GovHealthCheckResult;
+import org.joget.governance.model.GovHealthCheckResult.Detail;
 import org.joget.governance.model.GovHealthCheckResult.Status;
 import org.joget.governance.model.GovHealthCheckTask;
 import org.joget.plugin.base.Plugin;
@@ -239,6 +240,34 @@ public class GovHealthCheckManager {
         setupManager.saveSetting(deactivate);
     }
     
+    public String suppress(String pluginClass, String detail) {
+        Map<String, GovHealthCheckResult> prevResults = getLastResults();
+        if (prevResults != null && prevResults.containsKey(pluginClass)) {
+            GovHealthCheckResult result = prevResults.get(pluginClass);
+            
+            if (result != null && !result.getDetails().isEmpty()) {
+                boolean allSuppressed = true;
+                for (Detail d : result.getDetails()) {
+                    if (detail.equals(StringUtil.stripAllHtmlTag(d.getDetail()))) {
+                        d.setSuppressed(true);
+                    }
+                    
+                    if (!d.getSuppressed()) {
+                        allSuppressed = false;
+                    }
+                }
+                
+                if (allSuppressed) {
+                    result.setStatus(Status.PASS);
+                }
+                
+                setLastResults(prevResults);
+            }
+        }
+        
+        return getLastResultsJson();
+    }
+    
     public void cleanData() {
         File dir = new File(SetupManager.getBaseDirectory() + File.separator + "app_governance");
         if (dir.exists()) {
@@ -426,6 +455,36 @@ public class GovHealthCheckManager {
                 if (result != null) {
                     result.setTimestamp(checkTime);
                     results.put(pe.getClassName(), result);
+                    
+                    if (result.getSuppressable()) {
+                        if (prevResult != null && !prevResult.getDetails().isEmpty()) {
+                            Set<String> suppressed = new HashSet<String>();
+                            for (Detail d : prevResult.getDetails()) {
+                                if (d.getSuppressed()) {
+                                    suppressed.add(d.getDetail());
+                                }
+                            }
+                            
+                            if (!suppressed.isEmpty()) {
+                                boolean allSuppressed = true;
+                                for (Detail d : result.getDetails()) {
+                                    if (suppressed.contains(d.getDetail())) {
+                                        d.setSuppressed(true);
+                                    }
+                                    
+                                    if (!d.getSuppressed()) {
+                                        allSuppressed = false;
+                                    }
+                                }
+                                
+                                if (allSuppressed) {
+                                    result.setStatus(Status.PASS);
+                                }
+                            }
+
+                            setLastResults(prevResults);
+                        }
+                    }
                     
                     if (Status.FAIL.equals(result.getStatus())) {
                         status = Status.FAIL;
