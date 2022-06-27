@@ -4429,6 +4429,8 @@ ProcessBuilder = {
                         CustomBuilder.Builder.frameBody.find('#'+runningActivities[i]).addClass("running_activity");
                     }
                 });
+                
+                ProcessBuilder.refresh();
             });
         });
     },
