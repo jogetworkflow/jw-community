@@ -18,7 +18,7 @@ tr.even { background: #f8f8f8;}
 .details ul {padding-left: 20px;}
 .details li {list-style: disc; line-height: 20px;}
 .details li.suppressed {display: none;}
-.show-suppressed .details li.suppressed {display: list-item; color: #17a2b8;}
+.show-suppressed .details li.suppressed {display: list-item; color: #7e8c8e;}
 .details ol li {list-style: decimal;}
 .details li .detail {display: block;}
 .details li .btn {padding: 2px 5px; font-size: 80%; display: inline-block; vertical-align: top; margin-top: 5px; margin-right: 5px; line-height: 14px; background: #535353;}
@@ -47,6 +47,6 @@ tr.even { background: #f8f8f8;}
 .moreInfo.show .moreInfoBtn .hide, .moreInfo.show .infoContent {display: block;}
 .moreInfo .infoContent {padding: 10px; border: 1px solid #ccc; margin-top: 5px; border-radius: 8px; background: #fefefe; display: none;}
 .moreInfo .infoContent h1, .moreInfo .infoContent h2, .moreInfo .infoContent h3, .moreInfo .infoContent h4, .moreInfo .infoContent h5, .moreInfo .infoContent h6 {margin: 0 0 10px;}
-.btn-suppress{background: #17a2b8 !important;}
+.btn-suppress{background: #7e8c8e !important;}
 .details li.suppressed .btn-suppress {opacity: 0.8; cursor: default;}
 #status_selector{margin-right: 15px;}
