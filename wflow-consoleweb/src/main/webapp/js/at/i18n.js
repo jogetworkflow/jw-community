@@ -72,51 +72,51 @@ I18nEditor = {
         I18nEditor.renderTable(container, labels, options);
     },
     renderTable : function (container, labels, options) {
-        if (labels.length > 0) {
-            if ($(container).attr("id") === undefined) {
-                $(container).attr("id", "i18n_container" + (new Date).getTime());
-            }
-            
-            $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
-            var $table = $(container).find(".i18n_table");
-            
-            $table.data("options", options);
-            
-            $(container).find('.search-container input').off("keyup");
-            $(container).find('.search-container input').on("keyup", function(){
-                var searchText = $(this).val().toLowerCase();
-                $(container).find("tbody tr").each(function(){
-                    var match = false;
-                    $(this).find('td.label > span').each(function(){
-                        if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
-                            match = true;
-                        }
-                    });
-                    $(this).find('textarea').each(function(){
-                        if ($(this).val().toLowerCase().indexOf(searchText) > -1) {
-                            match = true;
-                        }
-                    });
-                    if (match) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
+        if ($(container).attr("id") === undefined) {
+            $(container).attr("id", "i18n_container" + (new Date).getTime());
+        }
+
+        $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
+        var $table = $(container).find(".i18n_table");
+
+        $table.data("options", options);
+
+        $(container).find('.search-container input').off("keyup");
+        $(container).find('.search-container input').on("keyup", function(){
+            var searchText = $(this).val().toLowerCase();
+            $(container).find("tbody tr").each(function(){
+                var match = false;
+                $(this).find('td.label > span').each(function(){
+                    if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
+                        match = true;
                     }
                 });
-                if (this.value !== "") {
-                    $(this).next("button").show();
+                $(this).find('textarea').each(function(){
+                    if ($(this).val().toLowerCase().indexOf(searchText) > -1) {
+                        match = true;
+                    }
+                });
+                if (match) {
+                    $(this).show();
                 } else {
-                    $(this).next("button").hide();
+                    $(this).hide();
                 }
             });
-            
-            $(container).find('.search-container .clear-backspace').off("click");
-            $(container).find('.search-container .clear-backspace').on("click", function(){
-                $(this).hide();
-                $(this).prev("input").val("");
-                $(container).find("tbody tr").show();
-            });
-            
+            if (this.value !== "") {
+                $(this).next("button").show();
+            } else {
+                $(this).next("button").hide();
+            }
+        });
+
+        $(container).find('.search-container .clear-backspace').off("click");
+        $(container).find('.search-container .clear-backspace').on("click", function(){
+            $(this).hide();
+            $(this).prev("input").val("");
+            $(container).find("tbody tr").show();
+        });
+
+        if (labels.length > 0) {    
             var i = 0;
             for (var l in labels) {
                 var key = "";
@@ -133,31 +133,31 @@ I18nEditor = {
                 $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(label)+'</span><textarea name="i18n_key_'+l+'" style="display:none">'+key+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
                 i++;
             }
-            
-            if (I18nEditor.languages === undefined) {
-                $.ajax({
-                    url: options.contextPath + '/web/json/console/locales',
-                    dataType : "json",
-                    success: function(response) {
-                        I18nEditor.languages = response.data;
-                        I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1", options);
-                        I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2", options);
-                        
-                        if (options.loadEnglish) {
-                            $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
-                        }
-                    }
-                });
-            } else {
-                I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1",  options);
-                I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2",  options);
-                
-                if (options.loadEnglish) {
-                    $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
-                }
-            }
         } else {
-            $(container).append('<h3>'+get_advtool_msg('i18n.editor.no.label')+'</h3>');
+            $table.find("tbody").append('<tr class="norecord"><td colspan="3" class="label"><h3>'+get_advtool_msg('i18n.editor.no.label')+'</h3></td></tr>');
+        }
+        
+        if (I18nEditor.languages === undefined) {
+            $.ajax({
+                url: options.contextPath + '/web/json/console/locales',
+                dataType : "json",
+                success: function(response) {
+                    I18nEditor.languages = response.data;
+                    I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1", options);
+                    I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2", options);
+
+                    if (options.loadEnglish) {
+                        $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
+                    }
+                }
+            });
+        } else {
+            I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1",  options);
+            I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2",  options);
+
+            if (options.loadEnglish) {
+                $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
+            }
         }
     },
     renderLocaleSelector : function(container, header, id, options) {

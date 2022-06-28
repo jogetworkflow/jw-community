@@ -2177,6 +2177,7 @@
                 }
                 
                 $(button).closest("tr").after(newRow);
+                $(button).closest("table").find("tr.norecord").remove();
                 
                 $(container).remove();
                 $(button).show();
