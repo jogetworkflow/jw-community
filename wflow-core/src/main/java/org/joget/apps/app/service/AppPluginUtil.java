@@ -167,8 +167,12 @@ public class AppPluginUtil implements ApplicationContextAware {
      * @return 
      */
     public static String getMessage(String key, String pluginName, String translationPath){
-        PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
-        return pluginManager.getMessage(key, pluginName, translationPath);
+        if (appContext != null) {
+            PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+            return pluginManager.getMessage(key, pluginName, translationPath);
+        } else {
+            return key;
+        }
     }
     
     /**
