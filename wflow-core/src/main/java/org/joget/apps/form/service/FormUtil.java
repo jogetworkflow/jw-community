@@ -1586,6 +1586,21 @@ public class FormUtil implements ApplicationContextAware {
     }
     
     /**
+     * Check a form is submitted or not through import
+     * @param formData
+     */
+    public static boolean isFormDataImported(Element element, FormData formData) {
+        Form form = findRootForm(element);
+        if (form != null) {
+            String paramName = FormUtil.getElementParameterName(form);
+            if (formData != null && formData.getRequestParameter(paramName+"_IMPORTED") != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Check an element is readonly or not
      * @param formData
      */

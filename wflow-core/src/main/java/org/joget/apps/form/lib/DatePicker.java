@@ -435,7 +435,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
     }
     
     private String formattedValue(String value, String displayFormat, FormData formData) {
-        if (!FormUtil.isFormSubmitted(this, formData)) {
+        if (!FormUtil.isFormSubmitted(this, formData) && !FormUtil.isFormDataImported(this, formData)) {
             value = formattedDisplayValue(value, displayFormat, formData);
         }
         return value;
