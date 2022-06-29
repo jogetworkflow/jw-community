@@ -691,7 +691,7 @@ ProcessBuilder = {
 
             //update limit
             if (data.properties.limit !== undefined && data.properties.limit !== "") {
-                xpdlProcess['Limit'] = data.properties.limit;
+                xpdlProcess['ProcessHeader']['Limit'] = data.properties.limit;
             } else {
                 delete xpdlProcess['Limit'];
             }
