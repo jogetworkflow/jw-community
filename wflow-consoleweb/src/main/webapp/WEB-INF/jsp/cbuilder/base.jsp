@@ -133,7 +133,7 @@
                                 </button>
 
                                 <button class="btn btn-light" title="<fmt:message key="adv.tool.JSON.Definition"/>" id="json-def-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="jsonDef" data-cbuilder-action="switchView" data-hide-tool data-view-control>
-                                    <i class="la la-code"></i>
+                                    <i class="text-icon">{ }</i>
                                 </button>
 
                                 <button class="btn btn-light" title="<fmt:message key="cbuilder.screenshot"/>" id="screenshot-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="screenshot" data-cbuilder-action="switchView" data-hide-tool data-view-control>
