@@ -538,6 +538,10 @@ ul#category-container {
         right: 5px;
         z-index: 1000;
     }
+    .rtl header.navbar .header-nav {
+        left: 5px;
+        right: auto;
+    }
     header.navbar .header-nav > ul {
         width: 100%;
     }
