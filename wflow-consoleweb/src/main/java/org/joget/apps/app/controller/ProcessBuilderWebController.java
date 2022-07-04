@@ -402,6 +402,28 @@ public class ProcessBuilderWebController {
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(json));
     }
     
+    /**
+     * Used by process builder > advance tool > XPDL to convert xpdl to json format
+     * @param writer
+     * @param request
+     * @param response
+     * @param appId
+     * @param version
+     * @param xpdl
+     * @throws IOException 
+     */
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/process/builder/xpdlJson", method = RequestMethod.POST)
+    public void getXpdlJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "xpdl") String xpdl) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
+        String xpdlJson = U.xmlToJson(xpdl);
+        writer.write(xpdlJson);
+    }
+    
     protected void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef) throws JSONException {
         o.put("formId", f.getFormId());
         o.put("formUrl", f.getFormUrl());

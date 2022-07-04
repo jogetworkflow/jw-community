@@ -74,7 +74,6 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormERDEntityRetriever;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
-import org.joget.apps.form.service.FormERD;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.generator.service.GeneratorUtil;
@@ -1823,25 +1822,34 @@ public class ConsoleWebController {
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        MultipartFile packageXpdl;
+        MultipartFile packageXpdl = null;
+        String error = null;
+        String xpdlJson = "";
         
         try {
             packageXpdl = FileStore.getFile("packageXpdl");
         } catch (FileLimitException e) {
-            map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
-            return "console/apps/packageUpload";
+            error = ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()});
         }
         
-        try {
-            if (packageXpdl == null || packageXpdl.isEmpty()) {
-                throw new RuntimeException("Package XPDL is empty");
+        if (packageXpdl == null || packageXpdl.isEmpty()) {
+            error = "Package XPDL is empty";
+        } else {
+            try {
+                xpdlJson = U.xmlToJson(new String(packageXpdl.getBytes(), "UTF-8"));
+            } catch (Exception e) {
+                error = e.getMessage();
             }
-            appService.deployWorkflowPackage(appId, version, packageXpdl.getBytes(), false);
-        } catch (Exception e) {
-            map.addAttribute("errorMessage", e.getMessage());
-            return "console/apps/packageUpload";
         }
-        return "console/apps/xpdlUploadSuccess";
+        
+        //close popup dialog & update the process design in process builder
+        if ((xpdlJson != null && !xpdlJson.isEmpty()) && (error == null || error.isEmpty())) {
+            map.addAttribute("script", "parent.JPopup.hide(\"uploadXpdlDialog\");parent.ProcessBuilder.updateJsonFromUploadedXpdl(\""+StringUtil.escapeString(xpdlJson, StringUtil.TYPE_JAVASCIPT, null)+"\");");
+        } else {
+            map.addAttribute("script", "parent.JPopup.hide(\"uploadXpdlDialog\");parent.alert(\""+StringUtil.escapeString(error, StringUtil.TYPE_JAVASCIPT, null)+"\");");
+        }
+        
+        return "console/apps/dialogClose";
     }
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/processes", "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)"})

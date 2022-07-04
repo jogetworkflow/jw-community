@@ -48,6 +48,7 @@
         #listViewerView .cbuilder-node-details-list dt {float: left;clear: left; padding-left: 10px; padding-right: 5px; width: 120px; font-weight: 500;}
         #screenshotView .sticky-buttons {top: 125px;}
         #cbuilder.jsonDef-builder-view, #cbuilder.i18n-builder-view, #cbuilder.diffChecker-builder-view {--builder-left-panel-width: 0px; --builder-content-top: var(--builder-header-top-height);}
+        #xpdlView{top:85px !important;}
     </style>    
 </c:set>    
 <c:set var="builderCode" scope="request" value="process"/>
@@ -70,6 +71,7 @@
                 "beforeUpdate" : "ProcessBuilder.updateXpdl",
                 "zoomMinus" : "ProcessBuilder.zoomMinus",
                 "zoomPlus" : "ProcessBuilder.zoomPlus",
+                "xpdlViewInit" : "ProcessBuilder.xpdlViewInit",
                 "builderBeforeSave" : "ProcessBuilder.beforeSaveValidation",
                 "listViewerViewInit" : "ProcessBuilder.listViewerViewInit",
                 "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",

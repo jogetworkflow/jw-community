@@ -40,6 +40,8 @@ ProcessBuilder = {
             
             $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
             
+            $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView"><i class="la la-code"></i></button>');
+            
             $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
                 <button id="zoom-minus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomOut')+' (90%)" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
                 <button id="zoom-plus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomIn')+' (110%)" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
@@ -4343,6 +4345,172 @@ ProcessBuilder = {
         
         callback();
     } ,
+         
+    /*
+     * Used to render advance tool > xpdl
+     */                
+    xpdlViewInit : function(view) {
+        $(view).html('');
+        $(view).append('<pre id="xpdl_definition"></pre><div class="sticky-buttons"><button class="upload-btn btn button btn-secondary">'+get_cbuilder_msg('pbuilder.label.uploadXpdl')+'</button> <button class="update-btn btn button btn-secondary">'+get_cbuilder_msg('cbuilder.update')+'</button></div>');
+        
+        var editor = ace.edit("xpdl_definition");
+        editor.$blockScrolling = Infinity;
+        editor.setTheme("ace/theme/textmate");
+        editor.getSession().setTabSize(4);
+        editor.getSession().setMode("ace/mode/xml");
+        editor.setAutoScrollEditorIntoView(true);
+        editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
+        editor.setOption("minLines", 10);
+        editor.getSession().setValue(ProcessBuilder.toXpdl());
+        editor.resize();
+        
+        $(view).find("button.update-btn").on("click", function() {
+            var btn = this;
+            var text = $(this).text();
+            $(this).attr("disabled", true);
+            
+            ProcessBuilder.updateJsonFromXpdl(editor.getSession().getValue(), function(){
+                $(btn).text(get_advtool_msg('adv.tool.updated'));
+                setTimeout(function(){
+                    $(btn).text(text);
+                    $(btn).removeAttr("disabled");
+                }, 1000);
+            });
+        });
+        
+        $(view).find("button.upload-btn").on("click", function() {
+            JPopup.show("uploadXpdlDialog", CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/package/upload', {}, "");
+        });
+    },   
+        
+    /*
+     * escape unsafe char in xml attr value
+     */                
+    escapeXml : function(unsafe) {
+        return unsafe.replace(/[<>&'"]/g, function (c) {
+            switch (c) {
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '&': return '&amp;';
+                case '\'': return '&apos;';
+                case '"': return '&quot;';
+            }
+        });
+    },        
+        
+    /*
+     * Convert object to xml
+     */                
+    obj2Xml : function(obj, name, level) {
+        var xml = '';
+        var selfClosing = false;
+        
+        var attrs = '';
+        var body = '';
+        
+        var space = '';
+        if (level > 0) {
+            for (var i = 0; i < (level * 4); i++) {
+                space += ' ';
+            }
+        }
+        
+        if (typeof obj === "object") {
+            for (var prop in obj) {
+                if (prop === "-self-closing") {
+                    selfClosing = obj['-self-closing'];
+                } else if (prop.indexOf("-") === 0) {
+                    attrs += " " + prop.substring(1) + "=\"" + ProcessBuilder.escapeXml(obj[prop]) + "\"";
+                } else if (prop.indexOf("#") === 0) {
+                    //ignore
+                } else if (obj[prop] instanceof Array) {
+                    for (var array in obj[prop]) {
+                        body += ProcessBuilder.obj2Xml(new Object(obj[prop][array]), prop, level + 1);
+                    }
+                } else if (typeof obj[prop] == "object") {
+                    body += ProcessBuilder.obj2Xml(new Object(obj[prop]), prop, level + 1);
+                } else {
+                    body += ProcessBuilder.obj2Xml(obj[prop], prop, level + 1);
+                }
+            }
+        } else {
+            body = obj;
+        }
+        
+        if (name !== "") {
+            if (selfClosing) {
+                xml = space + "<" + name + attrs + "/>\n";
+            } else if (typeof obj !== "object") {
+                xml = space + "<" + name + ">" + body + "</" + name + ">\n";
+            } else {
+                xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
+            }
+        } else {
+            xml = body;
+        }
+        return xml
+    },        
+    
+    /*
+     * Generate xpdl from the json def
+     */
+    toXpdl : function () {
+        return ProcessBuilder.obj2Xml(CustomBuilder.data.xpdl, "", -1);
+    },
+      
+    /*
+     * Callback from upload xpdl file. ConsoleWebConstroller.consolePackageUploadSubmit
+     */                
+    updateJsonFromUploadedXpdl : function(jsonStr) {
+        if (jsonStr !== null && jsonStr !== undefined && jsonStr !== "") {
+            try {
+                var data = eval("["+jsonStr+"]")[0];
+                if (data !== null && data["Package"] !== undefined) {
+                    CustomBuilder.data.xpdl["Package"] = data["Package"];
+                    CustomBuilder.update(true);
+                    CustomBuilder.loadJson(CustomBuilder.getJson());
+                    ProcessBuilder.xpdlViewInit($('#xpdlView .builder-view-body'));
+                }
+            } catch (err) {}
+        }
+    },        
+    
+    /*
+     * Update json def based on xpdl
+     */
+    updateJsonFromXpdl : function(xpdl, callback) {
+        $.ajax({
+            type: "POST",
+            data: {
+                "xpdl": xpdl
+            },
+            url: CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/process/builder/xpdlJson',
+            dataType : "json",
+            beforeSend: function (request) {
+                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+            },
+            success: function(response) {
+                if (response !== null && response !== undefined && response !== "") {
+                    try {
+                        var data = eval(response);
+                        if (data !== null && data["Package"] !== undefined) {
+                            CustomBuilder.data.xpdl["Package"] = data["Package"];
+                            CustomBuilder.update(true);
+                            CustomBuilder.loadJson(CustomBuilder.getJson());
+                        }
+                    } catch (err) {}
+                }  
+                if (callback) {
+                    callback();
+                }
+            },
+            error: function() {
+                if (callback) {
+                    callback();
+                }
+            }
+        });
+    },
       
     /*
      * remove dynamically added items    
@@ -4353,7 +4521,7 @@ ProcessBuilder = {
         ProcessBuilder.jsPlumb.deleteEveryEndpoint();
         ProcessBuilder.jsPlumb.reset();
             
-        $("#process-selector, .toolzoom-buttons, #listviewer-btn").remove();
+        $("#process-selector, .toolzoom-buttons, #listviewer-btn, #xpdl-btn").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        
     },

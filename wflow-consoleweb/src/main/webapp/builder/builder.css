@@ -1147,6 +1147,14 @@ div.section, .header > ol {
     background-color: transparent;
     border-color: transparent;
 }
+.toolbar-group .btn-light .text-icon{
+    font-size: 18px;
+    font-weight: 300;
+    vertical-align: top;
+    margin-top: -1px;
+    display: inline-block;
+    width: 22px;
+}
 #node-details-toggle {
     background: #6c757d;
 }
