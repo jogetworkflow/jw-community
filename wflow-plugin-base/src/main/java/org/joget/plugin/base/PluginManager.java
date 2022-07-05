@@ -513,7 +513,10 @@ public class PluginManager implements ApplicationContextAware {
                     LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
                     Object obj = context.getService(sr);
                     if (obj instanceof Plugin) {
-                        list.add(weavePluginAspect((Plugin) obj));
+                        Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                        if (plugin != null) {
+                            list.add(plugin);
+                        }
                     }
                     context.ungetService(sr);
                 }
@@ -807,6 +810,10 @@ public class PluginManager implements ApplicationContextAware {
                     if (isPlugin) {
                         plugin = (Plugin) obj;
                         plugin = weavePluginAspect(plugin);
+                        
+                        if (plugin == null) {  //plugin could be null if having error in multitenant 
+                            getCache().getNoOsgiPluginClassCache().add(name);
+                        }
                     }
                 } else {
                     getCache().getNoOsgiPluginClassCache().add(name);
