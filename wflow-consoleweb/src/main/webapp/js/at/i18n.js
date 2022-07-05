@@ -159,7 +159,9 @@ I18nEditor = {
         for (var i in I18nEditor.languages) {
             $(selector).append('<option>'+I18nEditor.languages[i]+'</option>');
         }
-        
+        if (UI.rtl) {
+            $(selector).addClass("chosen-rtl");
+        }
         $(selector).chosen({width: "60%"}).change(function(){
             var locale = $(this).val();
             $(header).find("a.button").remove();

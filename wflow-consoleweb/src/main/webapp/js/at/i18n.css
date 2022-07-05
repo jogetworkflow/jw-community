@@ -8,3 +8,4 @@
 .i18n_table th:first-child > div{ border: none;}
 .i18n_table tr.even td {background: #FFF;}
 .i18n_table tr td textarea {width: 99%; height: 100%;}
+.rtl .i18n_table th > div {margin-right: 35px; margin-left: auto;}
