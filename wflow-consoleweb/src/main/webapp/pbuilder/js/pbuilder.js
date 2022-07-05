@@ -4085,6 +4085,8 @@ ProcessBuilder = {
             $(view).find('.search-container input').off("keyup");
             $(view).find('.search-container input').on("keyup", function(){
                 var searchText = $(this).val().toLowerCase();
+                var regex = new RegExp(':"[^"]*'+searchText+'[^"]*"', 'gi'); //create regex to check the properties json value, `:"[zero or more chars not "]searchText[zero or more chars not "]"`
+                
                 $(view).find(".cbuilder-node-details-list").each(function(){
                     var match = false;
                     $(this).find('dd').each(function(){
@@ -4092,14 +4094,41 @@ ProcessBuilder = {
                             match = true;
                         }
                     });
+                    
+                    var id = $(this).attr("data-cbuilder-select");
+                    var node = self.frameBody.find("[data-cbuilder-id='"+id+"']");
+                    if (node.length > 0 ) {
+                        var data = $(node).data("data");
+                        if (data !== undefined && data !== null && data.properties !== undefined && data.properties !== null) {
+                            var text = JSON.encode(data.properties); //convert properties to json for regex checking
+                            var match = text.match(regex);
+                            if (match !== null && match.length > 0) {
+                                match = true;
+                            }
+                        }
+                    }
+                    
                     if (match) {
-                        $(this).show();
+                        $(this).removeClass("searchHide").show();
                     } else {
-                        $(this).hide();
+                        $(this).addClass("searchHide").hide();
                     }
                 });
+                
+                $(view).find("#process-list-tabs li a .counter").remove();
+                
                 if (this.value !== "") {
                     $(this).next("button").show();
+                    
+                    //show counter for each tab
+                    $(view).find("#process-list-tabs li a").each(function(){
+                        var id = $(this).attr("href");
+                        
+                        var count = $(id).find('.cbuilder-node-details-list:not(.searchHide)').length;
+                        if (count > 0) {
+                            $(this).append(' <span class="counter badge rounded-pill bg-primary text-white">'+count+'</span>');
+                        }
+                    });
                 } else {
                     $(this).next("button").hide();
                 }
@@ -4110,6 +4139,7 @@ ProcessBuilder = {
                 $(this).hide();
                 $(this).prev("input").val("");
                 $(view).find(".cbuilder-node-details-list").show();
+                $(view).find("#process-list-tabs li a .counter").remove();
             });
         }
         
