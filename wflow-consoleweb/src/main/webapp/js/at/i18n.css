@@ -10,3 +10,4 @@
 .i18n_table tr td textarea {width: 99%; height: 100%; border-color: #ddd;}
 .i18n_table th .chosen-container {margin-right: 10px;}
 .i18n_table th .search-container .clear-backspace {top: 13px; right: 10px;}
+.rtl .i18n_table th > div {margin-right: 35px; margin-left: auto;}

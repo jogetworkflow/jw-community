@@ -176,6 +176,9 @@ I18nEditor = {
             }
             I18nEditor.loadLocale(container, locale, id, options);
         });
+        if (UI.rtl) {
+            $(selector).addClass("chosen-rtl");
+        }
         $(header).off("click", "a.saveBtn");
         $(header).on("click", "a.saveBtn", function() {
             I18nEditor.saveLocale(container, this, $(selector).val(), id, options);
