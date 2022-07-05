@@ -83,7 +83,9 @@ ProcessBuilder = {
             $(window).off('hashchange');
             $(window).on('hashchange', function(){
                 var id = window.location.hash.replace("#", "");
-                if ((ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
+                
+                //when no current process data or current process data is not match with the id in URL hash
+                if (ProcessBuilder.currentProcessData === null || ProcessBuilder.currentProcessData === undefined || (ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
                     ProcessBuilder.viewProcess();
                 }
             });
@@ -285,10 +287,11 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         var id = window.location.hash.replace("#", "");
         
-        if (id !== "") {
+        //if id not empty or id is empty but there is remaining process in package. 
+        //The generateProcessData method will redirect to the first remaining process when id is empty
+        if (id !== "" || $("#processes_list option").length > 0) {
             ProcessBuilder.generateProcessData(id);
-
-            if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData.properties !== undefined) {
+            if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData !== null && ProcessBuilder.currentProcessData.properties !== undefined) {
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
                     ProcessBuilder.validate();
 
@@ -304,7 +307,7 @@ ProcessBuilder = {
                     }, 1000);
                 });
             }
-        } else {
+        } else { //only redirect to `process1` when there is totally no process in package
             window.location.hash = "process1";
         }
     },
