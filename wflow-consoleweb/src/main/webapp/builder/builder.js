@@ -4911,26 +4911,28 @@ _CustomBuilder.Builder = {
         
         $('.drag-elements-sidepane').off("mouseup.builder", "ul > li > ol > li");
         $('.drag-elements-sidepane').on("mouseup.builder", "ul > li > ol > li", function (event) {
-            self.isDragging = false;
-            self.frameBody.removeClass("is-dragging");
-            self.frameBody.find("[data-cbuilder-droparea]").removeAttr("data-cbuilder-droparea");
-            
-            if (self.iconDrag) {
-                self.iconDrag.remove();
-                self.iconDrag = null;
-            }
-            if (self.dragElement) {
-                var replicate = self.dragElement.closest('[data-cbuilder-replicate-origin]');
-                self.dragElement.remove();
-                self.frameBody.find("[data-cbuilder-dragSubElement]").remove();
-                if (replicate.length > 0) {
-                    var replicateHtml = $(replicate).html();
-                    var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
-                    $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
-                    $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
+            if (self.isDraggin) {
+                self.isDragging = false;
+                self.frameBody.removeClass("is-dragging");
+                self.frameBody.find("[data-cbuilder-droparea]").removeAttr("data-cbuilder-droparea");
+
+                if (self.iconDrag) {
+                    self.iconDrag.remove();
+                    self.iconDrag = null;
                 }
-                $("#element-parent-box").hide();
-                self.dragElement = null;
+                if (self.dragElement) {
+                    var replicate = self.dragElement.closest('[data-cbuilder-replicate-origin]');
+                    self.dragElement.remove();
+                    self.frameBody.find("[data-cbuilder-dragSubElement]").remove();
+                    if (replicate.length > 0) {
+                        var replicateHtml = $(replicate).html();
+                        var replicateKey = $(replicate).attr("data-cbuilder-replicate-origin");
+                        $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"]').html(replicateHtml);
+                        $(replicate).parent().find('[data-cbuilder-replicate="'+replicateKey+'"] [data-cbuilder-classname]').removeAttr('data-cbuilder-classname');
+                    }
+                    $("#element-parent-box").hide();
+                    self.dragElement = null;
+                }
             }
         });
 
