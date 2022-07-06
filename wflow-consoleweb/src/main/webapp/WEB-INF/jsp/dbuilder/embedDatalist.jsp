@@ -36,7 +36,7 @@
                 var data = getSelectedData();
                 
                 if (window.parent && $("th.select_checkbox").length > 0) {
-                    var json = $("iframe#<ui:stripTag html="${param._frameId}" />", window.parent.document).attr("_cachedSelection");
+                    var json = $(getIframe()).attr("_cachedSelection");
                     if (json !== undefined) {
                         var cachedData = JSON.parse(json);
                         if (cachedData !== undefined) {
@@ -76,7 +76,7 @@
             
             //to support presist selection for checkbox
             if (window.parent && $("th.select_checkbox").length > 0) {
-                var iframe = $("iframe#<ui:stripTag html="${param._frameId}"/>", window.parent.document);
+                var iframe = getIframe();
                 
                 //cache selection on sorting, filter and change page
                 $("th a, .pagelinks a, .filter-cell input[type=submit]").click(function() {
@@ -87,6 +87,22 @@
                 loadCachedSelection(iframe);
             }
         });
+        
+        function getIframe() {
+            var iframe = $("iframe#<ui:stripTag html="${param._frameId}"/>", window.parent.document);
+            if ($(iframe).length === 0) {
+                //find iframe based on document content
+                var ifs = window.parent.document.getElementsByTagName("iframe");
+                for(var i = 0, len = ifs.length; i < len; i++)  {
+                   var f = ifs[i];
+                   var fDoc = f.contentDocument || f.contentWindow.document;
+                   if(fDoc === document)   {
+                      iframe = $(f);
+                   }
+                }
+            }
+            return iframe;
+        }
         
         function loadCachedSelection(iframe) {
             var json = $(iframe).attr("_cachedSelection");
@@ -108,7 +124,7 @@
         function cacheSelection(iframe) {
             var data = getSelectedData();
             
-            var json = $("iframe#<ui:stripTag html="${param._frameId}" />", window.parent.document).attr("_cachedSelection");
+            var json = $(iframe).attr("_cachedSelection");
             if (json !== undefined) {
                 var cachedData = JSON.parse(json);
                 if (cachedData !== undefined) {
