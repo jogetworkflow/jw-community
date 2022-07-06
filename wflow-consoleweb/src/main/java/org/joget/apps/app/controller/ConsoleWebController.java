@@ -3628,6 +3628,12 @@ public class ConsoleWebController {
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         
         AppUtil.findMissingPlugins(appDef);
+        
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+
+        // get app info
+        String appInfo = consoleWebPlugin.getAppInfo(appId, version);
+        map.addAttribute("appInfo", appInfo);
 
         return "console/apps/builders";
     }
@@ -5500,10 +5506,6 @@ public class ConsoleWebController {
 
     protected String checkVersionExist(ModelMap map, String appId, String version) {
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
-
-        // get app info
-        String appInfo = consoleWebPlugin.getAppInfo(appId, version);
-        map.put("appInfo", appInfo);
 
         // verify app license
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
