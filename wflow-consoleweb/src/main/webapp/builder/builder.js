@@ -4911,7 +4911,7 @@ _CustomBuilder.Builder = {
         
         $('.drag-elements-sidepane').off("mouseup.builder", "ul > li > ol > li");
         $('.drag-elements-sidepane').on("mouseup.builder", "ul > li > ol > li", function (event) {
-            if (self.isDraggin) {
+            if (self.isDragging) {
                 self.isDragging = false;
                 self.frameBody.removeClass("is-dragging");
                 self.frameBody.find("[data-cbuilder-droparea]").removeAttr("data-cbuilder-droparea");
