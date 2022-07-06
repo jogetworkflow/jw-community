@@ -95,7 +95,7 @@
             'addNewMessage':'<ui:msgEscJS key="console.app.common.label.addnew"/>',
             'publishConfirm':'<ui:msgEscJS key="console.app.publish.label.confirm"/>',
             'unpublishConfirm':'<ui:msgEscJS key="console.app.unpublish.label.confirm"/>',
-            'appInfo':'${appInfo}'
+            'appInfo':"<ui:escape value="${appInfo}" format="json" />"
         }
     }
 </c:set>
