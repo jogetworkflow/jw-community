@@ -3,6 +3,21 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.31
+=================
+2cfa4f9b2 Fixed: wflow-consoleweb - X-admin Theme - List Grid multi page selection not working. T1189 @7.0-SNAPSHOT
+19e74d756 Fixed: wflow-plugin-base - Plugin Manager - Prevent NPE when weavePluginAspect return null. @7.0-SNAPSHOT
+6dae17438 Fixed: wflow-consoleweb - Universal/Progressive Theme - Can't open menu when in RTL mobile mode. T1064 @7.0-SNAPSHOT
+58e5c3140 Fixed: wflow-consoleweb - Advanced tools -  i18n becomes blank when in RTL mode. @7.0-SNAPSHOT
+65e268696 Fixed: wflow-core - AppPluginUtil - Prevent NPE during server startup. @7.0-SNAPSHOT
+a5b785c32 Fixed: wflow-core - Import Menu/Tool - regression bug from 20e5339c where hidden field missing default value when import. @7.0-SNAPSHOT #T1154
+4384b0f68 Fixed: wflow-consoleweb - Form Builder - Permission readonly is always reset when edit hidden field. @7.0-SNAPSHOT
+ca03561a5 Fixed: wflow-core - Userview - Hide category permission rule is not handle correctly. @7.0-SNAPSHOT
+c9ed5d91f Fixed: wflow-core - Userview Theme - Prevent text field zoom on focus in IOS. @7.0-SNAPSHOT
+3f63b51a1 Fixed: wflow-core - Hidden Field - No way to enforce input validation. T935 @7.0-SNAPSHOT
+dafa1192f Fixed: wflow-core - Grid - Can't display encrypted text. T1121 @7.0-SNAPSHOT
+f986a39dd Fixed: wflow-core - X-admin Theme - Link menu not handled correctly. T1107 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.30
 =================
 24dad94b4 Fixed: wflow-consoleweb - Userview Builder - Properties label correction. @7.0-SNAPSHOT
