@@ -214,7 +214,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
                 }
                 return url;
             }
-            return request.getContextPath() + "/web/console/home";
+            return request.getContextPath();
         }
         return "";
     }

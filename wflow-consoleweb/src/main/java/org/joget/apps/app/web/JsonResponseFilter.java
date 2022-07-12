@@ -69,6 +69,12 @@ public class JsonResponseFilter implements Filter {
                         error.put("code", Integer.toString(sc));
                         error.put("message", msg);
                         error.put("date", new Date());
+                        
+                        String systemAlert = AppUtil.getSystemAlert();
+                        if (systemAlert != null && !systemAlert.isEmpty()) {
+                            error.put("alert", systemAlert);
+                        }
+                        
                         jsonObject.accumulate("error", error);
 
                         jsonObject.write(getWriter());
