@@ -4,6 +4,7 @@
             this.each(function(){
                 var element = $(this);
                 var elementParent = element.parent();
+                var uid = $(element).attr("id");
 
                 if (!/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                     o.beforeShow = function(input, inst) {
@@ -75,10 +76,13 @@
                 
                 if (o.datePickerType === "dateTime") {
                     $(element).datetimepicker(o);
+                    createNativeField($(element), "datetime-local", o);
                 } else if (o.datePickerType === "timeOnly") {
                     $(element).timepicker(o);
+                    createNativeField($(element), "time", o);
                 } else {
                     $(element).datepicker(o);
+                    createNativeField($(element), "date", o);
                 }
                 
                 if($.placeholder) {
@@ -108,13 +112,13 @@
                 $(elementParent).find("input[readonly] , a.trigger").click(function(evt){
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    $(element).datepicker("show");
+                    showDatepicker($(element));
                 });
                 $(elementParent).find("input , a.trigger").off("keydown").on("keydown", function(evt){
                     if (evt.keyCode === 13) {
                         evt.preventDefault();
                         evt.stopPropagation();
-                        $(element).datepicker("show");
+                        showDatepicker($(element));
                     }
                 }).on("focus", function() {
                     $(element).addClass("focus");
@@ -134,7 +138,8 @@
                 if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
                     var startDate = FormUtil.getField(o.startDateFieldId);
                     var startDateOrg = null;
-                    startDate.on("change", function() {
+                    startDate.off("change.startdate"+uid);
+                    startDate.on("change.startdate"+uid, function() {
                         if (startDateOrg !== $(startDate).val()) {
                             startDateOrg = $(startDate).val();
                             setDateRange(startDate, "minDate", element, o);
@@ -146,7 +151,8 @@
                 if (o.endDateFieldId  !== undefined && o.endDateFieldId !== "") {
                     var endDate = FormUtil.getField(o.endDateFieldId);
                     var endDateOrg = null;
-                    endDate.on("change", function() {
+                    endDate.off("change.endDate"+uid);
+                    endDate.on("change.endDate"+uid, function() {
                         if (endDateOrg !== $(endDate).val()) {
                             endDateOrg = $(endDate).val();
                              setDateRange(endDate, "maxDate", element, o);
@@ -167,6 +173,96 @@
         }
     });
     
+    //check the browser is support the input type
+    function isSupport(type) {
+        var input = document.createElement('input');
+        input.setAttribute('type',type);
+
+        var notADateValue = 'not-a-date';
+        input.setAttribute('value', notADateValue); 
+
+        return (input.value !== notADateValue);
+    };
+    
+    //create a hidden date input for the picker
+    function createNativeField(element, type, o) {
+        if (isSupport(type)) {
+            var attr = "";
+            
+            $(element).before('<div class="ui-screen-hidden" style="display:inline-block;visibility: hidden;width: 0px;"><input class="native-picker" type="'+type+'" '+attr+'/></div>');
+            $(element).addClass('use-native');
+            
+            var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker');
+                    
+            var nativeChange = function(){
+                if (!$(element).is("[readonly]")) {
+                    $(element).off("change.manual");
+                }
+                setDate($(element), $(this).val(), o);
+                if (!$(element).is("[readonly]")) {
+                    $(element).on("change.manual", manualChange);
+                }
+            };
+            
+            var manualChange = function() {
+                $(nativeField).off("change.native");
+                setNativeDate($(element), $(nativeField), o);
+                $(nativeField).on("change.native", nativeChange);
+            };
+            
+            setNativeDate($(element), $(nativeField), o);
+            $(nativeField).on("change.native", nativeChange);
+            
+            if (!$(element).is("[readonly]")) {
+                $(element).on("change.manual", manualChange);
+            }
+        }
+    }
+    
+    //show the native picker or the jquery picker
+    function showDatepicker(element) {
+        if ($(element).hasClass("use-native")) {
+            $(element).prev(".ui-screen-hidden").find('.native-picker')[0].showPicker();
+        } else {
+            $(element).datepicker("show");
+        }
+    };
+
+    //update input field when native field changed
+    function setDate(element, date, o) {
+        if (o.datePickerType === "dateTime") {
+            $(element).datetimepicker("setDate", new Date(date) );
+        } else if (o.datePickerType === "timeOnly") {
+            $(element).timepicker("setTime", date);
+        } else {
+            $(element).datepicker("setDate", new Date(date) );
+        }
+        $(element).trigger("change");
+    };
+    
+    //update native field when input field changed
+    function setNativeDate(element, nativeField, o) {
+        var date = $(element).datepicker("getDate");
+        if (date !== null) {
+            date = toDateString(date);
+            if (o.datePickerType === "dateTime") {
+                $(nativeField).val(date.substr(0, 16));
+            } else if (o.datePickerType === "timeOnly") {
+                $(nativeField).val(date.substr(11, 16));
+            } else {
+                $(nativeField).val(date.substr(0, 10));
+            }
+        }
+    };
+    
+    //format the date value to string
+    function toDateString(date) {
+        var utcd = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+        var localOffset = date.getTimezoneOffset() * 60000;
+        var newdate = new Date(utcd + localOffset);
+        return newdate.toISOString();
+    }
+                
     function setDateRange(element, type, target, o) {
         var value = $(element).val();
         if (value === "" && $(target).datetimepicker("option", type) === null) {
@@ -186,5 +282,27 @@
             $(target).datepicker("option", type, value);
         }
         $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
+        
+        if ($(element).hasClass("use-native")) {
+            var date = $(element).datepicker("getDate");
+            var nativePicker = $(target).prev(".ui-screen-hidden").find('.native-picker');
+            
+            if (date !== null) {
+                date = toDateString(date);
+                var v = "";
+                if (o.datePickerType === "dateTime") {
+                    v = date.substr(0, 16);
+                } else if (o.datePickerType === "timeOnly") {
+                    v = date.substr(11, 16);
+                } else {
+                    v = date.substr(0, 10);
+                }
+                if (type === "maxDate") {
+                    $(nativePicker).attr("max", v);
+                } else {
+                    $(nativePicker).attr("min", v);
+                }
+            }
+        }
     }
 })(jQuery);
