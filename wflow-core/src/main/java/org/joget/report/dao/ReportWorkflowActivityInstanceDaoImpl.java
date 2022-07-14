@@ -32,7 +32,7 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
     
     @Override
     public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows) {
-        return getReportWorkflowActivityInstanceList(appId, appVersion, processDefId, null, activityDefId, false, sort, desc, start, rows);
+        return getReportWorkflowActivityInstanceList(appId, appVersion, processDefId, null, activityDefId, hasSlaOnly, sort, desc, start, rows);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
     
     @Override
     public long getReportWorkflowActivityInstanceListSize(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly) {
-        return getReportWorkflowActivityInstanceListSize(appId, appVersion, processDefId, null, activityDefId, false);
+        return getReportWorkflowActivityInstanceListSize(appId, appVersion, processDefId, null, activityDefId, hasSlaOnly);
     }
 
     @Override
