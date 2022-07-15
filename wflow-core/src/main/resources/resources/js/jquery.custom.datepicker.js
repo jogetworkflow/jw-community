@@ -257,9 +257,7 @@
     
     //format the date value to string
     function toDateString(date) {
-        var utcd = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
-        var localOffset = date.getTimezoneOffset() * 60000;
-        var newdate = new Date(utcd + localOffset);
+        var newdate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
         return newdate.toISOString();
     }
                 
