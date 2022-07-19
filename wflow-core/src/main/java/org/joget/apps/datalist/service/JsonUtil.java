@@ -141,51 +141,51 @@ public class JsonUtil {
         
         DataList object = (DataList) new DataList();
         if (object != null) {
+            object.setProperties(PropertyUtil.getProperties(obj));
             
-            if (obj.has(PROPERTY_ID)) {
-                object.setId(obj.getString(PROPERTY_ID));
+            if (object.getProperties().containsKey(PROPERTY_ID)) {
+                object.setId(object.getPropertyString(PROPERTY_ID));
             }
-            if (obj.has(PROPERTY_NAME)) {
-                object.setName(obj.getString(PROPERTY_NAME));
+            if (object.getProperties().containsKey(PROPERTY_NAME)) {
+                object.setName(object.getPropertyString(PROPERTY_NAME));
             }
-            if (obj.has(PROPERTY_DESC)) {
-                object.setDescription(obj.getString(PROPERTY_DESC));
+            if (object.getProperties().containsKey(PROPERTY_DESC)) {
+                object.setDescription(object.getPropertyString(PROPERTY_DESC));
             }
-            if (obj.has(PROPERTY_PAGE_SIZE)) {
-                object.setDefaultPageSize(obj.getInt(PROPERTY_PAGE_SIZE));
+            if (object.getProperties().containsKey(PROPERTY_PAGE_SIZE) && !object.getPropertyString(PROPERTY_PAGE_SIZE).isEmpty()) {
+                object.setDefaultPageSize(Integer.parseInt(object.getPropertyString(PROPERTY_PAGE_SIZE)));
             }
-            if (obj.has(PROPERTY_HIDE_PAGE_SIZE) && !obj.isNull(PROPERTY_HIDE_PAGE_SIZE)) {
-                object.setShowPageSizeSelector(!obj.getString(PROPERTY_HIDE_PAGE_SIZE).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_HIDE_PAGE_SIZE) && !object.getPropertyString(PROPERTY_HIDE_PAGE_SIZE).isEmpty()) {
+                object.setShowPageSizeSelector(!object.getPropertyString(PROPERTY_HIDE_PAGE_SIZE).equals("true"));
             }
-            if (obj.has(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS) && !obj.isNull(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS)) {
-                object.setPageSizeList(obj.getString(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS));
+            if (object.getProperties().containsKey(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS) && !object.getPropertyString(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS).isEmpty()) {
+                object.setPageSizeList(object.getPropertyString(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS));
             }
-            if (obj.has(PROPERTY_ORDER)) {
-                object.setDefaultOrder(obj.getString(PROPERTY_ORDER));
+            if (object.getProperties().containsKey(PROPERTY_ORDER)) {
+                object.setDefaultOrder(object.getPropertyString(PROPERTY_ORDER));
             }
-            if (obj.has(PROPERTY_ORDER_BY)) {
-                object.setDefaultSortColumn(obj.getString(PROPERTY_ORDER_BY));
+            if (object.getProperties().containsKey(PROPERTY_ORDER_BY)) {
+                object.setDefaultSortColumn(object.getPropertyString(PROPERTY_ORDER_BY));
             }
-            if (obj.has(PROPERTY_USE_SESSION) && !obj.isNull(PROPERTY_USE_SESSION)) {
-                object.setUseSession(obj.getString(PROPERTY_USE_SESSION).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_USE_SESSION) && !object.getPropertyString(PROPERTY_USE_SESSION).isEmpty()) {
+                object.setUseSession(object.getPropertyString(PROPERTY_USE_SESSION).equals("true"));
             }
-            if (obj.has(PROPERTY_SHOW_DATA_ONFILTER) && !obj.isNull(PROPERTY_SHOW_DATA_ONFILTER)) {
-                object.setShowDataWhenFilterSet(obj.getString(PROPERTY_SHOW_DATA_ONFILTER).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_SHOW_DATA_ONFILTER) && !object.getPropertyString(PROPERTY_SHOW_DATA_ONFILTER).isEmpty()) {
+                object.setShowDataWhenFilterSet(object.getPropertyString(PROPERTY_SHOW_DATA_ONFILTER).equals("true"));
             }
-            if (obj.has(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL) && !obj.isNull(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL)) {
-                object.setConsiderFilterWhenGetTotal(obj.getString(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL) && !object.getPropertyString(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL).isEmpty()) {
+                object.setConsiderFilterWhenGetTotal(object.getPropertyString(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL).equals("true"));
             }
-            if (obj.has(PROPERTY_DISABLE_RESPONSIVE) && !obj.isNull(PROPERTY_DISABLE_RESPONSIVE)) {
-                object.setDisableResponsive(obj.getString(PROPERTY_DISABLE_RESPONSIVE).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_DISABLE_RESPONSIVE) && !object.getPropertyString(PROPERTY_DISABLE_RESPONSIVE).isEmpty()) {
+                object.setDisableResponsive(object.getPropertyString(PROPERTY_DISABLE_RESPONSIVE).equals("true"));
             }
             if (obj.has(PROPERTY_RESPONSIVE) && !obj.isNull(PROPERTY_RESPONSIVE)) {
                 object.setResponsiveJson(obj.getJSONArray(PROPERTY_RESPONSIVE).toString());
             }
-            if (obj.has(PROPERTY_REPONSIVE_SEARCH_POPUP) && !obj.isNull(PROPERTY_REPONSIVE_SEARCH_POPUP)) {
-                object.setResponsiveSearchPopup(obj.getString(PROPERTY_REPONSIVE_SEARCH_POPUP).equals("true"));
+            if (object.getProperties().containsKey(PROPERTY_REPONSIVE_SEARCH_POPUP) && !object.getPropertyString(PROPERTY_REPONSIVE_SEARCH_POPUP).isEmpty()) {
+                object.setResponsiveSearchPopup(object.getPropertyString(PROPERTY_REPONSIVE_SEARCH_POPUP).equals("true"));
             }
             
-            object.setProperties(PropertyUtil.getProperties(obj));
             JsonUtil.generateBuilderProperties(object.getProperties(), new String[]{"", "filter-", "columns-header-", "columns-", "rowActions-header-", "rowActions-link-", "rowActions-", "action-", "card-"});
             
             if (obj.has("permission_rules")) {
@@ -214,8 +214,8 @@ public class JsonUtil {
             }
             
             object.setIsAuthorized(hasPermission);
-            if (obj.has("noPermissionMessage") && !obj.optString("noPermissionMessage").isEmpty()) {
-                object.setUnauthorizedMsg(obj.optString("noPermissionMessage"));
+            if (object.getProperties().containsKey("noPermissionMessage") && !object.getPropertyString("noPermissionMessage").isEmpty()) {
+                object.setUnauthorizedMsg(object.getPropertyString("noPermissionMessage"));
             }
 
             //set binder
@@ -300,22 +300,23 @@ public class JsonUtil {
             for (int i = 0; i < filters.length(); i++) {
                 JSONObject filter = filters.getJSONObject(i);
                 DataListFilter dataListFilter = new DataListFilter();
+                dataListFilter.setProperties(PropertyUtil.getProperties(filter));
                 
-                if (filter.has(PROPERTY_NAME)) {
-                    dataListFilter.setName(filter.getString(PROPERTY_NAME));
+                if (dataListFilter.getProperties().containsKey(PROPERTY_NAME)) {
+                    dataListFilter.setName(dataListFilter.getPropertyString(PROPERTY_NAME));
                 }
-                if (filter.has(PROPERTY_LABEL)) {
-                    dataListFilter.setLabel(filter.getString(PROPERTY_LABEL));
+                if (dataListFilter.getProperties().containsKey(PROPERTY_LABEL)) {
+                    dataListFilter.setLabel(dataListFilter.getPropertyString(PROPERTY_LABEL));
                 }
-                if (filter.has(PROPERTY_OPERATOR)) {
-                    dataListFilter.setOperator(filter.getString(PROPERTY_OPERATOR));
+                if (dataListFilter.getProperties().containsKey(PROPERTY_OPERATOR)) {
+                    dataListFilter.setOperator(dataListFilter.getPropertyString(PROPERTY_OPERATOR));
                 }
                 if (filter.has(PROPERTY_FILTER_TYPE)) {
                     DataListFilterType type = parseFilterTypeFromJsonObject(filter);
                     dataListFilter.setType(type);
                 }
-                if (filter.has(PROPERTY_HIDDEN)) {
-                    dataListFilter.setHidden("true".equalsIgnoreCase(filter.getString(PROPERTY_HIDDEN)));
+                if (dataListFilter.getProperties().containsKey(PROPERTY_HIDDEN)) {
+                    dataListFilter.setHidden("true".equalsIgnoreCase(dataListFilter.getPropertyString(PROPERTY_HIDDEN)));
                 }
                 
                 if (!Permission.DEFAULT.equals(permissionKey)) {
@@ -331,7 +332,6 @@ public class JsonUtil {
                     }
                 }
                 
-                dataListFilter.setProperties(PropertyUtil.getProperties(filter));
                 JsonUtil.generateBuilderProperties(dataListFilter.getProperties(), new String[]{""});
                 
                 property.add(dataListFilter);
@@ -644,30 +644,31 @@ public class JsonUtil {
      */
     public static DataListColumn parseColumnFromJsonObject(JSONObject column, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         DataListColumn dataListColumn = new DataListColumn();
-                
-        if (column.has(PROPERTY_NAME) && !column.isNull(PROPERTY_NAME)) {
-            dataListColumn.setName(column.getString(PROPERTY_NAME));
+        dataListColumn.setProperties(PropertyUtil.getProperties(column));
+        
+        if (dataListColumn.getProperties().containsKey(PROPERTY_NAME) && !dataListColumn.getPropertyString(PROPERTY_NAME).isEmpty()) {
+            dataListColumn.setName(dataListColumn.getPropertyString(PROPERTY_NAME));
         }
-        if (column.has(PROPERTY_LABEL) && !column.isNull(PROPERTY_LABEL)) {
-            dataListColumn.setLabel(column.getString(PROPERTY_LABEL));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_LABEL) && !dataListColumn.getPropertyString(PROPERTY_LABEL).isEmpty()) {
+            dataListColumn.setLabel(dataListColumn.getPropertyString(PROPERTY_LABEL));
         }
-        if (column.has(PROPERTY_SORTABLE) && !column.isNull(PROPERTY_SORTABLE)) {
-            dataListColumn.setSortable(column.getBoolean(PROPERTY_SORTABLE));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_SORTABLE) && !dataListColumn.getPropertyString(PROPERTY_SORTABLE).isEmpty()) {
+            dataListColumn.setSortable(Boolean.parseBoolean(dataListColumn.getPropertyString(PROPERTY_SORTABLE)));
         }
-        if (column.has(PROPERTY_HIDDEN) && !column.isNull(PROPERTY_HIDDEN)) {
-            dataListColumn.setHidden(column.getBoolean(PROPERTY_HIDDEN));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_HIDDEN) && !dataListColumn.getPropertyString(PROPERTY_HIDDEN).isEmpty()) {
+            dataListColumn.setHidden(Boolean.parseBoolean(dataListColumn.getPropertyString(PROPERTY_HIDDEN)));
         }
-        if (column.has(PROPERTY_WIDTH) && !column.isNull(PROPERTY_WIDTH)) {
-            dataListColumn.setWidth(column.getString(PROPERTY_WIDTH));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_WIDTH) && !dataListColumn.getPropertyString(PROPERTY_WIDTH).isEmpty()) {
+            dataListColumn.setWidth(dataListColumn.getPropertyString(PROPERTY_WIDTH));
         }
-        if (column.has(PROPERTY_STYLE) && !column.isNull(PROPERTY_STYLE)) {
-            dataListColumn.setStyle(column.getString(PROPERTY_STYLE));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_STYLE) && !dataListColumn.getPropertyString(PROPERTY_STYLE).isEmpty()) {
+            dataListColumn.setStyle(dataListColumn.getPropertyString(PROPERTY_STYLE));
         }
-        if (column.has(PROPERTY_ALIGNMENT) && !column.isNull(PROPERTY_ALIGNMENT)) {
-            dataListColumn.setAlignment(column.getString(PROPERTY_ALIGNMENT));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_ALIGNMENT) && !dataListColumn.getPropertyString(PROPERTY_ALIGNMENT).isEmpty()) {
+            dataListColumn.setAlignment(dataListColumn.getPropertyString(PROPERTY_ALIGNMENT));
         }
-        if (column.has(PROPERTY_HEADER_ALIGNMENT) && !column.isNull(PROPERTY_HEADER_ALIGNMENT)) {
-            dataListColumn.setHeaderAlignment(column.getString(PROPERTY_HEADER_ALIGNMENT));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_HEADER_ALIGNMENT) && !dataListColumn.getPropertyString(PROPERTY_HEADER_ALIGNMENT).isEmpty()) {
+            dataListColumn.setHeaderAlignment(dataListColumn.getPropertyString(PROPERTY_HEADER_ALIGNMENT));
         }
         if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
             DataListAction action = parseActionFromJsonObject(column);
@@ -680,11 +681,9 @@ public class JsonUtil {
 
             dataListColumn.setFormats(formatCollection);
         }
-        if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML) && !column.getString(PROPERTY_RENDER_HTML).isEmpty()) {
-            dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
+        if (dataListColumn.getProperties().containsKey(PROPERTY_RENDER_HTML) && !dataListColumn.getPropertyString(PROPERTY_RENDER_HTML).isEmpty()) {
+            dataListColumn.setRenderHtml(Boolean.parseBoolean(dataListColumn.getPropertyString(PROPERTY_RENDER_HTML)));
         }
-
-        dataListColumn.setProperties(PropertyUtil.getProperties(column));
 
         if (!Permission.DEFAULT.equals(permissionKey)) {
             if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
