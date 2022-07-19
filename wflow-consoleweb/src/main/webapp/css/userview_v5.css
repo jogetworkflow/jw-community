@@ -1,4 +1,7 @@
 /* boostrap 4 utilities class */
+html, body {
+    overscroll-behavior: none;
+}
 .row {
     display: -ms-flexbox;
     display: flex;

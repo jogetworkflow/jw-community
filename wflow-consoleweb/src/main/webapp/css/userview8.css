@@ -5,6 +5,9 @@ a {
 a:hover {
     color: var(--theme-link-active, var(--theme-color3, #0f9aee));
 }
+html, body {
+    overscroll-behavior: none;
+}
 body{
     margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;

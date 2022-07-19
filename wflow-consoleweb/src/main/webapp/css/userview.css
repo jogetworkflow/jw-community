@@ -1,3 +1,6 @@
+html, body {
+    overscroll-behavior: none;
+}
 * {
     font-family: PT Sans,Arial,serif;
     font-size: 13px;
