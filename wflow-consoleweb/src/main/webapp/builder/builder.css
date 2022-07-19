@@ -1040,12 +1040,14 @@ div.section, .header > ol {
 }
 .tree ol li input:checked + ol {
     position: relative;
-    margin: -1.1em 0 10px -53px;
-    padding: 2.1em 0 0 80px;
-    height: auto; 
+    margin: 0px 0 10px -53px;
+    padding: 5px 0 0 80px;
+    height: auto;
 }
 .tree ol li input:checked + ol:before {
     content:'\f105';
+    position: absolute;
+    top: -16px;
 }
 .tree ol li input:checked + ol > li {
     display: block;
