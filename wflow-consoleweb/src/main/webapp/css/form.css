@@ -334,6 +334,33 @@ span.tablesaw-cell-content {
     box-shadow: 0 0 2px #E50F0F;
     cursor: pointer;
 }
+.datapicker-native.ui-screen-hidden{
+    display: block;
+    visibility: hidden;
+    width: 0px;
+    position: absolute;
+    left: 15px;
+    bottom: 0px;
+}
+@media (max-width: 768px) {
+    .datapicker-native.ui-screen-hidden.ios {
+        right: 15px;
+        top: unset;
+        bottom: 0px;
+        z-index: 2;
+        opacity: 0;
+        width: auto;
+        visibility: unset;  
+    }
+    .datapicker-native.ui-screen-hidden.ios input{
+        width:100%;
+        -webkit-appearance: none;
+    }
+    .datapicker-native.ui-screen-hidden.ios.manual{
+        left:unset;
+        width: 25px;
+    }
+}
 
 /* File upload */
 .form-fileupload {width:70%;}

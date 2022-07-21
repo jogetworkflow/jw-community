@@ -230,7 +230,8 @@ textarea{
 
 
 /* date picker */
-.hasDatepicker + a{
+.hasDatepicker + a,
+.hasDatepicker + a + a{
     position: absolute;
     right: 20px;
     top: 9px;
@@ -250,8 +251,25 @@ textarea{
 .hasDatepicker + a:before{
     content: '\f073';
 }
+.hasDatepicker + a + a {
+    color: #f8d7da;
+    right: 42px;
+    top: 10px;
+    z-index: 4;
+}
+.hasDatepicker + a + a:before{
+    content: '\f057';
+}
 .hasDatepicker + a > img{
     display: none;
+}
+.datapicker-native.ui-screen-hidden{
+    display: block;
+    visibility: hidden;
+    width: 0px;
+    position: absolute;
+    left: 15px;
+    bottom: 0px;
 }
 #ui-datepicker-div {
     border: 1px solid #ced4da !important;
@@ -1091,6 +1109,27 @@ body.rtl .handsontable .htCore tr td:last-child {
     .hasDatepicker + a{
         top: unset;
         bottom: 7px;
+    }
+    .hasDatepicker + a + a{
+        top: unset;
+        bottom: 6px;
+    }
+    .datapicker-native.ui-screen-hidden.ios {
+        right: 15px;
+        top: unset;
+        bottom: 0px;
+        z-index: 2;
+        opacity: 0;
+        width: auto;
+        visibility: unset;  
+    }
+    .datapicker-native.ui-screen-hidden.ios input{
+        width:100%;
+        -webkit-appearance: none;
+    }
+    .datapicker-native.ui-screen-hidden.ios.manual{
+        left:unset;
+        width: 25px;
     }
 }
 @media screen and (max-width: 39.9375em) {

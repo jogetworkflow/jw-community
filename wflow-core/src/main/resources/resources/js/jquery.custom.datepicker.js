@@ -175,13 +175,16 @@
     
     //check the browser is support the input type
     function isSupport(type) {
-        var input = document.createElement('input');
-        input.setAttribute('type',type);
+        if (/Mobi/.test(navigator.userAgent)) { //only do it for mobile
+            var input = document.createElement('input');
+            input.setAttribute('type',type);
 
-        var notADateValue = 'not-a-date';
-        input.setAttribute('value', notADateValue); 
+            var notADateValue = 'not-a-date';
+            input.setAttribute('value', notADateValue); 
 
-        return (input.value !== notADateValue);
+            return (input.value !== notADateValue);
+        }
+        return false;
     };
     
     //create a hidden date input for the picker
@@ -189,7 +192,15 @@
         if (isSupport(type)) {
             var attr = "";
             
-            $(element).before('<div class="ui-screen-hidden" style="display:inline-block;visibility: hidden;width: 0px;"><input class="native-picker" type="'+type+'" '+attr+'/></div>');
+            var cssClass = "";
+            if (/iPhone/.test(navigator.userAgent) || /iPad/.test(navigator.userAgent)) {
+                cssClass += "ios";
+            }
+            if (!$(element).is("[readonly]")) {
+                cssClass += " manual";
+            }
+            
+            $(element).before('<div class="ui-screen-hidden datapicker-native '+cssClass+'"><input class="native-picker" type="'+type+'" '+attr+'/></div>');
             $(element).addClass('use-native');
             
             var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker');
@@ -222,7 +233,15 @@
     //show the native picker or the jquery picker
     function showDatepicker(element) {
         if ($(element).hasClass("use-native")) {
-            $(element).prev(".ui-screen-hidden").find('.native-picker')[0].showPicker();
+            var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker')[0];
+            if (!$(element).prev(".ui-screen-hidden").hasClass("ios")) {
+                try {
+                    nativeField.showPicker(); 
+                } catch (e) {
+                    $(element).datepicker("show");
+                        $(element).removeClass("use-native");
+                }    
+            }
         } else {
             $(element).datepicker("show");
         }
@@ -237,7 +256,7 @@
         } else {
             $(element).datepicker("setDate", new Date(date) );
         }
-        $(element).trigger("change");
+        $(element).focus().trigger("change");
     };
     
     //update native field when input field changed
