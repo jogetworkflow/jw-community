@@ -85,6 +85,10 @@
             <c:set var="stay" scope="request" value="${properties.stay}"/>
             <c:set var="closeDialog" scope="request" value="${properties.closeDialog}"/>
             <jsp:include page="../../client/app/formView.jsp" flush="true" />
+            
+            <c:if test="${!empty properties.editLink}">
+                <div><a class="btn btn-primary pull-right" href="<c:out value="${properties.editLink}" escapeXml="true"/>"><c:out value="${properties.editButtonLabel}" escapeXml="false"/></a></div>
+            </c:if>   
         </c:when>
         <c:when test="${properties.view eq 'formUnavailable'}">
             <p>
@@ -116,7 +120,7 @@
     </c:if>
     <c:if test="${!empty properties.customFooter}">
         ${properties.customFooter}
-    </c:if>
+    </c:if> 
 </div>
 
 <div style="clear:both;"></div>

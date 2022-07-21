@@ -20,6 +20,7 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -440,9 +441,35 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
 
         // set form to read-only if required
         Boolean readonly = "Yes".equalsIgnoreCase(getPropertyString("readonly"));
+        
+        //check if the edit button is click
+        if (readonly && formData.getRequestParameter("_enonce") != null && SecurityUtil.verifyNonce(formData.getRequestParameter("_enonce"), new String[] {getUrl(), formData.getPrimaryKeyValue()})) {
+            readonly = false;
+            form.setFormMeta("_enonce", new String[]{formData.getRequestParameter("_enonce")}); //passed the nonce again for submission
+        }
+        
         if (readonly || readonlyLabel) {
             FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel);
         }
+        
+        //add edit button only when there is primary key
+        if (readonly && "true".equalsIgnoreCase(getPropertyString("showEditButton")) && formData.getPrimaryKeyValue() != null) {
+            String qs = WorkflowUtil.getHttpServletRequest().getQueryString();
+            if (qs == null) {
+                qs = "";
+            }
+            if (!qs.isEmpty()) {
+                qs = "?" + qs;
+            }
+            String nonce = SecurityUtil.generateNonce(new String[] {getUrl(), formData.getPrimaryKeyValue()}, 4);
+            qs = StringUtil.addParamsToUrl(qs, "_enonce", nonce);
+            setProperty("editLink", qs);
+            
+            if (getPropertyString("editButtonLabel").isEmpty()) {
+                setProperty("editButtonLabel", "<i class=\"fas fa-edit\" title=\""+ResourceBundleUtil.getMessage("general.method.label.edit")+"\"></i>");
+            }
+        }
+        
         return form;
     }
 

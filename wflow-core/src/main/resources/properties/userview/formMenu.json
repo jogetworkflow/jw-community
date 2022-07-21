@@ -50,11 +50,32 @@
         name : 'readonlyLabel',
         label : '@@userview.formmenu.readonlyLabel@@',
         type : 'checkbox',
-        value : 'false',
+        value : 'true',
         options : [{
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'showEditButton',
+        label : '@@userview.formmenu.showEditButton@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }],
+        control_field: 'readonly',
+        control_value: 'Yes',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'editButtonLabel',
+        label : '@@userview.formmenu.editButtonLabel@@',
+        type : 'textfield',
+        control_field: 'showEditButton',
+        control_value: 'true',
+        control_use_regex: 'false'
     }]
 },
 {
