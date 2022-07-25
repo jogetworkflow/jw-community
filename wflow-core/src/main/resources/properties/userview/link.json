@@ -1,6 +1,10 @@
 [{
     title : '@@userview.link.editLink@@',
     properties : [{
+        name : 'type',
+        type : 'hidden'
+    },
+    {
         name : 'id',
         label : 'Id',
         type : 'hidden'
@@ -10,7 +14,10 @@
         label : '@@userview.link.customId@@',
         type : 'textfield',
         regex_validation : '^[a-zA-Z0-9_]+$',
-        validation_message : '@@userview.link.invalidId@@'
+        validation_message : '@@userview.link.invalidId@@',
+        control_field: 'type',
+        control_value: '',
+        control_use_regex: 'false'
     },
     {
         name : 'label',
@@ -47,5 +54,14 @@
         }],
         required : 'True',
         value : 'blank'
+    },
+    {
+        name : 'iframeId',
+        label : '@@userview.link.iframe@@ ID',
+        type : 'textfield',
+        required : 'true',
+        control_field: 'type;target',
+        control_value: 'pagecomponent;iframe',
+        control_use_regex: 'false'
     }]
 }]

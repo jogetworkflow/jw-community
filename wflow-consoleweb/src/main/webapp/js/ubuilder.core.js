@@ -769,28 +769,34 @@ UserviewBuilder = {
                     return "elements";
                 }
             };
+            component.builderTemplate._getDragHtml = component.builderTemplate.getDragHtml;
             component.builderTemplate.getDragHtml = function(component) {
                 if (UserviewBuilder.mode === "userview") {
                     return '<li><a href="" class="menu-link default"><span>'+component.label+'</span></a></li>';
                 } else {
-                    return this.dragHtml;
+                    return this._getDragHtml(component);
                 }
             };
+            component.builderTemplate._customPropertyOptions = component.builderTemplate.customPropertyOptions;
             component.builderTemplate.customPropertyOptions = function(elementOptions, element, elementObj, component) {
                 if (UserviewBuilder.mode === "userview") {
                     return elementOptions;
                 } else {
                     if (component.builderTemplate.ajaxEventPropertyOptions === undefined) {
+                        if (component.builderTemplate._customPropertyOptions !== undefined) {
+                            elementOptions = component.builderTemplate._customPropertyOptions(elementOptions, element, elementObj, component);
+                        }
                         component.builderTemplate.ajaxEventPropertyOptions = UserviewBuilder.getAjaxEventPropertyOptions(elementOptions);
                     }
                     return component.builderTemplate.ajaxEventPropertyOptions;
                 }
             }
+            component.builderTemplate._isSupportStyle = component.builderTemplate.isSupportStyle;
             component.builderTemplate.isSupportStyle = function(elementObj, component){
                 if (UserviewBuilder.mode === "userview") {
                     return false;
                 } else {
-                    return true;
+                    return component.builderTemplate._isSupportStyle(elementObj, component);
                 }
             };
             component.builderTemplate.renderPermission = UserviewBuilder.renderPermission;
@@ -1572,7 +1578,11 @@ UserviewBuilder = {
                 }
             };
 
-            self.frameBody.find("#btn_container").show();
+            var classname = UserviewBuilder.selectedMenu.className;
+            var component = self.getComponent(classname);
+            if (component.builderTemplate.supportPageBuilder === undefined || component.builderTemplate.supportPageBuilder === true) {
+                self.frameBody.find("#btn_container").show();
+            }
 
             if (UserviewBuilder.screenshots[screenshotKey] === undefined) {
                 UserviewBuilder.generateMenuSnapshot(json, screenshotKey, renderScreenshot);

@@ -87,4 +87,32 @@ public class Link extends UserviewMenu {
         }
         return null;
     }
+    
+    @Override
+    public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
+        if (getPropertyString("type").isEmpty()) {
+            return super.render(id, cssClass, style, attr, isBuilder);
+        } else {
+            // sanitize label
+            String label = getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+            
+            if ("blank".equals(getPropertyString("target")) || "self".equals(getPropertyString("target"))) {
+                return "<a "+attr+" id=\""+id+"\" class=\""+cssClass+"\" href=\"" + getPropertyString("url") + "\" target=\"_"+getPropertyString("target")+"\"><span>" + label + style + "</span></a>";
+            } else if ("script".equals(getPropertyString("target"))) {
+                return "<a "+attr+" id=\""+id+"\" class=\""+cssClass+"\" onclick=\"" + getPropertyString("url") + ";return false;\" ><span>" + label + style + "</span></a>";
+            } else if ("iframe".equals(getPropertyString("target"))) {
+                return "<a "+attr+" id=\""+id+"\" class=\""+cssClass+"\" href=\"" + getPropertyString("url") + "\" target=\""+getPropertyString("iframeId")+"\"><span>" + label + style + "</span></a>";
+            }
+        }
+        return "";
+    }
+    
+    @Override
+    public String getBuilderJavaScriptTemplate() {
+        //return "{'dragHtml' : '<div class=\"content-placeholder\"></div>'}";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/builder/link.json", null, true, null);
+    }
 }

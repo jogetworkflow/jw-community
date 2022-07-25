@@ -1,0 +1,21 @@
+{
+    "supportPageBuilder" : false,
+    "dragHtml" : "<a href=\"#\">@@userview.link@@</a>",
+    "customPropertiesData" : function(props, elementObj, component) {
+        if (UserviewBuilder.mode === "page") {
+            props.type = 'pagecomponent';
+        }
+        return props;
+    },
+    "getHtml" : function(elementObj, component) {
+        if (UserviewBuilder.mode === "page") {
+            return "<a href=\"#\">"+elementObj.properties['label']+"</a>";
+        }
+        return undefined;
+    },
+    "customPropertyOptions" : function(elementOptions, element, elementObj, component) {
+        var props = $.extend(true, [], elementOptions);
+        props.splice(-1);
+        return props;
+    }
+}
