@@ -3,6 +3,12 @@ $(document).ready(function() {
         if ($(this).find("> form > .table-wrapper > table.responsivetable").length > 0) {
             responsiveTable($(this));
         }
+        if ($(this).find("> form > .table-wrapper > table.draggabletable").length > 0) {
+            draggableTable($(this));
+        }
+        if ($(this).find("> form > .table-wrapper > table.showhidecolumns").length > 0) {
+            showHideColumns($(this));
+        }
         popupFilter($(this));
         $(this).show();
     });
@@ -168,4 +174,180 @@ function responsiveTable(datalist) {
     $(window).off("resize."+id);
     $(window).on("resize."+id, resize);
     resize();
+}
+/* init the table to allow draggable columns */
+function draggableTable(datalist) {
+    
+    var id = $(datalist).attr("id");
+    
+    //rearrange columns
+    var key = window.location.pathname + $(datalist).closest(".main-body-content").attr('id') + "_order";
+    var cache = localStorage.getItem(key);
+    if (cache !== undefined && cache !== null) {
+        rearrangeColumns(datalist, cache);
+    }
+    
+    setTimeout(function(){
+        var table = $(datalist).find("> form > .table-wrapper > table, > .table-wrapper > table");
+        var headers = $(table).find('> thead > tr > th.column_header');
+        
+        $(headers).attr('draggable', true);
+        
+        $(headers).off("dragover.draggableTable");
+        $(headers).on("dragover.draggableTable", function(event){
+            $(table).find('.drop_left, .drop_right').removeClass("drop_left drop_right");
+            if (!$(this).hasClass("current_dragging")) {
+                var index = $(this).closest("tr").find(' > th').index($(this));
+                
+                event = event || window.event;
+                var dragX = event.pageX;
+                
+                var pos = "drop_left";
+                var offset = getOffset(this);
+                if (dragX > (offset.left + ($(this).width()/3*2))) {
+                    pos = "drop_right";
+                }
+                
+                $(table).find('> thead > tr > th:eq('+index+')').addClass(pos);
+                $(table).find('> tbody > tr').each(function(){
+                    $(this).find('> td:eq('+index+')').addClass(pos);
+                });
+            }
+            event.preventDefault();
+        });
+        
+        $(headers).off("dragleave.draggableTable");
+        $(headers).on("dragleave.draggableTable", function(event){
+            $(table).find('.drop_left, .drop_right').removeClass("drop_left drop_right");
+            event.preventDefault();
+        });
+        
+        $(headers).off("drop.draggableTable");
+        $(headers).on("drop.draggableTable", function(event){
+            if ($(this).hasClass("drop_left") || $(this).hasClass("drop_right")) {
+                if ($(this).hasClass("drop_left")) {
+                    $(this).before($(table).find('> thead > tr > th.current_dragging'));
+                    $(table).find('> tbody > tr').each(function(){
+                        $(this).find('> td.drop_left').before($(this).find('> td.current_dragging'));
+                    });
+                } else {
+                    $(this).after($(table).find('> thead > tr > th.current_dragging'));
+                    $(table).find('> tbody > tr').each(function(){
+                        $(this).find('> td.drop_right').after($(this).find('> td.current_dragging'));
+                    });
+                }
+                
+            }
+            
+            $(table).find('.drop_left, .drop_right').removeClass("drop_left drop_right");
+            $(table).find('.current_dragging').removeClass("current_dragging");
+            
+            var columns = [];
+            $(table).find('> thead > tr > th.column_header').each(function(){
+                columns.push($(this).attr("class").split(" ")[2]);
+            });
+            localStorage.setItem(key, JSON.stringify(columns));
+        });
+        
+        $(headers).off("dragend.draggableTable");
+        $(headers).on("dragend.draggableTable", function(event){
+            $(table).find('.drop_left, .drop_right').removeClass("drop_left drop_right");
+            $(table).find('.current_dragging').removeClass("current_dragging");
+        });
+        
+        $(headers).off("dragstart.draggableTable");
+        $(headers).on("dragstart.draggableTable", function(event){
+            var index = $(this).closest("tr").find(' > th').index($(this));
+            $(table).find('> thead > tr > th:eq('+index+')').addClass('current_dragging');
+            $(table).find('> tbody > tr').each(function(){
+                $(this).find('> td:eq('+index+')').addClass('current_dragging');
+            });
+        });
+    }, 2);
+}
+/* rearrange the column based on cache order */
+function rearrangeColumns(datalist, cache) {
+    var table = $(datalist).find("> form > .table-wrapper > table, > .table-wrapper > table");
+        
+    var columns = JSON.parse(cache);
+    for (var i = 0; i < columns.length - 1; i++) {
+        var current = "."+columns[i];
+        var next = "."+columns[i+1];
+        
+        var currentheader = $(table).find(current);
+        var nextHeader = $(table).find(next);
+        
+        var headers = $(table).find('> thead > tr > th');
+        var currentIndex = $(headers).index(currentheader);
+        var nextIndex = $(headers).index(nextHeader);
+        
+        $(currentheader).after(nextHeader);
+        
+        $(table).find('> tbody > tr').each(function(){
+            var currentCell = $(this).find('> td:eq('+currentIndex+')');
+            var nextCell = $(this).find('> td:eq('+nextIndex+')');
+            $(currentCell).after(nextCell);
+        });
+    }
+}
+/* get position of a header */
+function getOffset(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY
+    };
+}
+/* init the table to allow show/hide columns */
+function showHideColumns(datalist) {
+    var id = $(datalist).attr("id");
+    
+    var table = $(datalist).find("> form > .table-wrapper > table, > .table-wrapper > table");
+    
+    var hide = function(key) {
+        var header = "."+key;
+        var body = header.replace(".header_", ".body_");
+        $(table).find(header + ', ' + body).addClass("control_hide");
+    };
+    
+    var show = function(key) {
+        var header = "."+key;
+        var body = header.replace(".header_", ".body_");
+        $(table).find(header + ', ' + body).removeClass("control_hide");
+    };
+    
+    //rearrange columns
+    var key = window.location.pathname + $(datalist).closest(".main-body-content").attr('id') + "_hide";
+    var cache = localStorage.getItem(key);
+    if (cache !== undefined && cache !== null) {
+        var columns = JSON.parse(cache);
+        for (var i = 0; i < columns.length; i++) {
+            hide(columns[i]);
+        }
+    }
+    
+    setTimeout(function(){
+        var headers = $(table).find('> thead > tr > th.column_header');
+
+        var dropdown = $('<div class="show_hide_control"><span class="toggle"></span><ul></ul></div>');
+        $(headers).each(function(){
+            $(dropdown).find('ul').append('<li><label><input type="checkbox" value="'+($(this).attr("class").split(" ")[2])+ '" ' + (!$(this).hasClass('control_hide')?'checked':'') +'/> '+$(this).text()+'</label></li>');
+        });
+
+        $(dropdown).find('input').on('click', function(){
+            if ($(this).is(':checked')) {
+                show($(this).attr('value'));
+            } else {
+                hide($(this).attr('value'));
+            }
+
+            var columns = [];
+            $(table).find('> thead > tr > th.column_header.control_hide').each(function(){
+                columns.push($(this).attr("class").split(" ")[2]);
+            });
+            localStorage.setItem(key, JSON.stringify(columns));
+        });
+
+        $(table).before(dropdown);
+    }, 2);
 }

@@ -218,7 +218,8 @@ div.exportlinks > a span {
     font-weight: 500;
 }
 .dataList th.sorted a {
-    color:white;
+    color:#000;
+    font-weight: bold;
 }
 .dataList th.sortable a {
     background-image:url("../images/v3/arrow_off.png");

@@ -152,7 +152,14 @@
                             </c:when>
                             <c:otherwise>
                                 <div class="table-wrapper" data-disableresponsive="${dataList.disableResponsive}">
-                                   <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
+                                    <c:set var="tableStyle" value=""/>
+                                    <c:if test="${!empty dataList.properties.draggabletable && dataList.properties.draggabletable eq 'true'}">
+                                        <c:set var="tableStyle" value="draggabletable"/>
+                                    </c:if>
+                                    <c:if test="${!empty dataList.properties.showhidecolumns && dataList.properties.showhidecolumns eq 'true'}">
+                                        <c:set var="tableStyle" value="${tableStyle} showhidecolumns"/>
+                                    </c:if>
+                                   <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable ${tableStyle}" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                                        <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                                            <c:choose>
                                                <c:when test="${selectionType eq 'single'}">

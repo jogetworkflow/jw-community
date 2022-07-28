@@ -490,3 +490,72 @@
         display: none;
     }
 }
+
+.dataList .current_dragging {
+    opacity: 0.3;
+}
+.dataList .drop_left {
+    border-left: 10px solid #d4d4d4 !important;
+}
+.dataList .drop_right {
+    border-right: 10px solid #d4d4d4 !important;
+}
+.dataList table th.control_hide,
+.dataList table td.control_hide {
+    display: none !important;
+}
+.dataList .show_hide_control {
+    position: absolute;
+    right: 30px;
+    display: block;
+    margin-top: 8px;
+    z-index: 1000;
+}
+.dataList .show_hide_control .toggle{
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #e4dede;
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+    cursor: pointer;
+    display: block;
+    box-sizing: border-box;
+}
+.dataList .show_hide_control:hover .toggle{
+    opacity: 1;
+}
+.dataList .show_hide_control .toggle:after {
+    content:""; 
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d;
+    position: absolute;
+    top: 7px;
+    right: 4px;
+}
+.dataList .show_hide_control ul {
+    list-style: none;
+    padding: 15px;
+    padding-left: 15px !important;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 20px;
+    background: #fff;
+    border: 1px solid #e4dede;
+    border-radius: 5px;
+    width: max-content;
+} 
+.dataList .show_hide_control ul li input {
+    display: inline-block !important;
+    margin-right: 5px;
+}
+.dataList .show_hide_control:hover ul {
+    display: block;
+}

@@ -2200,32 +2200,10 @@ DatalistBuilder = {
                         developer_mode : 'advanced'
                     },
                     {
-                        label : get_cbuilder_msg('dbuilder.rowActionsMode'),
-                        name  : 'rowActionsMode',
-                        type : 'checkbox',
-                        options : [
-                            {label : '', value : 'true'}
-                        ],
-                        control_field: 'template',
-                        control_value: '',
-                        control_use_regex: 'false'
-                    },
-                    {
                         label: get_cbuilder_msg('dbuilder.responsive'),
                         name: 'responsive',
                         type: 'header',
                         description: get_cbuilder_msg('dbuilder.responsive.desc')
-                    }, 
-                    {
-                        label: get_cbuilder_msg('dbuilder.disableResponsive'),
-                        name: 'disableResponsive',
-                        type: 'checkbox',
-                        options : [
-                            {value : 'true', label : ''}
-                        ],
-                        control_field: 'template',
-                        control_value: '',
-                        control_use_regex: 'false'
                     }, 
                     {
                         label: get_cbuilder_msg('dbuilder.responsiveMode'),
@@ -2237,6 +2215,46 @@ DatalistBuilder = {
                         ]
                     }
                 ]
+            },
+            {
+                title: get_cbuilder_msg('dbuilder.template') + ' (' + get_cbuilder_msg('dbuilder.classicTable') + ')',
+                properties : [
+                    {
+                        label : get_cbuilder_msg('dbuilder.rowActionsMode'),
+                        name  : 'rowActionsMode',
+                        type : 'checkbox',
+                        options : [
+                            {label : '', value : 'true'}
+                        ]
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.disableResponsive'),
+                        name: 'disableResponsive',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ]
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.allowUserRearrangeColumns'),
+                        name: 'draggabletable',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ]
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.allowUserShowHideColumns'),
+                        name: 'showhidecolumns',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ]
+                    }
+                ],
+                control_field: 'template',
+                control_value: '',
+                control_use_regex: 'false'
             }
         ];
     },
