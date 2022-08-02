@@ -15,6 +15,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -30,9 +37,12 @@ import org.apache.logging.log4j.util.Strings;
 import org.eclipse.jgit.util.FileUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
+import org.joget.workflow.util.WorkflowUtil;
 
 @Plugin(name = "LogViewerAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class LogViewerAppender extends AbstractAppender {
@@ -115,7 +125,7 @@ public class LogViewerAppender extends AbstractAppender {
 
     protected synchronized Writer getWriter(String appId) {
         try {
-            String filename = getFileName(appId);
+            String filename = getFileName(appId, null);
 
             //check rolling
             File currentFile = new File(filename);
@@ -152,23 +162,28 @@ public class LogViewerAppender extends AbstractAppender {
         }
     }
 
-    public static String getFilepath(String appId) {
+    public static String getFilepath(String appId, String node) {
         if (appId == null) {
             appId = getCurrentAppId();
         }
-        String serverName = ServerUtil.getServerName();
-        if (!serverName.isEmpty()) {
-            serverName = File.separator + serverName;
+        String serverName;
+        if (node != null && !node.isEmpty()) {
+            serverName = File.separator + node;
+        } else {
+            serverName = ServerUtil.getServerName();
+            if (!serverName.isEmpty()) {
+                serverName = File.separator + serverName;
+            }
         }
         return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + serverName + File.separator + appId;
     }
 
-    public static String getFileName(String appId) {
-        return getFilepath(appId) + File.separator + LOG_NAME + LOG_NAME_EXT;
+    public static String getFileName(String appId, String node) {
+        return getFilepath(appId, node) + File.separator + LOG_NAME + LOG_NAME_EXT;
     }
 
     protected String getFileName() {
-        return getFileName(null);
+        return getFileName(null, null);
     }
 
     protected boolean checkStartLogging(LogEvent event) {
@@ -257,8 +272,8 @@ public class LogViewerAppender extends AbstractAppender {
         }
     }
 
-    public static synchronized void registerEndpoint(String profile, String appId, LogViewerEndpoint endpoint) {
-        String key = profile + ":" + appId;
+    public static synchronized void registerEndpoint(String profile, String appId, LogViewerEndpoint endpoint, String node) {
+        String key = node + ":" + profile + ":" + appId;
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
         if (endpoints == null) {
             endpoints = new HashSet<>();
@@ -267,8 +282,8 @@ public class LogViewerAppender extends AbstractAppender {
         endpoints.add(endpoint);
     }
 
-    public static synchronized void removeEndpoint(String profile, String appId, LogViewerEndpoint endpoint) {
-        String key = profile + ":" + appId;
+    public static synchronized void removeEndpoint(String profile, String appId, LogViewerEndpoint endpoint, String node) {
+        String key = node + ":" + profile + ":" + appId;
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
         if (endpoints != null) {
             endpoints.remove(endpoint);
@@ -277,9 +292,18 @@ public class LogViewerAppender extends AbstractAppender {
             }
         }
     }
+    
+    public static void broadcast(String appId, String message) {
+        broadcast(appId, message, null);
+    }
 
-    protected static void broadcast(String appId, String message) {
-        String key = HostManager.getCurrentProfile() + ":" + appId;
+    public static void broadcast(String appId, String message, String node) {
+        String key;
+        if (node == null) {
+            key = ServerUtil.getServerName() + ":" + HostManager.getCurrentProfile() + ":" + appId;
+        } else {
+            key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
+        }
         String lines[] = message.split(Strings.LINE_SEPARATOR);
         Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
         if (endpoints != null && lines.length > 0) {
@@ -306,6 +330,70 @@ public class LogViewerAppender extends AbstractAppender {
                     broadcastEndpoints.remove(key);
                 }
             }
+        }
+        if (node == null && appId !=null && !appId.isEmpty()) {
+            String[] servers = ServerUtil.getServerList();
+            if (servers.length > 1) {
+                for (String server : servers) {
+                    if (!ServerUtil.getServerName().equalsIgnoreCase(server)) {
+                        broadcastClusterNode(message, server, appId);
+                    }
+                }
+            }
+        }
+    }
+    
+    //broadcast message to cluster node with token
+    public static void broadcastClusterNode(String message, String node, String appId) {
+        String currentNode = ServerUtil.getServerName();
+        String token = getLogViewerToken(currentNode);
+        updateJsonIPWhitelist(currentNode);
+        CloseableHttpClient client = null;
+        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+        String broadcastURL = "http://" + ServerUtil.getIPAddress(node) + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
+
+        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "message", message);
+        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
+        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
+        try {
+            client = HttpClients.createDefault();
+            HttpRequestBase request = new HttpGet(broadcastURL);
+            request.setHeader("token", token);
+            HttpResponse transcationResponse = client.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    //get or create log viewer token
+    public static String getLogViewerToken(String node) {
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        Setting setting = setupManager.getSettingByProperty(node + "LogToken");
+        if (setting == null) {
+            //generate random 12 chars string
+            String token = RandomStringUtils.random(12, true, true);
+            setupManager.updateSetting(node + "LogToken", token);
+            return token;
+        }
+        return setting.getValue();
+    }
+    
+    //update or add ip address to JsonIPWhitelist
+    public static void updateJsonIPWhitelist(String node) {
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        Setting setting = setupManager.getSettingByProperty("jsonpIPWhitelist");
+        String JsonIPWhitelist = "";
+        String currentIpAddress = ServerUtil.getIPAddress(node);
+        if (setting != null) {
+            JsonIPWhitelist = setting.getValue();
+        }
+        if (!JsonIPWhitelist.contains(currentIpAddress)) {
+            //check if JsonIPWhitelist is not empty & last character is not ;
+            if (!JsonIPWhitelist.isEmpty() && !JsonIPWhitelist.substring(JsonIPWhitelist.length() - 1).equals(";")) {
+                currentIpAddress = ";" + currentIpAddress;
+            }
+            JsonIPWhitelist = JsonIPWhitelist + currentIpAddress;
+            setupManager.updateSetting("jsonpIPWhitelist", JsonIPWhitelist);
         }
     }
 }

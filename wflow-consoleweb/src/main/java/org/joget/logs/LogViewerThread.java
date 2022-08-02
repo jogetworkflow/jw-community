@@ -15,24 +15,26 @@ public class LogViewerThread implements Runnable {
     private BufferedReader reader = null;
     private String currentFilename;
     private final String appId;
+    private final String node;
     private final String profile;
     private final LogViewerEndpoint endpoint;
 
-    public LogViewerThread(String profile, String appId, LogViewerEndpoint endpoint) {
+    public LogViewerThread(String profile, String appId, LogViewerEndpoint endpoint, String node) {
         this.appId = appId;
         this.profile = profile;
         this.endpoint = endpoint;
+        this.node = node;
     }
 
     @Override
     public void run() {
-        currentFilename = LogViewerAppender.getFileName(appId) + LogViewerAppender.LOG_ROLLING_EXT;
+        currentFilename = LogViewerAppender.getFileName(appId, node) + LogViewerAppender.LOG_ROLLING_EXT;
         readFile(currentFilename);
 
-        currentFilename = LogViewerAppender.getFileName(appId);
+        currentFilename = LogViewerAppender.getFileName(appId, node);
         readFile(currentFilename);
 
-        LogViewerAppender.registerEndpoint(profile, appId, endpoint);
+        LogViewerAppender.registerEndpoint(profile, appId, endpoint, node);
         HostManager.resetProfile();
     }
     
@@ -86,7 +88,7 @@ public class LogViewerThread implements Runnable {
             }
         } catch (IOException e) {
         } finally {
-            LogViewerAppender.removeEndpoint(profile, appId, endpoint);
+            LogViewerAppender.removeEndpoint(profile, appId, endpoint, node);
             HostManager.resetProfile();
         }
     }   

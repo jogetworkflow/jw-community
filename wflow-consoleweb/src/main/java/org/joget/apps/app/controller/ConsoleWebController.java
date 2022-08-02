@@ -104,6 +104,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
@@ -6099,6 +6100,22 @@ public class ConsoleWebController {
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/logs", "/console/monitor/slogs"})
     public String appLogs(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+        boolean supportMultipleNode = false;
+        
+        Map<String, String> nodes = new ListOrderedMap();
+        String[] tempNodes = ServerUtil.getServerList();
+        for (String node : tempNodes) {
+            nodes.put(node, node);
+        }
+        Map nodeList = PagingUtils.sortMapByValue(nodes, false);
+        map.addAttribute("nodes", nodeList);
+        map.addAttribute("currentNode", ServerUtil.getServerName());
+
+        if (tempNodes.length > 1) {
+            supportMultipleNode = true;
+        }
+        map.addAttribute("supportMultipleNode", supportMultipleNode);
+        
         if (appId != null) {
             String result = checkVersionExist(map, appId, version);
             boolean protectedReadonly = false;
@@ -6120,6 +6137,18 @@ public class ConsoleWebController {
         } else {
             map.addAttribute("appId", LogViewerAppender.CONSOLE_LOG);
             return "console/monitor/systemLog";
+        }
+    }
+
+    @RequestMapping("/json/log/broadcast")
+    public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "message", required = false) String message, @RequestParam(value = "node", required = false) String node) {
+        Setting setting = setupManager.getSettingByProperty(node + "LogToken");
+        if (setting != null) {
+            String httpToken = httpRequest.getHeader("token");
+            //validate token
+            if (setting.getValue().equals(httpToken)){
+                LogViewerAppender.broadcast(appId, message, node);
+            }
         }
     }
 }

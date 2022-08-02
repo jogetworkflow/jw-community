@@ -66,6 +66,18 @@ public class ServerUtil {
         return servers.toArray(new String[0]);
     }
     
+    //getIpAddres from address.json
+    public static String getIPAddress(String server) {
+        File addressFile = new File(SetupManager.getBaseSharedDirectory() + File.separator + "glowroot" + File.separator, SecurityUtil.normalizedFileName("agent-" + server) + File.separator + "address.json");
+        String ipAddress = "";
+        try {
+            ipAddress = FileUtils.readFileToString(new File(addressFile.getPath()), "UTF-8");
+        } catch (Exception e) {
+            LogUtil.debug(ServerUtil.class.getName(), "Error read address file: " + e.getMessage());
+        }
+        return ipAddress;
+    }
+    
     protected static void writeServer() {
         Set<String> servers = new HashSet<String>();
         Gson gson = new Gson();
