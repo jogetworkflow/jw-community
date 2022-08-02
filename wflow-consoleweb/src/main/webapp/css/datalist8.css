@@ -497,6 +497,17 @@ body.rtl .dataList span.pagelinks{
     }
 }
 
+.dataList th[draggable] {
+    cursor: move;
+    position: relative;
+    padding-left: 15px !important;
+}
+.dataList th[draggable]:before {
+    content: '\205D\205D';
+    opacity: 0.5;
+    position: absolute;
+    left: 3px;
+}
 .dataList .current_dragging {
     opacity: 0.3;
 }
