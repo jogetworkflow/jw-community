@@ -336,7 +336,6 @@ public class LogViewerAppender extends AbstractAppender {
             if (servers.length > 1) {
                 for (String server : servers) {
                     if (!ServerUtil.getServerName().equalsIgnoreCase(server)) {
-                        broadcastClusterNode(message, server, appId);
                     }
                 }
             }
