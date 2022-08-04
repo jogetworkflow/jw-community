@@ -697,8 +697,10 @@ ProcessBuilder = {
             //update limit
             if (data.properties.limit !== undefined && data.properties.limit !== "") {
                 xpdlProcess['ProcessHeader']['Limit'] = data.properties.limit;
+                delete xpdlProcess['ProcessHeader']['-self-closing'];
             } else {
-                delete xpdlProcess['Limit'];
+                delete xpdlProcess['ProcessHeader']['Limit'];
+                xpdlProcess['ProcessHeader']['-self-closing'] = "true";
             }
 
             //update formal parameters
