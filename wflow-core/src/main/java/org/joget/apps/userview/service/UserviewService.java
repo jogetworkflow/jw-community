@@ -558,6 +558,77 @@ public class UserviewService {
         return ids;
     }
     
+    /**
+     * Gets the userview menu tree
+     * @param appId
+     * @param version
+     * @param userviewId
+     * @return 
+     */
+    public JSONObject getMenuTree(AppDefinition appDef, String userviewId) {
+        JSONObject obj = new JSONObject();
+        
+        Collection<UserviewDefinition> userviews = null;
+        if (userviewId != null) {
+            userviews = new ArrayList<UserviewDefinition>();
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            userviews.add(userviewDef);
+        } else {
+            userviews = appDef.getUserviewDefinitionList();
+        }
+        
+        if (userviews != null && !userviews.isEmpty()) {
+            for (UserviewDefinition userviewDef : userviews) {
+                JSONObject temp = new JSONObject();
+                
+                if (userviewDef != null) {
+                    String json = userviewDef.getJson();
+                    try {
+                        //set userview properties
+                        JSONObject userviewObj = new JSONObject(json);
+                        JSONArray categoriesArray = userviewObj.getJSONArray("categories");
+                        for (int i = 0; i < categoriesArray.length(); i++) {
+                            JSONArray arr = new JSONArray();
+
+                            JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
+                            JSONObject categoryPropObj = categoryObj.getJSONObject("properties");
+                            JSONArray menusArray = categoryObj.getJSONArray("menus");
+                            for (int j = 0; j < menusArray.length(); j++) {
+                                JSONObject menuObj = (JSONObject) menusArray.get(j);
+                                JSONObject props = menuObj.getJSONObject("properties");
+                                String id = props.getString("id");
+                                String customId = (props.has("customId"))?props.getString("customId"):null;
+                                if (customId != null && !customId.isEmpty()) {
+                                    id = customId;
+                                }
+
+                                Map opt = new HashMap();
+                                opt.put("value", id);
+                                opt.put("label", StringUtil.stripAllHtmlTag(AppUtil.processHashVariable(props.getString("label"), null, null, null)));
+                                arr.put(opt);
+                            }
+
+                            if (arr.length() > 0) {
+                                temp.put(StringUtil.stripAllHtmlTag(AppUtil.processHashVariable(categoryPropObj.getString("label"), null, null, null)), arr);
+                            }
+                        }
+
+                        //if retreive specify userview or only 1 UI, replace the root object
+                        if (userviewId != null || userviews.size() == 1) {
+                            obj = temp;
+                        } else {
+                            obj.put(StringUtil.stripAllHtmlTag(AppUtil.processHashVariable(userviewDef.getName(), null, null, null)), temp);
+                        }
+                    } catch (Exception e) {
+                        LogUtil.debug(getClass().getName(), "get userview menu tree error.");
+                    }
+                }
+            }
+        }
+        
+        return obj;
+    }
+    
     public Map convertRequestParamMap(Map params) {
         Map result = new HashMap();
         for (String key : (Set<String>) params.keySet()) {

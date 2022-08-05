@@ -2700,7 +2700,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/options")
-    public void consoleDatalistOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleDatalistOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
 
         Collection<DatalistDefinition> datalistDefinitionList = null;
 
@@ -2709,13 +2709,17 @@ public class ConsoleWebController {
             desc = false;
         }
         AppDefinition appDef = null;
-        if (version == null || version.isEmpty()) {
-            Long appVersion = appService.getPublishedVersion(appId);
-            if (appVersion != null) {
-                version = appVersion.toString();
+        if (customAppId != null && !customAppId.isEmpty()) {
+            appDef = appService.getPublishedAppDefinition(customAppId);
+        } else {
+            if (version == null || version.isEmpty()) {
+                Long appVersion = appService.getPublishedVersion(appId);
+                if (appVersion != null) {
+                    version = appVersion.toString();
+                }
             }
-        }    
-        appDef = appService.getAppDefinition(appId, version);
+            appDef = appService.getAppDefinition(appId, version);
+        }
         if (appDef != null) {
             datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
         } else {
@@ -2866,7 +2870,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/options")
-    public void consoleUserviewOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleUserviewOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
 
         Collection<UserviewDefinition> userviewDefinitionList = null;
 
@@ -2875,13 +2879,17 @@ public class ConsoleWebController {
             desc = false;
         }
         AppDefinition appDef = null;
-        if (version == null || version.isEmpty()) {
-            Long appVersion = appService.getPublishedVersion(appId);
-            if (appVersion != null) {
-                version = appVersion.toString();
+        if (customAppId != null && !customAppId.isEmpty()) {
+            appDef = appService.getPublishedAppDefinition(customAppId);
+        } else {
+            if (version == null || version.isEmpty()) {
+                Long appVersion = appService.getPublishedVersion(appId);
+                if (appVersion != null) {
+                    version = appVersion.toString();
+                }
             }
+            appDef = appService.getAppDefinition(appId, version);
         }
-        appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, sort, desc, start, rows);
         } else {
@@ -3957,6 +3965,25 @@ public class ConsoleWebController {
         }
         jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/menu/tree/options")
+    public void consoleUserviewMenuTreeOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "userviewId", required = false) String userviewId, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
+        AppDefinition appDef = null;
+        if (customAppId != null && !customAppId.isEmpty()) {
+            appDef = appService.getPublishedAppDefinition(customAppId);
+        } else {
+            if (version == null || version.isEmpty()) {
+                Long appVersion = appService.getPublishedVersion(appId);
+                if (appVersion != null) {
+                    version = appVersion.toString();
+                }
+            }
+            appDef = appService.getAppDefinition(appId, version);
+        }
+        JSONObject obj = userviewService.getMenuTree(appDef, userviewId);
+        
+        AppUtil.writeJson(writer, obj, callback);
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/workflowVariable/options")

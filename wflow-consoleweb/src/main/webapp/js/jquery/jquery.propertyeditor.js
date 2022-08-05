@@ -10902,7 +10902,16 @@ PropertyAssistant = {
     /*
      * Render options for options field
      */
-    renderOptions : function(select, options, field) {
+    renderOptions : function(select, options, field, level) {
+        var prefix = "";
+        if (level === undefined) {
+            level = -1;
+        }
+        if (level > 0) {
+            for (var i =0; i < level; i++) {
+                prefix += "&nbsp;&nbsp;&nbsp;&nbsp;";
+            }
+        }
         if ($.isArray(options)) {
             for (var i in options) {
                 var opt = options[i];
@@ -10913,7 +10922,7 @@ PropertyAssistant = {
                 if (field.showValues) {
                     label = opt.value + ' ::: ' + label;
                 }
-                optionEl.text(label);
+                optionEl.text(prefix + label);
                 
                 if (opt.syntax) {
                     optionEl.data("syntax", opt.syntax);
@@ -10924,10 +10933,19 @@ PropertyAssistant = {
         } else {
             for (var key in options) {
                 if (options.hasOwnProperty(key)) {
-                    var optGroup = $('<optgroup></optgroup>');
-                    optGroup.attr("label", key);
-                    PropertyAssistant.renderOptions(optGroup, options[key], field);
-                    $(select).append(optGroup);
+                    if (level === -1) {
+                        var optGroup = $('<optgroup></optgroup>');
+                        optGroup.attr("label", prefix + key);
+                        $(select).append(optGroup);
+                        var newLevel = level;
+                        if (!$.isArray(options[key])) {
+                            newLevel = 0;
+                        }
+                        PropertyAssistant.renderOptions(optGroup, options[key], field, newLevel+1);
+                    } else { // use for render second level tree structure
+                        $(select).append('<option disabled>'+prefix + key+'</option>');
+                        PropertyAssistant.renderOptions(select, options[key], field, level+1);
+                    }
                 }
             }
         }
@@ -10976,6 +10994,14 @@ PropertyAssistant = {
         if (field.options_ajax_method) {
             method = field.options_ajax_method;
         }
+        
+        //show loading when the option is not ready yet
+        $(select).closest('.inputOptionsField').css({
+            'pointer-event' : 'none',
+            'opacity' : 0.3,
+            'position' : 'relative'
+        });
+        $(select).closest('.inputOptionsField').append('<i class="fas fa-spinner fa-spin" style="color:#000; position:absolute; top:9px; left:15px;"></i>');
 
         PropertyAssistant.cachedAjax({
             type: method,
@@ -11005,6 +11031,13 @@ PropertyAssistant = {
                     tempOptions = newOptions;
                 }
                 PropertyAssistant.renderOptions(select, tempOptions, field);
+                
+                //remove the loading icon
+                $(select).closest('.inputOptionsField').css({
+                    'pointer-event' : 'initial',
+                    'opacity' : 1
+                });
+                $(select).closest('.inputOptionsField').find('.fa-spinner').remove();
 
                 $(select).trigger("change");
                 $(select).trigger("chosen:updated");
@@ -11103,6 +11136,9 @@ PropertyAssistant = {
                     if (syntax[i].multiple) {
                         $(editable).attr("data-multiple", syntax[i].multiple);
                     }
+                    if (syntax[i].default) {
+                        $(editable).text(syntax[i].default);
+                    }
                     $(output).append(editable);
                 }
             }
@@ -11152,6 +11188,7 @@ PropertyAssistant = {
             $(result).append(output);
             $(output).addClass("editing");
         }
+        PropertyAssistant.travelDown();
     },
     
     /*
@@ -11236,8 +11273,9 @@ PropertyAssistant = {
         }
         $(result).removeClass('editing');
         
-        if ($(result).find('> .chunk').length > 0) {
-            $(result).find('> .chunk:first-child').addClass("editing");
+        if ($(result).find('> .chunk:visible').length > 0) { //should not travel to optional hidden chunck
+            $(result).find('> .chunk:visible').eq(0).addClass("editing");
+            PropertyAssistant.updateOptionField($(result).find('> .chunk:visible').eq(0));
             return;
         }
         

@@ -1,0 +1,76 @@
+{
+    "optionGroup" : {
+        "@@assist.url.ui@@" : [
+            {
+                "value" : "MENU_ID",
+                "label" : "@@assist.url.relativeMenuURL@@",
+                "syntax" : [
+                    {
+                        "placeholder" : "MenuId",
+                        "option" : "currentUserviewMenuId",
+                        "required" : true
+                    }
+                ]
+            },
+            {
+                "value" : "#request.baseURL#/web/userview/APP/UI/KEY/MENU_ID",
+                "label" : "@@assist.url.absoluteMenuURL@@",
+                "syntax" : [
+                    "#request.baseURL#/web/userview/",
+                    {
+                        "placeholder" : "App",
+                        "option" : "appId",
+                        "required" : true
+                    },
+                    "/",
+                    {
+                        "placeholder" : "UI",
+                        "option" : "userviewId",
+                        "required" : true
+                    },
+                    "/",
+                    {
+                        "placeholder" : "Key",
+                        "default" : "_",
+                        "required" : true
+                    },
+                    "/",
+                    {
+                        "placeholder" : "MenuId",
+                        "option" : "userviewMenuId",
+                        "required" : true
+                    }
+                ]
+            }
+        ]
+    },
+    "optionField" : {
+        "currentUserviewMenuId" : {
+            "name" : "currentUserviewMenuId",
+            "label" : "@@assist.url.menu@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/userview/menu/tree/options",
+            "type" : "selectbox"
+        },
+        "appId" : {
+            "name" : "appId",
+            "label" : "@@assist.App@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app/options",
+            "type" : "selectbox"
+        },
+        "userviewId" : {
+            "name" : "userviewId",
+            "label" : "@@assist.url.UI@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/userview/options",
+            "options_ajax_on_change" : "appId:customAppId",
+            "type" : "selectbox"
+        },
+        "userviewMenuId" : {
+            "name" : "userviewMenuId",
+            "label" : "@@assist.url.menu@@",
+            "options_ajax" : "[CONTEXT_PATH]/web/json/console/app[APP_PATH]/userview/menu/tree/options",
+            "options_ajax_on_change" : "appId:customAppId;userviewId",
+            "type" : "selectbox"
+        }
+    }
+}
+
