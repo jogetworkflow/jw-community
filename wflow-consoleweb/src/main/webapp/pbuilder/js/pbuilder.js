@@ -40,7 +40,7 @@ ProcessBuilder = {
             
             $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
             
-            $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView"><i class="la la-code"></i></button>');
+            $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView" data-hide-tool data-view-control><i class="la la-code"></i></button>');
             
             $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
                 <button id="zoom-minus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomOut')+' (90%)" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
