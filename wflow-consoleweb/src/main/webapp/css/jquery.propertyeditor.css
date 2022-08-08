@@ -1263,6 +1263,11 @@ td.error .chosen-container, td.error input {
     right: 50px;
     top: 7px;
 }
+.property-type-selectbox a.builderAddNew{
+    position: absolute;
+    top: -20px;
+    right: 4px;
+}
 /* field */
 .property-editor-container select {
     text-transform: none;

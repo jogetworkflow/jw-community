@@ -2750,10 +2750,12 @@
         $("#builder-quick-nav .backToApp").remove();
         $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="far fa-edit"></i></a></div>');
         
+        CustomBuilder.builderTypes = [];
         for (var i in data) {
             var builder = data[i];
             var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
             $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
+            CustomBuilder.builderTypes.push(builder.value);
             if (builder.elements) {
                 for (var j in builder.elements) {
                     var extra = '';

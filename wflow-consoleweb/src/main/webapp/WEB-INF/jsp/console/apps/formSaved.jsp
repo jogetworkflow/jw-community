@@ -2,7 +2,21 @@
 
 <script type="text/javascript">
     if (parent && parent.CustomBuilder) {
-        parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>");
+        var handled = false;
+        var iframe = window.parent.document.getElementById('peditorCreateNew');
+        if (iframe) {
+            var $ = window.parent['jQuery'];
+            var field = $(iframe).data('field');
+            if (field) {
+                field.addNewOption('<c:out value="${formDefinition.id}"/>', '<c:out value="${formDefinition.name}"/>');
+                parent.JPopup.dialogboxes['peditorCreateNew'].hide();
+                handled = true;
+            }
+        }
+        
+        if (!handled){
+            parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>");
+        }
     }
 </script>
 

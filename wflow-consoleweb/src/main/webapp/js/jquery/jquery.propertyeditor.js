@@ -6638,10 +6638,10 @@ PropertyEditor.Type.SelectBox.prototype = {
             builder = "userview";
         } else if (lname.indexOf("processid") !== -1 || lname.indexOf("processdefid") !== -1) {
             builder = "process";
-        } else if (typeof AdvancedTools !== "undefined" && AdvancedTools !== null 
-                && AdvancedTools.treeViewer !== undefined && AdvancedTools.treeViewer !== null 
-                && AdvancedTools.treeViewer.builderType !== undefined) {
-            for (var key in AdvancedTools.treeViewer.builderType) {
+        } else if (typeof CustomBuilder !== "undefined" && CustomBuilder !== null 
+                && CustomBuilder.builderTypes !== undefined) {
+            for (var i in CustomBuilder.builderTypes) {
+                var key = CustomBuilder.builderTypes[i];
                 if (lname.indexOf(key+"id") !== -1 || lname.indexOf(key+"defid") !== -1) {
                     builder = "cbuilder/" + key;
                 }
@@ -6649,7 +6649,10 @@ PropertyEditor.Type.SelectBox.prototype = {
         }
         
         if (builder !== "") {
-            html += " <a href=\"\" target=\"_blank\" class=\"openbuilder\" data-type=\""+builder+"\" style=\"display:none;\"><i class=\"fas fa-external-link-alt\"></i></i></a>";
+            if (builder !== "process") {
+                html += " <a class=\"builderAddNew\" data-type=\""+builder+"\" title=\""+get_peditor_msg('peditor.addNewElement')+"\"><i class=\"fas fa-plus-circle\"></i></i></a>";
+            }
+            html += " <a href=\"\" target=\"_blank\" class=\"openbuilder\" data-type=\""+builder+"\" style=\"display:none;\" title=\""+get_peditor_msg('peditor.openBuilder')+"\"><i class=\"fas fa-external-link-alt\"></i></i></a>";
         }
         
         return html;
@@ -6781,8 +6784,26 @@ PropertyEditor.Type.SelectBox.prototype = {
             });
             updateLink();
         }
+        
+        if ($("#" + field.id + "_input a.builderAddNew").length > 0) {
+            $("#" + field.id + "_input a.builderAddNew").off("click");
+            $("#" + field.id + "_input a.builderAddNew").on("click", function(){
+                var type = $(this).data("type");
+                var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/' + type + '/create?builderMode=true';
+                JPopup.show("peditorCreateNew", url, {}, "");
+                $('iframe#peditorCreateNew').data('field', field);
+            });
+        }
 
         PropertyEditor.Util.supportHashField(this);
+    },
+    addNewOption: function(id, label) {
+        var field = this;
+        $("#" + field.id).append('<option value="'+PropertyEditor.Util.escapeHtmlTag(id)+'">'+PropertyEditor.Util.escapeHtmlTag(label)+'</option>');
+        $("#" + field.id).val(PropertyEditor.Util.escapeHtmlTag(id));
+        
+        $("#" + field.id).trigger("change");
+        $("#" + field.id).trigger("chosen:updated");
     },
     pageShown: function() {
         $("#" + this.id).trigger("chosen:updated");

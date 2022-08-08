@@ -2,7 +2,21 @@
 
 <script type="text/javascript">
     if (parent && parent.CustomBuilder) {
-        parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>");
+        var handled = false;
+        var iframe = window.parent.document.getElementById('peditorCreateNew');
+        if (iframe) {
+            var $ = window.parent['jQuery'];
+            var field = $(iframe).data('field');
+            if (field) {
+                field.addNewOption('<c:out value="${userviewDefinition.id}"/>', '<c:out value="${userviewDefinition.name}"/>');
+                parent.JPopup.dialogboxes['peditorCreateNew'].hide();
+                handled = true;
+            }
+        }
+        
+        if (!handled){
+            parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>");
+        }
     }
 </script>
 
