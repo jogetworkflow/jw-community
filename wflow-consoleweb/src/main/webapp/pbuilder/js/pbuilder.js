@@ -4075,6 +4075,10 @@ ProcessBuilder = {
             $(view).find('ul.nav').append('<li id="transitions-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#transitions-list-tab" role="tab" aria-controls="transitions-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.transition')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="transitions-list-tab" class="tab-pane fade show"></div>');
             
+            //render variables
+            $(view).find('ul.nav').append('<li id="variables-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#variables-list-tab" role="tab" aria-controls="variables-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.workflowVariables')+'</span></a></li>');
+            $(view).find('.tab-content').append('<div id="variables-list-tab" class="tab-pane fade show"></div>');
+            
             $(view).off("click", ".cbuilder-node-details-list");
             $(view).on("click", ".cbuilder-node-details-list", function(){
                 $(view).find(".cbuilder-node-details-list").removeClass("active");
@@ -4111,9 +4115,9 @@ ProcessBuilder = {
                     }
                     
                     if (match) {
-                        $(this).removeClass("searchHide").show();
+                        $(this).parent().removeClass("searchHide").show();
                     } else {
-                        $(this).addClass("searchHide").hide();
+                        $(this).parent().addClass("searchHide").hide();
                     }
                 });
                 
@@ -4126,7 +4130,7 @@ ProcessBuilder = {
                     $(view).find("#process-list-tabs li a").each(function(){
                         var id = $(this).attr("href");
                         
-                        var count = $(id).find('.cbuilder-node-details-list:not(.searchHide)').length;
+                        var count = $(id).find('.cbuilder-node-details:not(.searchHide)').length;
                         if (count > 0) {
                             $(this).append(' <span class="counter badge rounded-pill bg-primary text-white">'+count+'</span>');
                         }
@@ -4140,7 +4144,7 @@ ProcessBuilder = {
             $(view).find('.search-container .clear-backspace').on("click", function(){
                 $(this).hide();
                 $(this).prev("input").val("");
-                $(view).find(".cbuilder-node-details-list").show();
+                $(view).find(".cbuilder-node-details").show();
                 $(view).find("#process-list-tabs li a .counter").remove();
             });
         }
@@ -4179,7 +4183,27 @@ ProcessBuilder = {
             ProcessBuilder.renderListViewerDetails($(view), clone);
             ProcessBuilder.renderListViewerDetails($(view), start);
         }
+        
+        //render variable list
+        for (var df=0; df<process.properties.dataFields.length; df++) {
+            var dataField = process.properties.dataFields[df];
+            ProcessBuilder.renderVariableListViewerDetail($(view), dataField);
+        }
     },
+         
+    /*
+     * render the detail row in list view for variable
+     */                
+    renderVariableListViewerDetail : function(container, variable) {
+        var self = CustomBuilder.Builder;
+        var list = $(container).find("#variables-list-tab");
+        
+        var detailsDiv = $('<div class="cbuilder-node-details" ><dl class=\"cbuilder-node-details-list\" style="pointer-events:none;cursor:none;"></dl></div>');
+        $(list).append(detailsDiv);
+        var dl = detailsDiv.find('dl');
+        
+        dl.append('<dt class="header"></dt><dd><h6 class="header">'+variable.variableId+'</h6></dd>');
+    },        
     
     /*
      * render the detail row in list view
