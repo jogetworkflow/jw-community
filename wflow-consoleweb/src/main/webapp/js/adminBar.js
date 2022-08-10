@@ -65,6 +65,14 @@ var AdminBar = {
         
         return false;
     },
+    openAppComposer: function(url) {
+        if (CustomBuilder !== undefined) {
+            CustomBuilder.ajaxRenderBuilder(url);
+            return false;
+        } else {
+            return true;
+        }
+    },
     togglePinQuickOverlay: function() {
         var pinActive =  $.cookie("pinModeActive");
         if (pinActive === undefined || pinActive === null || pinActive === "true") {

@@ -14,14 +14,11 @@
         <div id="adminBar" class="adminBarInactive">
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
-            <c:set var="key" value="0" />    
-            <c:if test="${!empty param.appId && !empty param.appVersion && !empty param.userviewId}">
-                <c:set var="key" value="1" />    
+                <c:set var="key" value="1" />
                 <div class="separator"></div>
-                <div>
-                    <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
-                </div>
-            </c:if>    
+                    <div>
+                        <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" onclick="return AdminBar.openAppComposer('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders');" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
+                    </div>
                 <div class="separator"></div>
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <div>

@@ -1821,9 +1821,6 @@ body .property-editor-page-button-panel input[type=button]:hover{
 body.stop-scrolling {
     overflow: hidden;
 }
-#adminBar {
-    display:none;
-}
 
 .switchingLeft {
     -webkit-animation-duration: 2s;
@@ -2256,14 +2253,6 @@ table.diff tbody th{
 }
 #i18nView .builder-view-body{
     padding: 20px 20px 0px;
-}
-
-/* admin bar*/
-#adminControl {
-    display: none !important;
-}
-#adminBar.adminBarInactive {
-    width: 100% !important;
 }
 
 /* mode */
