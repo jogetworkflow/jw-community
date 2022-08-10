@@ -10730,6 +10730,9 @@ PropertyAssistant = {
                 }
             });
         } else {
+            $("#assistantTypeSelector").val("HASH_VARIABLE");
+            $("#assistantTypeSelector").trigger("change");
+            $("#assistantTypeSelector").trigger("chosen:updated");
             if (callback) {
                 callback(PropertyAssistant.dialog);
             }
