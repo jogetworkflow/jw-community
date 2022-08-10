@@ -336,6 +336,7 @@ public class LogViewerAppender extends AbstractAppender {
             if (servers.length > 1) {
                 for (String server : servers) {
                     if (!ServerUtil.getServerName().equalsIgnoreCase(server)) {
+                        broadcastClusterNode(message, server, appId);
                     }
                 }
             }
@@ -349,18 +350,20 @@ public class LogViewerAppender extends AbstractAppender {
         updateJsonIPWhitelist(currentNode);
         CloseableHttpClient client = null;
         HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-        String broadcastURL = "http://" + ServerUtil.getIPAddress(node) + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
+        if (httpRequest != null) {
+            String broadcastURL = "http://" + ServerUtil.getIPAddress(node) + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
 
-        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "message", message);
-        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
-        broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
-        try {
-            client = HttpClients.createDefault();
-            HttpRequestBase request = new HttpGet(broadcastURL);
-            request.setHeader("token", token);
-            HttpResponse transcationResponse = client.execute(request);
-        } catch (Exception e) {
-            e.printStackTrace();
+            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "message", message);
+            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
+            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
+            try {
+                client = HttpClients.createDefault();
+                HttpRequestBase request = new HttpGet(broadcastURL);
+                request.setHeader("token", token);
+                HttpResponse transcationResponse = client.execute(request);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     

@@ -3,11 +3,16 @@ package org.joget.commons.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.joget.commons.spring.model.Setting;
 
 public class ServerUtil {
     public static final String SYSTEM_PROPERTY_NODE_NAME = "wflow.name";
@@ -15,6 +20,7 @@ public class ServerUtil {
     protected static String serverName = null;
     protected static Map<String, Runnable> cleaningTasks = new HashMap<String, Runnable>();
     protected static Map<String, Runnable> allServersCleaningTasks = new HashMap<String, Runnable>();
+    protected static final String CLUSTER_PREFIX = "node::";
     
     public static void addServerShutdownCleaningTask(String name, Runnable runnable) {
         if (!cleaningTasks.containsKey(name)) {
@@ -66,16 +72,94 @@ public class ServerUtil {
         return servers.toArray(new String[0]);
     }
     
-    //getIpAddres from address.json
+    //read ip address from serversIP.txt
     public static String getIPAddress(String server) {
-        File addressFile = new File(SetupManager.getBaseSharedDirectory() + File.separator + "glowroot" + File.separator, SecurityUtil.normalizedFileName("agent-" + server) + File.separator + "address.json");
-        String ipAddress = "";
+        File addressFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.txt");
+        String ipAddr = "";
         try {
-            ipAddress = FileUtils.readFileToString(new File(addressFile.getPath()), "UTF-8");
+            ipAddr = FileUtils.readFileToString(new File(addressFile.getPath()), "UTF-8");
         } catch (Exception e) {
-            LogUtil.debug(ServerUtil.class.getName(), "Error read address file: " + e.getMessage());
+            LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
         }
-        return ipAddress;
+        
+        String[] serverIps = ipAddr.split(",");
+        for(String ip: serverIps){
+            if(ip.contains(server)){
+                ip = ip.substring(server.length()+1);
+                return ip;
+            }
+        }
+        return "";
+    }
+    
+    //delete ip address from serversIP.txt & servers.json
+    public static void deleteNode(String server) {
+        //delete server IP in serversIP.txt
+        File serversIPFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.txt");
+        if (Files.exists(serversIPFile.toPath())) {
+            String ipAddr = "";
+            String newIpAddr = "";
+            try {
+                ipAddr = FileUtils.readFileToString(new File(serversIPFile.getPath()), "UTF-8");
+                String[] serverIps = ipAddr.split(",");
+                if (ipAddr.contains(server)) {
+                    for (String ip : serverIps) {
+                        if (!ip.contains(server)) {
+                            if (!newIpAddr.isEmpty()) {
+                                newIpAddr += ",";
+                            }
+                            newIpAddr += ip;
+                        }
+                    }
+                    FileUtils.writeStringToFile(new File(serversIPFile.getPath()), newIpAddr, "UTF-8");
+                }
+            } catch (Exception e) {
+                LogUtil.debug(ServerUtil.class.getName(), "Error read serversIP file: " + e.getMessage());
+            }
+        }
+        //delete server in server.json
+        Set<String> servers = new HashSet<String>();
+        Gson gson = new Gson();
+        String serverFilePath = SetupManager.getBaseSharedDirectory() + "/servers.json";
+        if (Files.exists(serversIPFile.toPath())) {
+            try {
+                String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
+                servers = gson.fromJson(serverJson, new TypeToken<Set<String>>() {
+                }.getType());
+                if (servers.contains(server)) {
+                    servers.remove(server);
+                    serverJson = gson.toJson(servers);
+                    FileUtils.writeStringToFile(new File(serverFilePath), serverJson, "UTF-8");
+                }
+            } catch (Exception e) {
+                LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Get list of active cluster node
+     * allowed nodes
+     * @return 
+     */
+    public static String[] getActiveServerList() {
+        List<String> nodeList = new ArrayList<String>();
+        try {
+            // get registered nodes
+            SetupDao setupDao = (SetupDao) SecurityUtil.getApplicationContext().getBean("setupDao");
+            Collection<Setting> nodes = setupDao.find("WHERE property like '" + CLUSTER_PREFIX + "%'", null, "property", Boolean.FALSE, null, null);
+            for (Setting n : nodes) {
+                String key = n.getProperty().substring(n.getProperty().lastIndexOf(":") + 1);
+                nodeList.add(key);
+            }
+        } catch (Exception e) {
+            LogUtil.debug(ServerUtil.class.getName(), "Error getting active node: " + e.getMessage());
+        }
+        
+        if (nodeList.size() <= 0) {
+            return getServerList();
+        }
+        return nodeList.toArray(new String[0]);
     }
     
     protected static void writeServer() {

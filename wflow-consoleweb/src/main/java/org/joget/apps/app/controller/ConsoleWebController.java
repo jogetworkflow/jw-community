@@ -6130,9 +6130,13 @@ public class ConsoleWebController {
         boolean supportMultipleNode = false;
         
         Map<String, String> nodes = new ListOrderedMap();
-        String[] tempNodes = ServerUtil.getServerList();
+        String[] tempNodes = ServerUtil.getActiveServerList();
         for (String node : tempNodes) {
-            nodes.put(node, node);
+            if (node.equals(ServerUtil.getServerName())) {
+                nodes.put(node, node + ResourceBundleUtil.getMessage("console.monitor.current"));
+            } else {
+                nodes.put(node, node);
+            }
         }
         Map nodeList = PagingUtils.sortMapByValue(nodes, false);
         map.addAttribute("nodes", nodeList);
