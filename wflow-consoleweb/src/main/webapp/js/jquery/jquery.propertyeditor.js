@@ -8840,9 +8840,22 @@ PropertyEditor.Type.ElementSelect.prototype = {
             this.removePages();
             thisObj.editorObject.refresh();
         }
+        
+        //use the default api to retrieve plugin properties if url is empty
+        var defaultUrl = "[CONTEXT_PATH]/web/property/json"+thisObj.options.appPath+"/getPropertyOptions";
+        if (thisObj.properties.url === "" || thisObj.properties.url === undefined) {
+            thisObj.properties.url = defaultUrl;
+        }
+        var isDefault = true;
+        if (thisObj.properties.url !== defaultUrl) {
+            isDefault = false; // check this property type is used for plugin or not
+        }
+        
+        //check the value is empty or not
+        var isNotEmpty = (value !== "" && value !== undefined && value !== null);
 
-        //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && value !== "" && value !== undefined && value !== null && !$(anchor).hasClass("loading")) {
+        //if properties page not found, render it now. If this is used for plugin, don't render when value is empty
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && ((isDefault && isNotEmpty) || !isDefault) && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
@@ -9374,9 +9387,22 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             this.removePages(field);
             thisObj.editorObject.refresh();
         }
+        
+        //use the default api to retrieve plugin properties if url is empty
+        var defaultUrl = "[CONTEXT_PATH]/web/property/json"+thisObj.options.appPath+"/getPropertyOptions";
+        if (thisObj.properties.url === "" || thisObj.properties.url === undefined) {
+            thisObj.properties.url = defaultUrl;
+        }
+        var isDefault = true;
+        if (thisObj.properties.url !== defaultUrl) {
+            isDefault = false; // check this property type is used for plugin or not
+        }
+        
+        //check the value is empty or not
+        var isNotEmpty = (value !== "" && value !== undefined && value !== null);
 
-        //if properties page not found, render it now
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && value !== "" && value !== undefined && value !== null && !$(anchor).hasClass("loading")) {
+        //if properties page not found, render it now. If this is used for plugin, don't render when value is empty
+        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && ((isDefault && isNotEmpty) || !isDefault) && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
