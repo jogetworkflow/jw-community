@@ -2771,6 +2771,7 @@
         container.after('<span class="seperator"></span><ul class="app_tools"></ul>');
         
         var appTools = $("#builder-menu > ul.app_tools");
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.notes')+'" id="appDesc-btn" data-cbuilder-view="appDesc" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/note" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-sticky-note"></i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.envVariable')+'" id="variables-btn" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView" data-hide-tool=""><i class="lar la-file-image"></i> </a></li>');

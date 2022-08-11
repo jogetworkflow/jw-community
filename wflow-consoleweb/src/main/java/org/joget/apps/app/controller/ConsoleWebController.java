@@ -1590,9 +1590,20 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
     
+    @RequestMapping("/console/app/(*:appId)/(~:version)/note")
+    public String consoleAppNote(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        appId = SecurityUtil.validateStringInput(appId);
+        version = SecurityUtil.validateStringInput(version);
+        
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appDefinition", appDef);
+        
+        return "console/apps/note";
+    }
+    
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/note/submit", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppNote(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "description") String description) {
+    public String consoleAppNoteSubmit(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "description") String description) {
         appId = SecurityUtil.validateStringInput(appId);
         version = SecurityUtil.validateStringInput(version);
 
@@ -1602,8 +1613,9 @@ public class ConsoleWebController {
             appDef.setDescription(description);
             appDefinitionDao.merge(appDef);
         }
+        map.addAttribute("appDefinition", appDef);
 
-        return "redirect:/web/console/app/"+appId+"/"+version+"/properties";
+        return "console/apps/note";
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/unpublish", method = RequestMethod.POST)
