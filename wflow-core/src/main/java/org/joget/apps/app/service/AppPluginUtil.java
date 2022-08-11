@@ -274,21 +274,23 @@ public class AppPluginUtil implements ApplicationContextAware {
             if (key.startsWith(prefix) && !key.equals("elementUniqueKey")) { // ignore random generated elementUniqueKey
                 Object val = properties.get(keyObj);
                 String strVal = "";
-                if (val.getClass().isArray()) {
-                    // expand array
-                    for (Object el: (Object[])val) {
-                        if (el instanceof Map) {
-                            // recurse into map                            
-                            strVal = generateStyleCacheKey((Map)el, prefix);                            
-                        } else {
-                            strVal = Arrays.toString((Object[])el);
+                if (val != null) {
+                    if (val.getClass().isArray()) {
+                        // expand array
+                        for (Object el: (Object[])val) {
+                            if (el instanceof Map) {
+                                // recurse into map                            
+                                strVal = generateStyleCacheKey((Map)el, prefix);                            
+                            } else {
+                                strVal = Arrays.toString((Object[])el);
+                            }
                         }
+                    } else if (val instanceof Map) {
+                        // recurse into map 
+                        strVal = generateStyleCacheKey((Map)val, prefix);
+                    } else {
+                        strVal = val.toString();
                     }
-                } else if (val instanceof Map) {
-                    // recurse into map 
-                    strVal = generateStyleCacheKey((Map)val, prefix);
-                } else {
-                    strVal = val.toString();
                 }
                 cacheKey += key + "="+ strVal + ";";
             }
