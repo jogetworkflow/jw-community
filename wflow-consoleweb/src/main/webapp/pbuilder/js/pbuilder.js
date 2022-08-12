@@ -1049,7 +1049,7 @@ ProcessBuilder = {
                 formMapping.formUrl = (activity.properties['mapping_act_formUrl'] !== undefined)?activity.properties['mapping_act_formUrl']:"";
                 formMapping.formIFrameStyle = (activity.properties['mapping_act_formIFrameStyle'] !== undefined)?activity.properties['mapping_act_formIFrameStyle']:"";
             
-                delete formMapping['formUrl'];
+                delete formMapping['formId'];
                 delete formMapping['disableSaveAsDraft'];
             }
             formMapping.autoContinue = (activity.properties['mapping_act_autoContinue'] === "true");
@@ -3670,6 +3670,14 @@ ProcessBuilder = {
                     control_value: 'SINGLE',
                     control_use_regex: 'false'
                 },{
+                    name : 'mapping_act_formUrl',
+                    label : get_cbuilder_msg("pbuilder.label.url"),
+                    type : 'textfield',
+                    required: 'true',
+                    control_field: 'mapping_act_type',
+                    control_value: 'EXTERNAL',
+                    control_use_regex: 'false'
+                },{
                     name : 'mapping_act_formIFrameStyle',
                     label : get_cbuilder_msg("pbuilder.label.iframeStyle"),
                     type : 'codeeditor',
@@ -3783,6 +3791,14 @@ ProcessBuilder = {
                     },
                     control_field: 'mapping_act_type',
                     control_value: 'SINGLE',
+                    control_use_regex: 'false'
+                },{
+                    name : 'mapping_act_formUrl',
+                    label : get_cbuilder_msg("pbuilder.label.url"),
+                    type : 'textfield',
+                    required: 'true',
+                    control_field: 'mapping_act_type',
+                    control_value: 'EXTERNAL',
                     control_use_regex: 'false'
                 },{
                     name : 'mapping_act_formIFrameStyle',
