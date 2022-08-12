@@ -3,14 +3,21 @@ package org.joget.commons.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.joget.commons.spring.model.Setting;
 
@@ -72,49 +79,69 @@ public class ServerUtil {
         return servers.toArray(new String[0]);
     }
     
-    //read ip address from serversIP.txt
     public static String getIPAddress(String server) {
-        File addressFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.txt");
-        String ipAddr = "";
-        try {
-            ipAddr = FileUtils.readFileToString(new File(addressFile.getPath()), "UTF-8");
-        } catch (Exception e) {
-            LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
-        }
-        
-        String[] serverIps = ipAddr.split(",");
-        for(String ip: serverIps){
-            if(ip.contains(server)){
-                ip = ip.substring(server.length()+1);
-                return ip;
+        InputStream input = null;
+        File addressFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.properties");
+        if (Files.exists(addressFile.toPath())) {
+            try {
+                Properties props = new Properties();
+                input = new FileInputStream(addressFile.getPath());
+                props.load(input);
+
+                if (props.get(server) != null) {
+                    return props.getProperty(server);
+                }
+            } catch (Exception e) {
+                LogUtil.debug(ServerUtil.class.getName(), "Error read serversIP file: " + e.getMessage());
+            } finally {
+                try {
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch (IOException e) {
+                    LogUtil.debug(ServerUtil.class.getName(), "Failed to close streams: " + e.getMessage());
+                }
             }
         }
         return "";
     }
     
-    //delete ip address from serversIP.txt & servers.json
-    public static void deleteNode(String server) {
-        //delete server IP in serversIP.txt
-        File serversIPFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.txt");
+    //delete ip address from serversIP.properties & servers.json
+    public static void deleteNode(String[] inactiveNodeList) {
+        //delete server IP in serversIP.properties
+        InputStream input = null;
+        OutputStream output = null;
+        File serversIPFile = new File(SetupManager.getBaseSharedDirectory() + "/serversIP.properties");
         if (Files.exists(serversIPFile.toPath())) {
-            String ipAddr = "";
-            String newIpAddr = "";
             try {
-                ipAddr = FileUtils.readFileToString(new File(serversIPFile.getPath()), "UTF-8");
-                String[] serverIps = ipAddr.split(",");
-                if (ipAddr.contains(server)) {
-                    for (String ip : serverIps) {
-                        if (!ip.contains(server)) {
-                            if (!newIpAddr.isEmpty()) {
-                                newIpAddr += ",";
-                            }
-                            newIpAddr += ip;
-                        }
+                Properties props = new Properties();
+                input = new FileInputStream(serversIPFile.getPath());
+                props.load(input);
+                boolean removed = false;
+                for (String inactiveNode : inactiveNodeList) {
+                    if (props.get(inactiveNode) != null) {
+                        removed = true;
+                        props.remove(inactiveNode);
                     }
-                    FileUtils.writeStringToFile(new File(serversIPFile.getPath()), newIpAddr, "UTF-8");
+                }
+                //store the properties when node is removed
+                if (removed) {
+                    output = new FileOutputStream(serversIPFile.getPath());
+                    props.store(output, null);
                 }
             } catch (Exception e) {
                 LogUtil.debug(ServerUtil.class.getName(), "Error read serversIP file: " + e.getMessage());
+            } finally {
+                try {
+                    if (input != null) {
+                        input.close();
+                    }
+                    if (output != null) {
+                        output.close();
+                    }
+                } catch (IOException e) {
+                    LogUtil.debug(ServerUtil.class.getName(), "Failed to close streams: " + e.getMessage());
+                }
             }
         }
         //delete server in server.json
@@ -126,8 +153,15 @@ public class ServerUtil {
                 String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
                 servers = gson.fromJson(serverJson, new TypeToken<Set<String>>() {
                 }.getType());
-                if (servers.contains(server)) {
-                    servers.remove(server);
+                boolean removed = false;
+                for (String inactiveNode : inactiveNodeList) {
+                    if (servers.contains(inactiveNode)) {
+                        removed = true;
+                        servers.remove(inactiveNode);
+                    }
+                }
+                //write the properties when node is removed
+                if (removed) {
                     serverJson = gson.toJson(servers);
                     FileUtils.writeStringToFile(new File(serverFilePath), serverJson, "UTF-8");
                 }
@@ -208,6 +242,29 @@ public class ServerUtil {
             FileUtils.writeStringToFile(new File(serverFilePath), serverJson, "UTF-8");
         } catch (Exception e) {
             LogUtil.debug(ServerUtil.class.getName(), "Error write servers file: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Removes inactive cluster in servers.json & serversIP.properties
+     * @param activeNodes
+     */
+    public static void updateServersFile(Set<String> activeNodes) {
+        List<String> inactiveNodeList = new ArrayList<String>();
+        if (activeNodes != null) {
+            List<String> nodeList = Arrays.asList(ServerUtil.getServerList());
+            for (String node : nodeList) {
+                boolean exist = false;
+                for (String activeNode : activeNodes) {
+                    if (activeNode.substring(activeNode.lastIndexOf(":") + 1).equals(node)) {
+                        exist = true;
+                    }
+                }
+                if (!exist) {
+                    inactiveNodeList.add(node);
+                }
+            }
+            deleteNode(inactiveNodeList.toArray(new String[0]));
         }
     }
 }
