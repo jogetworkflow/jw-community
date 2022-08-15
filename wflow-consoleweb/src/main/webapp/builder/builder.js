@@ -1000,7 +1000,10 @@
 
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                 }
+                $("#save-btn").removeAttr("disabled");
             }, "text");
+        } else {
+            $("#save-btn").removeAttr("disabled");
         }
     },
 
@@ -1278,10 +1281,12 @@
     mergeAndSave: function() {
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
             CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
+                $("#save-btn").attr("disabled", "disabled");
                 $("body").addClass("no-right-panel");
                 CustomBuilder.merge(CustomBuilder.save);
             });
         } else {
+            $("#save-btn").attr("disabled", "disabled");
             CustomBuilder.merge(CustomBuilder.save);
         }
     }, 
