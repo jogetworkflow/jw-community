@@ -1547,7 +1547,7 @@ public class ConsoleWebController {
             for (AppDefinition appDef : newAppDefList) {
                 Map data = new HashMap();
                 data.put("version", appDef.getVersion().toString());
-                data.put("published", (appDef.isPublished()) ? "<div class=\"tick\"></div>" : "");
+                data.put("published", (appDef.isPublished()) ? "<span class=\"tick\"></span>" : "");
                 data.put("dateCreated", TimeZoneUtil.convertToTimeZone(appDef.getDateCreated(), null, AppUtil.getAppDateFormat()));
                 data.put("dateModified", TimeZoneUtil.convertToTimeZone(appDef.getDateModified(), null, AppUtil.getAppDateFormat()));
                 data.put("description", appDef.getDescription());

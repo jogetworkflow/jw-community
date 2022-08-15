@@ -190,7 +190,7 @@ public class PluginJsonController {
                         }
                     }
                     data.put("plugintype", type);
-                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<div class=\"tick\"></div>" : "");
+                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<span class=\"tick\"></span>" : "");
                     
                     jsonObject.accumulate("data", data);
                 }
@@ -268,7 +268,7 @@ public class PluginJsonController {
                         }
                     }
                     data.put("plugintype", type);
-                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<div class=\"tick\"></div>" : "");
+                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<span class=\"tick\"></span>" : "");
                     
                     jsonObject.accumulate("data", data);
                 }
