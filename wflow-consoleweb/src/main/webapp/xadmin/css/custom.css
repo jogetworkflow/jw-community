@@ -221,6 +221,17 @@ body.popupBody > #form-canvas{
 .x-admin-sm .menu-link .badge {
     font-size: 12px;
 }
+.sub-menu li a cite{
+    float: left;
+    max-width: 80%;
+    white-space: normal;
+}
+.badge {
+    max-width: 20%;
+}
+.sub-menu li a{
+    overflow:auto;
+}
 .menu-link.active .badge, .menu-link:hover .badge {
     background: #fff;
     color: #189f92;

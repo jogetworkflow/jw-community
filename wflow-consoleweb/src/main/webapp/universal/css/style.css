@@ -765,6 +765,16 @@ body#login #page > footer {
     border-bottom: 0; 
 }
 
+.menu-container > li > a > span:nth-child(1) {
+    float: left;
+    max-width: 80%;
+    white-space: normal;
+}
+
+.badge {
+    max-width: 20%;
+}
+
 #sidebar li ul {
     padding:0;
     list-style: none;
@@ -778,6 +788,7 @@ body#login #page > footer {
 #sidebar li ul>li>a, #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 20px 8px 65px;
     display: block;
+    overflow: auto;
 }
 .rtl #sidebar li ul>li>a, .rtl #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 65px 8px 20px;
