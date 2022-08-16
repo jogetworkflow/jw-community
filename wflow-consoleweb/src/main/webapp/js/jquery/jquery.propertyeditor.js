@@ -740,6 +740,81 @@ PropertyEditor.Util = {
             }
         }
     },
+    handleSuggestionField: function(field) {
+        if (field.properties.id_suggestion !== undefined && field.properties.id_suggestion !== null && field.properties.id_suggestion !== "") {
+            //find the listening field
+            var fieldId = field.properties.id_suggestion;
+            var fields = field.editorObject.fields;
+            if (field.parentId !== "" && field.parentId !== undefined) {
+                var parentId = field.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            if (field.repeaterFields) {
+                fields = $.extend({}, fields, field.repeaterFields);
+            }
+            
+            if (fields[fieldId] !== undefined) {
+                var  selector = "[name=\"" + fields[fieldId].id + "\"]";
+                
+                //listen to field changes and display a suggestion based on changed value
+                $(field.editor).off("change.suggestion_"+field.id, selector);
+                $(field.editor).on("change.suggestion_"+field.id, selector, function() {
+                    var targetField = fields[fieldId];
+                    var data = targetField.getData(true);
+                    var targetValue = data[fieldId];
+                    PropertyEditor.Util.displaySuggestion(field, targetValue);
+                });
+            }
+        }  
+    },
+    displaySuggestion: function(field, value) {
+        var input = $("#" + field.id);
+        $(input).parent().find('.suggestions').remove();
+        
+        var text = $('<p>'+value+'</p>').text().trim(); //remove all html tag
+        if (window['Pinyin'] !== undefined && window['Pinyin'].isSupported()) { // for Chinese
+            var pinyin = '';
+            var tokens = window['Pinyin'].parse(text);
+            var lastToken;
+            for(var i=0; i < tokens.length; i++){
+                var v = tokens[i];
+                if (v.type === 2) {
+                    pinyin += pinyin && !/\n|\s/.test(lastToken.target) ? ' ' + v.target : v.target;
+                } else {
+                    pinyin += (lastToken && lastToken.type === 2 ? ' ' : '') + v.target;
+                }
+                lastToken = v;
+            }
+            if (pinyin !== "") {
+                text = pinyin;
+            }
+        } else if (window['wanakana'] !== undefined && window['wanakana'].isJapanese(text)) { //for Japanese
+            text = window['wanakana'].toRomaji(text);
+        } else if (window['Aromanize'] !== undefined) { //for Korean
+            text = window['Aromanize'].romanize(text);
+        }
+        if (getSlug !== undefined) {
+            var lang = UI.locale.substring(0,2); 
+            text = getSlug(text, { separator: "_",  truncate: 30, lang:lang});
+        }
+        
+        var data = field.getData(true);
+        var currentValue = data[field.id];
+        
+        if(text !== "" && text !== currentValue) {
+            //render suggestion under field
+            var suggestion = $('<em class="suggestions"><i>'+get_peditor_msg('peditor.suggestion')+'</i>: <span>'+text+'</span> <a class="accept">'+get_peditor_msg('peditor.accept')+'</a><em>');
+            
+            $(suggestion).find('a.accept').on('click', function(){
+                $(input).val(text);
+                $(suggestion).remove();
+            });
+            
+            $(input).after(suggestion);
+        }
+    },
     unhandleOptionsField: function(field) {
         $(field.editor).off("change."+field.id);
     },
@@ -2835,6 +2910,8 @@ PropertyEditor.Model.Type.prototype = {
             var prefixWidth = $(container).find(".withPrefix .prefix").outerWidth(true);
             $(container).find(".withPrefix input").css("padding-left", (prefixWidth + 5) + "px");
         }
+        
+        PropertyEditor.Util.handleSuggestionField(this);
     },
     initScripting: function() {},
     handleAjaxOptions: function(options, reference) {

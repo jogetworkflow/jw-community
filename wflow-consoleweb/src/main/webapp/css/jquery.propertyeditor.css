@@ -2298,3 +2298,13 @@ body .ui-dialog .button_form.ui-dialog-content{
     height:25px !important;
     cursor: text;
 }
+.property-input .suggestions{
+    font-size: 90%;
+    color: #666;
+}
+.property-input .suggestions i {
+    font-style: italic;
+}
+.property-input .suggestions a {
+    cursor: pointer;
+}

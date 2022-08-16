@@ -79,19 +79,33 @@ FormBuilder = {
      * Render form element plugin in palette, used in /fbuidler/formBuilder.jsp
      */
     initPaletteElement : function (category, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData, tab) {
-        var found = false;
+        var found = 0;
+        var idPos = 0;
+        var labelPos = 0;
         if (propertyOptions !== null && propertyOptions !== undefined) {
             for (var i in propertyOptions) {
-                if (propertyOptions[i].properties != null && propertyOptions[i].properties !== undefined) {
+                if (propertyOptions[i].properties !== null && propertyOptions[i].properties !== undefined) {
                     for (var j in propertyOptions[i].properties) {
                         if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined) {
                             propertyOptions[i].properties[j].js_validation = 'FormBuilder.validateFieldId';
-                            found = true;
+                            propertyOptions[i].properties[j].id_suggestion = "label";
+                            found++;
+                            idPos = j;
+                        }
+                        if (propertyOptions[i].properties[j].name === "label") {
+                            found++;
+                            labelPos = j;
+                        }
+                        if (found === 2) {
                             break;
                         }
                     }
                 }
-                if (found) {
+                if (found === 2) {
+                    //swape position of id & label if id come before label
+                    if (labelPos > idPos) {
+                        propertyOptions[i].properties[idPos] = propertyOptions[i].properties.splice(labelPos, 1, propertyOptions[i].properties[idPos])[0];
+                    }
                     break;
                 }
             }

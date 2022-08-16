@@ -801,22 +801,66 @@ UserviewBuilder = {
             };
             component.builderTemplate.renderPermission = UserviewBuilder.renderPermission;
             
-            //change label to icon text field
-            var found = false;
+            //change label to icon text field and change id field to having suggestion
+            var found = 0;
+            var idPos = 0;
+            var labelPos = 0;
             for (var i in component.propertyOptions) {
                 for (var r in component.propertyOptions[i].properties) {
+                    if (component.propertyOptions[i].properties[r].name === "customId") {
+                        component.propertyOptions[i].properties[r].id_suggestion = "label";
+                        component.propertyOptions[i].properties[r].label = get_cbuilder_msg('ubuilder.menuId');
+                        found++;
+                        idPos = r;
+                    }
                     if (component.propertyOptions[i].properties[r].name === "label") {
                         component.propertyOptions[i].properties[r].type = "icon-textfield";
-                        found = true;
+                        found++;
+                        labelPos = r;
+                    }
+                    if (found === 2) {
                         break;
                     }
                 }
-                if (found) {
+                if (found === 2) {
+                    //swape position of id & label if id come before label
+                    if (labelPos > idPos) {
+                        component.propertyOptions[i].properties[idPos] = component.propertyOptions[i].properties.splice(labelPos, 1, component.propertyOptions[i].properties[idPos])[0];
+                    }
                     break;
                 }
             }
         } else if (component.type === "component") {
             component.propertyOptions.push(UserviewBuilder.getSimpleAjaxEventPropertyOptions());
+            
+            //change id field to having suggestion
+            var found = 0;
+            var idPos = 0;
+            var labelPos = 0;
+            for (var i in component.propertyOptions) {
+                for (var r in component.propertyOptions[i].properties) {
+                    if (component.propertyOptions[i].properties[r].name === "customId") {
+                        component.propertyOptions[i].properties[r].label = get_cbuilder_msg('cbuilder.id');
+                        found++;
+                        idPos = r;
+                    }
+                    if (component.propertyOptions[i].properties[r].name === "label" || component.propertyOptions[i].properties[r].name === "textContent") {
+                        found++;
+                        labelPos = r;
+                    }
+                    if (found === 2) {
+                        break;
+                    }
+                }
+                if (found === 2) {
+                    component.propertyOptions[i].properties[idPos].id_suggestion = component.propertyOptions[i].properties[labelPos].name;
+                    //swape position of id & label if id come before label
+                    if (labelPos > idPos) {
+                        component.propertyOptions[i].properties[idPos] = component.propertyOptions[i].properties.splice(labelPos, 1, component.propertyOptions[i].properties[idPos])[0];
+                    }
+                    break;
+                }
+            }
         }
     },
     

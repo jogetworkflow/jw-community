@@ -15,6 +15,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/dropzone/dropzone.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tinyColorPicker/jqColorPicker.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tooltipster/js/tooltipster.bundle.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/speakingurl/speakingurl.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/scrollTo/jquery.scrollTo.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
@@ -37,3 +38,12 @@
         });
     </script>    
 </c:if>
+<c:if test="${fn:startsWith(currentLocale, 'zh') == true}">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny-pinyin/tiny-pinyin.js"></script>
+</c:if>
+<c:if test="${fn:startsWith(currentLocale, 'ja') == true}">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/wanakana/wanakana.min.js"></script>
+</c:if>    
+<c:if test="${fn:startsWith(currentLocale, 'ko') == true}">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/aromanize-js/aromanize.js"></script>
+</c:if>   
