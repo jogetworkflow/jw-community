@@ -46,47 +46,47 @@
  
     <Loggers>
         <!-- Custom logger levels -->
-        <Logger name="bitronix.tm.twopc" level="error" additivity="false">
+        <Logger name="bitronix.tm.twopc" level="error" additivity="true">
         </Logger>
-        <Logger name="org.directwebremoting.util.SwallowingHttpServletResponse" level="error" additivity="false">
+        <Logger name="org.directwebremoting.util.SwallowingHttpServletResponse" level="error" additivity="true">
         </Logger>
-        <Logger name="org.displaytag.util.LookupUtil" level="error" additivity="false">
+        <Logger name="org.displaytag.util.LookupUtil" level="error" additivity="true">
         </Logger>        
-        <Logger name="org.hibernate" level="error" additivity="false">
+        <Logger name="org.hibernate" level="error" additivity="true">
         </Logger>
-        <Logger name="org.hibernate.tool.hbm2ddl.SchemaUpdate" level="fatal" additivity="false">
+        <Logger name="org.hibernate.tool.hbm2ddl.SchemaUpdate" level="fatal" additivity="true">
         </Logger>
-        <Logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="fatal" additivity="false">
+        <Logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="fatal" additivity="true">
         </Logger>
-        <Logger name="org.joget.apps.form.dao.FormDataLocalSessionFactoryBean" level="warn" additivity="false">
+        <Logger name="org.joget.apps.form.dao.FormDataLocalSessionFactoryBean" level="warn" additivity="true">
         </Logger>
-        <Logger name="org.joget.commons.spring.web" level="error" additivity="false">
+        <Logger name="org.joget.commons.spring.web" level="error" additivity="true">
         </Logger>
-        <Logger name="org.objectweb" level="error" additivity="false">
+        <Logger name="org.objectweb" level="error" additivity="true">
         </Logger>
-        <Logger name="org.owasp.csrfguard" level="warn" additivity="false">
+        <Logger name="org.owasp.csrfguard" level="error" additivity="true">
         </Logger>
-        <Logger name="org.springframework" level="error" additivity="false">
+        <Logger name="org.springframework" level="error" additivity="true">
         </Logger>
-        <Logger name="org.springframework.web.context.ContextLoader" level="fatal" additivity="false">
+        <Logger name="org.springframework.web.context.ContextLoader" level="fatal" additivity="true">
         </Logger>
-        <Logger name="org.springframework.beans.factory.BeanCreationException" level="fatal" additivity="false">
+        <Logger name="org.springframework.beans.factory.BeanCreationException" level="fatal" additivity="true">
         </Logger>
-        <Logger name="org.springframework.transaction.support.TransactionSynchronizationUtils" level="fatal" additivity="false">
+        <Logger name="org.springframework.transaction.support.TransactionSynchronizationUtils" level="fatal" additivity="true">
         </Logger>
-        <Logger name="DatabaseManager" level="error" additivity="false">
+        <Logger name="DatabaseManager" level="error" additivity="true">
         </Logger>
-        <Logger name="Scripting" level="error" additivity="false">
+        <Logger name="Scripting" level="error" additivity="true">
         </Logger>
-        <Logger name="Shark" level="error" additivity="false">
+        <Logger name="Shark" level="error" additivity="true">
         </Logger>
-        <Logger name="TimeProfiler" level="error" additivity="false">
+        <Logger name="TimeProfiler" level="error" additivity="true">
         </Logger>
-        <Logger name="TimeProfiler-InstancePersistence" level="error" additivity="false">
+        <Logger name="TimeProfiler-InstancePersistence" level="error" additivity="true">
         </Logger>
-        <Logger name="TimeProfiler-EventAudit" level="error" additivity="false">
+        <Logger name="TimeProfiler-EventAudit" level="error" additivity="true">
         </Logger>
-        <Logger name="TimeProfiler-EventAudit" level="error" additivity="false">
+        <Logger name="TimeProfiler-EventAudit" level="error" additivity="true">
         </Logger>
 
         <!-- Email log file -->
