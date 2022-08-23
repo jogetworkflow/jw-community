@@ -1000,10 +1000,14 @@
 
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                 }
-                $("#save-btn").removeAttr("disabled");
+                setTimeout(function(){
+                    $("#save-btn").removeAttr("disabled");
+                }, 3000);
             }, "text");
         } else {
-            $("#save-btn").removeAttr("disabled");
+            setTimeout(function(){
+                $("#save-btn").removeAttr("disabled");
+            }, 1000);
         }
     },
 
