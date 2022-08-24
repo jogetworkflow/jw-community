@@ -523,6 +523,12 @@
             
             $("body").removeClass("initializing");
             CustomBuilder.intBuilderMenu();
+                 
+            HelpGuide.clear();
+            HelpGuide.key = "help.web.console.app.builder."+CustomBuilder.builderType;
+            HelpGuide.base = CustomBuilder.contextPath;
+            HelpGuide.attachTo = "#help-guide-container";
+            HelpGuide.show(); 
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
@@ -3562,6 +3568,17 @@ _CustomBuilder.Builder = {
 
         CustomBuilder.update();
         self.triggerChange();
+    },
+    
+    /*
+     * Select first element in canvas
+     */
+    selectFirst:  function() {
+        var self = CustomBuilder.Builder;
+        var first = self.frameBody.find('[data-cbuilder-classname]:not([data-cbuilder-uneditable])').first();
+        if (first) {
+            self.selectNode(first, false);
+        }
     },
     
     /*

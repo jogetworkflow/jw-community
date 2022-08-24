@@ -103,7 +103,6 @@
                 <c:if test="${isAnonymous}">
                 <a href="${pageContext.request.contextPath}/web/login" id="header-login"><i class="fas fa-sign-in-alt"></i> <span><fmt:message key="console.header.top.label.login"/></span></a>
                 </c:if>
-                <a id="main-action-help"><i class="fas fa-info-circle"></i></a>
             </div>
         </div>
         <div id="container">

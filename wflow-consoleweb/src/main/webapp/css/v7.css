@@ -117,6 +117,11 @@ body:not(#login) #footer {
     box-shadow: 2px 4px 2px -2px rgba(0, 0, 0, .3);
     margin-bottom: 1px;
 }
+#nav-title #main-action-help {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
 #nav-title p span {
     display: block;
 }
@@ -1969,4 +1974,3 @@ span.dot_yellow{
         margin-top: 35px;
     }
 }
-

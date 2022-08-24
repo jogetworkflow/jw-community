@@ -943,6 +943,14 @@ HelpGuide = {
     key: null,
     definition: null,
     
+    clear: function(){
+        HelpGuide.hide();
+        if(window['guiders'] != undefined){
+            guiders._guiders = {};
+        }
+        $("#main-action-help").remove();
+    },
+    
     enable: function() {
         $.cookie("helpGuide", "true", { expires: 3650, path:HelpGuide.base });
     },
@@ -998,6 +1006,7 @@ HelpGuide = {
         if(window['guiders'] != undefined){
             guiders.hideAll();
         }
+        $('body .guider_hloverlay').hide();
     },
     
     determineKey: function() {
@@ -1018,19 +1027,20 @@ HelpGuide = {
 
     insertButton: function(div) {
         // create button
-        var button = $('<span id="main-action-help"><i class="fa fas fa-info-circle"></i></span>');
+        var button = $('<a id="main-action-help"><i class="fa fas fa-info-circle"></i></a>');
         
         // insert button
         if ($("#main-action-help").length == 0) {
             if (!div) {
                 div = document.body;
             }
-            $(div).prepend(button);
+            $(div).append(button);
         }
         
         // display icon and set event handler
         $("#main-action-help").show();
-        $("#main-action-help").click(function() {
+        $("#main-action-help").click(function(e) {
+            e.preventDefault();
             HelpGuide.hide();
             HelpGuide.enable();
             HelpGuide.show();
@@ -1065,17 +1075,22 @@ HelpGuide = {
                     // loop thru guides
                     for (i=0; i<helpDefObj.length; i++) {
                         var def = helpDefObj[i];
-                        HelpGuide.displayGuide(def);
+                        HelpGuide.displayGuide(def, i, helpDefObj.length);
                     }
                 }, 500);
             }
         }
     },
     
-    displayGuide: function(def) {
+    displayGuide: function(def, i, total) {
         if(window['guiders'] != undefined){
             var guider = guiders._guiders[def.id]; 
             if (!guider) {
+                def.onShow = HelpGuide.guiderOnShow;
+                
+                def.current = i;
+                def.steps = total;
+                
                 guider = guiders.createGuider(def);
                 if (def.show) {
                     guider.show();
@@ -1083,6 +1098,44 @@ HelpGuide = {
             } else if (def.show) {
                 guiders.show(def.id);
             }
+        }
+    },
+    
+    guiderOnShow : function(guider) {
+        if (guider.init === undefined) {
+            //add steps to guider
+            $(guider.elem).find('.guider_buttons').append('<spn class="steps">'+(guider.current+1)+'/'+guider.steps+'</span>')
+            guider.init = true;
+        }
+        
+        if (guider.script !== undefined) {
+            try {
+                eval(guider.script);
+            } catch (err) {}
+        }
+        
+        if (guider.highlight === undefined) {
+            guider.highlight = guider.attachTo;
+        }
+        
+        //if highlight
+        if (guider.highlight !== false) {
+            if ($('body .guider_hloverlay').length === 0) {
+                $('body').append('<div class="guider_hloverlay top"></div><div class="guider_hloverlay right"></div><div class="guider_hloverlay bottom"></div><div class="guider_hloverlay left"></div>');
+            }
+
+            var offset = $(guider.highlight).offset();
+            var width = $(guider.highlight).outerWidth();
+            var height = $(guider.highlight).outerHeight();
+            var pad = 5;
+            $('.guider_hloverlay.top').css({top:'0px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', height: (offset.top - pad) + 'px'});
+            $('.guider_hloverlay.right').css({top:'0px', left: (offset.left+width+pad) + 'px', bottom: '0px', right: '0px'});
+            $('.guider_hloverlay.bottom').css({top:(offset.top+height+pad) + 'px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', bottom: '0px'});
+            $('.guider_hloverlay.left').css({top:'0px', left: '0px', bottom: '0px', width: (offset.left-pad) + 'px'});
+
+            $('body .guider_hloverlay').show();
+        } else {
+            $('body .guider_hloverlay').hide();
         }
     },
     

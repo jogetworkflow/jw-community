@@ -131,3 +131,24 @@
   background-position: 0px -84px;
   left: -42px;
 }
+
+body .guider{
+    padding: 15px;
+}
+body .guider h1{
+    font-size: 18px;
+}
+body .guider .steps{
+    font-size: 14px;
+    color: #888;
+}
+body .guider_hloverlay{
+    background: #00000099;
+    position: fixed;
+    display: block;
+    z-index: 200000000;
+}
+body .guider_button:hover,
+body .guider_button {
+    text-decoration: none;
+}

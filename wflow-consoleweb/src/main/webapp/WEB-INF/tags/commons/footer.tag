@@ -107,7 +107,7 @@
 
 <script type="text/javascript">
     HelpGuide.base = "${pageContext.request.contextPath}"
-    HelpGuide.attachTo = "#home-container, #login-container, #main";
+    HelpGuide.attachTo = "body.webconsole #header-links, body:not(.webconsole) #nav-title";
     HelpGuide.show();
 </script>
 

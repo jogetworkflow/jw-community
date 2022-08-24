@@ -82,6 +82,7 @@
                     <div id="top-panel-main">
                         <div id="builderElementName" style="color:<c:out value="${builderColor}"/>;">
                             <div class="title"><span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                            <span id="help-guide-container"></span>
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
                                 <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
@@ -93,8 +94,8 @@
                                 <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
                                     <i class="las la-pencil-ruler"></i> <span><fmt:message key="ubuilder.design"/></span>
                                 </button>
-                                <button style="display:none" class="btn btn-light" title="<fmt:message key="ubuilder.properties"/>" id="properties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool data-view-control>
-                                    <i class="la la-cog"></i> <span><fmt:message key="ubuilder.properties"/></span>
+                                <button style="display:none" class="btn btn-light" title="<fmt:message key="ubuilder.setting"/>" id="properties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                    <i class="la la-cog"></i> <span><fmt:message key="ubuilder.setting"/></span>
                                 </button>
                                 <button style="display:none" class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
                                     <i class="fa-stack" style="font-size: 50%;"><i class="las la-file-alt fa-stack-2x"></i><i class="las la-search fa-stack-2x" style="transform: rotate(270deg); position: absolute; top: 2px; left: 4px;"></i></i> <span style="top:0px;"><fmt:message key="ubuilder.preview"/></span>
@@ -338,8 +339,8 @@
 
                             CustomBuilder.initBuilder(function() {
                                 CustomBuilder.loadJson($("#cbuilder-json").val());
-                            });
-                        });
+                            }); 
+                        });  
                 </script>
                 <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
                     <jsp:param name="appId" value="${appDefinition.id}"/>
