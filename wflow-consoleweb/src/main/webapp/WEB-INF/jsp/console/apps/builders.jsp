@@ -114,12 +114,6 @@
                 name  : 'name',
                 required : 'true',
                 type : 'textfield'
-            },
-            {
-                label : '<ui:msgEscJS key="console.app.common.label.description"/>',
-                name  : 'notes',
-                type : 'codeeditor',
-                mode : 'text'
             }
         ]
     },
