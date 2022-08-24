@@ -19,6 +19,8 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagingUtils;
+import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONObject;
 
 public class JsonApiDatalistBinder extends DataListBinderDefault {
     
@@ -54,7 +56,29 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
     
     @Override
     public DataListColumn[] getColumns() {
-        Map<String,Object> results = call(null);
+        Map<String,Object> results = null;
+        if (!getPropertyString("sampleResponse").isEmpty()) {
+            String jsonResponse = getPropertyString("sampleResponse").trim();
+            if (jsonResponse.startsWith("[") && jsonResponse.endsWith("]")) {
+                jsonResponse = "{ \"response\" : " + jsonResponse + " }";
+            } else if (!jsonResponse.startsWith("{") && !jsonResponse.endsWith("}")) {
+                jsonResponse = "{ \"response\" : \"" + jsonResponse + "\" }";
+            }
+            if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                LogUtil.info(JsonApiUtil.class.getName(), jsonResponse);
+            }
+            try {
+                results = PropertyUtil.getProperties(new JSONObject(jsonResponse));
+            } catch (Exception e) {
+                LogUtil.error(getClassName(), e, "");
+            }
+            if (results == null) {
+                results = new HashMap<String, Object>();
+            }
+            setProperty("jsonResult", results);
+        } else {
+            results = call(null);
+        }
         Map<String, DataListColumn> columns = new HashMap<String, DataListColumn>();
         
         if (results != null) {
@@ -164,12 +188,10 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                 }
             }
         } else if (o instanceof Map) {
-            Map<String, Object> newData = new HashMap<String, Object>();
-            newData.putAll(data);
-            
             if (prefix.equals(base)) {
+                data = new HashMap<String, Object>();
                 prefix = "";
-                resultList.add(newData);
+                resultList.add(data);
             }
             
             if (!prefix.isEmpty()) {
@@ -184,11 +206,11 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                     last = m.get(k);
                     lastKey = k.toString();
                 } else {
-                    recursiveGetData(m.get(k), resultList, newData, prefix + k.toString(), base);
+                    recursiveGetData(m.get(k), resultList, data, prefix + k.toString(), base);
                 }
             }
             if (last != null) {
-                recursiveGetData(last, resultList, newData, prefix + lastKey, base);
+                recursiveGetData(last, resultList, data, prefix + lastKey, base);
             }
         } else {
             data.put(prefix, o);
