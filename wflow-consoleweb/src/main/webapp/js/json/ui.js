@@ -1091,6 +1091,74 @@ HelpGuide = {
                 def.current = i;
                 def.steps = total;
                 
+                //auto adjust position
+                if (def.position !== undefined && def.position !== 0) {
+                    var atOffset = $(def.attachTo).offset();
+                    var atWidth = $(def.attachTo).outerWidth();
+                    var atHeight = $(def.attachTo).outerHeight();
+                    var scWidth = $(window).width();
+                    var scHeight = $(window).height();
+                    var wlimit = atOffset.left + atWidth + 400;
+                    var hlimit = atOffset.top + atHeight + 150;
+                    if (def.position >= 2 & def.position <= 4) { //right
+                        if (wlimit > scWidth) {
+                            if (atOffset.left - 400 < 0) {
+                                def.position = 0;
+                            } else {
+                                if (def.position === 2) {
+                                    def.position = 10;
+                                } else if (def.position === 3) {
+                                    def.position = 9;
+                                } else if (def.position === 4) {
+                                    def.position = 8;
+                                }
+                            }
+                        }
+                    } else if (def.position >= 8 & def.position <= 10) { //left
+                        if (atOffset.left - 400 < 0) {
+                            if (wlimit > scWidth) {
+                                def.position = 0;
+                            } else {
+                                if (def.position === 10) {
+                                    def.position = 2;
+                                } else if (def.position === 9) {
+                                    def.position = 3;
+                                } else if (def.position === 8) {
+                                    def.position = 4;
+                                }
+                            }
+                        }
+                    } else if (def.position >= 5 & def.position <= 7) { //bottom
+                        if (hlimit > scHeight) {
+                            if (atOffset.top - 150 < 0) {
+                                def.position = 0;
+                            } else {
+                                if (def.position === 5) {
+                                    def.position = 1;
+                                } else if (def.position === 6) {
+                                    def.position = 12;
+                                } else if (def.position === 7) {
+                                    def.position = 11;
+                                }
+                            }
+                        }
+                    } else { //top
+                        if (atOffset.top - 150 < 0) {
+                            if (hlimit > scHeight) {
+                                def.position = 0;
+                            } else {
+                                if (def.position === 1) {
+                                    def.position = 5;
+                                } else if (def.position === 12) {
+                                    def.position = 6;
+                                } else if (def.position === 11) {
+                                    def.position = 7;
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 guider = guiders.createGuider(def);
                 if (def.show) {
                     guider.show();
