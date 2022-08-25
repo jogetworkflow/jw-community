@@ -189,7 +189,9 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             }
         } else if (o instanceof Map) {
             if (prefix.equals(base)) {
+                Map<String, Object> parentData = data;
                 data = new HashMap<String, Object>();
+                data.putAll(parentData);
                 prefix = "";
                 resultList.add(data);
             }
