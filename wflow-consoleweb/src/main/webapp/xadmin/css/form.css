@@ -921,3 +921,16 @@ body .handsontable input, .handsontable textarea{
         width: calc(100% - 42px);
     }
 }
+
+.form-edit-btn{
+    right: 22px;
+}
+body.rtl .form-edit-btn{
+    left: 22px;
+}
+.form-edit-btn.top{
+    top:23px;
+}
+.form-edit-btn.bottom{
+    bottom: 31px;
+}

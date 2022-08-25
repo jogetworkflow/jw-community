@@ -1143,3 +1143,18 @@ body.rtl .handsontable .htCore tr td:last-child {
         width: 100%;
     }
 }
+
+.form-edit-btn{
+    position: absolute !important;
+    right: 5px;
+}
+body.rtl .form-edit-btn{
+    right: auto;
+    left: 5px;
+}
+.form-edit-btn.top{
+    top:5px;
+}
+.form-edit-btn.bottom{
+    bottom:20px;
+}

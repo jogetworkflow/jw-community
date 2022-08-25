@@ -759,3 +759,18 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 body.rtl .ht_clone_left, body.rtl .ht_clone_top, body.rtl .ht_clone_top_left_corner  { left: unset !important; right:0;}
 body.rtl .handsontableInputHolder textarea {position:absolute; left:0}
 body.rtl .handsontable .htCore tr th:last-child, body.rtl .handsontable .htCore tr td:last-child {border-left-width:1px !important;}
+
+.form-edit-btn{
+    position: absolute !important;
+    right: 5px;
+}
+body.rtl .form-edit-btn{
+    right: auto;
+    left: 5px;
+}
+.form-edit-btn.top{
+    top:5px;
+}
+.form-edit-btn.bottom{
+    bottom:30px;
+}

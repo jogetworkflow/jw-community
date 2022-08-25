@@ -3,6 +3,7 @@
 <style>
     .viewForm-body-content{
         padding:10px;
+        position:relative;
     }
     .viewForm-body-header{
         font-size:16px;
@@ -87,7 +88,8 @@
             <jsp:include page="../../client/app/formView.jsp" flush="true" />
             
             <c:if test="${!empty properties.editLink}">
-                <div><a class="btn btn-primary pull-right" href="<c:out value="${properties.editLink}" escapeXml="true"/>"><c:out value="${properties.editButtonLabel}" escapeXml="false"/></a></div>
+                <a class="btn btn-primary pull-right form-edit-btn top" href="<c:out value="${properties.editLink}" escapeXml="true"/>"><c:out value="${properties.editButtonLabel}" escapeXml="false"/></a>
+                <a class="btn btn-primary pull-right form-edit-btn bottom" href="<c:out value="${properties.editLink}" escapeXml="true"/>"><c:out value="${properties.editButtonLabel}" escapeXml="false"/></a>
             </c:if>   
         </c:when>
         <c:when test="${properties.view eq 'formUnavailable'}">
