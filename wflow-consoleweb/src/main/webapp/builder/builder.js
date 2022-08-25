@@ -2287,6 +2287,8 @@
         $("body").addClass("no-right-panel");
         
         $("body").trigger($.Event("viewport.change", {"view": view}));
+        
+        CustomBuilder.checkPropertiesPanelOverlapWithCanvas();
     },
     
     /*
@@ -2311,6 +2313,22 @@
         } else {
             $("#right-panel .property-editor-container").removeClass("wider");
         }
+        
+        CustomBuilder.checkPropertiesPanelOverlapWithCanvas();
+    },
+    
+    /*
+     * check properties panel overlay with canvas
+     */
+    checkPropertiesPanelOverlapWithCanvas : function() {
+        $("#right-panel").removeClass("overlap");
+        setTimeout(function(){
+            var pOffset = $("#right-panel").offset();
+            var cOffset = $("#builder_canvas").offset();
+            if (pOffset.left < (cOffset.left + $("#builder_canvas").outerWidth())) {
+                $("#right-panel").addClass("overlap");
+            }
+        }, 2000); //add some delay to make sure the properties panel is fully open
     },
     
     /*
@@ -3882,6 +3900,7 @@ _CustomBuilder.Builder = {
      */
     _showPropertiesPanel : function(target, data, component) {
         var self = CustomBuilder.Builder;
+        $("body").removeClass('enter-canvas');
         
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("disable-select-edit")) {
             var supportProps = component.builderTemplate.isSupportProperties(data, component);
@@ -3942,9 +3961,11 @@ _CustomBuilder.Builder = {
     _initHighlight: function () {
 
         var self = CustomBuilder.Builder;
-
+        
         self.frameHtml.off("mousemove.builder touchmove.builder");
         self.frameHtml.on("mousemove.builder touchmove.builder", function (event, parentEvent) {
+            $("body").addClass('enter-canvas');
+            
             var x = 0;
             var y = 0;
             
@@ -5016,36 +5037,37 @@ _CustomBuilder.Builder = {
             }
         });
 
-        $('body').off('mousemove.builder touchmove.builder');
-        $('body').on('mousemove.builder touchmove.builder', function (event) {
+        $(document).off('mousemove.builder touchmove.builder');
+        $(document).on('mousemove.builder touchmove.builder', function (event) {
+            var x = 0;
+            var y = 0;
+            if (event.type === "touchmove") {
+                x = event.touches[0].clientX;
+                y = event.touches[0].clientY;
+                if (event.touches[0].originalEvent) {
+                    x = event.touches[0].originalEvent.clientX;
+                    y = event.touches[0].originalEvent.clientY;
+                }
+            } else {
+                x = event.clientX;
+                y = event.clientY;
+                if (event.originalEvent) {
+                   x = event.originalEvent.clientX;
+                   y = event.originalEvent.clientY;
+                }
+            }
+            
             if (self.iconDrag && self.isDragging == true)
             {
                 event.stopPropagation();
                 event.stopImmediatePropagation();
                 
-                var x = 0;
-                var y = 0;
-                if (event.type === "touchmove") {
-                    x = event.touches[0].clientX;
-                    y = event.touches[0].clientY;
-                    if (event.touches[0].originalEvent) {
-                        x = event.touches[0].originalEvent.clientX;
-                        y = event.touches[0].originalEvent.clientY;
-                    }
-                } else {
-                    x = event.clientX;
-                    y = event.clientY;
-                    if (event.originalEvent) {
-                       x = event.originalEvent.clientX;
-                       y = event.originalEvent.clientY;
-                    }
-                }
                 self.iconDrag.css({'left': x - 50, 'top': y - 45});
                 
                 var elementMouseIsOver = document.elementFromPoint(x, y);
 
                 //if drag elements hovers over iframe switch to iframe mouseover handler	
-                if (elementMouseIsOver && elementMouseIsOver.tagName == 'IFRAME')
+                if (elementMouseIsOver && $(elementMouseIsOver).is(self.documentFrame))
                 {
                     if (event.type === "touchmove") {
                         self.frameBody.trigger("touchmove", event);
@@ -5055,6 +5077,25 @@ _CustomBuilder.Builder = {
                     event.stopPropagation();
                     self.selectNode(false);
                 }
+            }
+            
+            //use for transparent the properties editor when hover over canvas
+            if ($("body").hasClass('enter-canvas')) {
+                var elements = document.elementsFromPoint(x, y);
+                var found = false;
+                for (var i = 0; i < elements.length; i++) {
+                    if ($(elements[i]).is(self.documentFrame)) {
+                        found = true;
+                        break
+                    }
+                }
+                if (found) {
+                    $("body").addClass('enter-canvas');
+                } else {
+                    $("body").removeClass('enter-canvas');
+                }
+            } else {
+                $("body").removeClass('enter-canvas');
             }
         });
     },
