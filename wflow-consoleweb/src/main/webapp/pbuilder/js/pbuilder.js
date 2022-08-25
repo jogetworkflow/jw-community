@@ -175,6 +175,7 @@ ProcessBuilder = {
             $('#process-selector .process_action').append(' <a id="process-delete-btn" title="'+get_cbuilder_msg("cbuilder.remove")+'" style=""><i class="la la-trash"></i></a>');
             $('#process-selector .process_action').append('&nbsp;&nbsp;&nbsp;<a class="graybtn" id="process-clone-btn" title="'+get_cbuilder_msg("cbuilder.clone")+'" style=""><i class="la la-copy"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-add-btn" title="'+get_cbuilder_msg("cbuilder.addnew")+'" style=""><i class="la la-plus"></i></a>');
+            $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-def-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessDef")+'" style=""><i class="las la-notes-medical"></i></a>');
             
             $("#process-edit-btn").on("click", function(event){
                 ProcessBuilder.editProcess();
@@ -193,6 +194,19 @@ ProcessBuilder = {
             });
             $("#process-add-btn").on("click", function(event){
                 ProcessBuilder.addProcess();
+                event.preventDefault();
+                return false;
+            });
+            $("#process-copy-def-btn").on("click", function(event){
+                var processDefId = CustomBuilder.appId + ":latest:" + ProcessBuilder.currentProcessData.properties.id;
+                var $temp = $("<input style='height:1px;opacity:0'>");
+                $("body").append($temp);
+                $temp.val(processDefId).select();
+                document.execCommand("copy");
+                $temp.remove();
+                
+                CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
+                
                 event.preventDefault();
                 return false;
             });

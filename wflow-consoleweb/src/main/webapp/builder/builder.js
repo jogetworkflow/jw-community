@@ -1145,7 +1145,7 @@
     /*
      * Show notifcation message
      */
-    showMessage: function(message, type) {
+    showMessage: function(message, type, center) {
         if (message && message !== "") {
             var id = "toast-" + (new Date()).getTime();
             var delay = 3000;
@@ -1160,7 +1160,11 @@
                 </button>\
               </div>');
             
+            $("#builder-message").removeClass('center');
             $("#builder-message").append(toast);
+            if (center) {
+                $("#builder-message").addClass('center');
+            }
             $('#'+id).toast({delay : delay});
             $('#'+id).toast("show");
             $('#'+id).on('hidden.bs.toast', function () {

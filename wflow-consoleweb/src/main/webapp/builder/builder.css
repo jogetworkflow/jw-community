@@ -2117,6 +2117,10 @@ body.quick-nav-shown #builder-quick-nav {
     right: calc(var(--builder-right-panel-width) + 15px);
     z-index: 1000;
 }
+#builder-message.center{
+    right: 50% !important;
+    transform: translateX(50%);
+}
 #builder-message .toast{
     position: relative;
     padding: 15px 35px 15px 15px;
