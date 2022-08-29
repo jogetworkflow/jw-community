@@ -172,6 +172,7 @@ public class UserviewService {
         requestParameters.put("embed", Boolean.toString(embed));
         requestParameters.put("appId", appDef.getAppId());
         requestParameters.put("appVersion", appDef.getVersion().toString());
+        requestParameters.put("key", (key != null)?key:"");
 
         String appId = appDef.getId();
         String appVersion = appDef.getVersion().toString();

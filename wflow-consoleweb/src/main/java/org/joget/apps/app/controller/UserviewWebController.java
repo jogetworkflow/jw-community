@@ -67,7 +67,7 @@ public class UserviewWebController {
         }
         
         //check for empty key
-        if (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE)) {
+        if (key == null || (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE))) {
             key = "";
         }
         
