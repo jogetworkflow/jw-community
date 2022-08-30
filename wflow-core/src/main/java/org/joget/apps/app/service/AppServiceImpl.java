@@ -1593,7 +1593,10 @@ public class AppServiceImpl implements AppService {
         if (form != null) {
             try {
                 formData = formService.submitForm(form, formData, ignoreValidation);
-                FormUtil.executePostFormSubmissionProccessor(form, formData);
+                
+                if (formData.getRequestParameter("_json") == null && formData.getRequestParameter("_nonce") == null) { //don't execute for embed form
+                    FormUtil.executePostFormSubmissionProccessor(form, formData);
+                }
             } catch (Exception ex) {
                 String formId = FormUtil.getElementParameterName(form);
                 formData.addFormError(formId, "Error storing data: " + ex.getMessage());
