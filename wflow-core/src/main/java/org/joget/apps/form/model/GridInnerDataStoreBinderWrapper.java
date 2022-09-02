@@ -17,6 +17,7 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     protected boolean deleteSubformData = false;
     protected boolean abortProcess = false;
     protected boolean deleteFiles = false;
+    protected FormData formData = null;;
     
     public String getName() {
         return "GridInnerDataStoreBinderWrapper";
@@ -82,6 +83,8 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     
 
     public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
+        this.formData = formData;
+        
         //handle deleted row inner form/grid data
         handleDeletedRows(element, rows, formData, isDeleteGridData(), isDeleteSubformData(), isAbortProcess(), isDeleteFiles());
         
@@ -179,7 +182,17 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                         formService.recursiveExecuteFormStoreBinders(innerForm, e, rowFormData);
                     }
                 }
+            } else {
+                rowFormData = new FormData();
+                rowFormData.setPrimaryKeyValue(r.getId());
+                rowFormData.addRequestParameterValues(FormUtil.FORM_META_ORIGINAL_ID, new String[]{r.getId()});
             }
+            
+            if (this.formData != null && this.formData.getRequestParameter("saveAsDraft") != null) {
+                rowFormData.addRequestParameterValues("saveAsDraft", this.formData.getRequestParameterValues("saveAsDraft"));
+            }
+
+            FormUtil.executePostFormSubmissionProccessor(innerForm, rowFormData);
         }
     }
     

@@ -48,7 +48,7 @@ PwaUtil = {
             reconnect: false
         };
 
-        if (!navigator.serviceWorker || PwaUtil.isEmbedded) {
+        if (!navigator.serviceWorker) {
             return;
         }
 
@@ -174,7 +174,7 @@ PwaUtil = {
     },
 
     register: function () {
-        if (navigator.serviceWorker && !PwaUtil.isEmbedded) {
+        if (navigator.serviceWorker) {
             function indexesOf(string, substring){
                 var a=[], i=-1;
                 while((i=string.indexOf(substring,i+1)) >= 0) a.push(i);
@@ -185,6 +185,10 @@ PwaUtil = {
 
             var swScope = PwaUtil.serviceWorkerPath.substring(0, substringIndex);
 
+            if (PwaUtil.isEmbedded) {
+                swScope = swScope.replace('/web/userview', '/web/embed/userview');
+            }
+            
             PwaUtil.registerBaseServiceWorker();
 
             console.log('registering service worker, scope: ' + swScope);
@@ -247,7 +251,7 @@ PwaUtil = {
     },
 
     registerBaseServiceWorker: function () {
-        if (navigator.serviceWorker && !PwaUtil.isEmbedded) {
+        if (navigator.serviceWorker) {
             console.log('registering base service worker, scope: ' + PwaUtil.contextPath + '/');
 
             return navigator.serviceWorker.register(PwaUtil.contextPath + '/basesw.js', { scope: PwaUtil.contextPath + '/' })
@@ -352,7 +356,7 @@ PwaUtil = {
     },
 
     showOfflineIndicator: function () {
-        if(PwaUtil.isEmbedded){
+        if(PwaUtil.isIframe()){
             return;
         }
 
@@ -371,6 +375,13 @@ PwaUtil = {
         $offlineIndicator.show();
     },
 
+    isIframe: function () { // not to display offline for dashboard iframe
+        if (PwaUtil.isEmbedded && window.self !== window.top) {
+            return true;
+        }
+        return false;
+    },
+    
     isReachable: function(url) {
         /**
          * Note: fetch() still "succeeds" for 404s on subdirectories,

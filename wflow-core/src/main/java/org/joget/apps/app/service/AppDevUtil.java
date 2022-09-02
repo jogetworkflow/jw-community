@@ -895,6 +895,10 @@ public class AppDevUtil {
             return;
         }
         
+        if (fileContents == null) {
+            fileContents = "";
+        }
+        
         path = SecurityUtil.normalizedFileName(path);
         fileContents = compatibleNewline(fileContents);
         

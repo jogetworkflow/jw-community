@@ -51,9 +51,20 @@ var STATUS_SUCCESS       = 1;
 var STATUS_FAILED        = 2;
 var STATUS_FORM_ERROR    = 3;
 
+var path = null;
+function getPath() { // for offline redirection & cache key to use back non embed url
+    if (path === null) {
+        path = self.registration.scope;
+        if (path.indexOf('/web/embed/userview') !== -1) {
+            path = path.replace('/web/embed/userview', '/web/userview');
+        }
+    }
+    return path;
+}
+
 function cacheUserview(){
     //const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
-    const cacheApi = self.registration.scope + '/' + userviewKey + "/cacheUrls";
+    const cacheApi = getPath() + '/' + userviewKey + "/cacheUrls";
     console.log("Retrieve urls to cache by API (" + cacheApi + ")");
     fetch(cacheApi, {  
         credentials: 'include'  
@@ -70,8 +81,8 @@ function cacheUserview(){
             .then(function (cache) {
                 var promises = [];
 
-                data.push(self.registration.scope + '/_/pwaoffline');
-                data.push(self.registration.scope + '/_/offline');
+                data.push(getPath() + '/_/pwaoffline');
+                data.push(getPath() + '/_/offline');
                 data.push(homePageLink);
                
                 promises.push(
@@ -120,8 +131,8 @@ self.addEventListener('install', function (event) {
                     .then(function (cache) {
                         var promises = [];
 
-                        urlsToCache.push(self.registration.scope + '/_/pwaoffline');
-                        urlsToCache.push(self.registration.scope + '/_/offline');
+                        urlsToCache.push(getPath() + '/_/pwaoffline');
+                        urlsToCache.push(getPath() + '/_/offline');
                         promises.push(
                             //cache one by one to prevent duplicate url causing DOMexception
                             urlsToCache.map(function(url) {
@@ -183,11 +194,11 @@ self.addEventListener('fetch', function (event) {
         .catch(function () {
             if(event.request.method === 'POST' && formData !== null){
                 console.log('form POST failed, saving to indexedDB');
-
+                
                 savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
 
                 //redirect instead
-                var response = Response.redirect(self.registration.scope + '/_/pwaoffline', 302);
+                var response = Response.redirect(getPath() + '/_/pwaoffline', 302);
                 return response;
 
             }else{
@@ -667,7 +678,7 @@ function processStoredFormData() {
                 isSyncing = false;
                 console.log('error getting username', error);
             });
-    }, 5000);
+    }, 10000);
         
 }
 
