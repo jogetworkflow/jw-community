@@ -363,6 +363,12 @@ public class LogViewerAppender extends AbstractAppender {
                 HttpResponse transcationResponse = client.execute(request);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                if (client != null) {
+                    try {
+                        client.close();
+                    } catch (Exception e){}
+                }
             }
         }
     }
