@@ -123,7 +123,7 @@ public class TestHashVariable {
     @Test
     public void testEscapeWithFormat() {
         Assert.assertEquals("Joget Inc.,  Inc., Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.separated?separator(, )#", null, null, null));
-        Assert.assertEquals("Joget Inc.\n<br class=\"nl2br\" /> Inc.\n<br class=\"nl2br\" />Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br?nl2br#", null, null, null));
+        Assert.assertEquals("Joget Inc.<br class=\"nl2br\" /> Inc.<br class=\"nl2br\" />Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br?nl2br#", null, null, null));
     }
     
     @Test

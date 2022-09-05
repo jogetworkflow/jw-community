@@ -2,7 +2,6 @@ package org.joget.apps.form.lib;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,11 +18,10 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.util.ReflectionUtils;
+import org.jsoup.safety.Safelist;
 
 public class CustomHTML extends Element implements FormBuilderPaletteElement, FormContainer {
-    protected static Whitelist whitelist = null;
+    protected static Safelist whitelist = null;
     
     @Override
     public String getName() {
@@ -106,13 +104,10 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
     public String stripNoneInputTag(String content) {
         if (content != null && !content.isEmpty()) {
             if (whitelist == null) {
-                whitelist = Whitelist.none().addAttributes(":all","name");
+                whitelist = Safelist.none().addAttributes(":all","name");
                 whitelist.addTags("input");
                 whitelist.addTags("textarea");
                 whitelist.addTags("select");
-                java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
-                ReflectionUtils.makeAccessible(field);
-                ReflectionUtils.setField(field, whitelist, new HashMap());
             }
             content = Jsoup.clean(content, whitelist);
         }
