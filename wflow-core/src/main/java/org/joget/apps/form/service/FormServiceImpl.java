@@ -60,6 +60,7 @@ public class FormServiceImpl implements FormService {
         Element element = createElementFromJson(StringUtil.decryptContent(json), true);
         FormData formData = new FormData();
         formData.addFormResult(PREVIEW_MODE, "true");
+        formData.addFormResult(INCLUDE_META_DATA, Boolean.toString(includeMetaData));
         
         formData = retrieveFormDataFromRequest(formData, WorkflowUtil.getHttpServletRequest());
         

@@ -14,6 +14,7 @@ public interface FormService {
     String PREFIX_FOREIGN_KEY = "fk_";
     String PREFIX_FOREIGN_KEY_EDITABLE = "fke_";
     String PREVIEW_MODE = "_PREVIEW_MODE";
+    String INCLUDE_META_DATA = "_INCLUDE_META_DATA";
 
     /**
      * Creates an element object from a JSON definition
