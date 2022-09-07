@@ -2331,11 +2331,6 @@ body.rtl div#builderModeOption:before {
 #cbuilder.mode-advanced .basic-mode-only:not(.advanced-mode-only) {
     display: none !important;
 }
-body.enter-canvas #right-panel.overlap{
-    opacity: 0.1;
-    pointer-events: none;
-    transition: opacity ease-in-out 2s;
-}
 
 /* save btn*/
 #save-btn.unsaved {
