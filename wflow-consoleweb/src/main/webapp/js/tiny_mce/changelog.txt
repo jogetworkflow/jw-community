@@ -1,3 +1,51 @@
+Version 4.9.11 (2020-07-13)
+    Fixed the `selection.setContent()` API not running parser filters #TINY-4002
+    Fixed content in an iframe element parsing as DOM elements instead of text content #TINY-5943
+    Fixed up and down keyboard navigation not working for inline `contenteditable="false"` elements #TINY-6226
+Version 4.9.10 (2020-04-23)
+    Fixed an issue where the editor selection could end up inside a short ended element (eg br) #TINY-3999
+    Fixed a security issue related to CDATA sanitization during parsing #TINY-4669
+    Fixed `media` embed content not processing safely in some cases #TINY-4857
+Version 4.9.9 (2020-03-25)
+    Fixed the table selection not functioning correctly in Microsoft Edge 44 or higher #TINY-3862
+    Fixed the table resize handles not functioning correctly in Microsoft Edge 44 or higher #TINY-4160
+    Fixed the `forced_root_block_attrs` setting not applying attributes to new blocks consistently #TINY-4564
+    Fixed the editor failing to initialize if a script tag was used inside an SVG #TINY-4087
+Version 4.9.8 (2020-01-28)
+    Fixed the `mobile` theme failing to load due to a bundling issue #TINY-4613
+    Fixed security issue related to parsing HTML comments and CDATA #TINY-4544
+Version 4.9.7 (2019-12-19)
+    Fixed the `visualchars` plugin converting HTML-like text to DOM elements in certain cases #TINY-4507
+    Fixed an issue with the `paste` plugin not sanitizing content in some cases #TINY-4510
+    Fixed HTML comments incorrectly being parsed in certain cases #TINY-4511
+Version 4.9.6 (2019-09-02)
+    Fixed image browse button sometimes displaying the browse window twice #TINY-3959
+Version 4.9.5 (2019-07-02)
+    Changed annotations navigation to work the same as inline boundaries #TINY-3396
+    Fixed the print plugin printing from the wrong window in IE11 #TINY-3762
+    Fixed an exception being thrown when a file or number input has focus during initialization. Patch contributed by t00 #GH-2194
+    Fixed positioning of the styleselect menu in iOS while using the mobile theme #TINY-3505
+    Fixed native context menu not showing with images in IE11 #TINY-3392
+    Fixed selection incorrectly changing when programmatically setting selection on contenteditable false elements #TINY-3766
+    Fixed image browse button not working on touch devices #TINY-3751
+    Fixed so that nbsp entities aren't trimmed in white-space: pre-line elements #TINY-3642
+    Fixed space key properly inserts a nbsp before/after block elements #TINY-3745
+    Fixed infinite loop in the paste plugin when IE11 takes a long time to process paste events. Patch contributed by lRawd. #GH-4987
+Version 4.9.4 (2019-03-20)
+    Fixed an issue where **Home/End** keys wouldn't move the caret correctly before or after `contenteditable=false` inline elements #TINY-2995
+    Fixed an issue where content may have been lost when using permanent bookmarks #TINY-3400
+    Fixed the mobile editor to clean up properly when removed #TINY-3445
+    Fixed an issue where retrieving the selected content as text didn't create newlines #TINY-3197
+    Fixed an issue where typing space between images would cause issues with nbsp not being inserted. #TINY-3346
+Version 4.9.3 (2019-01-31)
+    Added a visualchars_default_state setting to the Visualchars Plugin. Patch contributed by mat3e.
+    Fixed a bug where scrolling on a page with more than one editor would cause a ResizeWindow event to fire. #TINY-3247
+    Fixed a bug where if a plugin threw an error during initialisation the whole editor would fail to load. #TINY-3243
+    Fixed a bug where getContent would include bogus elements when valid_elements setting was set up in a specific way. #TINY-3213
+    Fixed a bug where only a few function key names could be used when creating keyboard shortcuts. #TINY-3146
+    Fixed a bug where it wasn't possible to enter spaces into an editor after pressing shift+enter. #TINY-3099
+    Fixed a bug where no caret would be rendered after backspacing to a contenteditable false element. #TINY-2998
+    Fixed a bug where deletion to/from indented lists would leave list fragments in the editor. #TINY-2981
 Version 4.9.2 (2018-12-17)
     Fixed a bug with pressing the space key on IE 11 would result in nbsp characters being inserted between words at the end of a block. #TINY-2996
     Fixed a bug where character composition using quote and space on US International keyboards would produce a space instead of a quote. #TINY-2999
