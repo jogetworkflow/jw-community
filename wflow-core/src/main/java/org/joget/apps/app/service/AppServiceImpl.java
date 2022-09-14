@@ -1203,7 +1203,7 @@ public class AppServiceImpl implements AppService {
                     RegistryMatcher m = new RegistryMatcher();
                     m.bind(Date.class, new CustomDateFormatTransformer());
                     
-                    Serializer serializer = new Persister();
+                    Serializer serializer = new Persister(m);
                     serializer.write(copy, baos);
 
                     appDefinitionXml = baos.toByteArray();
@@ -1290,7 +1290,7 @@ public class AppServiceImpl implements AppService {
         RegistryMatcher m = new RegistryMatcher();
         m.bind(Date.class, new CustomDateFormatTransformer());
                     
-        Serializer serializer = new Persister();
+        Serializer serializer = new Persister(m);
         AppDefinition newAppDef = null;
 
         try {
@@ -1960,7 +1960,7 @@ public class AppServiceImpl implements AppService {
             RegistryMatcher m = new RegistryMatcher();
             m.bind(Date.class, new CustomDateFormatTransformer());
 
-            Serializer serializer = new Persister();
+            Serializer serializer = new Persister(m);
             serializer.write(appDef, baos);
 
             appDefinitionXml = baos.toByteArray();
@@ -2176,7 +2176,7 @@ public class AppServiceImpl implements AppService {
             RegistryMatcher m = new RegistryMatcher();
             m.bind(Date.class, new CustomDateFormatTransformer());
                     
-            Serializer serializer = new Persister();
+            Serializer serializer = new Persister(m);
             AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
 
             long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
