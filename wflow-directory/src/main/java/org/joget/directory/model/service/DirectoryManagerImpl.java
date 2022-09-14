@@ -352,6 +352,7 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
                     users.addAll(getUserDao().getUsers(null, null, e.getDepartment().getId(), null, null, null, null, "username", false, null, null));
                 }
             }
+            return users;
         }
         return null;
     }
