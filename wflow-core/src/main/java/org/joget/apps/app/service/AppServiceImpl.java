@@ -446,34 +446,37 @@ public class AppServiceImpl implements AppService {
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
 
-        // get and submit mapped form
-        if (form != null) {
-            String originId = form.getPrimaryKeyValue(formData);
-            boolean hasExistingRecord = true;
-            if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
-                String id = formData.getLoadBinderData(form).iterator().next().getId();
-                if (id == null || id.isEmpty()) {
-                    hasExistingRecord = false;
-                }
-            }
-            
-            formData = submitForm(form, formData, false);
-            
-            if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
-                workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
-            }
-        }
-
-        Map<String, String> errors = formData.getFormErrors();
-        if (!formData.getStay() && (errors == null || errors.isEmpty())) {
-            if (!executeProcessFormModifierSubmission(form, formData, assignment, AppUtil.getCurrentAppDefinition())) {
-                // accept assignment if necessary
-                if (!assignment.isAccepted()) {
-                    workflowManager.assignmentAccept(activityId);
+        final String key = activityId.intern();
+        synchronized (key) {
+            // get and submit mapped form
+            if (form != null) {
+                String originId = form.getPrimaryKeyValue(formData);
+                boolean hasExistingRecord = true;
+                if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
+                    String id = formData.getLoadBinderData(form).iterator().next().getId();
+                    if (id == null || id.isEmpty()) {
+                        hasExistingRecord = false;
+                    }
                 }
 
-                // complete assignment
-                workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                formData = submitForm(form, formData, false);
+
+                if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
+                    workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
+                }
+            }
+
+            Map<String, String> errors = formData.getFormErrors();
+            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
+                if (!executeProcessFormModifierSubmission(form, formData, assignment, AppUtil.getCurrentAppDefinition())) {
+                    // accept assignment if necessary
+                    if (!assignment.isAccepted()) {
+                        workflowManager.assignmentAccept(activityId);
+                    }
+
+                    // complete assignment
+                    workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                }
             }
         }
         return formData;
@@ -502,46 +505,50 @@ public class AppServiceImpl implements AppService {
         Form form = null;
         AppDefinition appDef = null;
         
-        // get and submit mapped form
-        PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
-        if (paf != null) {
-            String formDefId = paf.getFormId();
-            if (formDefId != null && !formDefId.isEmpty()) {
-                String originProcessId = getOriginProcessId(processId);
-                formData.setPrimaryKeyValue(originProcessId);
-                formData.setAssignment(assignment);
-                formData.setProcessId(processId);
-                
-                appDef = getAppDefinition(appId, version);
-                form = retrieveForm(appDef, paf, formData, assignment, null);
-                
-                String originId = form.getPrimaryKeyValue(formData);
-                boolean hasExistingRecord = true;
-                if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
-                    String id = formData.getLoadBinderData(form).iterator().next().getId();
-                    if (id == null || id.isEmpty()) {
-                        hasExistingRecord = false;
+        final String key = activityId.intern();
+        synchronized (key) {
+        
+            // get and submit mapped form
+            PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
+            if (paf != null) {
+                String formDefId = paf.getFormId();
+                if (formDefId != null && !formDefId.isEmpty()) {
+                    String originProcessId = getOriginProcessId(processId);
+                    formData.setPrimaryKeyValue(originProcessId);
+                    formData.setAssignment(assignment);
+                    formData.setProcessId(processId);
+
+                    appDef = getAppDefinition(appId, version);
+                    form = retrieveForm(appDef, paf, formData, assignment, null);
+
+                    String originId = form.getPrimaryKeyValue(formData);
+                    boolean hasExistingRecord = true;
+                    if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
+                        String id = formData.getLoadBinderData(form).iterator().next().getId();
+                        if (id == null || id.isEmpty()) {
+                            hasExistingRecord = false;
+                        }
+                    }
+
+                    formData = submitForm(form, formData, false);
+
+                    if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
+                        workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
                     }
                 }
-            
-                formData = submitForm(form, formData, false);
-                
-                if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
-                    workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
-                }
             }
-        }
 
-        Map<String, String> errors = formData.getFormErrors();
-        if (!formData.getStay() && (errors == null || errors.isEmpty())) {
-            if (!executeProcessFormModifierSubmission(form, formData, assignment, appDef)) {
-                // accept assignment if necessary
-                if (!assignment.isAccepted()) {
-                    workflowManager.assignmentAccept(activityId);
+            Map<String, String> errors = formData.getFormErrors();
+            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
+                if (!executeProcessFormModifierSubmission(form, formData, assignment, appDef)) {
+                    // accept assignment if necessary
+                    if (!assignment.isAccepted()) {
+                        workflowManager.assignmentAccept(activityId);
+                    }
+
+                    // complete assignment
+                    workflowManager.assignmentComplete(activityId, workflowVariableMap);
                 }
-
-                // complete assignment
-                workflowManager.assignmentComplete(activityId, workflowVariableMap);
             }
         }
         return formData;

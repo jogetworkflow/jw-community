@@ -923,79 +923,85 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/completeWithVariable/(*:activityId)", method = RequestMethod.POST)
     public void assignmentCompleteWithVariable(HttpServletRequest request, HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
-        if (assignment == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
-        }
-        
-        appService.getAppDefinitionForWorkflowActivity(activityId);
-        String processId = (assignment != null) ? assignment.getProcessId() : "";
-        
-        if (assignment != null && !assignment.isAccepted()) {
-            workflowManager.assignmentAccept(activityId);
-        }
-
-        Map<String, String> workflowVariableMap = AppUtil.retrieveVariableDataFromRequest(request);
-        workflowManager.assignmentComplete(activityId, workflowVariableMap);
-        LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("assignment", assignment.getAssigneeId());
-        jsonObject.accumulate("status", "completed");
-        jsonObject.accumulate("processId", processId);
-        jsonObject.accumulate("activityId", activityId);
-
-        // check for automatic continuation
-        String processDefId = assignment.getProcessDefId();
-        String activityDefId = assignment.getActivityDefId();
-        String packageId = WorkflowUtil.getProcessDefPackageId(processDefId);
-        String packageVersion = WorkflowUtil.getProcessDefVersion(processDefId);
-        boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, activityDefId);
-        if (continueNextAssignment) {
-            WorkflowAssignment nextAssignment = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
-            if (nextAssignment != null) {
-                jsonObject.accumulate("nextActivityId", nextAssignment.getActivityId());
+        final String key = activityId.intern();
+        synchronized (key) {
+            WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+            if (assignment == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
             }
-        }
 
-        AppUtil.writeJson(writer, jsonObject, callback);
+            appService.getAppDefinitionForWorkflowActivity(activityId);
+            String processId = (assignment != null) ? assignment.getProcessId() : "";
+
+            if (assignment != null && !assignment.isAccepted()) {
+                workflowManager.assignmentAccept(activityId);
+            }
+
+            Map<String, String> workflowVariableMap = AppUtil.retrieveVariableDataFromRequest(request);
+            workflowManager.assignmentComplete(activityId, workflowVariableMap);
+            LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("assignment", assignment.getAssigneeId());
+            jsonObject.accumulate("status", "completed");
+            jsonObject.accumulate("processId", processId);
+            jsonObject.accumulate("activityId", activityId);
+
+            // check for automatic continuation
+            String processDefId = assignment.getProcessDefId();
+            String activityDefId = assignment.getActivityDefId();
+            String packageId = WorkflowUtil.getProcessDefPackageId(processDefId);
+            String packageVersion = WorkflowUtil.getProcessDefVersion(processDefId);
+            boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, activityDefId);
+            if (continueNextAssignment) {
+                WorkflowAssignment nextAssignment = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
+                if (nextAssignment != null) {
+                    jsonObject.accumulate("nextActivityId", nextAssignment.getActivityId());
+                }
+            }
+
+            AppUtil.writeJson(writer, jsonObject, callback);
+        }
     }
 
     @RequestMapping(value = "/json/workflow/assignment/complete/(*:activityId)", method = RequestMethod.POST)
     public void assignmentComplete(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
-        if (assignment == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
-        }
-        
-        appService.getAppDefinitionForWorkflowActivity(activityId);
-
-        String processId = (assignment != null) ? assignment.getProcessId() : "";
-
-        if (assignment != null && !assignment.isAccepted()) {
-            workflowManager.assignmentAccept(activityId);
-        }
-
-        workflowManager.assignmentComplete(activityId);
-        LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("status", "completed");
-        jsonObject.accumulate("processId", processId);
-        jsonObject.accumulate("activityId", activityId);
-
-        // check for auto continuation
-        String processDefId = assignment.getProcessDefId();
-        String activityDefId = assignment.getActivityDefId();
-        String packageId = WorkflowUtil.getProcessDefPackageId(processDefId);
-        String packageVersion = WorkflowUtil.getProcessDefVersion(processDefId);
-        boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, activityDefId);
-        if (continueNextAssignment) {
-            WorkflowAssignment nextAssignment = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
-            if (nextAssignment != null) {
-                jsonObject.accumulate("nextActivityId", nextAssignment.getActivityId());
+        final String key = activityId.intern();
+        synchronized (key) {
+            WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+            if (assignment == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
             }
-        }
 
-        AppUtil.writeJson(writer, jsonObject, callback);
+            appService.getAppDefinitionForWorkflowActivity(activityId);
+
+            String processId = (assignment != null) ? assignment.getProcessId() : "";
+
+            if (assignment != null && !assignment.isAccepted()) {
+                workflowManager.assignmentAccept(activityId);
+            }
+
+            workflowManager.assignmentComplete(activityId);
+            LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("status", "completed");
+            jsonObject.accumulate("processId", processId);
+            jsonObject.accumulate("activityId", activityId);
+
+            // check for auto continuation
+            String processDefId = assignment.getProcessDefId();
+            String activityDefId = assignment.getActivityDefId();
+            String packageId = WorkflowUtil.getProcessDefPackageId(processDefId);
+            String packageVersion = WorkflowUtil.getProcessDefVersion(processDefId);
+            boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, activityDefId);
+            if (continueNextAssignment) {
+                WorkflowAssignment nextAssignment = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
+                if (nextAssignment != null) {
+                    jsonObject.accumulate("nextActivityId", nextAssignment.getActivityId());
+                }
+            }
+
+            AppUtil.writeJson(writer, jsonObject, callback);
+        }
     }
 
     @RequestMapping("/json/workflow/currentUsername")
