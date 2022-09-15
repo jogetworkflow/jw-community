@@ -322,9 +322,9 @@ public class XadminTheme extends UniversalTheme {
                         }
                         String attr = "";
                         if ("tab".equalsIgnoreCase(target)) {
-                            attr = "onclick=\"xadmin.add_tab('"+label+"','"+href+"')\"";
+                            attr = "onclick=\"xadmin.add_tab('"+StringUtil.escapeString(label, StringUtil.TYPE_HTML + ";" + StringUtil.TYPE_JAVASCIPT, null)+"','"+href+"')\"";
                         } else if ("popup".equalsIgnoreCase(target)) {
-                            attr = "onclick=\"xadmin.open('"+label+"','"+href+"')\"";
+                            attr = "onclick=\"xadmin.open('"+StringUtil.escapeString(label, StringUtil.TYPE_HTML + ";" + StringUtil.TYPE_JAVASCIPT, null)+"','"+href+"')\"";
                         } else {
                             attr = "href=\"" + href + "\" target=\""+target+"\"";
                         }
@@ -369,9 +369,9 @@ public class XadminTheme extends UniversalTheme {
                         }
                         String attr = "";
                         if ("tab".equalsIgnoreCase(target)) {
-                            attr = "onclick=\"xadmin.add_tab('"+label+"','"+href+"')\"";
+                            attr = "onclick=\"xadmin.add_tab('"+StringUtil.escapeString(label, StringUtil.TYPE_HTML + ";" + StringUtil.TYPE_JAVASCIPT, null)+"','"+href+"')\"";
                         } else if ("popup".equalsIgnoreCase(target)) {
-                            attr = "onclick=\"xadmin.open('"+label+"','"+href+"')\"";
+                            attr = "onclick=\"xadmin.open('"+StringUtil.escapeString(label, StringUtil.TYPE_HTML + ";" + StringUtil.TYPE_JAVASCIPT, null)+"','"+href+"')\"";
                         } else {
                             attr = "href=\"" + href + "\" target=\""+target+"\"";
                         }
@@ -409,7 +409,7 @@ public class XadminTheme extends UniversalTheme {
                   + "    <dl class=\"layui-nav-child\">\n"
                   + "        <dd class=\"inbox-title\"><span>" + ResourceBundleUtil.getMessage("theme.universal.inboxTaskMessage") + "</span><a href=\"#\" class=\"refresh\"><i class=\"layui-icon\">&#xe666;</i></a></dd>"
                   + "        <dd class=\"loading\"><a><span><i class=\"fa fa-spinner fa-spin fa-3x\"></i></span></a></dd>\n"
-                  + "        <dd class=\"\"><a data-href=\""+data.get("base_link") + INBOX+"\" onclick=\"xadmin.add_tab('"+ResourceBundleUtil.getMessage("theme.universal.viewAllTask")+"','"+data.get("base_link") + INBOX+"',true)\" class=\"dropdown-menu-sub-footer\">" + ResourceBundleUtil.getMessage("theme.universal.viewAllTask") + "</a></dd>\n"  
+                  + "        <dd class=\"\"><a data-href=\""+data.get("base_link") + INBOX+"\" onclick=\"xadmin.add_tab('"+StringUtil.escapeString(ResourceBundleUtil.getMessage("theme.universal.viewAllTask"), StringUtil.TYPE_HTML + ";" + StringUtil.TYPE_JAVASCIPT, null)+"','"+data.get("base_link") + INBOX+"',true)\" class=\"dropdown-menu-sub-footer\">" + ResourceBundleUtil.getMessage("theme.universal.viewAllTask") + "</a></dd>\n"  
                   + "    </dl>\n"
                   + "</li>";
         }
@@ -691,7 +691,7 @@ public class XadminTheme extends UniversalTheme {
             if ("blank".equals(menu.getPropertyString("target"))) {
                 onclick = "onclick=\"window.open('" + url + "');return false;\"";
             } else if ("self".equals(menu.getPropertyString("target"))) {
-                onclick = "onclick=\"xadmin.redirect('"+StringUtil.stripAllHtmlTag(label)+"','" + url + "');return false;\"";
+                onclick = "onclick=\"xadmin.redirect('"+StringUtil.escapeString(StringUtil.stripAllHtmlTag(label), StringUtil.TYPE_JAVASCIPT, null)+"','" + url + "');return false;\"";
             }
         }
         if (category.getMenus().size() == 1) {
@@ -699,7 +699,7 @@ public class XadminTheme extends UniversalTheme {
             icon = icon.replace("class=\"", "class=\"left-nav-li ");
         }
         if (onclick == null) {
-            onclick = "onclick=\"xadmin.add_tab('"+StringUtil.stripAllHtmlTag(label)+"','"+url+"',true)\"";
+            onclick = "onclick=\"xadmin.add_tab('"+StringUtil.escapeString(StringUtil.stripAllHtmlTag(label), StringUtil.TYPE_JAVASCIPT, null)+"','"+url+"',true)\"";
         }
         return "<a class=\"menu-link default\" "+onclick+">" + icon + "<cite>" + label + "</cite>"+extra+"</a>";
     }
