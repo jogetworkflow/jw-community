@@ -345,13 +345,14 @@ public class LogViewerAppender extends AbstractAppender {
     
     //broadcast message to cluster node with token
     public static void broadcastClusterNode(String message, String node, String appId) {
-        String currentNode = ServerUtil.getServerName();
-        String token = getLogViewerToken(currentNode);
-        updateJsonIPWhitelist(currentNode);
-        CloseableHttpClient client = null;
         HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-        if (httpRequest != null) {
-            String broadcastURL = "http://" + ServerUtil.getIPAddress(node) + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
+        String nodeIp = ServerUtil.getIPAddress(node);
+        if (httpRequest != null && nodeIp != null && !nodeIp.isEmpty()) {
+            String currentNode = ServerUtil.getServerName();
+            String token = getLogViewerToken(currentNode);
+            updateJsonIPWhitelist(currentNode);
+            CloseableHttpClient client = null;
+            String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
 
             broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "message", message);
             broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);

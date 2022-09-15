@@ -117,7 +117,7 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     public Set<Map.Entry<K,V>> entrySet() {
         if (isInternal == null) {
             int i = 0;
-            for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
+            for (StackTraceElement elem : new Throwable().getStackTrace()) {
                 if (i++ < 2) {
                     continue;
                 }
