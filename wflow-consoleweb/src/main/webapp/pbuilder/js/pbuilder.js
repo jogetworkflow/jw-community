@@ -854,6 +854,8 @@ ProcessBuilder = {
                         "-Type": "DEFAULTEXCEPTION",
                         "-self-closing": "true"
                     };
+                } else {
+                    delete transitionXpdlObj['Condition'];
                 }
 
                 if (transition.properties.type === 'CONDITION' && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
@@ -2655,6 +2657,7 @@ ProcessBuilder = {
             var connection = elementObj.connection;
             
             connection.setPaintStyle({strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'});
+            connection.setHoverPaintStyle({lineWidth: 4}),
             connection.setConnector(connector);
             connection.removeOverlay(transitionId+"-label");
             connection.addOverlay([ 
