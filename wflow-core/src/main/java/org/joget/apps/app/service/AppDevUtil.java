@@ -1843,42 +1843,7 @@ public class AppDevUtil {
             Set<String> jars = new HashSet<String>();
             
             // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            if (packageDef != null) {
-                if (packageDef.getPackageActivityPluginMap() != null) {
-                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                        concatAppDef += o.getPluginName() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-                if (packageDef.getPackageParticipantMap() != null) {
-                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                        concatAppDef += o.getValue() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-            }
+            String concatAppDef = getConcatAppDef(appDef);
             
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
@@ -1958,42 +1923,7 @@ public class AppDevUtil {
             }
         } else {
             // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            if (packageDef != null) {
-                if (packageDef.getPackageActivityPluginMap() != null) {
-                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                        concatAppDef += o.getPluginName() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-                if (packageDef.getPackageParticipantMap() != null) {
-                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                        concatAppDef += o.getValue() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-            }
+            String concatAppDef = getConcatAppDef(appDef);
             
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
@@ -2057,5 +1987,47 @@ public class AppDevUtil {
 
     public static Map<String, GitCommitHelper> getBackgroundSync() throws BeansException {
         return (Map<String, GitCommitHelper>) backgroundSync.get();
+    }
+    
+    public static String getConcatAppDef(AppDefinition appDef) {
+        // combine all definitions into a string for matching
+        String concatAppDef = "";
+        if (appDef.getFormDefinitionList() != null) {
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getDatalistDefinitionList() != null) {
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getUserviewDefinitionList() != null) {
+            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            if (packageDef.getPackageActivityPluginMap() != null) {
+                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                    concatAppDef += o.getPluginName() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+            if (packageDef.getPackageParticipantMap() != null) {
+                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                    concatAppDef += o.getValue() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+        }
+        
+        return concatAppDef;
     }
 }

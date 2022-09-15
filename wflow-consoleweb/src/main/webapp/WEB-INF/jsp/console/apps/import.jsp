@@ -80,6 +80,14 @@
                             </label>
                         </span>
                     </div>
+                    <div class="form-row">                
+                        <span class="form-input">
+                            <label for="doNotImportUserGroups" class="upload">
+                                <input id="doNotImportUserGroups" type="checkbox" name="doNotImportUserGroups" value="true"/><i></i>
+                                <fmt:message key="console.app.import.label.doNotImportUserGroups"/>
+                            </label>
+                        </span>
+                    </div>        
                 </div>
             </fieldset>
             <div class="form-buttons">

@@ -43,6 +43,18 @@
                         </c:forEach>
                     </div>
                 </div>
+                <c:if test="${!empty(userGroups)}">       
+                    <div class="form-row">
+                        <label for="userGroups"><fmt:message key="console.app.export.label.userGroups"/></label>
+                        <div class="form-input">
+                            <c:forEach items="${userGroups}" var="group">
+                                <label>
+                                    <input type="checkbox" name="usergroups" value="${group.id}"/> ${group.name}
+                                </label>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </c:if>    
             </fieldset>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<ui:msgEscHTML key="console.app.export.label"/>" />

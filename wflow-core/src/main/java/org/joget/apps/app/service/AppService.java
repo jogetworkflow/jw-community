@@ -15,6 +15,7 @@ import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.directory.model.Group;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
@@ -509,6 +510,14 @@ public interface AppService {
      * @return
      */
     AppDefinition importApp(byte[] zip) throws ImportAppException;
+    
+    /**
+     * Retrieve all user groups used in the app
+     * 
+     * @param appDef
+     * @return 
+     */
+    Collection<Group> getAppUserGroups(AppDefinition appDef);
 
     /**
      * Reads app XML from zip content.
@@ -550,6 +559,13 @@ public interface AppService {
     void importFormData(byte[] zip) throws Exception;
     
     /**
+     * Import user groups from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    void importUserGroups(byte[] zip) throws Exception;
+
+    /**
      * Export form data of an app to ZioOutputStream
      * @param appId
      * @param version
@@ -559,6 +575,17 @@ public interface AppService {
      * @throws java.io.IOException
      */
     void exportFormData(String appId, String version, ZipOutputStream zip, String[] formTables) throws UnsupportedEncodingException, IOException;
+    
+    /**
+     * Export user group used of an app to ZioOutputStream
+     * @param appId
+     * @param version
+     * @param zip
+     * @param groupIds
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.io.IOException
+     */
+    void exportUserGroups(String appId, String version, ZipOutputStream zip, String[] groupIds) throws UnsupportedEncodingException, IOException;
     
     /**
      * Get version of published app

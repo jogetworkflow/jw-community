@@ -1,5 +1,7 @@
 package org.joget.apps.app.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,6 +35,7 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -93,7 +96,9 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
+import org.joget.directory.model.Group;
 import org.joget.directory.model.User;
+import org.joget.directory.dao.GroupDao;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -159,6 +164,8 @@ public class AppServiceImpl implements AppService {
     WorkflowAssignmentDao workflowAssignmentDao;
     @Autowired
     WorkflowProcessLinkDao workflowProcessLinkDao;
+    @Autowired
+    GroupDao groupDao;
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new HashMap<String, String>();
@@ -2095,6 +2102,9 @@ public class AppServiceImpl implements AppService {
                 if (request != null && request.getParameterValues("tablenames") != null) {
                     exportFormData(appId, version, zip, request.getParameterValues("tablenames"));
                 }
+                if (request != null && request.getParameterValues("usergroups") != null) {
+                    exportUserGroups(appId, version, zip, request.getParameterValues("usergroups"));
+                }
                 
                 for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
                     if (builder instanceof CustomBuilderCallback) {
@@ -2172,6 +2182,40 @@ public class AppServiceImpl implements AppService {
     }
     
     /**
+     * Export user groups used by an app to ZioOutputStream
+     * @param appId
+     * @param version
+     * @param zip
+     * @param groupIds
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.io.IOException
+     */
+    public void exportUserGroups(String appId, String version, ZipOutputStream zip, String[] groupIds) throws UnsupportedEncodingException, IOException {
+        if (groupIds != null && groupIds.length > 0) {
+            Collection<Group> groups = new ArrayList<Group>();
+            for (String g : groupIds) {
+                g = SecurityUtil.validateStringInput(g);
+                Group group = groupDao.getGroup(g);
+                if (group != null) {
+                    Group ng = new Group();
+                    ng.setId(group.getId());
+                    ng.setName(group.getName());
+                    ng.setDescription(group.getDescription());
+                    groups.add(ng);
+                }
+            }
+            
+            if (!groups.isEmpty()) {
+                Gson g = new Gson();
+                byte[] byteData = g.toJson(groups).getBytes("UTF-8");
+                zip.putNextEntry(new ZipEntry("user_groups.json"));
+                zip.write(byteData);
+                zip.closeEntry();
+            }
+        }
+    }
+    
+    /**
      * Import app from zip file
      * @param zip
      * @return
@@ -2218,6 +2262,9 @@ public class AppServiceImpl implements AppService {
             if (request != null && request.getParameterValues("doNotImportFormDatas") == null) {
                 importFormData(zip);
             }
+            if (request != null && request.getParameterValues("doNotImportUserGroups") == null) {
+                importUserGroups(zip);
+            }
             
             for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
                 if (builder instanceof CustomBuilderCallback) {
@@ -2232,6 +2279,33 @@ public class AppServiceImpl implements AppService {
             LogUtil.error(getClass().getName(), e, "");
         }
         return null;
+    }
+    
+    /**
+     * Retrieve all user groups used in the app
+     * 
+     * @param appDef
+     * @return 
+     */
+    @Override
+    public Collection<Group> getAppUserGroups(AppDefinition appDef){
+        Collection<Group> groups = new ArrayList<Group>();
+        
+        Collection<Group> allGroups = groupDao.findGroups("", null, null, null, null, null);
+        if (allGroups != null && !allGroups.isEmpty()) {
+            String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
+            // look for plugins used in any definition file
+            for (Group g: allGroups) {
+                if (concatAppDef.contains("\"" + g.getId() + "\"") || 
+                        concatAppDef.contains(";" + g.getId() + ";") ||
+                        concatAppDef.contains("\"" + g.getId() + ";") ||
+                        concatAppDef.contains(";" + g.getId() + "\"")) {
+                    groups.add(g);
+                }
+            }
+        }
+        
+        return groups;
     }
 
     /**
@@ -2764,6 +2838,57 @@ public class AppServiceImpl implements AppService {
             }
         }
         in.close();
+    }
+    
+    /**
+     * Import user groups from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    @Override
+    public void importUserGroups(byte[] zip) throws Exception {
+        ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
+        ZipEntry entry = null;
+
+        try {
+            while ((entry = in.getNextEntry()) != null) {
+                if (!entry.isDirectory()) {
+                    if (entry.getName().startsWith("user_groups.json")) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        
+                        try {
+                            int length;
+                            byte[] temp = new byte[1024];
+                            while ((length = in.read(temp, 0, 1024)) != -1) {
+                                out.write(temp, 0, length);
+                            }
+
+                            String json = new String(out.toByteArray(), "UTF-8");
+                            Gson g = new Gson();
+                            Collection<Group> groups = g.fromJson(json, new TypeToken<Collection<Group>>() {}.getType());
+                            
+                            Set<String> added = new HashSet<String>();
+                            for (Group group : groups) {
+                                if (groupDao.getGroup(group.getId()) == null) {
+                                    groupDao.addGroup(group);
+                                    added.add(group.getId());
+                                }
+                            }
+
+                            if (!added.isEmpty()) {
+                                LogUtil.info(AppServiceImpl.class.getName(), "Imported user groups - " + StringUtils.join(added, ", "));
+                            }
+                        } finally {
+                            out.flush();
+                            out.close();
+                        }
+                        break;
+                    }
+                }
+            }
+        } finally {
+            in.close();
+        }
     }
 
     /**

@@ -1661,6 +1661,9 @@ public class ConsoleWebController {
         Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
         map.addAttribute("tableNameList", tableNameList);
         
+        Collection<Group> userGroups = appService.getAppUserGroups(appDef);
+        map.addAttribute("userGroups", userGroups);
+        
         return "console/apps/exportConfig";
     }
 
