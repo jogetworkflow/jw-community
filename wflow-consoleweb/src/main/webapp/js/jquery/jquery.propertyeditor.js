@@ -6867,8 +6867,8 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#" + field.id + "_input a.builderAddNew").on("click", function(){
                 var type = $(this).data("type");
                 var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/' + type + '/create?builderMode=true';
-                JPopup.show("peditorCreateNew", url, {}, "");
-                $('iframe#peditorCreateNew').data('field', field);
+                JPopup.show("navCreateNewDialog", url, {}, "");
+                $('iframe#navCreateNewDialog').data('field', field);
             });
         }
 

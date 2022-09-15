@@ -3,13 +3,13 @@
 <script type="text/javascript">
     if (parent && parent.CustomBuilder) {
         var handled = false;
-        var iframe = window.parent.document.getElementById('peditorCreateNew');
+        var iframe = window.parent.document.getElementById('navCreateNewDialog');
         if (iframe) {
             var $ = window.parent['jQuery'];
             var field = $(iframe).data('field');
             if (field) {
                 field.addNewOption('<c:out value="${datalistDefinition.id}"/>', '<c:out value="${datalistDefinition.name}"/>');
-                parent.JPopup.dialogboxes['peditorCreateNew'].hide();
+                parent.JPopup.dialogboxes['navCreateNewDialog'].hide();
                 handled = true;
             }
         }
