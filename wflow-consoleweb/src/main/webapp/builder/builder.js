@@ -3827,6 +3827,7 @@ _CustomBuilder.Builder = {
                     }
                 }
                 
+                $("#element-select-box #element-select-name").attr("style", "");
                 $("#element-select-name #element-name").html(this._getElementType(data, component));
                 
                 $("#element-select-box #element-options").html("");
