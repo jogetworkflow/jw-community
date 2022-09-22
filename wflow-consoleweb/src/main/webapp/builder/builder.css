@@ -756,6 +756,7 @@ body.right-panel-resizing #right-panel-resize-block{
     display: table-cell;
     vertical-align: middle;
     text-align: left;
+    overflow-wrap: anywhere;
 }
 .drag-elements-sidepane ul > li ol li[data-type] {
     border: none;
