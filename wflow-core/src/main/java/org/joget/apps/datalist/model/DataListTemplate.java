@@ -394,13 +394,16 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
 
                 id = c.getPropertyString("id");
                 cssClass += c.getPropertyString("id") + " ";
+                if (c.isHidden()) {
+                    cssClass += " column-hidden ";
+                }
                 if (html.startsWith("<th")) {
-                    cssClass += "column_header column_" + c.getName() + " header_"+id+" ";
+                    cssClass += "column_header column_" + c.getName().replaceAll(StringUtil.escapeRegex("."), StringUtil.escapeRegex("_")) + " header_"+id+" ";
                     if (c.getHeaderAlignment() != null && !c.getHeaderAlignment().isEmpty()) {
                         cssClass += c.getHeaderAlignment() + " ";
                     }
                 } else {
-                    cssClass += "column_body column_" + c.getName() + " body_"+id+" ";
+                    cssClass += "column_body column_" + c.getName().replaceAll(StringUtil.escapeRegex("."), StringUtil.escapeRegex("_")) + " body_"+id+" ";
                     if (c.getAlignment() != null && !c.getAlignment().isEmpty()) {
                         cssClass += c.getAlignment() + " ";
                     }
