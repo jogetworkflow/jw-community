@@ -68,8 +68,10 @@ AjaxComponent = {
             var btn = $(this);
             var url = $(btn).data("href");
             var target = $(btn).data("target");
+            var hrefParam = $(btn).data("hrefparam");
             if (AjaxComponent.isCurrentUserviewUrl(url) 
-                    && (target === null || target === undefined || target === "" || target === "_top" || target === "_parent" || target === "_self")) {
+                    && (target === null || target === undefined || target === "" || target === "_top" || target === "_parent" || target === "_self")
+                    && (hrefParam === undefined || hrefParam === "")) {
                 var confirmMsg = $(btn).data("confirmation");
                 $(btn).off("click");
                 $(btn).removeAttr("onclick");
