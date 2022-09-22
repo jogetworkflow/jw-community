@@ -22,8 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.validator.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.util.ReflectionUtils;
+import org.jsoup.safety.Safelist;
 import javax.mail.internet.MimeUtility;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -67,13 +66,13 @@ public class StringUtil {
     public static final String TYPE_IMG2BASE64 = "img2base64";
     public static final String TYPE_EXP = "expression";
 
-    static final Whitelist whitelistRelaxed;
+    static final Safelist whitelistRelaxed;
     static {
         // configure jsoup whitelist
-        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div", "hr").addAttributes(":all","id","style","class","title","target", "name");
-        java.lang.reflect.Field field = ReflectionUtils.findField(whitelistRelaxed.getClass(), "protocols");
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
+        whitelistRelaxed = Safelist.relaxed()
+                            .addTags("span", "div", "hr")
+                            .addAttributes(":all","id","style","class","title","target", "name")
+                            .preserveRelativeLinks(true);
     }
 
     /**
@@ -654,9 +653,9 @@ public class StringUtil {
     public static String stripAllHtmlTag(String content, boolean prettyPrint) {
         if (content != null && !content.isEmpty()) {
             if (prettyPrint) {
-                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().escapeMode(EscapeMode.xhtml));
+                content = Jsoup.clean(content, "", Safelist.none(), new OutputSettings().escapeMode(EscapeMode.xhtml));
             } else {
-                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().prettyPrint(false).escapeMode(EscapeMode.xhtml));
+                content = Jsoup.clean(content, "", Safelist.none(), new OutputSettings().prettyPrint(false).escapeMode(EscapeMode.xhtml));
             }
         }
         return content;
@@ -670,14 +669,21 @@ public class StringUtil {
      */
     public static String stripHtmlTag(String content, String[] allowedTag) {
         if (content != null && !content.isEmpty()) {
-            Whitelist whitelist = Whitelist.none().addAttributes(":all","style","class","title","id","src","href","target");
+            Safelist whitelist = Safelist.none()
+                                    .addAttributes(":all","style","class","title","id","target")
+                                    .preserveRelativeLinks(true);
             for (String tag : allowedTag) {
                 whitelist.addTags(tag);
+                
+                if ("a".equalsIgnoreCase(tag)) {
+                    whitelist.addAttributes("a", "href");
+                    whitelist.addProtocols("a", "href", "http", "https", "mailto");
+                } else if ("img".equalsIgnoreCase(tag)) {
+                    whitelist.addAttributes("img", "src");
+                    whitelist.addProtocols("img", "src", "http", "https");
+                }
             }
-            java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
-            ReflectionUtils.makeAccessible(field);
-            ReflectionUtils.setField(field, whitelist, new HashMap());
-            content = Jsoup.clean(content, whitelist);
+            content = Jsoup.clean(content, "http://base.uri" , whitelist);  //put dummy base to allow releative path
         }
         return content;
     }
@@ -689,7 +695,7 @@ public class StringUtil {
      */
     public static String stripHtmlRelaxed(String content) {
         if (content != null && content.indexOf("<") >= 0) {
-            content = Jsoup.clean(content, "", whitelistRelaxed, new OutputSettings().syntax(OutputSettings.Syntax.xml));
+            content = Jsoup.clean(content, "http://base.uri", whitelistRelaxed, new OutputSettings().syntax(OutputSettings.Syntax.xml));  //put dummy base to allow releative path
         }
         return content;
     }

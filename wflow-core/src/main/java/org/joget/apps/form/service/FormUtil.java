@@ -411,7 +411,8 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        if (!FormUtil.isHidden(element, formData)) {
+        //adding checking for include meta data, so that nested element like subform will load in builder even its parent is permission hidden
+        if (!FormUtil.isHidden(element, formData) || "true".equalsIgnoreCase(formData.getFormResult(FormService.INCLUDE_META_DATA))) {
             FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
             if (binder != null && !isAjaxOptionsSupported(element, formData)) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
