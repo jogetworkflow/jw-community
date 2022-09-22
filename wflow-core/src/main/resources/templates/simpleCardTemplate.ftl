@@ -17,10 +17,10 @@
                     {{column_title}}
                     {{columns<#if element.properties.inlineLabel! == 'true'> data-cbuilder-style="[{}, {'prefix' : 'header', 'class' : '.card-text > .label', 'label' : '@@datalist.simpleCardTemplate.label@@'}]"</#if>}}
                          {{column}}
-                            <p class="card-text">
+                            <div class="card-text mb-1">
                                 <#if element.properties.inlineLabel! == 'true'><strong class="label">{{label||@@datalist.simpleCardTemplate.label@@}}:</strong><br/></#if>
                                 {{body||@@datalist.simpleCardTemplate.textContent@@}}
-                            </p>
+                            </div>
                          {{column}}
                     {{columns}}
                     {{rowActions data-cbuilder-sort-horizontal}}
