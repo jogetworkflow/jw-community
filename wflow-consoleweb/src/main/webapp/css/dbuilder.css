@@ -9,9 +9,6 @@ body{
     width: 100%;
     min-width: min-content;
 }
-.dataList th, .dataList td:not(.footable-row-detail-cell){
-    white-space: nowrap;
-}
 .filters, actions {
     min-height: 35px;
 }
