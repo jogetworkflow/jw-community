@@ -44,7 +44,17 @@
                 shadeClose: true,
                 shade:0.4,
                 title: title,
-                content: url
+                content: url,
+                cancel: function(){ 
+                    //check is in iframe
+                    if (parent && parent.layer && parent.xadmin && $(window.frameElement)) {
+                        var pindex = parent.layer.getFrameIndex(window.name);
+                        if (pindex) {
+                            parent.layer.restore(pindex);
+                        }
+                    }
+                    return true;
+                }
             });
             
             layer.iframeAuto(index);

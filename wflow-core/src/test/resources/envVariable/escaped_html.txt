@@ -1,8 +1,8 @@
-<div> 
- <h1>Iframe Example</h1> 
- <p style="display:none;">A simple iframe test</p> 
-</div>  
-<p><a href="https://www.w3schools.com" target="iframe_a">W3Schools.com</a></p> 
+<div>
+ <h1>Iframe Example</h1>
+ <p style="display:none;">A simple iframe test</p>
+</div>
+<p><a href="https://www.w3schools.com" target="iframe_a">W3Schools.com</a></p>
 <div>
  !@#$%^&amp;*()_+-={}|[]\:";',./&lt;&gt;?`~
 </div>

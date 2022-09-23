@@ -28,7 +28,7 @@ ${menus!}
                     setTimeout(function(){
                         layui.use(['layer', 'element'], function(){
                             if (layer !== undefined && element !== undefined ) {
-                                xadmin.add_tab('${preloadLabel}','${preloadUrl?js_string}',true);
+                                xadmin.add_tab('${preloadLabel?js_string}','${preloadUrl?js_string}',true);
                             } else {
                                 initTheme();
                             }
