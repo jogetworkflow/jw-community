@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.JsonApiUtil;
@@ -16,7 +17,9 @@ import static org.joget.apps.datalist.model.DataList.ORDER_DESCENDING_VALUE;
 import org.joget.apps.datalist.model.DataListBinderDefault;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListCollection;
+import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
+import org.joget.apps.datalist.model.DataListFilterTypeDefault;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagingUtils;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -302,7 +305,23 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
         param.put("sort", sortColumn);
         param.put("desc", Boolean.toString(desc));
         param.put("size", Integer.toString(recordSize));
+        param.put("rows", Integer.toString(recordSize));
         param.put("start", Integer.toString(start));
+        
+        //filter param
+        DataListFilter[] filterList = dataList.getFilters();
+        if (filterList != null) {
+            for (int i = 0; i < filterList.length; i++) {
+                DataListFilter filter = filterList[i];
+                DataListFilterTypeDefault type = (DataListFilterTypeDefault) filter.getType();
+                String[] values = type.getValues(dataList, filter.getName(), type.getPropertyString("defaultValue"));
+                if (values != null && values.length > 0) {
+                    param.put(filter.getName(), StringUtils.join(values, ";"));
+                } else {
+                    param.put(filter.getName(), "");
+                }
+            }
+        }
 
         return param;
     }
