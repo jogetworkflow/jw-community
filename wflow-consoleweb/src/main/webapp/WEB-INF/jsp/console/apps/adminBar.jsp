@@ -62,7 +62,12 @@
         
     <script>
         <ui:popupdialog var="appCreateDialog" src="${pageContext.request.contextPath}/web/console/app/create"/>
-            function appCreate() {
+            function appCreate(templateId) {
+                if (templateId !== undefined) {
+                    appCreateDialog.src = "${pageContext.request.contextPath}/web/console/app/create?templateAppId=" + encodeURIComponent(templateId);
+                } else {
+                    appCreateDialog.src = "${pageContext.request.contextPath}/web/console/app/create";
+                }
                 appCreateDialog.init();
             }
     </script>

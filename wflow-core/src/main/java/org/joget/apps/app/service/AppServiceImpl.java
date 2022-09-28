@@ -1193,6 +1193,18 @@ public class AppServiceImpl implements AppService {
     @Override
     @Transactional
     public Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copy) {
+        return createAppDefinition(appDefinition, copy, null);
+    }
+    
+    /**
+     * Create a new app definition and duplicate the other app
+     * @param appDefinition
+     * @param copyAppDefinition
+     * @return A Collection of errors (if any).
+     */
+    @Override
+    @Transactional
+    public Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copy, String tablePrefix) {
         Collection<String> errors = new ArrayList<String>();
 
         // check for duplicate
@@ -1218,14 +1230,32 @@ public class AppServiceImpl implements AppService {
                     appDefinitionXml = baos.toByteArray();
                     baos.close();
 
-                    String value = new String(appDefinitionXml, "UTF-8");
+                    Map<String, String> replacement = new HashMap<String, String>();
                     
                     //replace id and name
-                    value = value.replaceAll("<id>"+copy.getAppId()+"</id>", "<id>"+appId+"</id>");
-                    value = value.replaceAll("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
-                    value = value.replaceAll("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appId+"</appId>");
+                    replacement.put("<id>"+copy.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
+                    replacement.put("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
+                    replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                     
-                    appDefinitionXml =  value.getBytes("UTF-8");
+                    //replace table prefix
+                    if (tablePrefix != null && !tablePrefix.isEmpty()) {
+                        String prefix = "";
+                        //find table prefix in environment
+                        if (copy.getEnvironmentVariableList() != null) {
+                            for (EnvironmentVariable env : copy.getEnvironmentVariableList()) {
+                                if (env.getId().equals("table_prefix")) {
+                                    prefix = env.getValue();
+                                    break;
+                                }
+                            }
+                        }
+                        replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
+                        replacement.put("<tableName>" + prefix, "<tableName>" + tablePrefix);
+                        replacement.put("&quot;tableName&quot;:&quot;" + prefix, "&quot;tableName&quot;:&quot;" + tablePrefix);
+                        replacement.put("&quot;processTable&quot;:&quot;", "&quot;processTable&quot;:&quot;" + tablePrefix);
+                    }
+                    
+                    appDefinitionXml = StringUtil.searchAndReplaceByteContent(appDefinitionXml, replacement);
                     
                     PackageDefinition packageDef = copy.getPackageDefinition();
                     if (packageDef != null) {
@@ -1267,6 +1297,147 @@ public class AppServiceImpl implements AppService {
             }
         }
 
+        return errors;
+    }
+    
+    /**
+     * Create a new app definition from template
+     * @param appDefinition
+     * @param templateId
+     * @return A Collection of errors (if any).
+     */
+    @Override
+    @Transactional
+    public Collection<String> createAppDefinitionFromTemplate(AppDefinition appDefinition, String templateId, String tablePrefix) {
+        Collection<String> errors = new ArrayList<String>();
+        
+        // check for duplicate
+        String appId = appDefinition.getId();
+        AppDefinition appDef = appDefinitionDao.loadById(appId);
+        if (appDef != null) {
+            errors.add("console.app.error.label.idExists");
+        } else {
+            //download template from marketplace
+            byte[] zip = MarketplaceUtil.downloadTemplate(templateId);
+
+            if (zip != null) {
+                errors = internalCreateAppDefinitionFromZip(appDefinition, zip, tablePrefix);
+            } else {
+                errors.add("console.app.error.label.templeteNotAvailable");
+            }
+        }
+        return errors;
+    }
+    
+    /**
+     * Create a new app definition from template
+     * @param appDefinition
+     * @param zip
+     * @return A Collection of errors (if any).
+     */
+    @Override
+    @Transactional
+    public Collection<String> createAppDefinitionFromZip(AppDefinition appDefinition, byte[] zip, String tablePrefix) {
+        Collection<String> errors = new ArrayList<String>();
+        
+        // check for duplicate
+        String appId = appDefinition.getId();
+        AppDefinition appDef = appDefinitionDao.loadById(appId);
+        if (appDef != null) {
+            errors.add("console.app.error.label.idExists");
+        } else {
+            errors = internalCreateAppDefinitionFromZip(appDefinition, zip, tablePrefix);
+        }
+        return errors;
+    }
+    
+    /**
+     * Create a new app definition from template
+     * @param appDefinition
+     * @param zip
+     * @return A Collection of errors (if any).
+     */
+    protected Collection<String> internalCreateAppDefinitionFromZip(AppDefinition appDefinition, byte[] zip, String tablePrefix) {
+        Collection<String> errors = new ArrayList<String>();
+
+        if (zip != null) { 
+            try {
+                byte[] appData = getAppDataXmlFromZip(zip);
+                byte[] xpdl = getXpdlFromZip(zip);
+
+                //for backward compatible
+                Map<String, String> replacement = new HashMap<String, String>();
+                replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
+                replacement.put("</disableSaveAsDraft-->", "</disableSaveAsDraft>");
+                replacement.put("<!--description>", "<description>");
+                replacement.put("</description-->", "</description>");
+                replacement.put("<!--meta>", "<meta>");
+                replacement.put("</meta-->", "</meta>");
+                replacement.put("<!--resourceList>", "<resourceList>");
+                replacement.put("</resourceList-->", "</resourceList>");
+                replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
+                replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
+                
+                appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
+
+                RegistryMatcher m = new RegistryMatcher();
+                m.bind(Date.class, new CustomDateFormatTransformer());
+
+                Serializer serializer = new Persister(m);
+                AppDefinition zipApp = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
+
+                //replace id and name
+                replacement.put("<id>"+zipApp.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
+                replacement.put("<name>"+zipApp.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
+                replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
+                
+                //replace table prefix
+                if (tablePrefix != null && !tablePrefix.isEmpty()) {
+                    String prefix = "";
+                    //find table prefix in environment
+                    if (zipApp.getEnvironmentVariableList() != null) {
+                        for (EnvironmentVariable env : zipApp.getEnvironmentVariableList()) {
+                            if (env.getId().equals("table_prefix")) {
+                                prefix = env.getValue();
+                                break;
+                            }
+                        }
+                    }
+                    replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
+                    replacement.put("<tableName>" + prefix, "<tableName>" + tablePrefix);
+                    replacement.put("&quot;tableName&quot;:&quot;" + prefix, "&quot;tableName&quot;:&quot;" + tablePrefix);
+                    replacement.put("&quot;processTable&quot;:&quot;", "&quot;processTable&quot;:&quot;" + tablePrefix);
+                }
+
+                appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
+                
+                Map<String, String> replace = new HashMap<String, String>();
+                replace.put("Id=\""+zipApp.getAppId()+"\"", "Id=\""+appDefinition.getAppId()+"\"");
+                replace.put("id=\""+zipApp.getAppId()+"\"", "id=\""+appDefinition.getAppId()+"\"");
+                replace.put("Name=\""+zipApp.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
+                replace.put("name=\""+zipApp.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
+                xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
+                
+                AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
+                AppDefinition newAppDef = importAppDefinition(tempAppDef, 1L, xpdl);
+            
+                AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
+                importPlugins(zip);
+                importFormData(zip);
+                importUserGroups(zip);
+
+                for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
+                    if (builder instanceof CustomBuilderCallback) {
+                        ((CustomBuilderCallback) builder).importAppPostProcessing(newAppDef, zip);
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+                errors.add("console.app.error.label.create");
+            }
+        } else {
+            errors.add("console.app.error.label.create");
+        }
         return errors;
     }
     

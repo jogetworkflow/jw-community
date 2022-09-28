@@ -41,6 +41,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MarketplaceUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -1406,4 +1407,11 @@ public class WorkflowJsonController {
         jsonObject.accumulate("status", appDef != null);
         AppUtil.writeJson(writer, jsonObject, callback);
     }    
+    
+    @RequestMapping("/json/marketplace/list")
+    public void marketplaceList(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, 
+            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "type", required = false) String type, @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
+        AppUtil.writeJson(writer, MarketplaceUtil.getList(search, type, category, sort, desc, start, rows), callback);
+    }
 }

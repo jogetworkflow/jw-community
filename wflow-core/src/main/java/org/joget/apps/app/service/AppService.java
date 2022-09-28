@@ -87,7 +87,34 @@ public interface AppService {
      * @return A Collection of errors (if any).
      */
     Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copyAppDefinition);
+    
+    /**
+     * Create a new app definition and duplicate the other app
+     * @param appDefinition
+     * @param copyAppDefinition
+     * @param tablePrefix
+     * @return A Collection of errors (if any).
+     */
+    Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copyAppDefinition, String tablePrefix);
+    
+    /**
+     * Create a new app definition from template
+     * @param appDefinition
+     * @param templateId
+     * @param tablePrefix
+     * @return A Collection of errors (if any).
+     */
+    Collection<String> createAppDefinitionFromTemplate(AppDefinition appDefinition, String templateId, String tablePrefix);
 
+    /**
+     * Create a new app definition from a zip
+     * @param appDefinition
+     * @param zip
+     * @param tablePrefix
+     * @return
+     */
+    Collection<String> createAppDefinitionFromZip(AppDefinition appDefinition, byte[] zip, String tablePrefix);
+    
     /**
      * Create a new form definition
      * @param appDefinition

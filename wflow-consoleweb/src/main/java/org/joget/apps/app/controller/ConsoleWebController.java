@@ -63,6 +63,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.AuditTrailManager;
 import org.joget.apps.app.service.CustomBuilderUtil;
+import org.joget.apps.app.service.MarketplaceUtil;
 import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.app.service.TaggingUtil;
 import org.joget.apps.datalist.service.DataListService;
@@ -1410,33 +1411,54 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/create")
-    public String consoleAppCreate(ModelMap model) {
+    public String consoleAppCreate(ModelMap model, @RequestParam(value = "templateAppId", required = false) String templateAppId) {
         model.addAttribute("appDefinition", new AppDefinition());
         
         Collection<AppDefinition> appDefinitionList = appService.getUnprotectedAppList();
         model.addAttribute("appList", appDefinitionList);
         
+        Map<String, String> templateAppList = MarketplaceUtil.getTemplateOptions();
+        model.addAttribute("templateAppList", templateAppList);
+        
+        if (templateAppId != null && !templateAppId.isEmpty()) {
+            model.addAttribute("type", "template");
+            model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
+        } else {
+            model.addAttribute("type", "");
+        }
+        
         return "console/apps/appCreate";
     }
 
     @RequestMapping(value = "/console/app/submit", method = RequestMethod.POST)
-    public String consoleAppSubmit(ModelMap model, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result, @RequestParam(value = "copyAppId", required = false) String copyAppId) {
+    public String consoleAppSubmit(ModelMap model, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result, 
+            @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "templateAppId", required = false) String templateAppId, 
+            @RequestParam(value = "tablePrefix", required = false) String tablePrefix) {
         // validate ID
         validator.validate(appDefinition, result);
 
         boolean invalid = result.hasErrors();
         if (!invalid) {
-            // create app
-            AppDefinition copy = null;
-            if (copyAppId != null && !copyAppId.isEmpty()) {
-                Long copyVersion = appService.getPublishedVersion(copyAppId);
-                copy = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
-            }
-            
             appDefinition.setName(StringUtil.stripAllHtmlTag(appDefinition.getName()));
             
-            Collection<String> errors = appService.createAppDefinition(appDefinition, copy);
-            if (!errors.isEmpty()) {
+            Collection<String> errors = null;
+            if (templateAppId != null && !templateAppId.isEmpty()) {
+                errors = appService.createAppDefinitionFromTemplate(appDefinition, templateAppId, tablePrefix);
+                if (!errors.isEmpty()) {
+                    model.addAttribute("errors", errors);
+                    invalid = true;
+                }
+            } else {
+                // create app
+                AppDefinition copy = null;
+                if (copyAppId != null && !copyAppId.isEmpty()) {
+                    Long copyVersion = appService.getPublishedVersion(copyAppId);
+                    copy = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
+                }
+
+                errors = appService.createAppDefinition(appDefinition, copy, tablePrefix);
+            }
+            if (errors != null && !errors.isEmpty()) {
                 model.addAttribute("errors", errors);
                 invalid = true;
             }
@@ -1445,6 +1467,19 @@ public class ConsoleWebController {
         if (invalid) {
             Collection<AppDefinition> appDefinitionList = appService.getUnprotectedAppList();
             model.addAttribute("appList", appDefinitionList);
+            
+            Map<String, String> templateAppList = MarketplaceUtil.getTemplateOptions();
+            model.addAttribute("templateAppList", templateAppList);
+            
+            if (templateAppId != null && !templateAppId.isEmpty()) {
+                model.addAttribute("type", "template");
+                model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
+            } else if (copyAppId != null && !copyAppId.isEmpty()) {
+                model.addAttribute("type", "duplicate");
+                model.addAttribute("copyAppId", StringUtil.stripAllHtmlTag(copyAppId));
+            } else {
+                model.addAttribute("type", "");
+            }
         
             return "console/apps/appCreate";
         } else {
