@@ -1,0 +1,30 @@
+[
+    {
+        "title" : "@@userview.page.editHtml@@",
+        "properties" : [
+            {
+                "name" : "id",
+                "label" : "Id",
+                "type" : "hidden"
+            },
+            {
+                "name" : "customId",
+                "label" : "@@userview.formmenu.customId@@",
+                "type" : "textfield",
+                "regex_validation" : "^[a-zA-Z0-9_]+$",
+                "validation_message" : "@@userview.formmenu.invalidId@@"
+            },
+            {
+                "name" : "textContent",
+                "label" : "@@userview.page.html@@",
+                "type" : "codeeditor",
+                "mode" : "html",
+                "required" : "True"
+            }
+        ]
+    }
+]
+
+
+
+
