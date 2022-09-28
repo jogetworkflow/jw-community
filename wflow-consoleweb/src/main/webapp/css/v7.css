@@ -207,7 +207,9 @@ div#adminWelcome {
 #main-body {
     position: relative;
 }
-
+#main-body-content-filter {
+    margin-bottom: 10px;
+}
 
 /* buttons */
 #main-action-buttons {
@@ -444,19 +446,16 @@ input[type=search],
 input[type=file],
 textarea,
 select:not([class^=ui]){
-    border: none;
-    border-radius: 0;
-    outline: none;
-    height: 30px;
-    min-height: 30px;
-    margin: 0 0 15px 0;
-    padding: 0 2px;
-    box-shadow: none;
+    height: 32px;
+    padding: 6px 12px;
+    line-height: 18px;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     box-sizing: border-box;
-    transition: all 0.3s;
-    background-color: #f9f9f9;
-    border-bottom: 1px solid #9E9E9E;
-    color: inherit;
 }
 select[multiple]:not([class^=ui]){
     height: auto;
@@ -482,6 +481,9 @@ select:focus:not([readonly]):not([class^=ui]){
     border-bottom: 1px solid #727272;
     box-shadow: 0 1px 0 0 #727272;
 }
+.chosen-container a {
+    text-decoration: none;
+}
 body input:-webkit-autofill, body textarea:-webkit-autofill, body select:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #f9f9f9 inset;
     -webkit-text-fill-color: initial !important;
@@ -491,17 +493,6 @@ body input:focus:-webkit-autofill, body textarea:focus:-webkit-autofill, body se
 }
 body textarea {
     height: auto;
-}
-body select:not([class^="ui-"]){
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9E9E' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
-    background-position: 100% 50%;
-    background-repeat: no-repeat;
-    -webkit-appearance: none;
-    -ms-appearance: none;
-    appearance: none;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
-    padding-right: 25px;
 }
 body select:not([class^="ui-"])::-ms-expand{
     display: none;
@@ -519,6 +510,8 @@ body select:not([class^="ui-"]):focus{
 .form-row .form-input label {
     width:auto;
     font-weight: normal;
+    padding-top: 0px;
+    margin-bottom: 0px;
 }
 .form-row label span.mandatory{
     color:red;
@@ -719,7 +712,7 @@ body.popupBody #main-body-header #main-action-help{
     top:15px;
 }
 body.popupBody #main-body-content {
-    padding: 20px 15px;
+    padding: 20px 20px;
     overflow: auto !important;
 }
 .ui-dialog-content .popupBody #main-body-content {
@@ -853,6 +846,7 @@ body .flexigrid div.pDiv input,
 body .flexigrid div.pDiv select {
     height: 25px;
     min-height: 25px;
+    padding: 0 5px;
 }
 body .flexigrid div.bDiv tbody tr:last-child td{
     border-bottom: 1px solid #ccc;
@@ -965,25 +959,29 @@ fieldset {
 fieldset legend,
 .main-body-content-subheader,
 #main-body-content-subheader{
-    background: #ecf0f1;
-    padding: 10px 15px;
-    margin-bottom: 15px;
     font-weight: bold;
-    text-transform: uppercase;
-    display: block;
+    padding: 5px 10px;
+    margin-bottom: 15px;
+    background-color: #efefef;
+    left: 0px;
     width: 100%;
+    position: relative;
     box-sizing: border-box;
 }
+.form-row {
+    margin-bottom: 15px;
+}
 .form-row label {
-    width: 180px;
-    margin-right: 15px;
+    width: 200px;
     float: left;
     clear: left;
-    font-weight: bold;
-    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    font-weight: 600;
+    margin-bottom: 5px;
 }
 .form-row .form-input {
-    margin-left: 195px;
+    margin-left: 215px;
     display: block;
     line-height: 25px;
 }
@@ -992,6 +990,12 @@ fieldset legend,
     content: "";
     display: block;
     clear: both;
+}
+.form-input > input[type=checkbox]:first-child{
+    margin-top: 10px;
+}
+.form-input .chosen-container a {
+    text-decoration: none !important;
 }
 .form-input i {
     font-style: italic;
@@ -1411,8 +1415,8 @@ body#webconsole .welcome-box ul li{
 }
 .filterform .filterlabel {
     position: absolute;
-    top: 8px;
-    left: 2px;
+    top: 9px;
+    left: 8px;
 }
 .filterform .filterinput{
     padding-left: 25px;

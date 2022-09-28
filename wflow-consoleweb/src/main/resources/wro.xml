@@ -16,6 +16,7 @@
         <css>/js/boxy/stylesheets/boxy.css</css>
         <css>/css/admin_bar.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
+        <css>/js/chosen/chosen.css</css>
         <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
         <js>/js/jquery/jquery.ui.touch-punch.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
@@ -24,6 +25,7 @@
         <js>/js/guiders/guiders-1.1.1.js</js>
         <js>/js/jquery/jquery.blockUI.js</js>
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
+        <js>/js/chosen/chosen.jquery.js</js>
         <js>/js/contactjs/contact.min.js</js>
     </group>
     <group name="advancedTool">

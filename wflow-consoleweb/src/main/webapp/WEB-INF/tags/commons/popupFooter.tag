@@ -30,6 +30,15 @@
                     UI.blockUI();
                     return true;
                 });
+                
+                if ($("form.blockui select, #main-body-content-filter select").length > 0) {
+                    $("form.blockui select, #main-body-content-filter select").each(function(){
+                        if ($("body").hasClass("rtl")) {
+                            $(this).addClass("chosen-rtl");
+                        }
+                        $(this).chosen({width: "54%", placeholder_text: " "});
+                    });
+                }
             });
 
             HelpGuide.base = "${pageContext.request.contextPath}"

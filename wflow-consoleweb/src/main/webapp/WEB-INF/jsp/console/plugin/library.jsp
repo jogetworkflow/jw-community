@@ -11,7 +11,6 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/dropzone/dropzone.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tinyColorPicker/jqColorPicker.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tooltipster/js/tooltipster.bundle.min.js"></script>
@@ -23,7 +22,6 @@
     Dropzone.autoDiscover = false;
 </script>
 
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/dropzone/dropzone.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />

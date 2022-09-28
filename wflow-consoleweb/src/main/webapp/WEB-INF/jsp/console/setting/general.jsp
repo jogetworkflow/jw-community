@@ -19,7 +19,7 @@
         width: 50%
     }
 
-    .form-input input, .form-input textarea{
+    .form-input input:not([type=checkbox]), .form-input textarea{
         width: 100%
     }
 
@@ -137,11 +137,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="dateFormatFollowLocale"><fmt:message key="console.setting.general.label.dateFormatFollowLocale"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['dateFormatFollowLocale'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="dateFormatFollowLocale" name="dateFormatFollowLocale" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>
@@ -149,11 +151,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="datepickerFollowLocale"><fmt:message key="console.setting.general.label.datepickerFollowLocale"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['datepickerFollowLocale'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="datepickerFollowLocale" name="datepickerFollowLocale" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>
@@ -161,11 +165,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="enableUserLocale"><fmt:message key="console.setting.general.label.enableUserLocale"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['enableUserLocale'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="enableUserLocale" name="enableUserLocale" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>
@@ -183,11 +189,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="rightToLeft"><fmt:message key="console.setting.general.label.rightToLeft"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['rightToLeft'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="rightToLeft" name="rightToLeft" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>
@@ -233,11 +241,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="disableListRenderHtml"><fmt:message key="console.setting.general.label.disableListRenderHtml"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['disableListRenderHtml'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="disableListRenderHtml" name="disableListRenderHtml" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>            
@@ -368,11 +378,13 @@
                 <span class="row-content">
                     <div class="form-row">
                         <label for="disablePerformanceAnalyzer"><fmt:message key="console.setting.general.label.disablePerformanceAnalyzer"/></label>
+                        <span class="form-input">
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['disablePerformanceAnalyzer'] == 'true'}">
                             <c:set var="checked">checked</c:set>
                         </c:if>
                         <input type="checkbox" id="disablePerformanceAnalyzer" name="disablePerformanceAnalyzer" ${checked} />
+                        </span>
                     </div>
                 </span>
             </div>            
