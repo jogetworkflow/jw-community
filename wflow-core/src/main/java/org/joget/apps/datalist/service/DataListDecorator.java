@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -222,6 +224,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
     
     protected String generateLink(String href, String target, String hrefParam, String hrefColumn, String text, String confirmation, String cssClasses) {
+        return generateLink(getCurrentRowObject(), href, target, hrefParam, hrefColumn, text, confirmation, cssClasses);
+    }
+    
+    public static String generateLink(Object row, String href, String target, String hrefParam, String hrefColumn, String text, String confirmation, String cssClasses) {
         // add links
         String link = href;
         String targetString = "";
@@ -254,7 +260,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                         }
                         
                         if (isValid) {
-                            Object paramValue =evaluate(columns[i]);
+                            Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
                             if (paramValue == null) {
                                 paramValue = StringEscapeUtils.escapeHtml(columns[i]);
                             }
@@ -264,6 +270,22 @@ public class DataListDecorator extends CheckboxTableDecorator {
                                 link += paramValue;
                             }
                         }
+                    }
+                }
+            }
+            
+            if (link.contains("{") && link.contains("}")) {
+                Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
+                Matcher matcher = pattern.matcher(link);
+
+                while (matcher.find()) {
+                    String replace = matcher.group(0);
+                    String column = matcher.group(1);
+                    
+                    Object value = DataListService.evaluateColumnValueFromRow(row, column);
+                    if (value != null) {
+                        String temp = StringUtil.escapeString(value.toString(), StringUtil.TYPE_URL, null);
+                        link = link.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(temp));
                     }
                 }
             }
