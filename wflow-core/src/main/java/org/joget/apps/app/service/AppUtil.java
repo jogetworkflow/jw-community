@@ -1657,6 +1657,8 @@ public class AppUtil implements ApplicationContextAware {
             }
         }
         
+        missingPlugins = MarketplaceUtil.pluginClassToMarketplaceLink(missingPlugins);
+        
         Collections.sort(missingPlugins);
         
         return missingPlugins;
