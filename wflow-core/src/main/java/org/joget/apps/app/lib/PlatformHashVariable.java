@@ -22,6 +22,8 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
             result = ResourceBundleUtil.getMessage("console.header.top.title");
         } else if ("version".equals(variableKey)) {
             result = ResourceBundleUtil.getMessage("console.footer.label.revision");
+        } else if ("marketplaceUrl".equals(variableKey)) {
+            result = ResourceBundleUtil.getMessage("appCenter.link.marketplace.url");
         } else if ("jdbcDriver".equals(variableKey)) {
             DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
             try {
@@ -73,6 +75,7 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
         syntax.add("platform.name");
         syntax.add("platform.version");
         syntax.add("platform.jdbcDriver");
+        syntax.add("platform.marketplaceUrl");
         syntax.add("platform.setting.dataFileBasePath");
         syntax.add("platform.setting.deadlineCheckerInterval");
         syntax.add("platform.setting.fileSizeLimit");
