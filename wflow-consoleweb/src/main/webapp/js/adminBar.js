@@ -66,7 +66,7 @@ var AdminBar = {
         return false;
     },
     openAppComposer: function(url) {
-        if (CustomBuilder !== undefined) {
+        if (window['CustomBuilder'] !== undefined) {
             CustomBuilder.ajaxRenderBuilder(url);
             return false;
         } else {
@@ -254,7 +254,6 @@ var AdminBar = {
         $("#adminBarButtons a").on('click', function() {
             $("#adminBarButtons a").removeClass("current");
             $(this).addClass("current");
-            return false;
         });
         if (window === parent) {
             $("#adminControl").css("display", "block");
