@@ -45,6 +45,10 @@ public class LoginWebController {
             savedUrl = request.getHeader("referer");
         }
         
+        if (savedUrl.contains("/web/presence")) {
+            (new HttpSessionRequestCache()).removeRequest(request, response);
+        }
+        
         if (savedUrl.contains("/web/client/app/assignment/")) {
             UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
             if (UserviewUtil.checkUserviewInboxEnabled(defaultUserview)) {
