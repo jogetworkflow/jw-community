@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,6 +127,24 @@ public class MarketplaceUtil {
             }
         } catch (Exception e) {
             LogUtil.error(MarketplaceUtil.class.getName(), e, "");
+        }
+        
+        if (options != null && !options.isEmpty()) {
+            List<Map.Entry<String, String>> list = new LinkedList<Map.Entry<String, String>>(options.entrySet());
+
+            // Sort list with Collections.sort(), 
+            Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+                public int compare(Map.Entry<String, String> o1,
+                                   Map.Entry<String, String> o2) {
+                    return o1.getValue().compareTo(o2.getValue());
+                }
+            });
+
+            // Loop the sorted list and put it into a new insertion order Map LinkedHashMap
+            options = new LinkedHashMap<String, String>();
+            for (Map.Entry<String, String> entry : list) {
+                options.put(entry.getKey(), entry.getValue());
+            }
         }
         
         return options;
