@@ -3670,7 +3670,6 @@ public class ConsoleWebController {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", appDef.getAppId());
             jsonObject.put("name", appDef.getName());
-            jsonObject.put("notes", appDef.getDescription());
             jsonObject.put(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
             jsonObject.put(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
             jsonObject.put("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
@@ -6082,7 +6081,6 @@ public class ConsoleWebController {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", appDef.getAppId());
             jsonObject.put("name", appDef.getName());
-            jsonObject.put("notes", appDef.getDescription());
             jsonObject.put(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
             jsonObject.put(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
             jsonObject.put("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
@@ -6103,7 +6101,6 @@ public class ConsoleWebController {
             JSONObject jsonObject = new JSONObject(json);
 
             appDef.setName(jsonObject.getString("name"));
-            appDef.setDescription(jsonObject.getString("notes"));
             appDefinitionDao.merge(appDef);
 
             if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
