@@ -691,6 +691,18 @@ UserviewBuilder = {
                     var params = UrlUtil.getUrlParams(window.location.search);
                     if (params !== undefined && params["menuId"] !== undefined) {
                         id = params["menuId"][0];
+                        if (self.frameBody.find('[data-cbuilder-id="'+id+'"]').length === 0) {
+                            //find custom menu id in properties
+                            self.frameBody.find('[data-cbuilder-menus] .menu').each(function(){
+                                var data = $(this).data("data");
+                                if (data !== null && data !== undefined 
+                                        && data['properties'] !== null && data['properties'] !== undefined
+                                        && data['properties']['customId'] === id) {
+                                    id = data['properties']['id'];
+                                    return;
+                                }
+                            });
+                        }
                         self.selectNode(self.frameBody.find('[data-cbuilder-id="'+id+'"]'));
                     } else if (!self.selectedEl) {
                         id = self.frameBody.find("#category-container li.menu:eq(0)").attr("id");
