@@ -802,8 +802,11 @@ public class AppDevUtil {
                                     String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
                                     String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
                                     String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                                    AppDevUtil.gitAddRemote(localGit, gitUri);
-                                    AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                    
+                                    if (gitUri != null && !gitUri.trim().isEmpty()) {
+                                        AppDevUtil.gitAddRemote(localGit, gitUri);
+                                        AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                    }
                                 } finally {
                                     clearConcurrentPull(projectDirName);
                                 }
