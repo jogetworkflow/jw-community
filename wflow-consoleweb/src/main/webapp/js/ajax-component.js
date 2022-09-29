@@ -158,8 +158,8 @@ AjaxComponent = {
                 } else {
                      var formData = new FormData($(form)[0]);
                      var btn = $(this).find(document.activeElement);
-                     if ($(btn).length === 0 && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
-                         btn = $(this).find("input[type=submit][name], input[type=button][name], button[name]").eq(0);
+                     if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button')) && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
+                         btn = $(this).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
                      }
                      if ($(btn).length > 0) {
                          $(btn).each(function(){
