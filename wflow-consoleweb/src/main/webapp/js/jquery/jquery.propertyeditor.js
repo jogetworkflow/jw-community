@@ -416,7 +416,7 @@ PropertyEditor.Util = {
                             
                             var targetField = fields[fieldId];
                             var targetValue = "";
-                            if (!targetField.isHidden()) {
+                            if (!targetField.isHidden() || field.isHidden()) { //if the field not render yet, get the value too
                                 targetValue = targetField.value;
                             }
                             if (targetField.editor.find("#" + targetField.id).length > 0) {
