@@ -20,7 +20,8 @@ FormBuilder = {
                 "unloadElement" : "FormBuilder.unloadElement",
                 "selectElement" : "FormBuilder.selectElement",
                 "renderXray" : "FormBuilder.renderXray",
-                "copyElement" : "FormBuilder.copyElement"
+                "copyElement" : "FormBuilder.copyElement",
+                "pasteElement" : "FormBuilder.pasteElement"
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-fbuilder-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
@@ -139,7 +140,7 @@ FormBuilder = {
                 var copied = CustomBuilder.getCopiedElement();
                 if (copied !== null && copied !== undefined) {
                     var copiedComponent = CustomBuilder.Builder.getComponent(copied.object.className);
-                    if (copiedComponent.builderTemplate.getParentContainerAttr() === "sections" || copiedComponent.builderTemplate.getParentContainerAttr() === "columns") {
+                    if (copiedComponent.builderTemplate.getParentContainerAttr() === "sections" || copiedComponent.builderTemplate.getParentContainerAttr() === "columns" || copiedComponent.builderTemplate.getParentContainerAttr() === "elements") {
                         return true;
                     }
                 }
@@ -1269,6 +1270,20 @@ FormBuilder = {
             $temp.val("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#").select();
             document.execCommand("copy");
             $temp.remove();            
+        }
+    },
+
+    /*
+     * special handling to paste field in a section 
+     */
+    pasteElement: function(element, elementData, component, copiedObj, copiedComponent) {
+        //if element is section & copied element is not column
+        if ($(element).is('.form-section') && copiedComponent.builderTemplate.getParentContainerAttr() === "elements") {
+            //find last column in section
+            var lastColumn = $(element).find('> .form-column').last();
+            CustomBuilder.Builder._pasteNode(lastColumn, copiedObj, copiedComponent);
+        } else {
+            CustomBuilder.Builder._pasteNode(element, copiedObj, copiedComponent);
         }
     },
     
