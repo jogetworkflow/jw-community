@@ -17,10 +17,13 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -292,6 +295,21 @@ public class CustomBuilderWebController {
         }
         String json = builderDefinition.getJson();
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(json));
+    }
+    
+    @RequestMapping({"/json/console/app/(*:appId)/(~:version)/check"})
+    public void checkPermission(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
+        try {
+            JSONObject obj = new JSONObject();
+            if (WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) || EnhancedWorkflowUserManager.isAppAdminRole()) {
+                obj.put("status", true);
+            } else {
+                obj.put("status", false);
+            }
+            AppUtil.writeJson(writer, obj, null);
+        } catch (Exception e) {
+            LogUtil.error(CustomBuilderWebController.class.getName(), e, "");
+        }
     }
     
     @RequestMapping("/console/app/(*:appId)/(~:appVersion)/cbuilder/(*:type)/design/(*:id)")

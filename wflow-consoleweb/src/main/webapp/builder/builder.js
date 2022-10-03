@@ -288,21 +288,7 @@
             } else {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
                 
-                if (!(typeof document.removeEventListener === "undefined")) {
-                    var hidden, visibilityChange;
-                    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
-                        hidden = "hidden";
-                        visibilityChange = "visibilitychange";
-                    } else if (typeof document.msHidden !== "undefined") {
-                        hidden = "msHidden";
-                        visibilityChange = "msvisibilitychange";
-                    } else if (typeof document.webkitHidden !== "undefined") {
-                        hidden = "webkitHidden";
-                        visibilityChange = "webkitvisibilitychange";
-                    }
-
-                    document.removeEventListener(visibilityChange, null);
-                }
+                CustomBuilder.removeVisibilityChangeEvent("paste");
                 
                 $("body").attr("class", "no-right-panel initializing max-property-editor");
                 $("#builder_canvas").attr("class", "");
@@ -2533,32 +2519,8 @@
         var orgError = ajaxObj.error;
         ajaxObj.error = function(request, status, error) {
             if (request.status === 403 && !retried) {
-                //refresh ConnectionManager token
-                $.ajax({
-                    type: 'POST',
-                    url: UI.base + "/csrf",
-                    headers: {
-                        "FETCH-CSRF-TOKEN-PARAM":"true",
-                        "FETCH-CSRF-TOKEN":"true"
-                    },
-                    success: function (response) {
-                        var temp = response.split(":");
-                        ConnectionManager.tokenValue = temp[1];
-                        JPopup.tokenValue = temp[1];
-                        
-                        $("iframe").each(function() {
-                            try {
-                                if (this.contentWindow.ConnectionManager !== undefined) {
-                                    this.contentWindow.ConnectionManager.tokenValue = temp[1];
-                                }
-                                if (this.contentWindow.JPopup !== undefined) {
-                                    this.contentWindow.JPopup.tokenValue = temp[1];
-                                }
-                            } catch(err) {}
-                        });
-                        
-                        $.ajax(ajaxObj);
-                    }
+                CustomBuilder.refreshSession(function(){
+                    $.ajax(ajaxObj);
                 });
                 retried = true;
             } else if (orgError) {
@@ -2812,7 +2774,7 @@
     },
     
     /*
-     * Store previous Presence Indicator and start with new url
+     * stop previous Presence Indicator and start with new url
      */
     updatePresenceIndicator : function() {
         if (PresenceUtil.source !== null) {
@@ -2820,7 +2782,143 @@
             PresenceUtil.source = null;
         }
         PresenceUtil.createEventSource();
-    }
+    },
+    
+    /*
+     * Block the page and add listener to check session
+     */
+    sessionTimeout : function() {
+        //blocking the page and show alert message
+        if ($("body").find(".session_timeout").length === 0) {
+            $("body").append('<div class="session_timeout" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#727272bf;z-index:100000;"><div></div></div>');
+            var sessionDiv = $("body").find('.session_timeout > div');
+            $(sessionDiv).css({
+                "display" : "block",
+                "width": "450px",
+                "max-width": "90%",
+                "text-align": "center",
+                "background": "#fff",
+                "padding": "20px",
+                "border-radius": "10px",
+                "top": "50%",
+                "left": "50%",
+                "position": "absolute",
+                "transform": "translate(-50%, -50%)"
+            });
+            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.sessionTimeout')+'</p>');
+            $(sessionDiv).append('<a href="'+CustomBuilder.contextPath+'/web/presence" target="_blank" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.login')+'</a>');
+            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.doNotClose')+'</p>');
+            $(sessionDiv).append('<p><i class="fas fa-spin fa-spinner" style="font-size: 40px; color: #ccc;"></i></p>');
+            
+            //adding listener
+            CustomBuilder.addVisibilityChangeEvent("session", function(event, hidden) {
+                if (!document[hidden]) {
+                    CustomBuilder.refreshSession(CustomBuilder.sessionCheck);
+                }
+            });
+        }
+    },
+    
+    /*
+     * Check a user is logged in and having permission to continue edit
+     */
+    sessionCheck : function() {
+        $.ajax({
+            type: 'POST',
+            url: UI.base + "/web/json/console/app"+CustomBuilder.appPath+"/check",
+            dataType: "json",
+            success: function (response) {
+                if (response !== null && response !== undefined){
+                    if (response.status) {
+                        $("body").find(".session_timeout").remove();
+                        CustomBuilder.removeVisibilityChangeEvent("session");
+                    }
+                }
+            }
+        });
+    },
+
+    /*
+     * Update all csrf token
+     */
+    refreshSession : function(callback) {
+        //refresh ConnectionManager token
+        $.ajax({
+            type: 'POST',
+            url: UI.base + "/csrf",
+            headers: {
+                "FETCH-CSRF-TOKEN-PARAM":"true",
+                "FETCH-CSRF-TOKEN":"true"
+            },
+            success: function (response) {
+                var temp = response.split(":");
+                ConnectionManager.tokenValue = temp[1];
+                JPopup.tokenValue = temp[1];
+
+                $("iframe").each(function() {
+                    try {
+                        if (this.contentWindow.ConnectionManager !== undefined) {
+                            this.contentWindow.ConnectionManager.tokenValue = temp[1];
+                        }
+                        if (this.contentWindow.JPopup !== undefined) {
+                            this.contentWindow.JPopup.tokenValue = temp[1];
+                        }
+                    } catch(err) {}
+                });
+
+                if (callback) {
+                    callback();
+                }
+            }
+        });
+    },
+    
+    /*
+     * Add listener for browser tab visibility changes
+     */
+    addVisibilityChangeEvent : function(key, listener) {
+        if (!(typeof document.addEventListener === "undefined")) {
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            } else if (typeof document.msHidden !== "undefined") {
+                hidden = "msHidden";
+                visibilityChange = "msvisibilitychange";
+            } else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
+            if (CustomBuilder.visibilityChangeEvents === undefined) {
+                CustomBuilder.visibilityChangeEvents = {};
+            }
+
+            CustomBuilder.visibilityChangeEvents[key] = function(event) {
+                listener(event, hidden);
+            };
+            document.addEventListener(visibilityChange, CustomBuilder.visibilityChangeEvents[key], false);
+        }
+    },
+    
+    /*
+     * Remove listener for browser tab visibility changes
+     */
+    removeVisibilityChangeEvent : function(key) {
+        if (CustomBuilder.visibilityChangeEvents !== undefined && CustomBuilder.visibilityChangeEvents[key] !== undefined) {
+            if (!(typeof document.removeEventListener === "undefined")) {
+                var visibilityChange;
+                if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                    visibilityChange = "visibilitychange";
+                } else if (typeof document.msHidden !== "undefined") {
+                    visibilityChange = "msvisibilitychange";
+                } else if (typeof document.webkitHidden !== "undefined") {
+                    visibilityChange = "webkitvisibilitychange";
+                }
+                document.removeEventListener(visibilityChange, CustomBuilder.visibilityChangeEvents[key], false);
+                delete CustomBuilder.visibilityChangeEvents[key];
+            }
+        }
+    },
 };
 
 /*
@@ -2862,33 +2960,7 @@ _CustomBuilder.Builder = {
         if (CustomBuilder.Builder.options.enableCopyPaste) {
             $("#builderToolbar .copypaste").show();
             
-            if (!(typeof document.addEventListener === "undefined")) {
-                var hidden, visibilityChange;
-                if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
-                    hidden = "hidden";
-                    visibilityChange = "visibilitychange";
-                } else if (typeof document.msHidden !== "undefined") {
-                    hidden = "msHidden";
-                    visibilityChange = "msvisibilitychange";
-                } else if (typeof document.webkitHidden !== "undefined") {
-                    hidden = "webkitHidden";
-                    visibilityChange = "webkitvisibilitychange";
-                }
-
-                document.addEventListener(visibilityChange, function(){
-                    if (!document[hidden]) {
-                        var element = self.selectedEl;
-                        var data = CustomBuilder.data;
-                        if (element !== null) {
-                            data = $(element).data("data");
-                        }
-                        var component = self.parseDataToComponent(data);
-                        if (component !== null && component.builderTemplate.isPastable(data, component)) {
-                            $("#paste-element-btn").removeClass("disabled");
-                        }
-                    }
-                }, false);
-            }
+            CustomBuilder.addVisibilityChangeEvent("paste", CustomBuilder.Builder.updatePasteStatus);
         } else {
             $("#builderToolbar .copypaste").hide();
         }
@@ -6273,6 +6345,24 @@ _CustomBuilder.Builder = {
                 self.frameBody.removeClass("screenshot-in-progress");
             });
         }, 300);
+    },
+    
+    /*
+     * Used to update the toolbar paste icon when browser tab active. 
+     * Called by 
+     */
+    updatePasteStatus : function(event, hidden) {
+        if (!document[hidden]) {
+            var element = CustomBuilder.Builder.selectedEl;
+            var data = CustomBuilder.data;
+            if (element !== null) {
+                data = $(element).data("data");
+            }
+            var component = CustomBuilder.Builder.parseDataToComponent(data);
+            if (component !== null && component.builderTemplate.isPastable(data, component)) {
+                $("#paste-element-btn").removeClass("disabled");
+            }
+        }
     }
 }
 

@@ -43,7 +43,7 @@ var EventSource = function (url) {
       cache = '';
     
       xhr.timeout = 50000;
-      xhr.onreadystatechange = function () {
+      xhr.onreadystatechange = function () {  
         if (this.readyState == 3 || (this.readyState == 4 && this.status == 200)) {
           // on success
           if (eventsource.readyState == eventsource.CONNECTING) {
@@ -205,6 +205,14 @@ PresenceUtil = {
                 $("#presence li").each(function(i, li){
                     $(li).css("right", (i * 5) + "px");
                 });
+            }, false);
+
+            PresenceUtil.source.addEventListener("error", function(e) {
+                if (e.target.readyState === 2) {
+                    if (window['CustomBuilder'] !== undefined) {
+                        CustomBuilder.sessionTimeout();
+                    }
+                }
             }, false);
         } else {
             $("#presence").html("Your browser does not support EventSource");
