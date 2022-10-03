@@ -89,6 +89,10 @@ AjaxUniversalTheme = {
         if ($("#content main").find(".c-overflow").length > 0) {
             AjaxUniversalTheme.scrollBar(".c-overflow", "y");
         }
+        
+        $("html, body").animate({
+            scrollTop: 0
+        }, 0);
 
         setTimeout(function(){
             $(window).trigger('resize'); //inorder for datalist to render in correct viewport
