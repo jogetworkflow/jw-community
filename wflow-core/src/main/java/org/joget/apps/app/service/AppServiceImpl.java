@@ -3202,7 +3202,7 @@ public class AppServiceImpl implements AppService {
 
                     for (UserviewDefinition uvDef : uvDefList) {
                         UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, uvDef.getJson());
-                        if (userviewSetting != null && (userviewSetting.getPermission() == null || (userviewSetting.getPermission() != null && userviewSetting.getPermission().isAuthorize()))
+                        if (userviewSetting != null && userviewSetting.isIsAuthorize()
                                 && (!mobileView || !userviewSetting.getTheme().isMobileViewDisabled())
                                 && (!mobileCache || "true".equals(userviewSetting.getProperty("mobileCacheEnabled")))) {
                             if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {

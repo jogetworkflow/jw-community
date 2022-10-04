@@ -7,6 +7,7 @@ public class UserviewSetting extends Element {
 
     private UserviewTheme theme;
     private Permission permission;
+    private boolean isAuthorize;
 
     public UserviewTheme getTheme() {
         return theme;
@@ -51,5 +52,13 @@ public class UserviewSetting extends Element {
             return getTheme().getPropertyString(property);
         }
         return super.getPropertyString(property);
+    }
+
+    public boolean isIsAuthorize() {
+        return isAuthorize;
+    }
+
+    public void setIsAuthorize(boolean isAuthorize) {
+        this.isAuthorize = isAuthorize;
     }
 }

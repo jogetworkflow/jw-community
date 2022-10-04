@@ -111,24 +111,42 @@ public class UserviewService {
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");
             }
+            String permissionKey = Permission.DEFAULT;
+            boolean userviewPermission = false;
             try {
                 if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
-                    JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                    Permission permission = null;
-                    String permissionClassName = permissionObj.getString("className");
-                    if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                        permission = (Permission) pluginManager.getPlugin(permissionClassName);
+                    if (settingObj.getJSONObject("properties").has("permission_rules")) {
+                        JSONArray permissionRules = settingObj.getJSONObject("properties").getJSONArray("permission_rules");
+                        if (permissionRules != null && permissionRules.length() > 0) {
+                            for (int i = 0; i < permissionRules.length(); i++) {
+                                JSONObject rule = permissionRules.getJSONObject(i);
+                                if (rule.has("permission")) {
+                                    JSONObject permissionObj = rule.optJSONObject("permission");
+                                    userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                                    if (userviewPermission) {
+                                        permissionKey = rule.getString("permission_key");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (permission != null) {
-                        permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
-                        permission.setRequestParameters(requestParameters);
-                        permission.setCurrentUser(currentUser);
-                        setting.setPermission(permission);
+                    
+                    if (!userviewPermission) {
+                        if (settingObj.getJSONObject("properties").has("permission")) {
+                            JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                            userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                        } else {
+                            userviewPermission = true;
+                        }
                     }
+                } else {
+                    userviewPermission = true;
                 }
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
             }
+            setting.setIsAuthorize(userviewPermission);
             userview.setSetting(setting);
         } catch (Exception ex) {
             LogUtil.debug(getClass().getName(), "set userview setting error.");
@@ -253,6 +271,7 @@ public class UserviewService {
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
             }
+            setting.setIsAuthorize(userviewPermission);
             userview.setSetting(setting);
             userview.setPermissionKey(permissionKey);
 
