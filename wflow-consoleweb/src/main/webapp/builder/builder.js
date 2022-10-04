@@ -343,6 +343,11 @@
                     $("head").append(data.builderJS);
                 }
             }
+            
+            //update admin bar
+            var acBtn = $("#adminBarButtons .adminBarButton").eq(0);
+            $(acBtn).attr("href", CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath +'/builders');
+            $(acBtn).attr("onclick", "return AdminBar.openAppComposer('" + CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath + "/builders');");
         })
         .catch(function (error) {
             console.log(error);
