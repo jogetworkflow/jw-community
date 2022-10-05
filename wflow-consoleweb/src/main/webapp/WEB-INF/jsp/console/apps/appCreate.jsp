@@ -119,8 +119,17 @@
                 </div>
                 <div class="form-row" id="optionView" style="display:none">
                     <label for="field1"><fmt:message key="console.app.create.tablePrefix"/> </label>
-                    <span class="form-input"><input type="text" name="tablePrefix" value="" placeholder="<fmt:message key="console.app.create.tablePrefix.eg"/>" /></span>
-                </div>  
+                    <span class="form-input"><input type="text" name="tablePrefix" value="<c:out value="${tablePrefix}"/>" placeholder="<fmt:message key="console.app.create.tablePrefix.eg"/>" /></span>
+                </div>
+                <div id="templateConfig" style="display:none;">
+                    <div class="form-row">
+                        <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
+                        <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
+                    </div>
+                    <div id="templateConfigRows" style="display:none;margin-top: 20px;">
+                        
+                    </div>
+                </div>    
             </fieldset>
             <div class="form-buttons">
                 <input class="form-button btn btn-primary" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
@@ -130,6 +139,16 @@
     </div>
     
     <script type="text/javascript">
+        function showAdvancedInfo(){
+            showDiv($("#templateConfigRows"));
+            $('#showAdvancedInfo').hide();
+            $('#hideAdvancedInfo').show();
+        }
+        function hideAdvancedInfo(){
+            hideDiv($("#templateConfigRows"));
+            $('#showAdvancedInfo').show();
+            $('#hideAdvancedInfo').hide();
+        }
         function showDiv(div) {
             $(div).find('input, select, textarea').removeAttr('disabled');
             $(div).show();
@@ -162,12 +181,60 @@
             return false;
         }
         
+        var advancedConfig = {};
+        <c:if test="${!empty templateConfig}">
+            advancedConfig = ${templateConfig};
+        </c:if>
+        
+        function createField(type, i, name) {
+            var id = 'rp_'+type+'_'+name.replace(/[^a-zA-Z0-9_]/ig, "_");
+            var value = '';
+            if (advancedConfig[id] !== undefined) {
+                value = UI.escapeHTML(advancedConfig[id]);
+            }
+            var field = $('<div class="form-row"><label for="'+id+'">'+name+'</label><span class="form-input"><input type="text" name="'+id+'" value="'+value+'"/></span></div>');
+            $("#templateConfigRows").append(field);
+        }       
+        
         $(function() {
             $("input#id").focus();
             
+            $("[name='templateAppId']").on("change", function(){
+                var id = $("[name='templateAppId']").val();
+                if ($("#templateConfigRows").attr("data-id") === id) {
+                    showDiv($("#templateConfig"));
+                } else {
+                    $("#templateConfigRows").attr("data-id", "");
+                    $("#templateConfigRows").html("");
+                    $.ajax("${pageContext.request.contextPath}/web/json/marketplace/template/config?id=" + encodeURIComponent(id))
+                    .done(function(data){
+                        if (data.ids !== undefined && data.ids.length > 0) {
+                            $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.idReplace"/></h5>');
+                            for (var i=0; i<data.ids.length; i++) {
+                                createField("ids", i, data.ids[i]);
+                            }
+                        }
+                        if (data.tables !== undefined && data.tables.length > 0) {
+                            $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.tableNameReplace"/></h5>');
+                            for (var i=0; i<data.tables.length; i++) {
+                                createField("tables", i, data.tables[i]);
+                            }
+                        }
+                        if (data.labels !== undefined && data.labels.length > 0) {
+                            $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.labelReplace"/></h5>');
+                            for (var i=0; i<data.labels.length; i++) {
+                                createField("labels", i, data.labels[i]);
+                            }
+                        }
+                        $("#templateConfigRows").attr("data-id", id);
+                        showDiv($("#templateConfig"));
+                    });
+                }
+            });
+
             $("[name='type']").on("change", function(){
                 var value = $("[name='type']:checked").val();
-                hideDiv($("#duplicateView, #templateView, #optionView"));
+                hideDiv($("#duplicateView, #templateView, #optionView, #templateConfig"));
                 
                 if (value === "template") {
                     showDiv($("#templateView, #optionView"));

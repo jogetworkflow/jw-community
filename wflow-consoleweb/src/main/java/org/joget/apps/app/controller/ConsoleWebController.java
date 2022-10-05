@@ -1431,7 +1431,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/submit", method = RequestMethod.POST)
-    public String consoleAppSubmit(ModelMap model, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result, 
+    public String consoleAppSubmit(ModelMap model, HttpServletRequest request, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result, 
             @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "templateAppId", required = false) String templateAppId, 
             @RequestParam(value = "tablePrefix", required = false) String tablePrefix) {
         // validate ID
@@ -1472,11 +1472,26 @@ public class ConsoleWebController {
             model.addAttribute("templateAppList", templateAppList);
             
             if (templateAppId != null && !templateAppId.isEmpty()) {
+                try {
+                    JSONObject o = new JSONObject();
+                    //retrieve config from parameters
+                    for (String key : request.getParameterMap().keySet()) {
+                        if (key.startsWith("rp_")) {
+                            o.put(StringUtil.stripAllHtmlTag(key), StringUtil.stripAllHtmlTag(request.getParameter(key)));
+                        }
+                    }
+                    model.addAttribute("templateConfig", o.toString());
+                } catch (Exception e) {
+                    //ignore
+                }
+                
                 model.addAttribute("type", "template");
                 model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
+                model.addAttribute("tablePrefix", StringUtil.stripAllHtmlTag(tablePrefix));
             } else if (copyAppId != null && !copyAppId.isEmpty()) {
                 model.addAttribute("type", "duplicate");
                 model.addAttribute("copyAppId", StringUtil.stripAllHtmlTag(copyAppId));
+                model.addAttribute("tablePrefix", StringUtil.stripAllHtmlTag(tablePrefix));
             } else {
                 model.addAttribute("type", "");
             }

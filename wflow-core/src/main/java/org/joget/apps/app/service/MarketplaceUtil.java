@@ -51,10 +51,6 @@ public class MarketplaceUtil {
     public static JSONArray getList(String search, String type, String category, String sort, Boolean desc, Integer start, Integer rows) {
         update();
         
-        if (type != null && TYPE_Template.equals(type)) { //TODO: remove this block
-            type = TYPE_APP;
-        }
-        
         try {
             List<JSONObject> list = new ArrayList<JSONObject>();
             
@@ -120,7 +116,7 @@ public class MarketplaceUtil {
                 JSONArray c = cache.getJSONArray("data");
                 for (int i = 0 ; i < c.length(); i++) {
                     JSONObject obj = c.getJSONObject(i);
-                    if (TYPE_APP.equals(obj.getString("category"))) { // TODO: change to Template 
+                    if (TYPE_Template.equals(obj.getString("category"))) { 
                         options.put(obj.getString("id"), obj.getString("name"));
                     }
                 }
@@ -148,6 +144,33 @@ public class MarketplaceUtil {
         }
         
         return options;
+    }
+    
+    /**
+     * Retrieve the template config based on id
+     * @param id
+     * @return 
+     */
+    public static JSONObject getTemplateConfig(String id) {
+        update();
+        JSONObject config = new JSONObject();
+        
+        try {
+            if (cache != null && cache.has("data")) {
+                JSONArray c = cache.getJSONArray("data");
+                for (int i = 0 ; i < c.length(); i++) {
+                    JSONObject obj = c.getJSONObject(i);
+                    if (TYPE_Template.equals(obj.getString("category")) && obj.getString("id").equals(id) && obj.has("config")) { 
+                        config = new JSONObject(obj.getString("config"));
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(MarketplaceUtil.class.getName(), e, "");
+        }
+        
+        return config;
     }
     
     /**
@@ -242,8 +265,6 @@ public class MarketplaceUtil {
         Date now = new Date();
         
         if (lastRetrieve == null || Math.abs(now.getTime() - lastRetrieve.getTime()) > 3600000) { //1 hour
-            lastRetrieve = now;
-            
             String marketPlaceUrl = ResourceBundleUtil.getMessage("appCenter.link.marketplace.url");
 
             try {
@@ -253,7 +274,7 @@ public class MarketplaceUtil {
                 try {
                     String lastUpdate = "";
                     if (cache != null) {
-                        lastUpdate = "?last_update="+cache.get("lastUpdateDate");
+                        lastUpdate = "?last_update="+URLEncoder.encode(cache.get("lastUpdateDate").toString(), "UTF-8");
                     }
 
                     HttpGet get = new HttpGet(marketPlaceUrl + "/jw/web/json/plugin/org.joget.marketplace.MarketplaceApi/service"+lastUpdate);
@@ -267,6 +288,7 @@ public class MarketplaceUtil {
                             cache = data;
                         }
                     }
+                    lastRetrieve = now;
                 } finally {
                     try {
                         client.close();
@@ -274,7 +296,7 @@ public class MarketplaceUtil {
                     }
                 }
             } catch (Exception e) {
-                LogUtil.error(MarketplaceUtil.class.getName(), e, "");
+                LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to retrieve data from marketplace.");
             }
         }
     }
@@ -389,7 +411,7 @@ public class MarketplaceUtil {
                     in.close();
                 }
             } catch (IOException ex) {
-                LogUtil.error(MarketplaceUtil.class.getName(), ex, ex.getMessage());
+                LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to retrieve template from marketplace.");
             }
         }
     }    

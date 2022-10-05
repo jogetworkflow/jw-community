@@ -1414,4 +1414,9 @@ public class WorkflowJsonController {
             @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         AppUtil.writeJson(writer, MarketplaceUtil.getList(search, type, category, sort, desc, start, rows), callback);
     }
+    
+    @RequestMapping("/json/marketplace/template/config")
+    public void marketplaceTemplateConfig(HttpServletResponse response, Writer writer, @RequestParam(value = "id") String id) throws JSONException, IOException {
+        AppUtil.writeJson(writer, MarketplaceUtil.getTemplateConfig(id), null);
+    }
 }

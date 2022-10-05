@@ -19,10 +19,13 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -115,6 +118,8 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.transform.RegistryMatcher;
@@ -1364,7 +1369,10 @@ public class AppServiceImpl implements AppService {
             try {
                 byte[] appData = getAppDataXmlFromZip(zip);
                 byte[] xpdl = getXpdlFromZip(zip);
-
+                
+                //find template
+                byte[] templateConfig = getTemplateConfigFromZip(zip);
+        
                 //for backward compatible
                 Map<String, String> replacement = new HashMap<String, String>();
                 replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -1390,6 +1398,55 @@ public class AppServiceImpl implements AppService {
                 replacement.put("<id>"+zipApp.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
                 replacement.put("<name>"+zipApp.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
+                replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
+                
+                Map<String, String> templateReplace = new HashMap<String, String>();
+                if (templateConfig != null) {
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null) {
+                        try {
+                            JSONObject obj = new JSONObject(new String(templateConfig, "UTF-8"));
+                            Iterator<String> keys = obj.keys();
+                            while(keys.hasNext()) {
+                                String key = keys.next();
+                                if (obj.get(key) instanceof JSONArray) {
+                                    JSONArray jsonArray = obj.getJSONArray(key);
+                                    List<String> list = new ArrayList<String>();
+                                    for (int i=0; i<jsonArray.length(); i++) {
+                                        list.add( jsonArray.getString(i) );
+                                    }
+                                    //sort by length
+                                    Collections.sort(list, new Comparator<String>() {
+                                        public int compare(String o1,
+                                                           String o2) {
+                                            return o2.length() - o1.length();
+                                        }
+                                    });
+
+                                    for (String s : list) {
+                                        String value = request.getParameter("rp_" + key+"_"+s.replaceAll("[^a-zA-Z0-9_]", "_"));
+                                        if (value != null && !value.isEmpty()) {
+                                            value = StringUtil.stripAllHtmlTag(value);
+                                            if (!value.isEmpty()) {
+                                                if (key.equals("tables")) {
+                                                    replacement.put("app_fd_" + s, "app_fd_" + value);
+                                                    replacement.put("<tableName>" + s, "<tableName>" + value);
+                                                    replacement.put("&quot;tableName&quot;:&quot;" + s, "&quot;tableName&quot;:&quot;" + value);
+                                                } else {
+                                                    templateReplace.put(s, value);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            LogUtil.error(AppServiceImpl.class.getName(), ex, "");
+                        }
+
+                        replacement.putAll(templateReplace);
+                    }
+                }
                 
                 //replace table prefix
                 if (tablePrefix != null && !tablePrefix.isEmpty()) {
@@ -1417,6 +1474,10 @@ public class AppServiceImpl implements AppService {
                 replace.put("Name=\""+zipApp.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
                 replace.put("name=\""+zipApp.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
                 xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
+                
+                if (!templateReplace.isEmpty()) {
+                    xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
+                }
                 
                 AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
                 AppDefinition newAppDef = importAppDefinition(tempAppDef, 1L, xpdl);
@@ -3115,6 +3176,30 @@ public class AppServiceImpl implements AppService {
 
         while ((entry = in.getNextEntry()) != null) {
             if (entry.getName().endsWith(".xpdl")) {
+                int length;
+                byte[] temp = new byte[1024];
+                while ((length = in.read(temp, 0, 1024)) != -1) {
+                    out.write(temp, 0, length);
+                }
+
+                return out.toByteArray();
+            }
+            out.flush();
+            out.close();
+        }
+        in.close();
+
+        return null;
+    }
+    
+    public byte[] getTemplateConfigFromZip(byte[] zip) throws Exception {
+        ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        ZipEntry entry = null;
+
+        while ((entry = in.getNextEntry()) != null) {
+            if (entry.getName().endsWith("resources/template.json")) {
                 int length;
                 byte[] temp = new byte[1024];
                 while ((length = in.read(temp, 0, 1024)) != -1) {
