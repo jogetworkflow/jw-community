@@ -974,6 +974,9 @@
     save : function(){
         var proceedSave = true;
         
+        //the tooltip can't hide itself after click save, manually delete it
+        $(".ui-tooltip").remove();
+        
         if (CustomBuilder.config.builder.callbacks["builderBeforeSave"] !== undefined &&
                 CustomBuilder.config.builder.callbacks["builderBeforeSave"] !== "") {
             proceedSave = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderBeforeSave"]);
