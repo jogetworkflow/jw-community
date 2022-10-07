@@ -95,7 +95,9 @@ public class AbstractVersionedObject implements Serializable {
     }
 
     public String getName() {
-        return StringUtil.stripAllHtmlTag(name);
+         //StringUtil.stripAllHtmlTag will remove all html and escape the string
+         //StringUtil.unescapeString will unesacpe the string again, so that char like & won't appear wrongly as &amp;
+        return StringUtil.unescapeString(StringUtil.stripAllHtmlTag(name), StringUtil.TYPE_HTML, null);
     }
 
     public void setName(String name) {

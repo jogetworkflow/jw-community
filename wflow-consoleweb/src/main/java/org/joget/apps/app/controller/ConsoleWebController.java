@@ -1439,8 +1439,6 @@ public class ConsoleWebController {
 
         boolean invalid = result.hasErrors();
         if (!invalid) {
-            appDefinition.setName(StringUtil.stripAllHtmlTag(appDefinition.getName()));
-            
             Collection<String> errors = null;
             if (templateAppId != null && !templateAppId.isEmpty()) {
                 errors = appService.createAppDefinitionFromTemplate(appDefinition, templateAppId, tablePrefix);
