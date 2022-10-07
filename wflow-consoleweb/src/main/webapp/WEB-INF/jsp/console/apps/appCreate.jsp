@@ -186,13 +186,26 @@
             advancedConfig = ${templateConfig};
         </c:if>
         
-        function createField(type, i, name) {
-            var id = 'rp_'+type+'_'+name.replace(/[^a-zA-Z0-9_]/ig, "_");
+        //create config fields for template
+        function createField(type, i, name, defaultValue, placeholder) {
+            var id = "";
+            if (type === "tablePrefix") {
+                id = "tablePrefix";
+            } else {
+                id = 'rp_'+type+'_'+name.replace(/[^a-zA-Z0-9_]/ig, "_");
+            }
             var value = '';
+            if (defaultValue !== undefined) {
+                value = defaultValue;
+            }
             if (advancedConfig[id] !== undefined) {
                 value = UI.escapeHTML(advancedConfig[id]);
             }
-            var field = $('<div class="form-row"><label for="'+id+'">'+name+'</label><span class="form-input"><input type="text" name="'+id+'" value="'+value+'"/></span></div>');
+            var attr = "";
+            if (placeholder !== undefined) {
+                attr = " placeholder=\"" + placeholder + "\" ";
+            }
+            var field = $('<div class="form-row"><label for="'+id+'">'+name+'</label><span class="form-input"><input type="text" name="'+id+'" value="'+value+'" '+attr+'/></span></div>');
             $("#templateConfigRows").append(field);
         }       
         
@@ -214,12 +227,13 @@
                                 createField("ids", i, data.ids[i]);
                             }
                         }
+                        $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.tableNameReplace"/></h5>');
                         if (data.tables !== undefined && data.tables.length > 0) {
-                            $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.tableNameReplace"/></h5>');
                             for (var i=0; i<data.tables.length; i++) {
                                 createField("tables", i, data.tables[i]);
                             }
                         }
+                        createField("tablePrefix", 0, '<ui:msgEscJS key="console.app.create.tablePrefix"/>', '<c:out value="${tablePrefix}"/>', '<ui:msgEscJS key="console.app.create.tablePrefix.eg"/>');
                         if (data.labels !== undefined && data.labels.length > 0) {
                             $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.labelReplace"/></h5>');
                             for (var i=0; i<data.labels.length; i++) {
@@ -237,7 +251,7 @@
                 hideDiv($("#duplicateView, #templateView, #optionView, #templateConfig"));
                 
                 if (value === "template") {
-                    showDiv($("#templateView, #optionView"));
+                    showDiv($("#templateView"));
                 } else if (value === "duplicate") {
                     showDiv($("#duplicateView, #optionView"));
                 }
