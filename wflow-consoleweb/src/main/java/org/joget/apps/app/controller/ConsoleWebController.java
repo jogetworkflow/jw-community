@@ -5632,9 +5632,6 @@ public class ConsoleWebController {
         
         // check to ensure that userview is published
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        if (!appDef.isPublished()) {
-            return;
-        }
         
         // get base64 encoded image in POST body
         String imageBase64 = request.getParameter("base64data");

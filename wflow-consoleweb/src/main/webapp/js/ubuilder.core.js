@@ -2133,6 +2133,129 @@ UserviewBuilder = {
             });
         }
     },
+    
+    /*
+     * Prepare and render the screeshot view, called by switchView method
+     */
+    screenshotViewInit: function(view) {
+        $("body").addClass("no-left-panel");
+        $(view).html('<div id="screenshotViewImage"></div><div class="sticky-buttons"></div>');
+        
+        if ($("body").hasClass("default-builder")) {
+            $(CustomBuilder.Builder.iframe).off("change.builder", UserviewBuilder.renderScreenshot);
+            $(CustomBuilder.Builder.iframe).on("change.builder", UserviewBuilder.renderScreenshot);
+
+            UserviewBuilder.renderScreenshot();
+        }
+    },
+    
+    /*
+     * Render the screenshot of userview menu as it show in preview in stead of what is in builder canvas
+     */
+    renderScreenshot : function() {
+        if (UserviewBuilder.mode === "userview") {
+            $("#screenshotViewImage").html('<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
+            $("#screenshotView .sticky-buttons").html("");
+
+            var self = CustomBuilder.Builder;
+            var id = CustomBuilder.id;
+
+            if (self.frameBody.find('> *:eq(0)').length > 0) {
+                var tempId = self.frameBody.find('> *:eq(0)').attr("data-cbuilder-id");
+                if (tempId !== undefined && tempId !== "") {
+                    id = tempId;
+                }
+            }
+            
+            UserviewBuilder.getPreviewScreenshot(function(image){
+                $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
+
+                var link = document.createElement('a');
+                link.download = CustomBuilder.appId + '-' + CustomBuilder.builderType + '-' + id+'.png';
+                link.href = image;
+                $(link).addClass("btn button btn-secondary");  
+                $(link).html(get_cbuilder_msg('cbuilder.download'));
+                $("#screenshotView .sticky-buttons").append(link);
+            }, false);
+        } else {
+            CustomBuilder.Builder.renderScreenshot();
+        }
+    },
+    
+    getPreviewScreenshot : function(callback, isHome) {
+        var self = CustomBuilder.Builder;
+        
+        var iframe = document.createElement('iframe');
+        var iwidth = 1440; //$(window).width()
+        var iheight = 1000; //$(window).height()
+        $(iframe).attr("id", "preview-screenshot-iframe");
+        $(iframe).attr("name", "preview-screenshot-iframe");
+        $(iframe).css({
+            'visibility':'hidden',
+            'position': 'absolute'
+        }).width(iwidth).height(iheight);
+        $(document.body).append(iframe);
+
+        iframe.onload = function() {
+            setTimeout(function() {
+                var target = $(iframe.contentWindow.document).find("body");
+                
+                CustomBuilder.getScreenshot(target, function(image){
+                    callback(image);
+                    $(iframe).remove();
+                }, function(error) {
+                    $(iframe).remove();
+                });
+            }, 300);
+        }; 
+        
+        var menuId = "";
+        if (!isHome) {
+            var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
+            if (menuId !== undefined && menuId !== "") {
+                var menuObj = self.frameBody.find('[data-cbuilder-id="'+menuId+'"]').data("data");
+                if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
+                    menuId = menuObj.properties.customId;
+                }
+                menuId = "/" + menuId;
+            } else if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
+                var menuObj = UserviewBuilder.selectedMenu;
+                if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
+                    menuId = menuObj.properties.customId;
+                }
+                menuId = "/" + menuId;
+            } else {
+                menuId = "";
+            }
+        }
+        
+        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
+        $('#cbuilder-preview').attr("target", "preview-screenshot-iframe");
+        $('#cbuilder-preview').submit();
+    },
+    
+    /*
+     * save a screenshot after builder saved
+     */
+    builderSaved : function() {
+        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.generatingScreenshot'), "success");
+        
+        UserviewBuilder.getPreviewScreenshot(function(image){
+            var saveUrl = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/userview/' + CustomBuilder.data.properties.id + '/screenshot/submit';
+            $.ajax({ 
+                type: "POST", 
+                url: saveUrl,
+                dataType: 'text',
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                data: {
+                    base64data : image
+                }
+            })
+        }, true);
+    },
       
     /*
      * remove dynamically added items    
