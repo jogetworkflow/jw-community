@@ -3111,7 +3111,9 @@ ProcessBuilder = {
             
         if (elementObj.properties.id === undefined || elementObj.properties.id === "" || className === "participant") {
             var nodeCount = self.frameBody.find("."+className).length - 1;
-            
+            if (nodeCount < 0) {
+                nodeCount = 0; //should always start with 0
+            }
             var id;
             do {
                 id = className + ++nodeCount;
@@ -3124,6 +3126,7 @@ ProcessBuilder = {
             elementObj.properties.id = id;
         } else if (self.frameBody.find("#"+elementObj.properties.id).length > 0) {
             var nodeCount = self.frameBody.find("#"+elementObj.properties.id).length;
+            
             var id = elementObj.properties.id;
             
             while (self.frameBody.find("#"+id).length > 0) {
