@@ -1424,6 +1424,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListBinder", ResourceBundleUtil.getMessage("setting.plugin.datalistBinder"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListColumnFormat", ResourceBundleUtil.getMessage("setting.plugin.datalistColumnFormatter"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListFilterType", ResourceBundleUtil.getMessage("setting.plugin.datalistFilterType"));
+        pluginTypeMap.put("org.joget.apps.datalist.model.DataListTemplate", ResourceBundleUtil.getMessage("setting.plugin.dataListTemplate"));
         pluginTypeMap.put("org.joget.workflow.model.DeadlinePlugin", ResourceBundleUtil.getMessage("setting.plugin.deadline"));
         pluginTypeMap.put("org.joget.directory.model.service.DirectoryManagerPlugin", ResourceBundleUtil.getMessage("setting.plugin.directoryManager"));
         pluginTypeMap.put("org.joget.apps.form.model.Element", ResourceBundleUtil.getMessage("setting.plugin.formElement"));
@@ -1440,11 +1441,13 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewMenu", ResourceBundleUtil.getMessage("setting.plugin.userviewMenu"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewPermission", ResourceBundleUtil.getMessage("setting.plugin.userviewPermission"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewTheme", ResourceBundleUtil.getMessage("setting.plugin.userviewTheme"));
+        pluginTypeMap.put("org.joget.apps.userview.model.PageComponent", ResourceBundleUtil.getMessage("setting.plugin.pageComponent"));
         pluginTypeMap.put("org.joget.plugin.base.PluginWebSupport", ResourceBundleUtil.getMessage("setting.plugin.webService"));
         pluginTypeMap.put("org.joget.apps.app.service.MfaAuthenticator", ResourceBundleUtil.getMessage("setting.plugin.mfaAuthenticator"));
         pluginTypeMap.put("org.joget.apps.app.model.CustomBuilder", ResourceBundleUtil.getMessage("setting.plugin.customBuilder"));
         pluginTypeMap.put("org.joget.ai.TensorFlowPlugin", ResourceBundleUtil.getMessage("setting.plugin.TensorFlowPlugin"));
         pluginTypeMap.put("org.joget.workflow.model.DecisionPlugin", ResourceBundleUtil.getMessage("setting.plugin.DecisionPlugin"));
+        pluginTypeMap.put("org.joget.governance.model.GovHealthCheckAbstract", ResourceBundleUtil.getMessage("setting.plugin.govHealthCheck"));
         
         if (!getCache().getCustomPluginInterfaces().isEmpty()) {
             for (String className : getCache().getCustomPluginInterfaces().keySet()) {
