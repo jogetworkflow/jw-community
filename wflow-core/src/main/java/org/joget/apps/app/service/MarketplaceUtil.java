@@ -77,7 +77,10 @@ public class MarketplaceUtil {
                     if (obj.has("img") && obj.getString("img").startsWith("/")) {
                         obj.put("img", marketPlaceUrl + obj.getString("img"));
                     }
-                    list.add(obj);
+                    
+                    if (AppUtil.isEnterprise() || (!AppUtil.isEnterprise() && obj.getString("edition").contains("Community Edition"))) {
+                        list.add(obj);
+                    }
                 }
                 
                 if (sort != null && !sort.isEmpty()) {
@@ -110,14 +113,16 @@ public class MarketplaceUtil {
         update();
         
         Map<String, String> options = new HashMap<String, String>();
-        
+         
         try {
             if (cache != null && cache.has("data")) {
                 JSONArray c = cache.getJSONArray("data");
                 for (int i = 0 ; i < c.length(); i++) {
                     JSONObject obj = c.getJSONObject(i);
-                    if (TYPE_Template.equals(obj.getString("category"))) { 
-                        options.put(obj.getString("id"), obj.getString("name"));
+                    if (TYPE_Template.equals(obj.getString("category"))) {
+                        if (AppUtil.isEnterprise() || (!AppUtil.isEnterprise() && obj.getString("edition").contains("Community Edition"))) {
+                            options.put(obj.getString("id"), obj.getString("name"));
+                        }
                     }
                 }
             }

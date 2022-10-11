@@ -84,7 +84,9 @@
                     <span class="form-input">
                         <ul class="type-icon">
                             <li><label><input name="type" type="radio" value="" <c:if test="${type eq ''}">checked</c:if>><div><i class="far fa-file"></i><span><fmt:message key="console.app.create.blank"/></span></div></label></li>
-                            <li><label><input name="type" type="radio" value="template" <c:if test="${type eq 'template'}">checked</c:if>><div><i class="far fa-file-archive"></i><span><fmt:message key="console.app.create.templateApp"/></span></div></label></li>
+                            <c:if test="${templateAppList.size() > 0}">
+                                <li><label><input name="type" type="radio" value="template" <c:if test="${type eq 'template'}">checked</c:if>><div><i class="far fa-file-archive"></i><span><fmt:message key="console.app.create.templateApp"/></span></div></label></li>
+                            </c:if>
                             <li><label><input name="type" type="radio" value="duplicate" <c:if test="${type eq 'duplicate'}">checked</c:if>><div><i class="far fa-copy"></i><span><fmt:message key="console.app.create.cloneExisting"/></span></div></label></li>
                         </ul>
                     </span>
