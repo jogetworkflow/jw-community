@@ -3077,6 +3077,8 @@ _CustomBuilder.Builder = {
                 if ($(element).length > 0) {
                     self.selectNode(element);
                 }
+            } else {
+                CustomBuilder.Builder.updatePasteStatus();
             }
             
             if (callback) {
@@ -3697,6 +3699,19 @@ _CustomBuilder.Builder = {
                 $("body").addClass("no-right-panel");
                 $("#right-panel .property-editor-container").remove();
                 $("#copy-element-btn").addClass("disabled");
+            }
+
+            if (!node) {
+                node = self.frameBody.find('[data-cbuilder-uneditable]').first();
+            }
+
+            if ($(node).length > 0) {
+                $("#paste-element-btn").addClass("disabled");
+                var data = node.data("data");
+                var component = self.parseDataToComponent(data);
+                if (component !== null && component.builderTemplate.isPastable(data, component)) {
+                    $("#paste-element-btn").removeClass("disabled");
+                }
             }
                 
             return;
@@ -6361,6 +6376,7 @@ _CustomBuilder.Builder = {
      */
     updatePasteStatus : function(event, hidden) {
         if (!document[hidden]) {
+            $("#paste-element-btn").addClass("disabled");
             var element = CustomBuilder.Builder.selectedEl;
             var data = CustomBuilder.data;
             if (element !== null) {
