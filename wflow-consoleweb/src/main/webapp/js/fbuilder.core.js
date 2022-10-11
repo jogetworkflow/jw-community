@@ -690,9 +690,11 @@ FormBuilder = {
 
             // generate ID
             var elements = CustomBuilder.Builder.frameBody.find("." + elementClass);
-            var newIndex = elements.length + 1;
+            var newIndex = elements.length;
+            if (elementClass === "form-section") {
+                newIndex++; //only add for section, because for form field there is 1 dragged from pallate 
+            }
             var newId = prefix + newIndex;
-            
             while (CustomBuilder.Builder.frameBody.find("[data-cbuilder-id="+newId+"]").length > 0) {
                 newIndex++;
                 newId = prefix + newIndex;
