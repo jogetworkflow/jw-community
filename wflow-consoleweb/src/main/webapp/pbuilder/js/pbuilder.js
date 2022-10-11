@@ -3518,8 +3518,22 @@ ProcessBuilder = {
         
         var def = ProcessBuilder.getParticipantDef(elementObj, component);
         
-        def[0].title = get_cbuilder_msg("pbuilder.label.processStartWhiteList")
-        def[0].properties[0].options.unshift({value : "", label : get_cbuilder_msg("pbuilder.label.type.role")});
+        def[0].title = get_cbuilder_msg("pbuilder.label.processStartWhiteList");
+        def[0].properties[0].options[0].label = get_cbuilder_msg("pbuilder.label.type.role");
+        
+        def[0].properties.push({
+            name: 'mapping_par_role',
+            label: get_cbuilder_msg("pbuilder.label.type.role"),
+            type : 'selectbox',
+            options : [
+                {value : "" , label : get_cbuilder_msg("pbuilder.label.type.role.everyone")},
+                {value : "loggedInUser" , label : get_cbuilder_msg("pbuilder.label.loggedInUser")},
+                {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")}
+            ],
+            control_field: 'mapping_par_type',
+            control_value: '',
+            control_use_regex: 'false'
+        });
         
         return def;
     },
@@ -3538,6 +3552,7 @@ ProcessBuilder = {
                     label: get_cbuilder_msg("cbuilder.type"),
                     type : 'selectbox',
                     options : [
+                        {value : "", label : ""},
                         {value : "user", label : get_cbuilder_msg("pbuilder.label.users")},
                         {value : "group", label : get_cbuilder_msg("pbuilder.label.groups")},
                         {value : "department", label : get_cbuilder_msg("pbuilder.label.department")},
@@ -3635,18 +3650,6 @@ ProcessBuilder = {
                     url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions',
                     control_field: 'mapping_par_type',
                     control_value: 'plugin',
-                    control_use_regex: 'false'
-                },{
-                    name: 'mapping_par_role',
-                    label: get_cbuilder_msg("pbuilder.label.type.role"),
-                    type : 'selectbox',
-                    options : [
-                        {value : "" , label : get_cbuilder_msg("pbuilder.label.type.role.everyone")},
-                        {value : "loggedInUser" , label : get_cbuilder_msg("pbuilder.label.loggedInUser")},
-                        {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")}
-                    ],
-                    control_field: 'mapping_par_type',
-                    control_value: '',
                     control_use_regex: 'false'
                 }]
             }
