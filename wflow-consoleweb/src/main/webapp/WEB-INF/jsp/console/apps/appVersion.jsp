@@ -23,10 +23,14 @@
                       checkboxButton1="console.app.version.label.newVersion"
                       checkboxCallback1="newVersion"
                       checkboxOptional1="true"
-                      checkboxButton2="console.app.version.label.view"
-                      checkboxCallback2="viewVersion"
-                      checkboxButton3="general.method.label.delete"
-                      checkboxCallback3="deleteVersion"
+                      checkboxButton2="console.app.version.label.publish"
+                      checkboxCallback2="publishVersion"
+                      checkboxButton3="console.app.version.label.unpublish"
+                      checkboxCallback3="unpublishVersion"
+                      checkboxButton4="console.app.version.label.view"
+                      checkboxCallback4="viewVersion"
+                      checkboxButton5="general.method.label.delete"
+                      checkboxCallback5="deleteVersion"
                       fields="['version','published','description','dateCreated','dateModified']"
                       column1="{key: 'version', label: 'console.app.common.label.version', sortable: true}"
                       column2="{key: 'published', label: 'console.app.common.label.published', sortable: true, relaxed: true}"
@@ -70,6 +74,32 @@
                         }
                     }
                     ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');
+                }
+            }
+            
+            function publishVersion(version){
+                if (version != '' && confirm('<ui:msgEscJS key="console.app.publish.label.confirm"/>')) {
+                    showLoading();
+                    var callback = {
+                        success : function() {
+                            parent.$.unblockUI();
+                            parent.AppBuilder.updatePublishButton(version[0], false);
+                        }
+                    }
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
+                }
+            }
+
+            function unpublishVersion(version){
+                if (version != '' && confirm('<ui:msgEscJS key="console.app.unpublish.label.confirm"/>')) {
+                    showLoading();
+                    var callback = {
+                        success : function() {
+                            parent.$.unblockUI();
+                            parent.AppBuilder.updatePublishButton(version[0], true);
+                        }
+                    }
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
                 }
             }
 

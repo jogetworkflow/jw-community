@@ -307,11 +307,7 @@ AppBuilder = {
         if (confirm(AppBuilder.msg('publishConfirm'))) {
             var callback = {
                 success : function() {
-                    $("#unpublish-btn").show();
-                    $("#publish-btn").hide();
-                    CustomBuilder.appPublished = "true";
-                    AppBuilder.reloadVersions();
-                    AppBuilder.renderBuilders(CustomBuilder.builderItems);
+                    AppBuilder.updatePublishButton(CustomBuilder.appVersion, false);
                 }
             };
             ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
@@ -325,15 +321,28 @@ AppBuilder = {
         if (confirm(AppBuilder.msg('unpublishConfirm'))) {
             var callback = {
                 success : function() {
-                    $("#publish-btn").show();
-                    $("#unpublish-btn").hide();
-                    CustomBuilder.appPublished = "false";
-                    AppBuilder.reloadVersions();
-                    AppBuilder.renderBuilders(CustomBuilder.builderItems);
+                    AppBuilder.updatePublishButton(CustomBuilder.appVersion, true);
                 }
             };
             ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
         }
+    },
+    
+    updatePublishButton: function(version, isUnpublish) {
+        if ((isUnpublish && CustomBuilder.appVersion === version) || // is current app version unpublish or
+                (!isUnpublish && CustomBuilder.appVersion !== version)) { //other app version publish
+            $("#publish-btn").show();
+            $("#unpublish-btn").hide();
+            CustomBuilder.appPublished = "false";
+            $("#builderElementName .title .published").remove();
+        } else if (!isUnpublish && CustomBuilder.appVersion === version) { //current app version publish
+            $("#unpublish-btn").show();
+            $("#publish-btn").hide();
+            CustomBuilder.appPublished = "true";
+            $("#builderElementName .title").append('<small class="published">('+AppBuilder.msg('published')+')</small>');
+        }
+        AppBuilder.reloadVersions();
+        AppBuilder.renderBuilders(CustomBuilder.builderItems);
     },
     
     /*
@@ -341,7 +350,7 @@ AppBuilder = {
      */
     reloadVersions: function() {
         if ($("#versionsView").length > 0) {
-            $("#versionsView iframe")[0].contentWindow.reloadTable();
+            $("#versionsView iframe")[0].contentWindow.location.reload(true);
         }
     },
     
