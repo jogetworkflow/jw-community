@@ -1986,22 +1986,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     wfProcess.setDelayInSeconds(delayInSeconds);
                     wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
                 }
-
-
-                //time taken for completion from date started
-                long timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getStartedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getStartedTime().getTime() : 0;
-                long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-
-                wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
-                wfProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
-
-                //time taken for completion from date created
-                timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getCreatedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getCreatedTime().getTime() : 0;
-                timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                
-                wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
-                wfProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
-
             } else if (wfProcess.getDue() != null && currentDate.after(wfProcess.getDue())) {
                 long delayInMilliseconds = ((wfProcess != null && wfProcess.getDue() != null) ? currentDate.getTime() - wfProcess.getDue().getTime() : 0);
                 long delayInSeconds = (long) delayInMilliseconds / 1000;
@@ -2009,6 +1993,24 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 wfProcess.setDelayInSeconds(delayInSeconds);
                 wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
             }
+            
+            //time taken for completion from date started
+            if (wfProcess != null && wfProcess.getFinishTime() != null) {
+                currentDate = wfProcess.getFinishTime();
+            }
+            
+            long timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getStartedTime() != null) ? currentDate.getTime() - wfProcess.getStartedTime().getTime() : 0;
+            long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+            wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+            wfProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
+
+            //time taken for completion from date created
+            timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getCreatedTime() != null) ? currentDate.getTime() - wfProcess.getCreatedTime().getTime() : 0;
+            timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
+
+            wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
+            wfProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
 
             return wfProcess;
         } catch (Exception ex) {
