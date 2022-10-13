@@ -48,7 +48,7 @@ public class MarketplaceUtil {
      * @param rows
      * @return 
      */
-    public static JSONArray getList(String search, String type, String category, String sort, Boolean desc, Integer start, Integer rows) {
+    public static JSONArray getList(String search, String type, String category, Boolean isNew, String sort, Boolean desc, Integer start, Integer rows) {
         update();
         
         try {
@@ -70,6 +70,10 @@ public class MarketplaceUtil {
                     }
                     
                     if (search != null && !search.isEmpty() && !obj.getString("name").toLowerCase().contains(search.toLowerCase())) {
+                        continue;
+                    }
+                    
+                    if (isNew != null && isNew && !obj.getString("isNew").equals("New")) {
                         continue;
                     }
                     

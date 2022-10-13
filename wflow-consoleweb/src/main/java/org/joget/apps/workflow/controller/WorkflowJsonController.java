@@ -1410,9 +1410,10 @@ public class WorkflowJsonController {
     
     @RequestMapping("/json/marketplace/list")
     public void marketplaceList(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, 
-            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "type", required = false) String type, @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "type", required = false) String type, 
+            @RequestParam(value = "category", required = false) String category, @RequestParam(value = "isNew", required = false) Boolean isNew,
             @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-        AppUtil.writeJson(writer, MarketplaceUtil.getList(search, type, category, sort, desc, start, rows), callback);
+        AppUtil.writeJson(writer, MarketplaceUtil.getList(search, type, category, isNew, sort, desc, start, rows), callback);
     }
     
     @RequestMapping("/json/marketplace/template/config")
