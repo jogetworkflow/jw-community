@@ -66,6 +66,7 @@ var AdminBar = {
         return false;
     },
     openAppComposer: function(url) {
+        AdminBar.hideQuickOverlay();
         if (window['CustomBuilder'] !== undefined) {
             CustomBuilder.ajaxRenderBuilder(url);
             return false;
