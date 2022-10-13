@@ -38,21 +38,21 @@
                 <div id="advancedView" style="display:none">
                     <h5><fmt:message key="console.datalist.create.copy.header"/></h5>
                     <div class="form-row">
-                        <label for="copyAppId" style="display:inline-block;width:auto;float:none;">
-                            <fmt:message key="console.datalist.create.copy.appId"/>
-                            
+                        <label for="copyAppId"><fmt:message key="console.datalist.create.copy.appId"/></label>
+                        <span class="form-input">    
                             <select id="copyAppId" name="copyAppId">
                                 <option></option>
                                 <c:forEach items="${appList}" var="app">
                                     <option value="${app.id}"><c:out value="${app.name}"/></option>
                                 </c:forEach>
                             </select>
-                        </label>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label for="copyListId" style="display:inline-block;width:auto;float:none;v">
-                            <fmt:message key="console.datalist.create.copy.datalistId"/>
+                        </span>
+                    </div>    
+                    <div class="form-row">
+                        <label for="copyListId"><fmt:message key="console.datalist.create.copy.datalistId"/></label>
+                        <span class="form-input"> 
                             <select id="copyListId" name="copyListId"></select>
-                        </label>
+                        </span>
                     </div>    
                 </div>
             </fieldset>
@@ -75,6 +75,7 @@
                         $.each(options, function(i, option){
                             $("#copyListId").append('<option value="'+option.value+'">'+UI.escapeHTML(option.label)+'</option>');
                         });
+                        $("#copyListId").trigger("change").trigger("chosen:updated");
                     }
                 };
                 if ($("#copyAppId").val()==='${appId}') {

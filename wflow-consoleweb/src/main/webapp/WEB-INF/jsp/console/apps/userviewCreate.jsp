@@ -38,21 +38,21 @@
                 <div id="advancedView" style="display:none">
                     <h5><fmt:message key="console.userview.create.copy.header"/></h5>
                     <div class="form-row">
-                        <label for="copyAppId" style="display:inline-block;width:auto;float:none;">
-                            <fmt:message key="console.userview.create.copy.appId"/>
-                            
+                        <label for="copyAppId"><fmt:message key="console.userview.create.copy.appId"/></label>
+                        <span class="form-input">    
                             <select id="copyAppId" name="copyAppId">
                                 <option></option>
                                 <c:forEach items="${appList}" var="app">
                                     <option value="${app.id}"><c:out value="${app.name}"/></option>
                                 </c:forEach>
                             </select>
-                        </label>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label for="copyUserviewId" style="display:inline-block;width:auto;float:none;v">
-                            <fmt:message key="console.userview.create.copy.userviewId"/>
+                        </span>
+                    </div>
+                    <div class="form-row">    
+                        <label for="copyUserviewId"><fmt:message key="console.userview.create.copy.userviewId"/></label>
+                        <span class="form-input">    
                             <select id="copyUserviewId" name="copyUserviewId"></select>
-                        </label>
+                        </span>
                     </div>    
                 </div>
             </fieldset>
@@ -75,6 +75,7 @@
                         $.each(options, function(i, option){
                             $("#copyUserviewId").append('<option value="'+option.value+'">'+UI.escapeHTML(option.label)+'</option>');
                         });
+                        $("#copyUserviewId").trigger("change").trigger("chosen:updated");
                     }
                 };
                 if ($("#copyAppId").val()==='${appId}') {

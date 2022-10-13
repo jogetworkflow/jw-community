@@ -36,7 +36,7 @@
                         if ($("body").hasClass("rtl")) {
                             $(this).addClass("chosen-rtl");
                         }
-                        $(this).chosen({width: "54%", placeholder_text: " "});
+                        $(this).chosen({width: "50%", placeholder_text: " "});
                     });
                 }
             });
