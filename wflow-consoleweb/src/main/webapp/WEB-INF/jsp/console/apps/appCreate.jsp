@@ -119,10 +119,6 @@
                     <label for="field1"><fmt:message key="console.app.common.label.name"/> <span class="mandatory">*</span></label>
                     <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
-                <div class="form-row" id="optionView" style="display:none">
-                    <label for="field1"><fmt:message key="console.app.create.tablePrefix"/> </label>
-                    <span class="form-input"><input type="text" name="tablePrefix" value="<c:out value="${tablePrefix}"/>" placeholder="<fmt:message key="console.app.create.tablePrefix.eg"/>" /></span>
-                </div>
                 <div id="templateConfig" style="display:none;">
                     <div class="form-row">
                         <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
@@ -214,14 +210,25 @@
         $(function() {
             $("input#id").focus();
             
-            $("[name='templateAppId']").on("change", function(){
-                var id = $("[name='templateAppId']").val();
-                if ($("#templateConfigRows").attr("data-id") === id) {
+            $("[name='templateAppId'], [name='copyAppId']").on("change", function(){
+                var type, id, url;
+                if ($(this).is("[name='copyAppId']")) {
+                    type = "duplicate";
+                    id = $("[name='copyAppId']").val();
+                    url = "${pageContext.request.contextPath}/web/json/duplicate/app/config?id=" + encodeURIComponent(id);
+                } else {
+                    type = "template";
+                    id = $("[name='templateAppId']").val();
+                    url = "${pageContext.request.contextPath}/web/json/marketplace/template/config?id=" + encodeURIComponent(id);
+                }
+                
+                if ($("#templateConfigRows").attr("data-id") === id && $("#templateConfigRows").attr("data-type") === type) {
                     showDiv($("#templateConfig"));
                 } else {
                     $("#templateConfigRows").attr("data-id", "");
+                    $("#templateConfigRows").attr("data-type", "");
                     $("#templateConfigRows").html("");
-                    $.ajax("${pageContext.request.contextPath}/web/json/marketplace/template/config?id=" + encodeURIComponent(id))
+                    $.ajax(url)
                     .done(function(data){
                         if (data.ids !== undefined && data.ids.length > 0) {
                             $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.idReplace"/></h5>');
@@ -243,6 +250,7 @@
                             }
                         }
                         $("#templateConfigRows").attr("data-id", id);
+                        $("#templateConfigRows").attr("data-type", type);
                         showDiv($("#templateConfig"));
                     });
                 }
@@ -250,12 +258,12 @@
 
             $("[name='type']").on("change", function(){
                 var value = $("[name='type']:checked").val();
-                hideDiv($("#duplicateView, #templateView, #optionView, #templateConfig"));
+                hideDiv($("#duplicateView, #templateView, #templateConfig"));
                 
                 if (value === "template") {
                     showDiv($("#templateView"));
                 } else if (value === "duplicate") {
-                    showDiv($("#duplicateView, #optionView"));
+                    showDiv($("#duplicateView"));
                 }
             })
             $("[name='type']:first").trigger("change");

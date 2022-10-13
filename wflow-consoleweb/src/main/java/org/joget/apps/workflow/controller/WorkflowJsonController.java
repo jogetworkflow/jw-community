@@ -1420,4 +1420,9 @@ public class WorkflowJsonController {
     public void marketplaceTemplateConfig(HttpServletResponse response, Writer writer, @RequestParam(value = "id") String id) throws JSONException, IOException {
         AppUtil.writeJson(writer, MarketplaceUtil.getTemplateConfig(id), null);
     }
+    
+    @RequestMapping("/json/duplicate/app/config")
+    public void duplicateAppConfig(HttpServletResponse response, Writer writer, @RequestParam(value = "id") String id) throws JSONException, IOException {
+        AppUtil.writeJson(writer, AppUtil.getAppTemplateConfig(id, null), null);
+    }
 }

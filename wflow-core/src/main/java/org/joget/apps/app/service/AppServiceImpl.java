@@ -1242,6 +1242,12 @@ public class AppServiceImpl implements AppService {
                     replacement.put("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
                     replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                     
+                    Map<String, String> templateReplace = new HashMap<String, String>();
+                    JSONObject templateConfig = AppUtil.getAppTemplateConfig(copy);
+                    if (templateConfig != null) {
+                        retrieveTemplateReplaceMap(replacement, templateReplace, templateConfig);
+                    }
+                    
                     //replace table prefix
                     if (tablePrefix != null && !tablePrefix.isEmpty()) {
                         String prefix = "";
@@ -1270,7 +1276,12 @@ public class AppServiceImpl implements AppService {
                         replace.put("id=\""+copy.getAppId()+"\"", "id=\""+appId+"\"");
                         replace.put("Name=\""+copy.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
                         replace.put("name=\""+copy.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
+                        
                         xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
+                        
+                        if (!templateReplace.isEmpty()) {
+                            xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
+                        }
                     }
                     
                     //import
@@ -1402,50 +1413,7 @@ public class AppServiceImpl implements AppService {
                 
                 Map<String, String> templateReplace = new HashMap<String, String>();
                 if (templateConfig != null) {
-                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                    if (request != null) {
-                        try {
-                            JSONObject obj = new JSONObject(new String(templateConfig, "UTF-8"));
-                            Iterator<String> keys = obj.keys();
-                            while(keys.hasNext()) {
-                                String key = keys.next();
-                                if (obj.get(key) instanceof JSONArray) {
-                                    JSONArray jsonArray = obj.getJSONArray(key);
-                                    List<String> list = new ArrayList<String>();
-                                    for (int i=0; i<jsonArray.length(); i++) {
-                                        list.add( jsonArray.getString(i) );
-                                    }
-                                    //sort by length
-                                    Collections.sort(list, new Comparator<String>() {
-                                        public int compare(String o1,
-                                                           String o2) {
-                                            return o2.length() - o1.length();
-                                        }
-                                    });
-
-                                    for (String s : list) {
-                                        String value = request.getParameter("rp_" + key+"_"+s.replaceAll("[^a-zA-Z0-9_]", "_"));
-                                        if (value != null && !value.isEmpty()) {
-                                            value = StringUtil.stripAllHtmlTag(value);
-                                            if (!value.isEmpty()) {
-                                                if (key.equals("tables")) {
-                                                    replacement.put("app_fd_" + s, "app_fd_" + value);
-                                                    replacement.put("<tableName>" + s, "<tableName>" + value);
-                                                    replacement.put("&quot;tableName&quot;:&quot;" + s, "&quot;tableName&quot;:&quot;" + value);
-                                                } else {
-                                                    templateReplace.put(s, value);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(AppServiceImpl.class.getName(), ex, "");
-                        }
-
-                        replacement.putAll(templateReplace);
-                    }
+                    retrieveTemplateReplaceMap(replacement, templateReplace, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
                 
                 //replace table prefix
@@ -1500,6 +1468,54 @@ public class AppServiceImpl implements AppService {
             errors.add("console.app.error.label.create");
         }
         return errors;
+    }
+    
+    protected void retrieveTemplateReplaceMap(Map<String, String> replacement, Map<String, String> templateReplace, JSONObject templateConfig) {
+        if (templateConfig != null) {
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null) {
+                try {
+                    Iterator<String> keys = templateConfig.keys();
+                    while(keys.hasNext()) {
+                        String key = keys.next();
+                        if (templateConfig.get(key) instanceof JSONArray) {
+                            JSONArray jsonArray = templateConfig.getJSONArray(key);
+                            List<String> list = new ArrayList<String>();
+                            for (int i=0; i<jsonArray.length(); i++) {
+                                list.add( jsonArray.getString(i) );
+                            }
+                            //sort by length
+                            Collections.sort(list, new Comparator<String>() {
+                                public int compare(String o1,
+                                                   String o2) {
+                                    return o2.length() - o1.length();
+                                }
+                            });
+
+                            for (String s : list) {
+                                String value = request.getParameter("rp_" + key+"_"+s.replaceAll("[^a-zA-Z0-9_]", "_"));
+                                if (value != null && !value.isEmpty()) {
+                                    value = StringUtil.stripAllHtmlTag(value);
+                                    if (!value.isEmpty()) {
+                                        if (key.equals("tables")) {
+                                            replacement.put("app_fd_" + s, "app_fd_" + value);
+                                            replacement.put("<tableName>" + s, "<tableName>" + value);
+                                            replacement.put("&quot;tableName&quot;:&quot;" + s, "&quot;tableName&quot;:&quot;" + value);
+                                        } else {
+                                            templateReplace.put(s, value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    LogUtil.error(AppServiceImpl.class.getName(), ex, "");
+                }
+
+                replacement.putAll(templateReplace);
+            }
+        }
     }
     
     /**

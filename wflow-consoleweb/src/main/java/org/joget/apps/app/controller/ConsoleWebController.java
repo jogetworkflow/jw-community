@@ -1469,7 +1469,7 @@ public class ConsoleWebController {
             Map<String, String> templateAppList = MarketplaceUtil.getTemplateOptions();
             model.addAttribute("templateAppList", templateAppList);
             
-            if (templateAppId != null && !templateAppId.isEmpty()) {
+            if ((templateAppId != null && !templateAppId.isEmpty()) || (copyAppId != null && !copyAppId.isEmpty())) {
                 try {
                     JSONObject o = new JSONObject();
                     //retrieve config from parameters
@@ -1482,7 +1482,9 @@ public class ConsoleWebController {
                 } catch (Exception e) {
                     //ignore
                 }
-                
+            }
+            
+            if (templateAppId != null && !templateAppId.isEmpty()) {
                 model.addAttribute("type", "template");
                 model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
                 model.addAttribute("tablePrefix", StringUtil.stripAllHtmlTag(tablePrefix));

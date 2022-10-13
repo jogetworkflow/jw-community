@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -41,6 +42,7 @@ import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -1662,5 +1664,50 @@ public class AppUtil implements ApplicationContextAware {
         Collections.sort(missingPlugins);
         
         return missingPlugins;
+    }
+    
+    /**
+     * Retrieve the app template config based on app id & version
+     * @param appId
+     * @param appVersion
+     * @return 
+     */
+    public static JSONObject getAppTemplateConfig(String appId, String appVersion) {
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        if (appVersion == null || appVersion.isEmpty()) {
+            Long version = appService.getPublishedVersion(appId);
+            appVersion = (version != null)?version.toString():null;
+        }
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        
+        if (appDef != null) {
+            return getAppTemplateConfig(appDef);
+        }
+        return new JSONObject();
+    }
+    
+    /**
+     * Retrieve the app template config based on app definition
+     * @param appDef
+     * @return 
+     */
+    public static JSONObject getAppTemplateConfig(AppDefinition appDef) {
+        JSONObject config = new JSONObject();
+        
+        try {
+            if (appDef != null) {
+                File json = AppResourceUtil.getFile(appDef.getAppId(), appDef.getVersion().toString(), "template.json");
+                if (json.exists()) {
+                    String content = FileUtils.readFileToString(json, StandardCharsets.UTF_8);
+                    if (content != null && !content.isEmpty()) {
+                        config = new JSONObject(content);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        
+        return config;
     }
 }
