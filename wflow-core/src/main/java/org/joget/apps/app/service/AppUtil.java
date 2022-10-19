@@ -1697,7 +1697,7 @@ public class AppUtil implements ApplicationContextAware {
         try {
             if (appDef != null) {
                 File json = AppResourceUtil.getFile(appDef.getAppId(), appDef.getVersion().toString(), "template.json");
-                if (json.exists()) {
+                if (json != null && json.exists()) {
                     String content = FileUtils.readFileToString(json, StandardCharsets.UTF_8);
                     if (content != null && !content.isEmpty()) {
                         config = new JSONObject(content);
