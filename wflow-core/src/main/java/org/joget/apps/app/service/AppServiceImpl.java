@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1235,14 +1236,16 @@ public class AppServiceImpl implements AppService {
                     appDefinitionXml = baos.toByteArray();
                     baos.close();
 
-                    Map<String, String> replacement = new HashMap<String, String>();
+                    Map<String, String> replacement = new LinkedHashMap<String, String>();
                     
                     //replace id and name
                     replacement.put("<id>"+copy.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
                     replacement.put("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
                     replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
+                    replacement.put("/app/"+copy.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
+                    replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                     
-                    Map<String, String> templateReplace = new HashMap<String, String>();
+                    Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                     JSONObject templateConfig = AppUtil.getAppTemplateConfig(copy);
                     if (templateConfig != null) {
                         retrieveTemplateReplaceMap(replacement, templateReplace, templateConfig);
@@ -1385,7 +1388,7 @@ public class AppServiceImpl implements AppService {
                 byte[] templateConfig = getTemplateConfigFromZip(zip);
         
                 //for backward compatible
-                Map<String, String> replacement = new HashMap<String, String>();
+                Map<String, String> replacement = new LinkedHashMap<String, String>();
                 replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
                 replacement.put("</disableSaveAsDraft-->", "</disableSaveAsDraft>");
                 replacement.put("<!--description>", "<description>");
@@ -1410,8 +1413,9 @@ public class AppServiceImpl implements AppService {
                 replacement.put("<name>"+zipApp.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
+                replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 
-                Map<String, String> templateReplace = new HashMap<String, String>();
+                Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
                     retrieveTemplateReplaceMap(replacement, templateReplace, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
