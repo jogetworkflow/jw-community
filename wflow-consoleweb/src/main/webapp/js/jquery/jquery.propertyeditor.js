@@ -8913,7 +8913,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
             this.pageOptions.propertyValues = (this.value && this.value.className === value) ? this.value.properties : null;
         }
         //check if value is different, remove all the related properties page
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']:first').attr('elementvalue') !== value) {
+        var existing = $(this.editor).find('.property-editor-page[elementid=' + this.id + ']:first');
+        if ($(existing).length > 0 && $(existing).attr('elementvalue') !== value) {
             this.removePages();
             thisObj.editorObject.refresh();
         }
@@ -9458,9 +9459,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         } else {
             propertyValues = (elData && elData.properties) ? elData.properties : null;
         }
-
+        
         //check if value is different, remove all the related properties page
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']:first').attr('elementvalue') !== value) {
+        var existing = $(this.editor).find('.property-editor-page[elementid=' + id + ']:first');
+        if ($(existing).length > 0 && $(existing).attr('elementvalue') !== value) {
             this.removePages(field);
             thisObj.editorObject.refresh();
         }
