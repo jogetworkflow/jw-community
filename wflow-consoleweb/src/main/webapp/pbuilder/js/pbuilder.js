@@ -2399,7 +2399,7 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         
         if (element.hasClass("process")) {
-            var id = element.attr("id");
+            var id = window.location.hash.replace("#", "");
             
             $('#process-selector select [value="'+id+'"]').text(elementObj.properties.label);
             if (id !== elementObj.properties.id) {
