@@ -289,4 +289,13 @@ public abstract class UserviewV5Theme extends UserviewTheme {
     public String getCustomHomepage() {
         return null;
     }
+    
+    /**
+     * To get custom content
+     * @param data
+     * @return 
+     */
+    public String getCustomContent(Map<String, Object> data) {
+        return null;
+    }
 }

@@ -10,6 +10,8 @@ import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
+import org.joget.apps.userview.model.UserviewCategory;
+import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -21,6 +23,7 @@ import org.joget.workflow.util.WorkflowUtil;
 
 public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilderColorConfig {
     protected Boolean isAjaxContent = null;
+    protected Boolean isAjaxMenu = null;
     
     @Override
     public String getName() {
@@ -45,7 +48,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     protected String getInternalJsCssLib(Map<String, Object> data) {
         String jscss = "";
-        if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
+        if (!isAjaxContent(data) && !isAjaxMenu() && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
             jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" async></script>";
             jscss += "\n<script>" + getContentPlaceholderRules() + "</script>";
         }
@@ -55,7 +58,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getLayout(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxMenu()) {
+            return (String) data.get("menus");
+        } else if (isAjaxContent(data)) {
             UserviewThemeProcesser processor = (UserviewThemeProcesser) data.get("processor");
             if (processor.getAlertMessage() != null && !processor.getAlertMessage().isEmpty()) {
                 data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
@@ -85,7 +90,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getHeader(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             if ("true".equals(getPropertyString("horizontal_menu"))) {
@@ -98,7 +103,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getFooter(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getFooter(data);
@@ -115,11 +120,33 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         }
     }
     
+    /**
+     * HTML template for menu. Return a temporary placeholder for menu count to improve performance.
+     * The actual count will retrieve in separated AJAX call.
+     * 
+     * @param category
+     * @param menu
+     * @return 
+     */
+    @Override
+    public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
+        if (!isAjaxMenu() && menu.getProperties().containsKey("rowCount") && Boolean.parseBoolean(menu.getPropertyString("rowCount"))) {
+            // sanitize label
+            String label = menu.getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+            return "<a href='" + menu.getUrl() + "' class='menu-link default'><span>" + label + "</span> <span class='pull-right badge rowCount' data-ajaxmenucount=\""+menu.getPropertyString("id")+"\">...</span></a>";
+        } else {
+            return menu.getMenu();
+        }
+    }
+    
     @Override
     public String getMenus(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             data.put("combine_single_menu_category", true);
-            return null;
+            return UserviewUtil.getTemplate(this, data, "/templates/userview/menus.ftl");
         } else {
             if ("minimized".equals(getPropertyString("horizontal_menu"))) {
                 data.put("body_classes", data.get("body_classes").toString() + " sidebar-minimized");
@@ -144,7 +171,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getJsCssLib(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             String jsCssLink = "";
@@ -198,7 +225,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getCss(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getCss(data);
@@ -207,7 +234,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getJs(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getJs(data);
@@ -216,7 +243,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getMetas(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getMetas(data);
@@ -225,7 +252,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getHead(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getHead(data);
@@ -234,7 +261,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     @Override
     public String getFavIconLink(Map<String, Object> data) {
-        if (isAjaxContent(data)) {
+        if (isAjaxContent(data) || isAjaxMenu()) {
             return "";
         } else {
             return super.getFavIconLink(data);
@@ -252,11 +279,30 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         return super.getLoginForm(data);
     }
     
+    @Override
+    public String getCustomContent(Map<String, Object> data) {
+        if (isAjaxMenu()) {
+            return "";
+        }
+        return null;
+    }
+    
     protected boolean isAjaxContent(Map<String, Object> data) {
         if (isAjaxContent == null) {
             isAjaxContent = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_loading"));
         }
         return isAjaxContent;
+    }
+    
+    /**
+     * Check the request is AJAX call to retrieve menu
+     * @return 
+     */
+    protected boolean isAjaxMenu() {
+        if (isAjaxMenu == null) {
+            isAjaxMenu = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_menu"));
+        }
+        return isAjaxMenu;
     }
     
     @Override

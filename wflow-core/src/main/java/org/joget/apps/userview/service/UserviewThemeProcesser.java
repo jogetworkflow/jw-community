@@ -649,6 +649,16 @@ public class UserviewThemeProcesser {
             return getDefaultTheme().getLoginForm(data);
         }
     }
+    
+    //check is there any custom content handled by theme
+    protected String getCustomContent(Map<String, Object> data) {
+        String content = theme.getCustomContent(data);
+        if (content != null) {
+            return content;
+        } else {
+            return getDefaultTheme().getCustomContent(data);
+        }
+    }
 
     protected String getContent(Map<String, Object> data) {
         String content = "";
@@ -663,25 +673,30 @@ public class UserviewThemeProcesser {
                 return getLoginForm(data);
             } else if (!isAuthorized) {
                 return "<h3>"+ResourceBundleUtil.getMessage("ubuilder.noAuthorize")+"</h3>";
-            } else if (userview.getCurrent() != null) {
-                if (isQuickEditEnabled) {
-                    String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + userview.getCurrent().getPropertyString("label");
-                    String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id") + "?menuId=" + userview.getCurrent().getPropertyString("id");
-                    content += "<div class=\"quickEdit\" style=\"display: none\">\n";
-                    content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
-                    content += "</div>\n";
-                }
-                if (userview.getCurrent().getUserview() == null) {
-                    userview.getCurrent().setUserview(userview);
-                }
-                UserviewPage page = new UserviewPage(userview.getCurrent());
-                content += page.render();
             } else {
-                String pageNotFound = theme.handlePageNotFound(data);
-                if (pageNotFound != null) {
-                    return pageNotFound;
+                String customContent = getCustomContent(data);
+                if (customContent != null) {
+                    return customContent;
+                } else if (userview.getCurrent() != null) {
+                    if (isQuickEditEnabled) {
+                        String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + userview.getCurrent().getPropertyString("label");
+                        String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id") + "?menuId=" + userview.getCurrent().getPropertyString("id");
+                        content += "<div class=\"quickEdit\" style=\"display: none\">\n";
+                        content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
+                        content += "</div>\n";
+                    }
+                    if (userview.getCurrent().getUserview() == null) {
+                        userview.getCurrent().setUserview(userview);
+                    }
+                    UserviewPage page = new UserviewPage(userview.getCurrent());
+                    content += page.render();
                 } else {
-                    return getDefaultTheme().handlePageNotFound(data);
+                    String pageNotFound = theme.handlePageNotFound(data);
+                    if (pageNotFound != null) {
+                        return pageNotFound;
+                    } else {
+                        return getDefaultTheme().handlePageNotFound(data);
+                    }
                 }
             }
         } catch (Exception e) {
