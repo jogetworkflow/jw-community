@@ -83,6 +83,7 @@
     <group name="userview_v5.min">
         <css>/css/form.css</css>
         <css>/css/userview_v5.css</css>
+        <js>/js/ajax-menus-count.js</js>
     </group>
     <group name="userview_print.min">
         <css>/css/userview_print.css</css>
@@ -118,6 +119,7 @@
         <js>/universal/js/main.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
     </group>
     <group name="progressive.preload.min">
@@ -140,6 +142,7 @@
         <js>/progressive/js/main.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
     </group>
     <group name="xadmin.min">
@@ -154,6 +157,7 @@
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
+        <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
