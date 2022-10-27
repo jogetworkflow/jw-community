@@ -204,6 +204,12 @@ public class UserviewThemeProcesser {
             data.put("login_link", request.getContextPath() + getLoginLink());
         }
         
+        if (request != null) {
+            if("true".equalsIgnoreCase(request.getHeader("__ajax_menu_count"))) {
+                return getAjaxMenusCount(data);
+            }
+        }
+        
         data.put("content", getContent(data));
 
         String handleMenuResponse = handleMenuResponse();
@@ -620,6 +626,14 @@ public class UserviewThemeProcesser {
             content += "</div>\n";
         }
         content += menu;
+        return content;
+    }
+    
+    protected String getAjaxMenusCount(Map<String, Object> data) {
+        String content = theme.getAjaxMenusCount(data);
+        if (content == null) {
+            content = getDefaultTheme().getAjaxMenusCount(data);
+        }
         return content;
     }
 

@@ -155,6 +155,16 @@ public abstract class UserviewV5Theme extends UserviewTheme {
     public String getMenus(Map<String, Object> data) {
         return UserviewUtil.getTemplate(this, data, "/templates/userview/menus.ftl");
     }
+    
+    /**
+     * HTML template to handle AJAX menus count
+     * 
+     * @param data
+     * @return 
+     */
+    public String getAjaxMenusCount(Map<String, Object> data) {
+        return UserviewUtil.getTemplate(this, data, "/templates/userview/ajax_menus_count.ftl");
+    }
 
     /**
      * HTML template for putting javascript and css link for getHead() template
@@ -255,14 +265,24 @@ public abstract class UserviewV5Theme extends UserviewTheme {
     }
     
     /**
-     * HTML template for menu 
+     * HTML template for menu. Return a temporary placeholder for menu count to improve performance.
+     * The actual count will retrieve in separated AJAX call.
      * 
      * @param category
      * @param menu
      * @return 
      */
     public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
-        return menu.getMenu();
+        if (menu.getProperties().containsKey("rowCount") && Boolean.parseBoolean(menu.getPropertyString("rowCount"))) {
+            // sanitize label
+            String label = menu.getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+            return "<a href='" + menu.getUrl() + "' class='menu-link default'><span>" + label + "</span> <span class='pull-right badge rowCount' data-ajaxmenucount=\""+menu.getPropertyString("id")+"\">...</span></a>";
+        } else {
+            return menu.getMenu();
+        }
     }
     
     /**

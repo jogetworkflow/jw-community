@@ -507,7 +507,6 @@ public class XadminTheme extends UniversalTheme {
     
     protected String getMenuScript(Map<String, Object> data){
         String title = " ";
-        String menu = "";
         if (userview.getCurrent() != null) {
             if (PROFILE.equals(getRequestParameter("menuId"))) {
                 title = ResourceBundleUtil.getMessage("theme.universal.profile");
@@ -515,10 +514,6 @@ public class XadminTheme extends UniversalTheme {
                 title = ResourceBundleUtil.getMessage("theme.universal.inbox");
             } else {
                 title = StringUtil.stripAllHtmlTag(userview.getCurrent().getPropertyString("label"));
-            }
-            String decoMenu = userview.getCurrent().getDecoratedMenu();
-            if (decoMenu != null) {
-                menu = transformMenu(userview.getCurrentCategory(), userview.getCurrent(), decoMenu);
             }
         }
         String script = "<script>";
@@ -528,7 +523,7 @@ public class XadminTheme extends UniversalTheme {
         script += "            layui.use(['layer', 'element'], function(){";
         script += "                if (layer !== undefined && element !== undefined ) {";
         script += "                    xadmin.updateTabTitle(\""+StringUtil.escapeString(title, StringUtil.TYPE_JAVASCIPT, null)+"\");";
-        script += "                    xadmin.updateMenu(\""+StringUtil.escapeString(menu, StringUtil.TYPE_JAVASCIPT, null)+"\");";    
+        script += "                    xadmin.updateMenu();";    
         script += "                } else {";
         script += "                    initPage();";
         script += "                }";
@@ -652,24 +647,16 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
-        String decoratedMenu = menu.getDecoratedMenu();
-        if (((menu instanceof Link) || ((menu instanceof CachedUserviewMenu) && ((CachedUserviewMenu) menu).instanceOf(Link.class))) || decoratedMenu == null || decoratedMenu.isEmpty()) {
-            return getMenuHtml(category, menu, "", null);
+        if (menu.getProperties().containsKey("rowCount") && Boolean.parseBoolean(menu.getPropertyString("rowCount"))) {
+            return getMenuHtml(category, menu, "<span class='pull-right badge rowCount' data-ajaxmenucount=\""+menu.getPropertyString("id")+"\">...</span>", null);
         } else {
-            return transformMenu(category, menu, decoratedMenu);
+            String decoratedMenu = menu.getDecoratedMenu();
+            if (((menu instanceof Link) || ((menu instanceof CachedUserviewMenu) && ((CachedUserviewMenu) menu).instanceOf(Link.class))) || decoratedMenu == null || decoratedMenu.isEmpty()) {
+                return getMenuHtml(category, menu, "", null);
+            } else {
+                return decoratedMenu;
+            }
         }
-    }
-    
-    protected String transformMenu(UserviewCategory category, UserviewMenu menu, String decoratedMenu) {
-        if (decoratedMenu.contains("badge")) {
-            String label = StringUtil.stripAllHtmlTag(menu.getPropertyString("label"));
-            String badge = StringUtil.stripAllHtmlTag(decoratedMenu);
-            badge = badge.replaceFirst(StringUtil.escapeRegex(label), "");
-            return getMenuHtml(category, menu, "<span class='pull-right badge rowCount'>"+badge+"</span>", null);
-        } else {
-            
-        }
-        return decoratedMenu;
     }
     
     protected String getMenuHtml(UserviewCategory category, UserviewMenu menu, String extra, String onclick) {
