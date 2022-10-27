@@ -60,6 +60,7 @@
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
         <css>/css/userview_v5.css</css>
+        <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
     </group>
     <group name="userview_print.min">
@@ -167,6 +168,7 @@
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
         <js>/js/ajax-component.js</js>
+        <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
     </group> 
     <group name="quill">

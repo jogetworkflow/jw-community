@@ -2,7 +2,6 @@ AjaxUniversalTheme = {
     init : function(target) {
         AjaxComponent.overrideLinkEvent(target);
         AjaxComponent.initContent(target);
-        AjaxUniversalTheme.retriveAjaxMenuCount();
         
         AjaxUniversalTheme.initSidebar();
             
@@ -86,7 +85,7 @@ AjaxUniversalTheme = {
 
         AjaxComponent.overrideFormEvent($("#category-container"));
         AjaxComponent.initContent($("#content main"));
-        AjaxUniversalTheme.retriveAjaxMenuCount();
+        AjaxMenusCount.init();
         
         if ($("#content main").find(".c-overflow").length > 0) {
             AjaxUniversalTheme.scrollBar(".c-overflow", "y");
@@ -129,41 +128,6 @@ AjaxUniversalTheme = {
             
         });
     },
-    
-    /**
-     * AJAX call to update menu count
-     */
-    retriveAjaxMenuCount : function(content) {
-        if ($("#category-container [data-ajaxmenucount]").length > 0) {
-            var headers = new Headers();
-            headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-            headers.append("__ajax_theme_menu", "true");
-            
-            var args = {
-                method : "GET",
-                headers: headers
-            };
-            
-            var url = window.location.href;
-            
-            //add a param to prevent it override cache
-            if (url.indexOf("?") === -1) {
-                url += "?__ajax_menu=1";
-            } else {
-                url += "&__ajax_menu=1";
-            }
-        
-            fetch(url, args)
-            .then(function (response) {
-                return response.text();
-            })
-            .then(function (data){
-                if (data !== null) {
-                    AjaxUniversalTheme.updateMenus($(data));
-                }
-            });
-        }
-    }
 };
 
 $(function(){
