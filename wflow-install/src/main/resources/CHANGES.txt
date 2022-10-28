@@ -3,6 +3,22 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.33
+=================
+e0a3dd64c Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.4 and jackson-databind to 2.13.4.2 for CVE-2022-42003 and CVE-2022-42004. @7.0-SNAPSHOT
+22cebaeea Modified: wflow-core - Change git init to background for better performance. @8.0-SNAPSHOT
+76b76698c Fixed: wflow-commons, wflow-core - Performance - Possible session is closed exception under load @7.0-SNAPSHOT
+1fc5eb426 Fixed: wflow-core - Performance - Hibernate - Possible blocking in classloader HHH-4959 @7.0-SNAPSHOT
+8f482f41a Modified: wflow-commons - Disable JMX on Bitronix to prevent blocking @7.0-SNAPSHOT
+336334f72 Modified: wflow-wfengine - WorkflowManager - Return process time consuming from date started for in progress process instance. @7.0-SNAPSHOT
+cd97bdad7 Fixed: wflow-core - Hidden Field - Regression of 3f63b51. @7.0-SNAPSHOT
+906719c80 Fixed: wflow-core - X-admin Theme - Parent popup does not restore from full screen mode after inner popup dialog closed. T1429 @7.0-SNAPSHOT
+72bd8a478 Fixed: wflow-core - X-admin Theme - Single & double quote in menu label is not escaped correctly. T1428 @7.0-SNAPSHOT
+bdda50822 Fixed: wflow-directory - Directory Manager - getUserDepartmentUser always return null. T1411 @7.0-SNAPSHOT
+3a8689e96 Fixed: wflow-core - Import App - jwa file with unrecognized `MESZ` timezone could not be imported. T1402 @7.0-SNAPSHOT
+6016fecb4 Fixed: wflow-core - Assignment - Prevent concurrent complete assignment causing activity stuck. T1401 @7.0-SNAPSHOT
+91b700730 Fixed: wflow-consoleweb - Update tinyMCE to 4.9.11. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.32
 =================
 c0350722d Fixed: wflow-core - Form Builder - Subform can't load in builder when section is set to permission hidden. T1387 @7.0-SNAPSHOT
