@@ -515,6 +515,14 @@ public class UserviewThemeProcesser {
         return StringUtil.stripAllHtmlTag(title);
     }
     
+    /**
+     * To retrieve analyzer data return by AOP in enterprise
+     * @return 
+     */
+    public String getAnalyzerStatus() {
+        return null;
+    }
+    
     protected String getBaseLink() {
         String key = userview.getParamString("key");
         if (key.isEmpty()) {
@@ -633,6 +641,11 @@ public class UserviewThemeProcesser {
         String content = theme.getAjaxMenusCount(data);
         if (content == null) {
             content = getDefaultTheme().getAjaxMenusCount(data);
+        }
+        
+        String analyzerData = getAnalyzerStatus();
+        if (analyzerData != null && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !"true".equalsIgnoreCase(userview.getParamString("isTemplate"))) {
+            content += "<textarea id=\"ajaxAnalyzerJson\" rows=\"1\" cols=\"1\" style=\"display:none;\">"+analyzerData+"</textarea>";
         }
         return content;
     }

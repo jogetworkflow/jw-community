@@ -43,6 +43,11 @@ AjaxMenusCount = {
                 $(this).text(count);
             }
         });
+        if (window['Analyzer'] !== undefined && $(menus).find("#ajaxAnalyzerJson").length > 0) {
+            var analyzerJson = $(html).find("#ajaxAnalyzerJson").val();
+            var analyzer = JSON.parse(analyzerJson);
+            Analyzer.initAnalyzer(analyzer);
+        }
     }
 };
 
