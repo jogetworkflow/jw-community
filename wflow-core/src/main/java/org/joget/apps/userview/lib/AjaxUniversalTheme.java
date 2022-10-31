@@ -10,8 +10,6 @@ import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
-import org.joget.apps.userview.model.UserviewCategory;
-import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -47,11 +45,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     protected String getInternalJsCssLib(Map<String, Object> data) {
         String jscss = "";
+        jscss += super.getInternalJsCssLib(data);
         if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
             jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" async></script>";
             jscss += "\n<script>" + getContentPlaceholderRules() + "</script>";
         }
-        jscss += super.getInternalJsCssLib(data);
         return jscss;
     }
     
@@ -66,6 +64,12 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 data.put("content", "<script>top.location.href = \""+processor.getRedirectUrl()+"\";</script>");
                 processor.setRedirectUrl(null);
             }
+            
+            String analyzerData = processor.getAnalyzerStatus();
+            if (analyzerData != null && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !"true".equalsIgnoreCase(userview.getParamString("isTemplate"))) {
+                data.put("analyzer", analyzerData);
+            }
+            
             return UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/ajaxlayout.ftl");
         } else {
             if ("true".equals(getPropertyString("horizontal_menu"))) {

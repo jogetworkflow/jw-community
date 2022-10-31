@@ -56,6 +56,13 @@ AjaxUniversalTheme = {
             var content = $(html).find("#ajaxtheme_loading_content");
 
             AjaxUniversalTheme.renderAjaxContent(menus, content, title);
+            
+            if (window['Analyzer'] !== undefined && $(html).find("#ajaxAnalyzerJson").length > 0) {
+                Analyzer.clearAnalyzer();
+                var analyzerJson = $(html).find("#ajaxAnalyzerJson").val();
+                var analyzer = JSON.parse(analyzerJson);
+                Analyzer.initAnalyzer(analyzer);
+            }
         } else if (data.indexOf("<html") !== -1 && data.indexOf("</html>") !== -1) {
             //something wrong and caused the full html loaded
             var html = $(data);
@@ -64,6 +71,13 @@ AjaxUniversalTheme = {
             var content = $(html).find("#content main");
             
             AjaxUniversalTheme.renderAjaxContent(menus, content, title);
+            
+            if (window['Analyzer'] !== undefined && $(html).find("#analyzerJson").length > 0) {
+                Analyzer.clearAnalyzer();
+                var analyzerJson = $(html).find("#analyzerJson").val();
+                var analyzer = JSON.parse(analyzerJson);
+                Analyzer.initAnalyzer(analyzer);
+            }
         }
     },
     
