@@ -1501,12 +1501,27 @@ public class AppServiceImpl implements AppService {
                                 if (value != null && !value.isEmpty()) {
                                     value = StringUtil.stripAllHtmlTag(value);
                                     if (!value.isEmpty()) {
+                                        if (key.equals("tables") || key.equals("ids")) {
+                                            //should not allow space or symbol
+                                            value = value.replaceAll("\\s", "_");
+                                            value = value.replaceAll("[^a-zA-Z0-9_]", "");
+                                        }
+                                        
                                         if (key.equals("tables")) {
                                             replacement.put("app_fd_" + s, "app_fd_" + value);
                                             replacement.put("<tableName>" + s, "<tableName>" + value);
                                             replacement.put("&quot;tableName&quot;:&quot;" + s, "&quot;tableName&quot;:&quot;" + value);
                                         } else {
-                                            templateReplace.put(s, value);
+                                            //to prevent accidentally replace xml tag
+                                            templateReplace.put(">" + s, ">" + value);
+                                            templateReplace.put(s+"<", value + "<");
+                                            templateReplace.put("&quot;" + s, "&quot;" + value);
+                                            templateReplace.put(s+"&quot;", value + "&quot;");
+                                            templateReplace.put("\"" + s, "\"" + value);
+                                            templateReplace.put(s+"\"", value + "\"");
+                                            templateReplace.put(" " + s + " ", " " + value + " ");
+                                            templateReplace.put(s + "_", value + "_");
+                                            templateReplace.put("=" + s, "=" + value); // for participant mapping start & end node
                                         }
                                     }
                                 }
