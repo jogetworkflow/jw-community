@@ -210,7 +210,9 @@ public class MarketplaceUtil {
             LogUtil.error(MarketplaceUtil.class.getName(), e, "");
         } finally {
             try {
-                in.close();
+                if (in != null) {
+                    in.close();
+                }
             } catch(IOException e) {
             }
             try {
