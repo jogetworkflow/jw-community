@@ -19,7 +19,7 @@
                 }
             },
             "permission": {
-                "className": "",
+                "className": "org.joget.apps.userview.lib.LoggedInUserPermission",
                 "properties": {}
             },
             "mobileViewDisabled":"",
