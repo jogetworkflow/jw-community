@@ -141,7 +141,7 @@ public class AppDevUtil {
         // load from FILE_APP_PROPERTIES
         Properties props = new Properties();
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = appDef.getAppId();
+        String projectDirName = SecurityUtil.normalizedFileName(appDef.getAppId());
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         File file = new File(projectDir, FILE_APP_PROPERTIES);
         FileInputStream fis = null;
@@ -169,7 +169,7 @@ public class AppDevUtil {
     
     public static void setAppDevProperties(AppDefinition appDef, Properties props) throws IOException {
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = appDef.getAppId();
+        String projectDirName = SecurityUtil.normalizedFileName(appDef.getAppId());
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         File file = new File(projectDir, FILE_APP_PROPERTIES);
         Properties currentProps = new Properties();
@@ -186,6 +186,7 @@ public class AppDevUtil {
 
     public static File dirSetup(String baseDir, String projectDirName) {
         // create project directory
+        projectDirName = SecurityUtil.normalizedFileName(projectDirName);
         File projectDir = new File(baseDir, projectDirName);
         if (!projectDir.exists()) {
             projectDir.mkdirs();
@@ -716,17 +717,17 @@ public class AppDevUtil {
     }
 
     public static String getGitBranchName(AppDefinition appDef) {
-        String branchName = appDef.getAppId() + "_" + appDef.getVersion();
+        String branchName = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion());
         return branchName;
     }
     
     public static String getAppGitDirectory(AppDefinition appDef) {
-        String dir = appDef.getAppId() + System.getProperty("file.separator") + getGitBranchName(appDef);
+        String dir = SecurityUtil.normalizedFileName(appDef.getAppId() + System.getProperty("file.separator") + getGitBranchName(appDef));
         return dir;
     }
     
     public static String getWorkingGitDirectory(AppDefinition appDef) {
-        String dir = appDef.getAppId() + System.getProperty("file.separator") + appDef.getAppId() + System.nanoTime();
+        String dir = SecurityUtil.normalizedFileName(appDef.getAppId() + System.getProperty("file.separator") + appDef.getAppId() + System.nanoTime());
         return dir;
     }
     

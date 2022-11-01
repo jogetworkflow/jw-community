@@ -5644,7 +5644,7 @@ public class ConsoleWebController {
         
         // save into image file
         String appVersion = (version != null && !version.isEmpty()) ? appDef.getVersion().toString() : "";
-        String filename = appDef.getId() + "_" + appVersion + "_" + userviewId + ".png";
+        String filename = SecurityUtil.normalizedFileName(appDef.getId() + "_" + appVersion + "_" + userviewId + ".png");
         String path = SetupManager.getBaseDirectory() + File.separator + "app_screenshots";
         new File(path).mkdirs();
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
@@ -5662,7 +5662,7 @@ public class ConsoleWebController {
         userviewId = SecurityUtil.validateStringInput(userviewId);
         
         version = (version != null) ? version : "";
-        String filename = appId + "_" + version + "_" + userviewId + ".png";
+        String filename = SecurityUtil.normalizedFileName(appId + "_" + version + "_" + userviewId + ".png");
         String path = SetupManager.getBaseDirectory() + File.separator + "app_screenshots";
         InputStream imageInput = null;
         OutputStream out = null;

@@ -79,10 +79,10 @@ public class AppResourceUtil {
             deleteFile(appId, appVersion, fileOrgName);
             
             FileOutputStream out = null;
-            String path =  appId + File.separator + appVersion + File.separator;
+            String path =  SecurityUtil.normalizedFileName(appId + File.separator + appVersion + File.separator);
             String filename = path;
             try {
-                filename += URLDecoder.decode(fileOrgName, "UTF-8");
+                filename += SecurityUtil.normalizedFileName(URLDecoder.decode(fileOrgName, "UTF-8"));
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
@@ -123,7 +123,7 @@ public class AppResourceUtil {
         // validate input
         String normalizedFileName = SecurityUtil.normalizedFileName(filename);
         
-        String path = appId + File.separator + appVersion + File.separator + normalizedFileName;
+        String path = SecurityUtil.normalizedFileName(appId + File.separator + appVersion) + File.separator + normalizedFileName;
         if (path != null) {
             try {
                 File file = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
@@ -151,7 +151,7 @@ public class AppResourceUtil {
     
     public static void addResourcesToZip(String appId, String appVersion, ZipOutputStream zip) {
         try {
-            String path = appId + File.separator + appVersion;
+            String path = SecurityUtil.normalizedFileName(appId + File.separator + appVersion);
             File folder = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
             
             if (folder.exists()) {
@@ -185,7 +185,7 @@ public class AppResourceUtil {
     
     public static void importFromZip(String appId, String appVersion, byte[] zip) {
         ZipInputStream in = null;
-        String path = appId + File.separator + appVersion;
+        String path = SecurityUtil.normalizedFileName(appId + File.separator + appVersion);
         int size = 0;
         try {
             in = new ZipInputStream(new ByteArrayInputStream(zip));
@@ -238,8 +238,8 @@ public class AppResourceUtil {
     
     public static void copyAppResources(String appIdFrom, String appVersionFrom, String appIdTo, String appVersionTo) {
         try {
-            String pathFrom = appIdFrom + File.separator + appVersionFrom;
-            String pathTo = appIdTo + File.separator + appVersionTo;
+            String pathFrom = SecurityUtil.normalizedFileName(appIdFrom + File.separator + appVersionFrom);
+            String pathTo = SecurityUtil.normalizedFileName(appIdTo + File.separator + appVersionTo);
             
             File folder = new File(getBaseDirectory(), URLDecoder.decode(pathFrom, "UTF-8"));
             
@@ -251,7 +251,7 @@ public class AppResourceUtil {
     
     public static void deleteAppResources(String appId, String appVersion) {
         try {
-            String path = appId + File.separator + appVersion;
+            String path = SecurityUtil.normalizedFileName(appId + File.separator + appVersion);
             File folder = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
             
             if (folder.exists()) {
@@ -262,7 +262,7 @@ public class AppResourceUtil {
     
     public static void deleteAppResourcesForAllVersion(String appId) {
         try {
-            String path = appId;
+            String path = SecurityUtil.normalizedFileName(appId);
             File folder = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
             
             if (folder.exists()) {

@@ -39,6 +39,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
@@ -80,6 +81,8 @@ public class LogViewerAppender extends AbstractAppender {
             CacheLoader loader = new CacheLoader<String, Writer>() {
                 @Override
                 public Writer load(String filename) throws Exception {
+                    filename = SecurityUtil.normalizedFileName(filename);
+                    
                     Writer writer = null;
                     FileOutputStream ostream = null;
 
@@ -175,7 +178,7 @@ public class LogViewerAppender extends AbstractAppender {
                 serverName = File.separator + serverName;
             }
         }
-        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + serverName + File.separator + appId;
+        return SetupManager.getBaseDirectory() + File.separator + LOG_DIRECTORY + SecurityUtil.normalizedFileName(serverName + File.separator + appId);
     }
 
     public static String getFileName(String appId, String node) {
