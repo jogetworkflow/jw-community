@@ -877,6 +877,9 @@ body .flexigrid div.bDiv table {
 body .flexigrid div.bDiv table tbody { 
     display: inline-block; 
 }
+body .flexigrid .pReload.loading > span:before {
+    display:none;
+}
 
 /* help guide */
 #guide {

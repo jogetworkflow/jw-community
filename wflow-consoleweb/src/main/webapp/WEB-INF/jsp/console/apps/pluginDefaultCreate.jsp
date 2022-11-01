@@ -35,7 +35,7 @@
                        fields="['id','name','description','version','plugintype']"
                        column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 80}"
+                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
                        column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
                        />
     </div>
