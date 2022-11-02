@@ -2765,7 +2765,9 @@
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView" data-hide-tool=""><i class="lar la-file-image"></i> </a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.pluginDefault')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-plug"></i> </a></li>');
-        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.performance')+'" id="performance-btn" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-tachometer-alt"></i> </a></li>');
+        if (CustomBuilder.isGlowrootAvailable === "true") {
+            appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.performance')+'" id="performance-btn" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-tachometer-alt"></i> </a></li>');
+        }
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.logs')+'" id="logs-btn" data-cbuilder-view="logViewer" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/logs" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-scroll"></i> </a></li>');
         
         CustomBuilder.initBuilderActions(appTools);

@@ -1,9 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@ page import="org.joget.apm.APMUtil"%>
 
 <c:set var="isAjaxRender" scope="request" value="${pageContext.request.getHeader('_ajax-rendering')}"/>
 <c:set var="isIE" scope="request" value="${MobileUtil.isIE()}"/>
+<c:set var="isGlowrootAvailable" value="<%= APMUtil.isGlowrootAvailable() %>"/>
 
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
@@ -332,8 +334,12 @@
                             CustomBuilder.builderIcon = '<c:out value="${builderIcon}"/>';
                             CustomBuilder.id = '<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>';
                             CustomBuilder.buildNumber = '<fmt:message key="build.number"/>';
+                            _CustomBuilder.buildNumber = '<fmt:message key="build.number"/>';
                             CustomBuilder.isGitDisabled = '<c:out value="${isGitDisabled}"/>';
-
+                            _CustomBuilder.isGitDisabled = '<c:out value="${isGitDisabled}"/>';
+                            CustomBuilder.isGlowrootAvailable = '<c:out value="${isGlowrootAvailable}"/>';
+                            _CustomBuilder.isGlowrootAvailable = '<c:out value="${isGlowrootAvailable}"/>';
+                            
                             CustomBuilder.initConfig(<c:out value="${builderConfig}" escapeXml="false"/>);
                             CustomBuilder.initPropertiesOptions(<c:out value="${builderProps}" escapeXml="false"/>);
 
