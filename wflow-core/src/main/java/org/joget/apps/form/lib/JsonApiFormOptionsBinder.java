@@ -94,23 +94,38 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
                 String groupingField = getPropertyString("groupingColumn").replace(multirowBaseObjectName + ".", "");
                 
                 Object temp = JsonApiUtil.getObjectFromMap(multirowBaseObjectName, results);
-                if (temp != null && temp.getClass().isArray()) {
-                    Object[] baseObjectArray = (Object[]) temp;
-                    if (baseObjectArray.length > 0) {
-                        for (Object rowObj : baseObjectArray) {
-                            FormRow r = new FormRow();
-                            Object id = JsonApiUtil.getObjectFromMap(idField, (Map) rowObj);
-                            Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) rowObj);
-                            if (id != null) {
-                                r.put(FormUtil.PROPERTY_VALUE, id.toString());
-                                r.put(FormUtil.PROPERTY_LABEL, (label != null)?label.toString():id.toString());
+                if (temp != null) {
+                    if (temp.getClass().isArray()) {
+                        Object[] baseObjectArray = (Object[]) temp;
+                        if (baseObjectArray.length > 0) {
+                            for (Object rowObj : baseObjectArray) {
+                                FormRow r = new FormRow();
+                                Object id = JsonApiUtil.getObjectFromMap(idField, (Map) rowObj);
+                                Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) rowObj);
+                                if (id != null) {
+                                    r.put(FormUtil.PROPERTY_VALUE, id.toString());
+                                    r.put(FormUtil.PROPERTY_LABEL, (label != null)?label.toString():id.toString());
+                                }
+                                if (!groupingField.isEmpty()) {
+                                    Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) rowObj);
+                                    r.put(FormUtil.PROPERTY_GROUPING, (grouping != null)?grouping.toString():"");
+                                }
+                                options.add(r);
                             }
-                            if (!groupingField.isEmpty()) {
-                                Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) rowObj);
-                                r.put(FormUtil.PROPERTY_GROUPING, (grouping != null)?grouping.toString():"");
-                            }
-                            options.add(r);
                         }
+                    } else {
+                        FormRow r = new FormRow();
+                        Object id = JsonApiUtil.getObjectFromMap(idField, (Map) temp);
+                        Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) temp);
+                        if (id != null) {
+                            r.put(FormUtil.PROPERTY_VALUE, id.toString());
+                            r.put(FormUtil.PROPERTY_LABEL, (label != null) ? label.toString() : id.toString());
+                        }
+                        if (!groupingField.isEmpty()) {
+                            Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) temp);
+                            r.put(FormUtil.PROPERTY_GROUPING, (grouping != null) ? grouping.toString() : "");
+                        }
+                        options.add(r);
                     }
                 }
             }
