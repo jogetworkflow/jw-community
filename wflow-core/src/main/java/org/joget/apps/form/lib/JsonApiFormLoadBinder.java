@@ -89,7 +89,7 @@ public class JsonApiFormLoadBinder extends FormBinder implements FormLoadBinder,
                 String fieldName = mapping.get("field").toString();
                 String jsonObjectName = mapping.get("jsonObjectName").toString();
 
-                if (multirowBaseObjectName != null) {
+                if (!multirowBaseObjectName.isEmpty()) {
                     jsonObjectName = jsonObjectName.replace(multirowBaseObjectName + ".", "");
                 }
 

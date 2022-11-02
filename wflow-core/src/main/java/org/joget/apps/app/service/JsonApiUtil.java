@@ -29,6 +29,7 @@ import org.apache.http.util.EntityUtils;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 
@@ -36,7 +37,9 @@ public class JsonApiUtil {
     
     public static Map<String, Object> callApi(Map properties, Map<String, String> params) {
         Map<String,Object> result = null;
+        WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
         String jsonUrl = JsonApiUtil.replaceParam(properties.get("jsonUrl").toString(), params);
+        jsonUrl = WorkflowUtil.processVariable(jsonUrl, "", wfAssignment);
         CloseableHttpClient client = null;
         HttpRequestBase request = null;
 
@@ -74,7 +77,7 @@ public class JsonApiUtil {
                             Map mapping = (HashMap) o;
                             String name  = mapping.get("name").toString();
                             String value = JsonApiUtil.replaceParam(mapping.get("value").toString(), params);
-                            obj.accumulate(name, value);
+                            obj.accumulate(name, WorkflowUtil.processVariable(value, "", wfAssignment));
                         }
                     }
 
@@ -99,7 +102,7 @@ public class JsonApiUtil {
                             Map mapping = (HashMap) o;
                             String name  = mapping.get("name").toString();
                             String value = JsonApiUtil.replaceParam(mapping.get("value").toString(), params);
-                            urlParameters.add(new BasicNameValuePair(name, value));
+                            urlParameters.add(new BasicNameValuePair(name, WorkflowUtil.processVariable(value, "", wfAssignment)));
                             if ("true".equalsIgnoreCase(properties.get("debugMode").toString())) {
                                 LogUtil.info(JsonApiUtil.class.getName(), "Adding param " + name + " : " + value);
                             }
