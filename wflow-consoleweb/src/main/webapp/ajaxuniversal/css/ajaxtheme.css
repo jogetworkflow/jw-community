@@ -32,11 +32,11 @@
 
 .ajaxloading .analyzer-label,
 .ajaxloading .quickEdit{
-    display:none;
+    display:none !important;
 }
 .ajaxloading.analyzer:before,
 .ajaxloading .analyzer:before {
-    display:none;
+    display:none !important;
 }
 body.quickEditModeActive .ajaxloading fieldset#form-canvas:after, 
 body.quickEditModeActive .ajaxloading fieldset#form-canvas .subform-container:after, 
@@ -44,7 +44,7 @@ body.quickEditModeActive .ajaxloading .dataList:after,
 body.quickEditModeActive .ajaxloading #category-container:after,
 body.quickEditModeActive .ajaxloading #content > main:after, 
 body.quickEditModeActive #content.ajaxloading  > main:after{
-    display:none;
+    display:none !important;
 }
 body .property-editor-page-button-panel input[type=button]{
     background: var(--theme-button-bg, #348fe2);
