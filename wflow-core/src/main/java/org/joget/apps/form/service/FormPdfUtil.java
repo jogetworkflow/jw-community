@@ -138,6 +138,7 @@ public class FormPdfUtil {
                 legalHtml = toXHTML(legalHtml);
             
                 final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                documentBuilderFactory.setExpandEntityReferences(false);
                 documentBuilderFactory.setValidating(false);
                 DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
                 builder.setEntityResolver(FSEntityResolver.instance());

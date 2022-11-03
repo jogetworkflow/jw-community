@@ -142,6 +142,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
             
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setExpandEntityReferences(false);
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 ByteArrayInputStream input =  new ByteArrayInputStream(defXml);
                 Document xml = builder.parse(input);
