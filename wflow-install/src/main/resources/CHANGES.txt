@@ -2,6 +2,7 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+<<<<<<< HEAD
 8.0-PREVIEW2
 ============
 b3e4c970f Fixed: wflow-consoleweb - Governance Health Check - Added loading icon when action is performing. @8.0-SNAPSHOT
@@ -10,6 +11,57 @@ b3e4c970f Fixed: wflow-consoleweb - Governance Health Check - Added loading icon
 bf2161c07 Modified: jw-community - Update apps and SQL files. @8.0-SNAPSHOT
 ffa843e51 Fixed: wflow-consoleweb - SPA Userview Theme - Download PDF List Action not working. @8.0-SNAPSHOT Fixed: wflow-consoleweb - SPA Userview Theme - CSRF token expired not handled correctly. @8.0-SNAPSHOT
 44d1100c0 Fixed: wflow-wfengine, wflow-core - Performance - Hotspots in WorkflowAssignmentDao.getAssignmentProcessIds, WorkflowProcessLinkDao.getOriginalIds, and FormDataDaoImpl.processQuery @8.0-SNAPSHOT
+=======
+CHANGES IN 7.0.33
+=================
+e0a3dd64c Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.4 and jackson-databind to 2.13.4.2 for CVE-2022-42003 and CVE-2022-42004. @7.0-SNAPSHOT
+22cebaeea Modified: wflow-core - Change git init to background for better performance. @8.0-SNAPSHOT
+76b76698c Fixed: wflow-commons, wflow-core - Performance - Possible session is closed exception under load @7.0-SNAPSHOT
+1fc5eb426 Fixed: wflow-core - Performance - Hibernate - Possible blocking in classloader HHH-4959 @7.0-SNAPSHOT
+8f482f41a Modified: wflow-commons - Disable JMX on Bitronix to prevent blocking @7.0-SNAPSHOT
+336334f72 Modified: wflow-wfengine - WorkflowManager - Return process time consuming from date started for in progress process instance. @7.0-SNAPSHOT
+cd97bdad7 Fixed: wflow-core - Hidden Field - Regression of 3f63b51. @7.0-SNAPSHOT
+906719c80 Fixed: wflow-core - X-admin Theme - Parent popup does not restore from full screen mode after inner popup dialog closed. T1429 @7.0-SNAPSHOT
+72bd8a478 Fixed: wflow-core - X-admin Theme - Single & double quote in menu label is not escaped correctly. T1428 @7.0-SNAPSHOT
+bdda50822 Fixed: wflow-directory - Directory Manager - getUserDepartmentUser always return null. T1411 @7.0-SNAPSHOT
+3a8689e96 Fixed: wflow-core - Import App - jwa file with unrecognized `MESZ` timezone could not be imported. T1402 @7.0-SNAPSHOT
+6016fecb4 Fixed: wflow-core - Assignment - Prevent concurrent complete assignment causing activity stuck. T1401 @7.0-SNAPSHOT
+91b700730 Fixed: wflow-consoleweb - Update tinyMCE to 4.9.11. @7.0-SNAPSHOT
+
+CHANGES IN 7.0.32
+=================
+c0350722d Fixed: wflow-core - Form Builder - Subform can't load in builder when section is set to permission hidden. T1387 @7.0-SNAPSHOT
+8f14ede07 Fixed: wflow-commons - Update jsoup to 1.15.3 for CVE-2022-36033. @7.0-SNAPSHOT
+7637bb25d Fixed: wflow-core - PWA - Offline support not working when in embedded mode. T1355 @7.0-SNAPSHOT
+480bbf859 Fixed: wflow-core - FormPdfUtil - Fixed PDF display radiobox/checkbox differently if in main Form vs Subform. @7.0-SNAPSHOT
+317d853e0 Fixed: wflow-core - Form - Form Grid's child form post-processing triggers even when main form have not been saved. @7.0-SNAPSHOT
+ecf8be8f6 Fixed: wflow-core - Userview - Fixed XSS issue on key parameter. @7.0-SNAPSHOT
+a1ed6f54b Fixed: wflow-consoleweb - Log - Some error info are not logged after upgrade to log4j 2. Regression of d314a7b49. @7.0-SNAPSHOT
+5ba6c11c1 Fixed: wflow-consoleweb - universal/progressive/xadmin theme - Fix Misalignment between menu label and row count when having long label. @7.0-SNAPSHOT
+4d4860b29 Fixed: wflow-core - AppDevUtil - Prevent NPE. T1255 @7.0-SNAPSHOT
+42db96674 Fixed: wflow-consoleweb/wflow-core - Universal/Progressive Theme - Added box-shadow for horizontal menu > sidebar. @7.0-SNAPSHOT
+e49850c27 Fixed: wflow-core - Report - SLA filter is not passed correctly. @7.0-SNAPSHOT
+
+CHANGES IN 7.0.31
+=================
+2cfa4f9b2 Fixed: wflow-consoleweb - X-admin Theme - List Grid multi page selection not working. T1189 @7.0-SNAPSHOT
+19e74d756 Fixed: wflow-plugin-base - Plugin Manager - Prevent NPE when weavePluginAspect return null. @7.0-SNAPSHOT
+6dae17438 Fixed: wflow-consoleweb - Universal/Progressive Theme - Can't open menu when in RTL mobile mode. T1064 @7.0-SNAPSHOT
+58e5c3140 Fixed: wflow-consoleweb - Advanced tools -  i18n becomes blank when in RTL mode. @7.0-SNAPSHOT
+65e268696 Fixed: wflow-core - AppPluginUtil - Prevent NPE during server startup. @7.0-SNAPSHOT
+a5b785c32 Fixed: wflow-core - Import Menu/Tool - regression bug from 20e5339c where hidden field missing default value when import. @7.0-SNAPSHOT #T1154
+4384b0f68 Fixed: wflow-consoleweb - Form Builder - Permission readonly is always reset when edit hidden field. @7.0-SNAPSHOT
+ca03561a5 Fixed: wflow-core - Userview - Hide category permission rule is not handle correctly. @7.0-SNAPSHOT
+c9ed5d91f Fixed: wflow-core - Userview Theme - Prevent text field zoom on focus in IOS. @7.0-SNAPSHOT
+3f63b51a1 Fixed: wflow-core - Hidden Field - No way to enforce input validation. T935 @7.0-SNAPSHOT
+dafa1192f Fixed: wflow-core - Grid - Can't display encrypted text. T1121 @7.0-SNAPSHOT
+f986a39dd Fixed: wflow-core - X-admin Theme - Link menu not handled correctly. T1107 @7.0-SNAPSHOT
+
+CHANGES IN 7.0.30
+=================
+24dad94b4 Fixed: wflow-consoleweb - Userview Builder - Properties label correction. @7.0-SNAPSHOT
+adcc9feed Fixed: jw-community - Update GSON to 2.9.0 for CVE-2022-25647 & CVE-2022-25647. @7.0-SNAPSHOT
+>>>>>>> 7.0-SNAPSHOT
 dd6047dbc Fixed: wflow-core - FormDataDao - Can't handle single value non string result for custom find. @7.0-SNAPSHOT
 bde364f53 Modified: wflow-core - Governance Health Check - Check for orphaned form data tables. @8.0-SNAPSHOT
 5234f56ba Fixed: wflow-consoleweb - Manage Permission menu / Import menu have CSS issues. @8.0-SNAPSHOT

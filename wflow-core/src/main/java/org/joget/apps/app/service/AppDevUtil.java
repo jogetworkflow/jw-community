@@ -1992,6 +1992,7 @@ public class AppDevUtil {
     public static Map<String, GitCommitHelper> getBackgroundSync() throws BeansException {
         return (Map<String, GitCommitHelper>) backgroundSync.get();
     }
+<<<<<<< HEAD
     
     public static String getConcatAppDef(AppDefinition appDef) {
         // combine all definitions into a string for matching
@@ -2034,4 +2035,6 @@ public class AppDevUtil {
         
         return concatAppDef;
     }
+=======
+>>>>>>> 7.0-SNAPSHOT
 }

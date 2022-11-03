@@ -6,6 +6,8 @@ import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 
@@ -94,5 +96,31 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
         } else {
             return super.isReadonly(formData);
         }
+    }
+    
+    /**
+     * to force the value stored for `Always Use Default Value` is always the default value
+     */
+    @Override
+    public FormRowSet formatData(FormData formData) {
+        FormRowSet rowSet = null;
+
+        // get value
+        String id = getPropertyString(FormUtil.PROPERTY_ID);
+        if (id != null) {
+            String value = FormUtil.getElementPropertyValue(this, formData);
+            if ("valueOnly".equalsIgnoreCase(getPropertyString("useDefaultWhenEmpty"))) {
+                value = getPropertyString("value");
+            }
+            if (value != null) {
+                // set value into Properties and FormRowSet object
+                FormRow result = new FormRow();
+                result.setProperty(id, value);
+                rowSet = new FormRowSet();
+                rowSet.add(result);
+            }
+        }
+
+        return rowSet;
     }
 }
