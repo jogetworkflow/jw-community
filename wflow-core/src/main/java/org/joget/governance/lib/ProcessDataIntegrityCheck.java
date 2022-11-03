@@ -78,27 +78,28 @@ public class ProcessDataIntegrityCheck extends GovHealthCheckAbstract {
             "SHKNextXPDLVersions", "SHKProcessData", "SHKProcessDefinitions", "SHKProcessRequesters", "SHKProcesses", "SHKResourcesTable", "SHKXPDLData", "SHKXPDLS"};
         
         Connection con = null;
-        PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             con = ds.getConnection();
             
             long nextoid = 0l;
             long minNextoid = 0l;
-            pstmt = con.prepareStatement("select nextoid from objectid");
-            rs = pstmt.executeQuery();
-            while (rs.next()) {
-                nextoid = rs.getLong(1);
+            try (PreparedStatement pstmt = con.prepareStatement("select nextoid from objectid")) {
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    nextoid = rs.getLong(1);
+                }
             }
             
             for (String name : names) {
-                pstmt = con.prepareStatement("select max(oid) from " + name);
-                rs = pstmt.executeQuery();
-                
-                while (rs.next()) {
-                    long temp = rs.getLong(1);
-                    if (temp > minNextoid) {
-                        minNextoid =  temp;
+                try (PreparedStatement pstmt = con.prepareStatement("select max(oid) from " + name)) {
+                    rs = pstmt.executeQuery();
+
+                    while (rs.next()) {
+                        long temp = rs.getLong(1);
+                        if (temp > minNextoid) {
+                            minNextoid =  temp;
+                        }
                     }
                 }
             }
@@ -114,9 +115,6 @@ public class ProcessDataIntegrityCheck extends GovHealthCheckAbstract {
             try {
                 if (rs != null) {
                     rs.close();
-                }
-                if (pstmt != null) {
-                    pstmt.close();
                 }
                 if (con != null) {
                     con.close();
