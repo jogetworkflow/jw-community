@@ -15,6 +15,12 @@ public class MobileUserviewWebController {
      */
     @RequestMapping("/mapp/xxx/xxx")
     public void mobileCheck(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            origin = origin.replace("\n", "").replace("\r", "");
+        }
+        response.setHeader("Access-Control-Allow-Origin", origin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }    
     
