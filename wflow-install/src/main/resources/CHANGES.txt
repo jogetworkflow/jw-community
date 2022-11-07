@@ -4,6 +4,13 @@ For more information, please refer to https://community.joget.org
 
 8.0-BETA
 ========
+3ff1a3530 Fixed: jw-community - Update app center. @8.0-SNAPSHOT
+c72f65341 Added: wflow-core - Hash Variable - added #platform.build# to retrieve build number. @8.0-SNAPSHOT
+a10ed155f Fixed: wflow-consoleweb - Form - Comment thread misaligned. @8.0-SNAPSHOT
+efe62fa60 Fixed: wflow-core - Form Options Field - Multicascading causing dependency fields value can't store correctly. @8.0-SNAPSHOT
+522ebfc26 Fixed: wflow-core - Process Data Integrity Check - Prevent unreleased resources. @8.0-SNAPSHOT
+9b83acd38 Fixed: wflow-core - Security - Prevent XXE. @8.0-SNAPSHOT
+3fe5c9fa5 Fixed: wflow-consoleweb - Mobile - Cannot login using the iOS mobile app @8.0-SNAPSHOT
 4afc238bf Fixed: wflow-consoleweb - App Composer - Quick Nav show performance icon when the feature is disabled. @8.0-SNAPSHOT
 a5babd82b Modified: wflow-install - Update SQL script & database files. @8.0-SNAPSHOT
 69d50cdb9 Fixed: wflow-core - Fixs for JSON API Binders. @8.0-SNAPSHOT
