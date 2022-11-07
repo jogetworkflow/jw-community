@@ -774,3 +774,9 @@ body.rtl .form-edit-btn{
 .form-edit-btn.bottom{
     bottom:30px;
 }
+
+/* process enhancement comments*/
+.comments_thread .comment {
+    width: 100% !important;
+    margin-top: 20px !important;
+}
