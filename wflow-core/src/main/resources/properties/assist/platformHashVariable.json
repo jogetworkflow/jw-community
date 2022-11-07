@@ -10,6 +10,10 @@
                 "label" : "@@assist.platform.version@@"
             },
             {
+                "value" : "#platform.build#",
+                "label" : "@@assist.platform.build@@"
+            },
+            {
                 "value" : "#platform.jdbcDriver#",
                 "label" : "@@assist.platform.jdbcDriver@@"
             },
