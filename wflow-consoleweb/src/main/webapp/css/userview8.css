@@ -1657,3 +1657,8 @@ body #ui-datepicker-div {
     font-size: 20px;
     font-weight: 800;
 }
+
+/*app center inbox fix*/
+#_ja_inbox #section-actions {
+    display: block !important;
+}
