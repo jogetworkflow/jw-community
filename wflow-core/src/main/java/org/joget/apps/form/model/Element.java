@@ -20,7 +20,7 @@ import org.joget.plugin.property.service.PropertyUtil;
  */
 public abstract class Element extends ExtDefaultPlugin implements PropertyEditable{
 
-    private Collection<Element> children = new ArrayList<Element>();
+    protected Collection<Element> children = new ArrayList<Element>();
     private Element parent;
     private String customParameterName;
     private FormLoadBinder loadBinder;

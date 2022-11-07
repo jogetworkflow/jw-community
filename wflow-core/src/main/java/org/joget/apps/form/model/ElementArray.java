@@ -1,5 +1,6 @@
 package org.joget.apps.form.model;
 
+import java.util.Collection;
 import java.util.Map;
 import org.joget.plugin.base.HiddenPlugin;
 
@@ -41,5 +42,10 @@ public class ElementArray extends Element implements HiddenPlugin {
     @Override
     public String getPropertyOptions() {
         return null;
+    }
+    
+    @Override
+    public void setChildren(Collection<Element> children) {
+        this.children = children;
     }
 }
