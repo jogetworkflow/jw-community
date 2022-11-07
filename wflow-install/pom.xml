@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-install</artifactId>
     <packaging>pom</packaging>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.0-BETA</version>
     <name>wflow-install</name>
     <url>http://www.joget.org</url>
     <properties>
@@ -16,7 +16,7 @@
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
         <url>ssh://git@repo.joget.org:2224/joget/jw-community.git</url>
-        <tag>HEAD</tag>
+        <tag>8.0-BETA</tag>
     </scm>
     <modules>
         <module>../wflow-app</module>
