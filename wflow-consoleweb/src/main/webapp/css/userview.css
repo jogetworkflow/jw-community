@@ -273,6 +273,7 @@ body .ui-dialog-titlebar-close:before {
 body .ui-dialog .ui-dialog-titlebar-close span {
     margin-left: -9px;
     line-height: 13px;
+    text-indent: 0px !important;
 }
 body .ui-icon-closethick{
     background: transparent !important;
@@ -289,6 +290,7 @@ body .ui-icon-closethick{
     width: 20px !important;
     height: 20px !important;
     color:#fff !important;
+    text-indent: 0px !important;
 }
 body .ui-icon-closethick:hover {
     color: #ccc !important;

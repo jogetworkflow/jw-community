@@ -648,6 +648,7 @@ body .ui-icon-closethick{
     width: 20px !important;
     height: 20px !important;
     color:#ccc !important;
+    text-indent: 0px !important;
 }
 body .ui-icon-closethick:hover {
     color: #aaa !important;
