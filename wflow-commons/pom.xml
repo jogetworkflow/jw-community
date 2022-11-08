@@ -51,27 +51,27 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.aspectj</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.3.22</version>
+            <version>5.3.23</version>
         </dependency>
         <dependency>
             <groupId>org.springmodules</groupId>
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>5.7.2</version>
+            <version>5.7.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -182,7 +182,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.7.2</version>
+            <version>5.7.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.7.2</version>
+            <version>5.7.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
