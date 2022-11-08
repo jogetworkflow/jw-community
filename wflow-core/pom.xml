@@ -253,6 +253,12 @@
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-api</artifactId>
             <version>0.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
@@ -270,6 +276,11 @@
             <groupId>org.tensorflow</groupId>
             <artifactId>ndarray</artifactId>
             <version>0.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.21.9</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
