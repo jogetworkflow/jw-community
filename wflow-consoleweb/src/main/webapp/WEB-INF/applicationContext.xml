@@ -127,6 +127,7 @@
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
         <security:intercept-url pattern="/web/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
         <security:intercept-url pattern="/web/json/authentication/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/json/data/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
 
         <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions  -->
         <!--

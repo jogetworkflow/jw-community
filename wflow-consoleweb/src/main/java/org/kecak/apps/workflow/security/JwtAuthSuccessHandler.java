@@ -26,6 +26,10 @@ public class JwtAuthSuccessHandler implements AuthenticationSuccessHandler, Decl
         }
     }
 
+    public void setWorkflowUserManager(WorkflowUserManager workflowUserManager) {
+        this.workflowUserManager = workflowUserManager;
+    }
+
     /**
      * Get optional parameter for http request
      *
@@ -33,14 +37,10 @@ public class JwtAuthSuccessHandler implements AuthenticationSuccessHandler, Decl
      * @param parameterName
      * @return
      */
-    private Optional<String> getOptionalParameter(HttpServletRequest request, String parameterName) {
+    protected Optional<String> getOptionalParameter(HttpServletRequest request, String parameterName) {
         return Optional.of(parameterName)
                 .map(request::getParameter)
                 .map(String::trim)
                 .filter(not(String::isEmpty));
-    }
-
-    public void setWorkflowUserManager(WorkflowUserManager workflowUserManager) {
-        this.workflowUserManager = workflowUserManager;
     }
 }
