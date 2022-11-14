@@ -1222,8 +1222,8 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      * @return
      */
-    public static Collection<Map> getElementPropertyOptionsMap(Element element, FormData formData) {
-        Collection<Map> optionsMap = new ArrayList<Map>();
+    public static <M extends Map, C extends Collection<M>> C getElementPropertyOptionsMap(Element element, FormData formData) {
+        Collection<M> optionsMap = new ArrayList<>();
 
         if (isAjaxOptionsSupported(element, formData)) {
             // load from binder if available
@@ -1231,9 +1231,9 @@ public class FormUtil implements ApplicationContextAware {
                 String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                 FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
-                    optionsMap = new ArrayList<Map>();
-                    for (Map row : rowSet) {
-                        optionsMap.add(row);
+                    optionsMap = new ArrayList<>();
+                    for (FormRow row : rowSet) {
+                        optionsMap.add((M) row);
                     }
                 }
             }
@@ -1241,8 +1241,8 @@ public class FormUtil implements ApplicationContextAware {
             // load from "options" property
             Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
             if (optionProperty != null && optionProperty instanceof Collection) {
-                for (Map opt : (FormRowSet) optionProperty) {
-                    optionsMap.add(opt);
+                for (FormRow opt : (FormRowSet) optionProperty) {
+                    optionsMap.add((M) opt);
                 }
             }
 
@@ -1251,15 +1251,15 @@ public class FormUtil implements ApplicationContextAware {
                 String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                 FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
-                    optionsMap = new ArrayList<Map>();
-                    for (Map row : rowSet) {
-                        optionsMap.add(row);
+                    optionsMap = new ArrayList<>();
+                    for (FormRow row : rowSet) {
+                        optionsMap.add((M) row);
                     }
                 }
             }
         }
 
-        return optionsMap;
+        return (C) optionsMap;
     }
 
     /**

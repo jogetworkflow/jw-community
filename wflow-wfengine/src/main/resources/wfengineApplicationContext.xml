@@ -58,7 +58,8 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
+                <prop key="hibernate.transaction.jta.platform">org.kecak.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
                 <prop key="hibernate.query.plan_cache_max_size">16</prop>
                 <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>

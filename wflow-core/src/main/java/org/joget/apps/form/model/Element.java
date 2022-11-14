@@ -8,16 +8,18 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.kecak.apps.form.model.DataJsonControllerHandler;
 
 /**
  * A base abstract class to develop a Form Field Element plugin. 
  * All forms, containers and form fields must extend this class.
  * 
  */
-public abstract class Element extends ExtDefaultPlugin implements PropertyEditable{
+public abstract class Element extends ExtDefaultPlugin implements PropertyEditable, DataJsonControllerHandler {
 
     private Collection<Element> children = new ArrayList<Element>();
     private Element parent;
@@ -31,6 +33,8 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     protected Map<FormData, Boolean> isReadonlySet = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
+
+    private UserviewTheme theme;
 
     /**
      * Get load binder
@@ -144,6 +148,14 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      */
     public void setParent(Element parent) {
         this.parent = parent;
+    }
+
+    public UserviewTheme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(UserviewTheme theme) {
+        this.theme = theme;
     }
 
     /**

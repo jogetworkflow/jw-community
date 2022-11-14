@@ -1,5 +1,11 @@
 package org.joget.apps.datalist.model;
 
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
+import org.joget.workflow.util.WorkflowUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -109,6 +115,12 @@ public class DataListColumn {
      * Flag to indicate whether to render the column as HTML content
      */
     private Boolean renderHtml = null;
+
+
+    /**
+     * Whoever can access this action
+     */
+    private UserviewPermission permission;
 
     /**
      * Convenience method to add a format to this column
@@ -241,5 +253,21 @@ public class DataListColumn {
 
     public void setRenderHtml(boolean renderHtml) {
         this.renderHtml = renderHtml;
+    }
+
+    public void setPermission(UserviewPermission permission) {
+        this.permission = permission;
+    }
+
+    public boolean isPermitted() {
+        if(WorkflowUtil.getCurrentUsername() == null || permission == null) {
+            return true;
+        }
+
+        DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+        User user = directoryManager.getUserByUsername(WorkflowUtil.getCurrentUsername());
+
+        permission.setCurrentUser(user);
+        return permission.isAuthorize();
     }
 }

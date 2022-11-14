@@ -14,7 +14,7 @@
  
     <!-- START web relevant bean-->
     <context:annotation-config/>
-    <context:component-scan base-package="org.joget"/>
+    <context:component-scan base-package="org.joget,org.kecak"/>
     
     <bean id="configurationLoader"
             class="org.springmodules.validation.bean.conf.loader.annotation.AnnotationBeanValidationConfigurationLoader"/>
