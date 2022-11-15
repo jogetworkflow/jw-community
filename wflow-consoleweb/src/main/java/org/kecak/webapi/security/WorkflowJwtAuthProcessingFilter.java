@@ -30,31 +30,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class WorkflowJwtAuthProcessingFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final String TOKEN_HEADER = "Authorization";
+    public final static String TOKEN_HEADER = "Authorization";
 
     private AuthTokenService authTokenService;
     private DirectoryManager directoryManager;
     private AuthenticationEntryPoint authenticationEntryPoint;
-
-//    private AuthenticationManager authenticationManager;
-//
-//    public WorkflowJwtAuthProcessingFilter(AuthenticationManager authenticationManager) {
-//        Assert.notNull(authenticationManager, "authenticationManager cannot be null");
-//        this.authenticationManager = authenticationManager;
-//    }
-//
-//    public WorkflowJwtAuthProcessingFilter(AuthenticationManager authenticationManager,
-//                                           AuthenticationEntryPoint authenticationEntryPoint) {
-//        Assert.notNull(authenticationManager, "authenticationManager cannot be null");
-//        Assert.notNull(authenticationEntryPoint,
-//                "authenticationEntryPoint cannot be null");
-//        this.authenticationManager = authenticationManager;
-//        this.authenticationEntryPoint = authenticationEntryPoint;
-//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -121,8 +106,4 @@ public class WorkflowJwtAuthProcessingFilter extends OncePerRequestFilter {
     public void setAuthenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
-//
-//    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-//        this.authenticationManager = authenticationManager;
-//    }
 }

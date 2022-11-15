@@ -2,6 +2,7 @@ package org.joget.apps.workflow.security;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -24,12 +25,14 @@ import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.kecak.webapi.security.WorkflowJwtAuthProcessingFilter;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -63,6 +66,23 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpServletResponse response = (HttpServletResponse)servletResponse;
+
+        final boolean isBearer = Optional.of(request)
+                .map(r -> r.getHeader(WorkflowJwtAuthProcessingFilter.TOKEN_HEADER))
+                .map(s -> s.startsWith("Bearer "))
+                .orElse(false);
+
+        final boolean isAuthenticated = Optional.of(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::isAuthenticated)
+                .orElse(false);
+
+
+        if(isBearer && isAuthenticated) {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         Boolean requiresAuthentication;
         try {
             if (request != null) {

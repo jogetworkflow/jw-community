@@ -39,14 +39,17 @@ public class AuthenticationJsonController implements Declutter {
 
     @Autowired
     @Qualifier("main")
-    DirectoryManager directoryManager;
+    private DirectoryManager directoryManager;
 
     @Autowired
-    AuthTokenService authTokenService;
+    private AuthTokenService authTokenService;
 
     @RequestMapping(value = "/json/authentication/login", method = RequestMethod.POST)
     public void postBasicAuthentication(final HttpServletRequest request,
                                         final HttpServletResponse response) throws IOException {
+
+        LogUtil.info(getClass().getName(), "Executing Authentication Rest API [" + request.getRequestURI() + "] in method [" + request.getMethod() + "] contentType [" + request.getContentType() + "] as [" + WorkflowUtil.getCurrentUsername() + "]");
+
         final JSONObject jsonResponse = new JSONObject();
         String header = request.getHeader(loginHeader);
 

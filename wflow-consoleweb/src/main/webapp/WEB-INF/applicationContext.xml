@@ -121,13 +121,17 @@
         <security:intercept-url pattern="/web/json/console/directory/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/monitor/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/setting/**" access="ROLE_SYSADMIN"/>
-                
+
+        <!-- Data JSON Controller -->
+        <security:intercept-url pattern="/web/json/data/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+
+        <!-- Authentication JSON Controller -->
+        <security:intercept-url pattern="/web/json/authentication/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
+
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN, ROLE_APPADMIN" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
         <security:intercept-url pattern="/web/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
-        <security:intercept-url pattern="/web/json/authentication/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
-        <security:intercept-url pattern="/web/json/data/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
 
         <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions  -->
         <!--
@@ -138,9 +142,8 @@
         
         <!-- Support Basic Authentication -->
         <security:http-basic />
-        
+        <security:custom-filter ref="workflowJwtAuthFilter" after="DIGEST_AUTH_FILTER" />
         <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" />
-        <security:custom-filter ref="workflowJwtAuthFilter" before="BASIC_AUTH_FILTER" />
     </security:http>
         
     <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager">
