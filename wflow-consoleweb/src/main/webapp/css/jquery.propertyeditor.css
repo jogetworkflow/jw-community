@@ -724,6 +724,57 @@ td.error .chosen-container, td.error input {
     left: -51px;
     padding: 6px 10px 2px 12px;
 }
+body.rtl .property-editor-container input.image + .file-picker-actions .choosefile {
+    top: -16px;
+    left: -9px;
+}
+body.rtl .image-placeholder{
+    float: right;
+    clear: right;
+    margin-right: 0px;
+}
+body.rtl .property-editor-container input[type=text].image{
+    padding-left: 45px;
+    padding-right: 12px;
+}
+body.rtl .assist_icon{
+    right: unset;
+    padding-left:5px;
+    left:0px;
+}
+body.rtl .builder-link a.openbuilder{
+    left: 50px;
+    right: unset;
+}
+body.rtl .property-type-selectbox a.builderAddNew{
+    left: 4px;
+    right:  unset;
+}
+body.rtl .property-editor-container input:not([type]),
+body.rtl .property-editor-container input[type=text],
+body.rtl .property-editor-container input[type=password],
+body.rtl .property-editor-container input[type=email],
+body.rtl .property-editor-container input[type=url],
+body.rtl .property-editor-container input[type=time],
+body.rtl .property-editor-container input[type=date],
+body.rtl .property-editor-container input[type=datetime],
+body.rtl .property-editor-container input[type=datetime-local],
+body.rtl .property-editor-container input[type=tel],
+body.rtl .property-editor-container input[type=number],
+body.rtl .property-editor-container input[type=search],
+body.rtl .property-editor-container input[type=file],
+body.rtl .property-editor-container .property-input select,
+body.rtl .property-editor-container .property-input textarea{
+    float: right;
+    text-align: right;
+}
+body.rtl .property-input .withPrefix{
+    display: unset !important;
+}
+body.rtl .property-input > span.icon > span > span.dropdown{
+    left: 5px;
+    right: unset !important;
+}
 .image-placeholder {
     background-size: cover;
     margin: 5px 15px 15px 0;

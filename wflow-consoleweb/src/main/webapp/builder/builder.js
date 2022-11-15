@@ -180,6 +180,10 @@
     },
     
     ajaxRenderBuilder: function(url) {
+        var rtl;
+        if($('body').hasClass('rtl')){
+           rtl=true;
+        }
         //check url is same
         var temp = url;
         var hash = ""
@@ -343,7 +347,9 @@
                     $("head").append(data.builderJS);
                 }
             }
-            
+            if(rtl === true) {
+                $('body').addClass("rtl");
+            }
             //update admin bar
             var acBtn = $("#adminBarButtons .adminBarButton").eq(0);
             $(acBtn).attr("href", CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath +'/builders');

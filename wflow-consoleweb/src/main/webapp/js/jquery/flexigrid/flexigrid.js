@@ -1023,17 +1023,28 @@
 									nl = onl - nw + Math.floor(p.cgwidth/2);
 
 									$(g.nDiv).hide();$(g.nBtn).hide();
-
-									$(g.nBtn).css({'left':nl,top:g.hDiv.offsetTop}).show();
+                                                                        if($('body').hasClass('rtl')){
+                                                                            $(g.nBtn).css({'right':nl,top:g.hDiv.offsetTop}).show();
+                                                                        } else {
+                                                                            $(g.nBtn).css({'left':nl,top:g.hDiv.offsetTop}).show();
+                                                                        }
 
 									var ndw = parseInt($(g.nDiv).width());
 
 									$(g.nDiv).css({top:g.bDiv.offsetTop});
 
 									if ((nl+ndw)>$(g.gDiv).width())
-										$(g.nDiv).css('left',onl-ndw+1);
+                                                                            if($('body').hasClass('rtl')){
+                                                                                $(g.nDiv).css('right',onl-ndw+1);
+                                                                            } else {
+                                                                                $(g.nDiv).css('left',onl-ndw+1);
+                                                                            }
 									else
-										$(g.nDiv).css('left',nl);
+                                                                            if($('body').hasClass('rtl')){
+                                                                                $(g.nDiv).css('right',nl);
+                                                                            } else {
+                                                                                $(g.nDiv).css('left',nl);
+                                                                            }
 
 									if ($(this).hasClass('sorted'))
 										$(g.nBtn).addClass('srtd');
