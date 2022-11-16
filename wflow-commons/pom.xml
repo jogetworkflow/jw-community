@@ -333,12 +333,12 @@
         <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>csrfguard</artifactId>
-            <version>4.0.0</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>csrfguard-extension-session</artifactId>
-            <version>4.0.0</version>
+            <version>4.2.0</version>
         </dependency>   
         <dependency>
             <groupId>com.google.code.gson</groupId>

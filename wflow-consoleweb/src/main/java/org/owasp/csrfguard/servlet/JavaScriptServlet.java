@@ -34,11 +34,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.owasp.csrfguard.CsrfGuard;
 import org.owasp.csrfguard.CsrfGuardServletContextListener;
 import org.owasp.csrfguard.CsrfValidator;
-import org.owasp.csrfguard.log.LogLevel;
+import org.owasp.csrfguard.config.properties.javascript.JavaScriptConfigParameters;
 import org.owasp.csrfguard.session.LogicalSession;
 import org.owasp.csrfguard.token.storage.LogicalSessionExtractor;
 import org.owasp.csrfguard.token.transferobject.TokenTO;
 import org.owasp.csrfguard.util.CsrfGuardUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
@@ -48,10 +50,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -98,6 +98,28 @@ public final class JavaScriptServlet extends HttpServlet {
 
     private static final String ASYNC_XHR = "'%ASYNC_XHR%'";
 
+    private static final Map<String, BiFunction<CsrfGuard, HttpServletRequest, String>> JS_REPLACEMENT_MAP = new HashMap<>();
+
+    static {
+        JS_REPLACEMENT_MAP.put(TOKEN_NAME_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getTokenName()));
+        JS_REPLACEMENT_MAP.put(TOKEN_VALUE_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(getMasterToken(request, csrfGuard)));
+        JS_REPLACEMENT_MAP.put(UNPROTECTED_EXTENSIONS_IDENTIFIER, (csrfGuard, request) -> String.valueOf(csrfGuard.getJavascriptUnprotectedExtensions()));
+        JS_REPLACEMENT_MAP.put(CONTEXT_PATH_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(request.getContextPath()));
+        JS_REPLACEMENT_MAP.put(SERVLET_PATH_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(request.getContextPath() + request.getServletPath()));
+        JS_REPLACEMENT_MAP.put(X_REQUESTED_WITH_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getJavascriptXrequestedWith()));
+        JS_REPLACEMENT_MAP.put(DYNAMIC_NODE_CREATION_EVENT_NAME_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getJavascriptDynamicNodeCreationEventName()));
+        JS_REPLACEMENT_MAP.put(DOMAIN_ORIGIN_IDENTIFIER, (csrfGuard, request) -> ObjectUtils.defaultIfNull(csrfGuard.getDomainOrigin(), StringUtils.defaultString(parseDomain(request.getRequestURL()))));
+        JS_REPLACEMENT_MAP.put(INJECT_INTO_FORMS_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoForms()));
+        JS_REPLACEMENT_MAP.put(INJECT_GET_FORMS_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectGetForms()));
+        JS_REPLACEMENT_MAP.put(INJECT_FORM_ATTRIBUTES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectFormAttributes()));
+        JS_REPLACEMENT_MAP.put(INJECT_INTO_ATTRIBUTES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoAttributes()));
+        JS_REPLACEMENT_MAP.put(INJECT_INTO_DYNAMIC_NODES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoDynamicallyCreatedNodes()));
+        JS_REPLACEMENT_MAP.put(INJECT_INTO_XHR_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isAjaxEnabled()));
+        JS_REPLACEMENT_MAP.put(TOKENS_PER_PAGE_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isTokenPerPageEnabled()));
+        JS_REPLACEMENT_MAP.put(DOMAIN_STRICT_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptDomainStrict()));
+        JS_REPLACEMENT_MAP.put(ASYNC_XHR, (csrfGuard, request) -> Boolean.toString(!csrfGuard.isForceSynchronousAjax()));
+    }
+
     /* MIME Type constants */
     private static final String JSON_MIME_TYPE = "application/json";
     private static final String JAVASCRIPT_MIME_TYPE = "text/javascript; charset=utf-8";
@@ -106,6 +128,8 @@ public final class JavaScriptServlet extends HttpServlet {
      * whitelist the javascript servlet from csrf errors
      */
     private static final Set<String> javascriptUris = new HashSet<>();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaScriptServlet.class);
 
     private static ServletConfig servletConfig = null;
 
@@ -125,9 +149,12 @@ public final class JavaScriptServlet extends HttpServlet {
     @Override
     public void init(final ServletConfig theServletConfig) {
         servletConfig = theServletConfig;
+
+        final CsrfGuard csrfGuard = CsrfGuard.getInstance();
+        csrfGuard.initializeJavaScriptConfiguration();
+
         // print again since it might change based on servlet config of javascript servlet
-        CsrfGuardServletContextListener.printConfigIfConfigured(servletConfig.getServletContext(),
-                                                                "Printing properties after JavaScript servlet, note, the javascript properties have now been initialized: ");
+        CsrfGuardServletContextListener.printConfigIfConfigured(servletConfig.getServletContext(), "Printing properties after JavaScript servlet, note, the javascript properties have now been initialized: ");
     }
 
     @Override
@@ -135,7 +162,9 @@ public final class JavaScriptServlet extends HttpServlet {
         final CsrfGuard csrfGuard = CsrfGuard.getInstance();
 
         if (csrfGuard.isEnabled()) {
-            writeJavaScript(csrfGuard, request, response);
+            if (CsrfGuardUtils.isPermittedUserAgent(request, response, csrfGuard)) {
+                writeJavaScript(csrfGuard, request, response);
+            }
         } else {
             response.setContentType(JAVASCRIPT_MIME_TYPE);
             final String javaScriptCode = "console.log('CSRFGuard is disabled');";
@@ -146,39 +175,41 @@ public final class JavaScriptServlet extends HttpServlet {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final CsrfGuard csrfGuard = CsrfGuard.getInstance();
-        
-        /* CUSTOM START : for backward compatible to retrieve CSRF Token*/
-        if (request.getHeader("FETCH-CSRF-TOKEN") != null 
-                || request.getHeader("FETCH-CSRF-TOKEN-PARAM") != null 
-                || request.getParameter("FETCH-CSRF-TOKEN-PARAM") != null) {
-            
-            try {
-                response.setContentType("text/plain");
-                response.getWriter().write(SecurityUtil.getCsrfTokenName() + ":" + SecurityUtil.getCsrfTokenValue(request));
-            } catch (Exception e) {
-                LogUtil.error(JavaScriptServlet.class.getName(), e, "");
-            }
-            
-            return;
-        }
-        /* CUSTOM END */
 
-        if (new CsrfValidator().isValid(request, response)) {
-            if (csrfGuard.isTokenPerPageEnabled()) {
-                // TODO pass the logical session downstream, see whether the null check can be done from here
-                final LogicalSession logicalSession = csrfGuard.getLogicalSessionExtractor().extract(request);
-                if (Objects.isNull(logicalSession)) {
-                    throw new IllegalStateException("This should not happen. A logical session should already exist at this point.");
+        if (CsrfGuardUtils.isPermittedUserAgent(request, response, csrfGuard)) {
+            /* CUSTOM START : for backward compatible to retrieve CSRF Token*/
+            if (request.getHeader("FETCH-CSRF-TOKEN") != null 
+                    || request.getHeader("FETCH-CSRF-TOKEN-PARAM") != null 
+                    || request.getParameter("FETCH-CSRF-TOKEN-PARAM") != null) {
+
+                try {
+                    response.setContentType("text/plain");
+                    response.getWriter().write(SecurityUtil.getCsrfTokenName() + ":" + SecurityUtil.getCsrfTokenValue(request));
+                } catch (Exception e) {
+                    LogUtil.error(JavaScriptServlet.class.getName(), e, "");
+                }
+
+                return;
+            }
+            /* CUSTOM END */
+        
+            if (new CsrfValidator().isValid(request, response)) {
+                if (csrfGuard.isTokenPerPageEnabled()) {
+                    // TODO pass the logical session downstream, see whether the null check can be done from here
+                    final LogicalSession logicalSession = csrfGuard.getLogicalSessionExtractor().extract(request);
+                    if (Objects.isNull(logicalSession)) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not create a logical session from the current request.");
+                    } else {
+                        final Map<String, String> pageTokens = csrfGuard.getTokenService().getPageTokens(logicalSession.getKey());
+                        final TokenTO tokenTO = new TokenTO(pageTokens);
+                        writeTokens(response, tokenTO);
+                    }
                 } else {
-                    final Map<String, String> pageTokens = csrfGuard.getTokenService().getPageTokens(logicalSession.getKey());
-                    final TokenTO tokenTO = new TokenTO(pageTokens);
-                    writeTokens(response, tokenTO);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "This endpoint should not be invoked if the Token-Per-Page functionality is disabled!");
                 }
             } else {
-                response.sendError(400, "This endpoint should not be invoked if the Token-Per-Page functionality is disabled!");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Master token missing from the request.");
             }
-        } else {
-            response.sendError(403, "Master token missing from the request.");
         }
     }
 
@@ -206,25 +237,9 @@ public final class JavaScriptServlet extends HttpServlet {
 
         response.setContentType(JAVASCRIPT_MIME_TYPE);
 
-        String code = csrfGuard.getJavascriptTemplateCode();
+        final String[] replacementList = JS_REPLACEMENT_MAP.values().stream().map(v -> v.apply(csrfGuard, request)).toArray(String[]::new);
 
-        code = code.replace(TOKEN_NAME_IDENTIFIER, StringUtils.defaultString(csrfGuard.getTokenName()))
-                   .replace(TOKEN_VALUE_IDENTIFIER, StringUtils.defaultString(getMasterToken(request, csrfGuard)))
-                   .replace(UNPROTECTED_EXTENSIONS_IDENTIFIER, String.valueOf(csrfGuard.getJavascriptUnprotectedExtensions()))
-                   .replace(CONTEXT_PATH_IDENTIFIER, StringUtils.defaultString(request.getContextPath()))
-                   .replace(SERVLET_PATH_IDENTIFIER, StringUtils.defaultString(request.getContextPath() + request.getServletPath()))
-                   .replace(X_REQUESTED_WITH_IDENTIFIER, StringUtils.defaultString(csrfGuard.getJavascriptXrequestedWith()))
-                   .replace(DYNAMIC_NODE_CREATION_EVENT_NAME_IDENTIFIER, StringUtils.defaultString(csrfGuard.getJavascriptDynamicNodeCreationEventName()))
-                   .replace(DOMAIN_ORIGIN_IDENTIFIER, ObjectUtils.defaultIfNull(csrfGuard.getDomainOrigin(), StringUtils.defaultString(parseDomain(request.getRequestURL()))))
-                   .replace(INJECT_INTO_FORMS_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptInjectIntoForms()))
-                   .replace(INJECT_GET_FORMS_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptInjectGetForms()))
-                   .replace(INJECT_FORM_ATTRIBUTES_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptInjectFormAttributes()))
-                   .replace(INJECT_INTO_ATTRIBUTES_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptInjectIntoAttributes()))
-                   .replace(INJECT_INTO_DYNAMIC_NODES_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptInjectIntoDynamicallyCreatedNodes()))
-                   .replace(INJECT_INTO_XHR_IDENTIFIER, Boolean.toString(csrfGuard.isAjaxEnabled()))
-                   .replace(TOKENS_PER_PAGE_IDENTIFIER, Boolean.toString(csrfGuard.isTokenPerPageEnabled()))
-                   .replace(DOMAIN_STRICT_IDENTIFIER, Boolean.toString(csrfGuard.isJavascriptDomainStrict()))
-                   .replace(ASYNC_XHR, Boolean.toString(!csrfGuard.isForceSynchronousAjax()));
+        final String code = StringUtils.replaceEach(csrfGuard.getJavascriptTemplateCode(), JS_REPLACEMENT_MAP.keySet().toArray(new String[0]), replacementList);
 
         response.getWriter().write(code);
     }
@@ -240,21 +255,22 @@ public final class JavaScriptServlet extends HttpServlet {
         try {
             return new URL(url.toString()).getHost();
         } catch (final MalformedURLException e) {
-            // Should not occur. javax.servlet.http.HttpServletRequest.getRequestURL should only returns valid URLs.
-            return "INVALID_URL: " + url.toString();
+            // Should not occur. javax.servlet.http.HttpServletRequest.getRequestURL should only return valid URLs.
+            return "INVALID_URL: " + url;
         }
     }
 
     private void writeJavaScript(final CsrfGuard csrfGuard, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final String refererHeader = request.getHeader("referer");
 
-        boolean hasError = false;
         final Pattern javascriptRefererPattern = csrfGuard.getJavascriptRefererPattern();
+        final String javaScriptReferer = javascriptRefererPattern.pattern();
+
         if (refererHeader != null) {
             if (!javascriptRefererPattern.matcher(refererHeader).matches()) {
-                csrfGuard.getLogger().log(LogLevel.Error, String.format("Referer domain %s does not match regex: %s", refererHeader, javascriptRefererPattern.pattern()));
-                response.sendError(403);
-                hasError = true;
+                LOGGER.error("Referer domain '{}' does not match regex: '{}'", refererHeader, javaScriptReferer);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
             }
 
             if (csrfGuard.isJavascriptRefererMatchDomain()) {
@@ -264,23 +280,28 @@ public final class JavaScriptServlet extends HttpServlet {
                 final String requestProtocolAndDomain = CsrfGuardUtils.httpProtocolAndDomain(url, isJavascriptRefererMatchProtocol);
                 final String refererProtocolAndDomain = CsrfGuardUtils.httpProtocolAndDomain(refererHeader, isJavascriptRefererMatchProtocol);
                 if (!refererProtocolAndDomain.equals(requestProtocolAndDomain)) {
-                    csrfGuard.getLogger().log(LogLevel.Error, String.format("Referer domain %s does not match request domain: %s", refererHeader, url));
-                    hasError = true;
-                    response.sendError(403);
+                    LOGGER.error("Referer domain '{}' does not match request domain: '{}'", refererHeader, url);
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
                 }
             }
-        }
+        } else {
+            if (!javaScriptReferer.equals(JavaScriptConfigParameters.DEFAULT_REFERER_PATTERN)) {
+                LOGGER.error("Missing referer headers are not accepted if a non-default referer pattern '{}' is configured!", javaScriptReferer);
 
-        if (!hasError) {
-            // save this path so javascript is whitelisted
-            final String javascriptPath = request.getContextPath() + request.getServletPath();
-
-            // don't know why there would be more than one... hmmm
-            if (javascriptUris.size() < 100) {
-                javascriptUris.add(javascriptPath);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
             }
-
-            writeJavaScript(request, response);
         }
+
+        // save this path so javascript is whitelisted
+        final String javascriptPath = request.getContextPath() + request.getServletPath();
+
+        // don't know why there would be more than one... hmmm
+        if (javascriptUris.size() < 100) {
+            javascriptUris.add(javascriptPath);
+        }
+
+        writeJavaScript(request, response);
     }
 }
