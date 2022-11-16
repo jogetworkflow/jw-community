@@ -3,6 +3,9 @@
 <hibernate-mapping>
     <class entity-name="FormRow" lazy="false" name="org.joget.apps.form.model.FormRow" table="app_fd">
         <id name="id" type="string"/>
+        <property name="orgId" type="string">
+            <column name="orgId" index="IDX_FormRow_orgId" default="false" not-null="true" />
+        </property>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
         <property name="createdBy" type="string"/>

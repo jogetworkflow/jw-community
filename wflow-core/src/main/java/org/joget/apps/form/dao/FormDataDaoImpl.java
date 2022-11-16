@@ -345,13 +345,16 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 q.setMaxResults(rows);
             }
 
+            int i = 0;
             if (params != null) {
-                int i = 0;
                 for (Object param : params) {
                     q.setParameter(i, param);
                     i++;
                 }
             }
+
+            String orgId = WorkflowUtil.getCurrentUserOrgId();
+            q.setParameter(i, orgId);
 
             Collection result = q.list();
 
@@ -412,13 +415,16 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ") + "(" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
 
             Query q = session.createQuery(query);
+
+            int i = 0;
             if (params != null) {
-                int i = 0;
                 for (Object param : params) {
                     q.setParameter(i, param);
                     i++;
                 }
             }
+
+            q.setParameter(i, WorkflowUtil.getCurrentUserOrgId());
 
             return ((Long) q.iterate().next());
         } finally {
@@ -476,6 +482,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             q.setFirstResult(0);
             q.setMaxResults(1);
             q.setParameter(0, value);
+            q.setParameter(1, WorkflowUtil.getCurrentUserOrgId());
 
             if (q.list().size() > 0) {
                 return ((String) q.iterate().next());
@@ -521,10 +528,20 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_STORE);
 
+        final String username = WorkflowUtil.getCurrentUsername();
+        final String orgId = WorkflowUtil.getCurrentUserOrgId();
+
         try {
             // save the form data
             for (FormRow row : rowSet) {
-                session.saveOrUpdate(entityName, row);
+                if (row.getOrgId() == null)
+                    row.setOrgId(orgId);
+
+                if (row.getOrgId().equals(FORM_ANY_ORG_ID) || row.getOrgId().equals(orgId)) {
+                    session.saveOrUpdate(entityName, row);
+                } else {
+                    LogUtil.warn(getClass().getName(), "User [" + username + "] is not allowed to store data in organization [" + row.getOrgId() + "]");
+                }
             }
             session.flush();
         } finally {
