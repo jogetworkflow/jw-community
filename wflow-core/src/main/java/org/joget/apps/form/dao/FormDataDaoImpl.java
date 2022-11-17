@@ -86,19 +86,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     
     private static final Document formRowDocument;
     static {
-        InputStream is = null;
-        try {
-            is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
+        try (InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml")) {
             formRowDocument = XMLUtil.loadDocument(is);
         } catch (Exception e) {
             throw new HibernateException("Unable to load FormRow.hbm.xml", e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                }
-            }
         }
     }
        
@@ -280,7 +271,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(formDefId);
         final String newTableName = getFormTableName(formDefId, tableName);
 
-        return internalFind(entityName, newTableName, condition, params, sort, desc, start, rows);
+        final String sortAs = FormUtil.PROPERTY_DATE_CREATED.equals(sort) || FormUtil.PROPERTY_DATE_MODIFIED.equals(sort) ? "timestamp" : "string";
+
+        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows);
     }
     
     /**
@@ -299,7 +292,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
-        return internalFind(entityName, tableName, condition, params, sort, desc, start, rows);
+        final String sortAs = FormUtil.PROPERTY_DATE_CREATED.equals(sort) || FormUtil.PROPERTY_DATE_MODIFIED.equals(sort) ? "timestamp" : "string";
+
+        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows);
     }
     
     /**
@@ -314,7 +309,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param rows
      * @return
      */
-    protected FormRowSet internalFind(final String entityName, final String tableName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+    protected FormRowSet internalFind(final String entityName, final String tableName, final String condition, final Object[] params, final String sort, final String sortAs, final Boolean desc, final Integer start, final Integer rows) {
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
 
@@ -1756,5 +1751,21 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return FormUtil.PROPERTY_ID.equals(column)
                 || FormUtil.PROPERTY_DATE_CREATED.equals(column) || FormUtil.PROPERTY_DATE_MODIFIED.equals(column)
                 || FormUtil.PROPERTY_CREATED_BY.equals(column) || FormUtil.PROPERTY_MODIFIED_BY.equals(column);
+    }
+
+    @Override
+    public FormRowSet find(Form form, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows) {
+        final String entityName = getFormEntityName(form);
+        final String tableName = getFormTableName(form);
+
+        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows);
+    }
+
+    @Override
+    public FormRowSet find(String formDefId, String tableName, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows);
     }
 }

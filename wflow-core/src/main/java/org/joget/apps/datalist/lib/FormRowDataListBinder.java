@@ -14,11 +14,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.datalist.model.DataList;
-import org.joget.apps.datalist.model.DataListBinderDefault;
-import org.joget.apps.datalist.model.DataListCollection;
-import org.joget.apps.datalist.model.DataListColumn;
-import org.joget.apps.datalist.model.DataListFilterQueryObject;
+import org.joget.apps.datalist.model.*;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.PasswordField;
 import org.joget.apps.form.model.Element;
@@ -151,7 +147,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
             DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
 
-            FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, desc, start, rows);
+            final String sortAs = getSortAs(dataList, sort);
+            FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, sortAs, desc, start, rows);
             resultList.addAll(rowSet);
         }
 
@@ -318,5 +315,29 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             queryObject.setValues((String[]) params.toArray(new String[0]));
         }
         return queryObject;
+    }
+
+
+    /**
+     * Get sort as
+     *
+     * @param   dataList
+     * @param   columnName
+     * @return  sortAs : SQL data type
+     */
+    protected String getSortAs(DataList dataList, String columnName) {
+        final DataListColumn[] columns = dataList.getColumns();
+        for (DataListColumn column : columns) {
+            if(column != null && column.getName().equalsIgnoreCase(columnName) && column.getFormats() != null) {
+                for (DataListColumnFormat format : column.getFormats()) {
+                    if(format != null) {
+                        return format.getSortAs(dataList, column);
+                    }
+                }
+            }
+        }
+
+        return FormUtil.PROPERTY_DATE_CREATED.equals(columnName)
+                || FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName) ? "timestamp" : "string";
     }
 }
