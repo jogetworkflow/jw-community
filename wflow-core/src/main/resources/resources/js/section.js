@@ -83,7 +83,7 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
 
 VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, isRegex) {
     //get enabled input field oni
-    controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+    controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, :disabled, [disabled=false]");
     controlEl = $(controlEl).filter(":not(.section-visibility-disabled)"); //must put in newline to avoid conflict with above condition
     
     var match = false;
