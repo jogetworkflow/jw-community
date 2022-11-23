@@ -16,6 +16,8 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.service.WorkflowManager;
 
 /**
  * Form load binder that loads the data rows of a form.
@@ -70,6 +72,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
     @Override
     public FormRowSet load(Element element, String primaryKey, FormData formData) {
+        setFormData(formData);
         return loadAjaxOptions(null);
     }
 
@@ -107,8 +110,17 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
                 String condition = null;
                 Object[] conditionParams = null;
-                
-                String extraCondition = (String) getProperty("extraCondition");
+
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+
+                FormData formData = getFormData();
+                WorkflowAssignment workflowAssignment = null;
+                if(formData != null && formData.getActivityId() != null) {
+                    workflowAssignment = workflowManager.getAssignment(formData.getActivityId());
+                }
+
+                String extraCondition = AppUtil.processHashVariable(getPropertyString("extraCondition"), workflowAssignment, null, null);
+
                 if (extraCondition != null && !extraCondition.trim().isEmpty()) {
                     condition = " WHERE " + extraCondition;
                 }

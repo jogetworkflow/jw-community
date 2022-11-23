@@ -21,7 +21,6 @@ public interface DataListColumnFormat extends PropertyEditable, DataJsonControll
      */
     String format(DataList dataList, DataListColumn column, Object row, Object value);
 
-
     /**
      * Get Sort As
      *

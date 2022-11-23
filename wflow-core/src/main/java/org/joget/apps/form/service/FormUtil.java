@@ -1985,6 +1985,10 @@ public class FormUtil implements ApplicationContextAware {
                 String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
 
                 FormAjaxOptionsBinder ajaxbinder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+                if(ajaxbinder instanceof FormBinder) {
+                    ((FormBinder) ajaxbinder).setFormData(formData);
+                }
+
                 FormRowSet rowSet = ajaxbinder.loadAjaxOptions(controlValues);
                 formData.setOptionsBinderData((FormLoadBinder) ajaxbinder, rowSet);
             }
