@@ -14,6 +14,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -205,12 +206,12 @@ public class UserProfileMenu extends UserviewMenu {
         }
         UserSecurity us = DirectoryUtil.getUserSecurity();
         
-        if ("".equals(getPropertyString("f_firstName"))) {
-            currentUser.setFirstName(getRequestParameterString("firstName"));
+        if ("".equals(getPropertyString("f_firstName")) && !StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")).isEmpty()) {
+            currentUser.setFirstName(StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")));
         }
 
         if ("".equals(getPropertyString("f_lastName"))) {
-            currentUser.setLastName(getRequestParameterString("lastName"));
+            currentUser.setLastName(StringUtil.stripAllHtmlTag(getRequestParameterString("lastName")));
         }
 
         if ("".equals(getPropertyString("f_email"))) {
