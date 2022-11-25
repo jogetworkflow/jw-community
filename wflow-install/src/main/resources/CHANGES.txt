@@ -1,4 +1,4 @@
-Joget DX 7 COMMUNITY
+Kecak Workflow 7 COMMUNITY
 ====================
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
@@ -1118,7 +1118,7 @@ d51b259 Fixed: wflow-consoleweb - Performance - Not able to set SMTP password fo
 6509228 Fixed: wflow-consoleweb - Guide - Help guide popup appears below the admin bar @7.0-SNAPSHOT
 ac849b7 Fixed: wflow-core - PWA - Manifest theme-color not correctly set for custom primary color @7.0-SNAPSHOT
 9590acd Modified: wflow-install - Move glowroot under wflow directory. @7.0-SNAPSHOT
-141b009 Modified: All - Changed labels from Joget Workflow to Joget DX @7.0-SNAPSHOT
+141b009 Modified: All - Changed labels from Joget Workflow to Kecak Workflow @7.0-SNAPSHOT
 1dd2dc8 Modified: wflow-consoleweb - Performance - Show Free Physical Memory & and Head Memory Usage in 100% scale. @7.0-SNAPSHOT
 e611bbd Fixed: wflow-consoleweb - Admin Bar - Adjust css. @7.0-SNAPSHOT
 593f6d4 Fixed: wflow-consoleweb - Process Mapper - Dropdown of "Display All Info" control is not clickable. @7.0-SNAPSHOT
