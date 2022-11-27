@@ -1,5 +1,6 @@
 package org.joget.apps.form.dao;
 
+import com.kinnarastudio.commons.Try;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
@@ -16,6 +17,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
 import net.sf.ehcache.Cache;
@@ -161,7 +164,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow load(Form form, String primaryKey) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        return internalLoad(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey, false);
     }
     
     /**
@@ -175,7 +178,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow load(String formDefId, String tableName, String primaryKey) {
         String entityName = getFormEntityName(formDefId);
         tableName = getFormTableName(formDefId, tableName);
-        return internalLoad(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey, false);
     }
 
     /**
@@ -189,7 +192,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow loadWithoutTransaction(Form form, String primaryKey) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        return internalLoad(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey, false);
     }
     
     /**
@@ -204,7 +207,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow loadWithoutTransaction(String formDefId, String tableName, String primaryKey) {
         String entityName = getFormEntityName(formDefId);
         tableName = getFormTableName(formDefId, tableName);
-        return internalLoad(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey, false);
     }
 
     /**
@@ -212,9 +215,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param entityName
      * @param tableName
      * @param primaryKey
+     * @param loadDeleted
      * @return null if the row does not exist
      */
-    protected FormRow internalLoad(String entityName, String tableName, String primaryKey) {
+    protected FormRow internalLoad(String entityName, String tableName, String primaryKey, Boolean loadDeleted) {
         // get hibernate session
         Session session = getHibernateSession(entityName, tableName, null, ACTION_TYPE_LOAD);
         
@@ -226,7 +230,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             row = Optional.ofNullable(primaryKey)
                     .map(s -> session.load(tableName, s))
                     .map(o -> (FormRow) o)
-                    .filter(r ->(r.getOrgId() == null || r.getOrgId().equals(FORM_ANY_ORG_ID) || r.getOrgId().equals(userOrgId)))
+                    .filter(r -> (loadDeleted || !r.getDeleted())
+                            && (r.getOrgId() == null || r.getOrgId().equals(FORM_ANY_ORG_ID) || r.getOrgId().equals(userOrgId)))
                     .orElse(null);
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
@@ -251,7 +256,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
         }
         
-        return internalLoad(tableName, tableName, primaryKey);
+        return internalLoad(tableName, tableName, primaryKey, false);
     }
 
     /**
@@ -273,7 +278,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         final String sortAs = FormUtil.PROPERTY_DATE_CREATED.equals(sort) || FormUtil.PROPERTY_DATE_MODIFIED.equals(sort) ? "timestamp" : "string";
 
-        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows);
+        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows, false);
     }
     
     /**
@@ -294,7 +299,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         final String sortAs = FormUtil.PROPERTY_DATE_CREATED.equals(sort) || FormUtil.PROPERTY_DATE_MODIFIED.equals(sort) ? "timestamp" : "string";
 
-        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows);
+        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows, false);
     }
     
     /**
@@ -309,14 +314,17 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param rows
      * @return
      */
-    protected FormRowSet internalFind(final String entityName, final String tableName, final String condition, final Object[] params, final String sort, final String sortAs, final Boolean desc, final Integer start, final Integer rows) {
+    protected FormRowSet internalFind(final String entityName, final String tableName, final String condition, final Object[] params, final String sort, String sortAs, final Boolean desc, final Integer start, final Integer rows, final Boolean loadSoftDeleted) {
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
 
         try {
             String query = "SELECT e FROM " + tableName + " e ";
             query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ")
-                    + "(" + (FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?)") + ") ";
+                    + ("(" + (FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " in ('" + FORM_ANY_ORG_ID + "', ?)") + ") ")
+                    + " AND "
+                    + ("( " + (loadSoftDeleted != null && loadSoftDeleted ? " 1 = 1 " : " 1 <> 1 ") + " OR " + FormUtil.PROPERTY_DELETED + " = false )");
+
 
             if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
                 String sortProperty = sort;
@@ -326,6 +334,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sort;
                 }
 
+                sortAs = sortAs == null ? "string" : sortAs;
                 if(sortAs.contains("?")) {
                     query += " ORDER BY " + sortAs.replaceAll("\\?", "e." + sortProperty);
                 } else {
@@ -380,7 +389,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(formDefId);
         final String newTableName = getFormTableName(formDefId, tableName);
 
-        return internalCount(entityName, newTableName, condition, params);
+        return internalCount(entityName, newTableName, condition, params, false);
     }
     
     /**
@@ -396,7 +405,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
-        return internalCount(entityName, tableName, condition, params);
+        return internalCount(entityName, tableName, condition, params, false);
     }
     
     /**
@@ -407,12 +416,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param params
      * @return
      */
-    protected Long internalCount(final String entityName, final String tableName, final String condition, final Object[] params) {
+    protected Long internalCount(final String entityName, final String tableName, final String condition, final Object[] params, final Boolean loadSoftDeleted) {
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
             String query = "SELECT COUNT(*) FROM " + tableName + " e ";
-            query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ") + "(" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
+            query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ")
+                    + "( " + FormUtil.PROPERTY_DELETED + " = false OR " + (loadSoftDeleted != null && loadSoftDeleted ? " 1 = 1 " : " 1 <> 1 ") + ") AND ("
+                    + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
 
             Query q = session.createQuery(query);
 
@@ -444,7 +455,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
-        return internalFindPrimaryKey(entityName, tableName, fieldName, value);
+        return internalFindPrimaryKey(entityName, tableName, fieldName, value, false);
     }
     
     /**
@@ -460,7 +471,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(formDefId);
         final String newTableName = getFormTableName(formDefId, tableName);
 
-        return internalFindPrimaryKey(entityName, newTableName, fieldName, value);
+        return internalFindPrimaryKey(entityName, newTableName, fieldName, value, false);
     }
     
     /**
@@ -471,11 +482,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param value
      * @return
      */
-    protected String internalFindPrimaryKey(final String entityName, final String tableName, final String fieldName, final String value) {
+    protected String internalFindPrimaryKey(final String entityName, final String tableName, final String fieldName, final String value, final Boolean loadSoftDeleted) {
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? AND (" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
+            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? "
+                    + " AND ( " + (loadSoftDeleted != null && loadSoftDeleted ? " 1 = 1 " : " 1 <> 1 ") + " OR " + FormUtil.PROPERTY_DELETED + " = false ) "
+                    + " AND "
+                    + " (" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
 
             Query q = session.createQuery(processQuery(query));
 
@@ -588,7 +602,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
 
-        internalDelete(entityName, tableName, primaryKeyValues);
+        internalSoftDelete(entityName, tableName, primaryKeyValues);
     }
     
     /**
@@ -602,7 +616,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String entityName = getFormEntityName(formDefId);
         String newTableName = getFormTableName(formDefId, tableName);
 
-        internalDelete(entityName, newTableName, primaryKeyValues);
+        internalSoftDelete(entityName, newTableName, primaryKeyValues);
     }
     
     /**
@@ -615,18 +629,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public void delete(String formDefId, String tableName, FormRowSet rows) {
         String entityName = getFormEntityName(formDefId);
         String newTableName = getFormTableName(formDefId, tableName);
+        String[] primaryKeyValues = rows.stream().map(FormRow::getId).toArray(String[]::new);
 
-        // get hibernate template
-        Session session = getHibernateSession(entityName, newTableName, null, ACTION_TYPE_STORE);
-        try {
-            // save the form data
-            for (FormRow row : rows) {
-                session.delete(entityName, row);
-            }
-            session.flush();
-        } finally {
-            closeSession(session);
-        }
+        internalSoftDelete(entityName, tableName, primaryKeyValues);
     }
     
     /**
@@ -648,6 +653,27 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             session.flush();
         } finally {
             closeSession(session);
+        }
+    }
+
+    protected void internalSoftDelete(String entityName, String tableName, String[] primaryKeyValues) {
+        if (primaryKeyValues.length > 0) {
+            String currentUsername = WorkflowUtil.getCurrentUsername();
+            String condition = Arrays.stream(primaryKeyValues)
+                    .map(s -> "?")
+                    .collect(Collectors.joining(", ", "where id in (", ")"));
+
+            FormRowSet rowSet = Optional.ofNullable(internalFind(entityName, tableName, condition, primaryKeyValues, null, null, null, null, null, false))
+                    .map(Collection::stream)
+                    .orElseGet(Stream::empty)
+                    .peek(row -> {
+                        row.setDateModified(new Date());
+                        row.setModifiedBy(currentUsername);
+                        row.setDeleted(true);
+                    })
+                    .collect(Collectors.toCollection(FormRowSet::new));
+
+            internalSaveOrUpdate(entityName, tableName, rowSet);
         }
     }
 
@@ -1301,6 +1327,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
             columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
             columnList.remove(FormUtil.PROPERTY_ORG_ID);
+            columnList.remove(FormUtil.PROPERTY_DELETED);
         }
         return columnList;
     }
@@ -1399,6 +1426,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
                 columnList.remove(FormUtil.PROPERTY_ORG_ID);
+                columnList.remove(FormUtil.PROPERTY_DELETED);
 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
@@ -1759,18 +1787,123 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     }
 
     @Override
-    public FormRowSet find(Form form, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows) {
-        final String entityName = getFormEntityName(form);
-        final String tableName = getFormTableName(form);
-
-        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows);
+    public FormRow load(Form form, String primaryKey, Boolean loadDeleted) {
+        String entityName = getFormEntityName(form);
+        String tableName = getFormTableName(form);
+        return internalLoad(entityName, tableName, primaryKey, loadDeleted);
     }
 
     @Override
-    public FormRowSet find(String formDefId, String tableName, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows) {
+    public FormRow load(String formDefId, String tableName, String primaryKey, Boolean loadSoftDeleted) {
+        String entityName = getFormEntityName(formDefId);
+        tableName = getFormTableName(formDefId, tableName);
+        return internalLoad(entityName, tableName, primaryKey, loadSoftDeleted);
+    }
+
+    @Override
+    public FormRow loadWithoutTransaction(Form form, String primaryKey, Boolean loadSoftDeleted) {
+        String entityName = getFormEntityName(form);
+        String tableName = getFormTableName(form);
+        return internalLoad(entityName, tableName, primaryKey, loadSoftDeleted);
+    }
+
+    @Override
+    public FormRow loadWithoutTransaction(String formDefId, String tableName, String primaryKey, Boolean loadSoftDeleted) {
+        String entityName = getFormEntityName(formDefId);
+        tableName = getFormTableName(formDefId, tableName);
+        return internalLoad(entityName, tableName, primaryKey, loadSoftDeleted);
+    }
+
+    @Override
+    public FormRow loadByTableNameAndColumnName(String tableName, String columnName, String primaryKey, Boolean loadSoftDeleted) {
+        if (!tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
+            tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
+        }
+
+        return internalLoad(tableName, tableName, primaryKey, loadSoftDeleted);
+    }
+
+    @Override
+    public String findPrimaryKey(Form form, String fieldName, String value, Boolean loadSoftDeleted) {
+        final String entityName = getFormEntityName(form);
+        final String tableName = getFormTableName(form);
+
+        return internalFindPrimaryKey(entityName, tableName, fieldName, value, loadSoftDeleted);
+    }
+
+    @Override
+    public String findPrimaryKey(String formDefId, String tableName, String fieldName, String value, Boolean loadSoftDeleted) {
         final String entityName = getFormEntityName(formDefId);
         final String newTableName = getFormTableName(formDefId, tableName);
 
-        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows);
+        return internalFindPrimaryKey(entityName, newTableName, fieldName, value, loadSoftDeleted);
+    }
+
+    @Override
+    public FormRowSet find(Form form, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows, Boolean loadDeleted) {
+        final String entityName = getFormEntityName(form);
+        final String tableName = getFormTableName(form);
+
+        return internalFind(entityName, tableName, condition, params, sort, sortAs, desc, start, rows, loadDeleted);
+    }
+
+    @Override
+    public FormRowSet find(String formDefId, String tableName, String condition, Object[] params, String sort, String sortAs, Boolean desc, Integer start, Integer rows, Boolean loadDeleted) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFind(entityName, newTableName, condition, params, sort, sortAs, desc, start, rows, loadDeleted);
+    }
+
+    @Override
+    public Long count(Form form, String condition, Object[] params, Boolean loadSoftDeleted) {
+
+        final String entityName = getFormEntityName(form);
+        final String tableName = getFormTableName(form);
+
+        return internalCount(entityName, tableName, condition, params, loadSoftDeleted);
+    }
+
+    @Override
+    public Long count(String formDefId, String tableName, String condition, Object[] params, Boolean loadSoftDeleted) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalCount(entityName, newTableName, condition, params, loadSoftDeleted);
+    }
+
+    @Override
+    public void delete(Form form, String[] primaryKeyValues, boolean isHardDelete) {
+        String entityName = getFormEntityName(form);
+        String tableName = getFormTableName(form);
+        if (isHardDelete) {
+            internalDelete(entityName, tableName, primaryKeyValues);
+        } else {
+            internalSoftDelete(entityName, tableName, primaryKeyValues);
+        }
+    }
+
+    @Override
+    public void delete(String formDefId, String tableName, String[] primaryKeyValues, boolean isHardDelete) {
+        String entityName = getFormEntityName(formDefId);
+        String newTableName = getFormTableName(formDefId, tableName);
+        if (isHardDelete) {
+            internalDelete(entityName, newTableName, primaryKeyValues);
+        } else {
+            internalSoftDelete(entityName, newTableName, primaryKeyValues);
+        }
+    }
+
+    @Override
+    public void delete(String formDefId, String tableName, FormRowSet rows, boolean isHardDelete) {
+        String entityName = getFormEntityName(formDefId);
+        String newTableName = getFormTableName(formDefId, tableName);
+        String[] primaryKeyValues = rows.stream().map(FormRow::getId).toArray(String[]::new);
+
+        if (isHardDelete) {
+            internalDelete(entityName, newTableName, primaryKeyValues);
+        } else {
+            internalSoftDelete(entityName, newTableName, primaryKeyValues);
+        }
     }
 }

@@ -14,6 +14,7 @@ public interface FormDeleteBinder {
      * @param deleteSubform
      * @param abortProcess
      * @param deleteFiles
+     * @param hardDelete
      */
-    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles);
+    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles, boolean hardDelete);
 }

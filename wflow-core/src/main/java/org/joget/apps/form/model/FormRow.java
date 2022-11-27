@@ -184,6 +184,22 @@ public class FormRow extends Properties {
         }
     }
 
+    public boolean getDeleted() {
+        Object obj = get(FormUtil.PROPERTY_DELETED);
+        if (obj != null) {
+            return Boolean.parseBoolean(String.valueOf(obj));
+        }
+        return false;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        if (deleted != null) {
+            put(FormUtil.PROPERTY_DELETED, String.valueOf(deleted));
+        } else {
+            remove(FormUtil.PROPERTY_DELETED);
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         FormRow row = (FormRow) obj;

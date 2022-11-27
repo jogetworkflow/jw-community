@@ -62,5 +62,17 @@
                 label:''
             }
         ]
+    },
+    {
+        name:'hardDelete',
+        label:'@@datalist.formrowdeletedatalistaction.hardDelete@@',
+        type:'checkbox',
+        value:'false',
+        options:[
+            {
+                value:'true',
+                label:''
+            }
+        ]
     }]
 }]
