@@ -529,7 +529,7 @@ public class FormServiceImpl implements FormService {
      */
     @Override
     public FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
-        if (!element.isReadonly(formData) && element.isAuthorize(formData)) {
+        if (!element.isReadonly(formData) && element.isAuthorize(formData) && element.continueValidation(formData)) {
 
             //load child element store binder to store before the main form
             Collection<Element> children = element.getChildren(formData);
