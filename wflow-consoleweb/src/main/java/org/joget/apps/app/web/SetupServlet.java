@@ -135,6 +135,7 @@ public class SetupServlet extends HttpServlet {
                 } catch (SQLException ex) {
                     LogUtil.info(getClass().getName(), "Database not yet initialized " + jdbcUrl);
                 }
+                con.commit();
                 
                 if (!exists) {
                     // get schema file
@@ -145,15 +146,18 @@ public class SetupServlet extends HttpServlet {
                         schemaFile = "/setup/sql/jwdb-mssql.sql";
                     } else if ("mysql".equals(dbType) || jdbcUrl.contains("mysql")) {
                         schemaFile = "/setup/sql/jwdb-mysql.sql";
+                    } else if ("postgresql".equals(dbType) || jdbcUrl.contains("postgresql")) {
+                        schemaFile = "/setup/sql/jwdb-postgres.sql";
                     } else {
                         throw new SQLException("Unrecognized database type, please setup the datasource manually");
                     }
 
                     if (dbName != null && stmt != null) {
                         // create database
-                        try {
+                        con.setAutoCommit(true);
+                        try (Statement stmt2 = con.createStatement()) {
                             LogUtil.info(getClass().getName(), "Create database " + dbName);
-                            stmt.executeUpdate("CREATE DATABASE " + dbName);
+                            stmt2.executeUpdate("CREATE DATABASE " + dbName);
                         } catch (SQLException ex) {
                             // ignore
                         }
@@ -161,6 +165,7 @@ public class SetupServlet extends HttpServlet {
                         // switch database
                         LogUtil.info(getClass().getName(), "Use database " + dbName);
                         con.setCatalog(dbName);
+                        con.setAutoCommit(false);
                     }
                     
                     // execute schema file

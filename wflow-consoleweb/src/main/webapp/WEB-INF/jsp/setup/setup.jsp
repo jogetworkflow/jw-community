@@ -105,6 +105,7 @@
                                         <option value="mysql">MySQL</option>
                                         <option value="oracle">Oracle</option>
                                         <option value="sqlserver">MS SQL Server</option>
+                                        <option value="postgresql">PostgreSQL</option>
                                         <option value="custom"><%= ResourceBundleUtil.getMessage("setup.datasource.label.custom")%></option>
                                     </select>
                                 </span>
@@ -295,6 +296,16 @@
                         }
                         $("#jdbcUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=direct");
                         $("#jdbcFullUrl").val("jdbc:sqlserver://" + dbHost + ":" + dbPort + ";SelectMethod=direct;DatabaseName=" + dbName);
+                    } else if (dbType === "postgresql") {
+                        $("#jdbcSetup").hide();
+                        $("#dbSetup").show();
+                        $("#jdbcDriver").val("org.postgresql.Driver");
+                        if (Setup.currentDbType !== dbType) {
+                            $("#dbPort").val("5432");
+                            dbPort = 5432;
+                        }
+                        $("#jdbcUrl").val("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName);
+                        $("#jdbcFullUrl").val("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName);
                     } else if (dbType === "mysql") {
                         $("#jdbcSetup").hide();
                         $("#dbSetup").show();
