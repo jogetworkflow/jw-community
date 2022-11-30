@@ -179,72 +179,96 @@ public class UserProfileMenu extends UserviewMenu {
         if (userObject != null) {
             currentUser = new User();
             BeanUtils.copyProperties(userObject, currentUser);
+        } else {
+            return;
         }
         ExtDirectoryManager directoryManager = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
            
         Collection<String> errors = new ArrayList<String>();
         Collection<String> passwordErrors = new ArrayList<String>();
         
-        boolean authenticated = false;
-        if (currentUser != null) {
-            if (!currentUser.getUsername().equals(getRequestParameterString("username"))) {
-                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                if (request != null) {
-                    HttpSession session = request.getSession(false);
-                    if (session != null) {
-                        session.invalidate();
-                        authenticated = false;
-                    }
+        //validate input length & value
+        String[] fields = new String[]{"firstName", "lastName", "email", "password", "confirmPassword", "oldPassword", "timeZone", "locale"};
+        for (String f : fields) {
+            String v = getRequestParameterString(f);
+            if (v != null) {
+                if (v.length() > 50) {
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    break;
                 }
-            } else {
-                try {
-                    if (directoryManager.authenticate(currentUser.getUsername(), getRequestParameterString("oldPassword"))) {
-                        authenticated = true;
-                    }
-                } catch (Exception e) { }
+                String e = StringUtil.unescapeString(StringUtil.stripAllHtmlTag(v), StringUtil.TYPE_HTML, null);
+                if (!e.equals(v)) {
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    break;
+                }
             }
         }
+        
+        boolean authenticated = false;
         UserSecurity us = DirectoryUtil.getUserSecurity();
         
-        if ("".equals(getPropertyString("f_firstName")) && !StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")).isEmpty()) {
-            currentUser.setFirstName(StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")));
-        }
-
-        if ("".equals(getPropertyString("f_lastName"))) {
-            currentUser.setLastName(StringUtil.stripAllHtmlTag(getRequestParameterString("lastName")));
-        }
-
-        if ("".equals(getPropertyString("f_email"))) {
-            currentUser.setEmail(getRequestParameterString("email"));
-        }
-
-        if ("".equals(getPropertyString("f_timeZone"))) {
-            currentUser.setTimeZone(getRequestParameterString("timeZone"));
-        }
-
-        if ("".equals(getPropertyString("f_locale"))) {
-            currentUser.setLocale(getRequestParameterString("locale"));
-        }
-
-        if (!authenticated) {
-            if (errors == null) {
-                errors = new ArrayList<String>();
-            }
-            errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.authenticationFailed"));
-        } else {
-            if (us != null) {
-                errors = us.validateUserOnProfileUpdate(currentUser);
+        if (errors.isEmpty()) {
+            if (currentUser != null) {
+                if (!currentUser.getUsername().equals(getRequestParameterString("username"))) {
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null) {
+                        HttpSession session = request.getSession(false);
+                        if (session != null) {
+                            session.invalidate();
+                            authenticated = false;
+                        }
+                    }
+                } else {
+                    try {
+                        if (directoryManager.authenticate(currentUser.getUsername(), getRequestParameterString("oldPassword"))) {
+                            authenticated = true;
+                        }
+                    } catch (Exception e) { }
+                }
             }
 
-            if (getRequestParameterString("password") != null && !getRequestParameterString("password").isEmpty() && us != null) {
-                passwordErrors = us.validatePassword(getRequestParameterString("username"),  getRequestParameterString("oldPassword"), getRequestParameterString("password"), getRequestParameterString("confirmPassword")); 
+            if ("".equals(getPropertyString("f_firstName")) && !StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")).isEmpty()) {
+                currentUser.setFirstName(StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")));
+            }
+
+            if ("".equals(getPropertyString("f_lastName"))) {
+                currentUser.setLastName(StringUtil.stripAllHtmlTag(getRequestParameterString("lastName")));
+            }
+
+            if ("".equals(getPropertyString("f_email"))) {
+                currentUser.setEmail(getRequestParameterString("email"));
+            }
+
+            if ("".equals(getPropertyString("f_timeZone"))) {
+                currentUser.setTimeZone(getRequestParameterString("timeZone"));
+            }
+
+            if ("".equals(getPropertyString("f_locale"))) {
+                currentUser.setLocale(getRequestParameterString("locale"));
+            }
+
+            if (!authenticated) {
+                if (errors == null) {
+                    errors = new ArrayList<String>();
+                }
+                errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.authenticationFailed"));
+            } else {
+                if (us != null) {
+                    errors = us.validateUserOnProfileUpdate(currentUser);
+                }
+
+                if (getRequestParameterString("password") != null && !getRequestParameterString("password").isEmpty() && us != null) {
+                    passwordErrors = us.validatePassword(getRequestParameterString("username"),  getRequestParameterString("oldPassword"), getRequestParameterString("password"), getRequestParameterString("confirmPassword")); 
+                }
+            }
+            
+            if (passwordErrors != null && !passwordErrors.isEmpty()) {
+                setProperty("passwordErrors", passwordErrors);
             }
         }
 
         setProperty("errors", errors);
-        if (passwordErrors != null && !passwordErrors.isEmpty()) {
-            setProperty("passwordErrors", passwordErrors);
-        }
+        
         
         if (authenticated && (passwordErrors != null && passwordErrors.isEmpty()) && (errors != null && errors.isEmpty())) {
             if ("".equals(getPropertyString("f_password"))) {
