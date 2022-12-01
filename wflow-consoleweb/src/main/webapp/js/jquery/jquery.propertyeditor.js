@@ -8566,7 +8566,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         var data = new Object();
         var value = "";
         if ($('[name=' + this.id + ']:not(.hidden)').length > 0) {
-            value = tinyMCE.editors[$('[name=' + this.id + ']:not(.hidden)').attr('id')].getContent();
+            value = tinymce.get($('[name=' + this.id + ']:not(.hidden)').attr('id')).getContent();
         }
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
@@ -8604,13 +8604,8 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         tinymce.init({
             selector: '#' + this.id,
             height: height,
-            plugins: [
-                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-                'searchreplace wordcount visualblocks visualchars code fullscreen',
-                'insertdatetime media nonbreaking table contextmenu directionality',
-                'emoticons paste textcolor colorpicker textpattern imagetools codesample toc'
-            ],
-            toolbar1: 'undo redo | insert | styleselect fontsizeselect | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample emoticons | print preview',
+            plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons codesample',
+            toolbar1: 'undo redo | insert | styles fontsize | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample emoticons | removeformat print preview',
             menubar: 'edit insert view format table tools',
             image_advtab: true,
             relative_urls: false,
@@ -8618,6 +8613,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             extended_valid_elements:"style,link[href|rel]",
             custom_elements:"style,link,~link",
             valid_elements: '*[*]',
+            promotion: false,
             setup: function(editor) {
                 editor.off('focus.tinymce');
                 editor.on('focus.tinymce', function(e) {

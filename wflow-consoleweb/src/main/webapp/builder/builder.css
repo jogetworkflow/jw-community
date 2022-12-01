@@ -2362,3 +2362,8 @@ body.rtl div#builderModeOption:before {
         display: none;
     }
 } 
+
+/* tinymce fix */
+#cbuilder > .tox-tinymce-aux{
+    width:0px !important;
+}

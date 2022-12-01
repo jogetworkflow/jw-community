@@ -2376,7 +2376,7 @@
                                     return false;
                                 }
                             } else if ($(this).is('.tinymce')) {
-                                var value = tinyMCE.editors[$(this).attr('id')].getContent();
+                                var value = tinymce.get($(this).attr('id')).getContent();
                                 if (CustomBuilder.isSearchMatch(value, searchText)) {
                                     show = true;
                                     return false;
@@ -3687,7 +3687,7 @@ _CustomBuilder.Builder = {
         
         self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
             try {
-                self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                self.iframe.contentWindow.tinymce.get($(this).attr("id")).destroy();
                 $(this).removeAttr('data-cbuilder-inlineedit');
                 $(this).off("change.inlineedit");
             }catch(err){}
@@ -3844,11 +3844,11 @@ _CustomBuilder.Builder = {
                             $(inilineEditEl).removeAttr('data-cbuilder-mobile-invisible');
 
                             try {
-                                var toolbar = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                var toolbar = 'styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
                                 if (inlineEditor.mode === "full") {
-                                    toolbar = 'styleselect | fontselect fontsizeselect forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                    toolbar = 'styles | fontfamily fontsize forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
                                 } else if (inlineEditor.mode === "simple") {
-                                    toolbar = 'bold italic | alignleft aligncenter alignright alignjustify';
+                                    toolbar = 'bold italic | alignleft aligncenter alignright alignjustify | removeformat';
                                 }
                                 setTimeout(function(){
                                     //find propety field
@@ -3862,14 +3862,10 @@ _CustomBuilder.Builder = {
                                         extended_valid_elements:"style,link[href|rel]",
                                         custom_elements:"style,link,~link",
                                         valid_elements: '*[*]',
-                                        plugins: [
-                                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'hr',
-                                            'insertdatetime', 'media', 'table', 'contextmenu',
-                                            'textcolor', 'colorpicker', 'textpattern', 'imagetools'
-                                        ],
-                                        forced_root_block : '',
+                                        plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons codesample',
                                         toolbar: toolbar,
                                         menubar: false,
+                                        promotion: false,
                                         init_instance_callback: function(editor) {
                                             editor.focus();
 
@@ -4061,7 +4057,7 @@ _CustomBuilder.Builder = {
             if (self.isDragging && self.dragElement) {
                 self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
                     try {
-                        self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                        self.iframe.contentWindow.tinymce.get($(this).attr("id")).destroy();
                         $(this).removeAttr('data-cbuilder-inlineedit');
                         $(this).off("change.inlineedit");
                     }catch(err){}
@@ -4382,7 +4378,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0) {
                 self.mousedown = false;
                 return true;
             }
