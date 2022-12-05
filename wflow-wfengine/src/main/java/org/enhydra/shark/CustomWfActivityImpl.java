@@ -1,5 +1,10 @@
 package org.enhydra.shark;
 
+import com.lutris.appserver.server.sql.CachedDBTransaction;
+import com.lutris.appserver.server.sql.DBTransaction;
+import com.lutris.dods.builder.generator.query.DataObjectException;
+import com.lutris.util.ConfigException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,11 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.enhydra.dods.DODS;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.CannotAcceptSuspended;
 import org.enhydra.shark.api.client.wfmodel.CannotComplete;
 import org.enhydra.shark.api.client.wfmodel.InvalidData;
+import org.enhydra.shark.api.client.wfmodel.InvalidState;
 import org.enhydra.shark.api.client.wfmodel.ResultNotAvailable;
+import org.enhydra.shark.api.client.wfmodel.TransitionNotAllowed;
 import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
@@ -25,6 +33,7 @@ import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfAssignmentInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.api.internal.working.WfResourceInternal;
+import org.enhydra.shark.instancepersistence.data.ActivityDO;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Deadline;
@@ -57,9 +66,80 @@ public class CustomWfActivityImpl extends WfActivityImpl {
         WorkflowUtil.addAuditTrail(this.getClass().getName(), "runSubFlow", key);
     }
     
+    /**
+     * Override the original change_state function to write transaction immediately after persist
+     * 
+     * @param shandle
+     * @param new_state
+     * @throws Exception
+     * @throws InvalidState
+     * @throws TransitionNotAllowed 
+     */
+    @Override
+    protected void change_state(WMSessionHandle shandle, String new_state) throws Exception, InvalidState, TransitionNotAllowed {
+        try {
+            if (!SharkUtilities.valid_activity_states(state(shandle)).contains(new_state)) {
+                throw new TransitionNotAllowed("Activity " + this + " - current state is " + this.state + ", can't change to state " + new_state + "!");
+            }
+            
+            String oldState = this.state;
+            this.state = new_state;
+            
+            this.lastStateTime = System.currentTimeMillis();
+            
+            persist(shandle);
+            
+            //write transaction now instead of write before next query execute to catch the exception
+            transactionWrite(shandle); 
+            
+            this.lastStateEventAudit = SharkEngineManager.getInstance().getObjectFactory().createStateEventAuditWrapper(shandle, this, "activityStateChanged", oldState, new_state);
+        } catch (DataObjectException e) {
+            //cannot change state as the activity already updated by another transaction
+            if (e.getMessage() != null 
+                    && e.getMessage().contains("Couldn't write transaction: java.sql.SQLException: Update failed") 
+                    && e.getMessage().contains("does exist with version=")) {
+                //throw exception to stop process continue as it should already handled by another transaction
+                throw new TransitionNotAllowed("Activity " + this + " cannot write transaction to change state ("+new_state+") due to data version changed.");
+            } else {
+                throw e;
+            }
+        }
+    }
+    
+    /**
+     * write transaction immediately instead of write before next query execute, so that any exception can be handled directly
+     * @param shandle
+     * @throws Exception 
+     */
+    protected void transactionWrite(WMSessionHandle shandle) throws Exception {
+        String dbName = ActivityDO.get_logicalDBName();
+        try {
+            if (DODS.getDatabaseManager().getConfig().getBoolean("DB." + dbName + ".JTA", DODS.getDatabaseManager().getConfig().getBoolean("defaults.JTA", false))){
+                DBTransaction transaction = DODS.getDatabaseManager().createTransaction(dbName);
+                
+                if ((transaction != null) && ((transaction instanceof CachedDBTransaction))) {
+                    if (((CachedDBTransaction)transaction).getAutoWrite()) {
+                        try {
+                            transaction.write();
+                        } catch (SQLException sqle) {
+                            throw new DataObjectException("Couldn't write transaction: " + sqle);
+                        }
+                        ((CachedDBTransaction) transaction).dontAggregateDOModifications();
+                    }
+                }
+            }
+        } catch (ConfigException e) {
+            //ignore
+        }
+    }
+    
     @Override
     public void finish(WMSessionHandle shandle) throws Exception, CannotComplete {
-        super.finish(shandle);
+        try {
+            super.finish(shandle);
+        } catch (TransitionNotAllowed e) {
+            LogUtil.warn(CustomWfActivityImpl.class.getName(), e.getLocalizedMessage());
+        }
         
         int type = getActivityDefinition(shandle).getActivityType();
         if (type == 3) {
