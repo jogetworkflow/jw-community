@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
+import net.coobird.thumbnailator.Thumbnails;
 
 /**
  * Utility methods used by the system to manager temporary files
@@ -170,27 +171,9 @@ public class FileManager {
                 path = path.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
             }
             path = SecurityUtil.normalizedFileName(path);
-            File imageFile = new File(getBaseDirectory(), path);
-            Image image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
-            MediaTracker mediaTracker = new MediaTracker(new Container());
-            mediaTracker.addImage(image, 0);
-            mediaTracker.waitForID(0);
+            File imageFile = new File(getBaseDirectory(), path);            
+            BufferedImage thumbImage = Thumbnails.of(imageFile).size(thumbWidth, thumbHeight).asBufferedImage();
 
-            double thumbRatio = (double) thumbWidth / (double) thumbHeight;
-            int imageWidth = image.getWidth(null);
-            int imageHeight = image.getHeight(null);
-            double imageRatio = (double) imageWidth / (double) imageHeight;
-            if (thumbRatio < imageRatio) {
-                thumbHeight = (int) (thumbWidth / imageRatio);
-            } else {
-                thumbWidth = (int) (thumbHeight * imageRatio);
-            }
-
-            BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics2D = thumbImage.createGraphics();
-            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
-            
             out = new BufferedOutputStream(new FileOutputStream(imageFile.getAbsolutePath() + THUMBNAIL_EXT));
             ImageIO.write(thumbImage, "jpeg", out);
 
