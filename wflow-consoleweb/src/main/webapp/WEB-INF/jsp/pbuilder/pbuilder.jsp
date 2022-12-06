@@ -24,7 +24,7 @@
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
         </c:if>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
+        <link href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui.custom.css" rel="stylesheet" type="text/css">
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
