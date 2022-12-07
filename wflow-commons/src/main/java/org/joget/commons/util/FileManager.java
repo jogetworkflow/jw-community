@@ -17,6 +17,12 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.jpeg.JpegDirectory;
 
 /**
  * Utility methods used by the system to manager temporary files
@@ -172,6 +178,10 @@ public class FileManager {
             path = SecurityUtil.normalizedFileName(path);
             File imageFile = new File(getBaseDirectory(), path);
             Image image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
+            Image processImage = checkImageOrientation(imageFile);
+            if (processImage != null) {
+                image = processImage;
+            }
             MediaTracker mediaTracker = new MediaTracker(new Container());
             mediaTracker.addImage(image, 0);
             mediaTracker.waitForID(0);
@@ -206,6 +216,70 @@ public class FileManager {
                 LogUtil.error(FileManager.class.getName(), ex, "");
             }
         }
+    }
+        
+    public static Image checkImageOrientation(File imageFile) {
+        try {
+            BufferedImage originalImage = ImageIO.read(imageFile);
+            Metadata metadata = ImageMetadataReader.readMetadata(imageFile);
+            ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            JpegDirectory jpegDirectory = (JpegDirectory) metadata.getFirstDirectoryOfType(JpegDirectory.class);
+
+            int orientation = 1;
+            if (exifIFD0Directory != null && jpegDirectory != null) {
+                orientation = exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+                int width = jpegDirectory.getImageWidth();
+                int height = jpegDirectory.getImageHeight();
+
+                AffineTransform affineTransform = new AffineTransform();
+
+                switch (orientation) {
+                    case 1:
+                        break;
+                    case 2: // Flip X
+                        affineTransform.scale(-1.0, 1.0);
+                        affineTransform.translate(-width, 0);
+                        break;
+                    case 3: // PI rotation
+                        affineTransform.translate(width, height);
+                        affineTransform.rotate(Math.PI);
+                        break;
+                    case 4: // Flip Y
+                        affineTransform.scale(1.0, -1.0);
+                        affineTransform.translate(0, -height);
+                        break;
+                    case 5: // - PI/2 and Flip X
+                        affineTransform.rotate(-Math.PI / 2);
+                        affineTransform.scale(-1.0, 1.0);
+                        break;
+                    case 6: // -PI/2 and -width
+                        affineTransform.translate(height, 0);
+                        affineTransform.rotate(Math.PI / 2);
+                        break;
+                    case 7: // PI/2 and Flip
+                        affineTransform.scale(-1.0, 1.0);
+                        affineTransform.translate(-height, 0);
+                        affineTransform.translate(0, width);
+                        affineTransform.rotate(3 * Math.PI / 2);
+                        break;
+                    case 8: // PI / 2
+                        affineTransform.translate(0, width);
+                        affineTransform.rotate(3 * Math.PI / 2);
+                        break;
+                    default:
+                        break;
+                }
+                if (orientation != 1) {
+                    AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
+                    BufferedImage destinationImage = new BufferedImage(originalImage.getHeight(), originalImage.getWidth(), originalImage.getType());
+                    destinationImage = affineTransformOp.filter(originalImage, destinationImage);
+                    return destinationImage;
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.error(FileManager.class.getName(), ex, "");
+        }
+        return null;
     }
     
     public static void performCleanTempFile() {
