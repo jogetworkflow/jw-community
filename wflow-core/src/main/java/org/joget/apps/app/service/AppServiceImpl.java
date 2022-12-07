@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -1471,7 +1472,7 @@ public class AppServiceImpl implements AppService {
                 AppDevUtil.fileSave(appDef, filename, xpdl, commitMessage);
             }
 
-            if (originalVersion != null) {
+            if (originalVersion != null && !Objects.equals(packageVersion, originalVersion)) {
                 updateRunningProcesses(packageId, originalVersion, packageVersion);
             }
         }
@@ -2263,7 +2264,7 @@ public class AppServiceImpl implements AppService {
     }
     
     protected void migrateProcessInstance(Collection<String> runningProcesses, String profile, String packageId, String fromVersion, String toVersion) {
-        if (runningProcesses.isEmpty() || toVersion == null) {
+        if (runningProcesses.isEmpty() || toVersion == null || (fromVersion != null && fromVersion.equals(toVersion))) {
             return;
         }
         
