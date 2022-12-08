@@ -1,9 +1,12 @@
 package org.joget.apps.form.lib;
 
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
@@ -65,7 +68,16 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
                 value = FormUtil.getElementPropertyValue(this, formData);
                 if (!(value != null && value.trim().length() > 0)) {
                     String envVariable = getPropertyString("envVariable");
-                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+
+                    AppDefinition appDef;
+                    if(isUsingPublishedAppVersion()) {
+                        appDef = getPublishedAppDefinition();
+                    }else if (isUsingLatestAppVersion()) {
+                        appDef = getLatestAppDefinition();
+                    } else {
+                        appDef = AppUtil.getCurrentAppDefinition();
+                    }
+
                     EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) AppUtil.getApplicationContext().getBean("environmentVariableDao");
                     
                     Integer count = environmentVariableDao.getIncreasedCounter(envVariable, "Used for plugin: " + getName(), appDef);
@@ -138,5 +150,49 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/idGeneratorField.json", null, true, "message/form/IdGeneratorField");
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    protected boolean isUsingPublishedAppVersion() {
+        return "published".equalsIgnoreCase(getPropertyString("environmentVariableScope"));
+    }
+
+    protected boolean isUsingLatestAppVersion() {
+        return "latest".equalsIgnoreCase(getPropertyString("environmentVariableScope"));
+    }
+
+    /**
+     * Get published application definition
+     *
+     * @return
+     */
+    protected AppDefinition getPublishedAppDefinition() {
+        AppDefinition currentAppDefinition = AppUtil.getCurrentAppDefinition();
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
+        String appId = currentAppDefinition.getAppId();
+        AppDefinition appDefinitions = appDefinitionDao.getPublishedAppDefinition(appId);
+        if(appDefinitions == null)
+            return currentAppDefinition;
+
+        return appDefinitions;
+    }
+
+    protected AppDefinition getLatestAppDefinition() {
+        AppDefinition currentAppDefinition = AppUtil.getCurrentAppDefinition();
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
+        String appId = currentAppDefinition.getAppId();
+        long version = appDefinitionDao.getLatestVersion(appId);
+
+        Collection<AppDefinition> appDefinitions = appDefinitionDao.findByVersion(appId, appId, version, null, null, null, null, 1);
+        if(appDefinitions == null || appDefinitions.isEmpty())
+            return currentAppDefinition;
+
+        return appDefinitions.stream()
+                .findFirst()
+                .orElse(currentAppDefinition);
     }
 }
