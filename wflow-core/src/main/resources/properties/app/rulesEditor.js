@@ -1,6 +1,6 @@
 {
-    getWorkflowVariables : [%s],
-    getTransitions : [%s],
+    getWorkflowVariables : ProcessBuilder.getWorkflowVariables(),
+    getTransitions : ProcessBuilder.getCurrentActivityOutgoingTransition(),
     variablehtml : "",
     transitionshtml : "",
     addOnValidation: function(data, errors, checkEncryption) {

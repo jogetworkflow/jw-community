@@ -3922,6 +3922,46 @@ ProcessBuilder = {
         
         return options;
     },
+            
+    /*
+     * return a array of available workflow variables
+     */                
+    getWorkflowVariables : function() {
+        var options = [];
+        
+        for (var i in ProcessBuilder.currentProcessData.properties.dataFields) {
+            var id = ProcessBuilder.currentProcessData.properties.dataFields[i].variableId;
+            options.push(id);    
+        }
+        
+        return options;
+    },
+          
+    /*
+     * return a list of of outgoing transitions options of the current selected activity 
+     */                
+    getCurrentActivityOutgoingTransition : function() {
+        var options = [];
+        
+        var act = CustomBuilder.Builder.selectedEl;
+        var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(act)});
+        for (var i = sourceConnSet.length - 1; i >= 0; i--) {
+            if (!$(sourceConnSet[i].target).hasClass("end")) { 
+                var id = $(sourceConnSet[i].canvas).data("data").properties.id;
+                var label = $(sourceConnSet[i].canvas).data("data").properties.label;
+                if (label === undefined || label === "") {
+                    label = id + " (" + $(sourceConnSet[i].target).data("data").properties.label +")";
+                }
+                
+                options.push({
+                    value : id,
+                    label : label
+                });
+            }
+        }
+        
+        return options;
+    },
     
     /*
      * Retrive the multi tools properties options for tool mapping
