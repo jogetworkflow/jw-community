@@ -1545,13 +1545,38 @@ ProcessBuilder = {
         cloneProcessData['-Id'] = id;  
         cloneProcessData['-Name'] = cloneProcessData['-Name'] + " " + get_cbuilder_msg("pbuilder.label.copy");
         
-        //clone participant
+        //remove participants not used by any processes
+        var partipantKeys = {};
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var a = 0; a < xpdlProcessesAttrs.length; p++) {
+                if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                    var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
+                    for (var i in ids) {
+                        partipantKeys[ids[i]] = "";
+                    }
+                    break;
+                }
+            }
+        }
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        xpdlParticipants.forEach(function(xpdlParticipant, index, object) {
+            if (partipantKeys[xpdlParticipant['-Id']] === undefined) {
+                object.splice(index, 1);
+                
+                //delete mapping
+            }
+        });
+        
+        //clone participant
         var currentParticipants = ProcessBuilder.currentProcessData.participants;
         for (var c in currentParticipants) {
             var xpdlObj = $.extend(true, {}, currentParticipants[c].xpdlObj);
             xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
-            xpdlParticipants.push(xpdlObj);
+            if (partipantKeys[xpdlObj['-Id']] === undefined) {     
+                xpdlParticipants.push(xpdlObj);
+            }
         }
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
         
