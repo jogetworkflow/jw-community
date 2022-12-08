@@ -5388,7 +5388,7 @@ body .ui-icon-closethick{
     text-rendering: auto;
     line-height: 1;
     font-weight: 900;
-    text-indent: unset !important;
+    text-indent: 0px !important;
     font-size: 20px;
     width: 20px !important;
     height: 20px !important;
