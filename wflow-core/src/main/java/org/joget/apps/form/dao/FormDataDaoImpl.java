@@ -5,7 +5,8 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
-import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,12 +50,6 @@ import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
-import org.joget.commons.util.DynamicDataSourceManager;
-import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
-import org.joget.commons.util.HostManager;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PluginThread;
-import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -1056,7 +1051,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
         
-        Properties properties = getProperties();
+        Properties properties = DynamicDataSourceManager.getProperties();
         String workflowSchema = (String) properties.get("workflowSchema");
         if (workflowSchema != null && !workflowSchema.isEmpty()) {
             configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));
@@ -1146,7 +1141,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
 
-        Properties properties = getProperties();
+        Properties properties = DynamicDataSourceManager.getProperties();
         String workflowSchema = (String) properties.get("workflowSchema");
         if (workflowSchema != null && !workflowSchema.isEmpty()) {
             configuration.setProperty(Environment.DEFAULT_SCHEMA, (String) properties.get("workflowSchema"));

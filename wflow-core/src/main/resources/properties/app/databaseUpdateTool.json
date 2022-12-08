@@ -18,7 +18,7 @@
         label : '@@app.databaseupdatetool.databaseType@@',
         description : '@@app.databaseupdatetool.driver.desc@@',
         type : 'textfield',
-        value : 'com.mysql.jdbc.Driver',
+        value : 'com.mysql.cj.jdbc.Driver',
         control_field: 'jdbcDatasource',
         control_value: 'custom',
         control_use_regex: 'false',

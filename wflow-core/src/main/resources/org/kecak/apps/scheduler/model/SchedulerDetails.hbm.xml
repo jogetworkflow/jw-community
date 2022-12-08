@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class entity-name="SchedulerDetails" lazy="false" name="org.kecak.apps.scheduler.model.SchedulerDetails" table="schdlr_detail">
+		<id name="id" type="string">
+			<generator class="uuid" />
+		</id>
+		<property name="dateCreated" type="timestamp" />
+		<property name="dateModified" type="timestamp" />
+		<property name="createdBy" type="string" />
+		<property name="modifiedBy" type="string" />
+		<property name="deleted" type="boolean" />
+		
+		<property name="jobName" type="string" column="job_name" />
+		<property name="groupJobName" type="string" column="group_job_name" />
+		
+		<property name="triggerName" type="string" column="trigger_name" />
+		<property name="groupTriggerName" type="string" column="group_trigger_name" />
+		
+		<property name="jobClassName" type="string" column="job_class_name" />
+		<property name="cronExpression" type="string" column="cron_expression" />
+		<property name="interval" type="long" column="job_interval" />
+		<property name="nextFireTime" type="timestamp" />
+		<property name="triggerTypes" column="trigger_types">
+		    <type name="org.hibernate.type.EnumType">
+		        <param name="enumClass">org.kecak.apps.scheduler.model.TriggerTypes</param>
+		    </type>
+		</property>
+	</class>
+</hibernate-mapping>

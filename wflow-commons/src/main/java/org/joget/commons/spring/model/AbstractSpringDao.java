@@ -126,6 +126,11 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
             }
         }
         return str;
-    }    
+    }
+
+    public List find(String entityName){
+        Session session = findSession();
+        return session.createQuery( "FROM " + entityName).list();
+    }
 }
 

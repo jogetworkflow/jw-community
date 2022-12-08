@@ -169,6 +169,8 @@
                 <value>/org/joget/apps/app/model/EnvironmentVariable.hbm.xml</value>
                 <value>/org/joget/apps/app/model/AuditTrail.hbm.xml</value>
                 <value>/org/joget/apps/app/model/UserReplacement.hbm.xml</value>
+                <value>/org/kecak/apps/scheduler/model/SchedulerLog.hbm.xml</value>
+                <value>/org/kecak/apps/scheduler/model/SchedulerDetails.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -265,11 +267,69 @@
     
     <bean id="sqlFilterAspect" class="org.joget.apps.app.service.SqlFilterAspect">
     </bean>
+
+    <!-- Scheduler -->
+    <bean id="schedulerLogDao" class="org.kecak.apps.scheduler.dao.SchedulerLogDao">
+        <property name="sessionFactory" ref="appSessionFactory"/>
+    </bean>
+
+    <bean id="schedulerDetailsDao" class="org.kecak.apps.scheduler.dao.SchedulerDetailsDao">
+        <property name="sessionFactory" ref="appSessionFactory"/>
+    </bean>
+
+    <bean id="schedulerManager" class="org.kecak.apps.scheduler.SchedulerManager" init-method="initManager">
+        <property name="schedulerFactory" ref="schedulerFactory"/>
+        <property name="schedulerJobListener" ref="schedulerJobListener"/>
+        <property name="schedulerDetailsDao" ref="schedulerDetailsDao"/>
+        <property name="pluginManager" ref="pluginManager"/>
+    </bean>
+
+    <bean id="schedulerJobListener" class="org.kecak.apps.scheduler.SchedulerJobListener">
+        <property name="schedulerLogDao" ref="schedulerLogDao"/>
+    </bean>
+
+    <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false">
+        <property name="autoStartup" value="true" />
+        <property name="waitForJobsToCompleteOnShutdown" value="true" />
+
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.scheduler.instanceName">kecakNonClusterScheduler</prop>
+                <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+                <prop key="org.quartz.scheduler.interruptJobsOnShutdown">true</prop>
+                <prop key="org.quartz.scheduler.interruptJobsOnShutdownWithWait">true</prop>
+
+                <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+                <prop key="org.quartz.threadPool.threadCount">5</prop>
+
+                <!--Job Store -->
+                <prop key="org.quartz.jobStore.driverDelegateClass">${quartz.jobStore.driverDelegateClass}</prop>
+                <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreTX</prop>
+                <prop key="org.quartz.jobStore.tablePrefix">QRTZ_</prop>
+                <prop key="org.quartz.jobStore.isClustered">true</prop>
+                <prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop>
+
+                <!-- DataSource -->
+                <prop key="org.quartz.jobStore.dataSource">quartzDS</prop>
+
+                <prop key="org.quartz.dataSource.quartzDS.jndiURL">${quartzDS.jndiURL}</prop>
+                <!--<prop key="org.quartz.dataSource.quartzDS.URL">${quartzDS.URL}</prop>-->
+                <!--<prop key="org.quartz.dataSource.quartzDS.driver">${quartzDS.driver}</prop>-->
+                <!--<prop key="org.quartz.dataSource.quartzDS.user">${quartzDS.user}</prop>-->
+                <!--<prop key="org.quartz.dataSource.quartzDS.password">${quartzDS.password}</prop>-->
+                <!--<prop key="org.quartz.dataSource.quartzDS.maxConnections">${quartzDS.maxConnections}</prop>-->
+                <!--<prop key="org.quartz.dataSource.quartzDS.validationQuery">${quartzDS.validationQuery}</prop>-->
+            </props>
+        </property>
+    </bean>
+    <!-- END OF SCHEDULER -->
    
     <bean id="pushService" class="org.joget.apps.app.service.PushServiceUtil">
         <property name="publicKey" value="BE54-RlSdVqGwlh_skZ4qQqP1tY7uNZrQbv3IJ_Rd2uRHsId8XjvH2CXav_5PkhrM1XvBLXJyi7tx6io5E3fegg"/>
         <property name="privateKey" value="Fe0bTj0H_UYcg7qnFzx0qBl-H90RuptO6r_vOUZJWvI"/>
     </bean>
+
     
     <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
@@ -282,7 +342,7 @@
         <property name="targetMethod" value="setStrategyName" />
         <property name="arguments" value="org.joget.apps.util.ThreadLocalSecurityContextHolderStrategy" />
     </bean>
-   
+
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.report.dao.*Dao.*(..))" order="1" />

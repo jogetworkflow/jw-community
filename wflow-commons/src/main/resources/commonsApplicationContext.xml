@@ -69,7 +69,8 @@
     </aop:config>
 
     <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8&amp;useSSL=false" />
         <property name="username" value="root" />
         <property name="password" value="" />
@@ -81,7 +82,6 @@
         <property name="maxActive" value="500" />
         <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
-        <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState" />
     </bean>
     <!--
     <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">

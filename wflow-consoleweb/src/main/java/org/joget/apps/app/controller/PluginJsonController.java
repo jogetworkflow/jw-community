@@ -26,6 +26,7 @@ import org.joget.workflow.model.ParticipantPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kecak.apps.app.model.SchedulerPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
@@ -59,7 +60,7 @@ public class PluginJsonController {
                 Collection<Plugin> fullPluginList = pluginManager.list();
 
                 for (Plugin plugin : fullPluginList) {
-                    if (plugin instanceof AuditTrailPlugin || plugin instanceof DeadlinePlugin || plugin instanceof ParticipantPlugin || plugin instanceof ApplicationPlugin) {
+                    if (plugin instanceof AuditTrailPlugin || plugin instanceof DeadlinePlugin || plugin instanceof ParticipantPlugin || plugin instanceof ApplicationPlugin || plugin instanceof SchedulerPlugin) {
                         pluginList.add(plugin);
                     }
                 }
