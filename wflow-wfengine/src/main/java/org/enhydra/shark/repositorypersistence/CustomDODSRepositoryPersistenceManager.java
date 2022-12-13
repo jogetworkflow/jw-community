@@ -12,6 +12,7 @@ import org.enhydra.shark.repositorypersistence.data.CustomXPDLDataQuery;
 import org.enhydra.shark.repositorypersistence.data.CustomXPDLQuery;
 import org.enhydra.shark.repositorypersistence.data.XPDLDO;
 import org.enhydra.shark.repositorypersistence.data.XPDLDataDO;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomDODSRepositoryPersistenceManager extends DODSRepositoryPersistenceManager {
 
@@ -163,6 +164,11 @@ public class CustomDODSRepositoryPersistenceManager extends DODSRepositoryPersis
         DBQuery dbQuery = null;
         ResultSet rs = null;
         try {
+            String key = "xpdlCurrentVersion_" + xpdlId;
+            result = (String)WorkflowUtil.readRequestCache(key);
+            if (result != null) {
+                return result;
+            }
             
             DBTransaction dbt = getDBTransaction();
             CustomXPDLQuery query = new CustomXPDLQuery(dbt);
@@ -181,6 +187,8 @@ public class CustomDODSRepositoryPersistenceManager extends DODSRepositoryPersis
                 }
             }
             query.getQueryBuilder().close();
+            
+            WorkflowUtil.writeRequestCache(key, result);
         } catch (Exception ex) {
             
         } finally {

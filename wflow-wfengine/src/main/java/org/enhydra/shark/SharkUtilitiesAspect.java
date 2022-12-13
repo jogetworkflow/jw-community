@@ -299,4 +299,77 @@ public class SharkUtilitiesAspect {
 
         return object;
     }
+
+    @Pointcut("execution(* org.enhydra.shark.SharkUtilities.getProcess(..))")
+    private void getProcessMethod() {
+    }
+
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.getProcessMethod()")
+    public Object getProcess(ProceedingJoinPoint pjp) throws Throwable {
+        Object[] args = pjp.getArgs();
+        WMSessionHandle shandle = (WMSessionHandle) args[0];
+        String processId = (String) args[1];
+        int mode = (int) args[2];
+        
+        String key = "processId_" + processId + "_" + mode;
+        Object result = WorkflowUtil.readRequestCache(key);
+        if (result != null) {
+            return result;
+        } else {
+            result = pjp.proceed();
+            if (result != null) {
+                WorkflowUtil.writeRequestCache(key, result);
+            }
+        }        
+        return result;
+    }
+
+    @Pointcut("execution(* org.enhydra.shark.SharkUtilities.getProcessMgr(..))")
+    private void getProcessMgrMethod() {
+    }
+
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.getProcessMgrMethod()")
+    public Object getProcessMgr(ProceedingJoinPoint pjp) throws Throwable {
+        Object[] args = pjp.getArgs();
+        WMSessionHandle shandle = (WMSessionHandle) args[0];
+        String name = (String) args[1];
+
+        String key = "processMgr_" + name;
+        Object result = WorkflowUtil.readRequestCache(key);
+        if (result != null) {
+            return result;
+        } else {
+            result = pjp.proceed();
+            if (result != null) {
+                WorkflowUtil.writeRequestCache(key, result);
+            }
+        }        
+        return result;
+    }
+
+    @Pointcut("execution(* org.enhydra.shark.SharkUtilities.getActivity(..))")
+    private void getActivityMethod() {
+    }
+
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.getActivityMethod()")
+    public Object getActivity(ProceedingJoinPoint pjp) throws Throwable {
+        Object[] args = pjp.getArgs();
+        WMSessionHandle shandle = (WMSessionHandle) args[0];
+        String processId = (String) args[1];
+        String activityId = (String) args[2];
+        int mode = (int) args[3];
+        
+        String key = "activityId_" + activityId + "_" + mode;
+        Object result = WorkflowUtil.readRequestCache(key);
+        if (result != null) {
+            return result;
+        } else {
+            result = pjp.proceed();
+            if (result != null) {
+                WorkflowUtil.writeRequestCache(key, result);
+            }
+        }        
+        return result;
+    }
+    
 }

@@ -103,6 +103,13 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
     
     @Override
     public Collection<String> getCurrentRoles() {
+        String username = WorkflowUtil.getCurrentUsername();
+        String key = "userRole_" + username;
+        Collection<String> result = (Collection<String>)WorkflowUtil.readRequestCache(key);
+        if (result != null) {
+            return result;
+        }
+        
         Collection<String> roles = super.getCurrentRoles();
 
         // check for sys admin role, add if not in db
@@ -128,6 +135,8 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
             }
         }
         
+        WorkflowUtil.writeRequestCache(key, roles);
+
         return roles;
     }
 
