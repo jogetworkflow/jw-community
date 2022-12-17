@@ -205,4 +205,5 @@
     <!-- END Spring Security -->
 
     <import resource="classpath:webApplicationContext.xml" />
+    <import resource="classpath:camelApplicationContext.xml" />
 </beans>

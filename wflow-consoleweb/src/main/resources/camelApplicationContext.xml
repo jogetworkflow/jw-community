@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="emailProcessor" class="org.kecak.apps.email.EmailProcessor">
+		<property name="workflowManager" ref="workflowManager"/>
+		<property name="appService" ref="appService"/>
+		<property name="workflowUserManager" ref="workflowUserManager"/>
+		<property name="directoryManager" ref="directoryManager"/>
+		<property name="appDefinitionDao" ref="appDefinitionDao"/>
+		<property name="pluginManager" ref="pluginManager"/>
+		<property name="workflowHelper" ref="workflowHelper" />
+	</bean>
+	
+	<bean id="camelRouteManager" class="org.kecak.apps.route.CamelRouteManager"/>
+	
+    <camelContext id="camelRoute" xmlns="http://camel.apache.org/schema/spring">
+		<routeBuilder ref="emailProcessorRouteBuilder"/>
+	</camelContext>
+
+	<bean id="emailProcessorRouteBuilder" class="org.kecak.apps.route.EmailProcessorRouteBuilder">
+		<property name="setupManager" ref="setupManager"/>
+	</bean>
+
+	<bean id="incomingEmailDao" class="org.kecak.apps.incomingEmail.dao.IncomingEmailDao">
+		<property name="sessionFactory" ref="appSessionFactory"/>
+	</bean>
+</beans>

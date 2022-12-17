@@ -18,12 +18,18 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.kinnarastudio.commons.Try;
+import com.kinnarastudio.commons.jsonstream.JSONCollectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -131,6 +137,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kecak.apps.app.model.SchedulerPlugin;
+import org.kecak.apps.incomingEmail.dao.IncomingEmailDao;
+import org.kecak.apps.incomingEmail.model.IncomingEmail;
+import org.kecak.apps.route.CamelRouteManager;
 import org.kecak.apps.scheduler.SchedulerManager;
 import org.kecak.apps.scheduler.dao.SchedulerDetailsDao;
 import org.kecak.apps.scheduler.dao.SchedulerLogDao;
@@ -230,6 +239,12 @@ public class ConsoleWebController {
     SchedulerDetailsDao schedulerDetailsDao;
     @Autowired
     SchedulerLogDao schedulerLogDao;
+
+    @Autowired
+    IncomingEmailDao incomingEmailDao;
+
+    @Autowired
+    CamelRouteManager camelRouteManager;
 
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
@@ -3154,7 +3169,6 @@ public class ConsoleWebController {
             return "console/dialogClose";
         }
     }
-    
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
     public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
         try {
@@ -5921,47 +5935,47 @@ public class ConsoleWebController {
                                                 @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start,
                                                 @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
-        String condition = "";
-        List<String> param = new ArrayList<String>();
+            String condition = "";
+            List<String> param = new ArrayList<String>();
 
-        if (jobName != null && jobName.trim().length() != 0) {
-            if (!condition.isEmpty()) {
-                condition += " and";
+            if (jobName != null && jobName.trim().length() != 0) {
+                if (!condition.isEmpty()) {
+                    condition += " and";
+                }
+                condition += " (e.jobName like ? )";
+                param.add("%" + jobName + "%");
             }
-            condition += " (e.jobName like ? )";
-            param.add("%" + jobName + "%");
-        }
 
-        if (condition.length() > 0) {
-            condition = "WHERE " + condition;
-        }
-
-        List<SchedulerDetails> schedulerList = schedulerDetailsDao.getSchedulerDetails(condition, param.toArray(new String[param.size()]),
-                sort, desc, start, rows);
-
-        Long count = schedulerDetailsDao.count(condition, param.toArray(new String[param.size()]));
-
-        JSONObject jsonObject = new JSONObject();
-        if (schedulerList != null && schedulerList.size() > 0) {
-            for (SchedulerDetails details : schedulerList) {
-                Map<String, Object> data = new HashMap<String, Object>();
-                data.put("id", details.getId());
-                data.put("jobName", details.getJobName());
-                data.put("groupJobName", details.getGroupJobName());
-                data.put("triggerName", details.getTriggerName());
-                data.put("groupTriggerName", details.getGroupTriggerName());
-                data.put("jobClassName", details.getJobClassName());
-                data.put("modifiedate", details.getDateModified() == null ? "" : details.getDateModified());
-                jsonObject.accumulate("data", data);
+            if (condition.length() > 0) {
+                condition = "WHERE " + condition;
             }
-        }
 
-        jsonObject.accumulate("total", count);
-        jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
-        jsonObject.accumulate("desc", desc);
+            List<SchedulerDetails> schedulerList = schedulerDetailsDao.getSchedulerDetails(condition, param.toArray(new String[param.size()]),
+                    sort, desc, start, rows);
 
-        AppUtil.writeJson(writer, jsonObject, callback);
+            Long count = schedulerDetailsDao.count(condition, param.toArray(new String[param.size()]));
+
+            JSONObject jsonObject = new JSONObject();
+            if (schedulerList != null && schedulerList.size() > 0) {
+                for (SchedulerDetails details : schedulerList) {
+                    Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("id", details.getId());
+                    data.put("jobName", details.getJobName());
+                    data.put("groupJobName", details.getGroupJobName());
+                    data.put("triggerName", details.getTriggerName());
+                    data.put("groupTriggerName", details.getGroupTriggerName());
+                    data.put("jobClassName", details.getJobClassName());
+                    data.put("modifiedate", details.getDateModified() == null ? "" : details.getDateModified());
+                    jsonObject.accumulate("data", data);
+                }
+            }
+
+            jsonObject.accumulate("total", count);
+            jsonObject.accumulate("start", start);
+            jsonObject.accumulate("sort", sort);
+            jsonObject.accumulate("desc", desc);
+
+            AppUtil.writeJson(writer, jsonObject, callback);
     }
 
     @RequestMapping(value = "/console/setting/scheduler/delete", method = RequestMethod.POST)
@@ -6055,5 +6069,162 @@ public class ConsoleWebController {
         jsonObject.accumulate("desc", desc);
 
         AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
+    @RequestMapping("/console/setting/incomingEmail")
+    public String consoleSettingIncomingEmailContent(ModelMap map) {
+        return "console/setting/incomingEmail";
+    }
+
+    @RequestMapping("/json/console/setting/incomingEmail/list")
+    public void consoleSettingIncomingEmailListJson(Writer writer, @RequestParam(value = "callback", required = false) String callback,
+                                                    @RequestParam(value = "username", required = false) String username,
+                                                    @RequestParam(value = "host", required = false) String host,
+                                                    @RequestParam(value = "sort", required = false) String sort,
+                                                    @RequestParam(value = "desc", required = false) Boolean desc,
+                                                    @RequestParam(value = "start", required = false) Integer start,
+                                                    @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        final StringBuilder condition = new StringBuilder("where 1 = 1");
+        final List<String> param = new ArrayList<String>();
+
+        if(username != null && !username.isEmpty()) {
+            condition.append("and e.username like ?");
+            param.add("%" + username + "%");
+        }
+
+        if(host != null && !host.isEmpty()) {
+            condition.append("and e.host like ?");
+            param.add("%" + host + "%");
+        }
+
+        @Nonnull
+        final List<IncomingEmail> list = Optional.ofNullable(incomingEmailDao.find(condition.toString(), param.toArray(new String[0]), sort, desc, start, rows))
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .collect(Collectors.toList());
+
+        final long count = incomingEmailDao.count(condition.toString(), param.toArray(new String[0]));
+
+        final JSONArray jsonData = list.stream()
+                .map(Try.onFunction(row -> {
+                    final JSONObject data = new JSONObject();
+                    data.put("id", row.getId());
+                    data.put("username", row.getUsername());
+                    data.put("priority", row.getPriority());
+                    data.put("protocol", row.getProtocol());
+                    data.put("host", row.getHost());
+                    data.put("port", row.getPort());
+                    data.put("folder", row.getFolder());
+                    data.put("active", row.getActive());
+                    return data;
+                }))
+                .collect(JSONCollectors.toJSONArray());
+
+        final JSONObject jsonResult = new JSONObject();
+        jsonResult.put("data", jsonData);
+        jsonResult.put("total", count);
+        jsonResult.put("start", start);
+        jsonResult.put("sort", sort);
+        jsonResult.put("desc", desc);
+
+        AppUtil.writeJson(writer, jsonResult, callback);
+    }
+
+    @RequestMapping("/console/setting/incomingEmail/create")
+    public String consoleSettingIncomingEmailCreate(ModelMap map) {
+        final IncomingEmail incomingEmail = new IncomingEmail();
+        map.addAttribute("incomingEmail", incomingEmail);
+        return "console/setting/incomingEmailCreate";
+    }
+
+    @RequestMapping("/console/setting/incomingEmail/edit/(*:id)")
+    public String consoleSettingIncomingEmailEdit(ModelMap map, @RequestParam("id") String id) {
+        final IncomingEmail incomingEmail = incomingEmailDao.load(id);
+        map.addAttribute("incomingEmail", incomingEmail);
+        return "console/setting/incomingEmailEdit";
+    }
+
+    @RequestMapping(value="/console/setting/incomingEmail/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleSettingIncomingEmailSubmit(ModelMap map, @RequestParam("action") String action, @ModelAttribute("incomingEmail") final IncomingEmail incomingEmail, BindingResult result) {
+        // validation
+        validator.validate(incomingEmail, result);
+
+        final Date now = new Date();
+        final String currUsername = workflowUserManager.getCurrentUsername();
+
+        boolean invalid = result.hasErrors();
+        if (!invalid) {
+            // check error
+            Collection<String> errors = new ArrayList<String>();
+
+            // create
+            if ("create".equals(action)) {
+                // check exist
+                final boolean isExists = 0 < incomingEmailDao.count("where e.username = ? and e.host = ?", new Object[]{incomingEmail.getUsername(), incomingEmail.getHost()});
+                if (isExists) {
+                    errors.add("console.app.message.error.label.exists");
+                } else {
+                    incomingEmail.setDateCreated(now);
+                    incomingEmail.setCreatedBy(currUsername);
+                    incomingEmail.setDateModified(now);
+                    incomingEmail.setModifiedBy(currUsername);
+                    incomingEmail.setActive(true);
+
+                    try {
+                        incomingEmailDao.saveOrUpdate(incomingEmail);
+                    } catch (Exception e) {
+                        invalid = true;
+                        errors.add("console.app.message.error.label.exception");
+                        LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                    }
+                }
+            }
+
+            // edit
+            else if("edit".equals(action)){
+                final IncomingEmail oldData = incomingEmailDao.load(incomingEmail.getId());
+                oldData.setDateModified(now);
+                oldData.setModifiedBy(currUsername);
+                oldData.setUsername(incomingEmail.getUsername());
+                oldData.setPassword(incomingEmail.getPassword());
+                oldData.setProtocol(incomingEmail.getProtocol());
+                oldData.setHost(incomingEmail.getHost());
+                oldData.setPort(incomingEmail.getPort());
+                oldData.setFolder(incomingEmail.getFolder());
+                oldData.setActive(incomingEmail.getActive());
+
+                try {
+                    incomingEmailDao.saveOrUpdate(oldData);
+                } catch (Exception e) {
+                    invalid = true;
+                    errors.add("console.app.message.error.label.exception");
+                    LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                }
+            } else {
+                invalid = true;
+                errors.add("console.app.message.error.label.exception");
+                LogUtil.warn(ConsoleWebController.class.getName(), "Unsupported action");
+            }
+        }
+
+        if (invalid) {
+            map.addAttribute("incomingEmail", incomingEmail);
+            if ("create".equals(action)) {
+                return "console/setting/incomingEmailCreate";
+            } else {
+                return "console/setting/incomingEmailEdit";
+            }
+        } else {
+            final String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            final String url = contextPath + "/web/console/setting/incomingEmail";
+            map.addAttribute("url", url);
+
+
+            camelRouteManager.stopContext(incomingEmail.getId());
+            camelRouteManager.startContext(incomingEmail.getId());
+
+            return "console/dialogClose";
+        }
     }
 }

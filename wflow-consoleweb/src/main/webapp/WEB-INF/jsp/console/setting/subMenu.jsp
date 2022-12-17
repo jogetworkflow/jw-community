@@ -8,6 +8,7 @@
 <li id="nav-setting-plugin"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/setting/plugin"><span class="nav-steps"><i class="fas fa-plug"></i></span><fmt:message key="console.header.submenu.label.setting.plugin"/></a></li>
 <li id="nav-setting-message"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/setting/message"><span class="nav-steps"><i class="fas fa-language"></i></span><fmt:message key="console.header.submenu.label.setting.message"/></a></li>
 <li id="nav-setting-scheduler"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/setting/scheduler"><span class="nav-steps"><i class="fas fa-clock"></i></span><fmt:message key="console.header.submenu.label.setting.scheduler"/></a></li>
+<li id="nav-setting-incoming-email"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/setting/incomingEmail"><span class="nav-steps"><i class="fas fa-clock"></i></span><fmt:message key="console.header.submenu.label.setting.incomingEmail"/></a></li>
 
 <div id="adminWelcome">
     <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
