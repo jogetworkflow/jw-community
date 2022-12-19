@@ -14,8 +14,6 @@ public class IncomingEmail implements Serializable {
 
     private String modifiedBy;
 
-    private Integer priority;
-
     private String username;
 
     private String password;
@@ -40,13 +38,6 @@ public class IncomingEmail implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Integer priority) {
-        this.priority = priority;
     }
 
     public String getUsername() {

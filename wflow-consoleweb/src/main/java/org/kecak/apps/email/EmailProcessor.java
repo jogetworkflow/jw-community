@@ -1,5 +1,6 @@
 package org.kecak.apps.email;
 
+import com.kinnarastudio.commons.Try;
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -49,6 +50,7 @@ public class EmailProcessor {
         // get sender email address
         final String from = exchange.getIn().getHeader(FROM).toString();
         final String fromEmail = from.replaceAll("^.*<|>.*$", "");
+        final String userAccount = exchange.getIn().getHeader("deliver-to").toString();
         final Set<String> usernames = getUsername(fromEmail);
 
         final String subject = exchange.getIn().getHeader(SUBJECT).toString().replace("\t", "__").replace("\n", "__").replace(" ", "__");
@@ -75,27 +77,23 @@ public class EmailProcessor {
 
                                     Map<String, Object> parameterProperties = new HashMap<>(pluginProperties);
                                     parameterProperties.put(EmailProcessorPlugin.PROPERTY_APP_DEFINITION, appDefinition);
+                                    parameterProperties.put(EmailProcessorPlugin.PROPERTY_ACCOUNT, userAccount);
                                     parameterProperties.put(EmailProcessorPlugin.PROPERTY_FROM, fromEmail);
                                     parameterProperties.put(EmailProcessorPlugin.PROPERTY_SUBJECT, subject);
                                     parameterProperties.put(EmailProcessorPlugin.PROPERTY_BODY, body);
                                     parameterProperties.put(EmailProcessorPlugin.PROPERTY_EXCHANGE, exchange);
 
-                                    usernames.forEach(username -> {
+                                    usernames.forEach(Try.onConsumer(username -> {
                                         workflowUserManager.setCurrentThreadUser(username);
+                                        if (((EmailProcessorPlugin) p).filter(parameterProperties)) {
+                                            LogUtil.info(getClass().getName(), "Processing Email Plugin [" + p.getName() + "] for application [" + appDefinition.getAppId() + "] as [" + username + "]");
+                                            workflowHelper.addAuditTrail(this.getClass().getName(), "parseEmail", subject, new Class[]{String.class}, new Object[]{subject}, false);
 
-                                        try {
-                                            if (((EmailProcessorPlugin) p).filter(parameterProperties)) {
-                                                LogUtil.info(getClass().getName(), "Processing Email Plugin [" + p.getName() + "] for application [" + appDefinition.getAppId() + "] as [" + username + "]");
-                                                workflowHelper.addAuditTrail(this.getClass().getName(), "parseEmail", subject, new Class[]{String.class}, new Object[]{subject}, false);
-
-                                                ((EmailProcessorPlugin) p).parse(parameterProperties);
-                                            } else {
-                                                LogUtil.debug(getClass().getName(), "Skipping Email Plugin [" + p.getName() + "] : Not meeting filter condition");
-                                            }
-                                        } catch (Exception e) {
-                                            ((EmailProcessorPlugin) p).onError(parameterProperties, e);
+                                            ((EmailProcessorPlugin) p).parse(parameterProperties);
+                                        } else {
+                                            LogUtil.debug(getClass().getName(), "Skipping Email Plugin [" + p.getName() + "] : Not meeting filter condition");
                                         }
-                                    });
+                                    }, e -> ((EmailProcessorPlugin) p).onError(parameterProperties, e)));
                                 })));
     }
 

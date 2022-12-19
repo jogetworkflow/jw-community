@@ -10,7 +10,6 @@
 		<property name="createdBy" type="string" />
 		<property name="modifiedBy" type="string" />
 
-		<property name="priority" type="integer" column="priority" />
 		<property name="username" type="string" column="username" />
 		<property name="password" type="string" column="password" />
 		<property name="protocol" type="string" column="protocol" />

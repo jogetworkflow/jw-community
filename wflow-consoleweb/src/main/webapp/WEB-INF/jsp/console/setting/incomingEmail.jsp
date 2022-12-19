@@ -48,13 +48,12 @@
 			checkboxButton2="general.method.label.delete"
 			checkboxCallback2="incomingEmailDelete"
 			searchItems="host|username"
-			fields="['id','priority', 'username','protocol','host','port','folder']"
-			column1="{key: 'priority', label: 'console.setting.incomingEmail.common.label.priority', sortable: true}"
-			column2="{key: 'username', label: 'console.setting.incomingEmail.common.label.username', sortable: true}"
-			column3="{key: 'protocol', label: 'console.setting.incomingEmail.common.label.protocol', sortable: true}"
-			column5="{key: 'host', label: 'console.setting.incomingEmail.common.label.host', sortable: true}"
-			column6="{key: 'port', label: 'console.setting.incomingEmail.common.label.port', sortable: true}"
-			column7="{key: 'folder', label: 'console.setting.incomingEmail.common.label.folder', sortable: true}"/>
+			fields="['id', 'username','protocol','host','port','folder']"
+			column1="{key: 'username', label: 'console.setting.incomingEmail.common.label.username', sortable: true}"
+			column2="{key: 'protocol', label: 'console.setting.incomingEmail.common.label.protocol', sortable: true}"
+			column3="{key: 'host', label: 'console.setting.incomingEmail.common.label.host', sortable: true}"
+			column4="{key: 'port', label: 'console.setting.incomingEmail.common.label.port', sortable: true}"
+			column5="{key: 'folder', label: 'console.setting.incomingEmail.common.label.folder', sortable: true}"/>
 	</div>
 </div>
 

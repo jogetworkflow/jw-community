@@ -10,6 +10,7 @@ import java.util.Map;
  */
 public interface EmailProcessorPlugin extends PropertyEditable {
     String PROPERTY_APP_DEFINITION = "appDefinition";
+    String PROPERTY_ACCOUNT = "userAccount";
     String PROPERTY_FROM = "from";
     String PROPERTY_SUBJECT = "subject";
     String PROPERTY_BODY = "body";

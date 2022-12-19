@@ -6111,7 +6111,6 @@ public class ConsoleWebController {
                     final JSONObject data = new JSONObject();
                     data.put("id", row.getId());
                     data.put("username", row.getUsername());
-                    data.put("priority", row.getPriority());
                     data.put("protocol", row.getProtocol());
                     data.put("host", row.getHost());
                     data.put("port", row.getPort());
@@ -6141,6 +6140,7 @@ public class ConsoleWebController {
     @RequestMapping("/console/setting/incomingEmail/edit/(*:id)")
     public String consoleSettingIncomingEmailEdit(ModelMap map, @RequestParam("id") String id) {
         final IncomingEmail incomingEmail = incomingEmailDao.load(id);
+        incomingEmail.setPassword(SecurityUtil.decrypt(incomingEmail.getPassword()));
         map.addAttribute("incomingEmail", incomingEmail);
         return "console/setting/incomingEmailEdit";
     }
@@ -6171,6 +6171,8 @@ public class ConsoleWebController {
                     incomingEmail.setModifiedBy(currUsername);
                     incomingEmail.setActive(true);
 
+                    incomingEmail.setPassword(SecurityUtil.encrypt(incomingEmail.getPassword()));
+
                     try {
                         incomingEmailDao.saveOrUpdate(incomingEmail);
                     } catch (Exception e) {
@@ -6187,7 +6189,7 @@ public class ConsoleWebController {
                 oldData.setDateModified(now);
                 oldData.setModifiedBy(currUsername);
                 oldData.setUsername(incomingEmail.getUsername());
-                oldData.setPassword(incomingEmail.getPassword());
+                oldData.setPassword(SecurityUtil.encrypt(incomingEmail.getPassword()));
                 oldData.setProtocol(incomingEmail.getProtocol());
                 oldData.setHost(incomingEmail.getHost());
                 oldData.setPort(incomingEmail.getPort());
@@ -6221,8 +6223,8 @@ public class ConsoleWebController {
             map.addAttribute("url", url);
 
 
-            camelRouteManager.stopContext(incomingEmail.getId());
-            camelRouteManager.startContext(incomingEmail.getId());
+            camelRouteManager.stopContext();
+            camelRouteManager.startContext();
 
             return "console/dialogClose";
         }

@@ -23,16 +23,12 @@
                     <span class="form-input"><c:out value="${incomingEmail.id}"/><input id="id" type="hidden" value="${incomingEmail.id}" name="id" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="priority"><fmt:message key="console.setting.incomingEmail.common.label.priority"/></label>
-                    <span class="form-input"><form:input path="priority" cssErrorClass="form-input-error" size="30" /> *</span>
-                </div>
-                <div class="form-row">
                     <label for="username"><fmt:message key="console.setting.incomingEmail.common.label.username"/></label>
                     <span class="form-input"><form:input path="username" cssErrorClass="form-input-error"  size="30"/> *</span>
                 </div>
                 <div class="form-row">
                     <label for="password"><fmt:message key="console.setting.incomingEmail.common.label.password"/></label>
-                    <span class="form-input"><form:input path="password" cssErrorClass="form-input-error" size="30"/> *</span>
+                    <span class="form-input"><form:input path="password" type="password" cssErrorClass="form-input-error" size="30"/> *</span>
                 </div>
                 <div class="form-row">
                     <label for="protocol"><fmt:message key="console.setting.incomingEmail.common.label.protocol"/></label>
@@ -65,11 +61,6 @@
     <script type="text/javascript">
         function validateField(){
                     let validators = {
-                        priority: {
-                            pattern: /^[0-9]+$/,
-                            message: '<fmt:message key="console.setting.incomingEmail.error.label.priorityInvalid"/>'
-                        },
-
                         username: {
                             pattern: /^[0-9a-zA-Z_\-@.]+$/,
                             message: '<fmt:message key="console.setting.incomingEmail.error.label.usernameInvalid"/>'
