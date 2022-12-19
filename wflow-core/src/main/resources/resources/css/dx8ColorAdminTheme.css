@@ -42,14 +42,13 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 }
 #sidebar .nav > li > a{
     font-size: 13px;
-    font-weight: 300;
+    font-weight: 500;
     line-height: 25px;
 }
 #sidebar .nav > li:not(.active) > a:hover,
 #sidebar .nav > li > ul > li > a:hover,
 #sidebar .nav > li > ul > li.active > a{
     background: var(--theme-sidebar-link-bg, transparent) !important; 
-    font-weight: 500;
 }
 #sidebar .nav > li.active > a,
 #sidebar .nav > li > ul > li.active > a{

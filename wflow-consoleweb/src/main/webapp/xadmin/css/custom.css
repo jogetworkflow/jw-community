@@ -5358,6 +5358,88 @@ table th, table td{
 body {
     color: #666;
 }
+body.rtl {
+    direction: rtl;
+}
+body.rtl .left-nav{
+    right: 0;
+    left: unset !important;
+}
+body.rtl .page-content{
+    left: 0 !important;
+    right: 220px !important;
+}
+body.rtl .page-content .layui-tab-title{
+    float: right;
+}
+body.rtl .container .logo a{
+    padding-right: 20px;
+    padding-left: unset !important;
+}
+body.rtl #page > div.container > div.logo{
+    float: right;
+}
+body.rtl .container .left_open{
+    float: right !important;
+}
+body.rtl .left-nav #nav li .nav_right{
+    float: left;
+}
+body.rtl .left-nav #nav li a i{
+    padding-right: 0 !important;
+}
+body.rtl #page > div.container > ul{
+    float: left !important;
+}
+body.rtl .layui-tab-title li .layui-tab-close{
+    margin-right: 8px;
+    margin-left: unset !important;
+}
+body.rtl .hasDatepicker + a, body .hasDatepicker + img{
+    left: 0;
+}
+body.rtl div.x-nav > a{
+    float: left !important;
+}
+
+body.rtl .hasDatepicker + a + .close-icon, body.rtl .hasDatepicker + img + .close-icon{
+    position: absolute;
+    left: 50px !important;
+}
+body.rtl select:not([class^="ui-"]), body.rtl .editor-cell select:not([class^="ui-"]){
+    float: right;
+}
+body.rtl input:not([type]), 
+body.rtl input[type=text], 
+body.rtl input[type=password], 
+body.rtl input[type=email], 
+body.rtl input[type=url], 
+body.rtl input[type=time], 
+body.rtl input[type=date], 
+body.rtl input[type=datetime], 
+body.rtl input[type=datetime-local], 
+body.rtl input[type=tel], 
+body.rtl input[type=number], 
+body.rtl input[type=search], 
+body.rtl textarea, 
+body.rtl select:not([class^=ui]), 
+body.rtl .editor-cell input:not([type]), 
+body.rtl .editor-cell input[type=text], 
+body.rtl .editor-cell input[type=password], 
+body.rtl .editor-cell input[type=email], 
+body.rtl .editor-cell input[type=url], 
+body.rtl .editor-cell input[type=time], 
+body.rtl .editor-cell input[type=date], 
+body.rtl .editor-cell input[type=datetime], 
+body.rtl .editor-cell input[type=datetime-local], 
+body.rtl .editor-cell input[type=tel], 
+body.rtl .editor-cell input[type=number], 
+body.rtl .editor-cell input[type=search], 
+body.rtl .editor-cell textarea,
+body.rtl .sigPad,
+body.rtl .editor-cell select:not([class^=ui]){
+    float: right !important;
+}
 .x-admin-sm body {
     font-size: 12px;
 }
@@ -5463,6 +5545,9 @@ body.popupBody > #form-canvas{
     max-width: 80%;
     white-space: normal;
 }
+body.rtl .sub-menu li a cite{
+    float: right !important;
+}
 .badge {
     max-width: 20%;
 }
@@ -5480,7 +5565,10 @@ body.popupBody > #form-canvas{
     font-size: 12px;
 }
     
-    
+body.rtl .menu-link .badge {
+    float: left;
+}
+
 /*dashboard*/
 body .dashboard_menu .grid-stack {
     margin: 0 -5px;
@@ -5517,6 +5605,10 @@ body .dashboard_menu .grid-stack-item-header-action{
     top: 0px;
     right: 15px;
 }
+body.rtl .dashboard_menu .grid-stack-item-header-action{
+    right: unset;
+    left: 20px;
+}
 body .dashboard_menu .grid-stack-item-header-action i{
     font-family: "layui-icon" !important;
     cursor: pointer;
@@ -5534,6 +5626,10 @@ body .dashboard_menu .grid-stack-item-header-open i:before{
 }
 body .dashboard_menu .grid-stack-item-header-refresh{
     right: 35px;
+}
+body.rtl .dashboard_menu .grid-stack-item-header-refresh{
+    right: unset !important;
+    left: 45px;
 }
 body .dashboard_menu .grid-stack-item-header-refresh i:before{
     content:"\e669";

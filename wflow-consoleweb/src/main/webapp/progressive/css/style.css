@@ -296,6 +296,10 @@ header.navbar .dropdown-menu a span.header, header.navbar .dropdown-menu a span.
     white-space: normal;
 }
 
+body.rtl header.navbar .dropdown-menu a span.header, body.rtl header.navbar .dropdown-menu a span.message{
+    padding-right: unset;
+}
+
 header.navbar .dropdown-menu a span.header {
     font-weight: bold;
 }
@@ -775,6 +779,10 @@ body#login #page > footer {
     max-width: 20%;
 }
 
+body.rtl .badge{
+    float: left !important;
+}
+
 #sidebar li ul {
     padding:0;
     list-style: none;
@@ -793,6 +801,9 @@ body#login #page > footer {
 #sidebar li ul>li>a > span:first-child{
     max-width: 140px;
     display: inline-block;
+}
+body.rtl #sidebar li ul>li>a > span:first-child{
+    float: right !important;
 }
 .rtl #sidebar li ul>li>a, .rtl #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 65px 8px 20px;

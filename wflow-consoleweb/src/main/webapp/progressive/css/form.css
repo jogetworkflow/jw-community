@@ -466,6 +466,11 @@ body .close-icon:after {
     right: 35px;
 }
 
+body.rtl .close-icon:after {
+    left: 35px;
+    right: unset;
+}
+
 body .hasDatepicker + a, body .hasDatepicker + img {
     position: absolute;
     padding: 8px 5px;

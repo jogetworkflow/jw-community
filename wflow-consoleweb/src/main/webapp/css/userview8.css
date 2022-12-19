@@ -20,6 +20,9 @@ body{
     background-color: var(--theme-background, var(--theme-color1, #f9fafb));
     line-height: 1.5;
 }
+body.rtl {
+    direction: rtl;
+}
 body.popupBody {
     background-color: var(--theme-content-background, #ffffffcc);
 }
@@ -37,6 +40,11 @@ input, select, textarea{
     background-image: var(--theme-background-image, none);
     background-size:cover !important;
     background-position:center bottom;
+}
+
+body.rtl:not(.horizontal_menu) #page{
+    padding-right: 280px;
+    padding-left: unset;
 }
 
 /* header */
@@ -57,6 +65,9 @@ header.navbar {
 header.navbar .container-fluid{
     flex-direction:row;
     padding: 12px 20px 12px 60px;
+}
+body.rtl:not(.horizontal_menu) header.navbar .container-fluid{
+    padding: 12px 60px 12px 20px !important;
 }
 #header-logout-text{
     display: none;
@@ -142,6 +153,9 @@ header.navbar .dropdown-menu a span.header, header.navbar .dropdown-menu a span.
     overflow-wrap: break-word;
     white-space: normal;
 }
+body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.header, body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.message{
+    padding-right: unset;
+}
 header.navbar .dropdown-menu a span.header {
     font-weight: bold;
 }
@@ -174,6 +188,12 @@ header.navbar .dropdown-menu a span.time{
     left: 0px;
     border-right: 1px solid rgba(0,0,0,.0625);
 }
+
+body.rtl:not(.horizontal_menu) #sidebar{
+    right: 0px;
+    left: auto !important;
+}
+
 .sidebar_brand{
     padding: 10px 10px;
     height: 65px;
@@ -256,6 +276,13 @@ body:not(.horizontal_menu) #navigation {
     opacity: 0.8;
     cursor: pointer;
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > a{
+    float: right;
+    width: 100%;
+}
+body.rtl:not(.horizontal_menu) #sidebar .category > a > span:not(.badge){
+    float: right;
+}
 #sidebar .nav > li > a:hover {
     color: var(--theme-sidebar-active-link, var(--theme-color3 ,#313435));
     background: var(--theme-sidebar-active-link-bg, transparent);
@@ -268,8 +295,15 @@ body:not(.horizontal_menu) #navigation {
     display: block;
     white-space: pre-line;
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > a > span:not(.badge) {
+    padding: 6px 50px 6px 25px;
+}
 #sidebar .nav > li > a.menu-link > span:not(.badge) {
     display: inline-block;
+}
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > a.menu-link > span:not(.badge) {
+    padding: 6px 50px 6px 0px;
+    float: right;
 }
 #sidebar .nav > li > a.menu-link > span.badge {
     margin-top: 8px;
@@ -285,6 +319,10 @@ body:not(.horizontal_menu) #navigation {
     font-size: 17px;
     top:0;
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > a > span > i:first-child{
+    left: unset !important;
+    right:0;
+}
 #sidebar .nav > li.active > a > span > i:first-child,
 #sidebar .nav > li > a:hover > span > i:first-child{
     color: var(--theme-sidebar-active-icon, var(--theme-color3, #03a9f4));
@@ -299,9 +337,21 @@ body:not(.horizontal_menu) #navigation {
     border-top:1px solid #00000015;
     border-bottom:1px solid #00000015;
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul {
+    padding-right: unset;
+    width: 100%;
+}
+
 #sidebar .nav > li.toggled > ul {
     display: block; 
 }
+
+body.rtl:not(.horizontal_menu) #sidebar .nav > li.toggled > ul {
+    padding-right: 0px;
+    float: right;
+    width: 100%;
+}
+
 #sidebar .nav > li.active:after {
     display:block;
     top:0;
@@ -312,9 +362,16 @@ body:not(.horizontal_menu) #navigation {
     background:var(--theme-sidebar-icon, var(--theme-color3, #03a9f4));
     content: "";
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li.active:after{
+    right: 0;
+    left: unset !important;
+}
 #sidebar .nav > li > ul > li {
     display: block;
     width: 100%;
+}
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
+    padding: 10px 65px 10px 15px;
 }
 #sidebar .nav > li > ul > li > a {
     display: block;
@@ -328,6 +385,10 @@ body:not(.horizontal_menu) #navigation {
     opacity: 0.8;
     cursor: pointer;
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
+    float: right;
+    width: 100%;
+}
 #sidebar .active > a,
 #sidebar .nav > li > ul > li > a:hover {
     color: var(--theme-sidebar-active-link, var(--theme-color3, #313435)) !important;
@@ -337,6 +398,9 @@ body:not(.horizontal_menu) #navigation {
 #sidebar .nav > li > ul > li > a > span:first-child {
     max-width: 160px;
     display: inline-block;
+}
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
+    float: right;
 }
 #sidebar li a.dropdown:after {
     position: absolute;
@@ -357,6 +421,10 @@ body:not(.horizontal_menu) #navigation {
     content: "\f105";
     font: normal normal normal 14px/1 FontAwesome;
 }
+body.rtl:not(.horizontal_menu) #sidebar li a.dropdown:after{
+    left: 15px;
+    right: unset !important;
+}
 #sidebar li.toggled > a.dropdown:after {
     content: "\f107";
 }
@@ -366,6 +434,11 @@ body:not(.horizontal_menu) #navigation {
 #sidebar #category-container{
     padding-bottom: 80px;
 }
+
+body.rtl:not(.horizontal_menu) #sidebar #category-container{
+    padding-right: 0px! important;
+}
+
 #sidebar .badge{
     min-width: 25px;
     text-align: center;
@@ -375,12 +448,19 @@ body:not(.horizontal_menu) #navigation {
     border-radius: 10px;
 }
 
+body.rtl:not(.horizontal_menu) #sidebar .badge{
+    float: left;
+}
+
 /* sidebar user menu */
 #sidebar .user-menu > li > a > img {
     position: absolute;
     border-radius: 50%;
     top: 50%;
     transform: translateY(-50%);
+}
+body.rtl:not(.horizontal_menu) #sidebar .user-menu > li > a > img {
+    right: 15px;
 }
 #sidebar .user-menu > li > a > span{
     padding-bottom: 0;
@@ -392,9 +472,15 @@ body:not(.horizontal_menu) #navigation {
 #sidebar .nav-tabs.user-menu{
     border-bottom: 1px solid rgba(0,0,0,.0625);
 }
+body.rtl:not(.horizontal_menu) #sidebar .nav-tabs.user-menu{
+    padding-right: 0px !important;
+}
 #sidebar .nav-tabs.user-menu .mm-profile > a{
     padding: 25px 15px;
     cursor: pointer;
+}
+body.rtl:not(.horizontal_menu) #sidebar .nav-tabs.user-menu .mm-profile > a{
+    padding-left: 65px;
 }
 #sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
     content: '\f007';
@@ -424,9 +510,11 @@ body:not(.horizontal_menu) #navigation {
     left: 25px;
     top:2px;
 }
-.rtl .hi-trigger {
+body.rtl .hi-trigger{
     margin-right: -20px;
     margin-left: auto;
+    right: 25px;
+    left: unset !important;
 }
 .hi-trigger:before {
     -webkit-transform: scale(0);
@@ -528,6 +616,10 @@ body:not(.horizontal_menu) #navigation {
 @media (min-width:1280px) {
     body.sidebar-minimized #page {
         padding-left: 65px;
+    }
+    body.rtl.sidebar-minimized #page {
+        padding-right: 65px;
+        padding-left: unset !important;
     }
     body.sidebar-minimized header.navbar {
         width: calc(100% - 65px);
@@ -1369,6 +1461,9 @@ main .fc button .fc-icon{
 body.embeded #page{
     padding-left: 0;
     padding-top: 0 !important;
+}
+body.rtl.embeded #page{
+    padding-right: 0;
 }
 body.embeded,
 body.embeded #content{

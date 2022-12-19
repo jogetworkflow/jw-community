@@ -91,6 +91,9 @@
                 }
                 
                 var a = $("<a>").attr("href","#");
+                if(!$(element).next("img.ui-datepicker-trigger").length){
+                    $(element).insertBefore($(element).prev('img.ui-datepicker-trigger'));
+                }
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
 
                 $(element).next("a.trigger").after("<a class=\"close-icon\" type=\"reset\"></a>");

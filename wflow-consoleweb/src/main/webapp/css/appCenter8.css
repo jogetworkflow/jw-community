@@ -63,7 +63,10 @@ body.popupBody{
 }
 #sidebar .nav > li > a > span:not(.badge) {
     min-height: 0px;
-    padding: 0px 0 0px 0px;
+    padding: 0px 0 0px 0px !important;
+}
+body.rtl #sidebar .nav > li > a > span:not(.badge) {
+    float: none !important;
 }
 #sidebar .nav-tabs.user-menu {
     margin-top: 60px;
@@ -415,12 +418,20 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
     padding-left: 140px;
 }
 
+body.rtl #page {
+    padding-right: 140px !important;
+}
+
 header.navbar {
     width: calc(100% - 140px);
 }
 
 .dataList span.pagelinks{
     width: 100%;
+}
+
+body.rtl #pc-07863BFB349747ED1A6E45812F7C5F97{
+    margin-right: 15px;
 }
 
 @media (max-width: 450px) {

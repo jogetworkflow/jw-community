@@ -248,6 +248,11 @@ textarea{
     font-size: 16px;
     color: #ced4da;
 }
+body.rtl .hasDatepicker + a,
+body.rtl .hasDatepicker + a + a{
+    left: 20px;
+    right: unset !important;
+}
 .hasDatepicker + a:before{
     content: '\f073';
 }
@@ -256,6 +261,10 @@ textarea{
     right: 42px;
     top: 10px;
     z-index: 4;
+}
+body.rtl .hasDatepicker + a + a{
+    left: 42px;
+    right: unset !important;
 }
 .hasDatepicker + a + a:before{
     content: '\f057';
