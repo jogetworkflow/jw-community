@@ -1246,7 +1246,7 @@ public class DataJsonController implements Declutter {
                         .map(String::valueOf)
 
                         //load form
-                        .map(tryFunction(s -> {
+                        .map(Try.onFunction(s -> {
                             final FormData formData = new FormData();
                             formData.setPrimaryKeyValue(s);
 
@@ -1256,7 +1256,7 @@ public class DataJsonController implements Declutter {
 
                             return Optional.of(form)
                                     .filter(f -> isAuthorize(f, formData))
-                                    .map(tryFunction(f -> getData(f, formData, asOptions), (Exception e) -> null))
+                                    .map(Try.onFunction(f -> getData(f, formData, asOptions), (Exception e) -> null))
                                     .orElse(null);
 
                         }))
@@ -2024,7 +2024,7 @@ public class DataJsonController implements Declutter {
                     .map(WorkflowAssignment::getActivityId)
                     .map(workflowManager::getAssignment)
                     .filter(Objects::nonNull)
-                    .map(tryFunction(assignment -> {
+                    .map(Try.onFunction(assignment -> {
                         FormData formData = new FormData();
 
                         // get form
@@ -2364,7 +2364,7 @@ public class DataJsonController implements Declutter {
                         // reformat content value
                         .map(row -> formatRow(dataList, row))
 
-                        .map(tryFunction(row -> {
+                        .map(Try.onFunction(row -> {
                             String primaryKeyColumn = getPrimaryKeyColumn(dataList);
                             String primaryKey = String.valueOf(row.get(primaryKeyColumn));
 
@@ -3197,7 +3197,7 @@ public class DataJsonController implements Declutter {
     @Nonnull
     protected WorkflowAssignment getAssignment(@Nonnull String activityId) throws ApiException {
         return Optional.of(activityId)
-                .map(tryFunction(workflowManager::getAssignment))
+                .map(Try.onFunction(workflowManager::getAssignment))
                 .orElseThrow(() -> new ApiException(HttpServletResponse.SC_NOT_FOUND, "Assignment [" + activityId + "] not available"));
     }
 
@@ -3263,7 +3263,7 @@ public class DataJsonController implements Declutter {
                 .orElseThrow(() -> new ApiException(HttpServletResponse.SC_NOT_FOUND, "Process [" + processId + "] is not defined"))
                 .findFirst()
                 .map(WorkflowProcessLink::getProcessId)
-                .map(tryFunction(workflowManager::getAssignmentByProcess))
+                .map(Try.onFunction(workflowManager::getAssignmentByProcess))
                 .orElseThrow(() -> new ApiException(HttpServletResponse.SC_NOT_FOUND, "Assignment for process [" + processId + "] not available"));
     }
 
@@ -3529,7 +3529,7 @@ public class DataJsonController implements Declutter {
         final JSONObject result = new JSONObject();
 
         // show error message
-        formErrors.forEach(tryBiConsumer(result::put));
+        formErrors.forEach(Try.onBiConsumer(result::put));
 
         return result;
     }
@@ -3578,12 +3578,12 @@ public class DataJsonController implements Declutter {
         return Optional.of(formData)
                 // try load addignment from activity ID
                 .map(FormData::getActivityId)
-                .map(tryFunction(this::getAssignment, (ApiException e) -> null))
+                .map(Try.onFunction(this::getAssignment, (ApiException e) -> null))
 
                 // if fails, try to load assignment from process ID
-                .orElseGet(trySupplier(() -> Optional.of(formData)
+                .orElseGet(Try.onSupplier(() -> Optional.of(formData)
                         .map(FormData::getProcessId)
-                        .map(tryFunction(this::getAssignmentByProcess, (ApiException e) -> null))
+                        .map(Try.onFunction(this::getAssignmentByProcess, (ApiException e) -> null))
                         .orElse(null)));
     }
 

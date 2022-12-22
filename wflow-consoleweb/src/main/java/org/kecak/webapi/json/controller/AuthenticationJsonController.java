@@ -2,6 +2,7 @@ package org.kecak.webapi.json.controller;
 
 
 import com.kinnarastudio.commons.Declutter;
+import com.kinnarastudio.commons.Try;
 import org.kecak.apps.app.service.AuthTokenService;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
@@ -147,7 +148,7 @@ public class AuthenticationJsonController implements Declutter {
 
     private Map<String, Object> parseClaimFromRequestPayload(JSONObject requestPayload) {
         return jsonStream(requestPayload)
-                .collect(Collectors.toMap(k -> k, tryFunction(requestPayload::get)));
+                .collect(Collectors.toMap(k -> k, Try.onFunction(requestPayload::get)));
     }
 
     @RequestMapping(value = "json/authentication/refresh", method = RequestMethod.POST)
