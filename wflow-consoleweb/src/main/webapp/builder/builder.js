@@ -2143,7 +2143,7 @@
                     I18nEditor.renderTable($(view), labels, config);
                     I18nEditor.refresh($(view));
                     
-                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus-circle"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
                     $(view).find(".i18n_table .addNewKey").on("click", function(){
                         CustomBuilder.appMessageAddNewKey($(this));
                     });
@@ -2749,7 +2749,7 @@
         for (var i in data) {
             var builder = data[i];
             var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
-            $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
+            $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             CustomBuilder.builderTypes.push(builder.value);
             if (builder.elements) {
                 for (var j in builder.elements) {
