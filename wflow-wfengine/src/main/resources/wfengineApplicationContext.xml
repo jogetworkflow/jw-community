@@ -46,6 +46,7 @@
                 <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/SharkProcessState.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkObjectId.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/ActivityPersistenceObject.hbm.xml</value>
                 <value>/org/joget/workflow/shark/model/DeadlinePersistenceObject.hbm.xml</value>
                 <value>/org/joget/workflow/shark/migrate/model/MigrateActivity.hbm.xml</value>
@@ -76,6 +77,10 @@
     </bean>
     
     <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+    </bean>
+    
+    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
     </bean>
 
