@@ -1,11 +1,14 @@
 package org.enhydra.shark;
 
+import com.lutris.appserver.server.sql.ObjectId;
+import com.lutris.appserver.server.sql.ObjectIdAllocationError;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,9 +21,12 @@ import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLInterfaceForJDK13;
 import org.enhydra.shark.xpdl.elements.Package;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
+import org.joget.workflow.shark.model.SharkObjectId;
+import org.joget.workflow.shark.model.dao.SharkObjectIdDao;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -298,5 +304,47 @@ public class SharkUtilitiesAspect {
         xmlInterface.closePackageVersion(pkgId, pkgVer);
 
         return object;
+    }
+    
+    
+    @Pointcut("execution(* com.lutris.appserver.server.sql.standard.StandardObjectIdAllocator.updateCache(String))")
+    private void standardObjectIdAllocatorUpdateCacheMethods() {
+        
+    }
+
+    /**
+     * Override the StandardObjectIdAllocator.updateCache of shark engine to lock table and update
+     * to prevent unique constraint exception in clustering environment
+     */
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.standardObjectIdAllocatorUpdateCacheMethods()")
+    public void standardObjectIdAllocatorUpdateCache(ProceedingJoinPoint pjp) throws Throwable {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        Object thisObj = pjp.getThis();
+        
+        Map next = (Map) FieldUtils.readField(thisObj, "next", true);
+        Map max = (Map) FieldUtils.readField(thisObj, "max", true);
+        
+        ObjectId currentMaxObjectId = (ObjectId) max.get(profile);
+        Long currentMax = null;
+        if (currentMaxObjectId != null) {
+            currentMax = currentMaxObjectId.toBigDecimal().longValue();
+        }
+
+        SharkObjectIdDao dao = (SharkObjectIdDao) WorkflowUtil.getApplicationContext().getBean("sharkObjectIdDao");
+        SharkObjectId nextoid = dao.getNext(currentMax);
+
+        if (nextoid != null) {
+            ObjectId nextObjectid = new ObjectId(nextoid.getNextoid());
+            ObjectId maxObjectid = new ObjectId(nextoid.getMaxoid());
+            
+            LogUtil.info(SharkUtilitiesAspect.class.getName(), "Cache object id range : [" + nextObjectid + " - " + maxObjectid + "]");
+            
+            max.put(null, maxObjectid);
+            next.put(null, nextObjectid);
+            max.put(profile, maxObjectid);
+            next.put(profile, nextObjectid);
+        } else {
+            throw new ObjectIdAllocationError("Failed to allocate object id.");
+        }
     }
 }
