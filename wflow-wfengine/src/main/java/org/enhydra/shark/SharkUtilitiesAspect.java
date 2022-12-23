@@ -2,6 +2,7 @@ package org.enhydra.shark;
 
 import com.lutris.appserver.server.sql.ObjectId;
 import com.lutris.appserver.server.sql.ObjectIdAllocationError;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,9 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
+import org.joget.workflow.shark.model.SharkCounter;
 import org.joget.workflow.shark.model.SharkObjectId;
+import org.joget.workflow.shark.model.dao.SharkCounterDao;
 import org.joget.workflow.shark.model.dao.SharkObjectIdDao;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
@@ -345,6 +348,49 @@ public class SharkUtilitiesAspect {
             next.put(profile, nextObjectid);
         } else {
             throw new ObjectIdAllocationError("Failed to allocate object id.");
+        }
+    }
+    
+    @Pointcut("execution(* org.enhydra.shark.utilities.dods.DODSUtilities.updateCaches(String))")
+    private void dodsUtilitiesUpdateCachesMethods() {
+        
+    }
+
+    /**
+     * Override the StandardObjectIdAllocator.updateCache of shark engine to lock table and update
+     * to prevent unique constraint exception in clustering environment
+     */
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.dodsUtilitiesUpdateCachesMethods()")
+    public void dodsUtilitiesUpdateCaches(ProceedingJoinPoint pjp) throws Throwable {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        String objectName = (String) pjp.getArgs()[0];
+        
+        Class dodsUtilities = Class.forName("org.enhydra.shark.utilities.dods.DODSUtilities");
+        
+        Map counterCachesMax = (Map) FieldUtils.readStaticField(dodsUtilities, "counterCachesMax", true);
+        Map counterCachesNext = (Map) FieldUtils.readStaticField(dodsUtilities, "counterCachesNext", true);
+        
+        BigDecimal currentMaxCounter = (BigDecimal) counterCachesMax.get(profile + "::" + objectName);
+        Long currentMax = null;
+        if (currentMaxCounter != null) {
+            currentMax = currentMaxCounter.longValue();
+        }
+
+        SharkCounterDao dao = (SharkCounterDao) WorkflowUtil.getApplicationContext().getBean("sharkCounterDao");
+        SharkCounter result = dao.getNext(objectName, currentMax);
+
+        if (result != null) {
+            BigDecimal nextCounter = new BigDecimal(result.getNextNumber());
+            BigDecimal maxCounter = new BigDecimal(result.getMaxNumber());
+            
+            LogUtil.info(SharkUtilitiesAspect.class.getName(), "Cache counter range for "+objectName+" : [" + nextCounter + " - " + maxCounter + "]");
+            
+            counterCachesMax.put(objectName, maxCounter);
+            counterCachesNext.put(objectName, nextCounter);
+            counterCachesMax.put(profile + "::" + objectName, maxCounter);
+            counterCachesNext.put(profile + "::" + objectName, nextCounter);
+        } else {
+            throw new ObjectIdAllocationError("Failed to allocate counter for " + objectName + ".");
         }
     }
 }
