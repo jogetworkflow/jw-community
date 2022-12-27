@@ -1,5 +1,6 @@
 package org.joget.workflow.shark.model.dao;
 
+import com.lutris.appserver.server.sql.ObjectIdAllocationError;
 import java.util.Collection;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
@@ -59,6 +60,8 @@ public class SharkCounterDao extends AbstractSpringDao {
                     transaction.commit();
                     
                     return temp;
+                } else {
+                    return null;
                 }
             } catch (Exception e) {
                 if (transaction != null) {
@@ -84,6 +87,6 @@ public class SharkCounterDao extends AbstractSpringDao {
             }
         } while (retry);
         
-        return null;
+        throw new ObjectIdAllocationError("Failed to allocate counter for " + objectName + ".");
     }
 }
