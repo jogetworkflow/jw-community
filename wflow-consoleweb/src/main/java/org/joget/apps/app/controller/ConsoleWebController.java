@@ -5632,7 +5632,27 @@ public class ConsoleWebController {
     }    
 
     @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp() {
+    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
+        boolean trusted = false;
+        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
+        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
+        if (trustedUrls != null && !trustedUrls.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
+            while (st.hasMoreTokens()) {
+                String trustedUrl = st.nextToken().trim();
+                if (url.startsWith(trustedUrl)) {
+                    trusted = true;
+                    break;
+                }
+            }
+        }
+        
+        if (trusted) {
+            model.addAttribute("appUrl", url);
+        } else {
+            model.addAttribute("appUrl", "");
+        }
+        
         return "desktop/marketplaceApp";
     }
     
