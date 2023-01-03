@@ -20,9 +20,9 @@ ${menus!}
 <div class="page-content-bg"></div>
 <#if preloadUrl??>
     <script>
-        if (window.frameElement !== null && $("body", window.parent.document).hasClass("index-window")) {
+        if (window.frameElement !== null && $("body", window.parent.document).hasClass("index-window") && window.parent['xadmin'].validateUrl('${preloadUrl?js_string}')) {
             window.location = '${preloadUrl?js_string}';
-        } else {
+        } else if (xadmin.validateUrl('${preloadUrl?js_string}')) {
             $(function(){
                 function initTheme() {
                     setTimeout(function(){

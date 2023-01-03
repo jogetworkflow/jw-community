@@ -1124,6 +1124,7 @@ public class ConsoleWebController {
             Set<String> existingDepartments = new HashSet<String>();
             Set<String> existingHods = new HashSet<String>();
             Set<String> existingGrades = new HashSet<String>();
+            Set<String> existingOrgs = new HashSet<String>();
             if (u.getEmployments() != null && !u.getEmployments().isEmpty()) {
                 for (Employment e : (Set<Employment>) u.getEmployments()) {
                     if (e.getDepartmentId() != null) {
@@ -1135,12 +1136,16 @@ public class ConsoleWebController {
                     if (e.getGradeId() != null) {
                         existingGrades.add(e.getGradeId());
                     }
+                    if (e.getOrganizationId() != null) {
+                        existingOrgs.add(e.getOrganizationId());
+                    }
                 }
             }
             if (employeeDepartment != null) {
                 for (int i = 0; i < employeeDepartment.length; i++) {
                     if (existingDepartments.contains(employeeDepartment[i])) {
                         existingDepartments.remove(employeeDepartment[i]);
+                        existingOrgs.remove(employeeDeptOrganization[i]);
                     } else {
                         employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
                     }
@@ -1158,6 +1163,7 @@ public class ConsoleWebController {
                 for (int i = 0; i < employeeGrade.length; i++) {
                     if (existingGrades.contains(employeeGrade[i])) {
                         existingGrades.remove(employeeGrade[i]);
+                        existingOrgs.remove(employeeGradeOrganization[i]);
                     } else {
                         employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
                     }
@@ -1171,6 +1177,10 @@ public class ConsoleWebController {
             }
             for (String d : existingGrades) {
                 employmentDao.unassignUserFromGrade(u.getId(), d);
+            }
+            //if user not assign to any dept & grade of an org, remove the org
+            for (String d : existingOrgs) {
+                employmentDao.unassignUserFromOrganization(u.getId(), d);
             }
             
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
@@ -5820,7 +5830,27 @@ public class ConsoleWebController {
     }    
 
     @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp() {
+    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
+        boolean trusted = false;
+        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
+        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
+        if (trustedUrls != null && !trustedUrls.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
+            while (st.hasMoreTokens()) {
+                String trustedUrl = st.nextToken().trim();
+                if (url.startsWith(trustedUrl)) {
+                    trusted = true;
+                    break;
+                }
+            }
+        }
+        
+        if (trusted) {
+            model.addAttribute("appUrl", url);
+        } else {
+            model.addAttribute("appUrl", "");
+        }
+        
         return "desktop/marketplaceApp";
     }
     

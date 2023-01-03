@@ -93,6 +93,15 @@
             parent.AjaxMenusCount.init();
         }
     };
+    win.xadmin.validateUrl = function(url) {
+        var currentURL = window.location.href;
+        // if same userview page, only same userview page can open in xadmin tab.
+        // please refer to XadminTheme.java line 676 & xadmin.redirect
+        if (url.indexOf(currentURL.substring(currentURL.indexOf("/web/userview"), currentURL.lastIndexOf("/") + 1)) !== -1) { 
+            return true;
+        }
+        return false;
+    };
 
     PopupDialog.prototype.show = function() {
         var newSrc = this.src;
