@@ -1294,7 +1294,9 @@ form.form .btn {
 .form-row label span.mandatory{
     color:red;
 }
-
+body .form-container [class*=form-cell-value]{
+    padding: 10px 12px;
+}
 /* dashboard */
 #content .main-body-content.Dashboard {
     background-color: transparent;
