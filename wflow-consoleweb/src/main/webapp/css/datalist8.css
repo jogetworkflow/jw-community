@@ -19,6 +19,9 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
+.dataList td {
+    vertical-align: top;
+}
 .dataList tbody tr:first-child td{
     border-top: 0px;
 }
