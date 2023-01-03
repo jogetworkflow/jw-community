@@ -58,7 +58,7 @@
         name : 'buttonPosition',
         label : '@@userview.inboxmenu.buttonPosition@@',
         type : 'selectbox',
-        value : 'bottomLeft',
+        value : 'bothLeft',
         options : [{
             value : 'topLeft',
             label : '@@userview.inboxmenu.buttonPosition.topLeft@@'

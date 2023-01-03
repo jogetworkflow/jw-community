@@ -46,7 +46,7 @@
         name : 'buttonPosition',
         label : '@@userview.datalistmenu.buttonPosition@@',
         type : 'selectbox',
-        value : 'bottomLeft',
+        value : 'bothLeft',
         options : [{
             value : 'topLeft',
             label : '@@userview.datalistmenu.buttonPosition.topLeft@@'
