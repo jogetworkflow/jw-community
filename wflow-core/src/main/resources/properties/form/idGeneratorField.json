@@ -23,7 +23,7 @@
         type : 'textfield',
         required : 'True',
         value : 'counter',
-        regex_validation : '^[\.#a-zA-Z0-9_]+$',
+        regex_validation : '^[\.#a-zA-Z0-9_-]+$',
         validation_message : '@@form.idgeneratorfield.invalidId@@'
     },
     {
