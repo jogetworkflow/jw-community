@@ -1,6 +1,6 @@
 <div class="cards row">
     {{rows data-cbuilder-highlight="@@datalist.simpleCardTemplate.card@@" data-cbuilder-style="[{'prefix' : 'card', 'class' : '.appIcon', 'label' : '@@datalist.simpleCardTemplate.card@@'}]"}}
-        <div class="{{columns_mobile}} {{columns_tablet}} {{columns_desktop}} p-2">
+        <div class="{{columns_mobile}} {{columns_tablet}} {{columns_desktop}} p-2 card-icon">
             {{selector}}
                 <input type="{{type}}" name="{{name}}" id="{{id}}" value="{{value}}" style="display:none"/>
             {{selector}}

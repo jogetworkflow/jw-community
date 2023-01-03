@@ -1,0 +1,10 @@
+.super-app-header{margin-bottom: 10px;}
+.super-app-body{visibility: hidden;}
+.super-app-body.initialized{visibility: visible;}
+.super-app-body h3.title {text-transform: uppercase; margin-top: 25px; color: #000;}
+.super-app-body .card-icon .super-app-action {position: absolute; top:0; left:0; right: 0; bottom: 0; z-index: 200;}
+.super-app-body .card-icon .super-app-action > i {position: absolute; top: 15px; right: 15px; font-size: 25px; cursor: pointer; opacity: 0.7;} 
+.super-app-body .card-icon .super-app-action > i:hover{opacity: 1;}
+.super-app-body .card-icon .super-app-action > i.selectApp {color: #007bff;}
+.super-app-body .card-icon .super-app-action > i.removeApp {color: #dc3545;}
+.super-app-body[data-super_app_mode="edit"] .card-actions {display: none !important;}

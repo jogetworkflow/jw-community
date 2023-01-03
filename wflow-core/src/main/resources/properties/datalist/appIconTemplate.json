@@ -95,6 +95,96 @@
                 "name"  : "splitListByColumn",
                 "type" : "selectbox",
                 "options_callback" : "DatalistBuilder.getColumnOptions"
+            },
+            {
+                "label" : "@@datalist.appIconTemplate.enableSuperApp@@",
+                "name"  : "enableSuperApp",
+                "type" : "checkbox",
+                "options" : [
+                    {
+                        "value" : "true",
+                        "label" : ""
+                    }
+                ]
+            },
+            {
+                "label": "@@datalist.appIconTemplate.superAppSettings@@",
+                "type" : "header",
+                "control_field": "enableSuperApp",
+                "control_value": "true",
+                "control_use_regex": "false"
+            },
+            {
+                "name": "defaultAppMode",
+                "label": "@@datalist.appIconTemplate.defaultAppsRetrieveBy@@",
+                "type" : "selectbox",
+                "options" : [
+                    {
+                        "value" : "ids",
+                        "label" : "@@datalist.appIconTemplate.idsSeparatedBy@@"
+                    },
+                    {
+                        "value" : "column",
+                        "label" : "@@datalist.appIconTemplate.byColumn@@"
+                    }
+                ],
+                "value" : "ids",
+                "control_field": "enableSuperApp",
+                "control_value": "true",
+                "control_use_regex": "false"
+            },
+            {
+                "label": "@@datalist.appIconTemplate.defaultApps@@ (@@datalist.appIconTemplate.idsSeparatedBy@@)",
+                "name" : "defaultAppIds",
+                "type" : "codeeditor",
+                "control_field": "defaultAppMode",
+                "control_value": "ids",
+                "control_use_regex": "false"
+            },
+            {
+                "label": "@@datalist.appIconTemplate.defaultApps@@ (@@datalist.appIconTemplate.byColumn@@)",
+                "name" : "defaultAppByColumn",
+                "type" : "selectbox",
+                "options_callback" : "DatalistBuilder.getColumnOptions",
+                "control_field": "defaultAppMode",
+                "control_value": "column",
+                "control_use_regex": "false"
+            },
+            {
+                "name": "nonRemovableAppMode",
+                "label": "@@datalist.appIconTemplate.nonRemovableRetrieveBy@@",
+                "type" : "selectbox",
+                "options" : [
+                    {
+                        "value" : "ids",
+                        "label" : "@@datalist.appIconTemplate.idsSeparatedBy@@"
+                    },
+                    {
+                        "value" : "column",
+                        "label" : "@@datalist.appIconTemplate.byColumn@@"
+                    }
+                ],
+                "value" : "ids",
+                "control_field": "enableSuperApp",
+                "control_value": "true",
+                "control_use_regex": "false"
+            },
+            {
+                "label": "@@datalist.appIconTemplate.nonRemovable@@ (@@datalist.appIconTemplate.idsSeparatedBy@@)",
+                "name" : "nonRemovableAppIds",
+                "type" : "codeeditor",
+                "control_field": "nonRemovableAppMode",
+                "control_value": "ids",
+                "control_use_regex": "false"
+            },
+            {
+                "label": "@@datalist.appIconTemplate.nonRemovable@@ (@@datalist.appIconTemplate.byColumn@@)",
+                "name" : "nonRemovableAppByColumn",
+                "type" : "selectbox",
+                "options_callback" : "DatalistBuilder.getColumnOptions",
+                "control_field": "nonRemovableAppMode",
+                "control_value": "column",
+                "control_use_regex": "false"
             }
         ]
     }

@@ -268,6 +268,10 @@ AjaxComponent = {
         var contentPlaceholder = $(element).data("ajax-content-placeholder");
         if (contentPlaceholder === undefined || contentPlaceholder === null || contentPlaceholder === "") {
             contentPlaceholder = AjaxComponent.getContentPlaceholder(url);
+            
+            if (contentPlaceholder === undefined || contentPlaceholder === null || contentPlaceholder === "") {
+                contentPlaceholder = $(contentConatiner).data("ajax-content-placeholder");
+            }
         }
         $(contentConatiner).attr("data-content-placeholder", contentPlaceholder);
         $(contentConatiner).removeAttr("aria-live");
