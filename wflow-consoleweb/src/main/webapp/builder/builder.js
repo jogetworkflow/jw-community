@@ -840,7 +840,7 @@
         if ($(li).hasClass("fav")) {
             $(li).removeClass("fav");
             if ($.inArray(id, list) !== -1) {
-                list = list.splice( $.inArray(id, list), 1);
+                list.splice( $.inArray(id, list), 1);
             }
         } else {
             $(li).addClass("fav");
