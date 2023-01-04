@@ -26,6 +26,7 @@
                 load : "",
                 saveEditProperties : "",
                 cancelEditProperties : "",
+                getBuilderItemName : "",
                 getBuilderProperties : "",
                 saveBuilderProperties : ""
             }
@@ -674,6 +675,18 @@
     },
     
     /*
+     * Retrieve the builder item name
+     */
+    getBuilderItemName : function() {
+        if (CustomBuilder.config.builder.callbacks["getBuilderItemName"] !== "") {
+            return CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getBuilderItemName"], []);
+        } else {
+            var props = CustomBuilder.getBuilderProperties();
+            return props['name'];
+        }
+    },
+    
+    /*
      * Save the properties value in Properties page
      */
     saveBuilderProperties : function(container, properties) {
@@ -1006,6 +1019,18 @@
 
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                 }
+                
+                //check builder name change
+                var name = CustomBuilder.getBuilderItemName();
+                if ($("#builderElementName .title span.item_name").text() !== name) {
+                    $("#builderElementName .title span.item_name").text(name);
+                    
+                    $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                    
+                    //reload nav
+                    CustomBuilder.reloadBuilderMenu();
+                }
+        
                 setTimeout(function(){
                     $("#save-btn").removeAttr("disabled");
                 }, 3000);

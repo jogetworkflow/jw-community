@@ -532,6 +532,14 @@ UserviewBuilder = {
     },
     
     /*
+     * Retrieve the builder item name
+     */
+    getBuilderItemName : function() {
+        var props = UserviewBuilder.getBuilderProperties();
+        return props['userviewName'];
+    },
+    
+    /*
      * Save properties from properties view
      */
     saveBuilderProperties : function(container, properties) {

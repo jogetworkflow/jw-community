@@ -10,7 +10,7 @@
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
         <c:set var="name" scope="request">
-            <c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
+            <c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
         </c:set>
         <c:set var="script" scope="request">
             ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}
@@ -83,7 +83,7 @@
                     </a>
                     <div id="top-panel-main">
                         <div id="builderElementName" style="color:<c:out value="${builderColor}"/>;">
-                            <div class="title"><span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
+                            <div class="title"><span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                             <span id="help-guide-container"></span>
                             <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
                                 <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
