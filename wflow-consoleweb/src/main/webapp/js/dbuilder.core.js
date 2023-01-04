@@ -914,12 +914,15 @@ DatalistBuilder = {
         }
         DatalistBuilder.availableColumns = fields;
         
+        var change = false;
+        
         //remove not exist columns and filters
         var i = CustomBuilder.data.filters.length;
         while (i--) {
             var filter = CustomBuilder.data.filters[i];
             if (DatalistBuilder.availableColumns[filter.name] === undefined) { 
                 CustomBuilder.data.filters.splice(i, 1);
+                change = true;
             } 
         }
         var i = CustomBuilder.data.columns.length;
@@ -927,6 +930,7 @@ DatalistBuilder = {
             var column = CustomBuilder.data.columns[i];
             if (DatalistBuilder.availableColumns[column.name] === undefined) { 
                 CustomBuilder.data.columns.splice(i, 1);
+                change = true;
             } 
         }
         
@@ -934,7 +938,12 @@ DatalistBuilder = {
         if (CustomBuilder.data.orderBy !== undefined && CustomBuilder.data.orderBy !== "") {
             if (DatalistBuilder.availableColumns[CustomBuilder.data.orderBy] === undefined) { 
                 CustomBuilder.data.orderBy = "";
+                change = true;
             }
+        }
+        
+        if (change) {
+            CustomBuilder.update(false);
         }
         
         deferrer.resolve();
@@ -2845,5 +2854,64 @@ DatalistBuilder = {
      */            
     unloadBuilder : function() {
         $("#binder-btn").remove();
-    } 
+    },
+    
+    /*
+     * Check and remove orphaned columns 
+     */ 
+    beforeMerge : function() {
+        var self = CustomBuilder.Builder;
+        
+        var change = false;
+        
+        var ids = [];
+        for(var ee in DatalistBuilder.availableColumns){
+            ids.push(DatalistBuilder.availableColumns[ee].id);
+        }
+        
+        
+        //find all placeholder key
+        var placeholder = [];
+        self.frameBody.find(".dataList [data-placeholder-key]").each(function(){
+            if ($.inArray($(this).data("placeholder-key"), placeholder) === -1) {
+                placeholder.push($(this).data("placeholder-key"));
+            }
+        });
+        
+        //remove unused placeholder in data
+        for (var prop in CustomBuilder.data) {
+            if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) && (prop.indexOf("column") === 0 || prop.indexOf("rowAction") === 0 || prop === "filters")) {
+                if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
+                    if (prop === "columns"  || prop === "rowActions") {
+                        CustomBuilder.data[prop] = [];
+                    } else {
+                        delete CustomBuilder.data[prop];
+                    }
+                    change = true;
+                } else if (prop.indexOf("column") === 0 || prop === "filters") {
+                    var nonExistIndex = [];
+                    
+                    for (var i in CustomBuilder.data[prop]) {
+                        var name = CustomBuilder.data[prop][i].name;
+                        if ($.inArray(name, ids) === -1) {
+                            nonExistIndex.push(i);
+                        }
+                    }
+                    
+                    //remove non exist column
+                    if (nonExistIndex.length > 0) {
+                        nonExistIndex.reverse();
+                        for (var i in nonExistIndex) {
+                            CustomBuilder.data[prop].splice(nonExistIndex[i], 1);
+                            change = true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (change) {
+            CustomBuilder.update(false);
+        }
+    }
 }

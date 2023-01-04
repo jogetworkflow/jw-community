@@ -1270,6 +1270,11 @@
      * Merge the diff between local and remote
      */
     merge: function (callback) {
+        if (CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== "") {
+            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderBeforeMerge"]);
+        }
+        
         // get current remote definition
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.merging'));
         var thisObject = CustomBuilder;
