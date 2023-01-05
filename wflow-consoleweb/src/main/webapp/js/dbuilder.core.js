@@ -10,6 +10,11 @@ DatalistBuilder = {
     filterIndexCounter : 0,
     actionIndexCounter : 0,
     
+    chosenColumns : new Array(),
+    chosenActions : new Array(),
+    chosenRowActions : new Array(),
+    chosenFilters : new Array(),
+
     availableActions : {},
     availableFilters : {},
     availableFormatters : {},
@@ -391,6 +396,8 @@ DatalistBuilder = {
                     }
                 }
                 $("#iframe-wrapper").show();
+                
+                DatalistBuilder.afterUpdate(CustomBuilder.data);
             });
         });
     },
@@ -2912,6 +2919,36 @@ DatalistBuilder = {
         
         if (change) {
             CustomBuilder.update(false);
+        }
+    },
+    
+    /*
+     * update the variables used by other plugins for backward compatible
+     */
+    afterUpdate : function(data) {
+        DatalistBuilder.chosenColumns = [];
+        DatalistBuilder.chosenActions = [];
+        DatalistBuilder.chosenRowActions = [];
+        DatalistBuilder.chosenFilters = [];
+        
+        for (var prop in CustomBuilder.data) {
+            if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) 
+                    && (prop.indexOf("column") === 0  || prop.indexOf("rowAction") === 0 
+                    || prop === "filters" || prop === "actions")) {
+                for (var i in CustomBuilder.data[prop]) {
+                    var id =  CustomBuilder.data[prop][i].id;
+                       
+                    if (prop === "columns") {
+                        DatalistBuilder.chosenColumns[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "rowActions" || prop.indexOf("rowAction") === 0) {
+                        DatalistBuilder.chosenRowActions[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "filters") {
+                        DatalistBuilder.chosenFilters[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "actions") {
+                        DatalistBuilder.chosenActions[id] = CustomBuilder.data[prop][i];
+                    }
+                }
+            }
         }
     }
 }
