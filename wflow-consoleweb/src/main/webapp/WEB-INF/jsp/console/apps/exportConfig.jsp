@@ -36,6 +36,9 @@
                 <div class="form-row">
                     <label for="formdatas"><fmt:message key="console.app.export.label.formdatas"/></label>
                     <div class="form-input">
+                        <label>
+                            <input type="checkbox" class="toggleAll"/> <strong><fmt:message key="console.app.export.label.checkAll"/></strong>
+                        </label>
                         <c:forEach items="${tableNameList}" var="tablename">
                             <label>
                                 <input type="checkbox" name="tablenames" value="${tablename}"/> ${tablename}
@@ -47,6 +50,9 @@
                     <div class="form-row">
                         <label for="userGroups"><fmt:message key="console.app.export.label.userGroups"/></label>
                         <div class="form-input">
+                            <label>
+                                <input type="checkbox" class="toggleAll"/> <strong><fmt:message key="console.app.export.label.checkAll"/></strong>
+                            </label>
                             <c:forEach items="${userGroups}" var="group">
                                 <label>
                                     <input type="checkbox" name="usergroups" value="${group.id}"/> ${group.name}
@@ -83,6 +89,18 @@
                     }
                 }, 100);
                 return true;
+            });
+            
+            $("#exportform .toggleAll").off("change");
+            $("#exportform .toggleAll").on("change", function(){
+                var checked = $(this).is(':checked');
+                $(this).closest(".form-input").find("input[name]").each(function(){
+                    if (checked) {
+                        $(this).prop("checked", true);
+                    } else {
+                        $(this).prop("checked", false);
+                    }
+                });
             });
         });
     </script>
