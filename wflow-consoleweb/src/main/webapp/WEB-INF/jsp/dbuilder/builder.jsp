@@ -32,7 +32,8 @@
                 "saveBuilderProperties" : "DatalistBuilder.saveBuilderProperties",
                 "dataBinderViewInit" : "DatalistBuilder.dataBinderViewInit",
                 "getRuleObject" : "DatalistBuilder.getRuleObject",
-                "builderBeforeMerge" : "DatalistBuilder.beforeMerge"
+                "builderBeforeMerge" : "DatalistBuilder.beforeMerge",
+                "afterUpdate" : "DatalistBuilder.afterUpdate",
             }
         },
         "advanced_tools" : {
