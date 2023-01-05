@@ -5528,6 +5528,9 @@ a {
 #adminBar {
     display:none;
 }
+.form-button, .btn, .button{
+    margin-bottom: 5px !important;
+}
 @media (min-width: 1921px) {
     .horizontal_menu .navbar-inner,
     .horizontal_menu #sidebar #navigation,

@@ -221,7 +221,7 @@ div#header-name img {
 
 header.navbar .header-nav{
     display: inline-block;
-    padding: 13px 0 9px;
+    padding: 13px 0 4px;
     float: right;
 }
 .rtl header.navbar .header-nav {
@@ -252,7 +252,7 @@ header.navbar .header-nav .nav>li>a.btn:focus, header.navbar .header-nav .nav>li
 header.navbar .header-nav .nav>li>a .badge{
     position: absolute;
     font-style: normal;
-    padding: 1px 5px;
+    padding: 1px 10px 1px 5px;
     border-radius: 2px;
     right: 7px;
     top: 0px;
