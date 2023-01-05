@@ -49,11 +49,11 @@ public class SharkCounterDao extends AbstractSpringDao {
                     temp.setMaxNumber(next.getNextNumber() + CACHE_SIZE);
                     
                     //update the next oid
-                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextNumber=?, version=? where name=? and nextNumber=?");
-                    query.setLong(0, temp.getMaxNumber());
-                    query.setInteger(1, next.getVersion() + 1);
-                    query.setString(2, objectName);
-                    query.setLong(3, temp.getNextNumber());
+                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextNumber=?1, version=?2 where name=?3 and nextNumber=?4");
+                    query.setParameter(1, temp.getMaxNumber());
+                    query.setParameter(2, next.getVersion() + 1);
+                    query.setParameter(3, objectName);
+                    query.setParameter(4, temp.getNextNumber());
                     query.executeUpdate();
                     
                     session.flush(); 

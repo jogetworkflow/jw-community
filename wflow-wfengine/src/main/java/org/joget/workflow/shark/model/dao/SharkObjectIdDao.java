@@ -47,9 +47,9 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     temp.setMaxoid(nextOid.getNextoid() + CACHE_SIZE);
                     
                     //update the next oid
-                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=? where nextoid=?");
-                    query.setLong(0, temp.getMaxoid());
-                    query.setLong(1, temp.getNextoid());
+                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=?1 where nextoid=?2");
+                    query.setParameter(1, temp.getMaxoid());
+                    query.setParameter(2, temp.getNextoid());
                     query.executeUpdate();
                     
                     session.flush(); 
