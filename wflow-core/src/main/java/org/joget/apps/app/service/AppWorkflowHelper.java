@@ -127,7 +127,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     if (appPlugin instanceof PropertyEditable) {
                         ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                     }
-                    appPlugin.execute(propertiesMap);
+                    appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
                 }
                 return true;
             }
