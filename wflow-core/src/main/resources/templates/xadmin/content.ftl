@@ -36,11 +36,6 @@ ${menus!}
                     }, 1000); 
                 }
                 initTheme();
-                if (!is_remember && ${is_logged_in?string("true", "false")}) {
-                    window.onbeforeunload = function() {
-                        return "@@xadmin.tabsLostOnceLeave@@";
-                    };
-                }
                 var scrollBar = function(selector, theme, mousewheelaxis) {
                     $(selector).mCustomScrollbar({
                         theme: theme,
