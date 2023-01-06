@@ -148,6 +148,8 @@
     builderItems : null,
     builderItemsLoading : [],
     
+    builderShortcutActionHandlers : [],
+    
     /*
      * Utility method to call a function by name
      */
@@ -256,6 +258,8 @@
             $("#design-btn").trigger("click");
     
             CustomBuilder.updatePresenceIndicator();
+            
+            CustomBuilder.unbindBuilderShortcutActionHandlers();
             
             data = eval("[" + data.trim() + "]")[0];
             
@@ -538,6 +542,9 @@
             container = "body";
         }
         
+        jQuery.hotkeys.options.filterInputAcceptingElements = false;
+        jQuery.hotkeys.options.filterTextInputs = false;
+        
         $(container).find("[data-cbuilder-action]").each(function () {
             var on = "click";
             var target = $(this);
@@ -556,8 +563,15 @@
                 if ($("#quick-nav-bar").hasClass("active")) {
                    $("#closeQuickNav").trigger("click");
                 }
+                
+                var isShortcut = event.type === "keydown";
                 if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
-                    action.call(this, event);
+                    var result = action.call(this, event);
+                    if (result) {
+                        return result;
+                    }
+                } else if (isShortcut) {
+                    return; //let default shortcut key handler to proceed
                 }
                 return false;
             };
@@ -565,14 +579,24 @@
             $(this).on(on, buttonAction);
             if (this.dataset.cbuilderShortcut)
             {
-                $(document).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                $(document).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                CustomBuilder.builderShortcutActionHandlers.push(buttonAction);
+                $(document).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
                 if (window.FrameDocument) {
-                    $(window.FrameDocument).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                    $(window.FrameDocument).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                    $(window.FrameDocument).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
                 }
             }
         });
+    },
+    
+    unbindBuilderShortcutActionHandlers : function() {
+        for (var i in CustomBuilder.builderShortcutActionHandlers) {
+            $(document).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+            if (window.FrameDocument) {
+                $(window.FrameDocument).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+            }
+        }
+        
+        CustomBuilder.builderShortcutActionHandlers = [];
     },
     
     /*
@@ -1199,6 +1223,18 @@
     },
     
     /*
+     * Remove copied element and clear clipboard
+     */
+    clearCopiedElement : function() {
+        var data = CustomBuilder.getCopiedElement();
+        if (data) {
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+".copyTime");
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+".copy");
+            $("#paste-element-btn").addClass("disabled");
+        }
+    },
+    
+    /*
      * Retrieve copied element in cache
      */
     getCopiedElement : function() {
@@ -1322,7 +1358,7 @@
     /*
      * Merge remote change and save
      */
-    mergeAndSave: function() {
+    mergeAndSave: function(event) {
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
             CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
                 $("#save-btn").attr("disabled", "disabled");
@@ -1332,6 +1368,12 @@
         } else {
             $("#save-btn").attr("disabled", "disabled");
             CustomBuilder.merge(CustomBuilder.save);
+        }
+        
+        if (event) {
+            //to stop browser save dialog
+            event.preventDefault();
+            return false;
         }
     }, 
     
@@ -2502,7 +2544,12 @@
     /*
      * Method used for toolbar to copy an element
      */
-    copyElement : function() {
+    copyElement : function(event) {
+        if (event && /textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) {
+            //clear element clipboard
+            CustomBuilder.clearCopiedElement();
+            return true; //to continue to the default handler to copy text
+        }
         if (CustomBuilder.Builder.selectedEl !== null) {
             CustomBuilder.Builder.copyNode();
         }
@@ -2511,7 +2558,10 @@
     /*
      * Method used for toolbar to paste an element
      */
-    pasteElement : function() {
+    pasteElement : function(event) {
+        if (event && /textarea|input|select/i.test(event.target.nodeName) && CustomBuilder.getCopiedElement() === null) {
+            return true; //to continue to the default handler to paste text
+        }
         CustomBuilder.Builder.pasteNode();
     },
     

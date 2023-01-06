@@ -167,7 +167,7 @@
 
       // metaKey is triggered off ctrlKey erronously
       if (event.metaKey && !event.ctrlKey && special !== "meta") {
-        modif += "meta+";
+        modif += "ctrl+"; //Custom: treat meta key as ctrl key
       }
 
       if (event.metaKey && special !== "meta" && modif.indexOf("alt+ctrl+shift+") > -1) {
