@@ -8,7 +8,7 @@
 ;General
 
   ;Name and file
-  Name "Joget DX"
+  Name "Kecak Workflow"
   ;OutFile "joget-installer.exe"
 
   ;Default installation folder
@@ -140,7 +140,7 @@
 
 ;Installer Sections
 
-Section "Joget DX" SecJoget
+Section "Kecak Workflow" SecJoget
 
   SectionIn RO
   SetOutPath "$INSTDIR"
@@ -256,11 +256,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget DX 7"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget DX 7\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Kecak Workflow 7"
+  CreateShortCut "$SMPROGRAMS\Kecak Workflow 7\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Kecak Workflow 7\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Kecak Workflow 7\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Kecak Workflow 7\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -336,7 +336,7 @@ FunctionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget DX Application"
+  LangString DESC_SecJoget ${LANG_ENGLISH} "Core Kecak Workflow Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
   LangString DESC_SecJava ${LANG_ENGLISH} "Java 11 Standard Edition"
   LangString DESC_SecMariaDB ${LANG_ENGLISH} "MariaDB 10 Database Server"
@@ -358,7 +358,7 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget DX 7"
+  RMDir /r "$SMPROGRAMS\Kecak Workflow 7"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre11.0.13"

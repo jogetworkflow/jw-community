@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html manifest="${pageContext.request.contextPath}/web/mobilecache/default">
     <head>
-        <title>Joget DX</title>
+        <title>Kecak Workflow</title>
         <meta name="viewport" content="width=device-width,initial-scale=1"/>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div id="footer">
-                <a href="http://www.joget.com">&copy; Joget DX - Joget Inc</a>
+                <a href="http://www.joget.com">&copy; Kecak Workflow - Joget Inc</a>
             </div>
         </div>
     </body>

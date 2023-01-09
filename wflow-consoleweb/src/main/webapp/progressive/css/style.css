@@ -233,6 +233,7 @@ header.navbar .header-nav{
 
 header.navbar .header-nav .nav>li {
     display: inline-block;
+    background-color: #4591a7;
 }
 header.navbar .header-nav .nav>li>a {
     padding: 0px 10px;
@@ -1564,7 +1565,7 @@ body#welcome:not(#login) #content > main > .ui-html {
     border-right: 1px solid rgba(0,0,0,.12);
 }
 #sidebar li ul li.active a, .main-menu.nav-tabs > li.active > a, .main-menu.nav-tabs .active > a, .main-menu.nav-tabs a.active {
-    color: #555;
+    color: #4591a7;
     font-weight: bold;
 }
 li.mm-profile.user-link {

@@ -1351,7 +1351,7 @@ public class AppUtil implements ApplicationContextAware {
                 
                 Calendar calendar = new Calendar();
                 calendar.getProperties().add(Version.VERSION_2_0);
-                calendar.getProperties().add(new ProdId("-//Joget DX//iCal4j 1.0//EN"));
+                calendar.getProperties().add(new ProdId("-//Kecak Workflow//iCal4j 1.0//EN"));
                 calendar.getProperties().add(CalScale.GREGORIAN);
                 calendar.getProperties().add(Method.REQUEST); 
                 

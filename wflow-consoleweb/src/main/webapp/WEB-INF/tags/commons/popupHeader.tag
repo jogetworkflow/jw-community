@@ -22,7 +22,7 @@
                 ${userviewThemeCss}
             </c:when>
             <c:otherwise>
-                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css?build=<fmt:message key="build.number"/>">
+                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/kecak_v3.css?build=<fmt:message key="build.number"/>">
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">
             </c:otherwise>
         </c:choose>    
