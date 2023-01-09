@@ -3,6 +3,16 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.35
+=================
+31f8e22bc Fixed: wflow-consoleweb - App Center - Inbox notifications causing session can't timeout. T1604 @7.0-SNAPSHOT
+55234bf45 Fixed: wflow-consoleweb - X-admin Theme - Prevent open redirection. T1604 @7.0-SNAPSHOT
+45cfe7a6a Fixed: wflow-consoleweb - App Center - Marketplace - Prevent open redirection. T1604 @7.0-SNAPSHOT
+d1556316e Fixed: wflow-consoleweb - Manage Users - User did not auto remove from organization when removed from all department and grade or an organization. T1744 @7.0-SNAPSHOT
+d80527ae8 Fixed: wflow-consoleweb - Monitoring - Tomcat logs - List does not change when switch page. @7.0-SNAPSHOT
+a69004048 Fixed: wflow-commons - SetupDao - Suppress cluster node license update exception due to node setting deleted when cluster node shutdown. @7.0-SNAPSHOT
+42b9c1dd4 Fixed: wflow-wfengine - Process - Prevent unique constraint issue in cluster environment. T1572 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.34
 =================
 58df6a790 Fixed: wflow-core - Process - Add checking to prevent infinite loop in process migration. @7.0-SNAPSHOT
