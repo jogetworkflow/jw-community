@@ -6,7 +6,7 @@ public enum TriggerTypes {
 	
 	private String code;
 
-	private TriggerTypes(String code) {
+	TriggerTypes(String code) {
 		this.code = code;
 	}
 
