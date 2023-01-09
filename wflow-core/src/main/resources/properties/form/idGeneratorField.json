@@ -50,6 +50,23 @@
         }]
     },
     {
+        name : 'environmentVariableScope',
+        label : '@@form.idgeneratorfield.environmentVariableScope@@',
+        description : '@@form.idgeneratorfield.usePublishedAppVersion.desc@@',
+        type : 'radio',
+        default : '',
+        options : [{
+            value : '',
+            label : '@@form.idgeneratorfield.useCurrentAppVersion@@'
+        }, {
+            value : 'published',
+            label : '@@form.idgeneratorfield.usePublishedAppVersion@@'
+        }, {
+            value : 'latest',
+            label : '@@form.idgeneratorfield.useLatestAppVersion@@'
+        }]
+    },
+    {
         label : '@@form.idgeneratorfield.workflow@@',
         type : 'header'
     },
