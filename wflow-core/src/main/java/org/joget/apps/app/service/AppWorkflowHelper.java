@@ -271,6 +271,8 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         resultList = getParticipantsByRequesterHod(participant, procDefId, procId, requesterUsername);
                     } else if (PackageParticipant.TYPE_REQUESTER_HOD_IGNORE_REPORT_TO.equals(participant.getType())) {
                         resultList = getParticipantsByRequesterHodIgnoreReportTo(participant, procDefId, procId, requesterUsername);
+                    } else if(PackageParticipant.TYPE_REQUESTER_REPORT_TO.equals(participant.getType())) {
+                        resultList = getParticipantsByRequesterReportTo(participant, procDefId, procId, requesterUsername);
                     } else if (PackageParticipant.TYPE_REQUESTER_SUBORDINATES.equals(participant.getType())) {
                         resultList = getParticipantsByRequesterSubordinates(participant, procDefId, procId, requesterUsername);
                     } else if (PackageParticipant.TYPE_REQUESTER_DEPARTMENT.equals(participant.getType())) {
@@ -423,6 +425,29 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
         }
         
+        return resultList;
+    }
+
+    protected List<String> getParticipantsByRequesterReportTo(PackageParticipant participant, String processDefId, String processId, String requesterUsername) {
+        List<String> resultList = new ArrayList<>();
+        ApplicationContext appContext = AppUtil.getApplicationContext();
+        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+        if (participant.getValue() != null && participant.getValue().trim().length() > 0) {
+            WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+            requesterUsername = workflowManager.getUserByProcessIdAndActivityDefId(processDefId, processId, participant.getValue());
+        }
+
+        User requester = directoryManager.getUserByUsername(requesterUsername);
+        if (requester != null && requester.getEmployments() != null && !requester.getEmployments().isEmpty()) {
+            Employment employment = (Employment) requester.getEmployments().iterator().next();
+            if (employment != null
+                    && employment.getEmploymentReportTo() != null
+                    && employment.getEmploymentReportTo().getReportTo() != null
+                    && employment.getEmploymentReportTo().getReportTo().getUserId() != null) {
+                resultList.add(employment.getEmploymentReportTo().getReportTo().getUserId());
+            }
+        }
+
         return resultList;
     }
 
