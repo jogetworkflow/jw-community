@@ -36,6 +36,89 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js"></script>
         <script>
+            var originalActId;
+            var isSubflow=true;
+            function allowDrop(ev) {
+              ev.preventDefault();
+            }
+
+            function leaveDropZone(ev) {
+                if($(ev.target).hasClass('node_label')){
+                    if($(ev.target).parent().hasClass('subflow')){
+                        isSubflow =true;
+                    }else{
+                        if($(ev.target).parent().hasClass('node_active')){
+                            originalActId = $(ev.target).parent().attr('id');
+                            isSubflow=false;
+                        }
+                    }
+                } else {
+                    if($(ev.target).hasClass('subflow')){
+                        isSubflow =true;
+                    }else{
+                        if($(ev.target).hasClass('node_active')){
+                            originalActId = $(ev.target).attr('id');
+                            isSubflow=false;
+                        }
+                    }
+                }
+
+            }
+
+            function drag(ev) {
+                ev.dataTransfer.setData("text", ev.target.id);
+            }
+
+            function drop(ev) {
+                ev.preventDefault();
+                let data = ev.dataTransfer.getData("text");
+                let actId;
+
+                if(isSubflow){
+                    alert("Can't move a running subflow!");
+                    return false;
+                }
+
+                if($(ev.target).hasClass('node_label')){
+                    actId = $(ev.target).parent().attr('id');
+                } else {
+                    actId = $(ev.target).attr('id');
+                }
+
+                if(actId===originalActId){
+                    alert("Can't choose current active activity!");
+                    return false;
+                }
+
+                if($(ev.target).hasClass('node_label')){
+                    $(ev.target).parent().addClass('node_active');
+                } else {
+                    $(ev.target).addClass('node_active');
+                }
+
+                $("[id="+originalActId+"]").removeClass("node_active");
+                if($("[id="+originalActId+"]").hasClass('node_label')){
+                    $("[id="+originalActId+"]").parent().removeClass('node_active');
+                } else {
+                    $("[id="+originalActId+"]").removeClass('node_active');
+                }
+
+                actId = actId.replace('node_','');
+                $(data).removeClass('node_active');
+
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/web/json/workflow/assignment/process/${wfProcess.instanceId}/transfer/" + actId,
+                    type:"GET",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var url = document.URL;
+                        url = url.replace('${wfProcess.instanceId}',data.processId);
+                        window.location = url;
+                    }
+                });
+            }
+
             $(function() {
                 //init ApiClient base url (add to support different context path)
                 ProcessBuilder.ApiClient.baseUrl = "${pageContext.request.contextPath}";
@@ -52,37 +135,50 @@
                     <c:forEach var="activityId" items="${runningActivityIds}">
                     selectedNodes.push("<c:out value="${activityId}"/>");
                     </c:forEach>
+
                     for (var i=0; i<selectedNodes.length; i++) {
                         $("#node_" + selectedNodes[i]).addClass("node_active");
+                        $("#node_" + selectedNodes[i]).clone().attr('id',"#node_" + selectedNodes[i])
+                                .attr('draggable','true').attr('ondragstart','drag(event)')
+                                .insertAfter("#node_" + selectedNodes[i]);
                     }
+
+                    $('.node.activity').each(function(e){
+                        $(this).find('.node_label').attr('tabindex','-1');
+                        $(this).attr('ondrop','drop(event)').attr('ondragover','allowDrop(event)').
+                                attr('ondragleave','leaveDropZone(event)');
+                    });
                 }
             });
         </script>
     </head>
 
     <body id="pviewer">
-        <div id="pviewer-container">
-            <div id="viewport">
-                <div id="canvas"></div>
-            </div>
-            <div id="panel">
-                <div id="controls">                                    
-                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fas fa-search-minus"></i> </a> 
-                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fas fa-search-plus"></i></a> | 
-                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fas fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
+        <section class="content" id="pviewer-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="viewport">
+                        <div id="canvas"></div>
+                    </div>
+                    <div id="panel">
+                        <div id="controls">
+                            <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="icon-zoom-out"></i> </a>
+                            <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="icon-zoom-in"></i></a> |
+                            <a href="#" onclick="$('#config').toggle(); return false"><i class="icon-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
+                        </div>
+                        <div id="config">
+                            <form method="POST">
+                                <textarea id="xpdl" name="xpdl" rows="12" cols="30"><c:out value="${xpdl}" escapeXml="true"/></textarea>
+                                <br />
+                                <input type="hidden" name="editable" value="false"/>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div id="config">
-                    <form method="POST">
-                        <textarea id="xpdl" name="xpdl" rows="12" cols="30"><c:out value="${xpdl}" escapeXml="true"/></textarea>
-                        <br />
-                        <input type="hidden" name="editable" value="false"/>
-                    </form>
-                </div>
-            </div>        
-        </div>
 
-        <div id="builder-message"></div>
-        <div id="builder-screenshot"></div>
-        
+                <div id="builder-message"></div>
+                <div id="builder-screenshot"></div>
+            </div>
+        </section>
     </body>
 </html>

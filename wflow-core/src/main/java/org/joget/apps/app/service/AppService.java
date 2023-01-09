@@ -649,4 +649,12 @@ public interface AppService {
      * @return 
      */
     public Collection<AppDefinition> getUnprotectedAppList();
+
+    /**
+     *
+     * @param packageId
+     * @param fromVersion
+     * @param toVersion
+     */
+    void  updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion);
 }
