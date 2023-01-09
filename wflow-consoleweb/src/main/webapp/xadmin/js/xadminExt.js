@@ -82,34 +82,15 @@
             });
         }
     };
-    win.xadmin.tabMenu = function(tabId, menu) {
-        if (menu !== "") {
-            var menuEl = $(menu);
-            if ($(menuEl).filter("form").length > 0) {
-                return;
-            }
-            var onclick = $(menu).attr("onclick");
-            $("#side-nav a").each(function(){
-                var temp = $(this).attr("onclick");
-                if (temp === onclick) {
-                    if ($(this).hasClass("active")){
-                        $(menuEl).addClass("active");
-                    }
-                    $(this).replaceWith(menuEl);
-                }
-            });
-        }
-    };
     win.xadmin.updateTabTitle = function(title) {
         if (parent && parent.layer && parent.xadmin && $(window.frameElement)) {
             var tabId = $(window.frameElement).attr("tab-id");
             parent.xadmin.tabTitle(tabId, title);
         }
     };
-    win.xadmin.updateMenu = function(menu) {
-        if (parent && parent.layer && parent.xadmin && $(window.frameElement) && menu !== "") {
-            var tabId = $(window.frameElement).attr("tab-id");
-            parent.xadmin.tabMenu(tabId, menu);
+    win.xadmin.updateMenu = function() {
+        if (parent && parent.AjaxMenusCount) {
+            parent.AjaxMenusCount.init();
         }
     };
 

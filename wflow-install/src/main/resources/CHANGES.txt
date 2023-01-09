@@ -3,6 +3,24 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.34
+=================
+58df6a790 Fixed: wflow-core - Process - Add checking to prevent infinite loop in process migration. @7.0-SNAPSHOT
+d5b33ebe4 Fixed: wflow-commons - Fixed form Image Upload, thumbnail show in portrait mode but photos taken in landscape. #T1200. @7.0-SNAPSHOT
+7e67c2609 Fixed: jw-community - Update jQuery UI to 1.13.2 for CVE-2022-31160. @7.0-SNAPSHOT
+32b988857 Fixed: wflow-core - Date Picker - Date picker can't work with date limit when the date format is without day syntax. T1673 @7.0-SNAPSHOT
+252f63cca Modified: wflow-core - JSON Tool - Added {} annotation to handle the keys which contains ".". @7.0-SNAPSHOT
+0d2e8d55b Fixed: wflow-wfengine - Workflow Manager - Process completed checking run even when activity on created and running state. T1513 @7.0-SNAPSHOT
+14b9e83b5 Fixed: wflow-wfengine - Process - Tool abort itself using JSON API but process still continue to next activity. T1513 @7.0-SNAPSHOT
+6e2ce04d1 Fixed: wflow-core - User Profile Menu - Validate input length. T1604 @7.0-SNAPSHOT
+a020eaa4d Fixed: wflow-consoleweb - Fixed Issue cant find the control field if the target field is on another page level. #T1598 @7.0-SNAPSHOT
+b93cced4f Fixed: wflow-core - Form - Store binders under visibility hidden section is still executed. T1640 @7.0-SNAPSHOT
+9a77f508a Fixed: wflow-core - User Profile Menu - Prevent XSS. T1604 @7.0-SNAPSHOT
+2e33ea3bc Fixed: wflow-core - Form Section Visibility - fails if on checkbox set to readonly. @7.0-SNAPSHOT #T1624
+28d803e14 Modified: wflow-core - UI Theme - Retrieve menu count in separated AJAX call. @7.0-SNAPSHOT
+3c0ba2094 Fixed: wflow-wfengine - WorkflowManager - XPDL return null in multitenant environment. @7.0-SNAPSHOT
+977fe76b2 Fixed: wflow-core - AppDevUtil - Git having file permission issue during heavy concurrent requests on multitenant environment. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.33
 =================
 e0a3dd64c Modified: wflow-core - Update jackson-annotations & jackson-core to 2.13.4 and jackson-databind to 2.13.4.2 for CVE-2022-42003 and CVE-2022-42004. @7.0-SNAPSHOT

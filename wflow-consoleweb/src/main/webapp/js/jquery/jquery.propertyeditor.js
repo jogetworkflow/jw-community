@@ -506,7 +506,7 @@ PropertyEditor.Util = {
             if (page.parentId !== "" && page.parentId !== undefined) {
                 var parentId = page.parentId.substring(1);
                 if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
+                    fields = jQuery.extend({}, fields, fields[parentId].fields);
                 }
             }
             field = fields[control_field];
