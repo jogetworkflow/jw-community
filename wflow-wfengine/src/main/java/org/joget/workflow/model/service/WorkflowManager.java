@@ -1053,4 +1053,12 @@ public interface WorkflowManager {
      * @return 
      */
     public WorkflowAssignment getNextAssignmentByCurrentAssignment(WorkflowAssignment assignment);
+
+    /**
+     * Transfer current assingment to target activity
+     * @param currentProcessId
+     * @param targetActivity
+     * @return
+     */
+    WorkflowProcessResult assignmentTransfer(String currentProcessId, String targetActivity);
 }

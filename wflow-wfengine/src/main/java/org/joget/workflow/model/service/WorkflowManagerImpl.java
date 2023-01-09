@@ -1,5 +1,7 @@
 package org.joget.workflow.model.service;
 
+import org.enhydra.shark.api.client.wfmc.wapi.*;
+import org.enhydra.shark.api.client.wfservice.*;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.*;
@@ -11,18 +13,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.enhydra.dods.jts.LocalContextFactory;
 import org.enhydra.shark.Shark;
-import org.enhydra.shark.api.client.wfmc.wapi.WAPI;
-import org.enhydra.shark.api.client.wfmc.wapi.WMAttribute;
-import org.enhydra.shark.api.client.wfmc.wapi.WMAttributeIterator;
-import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
-import org.enhydra.shark.api.client.wfmc.wapi.WMFilter;
-import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.WfActivity;
 import org.enhydra.shark.api.client.wfmodel.WfActivityIterator;
 import org.enhydra.shark.api.client.wfmodel.WfAssignment;
@@ -31,14 +28,6 @@ import org.enhydra.shark.api.client.wfmodel.WfProcessIterator;
 import org.enhydra.shark.api.client.wfmodel.WfProcessMgr;
 import org.enhydra.shark.api.client.wfmodel.WfRequester;
 import org.enhydra.shark.api.client.wfmodel.WfResource;
-import org.enhydra.shark.api.client.wfservice.AdminMisc;
-import org.enhydra.shark.api.client.wfservice.ExecutionAdministration;
-import org.enhydra.shark.api.client.wfservice.PackageAdministration;
-import org.enhydra.shark.api.client.wfservice.SharkConnection;
-import org.enhydra.shark.api.client.wfservice.WMEntity;
-import org.enhydra.shark.api.client.wfservice.WMEntityIterator;
-import org.enhydra.shark.api.client.wfservice.WfProcessMgrIterator;
-import org.enhydra.shark.api.client.wfservice.XPDLBrowser;
 import org.enhydra.shark.api.common.ActivityFilterBuilder;
 import org.enhydra.shark.api.common.ProcessFilterBuilder;
 import org.enhydra.shark.api.common.SharkConstants;
@@ -65,7 +54,6 @@ import org.enhydra.shark.CustomWfProcessImpl;
 import org.enhydra.shark.CustomWfResourceImpl;
 import org.enhydra.shark.SharkUtil;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
-import org.enhydra.shark.api.client.wfservice.PackageInvalid;
 import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
@@ -5663,5 +5651,53 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return nextAss;
+    }
+
+    @Override
+    public WorkflowProcessResult assignmentTransfer(@Nonnull String currentProcessId, @Nonnull String targetActivityId) {
+        String newProcessDefId = getProcessDefIdByInstanceId(currentProcessId);
+
+        if (newProcessDefId.isEmpty()) {
+            LogUtil.warn(getClass().getName(), "Process Definition [" + newProcessDefId + "] not available");
+            return null;
+        }
+
+        WorkflowProcessResult result = new WorkflowProcessResult();
+
+        try {
+            Map<String, Object> activitiesTree = getRunningActivitiesTree(currentProcessId);
+            if (activitiesTree != null && !activitiesTree.isEmpty()) {
+                Map.Entry<String, Object> currentActivityEntry = activitiesTree.entrySet().iterator().next();
+
+                Map<String, Object> newActivitiesTree = new HashMap<>();
+                newActivitiesTree.put(targetActivityId, currentActivityEntry.getValue());
+
+                // get current variable values
+                Collection<WorkflowVariable> variableList = getProcessVariableList(currentProcessId);
+                Map<String, String> variableMap = new HashMap<>();
+                for (WorkflowVariable variable : variableList) {
+                    String val = (variable.getVal() != null) ? variable.getVal().toString() : null;
+                    variableMap.put(variable.getId(), val);
+                }
+
+                String starter = getUserByProcessIdAndActivityDefId(newProcessDefId, currentProcessId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+                result = processStart(newProcessDefId, null, variableMap, starter, currentProcessId, true);
+                WorkflowProcess processStarted = result.getProcess();
+
+                if (processStarted != null) {
+                    String newProcessId = processStarted.getInstanceId();
+                    result.setActivities(new ArrayList<>());
+                    startActivitiesBasedOnActivitiesTree(newProcessId, newActivitiesTree, result);
+
+                    // abort old process if required
+                    processAbort(currentProcessId);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(WorkflowManagerImpl.class.getName(), e, "Error copy process instance - " + currentProcessId);
+        }
+
+        // return process result
+        return result;
     }
 }
