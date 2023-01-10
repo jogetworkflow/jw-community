@@ -58,10 +58,6 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     return temp;
                 }
             } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                
                 retry = true;
                 
                 //retry when update fail for 50 times

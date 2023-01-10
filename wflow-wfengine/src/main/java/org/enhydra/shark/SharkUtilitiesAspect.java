@@ -391,12 +391,7 @@ public class SharkUtilitiesAspect {
             counterCachesNext.put(profile + "::" + objectName, nextCounter);
         } else if (result == null) {
             //counter record not exist
-            pjp.proceed(pjp.getArgs());
-            
-            counterCachesMax.put(profile + "::" + objectName, counterCachesMax.get(objectName));
-            counterCachesNext.put(profile + "::" + objectName, counterCachesNext.get(objectName));
-            
-            LogUtil.info(SharkUtilitiesAspect.class.getName(), "Cache counter range for "+objectName+" : [" + counterCachesNext.get(objectName) + " - " + counterCachesMax.get(objectName) + "]");
+            throw new ObjectIdAllocationError("Failed to allocate counter for "+objectName+".");
         }
     }
 }
