@@ -61,7 +61,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
             }
             if (processor.getRedirectUrl() != null && !processor.getRedirectUrl().isEmpty() && !isCurrentUserviewUrl(processor.getRedirectUrl())) {
-                data.put("content", "<script>top.location.href = \""+processor.getRedirectUrl()+"\";</script>");
+                String redirectUrl = processor.getRedirectUrl(); //the redirect url from UserviewThemeProcesser.handleMenuResponse() usually without context path
+                if (redirectUrl.startsWith("/web/")) {
+                    redirectUrl = data.get("context_path") + redirectUrl;
+                }
+                data.put("content", "<script>top.location.href = \""+redirectUrl+"\";</script>");
                 processor.setRedirectUrl(null);
             }
             
