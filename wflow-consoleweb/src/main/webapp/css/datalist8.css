@@ -289,7 +289,8 @@ body.rtl .dataList span.pagelinks{
     text-align: center;
 }
 .dataList .rowaction_body a:not(.stretched-link),
-.dataList a.rowaction_body:not(.stretched-link) {
+.dataList a.rowaction_body:not(.stretched-link),
+.dataList .column_body a {
     z-index: 2;
     position: relative;
 }
