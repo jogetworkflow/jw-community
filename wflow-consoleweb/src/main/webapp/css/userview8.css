@@ -500,6 +500,11 @@ body.rtl:not(.horizontal_menu) #sidebar .nav-tabs.user-menu .mm-profile > a{
     transform: translateY(-50%);
 }
 
+body.rtl #sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
+    left: unset;
+    right: 0;
+}
+
 /* sidebar trigger */
 .hi-trigger {
     position: absolute;

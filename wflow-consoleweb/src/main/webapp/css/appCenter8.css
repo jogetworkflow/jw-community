@@ -1,11 +1,3 @@
-#mCSB_1_container > ul.user-menu.nav.nav-tabs.nav-stacked.main-menu > li > a > span{
-    text-align: center;
-}
-#mCSB_1_container > ul.user-menu.nav.nav-tabs.nav-stacked.main-menu > li > a > small{
-    text-align: center;
-    display: block;
-}
-
 body #content{
      padding: 85px 5%!important;
 }
@@ -49,6 +41,8 @@ body.popupBody{
 }
 #sidebar .user-menu > li > a > small {
     padding: 0px 0 0 0px;
+    text-align: center;
+    display: block;
 }
 #sidebar .user-menu > li > a > span {
     text-align:center;   
@@ -58,8 +52,14 @@ body.popupBody{
     margin-top: 25px;
     position: relative;
 }
+body.rtl #sidebar .user-menu > li > a > img {
+    margin-left: 55px;
+}
 #sidebar .nav > li > ul > li > a{
     padding: 10px 15px 10px 38px;
+}
+body.rtl #sidebar .nav > li > ul > li > a{
+    padding: 10px 15px 10px 15px !important;
 }
 #sidebar .nav > li > a > span:not(.badge) {
     min-height: 0px;
