@@ -3718,16 +3718,28 @@ _CustomBuilder.Builder = {
         if (parent.length === 0) {
             parent = $(node).closest("body");
         }
-        var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+        
+        var parentDataHolder = component.builderTemplate.getParentDataHolder(elementObj, component);
+        
+        if (parentDataHolder === null) { //if it is missing plugin, this will return null. getting it from parent element
+            var parentObj = $(parent).data("data");
+            if (parentObj) {
+                var parentComponent = self.parseDataToComponent(parentObj);
+                parentDataHolder = parentComponent.builderTemplate.getChildsDataHolder(parentObj, parentComponent);
+            } else {
+                parentDataHolder = component.builderTemplate.parentDataHolder; //default back to "elements"
+            }
+        }
+        
+        var parentDataArray = $(parent).data("data")[parentDataHolder];
         if (parentDataArray === undefined) {
             parentDataArray = [];
-            $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)] = parentDataArray;
+            $(parent).data("data")[parentDataHolder] = parentDataArray;
         }
         var index = $.inArray($(node).data("data"), parentDataArray);
         if (index !== -1) {
             parentDataArray.splice(index, 1);
         }
-
 
         if (component.builderTemplate.unload)
             component.builderTemplate.unload($(node), elementObj, component);
@@ -5026,6 +5038,7 @@ _CustomBuilder.Builder = {
     },
     
     missingComponent: function (className) {
+        console.log(className);
         CustomBuilder.Builder.frameBody.find("[data-cbuilder-classname='"+className+"']").attr("data-cbuilder-missing-plugin", "");
         
         CustomBuilder.initPaletteElement("", className, get_advtool_msg('dependency.tree.Missing.Plugin') + " ("+className+")", "", "", "", false, "", {builderTemplate: {
@@ -5039,6 +5052,9 @@ _CustomBuilder.Builder = {
                 } else if (callback) {
                     newcallback(element);
                 }
+            },
+            'getParentDataHolder' : function(elementObj, component) {
+                return null;
             },
             'supportProperties' : false,
             'supportStyle' : false,
