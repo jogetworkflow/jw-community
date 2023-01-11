@@ -61,13 +61,21 @@ public class SharkCounterDao extends AbstractSpringDao {
                     
                     return temp;
                 } else {
-                    return null;
+                    temp.setName(objectName);
+                    temp.setNextNumber(1 + CACHE_SIZE);
+                    temp.setVersion(0);
+                    temp.setOid(Math.abs(objectName.hashCode()) + 0l);
+                    
+                    session.save(ENTITY_NAME, temp);
+                    
+                    session.flush(); 
+                    transaction.commit();
+                    
+                    temp.setNextNumber(1l);
+                    temp.setMaxNumber(1 + CACHE_SIZE);
+                    return temp;
                 }
             } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                
                 retry = true;
                 
                 //retry when update fail for 50 times
