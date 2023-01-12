@@ -482,7 +482,11 @@ public class FormUtil implements ApplicationContextAware {
     public static boolean executeValidators(Element element, FormData formData) {
         String id = FormUtil.getElementParameterName(element);
         formData.getPreviousFormErrors().remove(id);
-                
+
+        // ignoring validation
+        if(!formData.getDoValidation())
+            return true;
+
         boolean result = true;
         if (!FormUtil.isReadonly(element, formData) && element.continueValidation(formData)) {
             Validator validator = (Validator) element.getValidator();

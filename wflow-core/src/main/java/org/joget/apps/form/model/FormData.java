@@ -35,12 +35,23 @@ public class FormData {
     protected Map<Element, Map<String, List<Element>>> elementMap = new HashMap<Element, Map<String, List<Element>>>();
     protected boolean elementMapBuildingInProgress = false;
 
+    protected Boolean validation = true;
+
     public Boolean getStay() {
         return stay;
     }
 
     public void setStay(Boolean stay) {
         this.stay = stay;
+    }
+
+
+    public Boolean getDoValidation() {
+        return validation == null || validation;
+    }
+
+    public void setDoValidation(Boolean validation) {
+        this.validation = validation;
     }
 
     public String getPrimaryKeyValue() {

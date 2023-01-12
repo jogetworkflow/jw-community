@@ -267,7 +267,7 @@ public class FormServiceImpl implements FormService {
     public FormData submitForm(Form form, FormData formData, boolean ignoreValidation) {
         FormData updatedFormData = formData;
         updatedFormData = FormUtil.executeElementFormatDataForValidation(form, formData);
-        if (!ignoreValidation) {
+        if (!ignoreValidation || !formData.getDoValidation()) {
             updatedFormData = validateFormData(form, formData);
         } else {
             updatedFormData.clearFormErrors();
