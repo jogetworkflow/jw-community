@@ -238,7 +238,8 @@ body#home #content{
 #home .dataList .exportlinks{
     display:none;    
 }
-#home #dataList_applist .card:hover .card-actions a{
+#home #dataList_applist .card:hover .card-actions a,
+#home #dataList_applist .card-icon:hover .card-actions a{
     display:block !important;
 }
 #home form.customLogin {
@@ -276,8 +277,9 @@ body#home #home_column .row{
 #dataList_applist > form > div > div.template_pagelinks{
     float: right !important;
 }
-#dataList_applist > form > div > div.cards.row > div > div > div > h5 > div{
-    border-radius: 10px;
+#dataList_applist > form > div > div.cards.row > div > div > h5 > div,
+#dataList_applist > form > div > div.cards.row > div > div > div{
+    border-radius: 20% !important;
 }
 
 #admin #content .InformationTileComponent {
@@ -305,13 +307,13 @@ body#home #home_column .row{
     background-color:transparent;
 }
 #templates #content .card {
-  border-radius: 16px;
+  border-radius: 10px;
   margin: 0 auto;
   width: 500px;
   max-width: 100%;
   min-height: 300px;
   overflow: hidden;
-  background-size: 100% 71% !important;
+  background-size: 100% 90% !important;
   box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
   position:relative;
 }
@@ -324,6 +326,7 @@ body#home #home_column .row{
         translateY(-88px)
         translateZ(0);
     transition: transform 0.5s ease-out;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
 }
 #templates #content .card:hover .card-body{
     transform: translateY(0);
