@@ -4548,6 +4548,9 @@ ProcessBuilder = {
      * escape unsafe char in xml attr value
      */                
     escapeXml : function(unsafe) {
+        if (unsafe === undefined || unsafe === null || unsafe === "") {
+            return unsafe;
+        }
         return unsafe.replace(/[<>&'"]/g, function (c) {
             switch (c) {
                 case '<': return '&lt;';
