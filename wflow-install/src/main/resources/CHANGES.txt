@@ -3,6 +3,10 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.36
+=================
+9b99d1caf Fixed: wflow-wfengine - Process Builder - Shark duplicate id issue in long transaction. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.35
 =================
 31f8e22bc Fixed: wflow-consoleweb - App Center - Inbox notifications causing session can't timeout. T1604 @7.0-SNAPSHOT
