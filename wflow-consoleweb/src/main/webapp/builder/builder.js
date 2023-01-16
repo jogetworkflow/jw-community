@@ -706,7 +706,11 @@
             return CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getBuilderItemName"], []);
         } else {
             var props = CustomBuilder.getBuilderProperties();
-            return props['name'];
+            if (props) {
+                return props['name'];
+            } else {
+                return null;
+            }
         }
     },
     
@@ -1046,10 +1050,12 @@
                 
                 //check builder name change
                 var name = CustomBuilder.getBuilderItemName();
-                if ($("#builderElementName .title span.item_name").text() !== name) {
-                    $("#builderElementName .title span.item_name").text(name);
-                    
-                    $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
+                    if (name !== null) {
+                        $("#builderElementName .title span.item_name").text(name);
+
+                        $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                    }
                     
                     //reload nav
                     CustomBuilder.reloadBuilderMenu();
