@@ -1,24 +1,31 @@
 package org.joget.plugin.enterprise;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserDao;
+import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.User;
+import org.joget.directory.model.UserMetaData;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.directory.model.service.UserSecurity;
@@ -27,8 +34,11 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 public class UserProfileMenu extends UserviewMenu {
+    
+    private static final SimpleDateFormat EN = new SimpleDateFormat("HH", new Locale("en"));
 
     @Override
     public String getClassName() {
@@ -142,6 +152,12 @@ public class UserProfileMenu extends UserviewMenu {
         
         SetupManager setupManager = (SetupManager) ac.getBean("setupManager");
         String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
+        
+        List<String> nonWesternDigitLocale = new ArrayList<String>();
+        if (isNonWesternDigitDate("")) {
+            nonWesternDigitLocale.add("DEFAULT");
+        }
+        
         Map<String, String> localeStringList = new TreeMap<String, String>();
         if(enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
             String userLocale = setupManager.getSettingValue("userLocale");
@@ -153,9 +169,22 @@ public class UserProfileMenu extends UserviewMenu {
                 String code = localeList[x].toString();
                 if (locales.contains(code)) {
                     localeStringList.put(code, code + " - " +localeList[x].getDisplayName());
+                    if (isNonWesternDigitDate(code)) {
+                        nonWesternDigitLocale.add(code);
+                    }
                 }
             }
         }
+        
+        UserMetaDataDao umdd = (UserMetaDataDao) AppUtil.getApplicationContext().getBean("userMetaDataDao");
+        UserMetaData data = umdd.getUserMetaData(user.getUsername(), "dateFormatUseEnglish");
+        if (data != null) {
+            setProperty("dateFormatUseEnglish", data.getValue());
+        } else {
+            setProperty("dateFormatUseEnglish", "");
+        }
+        
+        setProperty("nonWesternDigitLocale", StringUtils.join(nonWesternDigitLocale, ";"));
         setProperty("enableUserLocale", enableUserLocale);
         setProperty("localeStringList", localeStringList);
         
@@ -189,7 +218,7 @@ public class UserProfileMenu extends UserviewMenu {
         Collection<String> passwordErrors = new ArrayList<String>();
         
         //validate input length & value
-        String[] fields = new String[]{"firstName", "lastName", "email", "password", "confirmPassword", "oldPassword", "timeZone", "locale"};
+        String[] fields = new String[]{"firstName", "lastName", "email", "password", "confirmPassword", "oldPassword", "timeZone", "locale", "dateFormatUseEnglish"};
         for (String f : fields) {
             String v = getRequestParameterString(f);
             if (v != null) {
@@ -285,6 +314,37 @@ public class UserProfileMenu extends UserviewMenu {
 
             if (currentUser.getUsername().equals(getRequestParameterString("username"))) {
                 userDao.updateUser(currentUser);
+                
+                String dateFormatUseEnglish = getRequestParameterString("dateFormatUseEnglish");
+                if (!"true".equals(dateFormatUseEnglish) || !isNonWesternDigitDate(getRequestParameterString("locale"))) {
+                    dateFormatUseEnglish = "";
+                }
+
+                UserMetaDataDao umdd = (UserMetaDataDao) AppUtil.getApplicationContext().getBean("userMetaDataDao");
+                UserMetaData data = umdd.getUserMetaData(currentUser.getUsername(), "dateFormatUseEnglish");
+                if (data == null) {
+                    if (!dateFormatUseEnglish.isEmpty()) {
+                        data = new UserMetaData();
+                        data.setKey("dateFormatUseEnglish");
+                        data.setUsername(currentUser.getUsername());
+                        data.setValue(dateFormatUseEnglish);
+                        umdd.addUserMetaData(data);
+                        
+                        workflowUserManager.setCurrentUserTempData("dateFormatUseEnglish", "true");
+                    }
+                } else {
+                    if (!dateFormatUseEnglish.isEmpty()) {
+                        data.setValue(dateFormatUseEnglish);
+                        umdd.updateUserMetaData(data);
+                        
+                        workflowUserManager.setCurrentUserTempData("dateFormatUseEnglish", "true");
+                    } else {
+                        umdd.deleteUserMetaData(currentUser.getUsername(), "dateFormatUseEnglish");
+                        
+                        workflowUserManager.setCurrentUserTempData("dateFormatUseEnglish", "");
+                    }
+                }
+                
                 if (us != null) {
                     us.updateUserProfilePostProcessing(currentUser);
                 }
@@ -303,6 +363,38 @@ public class UserProfileMenu extends UserviewMenu {
         } else {
             viewForm(currentUser);
         }
+    }
+    
+    protected boolean isNonWesternDigitDate(String locale) {
+        if (locale == null || locale.isEmpty()) {
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            locale = setupManager.getSettingValue("systemLocale");
+        }
+        Date t = new Date();
+        try {
+            String[] temp = locale.split("_");
+            Locale localeObj = null;
+            switch (temp.length) {
+                case 1:
+                    localeObj = new Locale(temp[0]);
+                    break;
+                case 2:
+                    localeObj = new Locale(temp[0], temp[1]);
+                    break;
+                case 3:
+                    localeObj = new Locale(temp[0], temp[1], temp[2]);
+                    break;
+                default:
+                    localeObj = LocaleContextHolder.getLocale();
+                    break;
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("HH", localeObj);
+            
+            return !EN.format(t).equals(sdf.format(t));
+        } catch (Exception e) {
+            LogUtil.warn(getClassName(), e.getMessage());
+        }
+        return false;
     }
 
     @Override

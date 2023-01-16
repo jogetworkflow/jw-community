@@ -127,7 +127,7 @@ public class TimeZoneUtil {
      * @return Date in converted String 
      */
     public static String convertToTimeZone(Date time, String gmt, String format) {
-        return convertToTimeZone(time, gmt, format, null);
+        return convertToTimeZoneWithLocale(time, gmt, format, null);
     }
     
     /**
@@ -138,7 +138,7 @@ public class TimeZoneUtil {
      * @param locale
      * @return Date in converted String 
      */
-    public static String convertToTimeZone(Date time, String gmt, String format, String locale) {
+    public static String convertToTimeZoneWithLocale(Date time, String gmt, String format, String locale) {
         if (time == null) {
             return "";
         }

@@ -154,6 +154,14 @@
                         </span>
                     </div>
                 </#if>
+
+                <div id="dateFormatUseEnglish_field" class="form-row" style="display:none" data-nonwestern="${element.properties.nonWesternDigitLocale!}">
+                    <label for="field1">@@userview.userprofilemenu.field.dateFormatUseEnglish@@</label>
+                    <span class="form-input">
+                        <input type="checkbox" id="dateFormatUseEnglish" name="dateFormatUseEnglish" value="true" disabled <#if 'true' == element.properties.dateFormatUseEnglish!>checked</#if>/>
+                    </span>
+                </div>
+
             </fieldset>
             <#if element.properties.f_password! != 'hide'>
                 <fieldset>
@@ -219,6 +227,38 @@
                     alert(alertString);
                 }
             }
+
+            // show/hide the field based on current locale and the chosen locale
+            function updateWesternDigitDateField() {
+                var locale = "";
+                if ($("#locale").length > 0) {
+                    locale = $("#locale").val();
+                }
+                if (locale === "") {
+                    locale = "DEFAULT";
+                }
+                
+                var nonWesternDigit = $("#dateFormatUseEnglish_field").data("nonwestern").split(";");
+                
+                if ($.inArray(locale, nonWesternDigit) !== -1) {
+                    $("#dateFormatUseEnglish_field").show();
+                    $("#dateFormatUseEnglish").prop("disabled", false);
+                } else {
+                    $("#dateFormatUseEnglish_field").hide();
+                    $("#dateFormatUseEnglish").prop("disabled", true);
+                }
+            }
+
+            $(function(){
+                updateWesternDigitDateField();
+
+                if ($("#locale").length > 0) {
+                    $("#locale").off("change.westernDigitDateField");
+                    $("#locale").on("change.westernDigitDateField", function(){
+                        updateWesternDigitDateField();
+                    });
+                }
+            });
         </script>
     <#else>
         <p>
