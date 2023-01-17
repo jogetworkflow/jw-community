@@ -290,7 +290,7 @@ public class PropertyUtil implements ApplicationContextAware {
                         if (s.contains(PASSWORD_PROTECTED_VALUE)) {
                             newJson = newJson.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(passwordProperty.get(s)));
                         } else {
-                            String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
+                            String tempS = StringUtil.unescapeJSON(s).replaceAll(SecurityUtil.ENVELOPE, "");
                             tempS = SecurityUtil.encrypt(tempS);
 
                             newJson = newJson.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(tempS));
