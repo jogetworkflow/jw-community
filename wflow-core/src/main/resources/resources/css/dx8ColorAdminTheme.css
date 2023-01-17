@@ -362,10 +362,17 @@ footer{
 }
 
 body#login #page #content {
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.9));
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.2));
 }
 body#login #loginForm{
     background: transparent;
+    box-shadow: none;
+}
+#loginForm > div > h1 {
+    color: #fff;
+}
+body#login label {
+    color: #fff;
 }
 #loginForm table{
     width: 350px;

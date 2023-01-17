@@ -256,8 +256,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String name = "<div class=\"login_form_brand\">";
         if (!getPropertyString("logo").isEmpty()) {
             name += "<div class=\"login_form_logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>";
+        } else {
+            name += "<div class=\"login_form_logo_container\"><i class=\"fas fa-user-circle\"></i></div>";
         }
-        name += "<h1>" + userview.getPropertyString("name") + "</h1></div>";
+        name += "<h1>Login to " + userview.getPropertyString("name") + "</h1></div>";
         data.put("login_form_inner_before", name);
         return super.getLoginForm(data);
     }

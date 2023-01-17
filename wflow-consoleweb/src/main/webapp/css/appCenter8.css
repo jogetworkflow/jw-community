@@ -5,6 +5,11 @@ body.popupBody{
     color:#333 !important;
 }
 
+body#login #loginForm{
+    background: transparent;
+    box-shadow: none;
+}
+
 #sidebar-trigger{
     display: none;
 }
