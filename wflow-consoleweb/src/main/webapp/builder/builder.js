@@ -1037,7 +1037,8 @@
                 var d = JSON.decode(data);
                 if(d.success == true){
                     $("#save-btn").removeClass("unsaved");
-                    $('#cbuilder-json-original').val(json);
+                    CustomBuilder.savedJson = json;
+                    $('#cbuilder-json-original').val(CustomBuilder.processJsonProtectedValue(json));
                     CustomBuilder.updateSaveStatus("0");
                     CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
 
@@ -1070,6 +1071,26 @@
                 $("#save-btn").removeAttr("disabled");
             }, 1000);
         }
+    },
+    
+    //the protected value in saved json need to change to %%%%****SECURE_VALUE****-X%%%%, else the merge will incorrectly handle it.
+    processJsonProtectedValue : function(json) {
+        if (json.indexOf("%%%%") !== -1) {
+            var regex = /%%%%((?!%%%%).)*%%%%/g;
+            var matches = json.match(regex);
+            
+            var found = []; //filter out same values
+            for (var i in matches) {
+                if ($.inArray(matches[i], found) === -1) {
+                    found.push(matches[i]);
+                }
+            }
+            
+            for (var i in found) {
+                json = json.replace(found[i], "%%%%****SECURE_VALUE****-"+i+"%%%%");
+            }
+        }
+        return json;
     },
 
     /*
@@ -2687,7 +2708,8 @@
             });
         }
         
-        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val() && !hasChange){
+        if(((CustomBuilder.savedJson !== undefined && CustomBuilder.savedJson === $('#cbuilder-json').val()) ||
+            ($('#cbuilder-json-original').val() === $('#cbuilder-json').val())) && !hasChange){
             return true;
         }else{
             return false;
