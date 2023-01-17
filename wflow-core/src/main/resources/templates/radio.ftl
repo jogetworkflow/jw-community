@@ -1,6 +1,10 @@
 <div class="form-cell" ${elementMetaData!}>
     <label  field-tooltip="${elementParamName!}" class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <div class="form-cell-value" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    <#if (element.properties.fullWidth?? && element.properties.fullWidth! != "" && element.properties.fullWidth! == 'true') >
+        <div class="form-cell-value fullWidth" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    <#else>
+        <div class="form-cell-value" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    </#if>
     <#list options as option>
         <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
             <#if value?? && value == option.value!>
