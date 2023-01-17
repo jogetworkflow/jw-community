@@ -199,7 +199,13 @@ textarea{
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
+    float: left;
+    width: 50%;
+}
+.form-cell-value.fullWidth > label,
+.subform-cell-value.fullWidth > label{
     width: auto;
+    float: unset;
 }
 .form-cell-value > label:last-child,
 .subform-cell-value > label:last-child{

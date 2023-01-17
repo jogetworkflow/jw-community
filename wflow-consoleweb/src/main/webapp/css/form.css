@@ -195,6 +195,11 @@
     float: left;
     width: 50%;
 }
+.form-cell-value.fullWidth > label,
+.subform-cell-value.fullWidth > label{
+    width: auto;
+    float: unset;
+}
 .form-cell-full {
     width: 100%;
 }
