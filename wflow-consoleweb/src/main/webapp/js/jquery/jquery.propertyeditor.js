@@ -1904,6 +1904,7 @@ PropertyEditor.Model.Editor.prototype = {
         if (this.options.closeAfterSaved && !this.options.isPopupDialog) {
             this.clear();
         }
+        this.initialValues = data;
     },
     saveFailureCallback: function(errors) {
         var thisObj = this;
