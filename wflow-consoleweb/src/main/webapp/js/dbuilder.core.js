@@ -2891,7 +2891,7 @@ DatalistBuilder = {
                 if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
                     if (prop === "columns"  || prop === "rowActions") {
                         CustomBuilder.data[prop] = [];
-                    } else {
+                    } else if (prop.indexOf("-style-") === -1) {
                         delete CustomBuilder.data[prop];
                     }
                     change = true;
