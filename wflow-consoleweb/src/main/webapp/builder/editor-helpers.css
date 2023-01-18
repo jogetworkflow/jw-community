@@ -140,10 +140,7 @@ body [data-cbuilder-tablet-invisible]::after {
     display: flex;
     align-items: center;
     justify-content: center; }
-body [data-cbuilder-invisible]::after,
-body [data-cbuilder-desktop-invisible]::after,
-body [data-cbuilder-mobile-invisible]::after,
-body [data-cbuilder-tablet-invisible]::after {
+body [data-cbuilder-invisible][data-cbuilder-label]::after{
     content: attr(data-cbuilder-label);
     justify-content: left; 
     padding-left: 15px;

@@ -5824,7 +5824,7 @@ _CustomBuilder.Builder = {
         if (!$(node).is('[data-cbuilder-uneditable]')) {
             var temp = $('<div>'+$(node).html()+'</div>');
             $(temp).find('style').remove();
-            if ($(node).is('div, p') && $(temp).html() === "") {
+            if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
                 var height = $(node).outerHeight(false);
