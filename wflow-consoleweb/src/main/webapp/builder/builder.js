@@ -3043,6 +3043,25 @@
             }
         }
     },
+    
+    /*
+     *  remove all the custom styling from all elements 
+     */
+    clearCustomStyling : function(data, checker) {
+        var props = Object.getOwnPropertyNames(data);
+        for (var i = 0; i < props.length; i++) {
+            var name = props[i];
+            if (typeof data[name] === "object") {
+                CustomBuilder.clearCustomStyling(data[name]);
+            } else if (Array.isArray(data[name])) {
+                for (var j = 0; j < data[name].length; j++) {
+                    CustomBuilder.clearCustomStyling(data[name][j]);
+                }
+            } else if (name.indexOf("style-") === 0 || (checker !== undefined && checker(name))) {
+                delete data[name];
+            }
+        }
+    }
 };
 
 /*

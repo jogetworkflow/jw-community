@@ -2077,6 +2077,21 @@ DatalistBuilder = {
         var templateJson = "";
         if (CustomBuilder.data.template !== undefined && CustomBuilder.data.template !== null) {
             templateJson = JSON.encode(CustomBuilder.data.template);
+            
+            if (CustomBuilder.data.template.className !== properties.template.className) {
+                //change of template, prompt to check for remove custom style
+                if (confirm("Detected changing template. Do you want to remove previous custom styling?")) {
+                    CustomBuilder.clearCustomStyling(CustomBuilder.data, function(name){
+                        return (name.indexOf("-style-") !== -1 && (
+                                name.indexOf("action") === 0 ||
+                                name.indexOf("rowAction") === 0 ||
+                                name.indexOf("column") === 0 ||
+                                name.indexOf("filter") === 0 ||
+                                name.indexOf("card") === 0
+                                ));
+                    });
+                }
+            }
         }
         CustomBuilder.data = $.extend(CustomBuilder.data, properties);
         CustomBuilder.update();
