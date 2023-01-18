@@ -1,9 +1,8 @@
 package org.joget.apps.datalist.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
+
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -15,18 +14,24 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.form.model.FormRow;
-import org.joget.apps.userview.model.PwaOfflineNotSupported;
-import org.joget.apps.userview.model.PwaOfflineReadonly;
-import org.joget.apps.userview.model.PwaOfflineValidation;
+import org.joget.apps.userview.model.*;
 import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
+import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Nullable;
 
 /**
  * Service class to manage data lists
@@ -37,15 +42,64 @@ public class DataListService {
     @Autowired
     PluginManager pluginManager;
 
+
+    @Autowired
+    WorkflowUserManager workflowUserManager;
+
+    @Autowired
+    @Qualifier("main")
+    ExtDirectoryManager directoryManager;
+
+
     /**
      * Create a DataList object from JSON definition
      * @param json
      * @return
      */
     public DataList fromJson(String json) {
+        return fromJson(json, null);
+    }
+
+    /**
+     * Create a DataList object from JSON definition
+     * @param json
+     * @param theme
+     * @return
+     */
+    public DataList fromJson(String json, @Nullable UserviewTheme theme) {
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
-        DataList dataList = JsonUtil.fromJson(json, DataList.class);
+        final DataList dataList = JsonUtil.fromJson(json, DataList.class);
+
+        final Optional<UserviewPermission> optPermission = Optional.ofNullable(dataList)
+                .map(DataList::getPermission);
+
+        if (optPermission.isPresent()) {
+            final UserviewPermission permission = optPermission.get();
+            final DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+            final User user = directoryManager.getUserByUsername(WorkflowUtil.getCurrentUsername());
+
+            permission.setCurrentUser(user);
+            if (!permission.isAuthorize()) {
+                LogUtil.info(getClass().getName(), "User [" + user.getUsername() + "] is unauthorized to access datalist [" + dataList.getId() + "]");
+                return null;
+            }
+        }
+
+        // check column permission
+        if (dataList != null) {
+            DataListColumn[] columns = Optional.of(dataList)
+                    .map(DataList::getColumns)
+                    .map(Arrays::stream)
+                    .orElseGet(Stream::empty)
+                    .filter(dataListColumn -> dataListColumn.isPermitted())
+                    .toArray(DataListColumn[]::new);
+
+            dataList.setColumns(columns);
+
+            dataList.setTheme(theme);
+        }
+
         return dataList;
     }
 
@@ -242,5 +296,25 @@ public class DataListService {
             }
         }
         return true;
+    }
+
+    /**
+     * Check authorization using permission
+     *
+     * @param dataList
+     * @return
+     */
+    public boolean isAuthorize(DataList dataList) {
+        return Optional.ofNullable(dataList)
+                .map(DataList::getPermission)
+                .map(userviewPermission -> {
+                    User user = Optional.of(workflowUserManager.getCurrentUsername())
+                            .map(directoryManager::getUserByUsername)
+                            .orElse(null);
+
+                    userviewPermission.setCurrentUser(user);
+                    return userviewPermission.isAuthorize();
+                })
+                .orElse(true);
     }
 }

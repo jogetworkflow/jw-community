@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -200,6 +201,16 @@ public class WorkflowJavaScriptController {
         public void println(String str) throws IOException {
             unicodeEscapeSequence(str, this.origOutput, null);
             this.origOutput.println();
+        }
+
+        @Override
+        public boolean isReady() {
+            return origOutput.isReady();
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            origOutput.setWriteListener(writeListener);
         }
     }
 

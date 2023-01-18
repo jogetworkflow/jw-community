@@ -14,8 +14,12 @@
 
     <import resource="classpath:appsApplicationContext.xml" />
 
+    <context:annotation-config/>
+    <context:component-scan base-package = "org.kecak"/>
+
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="authenticationProvider" />
+        <security:authentication-provider ref="jwtAuthenticationProvider" />
     </security:authentication-manager>
 
     <!-- Open paths -->        
@@ -117,7 +121,13 @@
         <security:intercept-url pattern="/web/json/console/directory/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/monitor/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/setting/**" access="ROLE_SYSADMIN"/>
-                
+
+        <!-- Data JSON Controller -->
+        <security:intercept-url pattern="/web/json/data/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+
+        <!-- Authentication JSON Controller -->
+        <security:intercept-url pattern="/web/json/authentication/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
+
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN, ROLE_APPADMIN" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
@@ -132,13 +142,13 @@
         
         <!-- Support Basic Authentication -->
         <security:http-basic />
-        
-        <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" /> 
+        <security:custom-filter ref="workflowJwtAuthFilter" after="DIGEST_AUTH_FILTER" />
+        <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" />
     </security:http>
         
     <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager">
-    </bean>                
-    
+    </bean>
+
     <bean id="directoryManager" class="org.joget.apps.workflow.security.EnhancedDirectoryManagerProxyImpl" primary="true">
         <qualifier value="main" />
         <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
@@ -149,6 +159,12 @@
     <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
         <property name="directoryManager" ref="directoryManager"/>
     </bean>
+
+    <bean id="authTokenService" class="org.kecak.apps.app.service.AuthTokenService">
+        <constructor-arg ref="setupManager" />
+    </bean>
+
+    <bean id="workflowApiAuthEntryPoint" class="org.kecak.webapi.security.WorkflowApiAuthenticationEntryPoint" />
                                                                                                 
     <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager" />
@@ -159,13 +175,35 @@
         <property name="auditTrailManager" ref="auditTrailManager"/>
         <property name="allowSessionCreation" value="true" />
     </bean>
+
+    <bean id="workflowJwtAuthFilter" class="org.kecak.webapi.security.WorkflowJwtAuthProcessingFilter">
+        <!--        <constructor-arg ref="authenticationManager" />-->
+        <!--        <constructor-arg ref="workflowApiAuthEntryPoint" />-->
+        <property name="authenticationEntryPoint" ref="workflowApiAuthEntryPoint" />
+        <property name="authTokenService" ref="authTokenService"/>
+        <property name="directoryManager" ref="directoryManager"/>
+    </bean>
+
+    <!-- Begin of JTW -->
+
+    <bean id="jwtAuthSuccessHandler" class="org.kecak.apps.workflow.security.JwtAuthSuccessHandler">
+        <property name="workflowUserManager" ref="workflowUserManager" />
+    </bean>
+
+    <bean id="jwtAuthenticationProvider" class="org.kecak.apps.workflow.security.JwtTokenAuthenticationProvider">
+        <property name="directoryManager" ref="directoryManager"/>
+        <property name="authTokenService" ref="authTokenService" />
+        <property name="workflowUserManager" ref="workflowUserManager" />
+        <property name="workflowHelper" ref="workflowHelper" />
+    </bean>
+    <!-- End of JTW -->
     
     <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
         <constructor-arg value="/web/login"/>
         <property name="forceHttps" value="false" />
     </bean>
-
     <!-- END Spring Security -->
-    
+
     <import resource="classpath:webApplicationContext.xml" />
+    <import resource="classpath:camelApplicationContext.xml" />
 </beans>

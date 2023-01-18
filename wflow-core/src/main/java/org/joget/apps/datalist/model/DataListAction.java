@@ -64,4 +64,10 @@ public interface DataListAction extends PropertyEditable {
      * Flag that decide this action object can use as list action
      */
     Boolean supportList();
+
+    /**
+     * Method to perform permission checking
+     * @return
+     */
+    boolean isPermitted();
 }

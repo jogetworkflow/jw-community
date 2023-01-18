@@ -14,11 +14,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.datalist.model.DataList;
-import org.joget.apps.datalist.model.DataListBinderDefault;
-import org.joget.apps.datalist.model.DataListCollection;
-import org.joget.apps.datalist.model.DataListColumn;
-import org.joget.apps.datalist.model.DataListFilterQueryObject;
+import org.joget.apps.datalist.model.*;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.PasswordField;
 import org.joget.apps.form.model.Element;
@@ -129,6 +125,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_DATE_MODIFIED, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.dateModified"), true));
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_DATE_CREATED, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.dateCreated"), true));
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_ID, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.id"), true));
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_ORG_ID, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.orgId"), true));
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_DELETED, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.deleted"), true));
 
         return columns.toArray(new DataListColumn[0]);
     }
@@ -150,7 +148,9 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
             DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
 
-            FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, desc, start, rows);
+            final String sortAs = getSortAs(dataList, sort);
+            final boolean loadSoftDeleted = getLoadSoftDeleted();
+            FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, sortAs, desc, start, rows, loadSoftDeleted);
             resultList.addAll(rowSet);
         }
 
@@ -168,7 +168,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
             DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
 
-            Long rowCount = formDataDao.count(formDefId, tableName, criteria.getQuery(), criteria.getValues());
+            final boolean loadSoftDeleted = getLoadSoftDeleted();
+            Long rowCount = formDataDao.count(formDefId, tableName, criteria.getQuery(), criteria.getValues(), loadSoftDeleted);
             count = rowCount.intValue();
         }
         return count;
@@ -317,5 +318,33 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             queryObject.setValues((String[]) params.toArray(new String[0]));
         }
         return queryObject;
+    }
+
+
+    /**
+     * Get sort as
+     *
+     * @param   dataList
+     * @param   columnName
+     * @return  sortAs : SQL data type
+     */
+    protected String getSortAs(DataList dataList, String columnName) {
+        final DataListColumn[] columns = dataList.getColumns();
+        for (DataListColumn column : columns) {
+            if(column != null && column.getName().equalsIgnoreCase(columnName) && column.getFormats() != null) {
+                for (DataListColumnFormat format : column.getFormats()) {
+                    if(format != null) {
+                        return format.getSortAs(dataList, column);
+                    }
+                }
+            }
+        }
+
+        return FormUtil.PROPERTY_DATE_CREATED.equals(columnName)
+                || FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName) ? "timestamp" : "string";
+    }
+
+    protected boolean getLoadSoftDeleted() {
+        return "true".equalsIgnoreCase(getPropertyString("loadSoftDeleted"));
     }
 }

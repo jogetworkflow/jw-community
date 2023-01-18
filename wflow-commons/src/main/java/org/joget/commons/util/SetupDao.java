@@ -18,7 +18,7 @@ public class SetupDao extends AbstractSpringDao {
         super.delete(ENTITY_NAME, obj);
     }
 
-    public Object find(String id) {
+    public Object load(String id) {
         return super.find(ENTITY_NAME, id);
     }
 

@@ -132,7 +132,9 @@ public class FormUtil implements ApplicationContextAware {
     public static final String FORM_BUILDER_ACTIVE = "formBuilderActive";
     public static final String FORM_ERRORS_PARAM = "_FORM_ERRORS";
     public static final String FORM_RESULT_LOAD_ALL_DATA = "FORM_RESULT_LOAD_ALL_DATA";
-    
+    public static final String PROPERTY_ORG_ID = "orgId";
+
+    public static final String PROPERTY_DELETED = "deleted";
     static ApplicationContext appContext;
     
     public static ThreadLocal processedFormJson = new ThreadLocal(); 
@@ -1222,8 +1224,8 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      * @return
      */
-    public static Collection<Map> getElementPropertyOptionsMap(Element element, FormData formData) {
-        Collection<Map> optionsMap = new ArrayList<Map>();
+    public static <M extends Map, C extends Collection<M>> C getElementPropertyOptionsMap(Element element, FormData formData) {
+        Collection<M> optionsMap = new ArrayList<>();
 
         if (isAjaxOptionsSupported(element, formData)) {
             // load from binder if available
@@ -1231,9 +1233,9 @@ public class FormUtil implements ApplicationContextAware {
                 String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                 FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
-                    optionsMap = new ArrayList<Map>();
-                    for (Map row : rowSet) {
-                        optionsMap.add(row);
+                    optionsMap = new ArrayList<>();
+                    for (FormRow row : rowSet) {
+                        optionsMap.add((M) row);
                     }
                 }
             }
@@ -1241,8 +1243,8 @@ public class FormUtil implements ApplicationContextAware {
             // load from "options" property
             Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
             if (optionProperty != null && optionProperty instanceof Collection) {
-                for (Map opt : (FormRowSet) optionProperty) {
-                    optionsMap.add(opt);
+                for (FormRow opt : (FormRowSet) optionProperty) {
+                    optionsMap.add((M) opt);
                 }
             }
 
@@ -1251,15 +1253,15 @@ public class FormUtil implements ApplicationContextAware {
                 String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                 FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
-                    optionsMap = new ArrayList<Map>();
-                    for (Map row : rowSet) {
-                        optionsMap.add(row);
+                    optionsMap = new ArrayList<>();
+                    for (FormRow row : rowSet) {
+                        optionsMap.add((M) row);
                     }
                 }
             }
         }
 
-        return optionsMap;
+        return (C) optionsMap;
     }
 
     /**
@@ -1984,6 +1986,10 @@ public class FormUtil implements ApplicationContextAware {
                 String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
 
                 FormAjaxOptionsBinder ajaxbinder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+                if(ajaxbinder instanceof FormBinder) {
+                    ((FormBinder) ajaxbinder).setFormData(formData);
+                }
+
                 FormRowSet rowSet = ajaxbinder.loadAjaxOptions(controlValues);
                 formData.setOptionsBinderData((FormLoadBinder) ajaxbinder, rowSet);
             }
@@ -2219,7 +2225,7 @@ public class FormUtil implements ApplicationContextAware {
         }
     }
     
-    public static void recursiveDeleteChildFormData(Form form, String primaryKey, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
+    public static void recursiveDeleteChildFormData(Form form, String primaryKey, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles, boolean hardDelete) {
         FormData formData = new FormData();
         formData.setPrimaryKeyValue(primaryKey);
         formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, FormUtil.FORM_RESULT_LOAD_ALL_DATA);
@@ -2232,11 +2238,11 @@ public class FormUtil implements ApplicationContextAware {
         
         //skip the form element and start with its child
         for (Element e : form.getChildren()) {
-            recursiveExecuteFormDeleteBinders(e, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+            recursiveExecuteFormDeleteBinders(e, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
         }
     }
     
-    public static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
+    public static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles, boolean hardDelete) {
         if (FormUtil.isReadonly(element, formData)) {
             return;
         }
@@ -2258,13 +2264,13 @@ public class FormUtil implements ApplicationContextAware {
             if (element.getParent() == null || (isGrid && deleteGrid) || (!isGrid && deleteSubform)) {
                 boolean delete = false;
                 if (storeBinder instanceof FormDeleteBinder) {
-                    ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+                    ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
                     delete = true;
                 } else if (loadBinder instanceof FormDataDeletableBinder) {
                     String formId = ((FormDataDeletableBinder)loadBinder).getFormId();
                     String tableName = ((FormDataDeletableBinder)loadBinder).getTableName();
                     FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-                    formDataDao.delete(formId, tableName, rows);
+                    formDataDao.delete(formId, tableName, rows, hardDelete);
                     
                     if (deleteFiles) {
                         for (FormRow r : rows) {
@@ -2310,7 +2316,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         
         for (Element child : element.getChildren()) {
-            recursiveExecuteFormDeleteBinders(child, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+            recursiveExecuteFormDeleteBinders(child, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
         }
     }
     

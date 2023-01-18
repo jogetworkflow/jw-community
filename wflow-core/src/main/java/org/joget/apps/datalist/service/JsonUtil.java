@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.model.UserviewPermission;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.joget.apps.datalist.model.DataList;
@@ -73,6 +74,8 @@ public class JsonUtil {
     public static final String PROPERTY_DISABLE_RESPONSIVE = "disableResponsive";
     public static final String PROPERTY_RESPONSIVE = "responsiveView";
     public static final String PROPERTY_REPONSIVE_SEARCH_POPUP = "searchPopup";
+
+    public static final String PROPERTY_PERMISSION = "permission";
 
     /**
      * Converts from JSON string into an object. Specifically to support data list model classes.
@@ -237,6 +240,10 @@ public class JsonUtil {
                 Collection<DataListFilter> filters = parseFiltersFromJsonObject(obj, permissionKey);
                 DataListFilter[] temp4 = (DataListFilter[]) filters.toArray(new DataListFilter[filters.size()]);
                 object.setFilters(temp4);
+
+                // set permission
+                UserviewPermission permission = parsePermissionFromJsonObject(obj);
+                object.setPermission(permission);
             } else {
                 object.setColumns(new DataListColumn[0]);
                 object.setActions(new DataListAction[0]);
@@ -570,6 +577,11 @@ public class JsonUtil {
                 if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML) && !column.getString(PROPERTY_RENDER_HTML).isEmpty()) {
                     dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
                 }
+
+                if (column.has(PROPERTY_PERMISSION) && !column.isNull(PROPERTY_PERMISSION)) {
+                    UserviewPermission permission = parsePermissionFromJsonObject(column);
+                    dataListColumn.setPermission(permission);
+                }
                 
                 dataListColumn.setProperties(PropertyUtil.getProperties(column));
                 
@@ -627,6 +639,34 @@ public class JsonUtil {
                     return dataListFilterType;                    
                 }
             }
+        }
+        return null;
+    }
+
+    /**
+     * Used to retrieves datalist column permission from JSON Object
+     *
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static UserviewPermission parsePermissionFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
+        try {
+            if (!obj.isNull(PROPERTY_PERMISSION) && !"".equals(obj.getString(PROPERTY_PERMISSION))) {
+                JSONObject permissionObj = obj.getJSONObject(PROPERTY_PERMISSION);
+                if (permissionObj.has(PROPERTY_CLASS_NAME)) {
+                    String className = permissionObj.getString(PROPERTY_CLASS_NAME);
+                    UserviewPermission permission = (UserviewPermission) loadPlugin(className);
+                    if (permission != null) {
+                        permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject(PROPERTY_PROPERTIES)));
+                        return permission;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.warn(JsonUtil.class.getName(), "Invalid permission for " + obj.toString());
         }
         return null;
     }

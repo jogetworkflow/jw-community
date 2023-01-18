@@ -106,7 +106,8 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
                         "true".equalsIgnoreCase(getPropertyString("deleteGridData")),
                         "true".equalsIgnoreCase(getPropertyString("deleteSubformData")),
                         "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")),
-                        "true".equalsIgnoreCase(getPropertyString("deleteFiles")));
+                        "true".equalsIgnoreCase(getPropertyString("deleteFiles")),
+                        "true".equalsIgnoreCase(getPropertyString("hardDelete")));
             }
         }
 
@@ -141,7 +142,11 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
         }
         
         return form;
-    } 
+    }
+
+    protected boolean isHardDelete() {
+        return "true".equalsIgnoreCase(getPropertyString("hardDelete"));
+    }
 
     public String getClassName() {
         return this.getClass().getName();

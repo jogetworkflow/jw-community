@@ -22,7 +22,7 @@
     </bean>
 
     <!-- DynamicDataSourceManager will have its property set via @Autowired -->
-    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="btmConfig">
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager">
     	<constructor-arg ref="profilePropertyManager"/>
         <property name="cache" ref="dynamicDataSourceManagerCache"/>
     </bean>
@@ -30,19 +30,17 @@
     <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
     </bean>
 
-     <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices"> 
-         <property name="disableJmx" value="true" />
-         <property name="serverId" value="btm-joget" /> 
-         <property name="journal" value="null" /> 
-         <property name="DefaultTransactionTimeout" value="900" /> 
-     </bean> 
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+        <property name="forceShutdown" value="true" />
+    </bean>
 
-     <bean id="bitronixTransactionManager" factory-method="getTransactionManager" 
-         class="bitronix.tm.TransactionManagerServices" depends-on="btmConfig" destroy-method="shutdown" /> 
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300" />
+    </bean>
 
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-        <property name="transactionManager" ref="bitronixTransactionManager" />
-        <property name="userTransaction" ref="bitronixTransactionManager" />
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="userTransaction" ref="atomikosUserTransaction" />
         <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
@@ -71,7 +69,8 @@
     </aop:config>
 
     <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8&amp;useSSL=false" />
         <property name="username" value="root" />
         <property name="password" value="" />
@@ -83,7 +82,6 @@
         <property name="maxActive" value="500" />
         <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
-        <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState" />
     </bean>
     <!--
     <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -107,7 +105,7 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
+                <prop key="hibernate.transaction.jta.platform">org.kecak.commons.util.AtomikosJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>

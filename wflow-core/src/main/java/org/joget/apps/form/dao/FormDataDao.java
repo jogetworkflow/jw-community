@@ -12,7 +12,7 @@ import java.util.Map;
  * Service method used to manage form data
  * 
  */
-public interface FormDataDao {
+public interface FormDataDao extends org.kecak.apps.form.dao.FormDataDao {
 
     /**
      * clear cache for a form

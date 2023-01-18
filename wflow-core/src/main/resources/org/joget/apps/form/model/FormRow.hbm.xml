@@ -3,12 +3,18 @@
 <hibernate-mapping>
     <class entity-name="FormRow" lazy="false" name="org.joget.apps.form.model.FormRow" table="app_fd">
         <id name="id" type="string"/>
+        <property name="orgId" type="string">
+            <column name="orgId" index="IDX_FormRow_orgId" default="false" not-null="true" />
+        </property>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
         <property name="createdBy" type="string"/>
         <property name="createdByName" type="string"/>
         <property name="modifiedBy" type="string"/>
         <property name="modifiedByName" type="string"/>
+        <property name="deleted" type="boolean">
+            <column name="deleted" index="IDX_FormRow_deleted" default="false" not-null="true"/>
+        </property>
         <dynamic-component insert="true" name="customProperties" optimistic-lock="true" unique="false" update="true"/>
     </class>
 </hibernate-mapping>

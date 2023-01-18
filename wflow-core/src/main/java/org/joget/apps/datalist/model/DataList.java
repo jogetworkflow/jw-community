@@ -10,6 +10,8 @@ import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.service.DataListDecorator;
+import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
@@ -81,6 +83,10 @@ public class DataList {
     private boolean isAuthorized = true;
     private String unauthorizedMsg = null;
 
+    private UserviewPermission permission = null;
+
+    private UserviewTheme theme;
+
     //Required when using session
     public void init() {
         try {
@@ -139,7 +145,9 @@ public class DataList {
     }
 
     public DataListAction[] getActions() {
-        return actions;
+        return Arrays.stream(actions)
+                .filter(DataListAction::isPermitted)
+                .toArray(DataListAction[]::new);
     }
 
     public void setActions(DataListAction[] actions) {
@@ -307,8 +315,10 @@ public class DataList {
                 rowActions[i] = r;
             }
         }
-        
-        return rowActions;
+
+        return Arrays.stream(rowActions)
+                .filter(DataListAction::isPermitted)
+                .toArray(DataListAction[]::new);
     }
     
     public DataListAction getColumnAction(DataListColumn column) {
@@ -962,5 +972,27 @@ public class DataList {
             }
         }
         return noExport;
+    }
+
+    /**
+     * Set permission * * @param permission
+     */
+    public void setPermission(UserviewPermission permission) {
+        this.permission = permission;
+    }
+
+    /**
+     * Get permission * * @return
+     */
+    public UserviewPermission getPermission() {
+        return permission;
+    }
+
+    public UserviewTheme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(UserviewTheme theme) {
+        this.theme = theme;
     }
 }

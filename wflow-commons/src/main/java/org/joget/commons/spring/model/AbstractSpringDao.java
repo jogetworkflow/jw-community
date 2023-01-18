@@ -63,7 +63,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
 
     protected Collection find(final String entityName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         Session session = findSession();
-        String query = "SELECT e FROM " + entityName + " e " + condition;
+        String query = "SELECT e FROM " + entityName + " e " + (condition == null ? "" : condition);
 
         if (sort != null && !sort.equals("")) {
             String filteredSort = filterSpace(sort);
@@ -126,6 +126,11 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
             }
         }
         return str;
-    }    
+    }
+
+    public List find(String entityName){
+        Session session = findSession();
+        return session.createQuery( "FROM " + entityName).list();
+    }
 }
 

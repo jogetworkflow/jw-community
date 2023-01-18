@@ -2234,7 +2234,7 @@ public class AppServiceImpl implements AppService {
      * @param fromVersion
      * @param toVersion 
      */
-    protected void updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion) {
+    public void updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion) {
         final String profile = DynamicDataSourceManager.getCurrentProfile();
         final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         final User currentUser = workflowUserManager.getCurrentUser();

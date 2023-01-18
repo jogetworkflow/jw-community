@@ -17,6 +17,7 @@
 <c:if test="${isGlowrootAvailable}">
 <li id="nav-monitor-apm"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/apm"><span class="nav-steps"><i class="fas fa-tachometer-alt"></i></span><fmt:message key="apm.performance"/></a></li>
 </c:if>
+<li id="nav-monitor-scheduler"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/scheduler"><span class="nav-steps"><i class="fas fa-clock"></i></span><fmt:message key="console.header.submenu.label.scheduler"/></a></li>
 <div id="adminWelcome">
     <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
 </div>

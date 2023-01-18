@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.StringMap;
 import org.joget.commons.util.HostManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -782,6 +783,51 @@ public class PluginManager implements ApplicationContextAware {
     }
 
     /**
+     * Kecak Exclusive
+     *
+     * Generate plugin object
+     *
+     * @param elementSelect
+     * @param <T>
+     * @return
+     */
+    public <T extends PropertyEditable> T getPlugin(Map<String, Object> elementSelect) {
+        if (elementSelect == null)
+            return null;
+
+        String className = (String) elementSelect.get("className");
+        Map<String, Object> properties = (Map<String, Object>) elementSelect.get("properties");
+
+        return getPlugin(className, properties);
+    }
+
+    /**
+     * Kecak Exclusive
+     *
+     * Generate plugin object
+     *
+     * @param className class name
+     * @param properties plugin properties
+     * @param <T> plugin class
+     * @return plugin object
+     */
+    public <T extends PropertyEditable> T getPlugin(String className, Map<String, Object> properties) {
+        if(className == null || className.isEmpty())
+            return null;
+
+        T plugin = (T) getPlugin(className);
+        if (plugin == null) {
+            LogUtil.warn(PluginManager.class.getName(), "Error generating plugin [" + className + "]");
+            return null;
+        }
+
+        if(properties != null)
+            properties.forEach(plugin::setProperty);
+
+        return plugin;
+    }
+
+    /**
      * Retrieve a plugin from the OSGI container
      * @param name Fully qualified class name for the required plugin
      * @return
@@ -1438,6 +1484,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.app.model.CustomBuilder", ResourceBundleUtil.getMessage("setting.plugin.customBuilder"));
         pluginTypeMap.put("org.joget.ai.TensorFlowPlugin", ResourceBundleUtil.getMessage("setting.plugin.TensorFlowPlugin"));
         pluginTypeMap.put("org.joget.workflow.model.DecisionPlugin", ResourceBundleUtil.getMessage("setting.plugin.DecisionPlugin"));
+        pluginTypeMap.put("org.kecak.apps.app.model.SchedulerPlugin", ResourceBundleUtil.getMessage("setting.plugin.SchedulerPlugin"));
         
         if (!getCache().getCustomPluginInterfaces().isEmpty()) {
             for (String className : getCache().getCustomPluginInterfaces().keySet()) {

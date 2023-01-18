@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class entity-name="IncomingEmail" lazy="false" name="org.kecak.apps.incomingEmail.model.IncomingEmail" table="app_incoming_email">
+		<id name="id" type="string">
+			<generator class="uuid" />
+		</id>
+		<property name="dateCreated" type="timestamp" />
+		<property name="dateModified" type="timestamp" />
+		<property name="createdBy" type="string" />
+		<property name="modifiedBy" type="string" />
+
+		<property name="username" type="string" column="username" />
+		<property name="password" type="string" column="password" />
+		<property name="protocol" type="string" column="protocol" />
+		<property name="host" type="string" column="host" />
+		<property name="port" type="integer" column="port" />
+		<property name="folder" type="string" column="folder" />
+		<property name="active" type="boolean" column="active" />
+
+	</class>
+</hibernate-mapping>

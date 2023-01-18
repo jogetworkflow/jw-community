@@ -60,7 +60,7 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
             WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
 
             Map<String, String> replace = new HashMap<String, String>();
-            if (driver.equalsIgnoreCase("com.mysql.jdbc.Driver")) {
+            if (driver.equalsIgnoreCase("com.mysql.cj.jdbc.Driver")) {
                 replace.put("\\\\", "\\\\");
                 replace.put("'", "\\'");
             } else {

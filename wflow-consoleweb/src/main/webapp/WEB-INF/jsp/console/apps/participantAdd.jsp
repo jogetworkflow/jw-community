@@ -150,6 +150,9 @@
                                             <label for="requesterHodIgnoreReportTo">
                                                 <input id="requesterHodIgnoreReportTo" type="radio" name="participantType" value="requesterHodIgnoreReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod.ignoreReportTo"/>
                                             </label>
+                                            <label for="requesterReportTo">
+                                                <input id="requesterReportTo" type="radio" name="participantType" value="requesterReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.reportTo"/>
+                                            </label>
                                             <label for="requesterSubordinates">
                                                 <input id="requesterSubordinates" type="radio" name="participantType" value="requesterSubordinates"> <fmt:message key="console.process.config.label.mapParticipants.performer.subordinate"/>
                                             </label>

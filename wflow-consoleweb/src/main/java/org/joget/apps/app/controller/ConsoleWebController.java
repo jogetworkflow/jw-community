@@ -18,12 +18,18 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.kinnarastudio.commons.Try;
+import com.kinnarastudio.commons.jsonstream.JSONCollectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -131,6 +137,17 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kecak.apps.app.model.SchedulerPlugin;
+import org.kecak.apps.incomingEmail.dao.IncomingEmailDao;
+import org.kecak.apps.incomingEmail.model.IncomingEmail;
+import org.kecak.apps.route.CamelRouteManager;
+import org.kecak.apps.scheduler.SchedulerManager;
+import org.kecak.apps.scheduler.dao.SchedulerDetailsDao;
+import org.kecak.apps.scheduler.dao.SchedulerLogDao;
+import org.kecak.apps.scheduler.model.SchedulerDetails;
+import org.kecak.apps.scheduler.model.SchedulerLog;
+import org.kecak.apps.scheduler.model.TriggerTypes;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -216,6 +233,19 @@ public class ConsoleWebController {
     UserMetaDataDao userMetaDataDao;
     @Autowired
     AuditTrailManager auditTrailManager;
+
+    @Autowired
+    SchedulerManager schedulerManager;
+    @Autowired
+    SchedulerDetailsDao schedulerDetailsDao;
+    @Autowired
+    SchedulerLogDao schedulerLogDao;
+
+    @Autowired
+    IncomingEmailDao incomingEmailDao;
+
+    @Autowired
+    CamelRouteManager camelRouteManager;
 
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
@@ -3150,7 +3180,6 @@ public class ConsoleWebController {
             return "console/dialogClose";
         }
     }
-    
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
     public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
         try {
@@ -5389,6 +5418,7 @@ public class ConsoleWebController {
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", ResourceBundleUtil.getMessage("setting.plugin.processParticipant"));
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", ResourceBundleUtil.getMessage("setting.plugin.processTool"));
         pluginTypeMap.put("org.joget.apps.app.model.ProcessFormModifier", ResourceBundleUtil.getMessage("setting.plugin.processFormModifier"));
+        pluginTypeMap.put(SchedulerPlugin.class.getName(), ResourceBundleUtil.getMessage("setting.plugin.scheduler"));
 
         return PagingUtils.sortMapByValue(pluginTypeMap, false);
     }
@@ -5844,6 +5874,392 @@ public class ConsoleWebController {
         } else {
             map.addAttribute("appId", LogViewerAppender.CONSOLE_LOG);
             return "console/monitor/systemLog";
+        }
+    }
+
+    @RequestMapping("/console/setting/scheduler")
+    public String consoleSettingSchedulerContent(ModelMap map) {
+        return "console/setting/scheduler";
+    }
+
+    @RequestMapping("/console/setting/scheduler/create")
+    public String consoleSettingSchedulerCreate(ModelMap map) {
+        SchedulerDetails schedulerDetails = new SchedulerDetails();
+        map.addAttribute("schedulerDetails", schedulerDetails);
+        return "console/setting/schedulerCreate";
+    }
+
+    @RequestMapping(value = "/console/setting/scheduler/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleSettingSchedulerSubmit(ModelMap map, @RequestParam("action") String action, @ModelAttribute("schedulerDetails") SchedulerDetails schedulerDetails, BindingResult result) {
+        // validation
+        validator.validate(schedulerDetails, result);
+        Date now = new Date();
+        String currUsername = workflowUserManager.getCurrentUsername();
+
+        boolean invalid = result.hasErrors();
+        if (!invalid) {
+            // check error
+            Collection<String> errors = new ArrayList<String>();
+
+            if ("create".equals(action)) {
+                // check exist
+                SchedulerDetails currentByJob = schedulerDetailsDao.getSchedulerDetailsByJob(schedulerDetails.getJobName(), schedulerDetails.getGroupJobName());
+                SchedulerDetails currentByTrigger = schedulerDetailsDao.getSchedulerDetailsByTrigger(schedulerDetails.getTriggerName(), schedulerDetails.getGroupTriggerName());
+                if (currentByJob != null || currentByTrigger != null) {
+                    errors.add("console.app.message.error.label.exists");
+                } else {
+                    schedulerDetails.setDateCreated(now);
+                    schedulerDetails.setCreatedBy(currUsername);
+                    schedulerDetails.setDateModified(now);
+                    schedulerDetails.setModifiedBy(currUsername);
+                    schedulerDetails.setTriggerTypes(TriggerTypes.CRON);
+                    try {
+                        schedulerManager.saveOrUpdateJobDetails(schedulerDetails);
+                        invalid = false;
+                    } catch (Exception e) {
+                        invalid = true;
+                        errors.add("console.app.message.error.label.exception");
+                        LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                    }
+                }
+            } else {
+                SchedulerDetails details = schedulerDetailsDao.getSchedulerDetailsById(schedulerDetails.getId());
+                details.setCronExpression(schedulerDetails.getCronExpression());
+//                details.setJobClassName(schedulerDetails.getJobClassName());
+                details.setDateModified(now);
+                details.setModifiedBy(currUsername);
+
+                LogUtil.info(getClass().getName(), "getCronExpression [" + details.getCronExpression() + "] getJobClassName [" + details.getJobClassName() + "]");
+
+                try {
+                    schedulerManager.updateJobDetails(details);
+                    invalid = false;
+                } catch (Exception e) {
+                    invalid = true;
+                    errors.add("console.app.message.error.label.exception");
+                    LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                }
+            }
+
+            if (!errors.isEmpty()) {
+                map.addAttribute("errors", errors);
+                invalid = true;
+            }
+        }
+
+        if (invalid) {
+            map.addAttribute("schedulerDetails", schedulerDetails);
+            if ("create".equals(action)) {
+                return "console/setting/schedulerCreate";
+            } else {
+                return "console/setting/schedulerEdit";
+            }
+        } else {
+            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            String url = contextPath + "/web/console/setting/scheduler";
+            map.addAttribute("url", url);
+            return "console/dialogClose";
+        }
+    }
+
+    @RequestMapping("/json/console/setting/scheduler/list")
+    public void consoleSettingSchedulerListJson(Writer writer, @RequestParam(value = "callback", required = false) String callback,
+                                                @RequestParam(value = "jobName", required = false) String jobName, @RequestParam(value = "sort", required = false) String sort,
+                                                @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start,
+                                                @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+            String condition = "";
+            List<String> param = new ArrayList<String>();
+
+            if (jobName != null && jobName.trim().length() != 0) {
+                if (!condition.isEmpty()) {
+                    condition += " and";
+                }
+                condition += " (e.jobName like ? )";
+                param.add("%" + jobName + "%");
+            }
+
+            if (condition.length() > 0) {
+                condition = "WHERE " + condition;
+            }
+
+            List<SchedulerDetails> schedulerList = schedulerDetailsDao.getSchedulerDetails(condition, param.toArray(new String[param.size()]),
+                    sort, desc, start, rows);
+
+            Long count = schedulerDetailsDao.count(condition, param.toArray(new String[param.size()]));
+
+            JSONObject jsonObject = new JSONObject();
+            if (schedulerList != null && schedulerList.size() > 0) {
+                for (SchedulerDetails details : schedulerList) {
+                    Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("id", details.getId());
+                    data.put("jobName", details.getJobName());
+                    data.put("groupJobName", details.getGroupJobName());
+                    data.put("triggerName", details.getTriggerName());
+                    data.put("groupTriggerName", details.getGroupTriggerName());
+                    data.put("jobClassName", details.getJobClassName());
+                    data.put("modifiedate", details.getDateModified() == null ? "" : details.getDateModified());
+                    jsonObject.accumulate("data", data);
+                }
+            }
+
+            jsonObject.accumulate("total", count);
+            jsonObject.accumulate("start", start);
+            jsonObject.accumulate("sort", sort);
+            jsonObject.accumulate("desc", desc);
+
+            AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
+    @RequestMapping(value = "/console/setting/scheduler/delete", method = RequestMethod.POST)
+    public String consoleSettingSchedulerDelete(@RequestParam(value = "ids") String ids) {
+        StringTokenizer strToken = new StringTokenizer(ids, ",");
+        while (strToken.hasMoreTokens()) {
+            String id = (String) strToken.nextElement();
+            SchedulerDetails details = schedulerDetailsDao.getSchedulerDetailsById(id);
+            schedulerManager.deleteJob(details);
+        }
+        return "console/dialogClose";
+    }
+
+    @RequestMapping(value = "/console/setting/scheduler/firenow", method = RequestMethod.POST)
+    public String consoleSettingSchedulerFireNow(@RequestParam(value = "ids") String ids) {
+        StringTokenizer strToken = new StringTokenizer(ids, ",");
+        while (strToken.hasMoreTokens()) {
+            String id = (String) strToken.nextElement();
+            SchedulerDetails details = schedulerDetailsDao.getSchedulerDetailsById(id);
+            try {
+                schedulerManager.fireNow(details);
+            } catch (SchedulerException e) {
+                LogUtil.error(ConsoleWebController.class.getName(), e, "Unable to fire " + "[" + details.getJobName() + "] " + e.getMessage());
+            }
+        }
+        return "console/dialogClose";
+    }
+
+    @RequestMapping("/console/setting/scheduler/edit/(*:id)")
+    public String consoleSettingSchedulerEdit(ModelMap map, @RequestParam("id") String id) {
+        SchedulerDetails schedulerDetails = schedulerDetailsDao.getSchedulerDetailsById(id);
+        map.addAttribute("schedulerDetails", schedulerDetails);
+        return "console/setting/schedulerEdit";
+    }
+
+    @RequestMapping("/console/monitor/scheduler")
+    public String consoleMonitorScheduler(ModelMap map) {
+        return "console/monitor/scheduler";
+    }
+
+    @RequestMapping("/console/monitor/scheduler/view/(*:id)")
+    public String consoleMonitorSchedulerView(ModelMap map, @RequestParam("id") String id) {
+        SchedulerLog schedulerLog = schedulerLogDao.getSchedulerLogById(id);
+        map.addAttribute("schedulerLog", schedulerLog);
+        return "console/monitor/schedulerView";
+    }
+
+    @RequestMapping("/json/console/monitor/scheduler/list")
+    public void consoleMonitorSchedulerListJson(Writer writer, @RequestParam(value = "callback", required = false) String callback,
+                                                @RequestParam(value = "jobName", required = false) String jobName, @RequestParam(value = "sort", required = false) String sort,
+                                                @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start,
+                                                @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        String condition = "";
+        List<String> param = new ArrayList<String>();
+
+        if (jobName != null && jobName.trim().length() != 0) {
+            if (!condition.isEmpty()) {
+                condition += " and";
+            }
+            condition += " (e.jobName like ? )";
+            param.add("%" + jobName + "%");
+        }
+
+        if (condition.length() > 0) {
+            condition = "WHERE " + condition;
+        }
+
+        List<SchedulerLog> logs = schedulerLogDao.getSchedulerLogs(condition, param.toArray(new String[param.size()]),
+                sort, desc, start, rows);
+
+        Long count = schedulerLogDao.count(condition, param.toArray(new String[param.size()]));
+
+        JSONObject jsonObject = new JSONObject();
+        if (logs != null && logs.size() > 0) {
+            for (SchedulerLog log : logs) {
+                Map<String, Object> data = new HashMap<String, Object>();
+                data.put("id", log.getId());
+                data.put("jobName", log.getJobName());
+                data.put("jobClassName", log.getJobClassName());
+                data.put("finishTime", log.getFinishTime());
+                data.put("jobStatus", log.getJobStatus().name());
+                data.put("message", log.getMessage());
+                jsonObject.accumulate("data", data);
+            }
+        }
+
+        jsonObject.accumulate("total", count);
+        jsonObject.accumulate("start", start);
+        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("desc", desc);
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
+    @RequestMapping("/console/setting/incomingEmail")
+    public String consoleSettingIncomingEmailContent(ModelMap map) {
+        return "console/setting/incomingEmail";
+    }
+
+    @RequestMapping("/json/console/setting/incomingEmail/list")
+    public void consoleSettingIncomingEmailListJson(Writer writer, @RequestParam(value = "callback", required = false) String callback,
+                                                    @RequestParam(value = "username", required = false) String username,
+                                                    @RequestParam(value = "host", required = false) String host,
+                                                    @RequestParam(value = "sort", required = false) String sort,
+                                                    @RequestParam(value = "desc", required = false) Boolean desc,
+                                                    @RequestParam(value = "start", required = false) Integer start,
+                                                    @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        final StringBuilder condition = new StringBuilder("where 1 = 1");
+        final List<String> param = new ArrayList<String>();
+
+        if(username != null && !username.isEmpty()) {
+            condition.append("and e.username like ?");
+            param.add("%" + username + "%");
+        }
+
+        if(host != null && !host.isEmpty()) {
+            condition.append("and e.host like ?");
+            param.add("%" + host + "%");
+        }
+
+        @Nonnull
+        final List<IncomingEmail> list = Optional.ofNullable(incomingEmailDao.find(condition.toString(), param.toArray(new String[0]), sort, desc, start, rows))
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .collect(Collectors.toList());
+
+        final long count = incomingEmailDao.count(condition.toString(), param.toArray(new String[0]));
+
+        final JSONArray jsonData = list.stream()
+                .map(Try.onFunction(row -> {
+                    final JSONObject data = new JSONObject();
+                    data.put("id", row.getId());
+                    data.put("username", row.getUsername());
+                    data.put("protocol", row.getProtocol());
+                    data.put("host", row.getHost());
+                    data.put("port", row.getPort());
+                    data.put("folder", row.getFolder());
+                    data.put("active", row.getActive());
+                    return data;
+                }))
+                .collect(JSONCollectors.toJSONArray());
+
+        final JSONObject jsonResult = new JSONObject();
+        jsonResult.put("data", jsonData);
+        jsonResult.put("total", count);
+        jsonResult.put("start", start);
+        jsonResult.put("sort", sort);
+        jsonResult.put("desc", desc);
+
+        AppUtil.writeJson(writer, jsonResult, callback);
+    }
+
+    @RequestMapping("/console/setting/incomingEmail/create")
+    public String consoleSettingIncomingEmailCreate(ModelMap map) {
+        final IncomingEmail incomingEmail = new IncomingEmail();
+        map.addAttribute("incomingEmail", incomingEmail);
+        return "console/setting/incomingEmailCreate";
+    }
+
+    @RequestMapping("/console/setting/incomingEmail/edit/(*:id)")
+    public String consoleSettingIncomingEmailEdit(ModelMap map, @RequestParam("id") String id) {
+        final IncomingEmail incomingEmail = incomingEmailDao.load(id);
+        incomingEmail.setPassword(SecurityUtil.decrypt(incomingEmail.getPassword()));
+        map.addAttribute("incomingEmail", incomingEmail);
+        return "console/setting/incomingEmailEdit";
+    }
+
+    @RequestMapping(value="/console/setting/incomingEmail/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleSettingIncomingEmailSubmit(ModelMap map, @RequestParam("action") String action, @ModelAttribute("incomingEmail") final IncomingEmail incomingEmail, BindingResult result) {
+        // validation
+        validator.validate(incomingEmail, result);
+
+        final Date now = new Date();
+        final String currUsername = workflowUserManager.getCurrentUsername();
+
+        boolean invalid = result.hasErrors();
+        if (!invalid) {
+            // check error
+            Collection<String> errors = new ArrayList<String>();
+
+            // create
+            if ("create".equals(action)) {
+                // check exist
+                final boolean isExists = 0 < incomingEmailDao.count("where e.username = ? and e.host = ?", new Object[]{incomingEmail.getUsername(), incomingEmail.getHost()});
+                if (isExists) {
+                    errors.add("console.app.message.error.label.exists");
+                } else {
+                    incomingEmail.setDateCreated(now);
+                    incomingEmail.setCreatedBy(currUsername);
+                    incomingEmail.setDateModified(now);
+                    incomingEmail.setModifiedBy(currUsername);
+                    incomingEmail.setActive(true);
+
+                    incomingEmail.setPassword(SecurityUtil.encrypt(incomingEmail.getPassword()));
+
+                    try {
+                        incomingEmailDao.saveOrUpdate(incomingEmail);
+                    } catch (Exception e) {
+                        invalid = true;
+                        errors.add("console.app.message.error.label.exception");
+                        LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                    }
+                }
+            }
+
+            // edit
+            else if("edit".equals(action)){
+                final IncomingEmail oldData = incomingEmailDao.load(incomingEmail.getId());
+                oldData.setDateModified(now);
+                oldData.setModifiedBy(currUsername);
+                oldData.setUsername(incomingEmail.getUsername());
+                oldData.setPassword(SecurityUtil.encrypt(incomingEmail.getPassword()));
+                oldData.setProtocol(incomingEmail.getProtocol());
+                oldData.setHost(incomingEmail.getHost());
+                oldData.setPort(incomingEmail.getPort());
+                oldData.setFolder(incomingEmail.getFolder());
+                oldData.setActive(incomingEmail.getActive());
+
+                try {
+                    incomingEmailDao.saveOrUpdate(oldData);
+                } catch (Exception e) {
+                    invalid = true;
+                    errors.add("console.app.message.error.label.exception");
+                    LogUtil.error(ConsoleWebController.class.getName(), e, e.getMessage());
+                }
+            } else {
+                invalid = true;
+                errors.add("console.app.message.error.label.exception");
+                LogUtil.warn(ConsoleWebController.class.getName(), "Unsupported action");
+            }
+        }
+
+        if (invalid) {
+            map.addAttribute("incomingEmail", incomingEmail);
+            if ("create".equals(action)) {
+                return "console/setting/incomingEmailCreate";
+            } else {
+                return "console/setting/incomingEmailEdit";
+            }
+        } else {
+            final String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            final String url = contextPath + "/web/console/setting/incomingEmail";
+            map.addAttribute("url", url);
+
+
+            camelRouteManager.stopContext();
+            camelRouteManager.startContext();
+
+            return "console/dialogClose";
         }
     }
 }

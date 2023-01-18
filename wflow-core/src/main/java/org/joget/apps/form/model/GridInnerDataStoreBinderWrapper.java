@@ -17,6 +17,7 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     protected boolean deleteSubformData = false;
     protected boolean abortProcess = false;
     protected boolean deleteFiles = false;
+    protected boolean hardDelete = true;
     protected FormData formData = null;;
     
     public String getName() {
@@ -71,6 +72,13 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         return deleteFiles;
     }
 
+    public void setHardDelete(boolean hardDelete) {
+        this.hardDelete = hardDelete;
+    }
+    public boolean isHardDelete() {
+        return this.hardDelete;
+    }
+
     public void setDeleteFiles(boolean deleteFiles) {
         this.deleteFiles = deleteFiles;
     }
@@ -86,7 +94,7 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         this.formData = formData;
         
         //handle deleted row inner form/grid data
-        handleDeletedRows(element, rows, formData, isDeleteGridData(), isDeleteSubformData(), isAbortProcess(), isDeleteFiles());
+        handleDeletedRows(element, rows, formData, isDeleteGridData(), isDeleteSubformData(), isAbortProcess(), isDeleteFiles(), isHardDelete());
         
         if (rows != null && !rows.isEmpty()) {
             //store inner form/grid data
@@ -98,21 +106,21 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         return rows;
     } 
     
-    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
+    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles, boolean hardDelete) {
         if (deleteGrid || deleteSubform || abortProcess || deleteFiles) {
-            handleDeletedRows(element, null, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+            handleDeletedRows(element, null, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
         }
         
         if (storeBinder instanceof FormDeleteBinder) {
-            ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+            ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
         } else if (element.getLoadBinder() != null && element.getLoadBinder() instanceof FormDataDeletableBinder) {
             FormDataDeletableBinder binder = (FormDataDeletableBinder) element.getLoadBinder();
             FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-            formDataDao.delete(binder.getFormId(), binder.getTableName(), rows);
+            formDataDao.delete(binder.getFormId(), binder.getTableName(), rows, hardDelete);
         }
     }
     
-    public void handleDeletedRows(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
+    public void handleDeletedRows(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles, boolean hardDelete) {
         //get load binder data of this element
         FormRowSet loadedRows = formData.getLoadBinderData(element);
         Set<String> ids = new HashSet<String>();
@@ -148,7 +156,7 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                     
                     //remove inner data
                     if (deleteGrid || deleteSubform) {
-                        FormUtil.recursiveDeleteChildFormData(innerForm, id, deleteGrid, deleteSubform, abortProcess, deleteFiles);
+                        FormUtil.recursiveDeleteChildFormData(innerForm, id, deleteGrid, deleteSubform, abortProcess, deleteFiles, hardDelete);
                     }
                 }
             }
