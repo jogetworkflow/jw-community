@@ -957,6 +957,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (entity != null) {
                 instanceId = entity.getId();
             }
+            
+            WorkflowUtil.writeRequestCache("xpdlCurrentVersion_" + packageId, null);
         } catch (PackageInvalid ex) {
             String errors = ex.getXPDLValidationErrors();
             if (errors != null) {
