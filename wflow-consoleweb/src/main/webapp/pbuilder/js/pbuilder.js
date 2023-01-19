@@ -2594,6 +2594,7 @@ ProcessBuilder = {
         
         element.addClass("node " + elementObj.className);
         element.attr("id", elementObj.properties.id);
+        element.attr("data-cbuilder-visible", "");
         
         if (elementObj.className !== "end") {
             ProcessBuilder.jsPlumb.makeSource($(element), {

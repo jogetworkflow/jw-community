@@ -5821,7 +5821,7 @@ _CustomBuilder.Builder = {
      */
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
-        if (!$(node).is('[data-cbuilder-uneditable]')) {
+        if (!$(node).is('[data-cbuilder-uneditable]') && !$(node).is('[data-cbuilder-visible]')) { //use "data-cbuilder-visible" to skip visiblity check
             var temp = $('<div>'+$(node).html()+'</div>');
             $(temp).find('style').remove();
             if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
