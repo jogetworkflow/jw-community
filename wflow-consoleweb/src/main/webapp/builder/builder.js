@@ -6499,7 +6499,11 @@ _CustomBuilder.Builder = {
             }
         }
         
-        setTimeout(function() {
+        if (CustomBuilder.screenshotTimeout !== undefined && CustomBuilder.screenshotTimeout !== null) {
+            clearTimeout(CustomBuilder.screenshotTimeout);
+        }
+        
+        CustomBuilder.screenshotTimeout = setTimeout(function() {
             CustomBuilder.getScreenshot(target, function(image){
                 $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
                 
@@ -6511,8 +6515,10 @@ _CustomBuilder.Builder = {
                 $("#screenshotView .sticky-buttons").append(link);
                 
                 self.frameBody.removeClass("screenshot-in-progress");
+                CustomBuilder.screenshotTimeout = null;
             }, function(error) {
                 self.frameBody.removeClass("screenshot-in-progress");
+                CustomBuilder.screenshotTimeout = null;
             });
         }, 300);
     },
