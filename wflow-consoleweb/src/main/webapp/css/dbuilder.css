@@ -104,3 +104,7 @@ table.breakpoint th .overlay{
 table.defaulttemplate td[data-cbuilder-element-invisible]:after{
     display: none !important;
 }
+.cards.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
