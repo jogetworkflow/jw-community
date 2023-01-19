@@ -57,6 +57,26 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>0</revisionOnScmFailure>
+                    <shortRevisionLength>8</shortRevisionLength>
+                    <timestampFormat>{0,date,yyyy}</timestampFormat>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
