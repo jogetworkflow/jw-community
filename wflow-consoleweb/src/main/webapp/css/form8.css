@@ -71,6 +71,10 @@
     padding-left: 15px;
     padding-right: 15px;
 }
+.form-column-label, .subform-column-label{
+    padding-left: 13px;
+    padding-right: 13px;
+}
 .form-cell + .form-cell,
 .subform-cell + .subform-cell,
 .form-cell + .subform-cell,
