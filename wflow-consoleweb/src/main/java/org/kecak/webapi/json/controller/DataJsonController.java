@@ -971,7 +971,7 @@ public class DataJsonController implements Declutter {
             long pageSize = rows != null && rows > 0 ? rows : page != null && page > 0 ? DataList.DEFAULT_PAGE_SIZE : DataList.MAXIMUM_PAGE_SIZE;
             long rowStart = start != null ? start : page != null && page > 0 ? ((page - 1) * pageSize) : 0;
 
-            FormRowSet optionRows = FormUtil.getElementPropertyOptionsMap(element, formData);
+            Collection<FormRow> optionRows = FormUtil.getElementPropertyOptionsMap(element, formData);
 
             @Nonnull
             FormRowSet formRows = optionRows.stream()

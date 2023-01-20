@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.text.Normalizer;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.owasp.csrfguard.CsrfGuard;
@@ -337,5 +338,32 @@ public class SecurityUtil implements ApplicationContextAware {
             throw new SecurityException("Invalid filename " + normalizedFileName);
         }
         return normalizedFileName;
+    }
+
+    /**
+     * @param targetStringLength expected result characters length
+     * @param lower              includes lower case characters
+     * @param upper              includes upper case characters
+     * @param numeric            includes numeric characters
+     * @param space              includes space character
+     * @param special            includes special characters
+     * @return
+     */
+    public static String generateRandomString(int targetStringLength, boolean lower, boolean upper, boolean numeric, boolean space, boolean special) {
+        int leftLimit = 32; // letter <space>
+        int rightLimit = 126; // letter '~'
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (lower && 97 <= i && i <= 122)
+                        || (upper && 65 <= i && i <= 90)
+                        || (numeric && 48 <= i && i <= 57)
+                        || (space && i == 32)
+                        || (special && (33 <= i && i <= 47 || 58 <= i && i <= 64 || 91 <= i && i <= 96 || 123 <= i && i <= 126)))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        return generatedString;
     }
 }

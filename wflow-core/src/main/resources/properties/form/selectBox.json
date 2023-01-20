@@ -117,5 +117,48 @@
         label : '@@form.selectbox.workflowVariable@@',
         type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
-    }]
+    },
+    {
+        label : '@@form.selectbox.select2Options@@',
+        type : 'header'
+    },
+    {
+        name : 'lazyLoading',
+        label : '@@form.selectbox.lazyLoading@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'messageSearching',
+        label : '@@form.selectbox.messageSearching@@',
+        type : 'textfield',
+        required : 'true',
+        value : '@@form.selectbox.messageSearching.value@@'
+    },
+    {
+        name : 'messageLoadingMore',
+        label : '@@form.selectbox.messageLoadingMore@@',
+        type : 'textfield',
+        required : 'true',
+        value : '@@form.selectbox.messageLoadingMore.value@@'
+    },
+    {
+        name : 'messageNoResults',
+        label : '@@form.selectbox.messageNoResults@@',
+        type : 'textfield',
+        required : 'true',
+        value : '@@form.selectbox.messageNoResults.value@@'
+    },
+    {
+        name : 'messageErrorLoading',
+        label : '@@form.selectbox.messageErrorLoading@@',
+        type : 'textfield',
+        required : 'true',
+        value : '@@form.selectbox.messageErrorLoading.value@@'
+    }
+    ]
 }]

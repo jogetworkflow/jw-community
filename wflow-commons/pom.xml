@@ -372,6 +372,12 @@
             <version>2.18.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

@@ -1228,8 +1228,8 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      * @return
      */
-    public static <M extends Map, C extends Collection<M>> C getElementPropertyOptionsMap(Element element, FormData formData) {
-        Collection<M> optionsMap = new ArrayList<>();
+    public static <M extends Map, C extends List<M>> C getElementPropertyOptionsMap(Element element, FormData formData) {
+        List<M> optionsMap = new ArrayList<>();
 
         if (isAjaxOptionsSupported(element, formData)) {
             // load from binder if available

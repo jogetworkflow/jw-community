@@ -150,5 +150,14 @@
     
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
-    
+
+    <bean id="dataEncryption" class="org.kecak.commons.security.SecureDataEncryptionImpl">
+        <property name="setupManager" ref="setupManager"/>
+    </bean>
+
+    <bean id="nonceGenerator" class="org.kecak.commons.security.NonceGeneratorImpl">
+        <property name="cache">
+            <ref local="resourceBundleMessageCache" />
+        </property>
+    </bean>
 </beans>
