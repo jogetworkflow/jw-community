@@ -2098,6 +2098,8 @@ UserviewBuilder = {
             var menuObj = UserviewBuilder.selectedMenu;
             if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
                 menuId = menuObj.properties.customId;
+            } else {
+                menuId = menuObj.properties.id;
             }
             menuId = "/" + menuId;
         } else {
