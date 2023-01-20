@@ -180,8 +180,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             dataModel.put("appVersion", appDefinition.getVersion());
 
             final String fieldId = getPropertyString(FormUtil.PROPERTY_ID);
-            final String username = WorkflowUtil.getCurrentUsername();
-            final String nonce = SecurityUtil.generateNonce(new String[]{getName(), appId, appVersion, formDefId, fieldId, username}, 1);
+            final String nonce = SecurityUtil.generateNonce(new String[]{getName(), appId, appVersion, formDefId, fieldId}, 1);
             dataModel.put("nonce", nonce);
         }
 
@@ -302,9 +301,8 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         final AppDefinition appDefinition = AppUtil.getCurrentAppDefinition();
         final String appId = appDefinition.getAppId();
         final String appVersion = appDefinition.getVersion().toString();
-        final String username = WorkflowUtil.getCurrentUsername();
 
-        if(!SecurityUtil.verifyNonce(nonce, new String[]{getName(), appId, appVersion, formDefId, fieldId, username})) {
+        if(!SecurityUtil.verifyNonce(nonce, new String[]{getName(), appId, appVersion, formDefId, fieldId})) {
             throw new ApiException(HttpServletResponse.SC_UNAUTHORIZED, "Invalid nonce token");
         }
 
