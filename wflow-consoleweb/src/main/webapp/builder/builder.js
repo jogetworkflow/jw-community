@@ -851,21 +851,29 @@
                 $(container).append(li);
             }
         }
+        CustomBuilder.updatePaletteFav();
     },
     
     /*
      * Check a palette element is in fav list and flag it
      */
     updatePaletteFav : function() {
-        var list = CustomBuilder.getBuilderSetting("paletteFavList");
-        if (list !== undefined && list !== null) {
-            for (var i in list) {
-                var div = $("li div#"+list[i]);
-                if ($(div).length > 0) {
-                    $(div).parent().addClass("fav");
+        if (CustomBuilder.updatePaletteFavTimeout !== undefined && CustomBuilder.updatePaletteFavTimeout !== null) {
+            clearTimeout(CustomBuilder.updatePaletteFavTimeout);
+        }
+        
+        CustomBuilder.updatePaletteFavTimeout = setTimeout(function() {
+            var list = CustomBuilder.getBuilderSetting("paletteFavList");
+            if (list !== undefined && list !== null) {
+                for (var i in list) {
+                    var div = $("li div#"+list[i]);
+                    if ($(div).length > 0) {
+                        $(div).parent().addClass("fav");
+                    }
                 }
             }
-        }
+            CustomBuilder.updatePaletteFavTimeout = null;
+        }, 300);    
     },
     
     /*
