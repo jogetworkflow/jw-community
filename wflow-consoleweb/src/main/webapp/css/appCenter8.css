@@ -498,11 +498,78 @@ body.rtl #pc-07863BFB349747ED1A6E45812F7C5F97{
         display: none;
     }
 }
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img:nth-child(2){
+    width: 550px;
+    height: 350px;
+    margin: 40px 0px;
+    margin-bottom: 5.5rem !important;
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(5px 5px 5px #222);
+}
+body#login #loginForm{
+    position: relative;
+}
+body#login #page #content main{
+    padding-left: 0%;
+    padding-right: 0%;
+    height: 100%;
+}
+.w-lg-50 {
+    width: 50%!important;
+}
+.d-flex {
+    height: 100%;
+}
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img.h-60px.h-lg-75px{
+    width: 200px;
+    height: 55px;
+    margin-top: 4rem!important;
+}
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img:nth-child(3){
+    width: 540px!important;
+    margin-bottom: 5.5rem!important;
+}
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div{
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > h2{
+    padding-left: 20px;
+    margin-bottom: 40px;
+}
+#loginForm > table{
+    width: 50%;
+}
+body#login #loginForm table td input[type='submit']{
+    width: 100%;
+}
+#content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > h1{
+    margin-bottom: 20px;
+}
+label{
+    font-weight: 500;
+}
+#content > main > div > div.d-flex.flex-column.flex-lg-row-fluid.w-lg-50.p-10.order-2.order-lg-1 > div > div{
+    position: relative;
+    top: 23%;
+}
+body#login #loginForm table td input[type='submit'] {
+    background-color: #32ae93 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+#login #page{
+    max-width: 100%;
+}
 
-
-
-
-
-
-
-
+@media (max-width: 992px) {
+    .w-lg-50 {
+        width: 100% !important;
+    }
+    #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2{
+        height: 20% !important;
+    }
+    #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img.h-60px.h-lg-75px{
+        margin-top: 0rem !important;
+    }
+}
