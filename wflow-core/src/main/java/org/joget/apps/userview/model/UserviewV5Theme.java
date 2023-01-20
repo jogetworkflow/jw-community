@@ -1,10 +1,15 @@
 package org.joget.apps.userview.model;
 
+import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.context.MessageSource;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.xhtmlrenderer.util.LoggerUtil;
 
 /**
  * A base abstract class to develop a Userview Theme plugin for version v5.0 onward.
@@ -133,6 +138,15 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String getFooter(Map<String, Object> data) {
+        MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
+        Locale locale = LocaleContextHolder.getLocale();
+        String footer = "&copy;Copyright Kecak Workflow " + messageSource.getMessage("build.year", null, "", locale) + " - Build " + messageSource.getMessage("build.number", null, "", locale);
+        LogUtil.info(this.getClassName(), "location : ");
+        LogUtil.info(this.getClassName(), "year : " + messageSource.getMessage("build.year", null, "", locale));
+        LogUtil.info(this.getClassName(), "build number : " + messageSource.getMessage("build.number", null, "", locale));
+        LogUtil.info(this.getClassName(), "footerMessage : " + messageSource.getMessage("footerMessage", null, "", locale));
+        data.put("buildNumber", messageSource.getMessage("build.number", null, "", locale));
+        data.put("footerMessage", footer);
         return UserviewUtil.getTemplate(this, data, "/templates/userview/footer.ftl");
     }
 
