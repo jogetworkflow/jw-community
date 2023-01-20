@@ -176,6 +176,7 @@ ProcessBuilder = {
             $('#process-selector .process_action').append('&nbsp;&nbsp;&nbsp;<a class="graybtn" id="process-clone-btn" title="'+get_cbuilder_msg("cbuilder.clone")+'" style=""><i class="la la-copy"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-add-btn" title="'+get_cbuilder_msg("cbuilder.addnew")+'" style=""><i class="la la-plus"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-def-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessDef")+'" style=""><i class="las la-notes-medical"></i></a>');
+            $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-link-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessStartLink")+'" style=""><i class="las la-link"></i></a>');
             
             $("#process-edit-btn").on("click", function(event){
                 ProcessBuilder.editProcess();
@@ -206,6 +207,20 @@ ProcessBuilder = {
                 $temp.remove();
                 
                 CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
+                
+                event.preventDefault();
+                return false;
+            });
+            $("#process-copy-link-btn").on("click", function(event){
+                var url = document.URL.substring(0, document.URL.indexOf("/web/console"));
+                url += "/web/client/app" + CustomBuilder.appPath + "/process/" + ProcessBuilder.currentProcessData.properties.id + "?start=true";
+                var $temp = $("<input style='height:1px;opacity:0'>");
+                $("body").append($temp);
+                $temp.val(url).select();
+                document.execCommand("copy");
+                $temp.remove();
+                
+                CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessStartLink.copied'), "info", true);
                 
                 event.preventDefault();
                 return false;
