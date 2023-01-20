@@ -110,8 +110,7 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
     public String getFooter(String path) {
         MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
         Locale locale = LocaleContextHolder.getLocale();
-        String revision = messageSource.getMessage("console.footer.label.revision", null, "", locale);
-        String footer = "&copy; Kecak Workflow - Joget Inc. All Rights Reserved. " + revision;
+        String footer = "&copy;Copyright Kecak Workflow " + messageSource.getMessage("build.year", null, "", locale) + " - Build " + messageSource.getMessage("build.number", null, "", locale);
         return footer;
     }
     
