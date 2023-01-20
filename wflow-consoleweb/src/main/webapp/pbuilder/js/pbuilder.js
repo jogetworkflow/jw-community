@@ -887,7 +887,7 @@ ProcessBuilder = {
         }
         
         //remove participants not used by any processes
-        var partipantKeys = {};
+        var participantKeys = {};
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
         for (var p in xpdlProcesses) {
             var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
@@ -895,7 +895,7 @@ ProcessBuilder = {
                 if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                     var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
                     for (var i in ids) {
-                        partipantKeys[ids[i]] = "";
+                        participantKeys[ids[i]] = "";
                     }
                     break;
                 }
@@ -903,14 +903,22 @@ ProcessBuilder = {
         }
         
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
-        xpdlParticipants.forEach(function(xpdlParticipant, index, object) {
-            if (partipantKeys[xpdlParticipant['-Id']] === undefined) {
-                object.splice(index, 1);
+        for (var i = xpdlParticipants.length - 1; i >= 0; i--) {
+            if (participantKeys[xpdlParticipants[i]['-Id']] === undefined) {
+                xpdlParticipants.splice(i, 1);
                 
-                //delete mapping
             }
-        });
+        }
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
+        
+        //remove unused participant mapping
+        var keys = Object.keys(CustomBuilder.data.participants);
+        for (var i in keys) {
+            var pid = keys[i].substring(keys[i].indexOf("::") + 2);
+            if (participantKeys[pid] === undefined) {
+                delete CustomBuilder.data.participants[keys[i]];
+            }
+        }
         
         ProcessBuilder.validate();
     },
@@ -1561,7 +1569,7 @@ ProcessBuilder = {
         cloneProcessData['-Name'] = cloneProcessData['-Name'] + " " + get_cbuilder_msg("pbuilder.label.copy");
         
         //remove participants not used by any processes
-        var partipantKeys = {};
+        var participantKeys = {};
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
         for (var p in xpdlProcesses) {
             var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
@@ -1569,28 +1577,47 @@ ProcessBuilder = {
                 if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                     var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
                     for (var i in ids) {
-                        partipantKeys[ids[i]] = "";
+                        participantKeys[ids[i]] = "";
                     }
                     break;
                 }
             }
         }
+        
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
-        xpdlParticipants.forEach(function(xpdlParticipant, index, object) {
-            if (partipantKeys[xpdlParticipant['-Id']] === undefined) {
-                object.splice(index, 1);
-                
-                //delete mapping
+        for (var i = xpdlParticipants.length - 1; i >= 0; i--) {
+            if (participantKeys[xpdlParticipants[i]['-Id']] === undefined) {
+                xpdlParticipants.splice(i, 1);
             }
-        });
+        }
+        
+        //remove unused participant mapping
+        var keys = Object.keys(CustomBuilder.data.participants);
+        for (var i in keys) {
+            var pid = keys[i].substring(keys[i].indexOf("::") + 2);
+            if (participantKeys[pid] === undefined) {
+                delete CustomBuilder.data.participants[keys[i]];
+            }
+        }
         
         //clone participant
         var currentParticipants = ProcessBuilder.currentProcessData.participants;
         for (var c in currentParticipants) {
             var xpdlObj = $.extend(true, {}, currentParticipants[c].xpdlObj);
-            xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
-            if (partipantKeys[xpdlObj['-Id']] === undefined) {     
-                xpdlParticipants.push(xpdlObj);
+            
+            //check the participant is exist
+            if (participantKeys[xpdlObj['-Id']] !== undefined) {
+                var oriPid = xpdlObj['-Id'];
+                if (xpdlObj['-Id'].indexOf(oriId) === 0) { //if keep prepending the process id, the participant id will become very long and over 255 chars
+                    xpdlObj['-Id'] = id + xpdlObj['-Id'].substring(oriId.length);
+                } else {
+                    xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
+                }
+                if (participantKeys[xpdlObj['-Id']] === undefined) {     
+                    xpdlParticipants.push(xpdlObj);
+                    participantKeys[xpdlObj['-Id']] = "";
+                    participantKeys[oriPid] = xpdlObj['-Id'];
+                }
             }
         }
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
@@ -1599,21 +1626,32 @@ ProcessBuilder = {
         var xpdlProcessesAttrs = ProcessBuilder.getArray(cloneProcessData['ExtendedAttributes'], 'ExtendedAttribute');
         for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
-                xpdlProcessesAttrs[p]['-Value'] = id + "_" + xpdlProcessesAttrs[p]['-Value'].replace(/;/g, ";"+ id + "_");
+                var porders = xpdlProcessesAttrs[p]['-Value'].split(";");
+                for (var j in porders) {
+                    porders[j] = participantKeys[porders[j]];
+                }
+                xpdlProcessesAttrs[p]['-Value'] = porders.join(";");
             } else if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
-                xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID=", "JaWE_GRAPH_PARTICIPANT_ID="+id + "_" );
+                var keys = Object.keys(participantKeys);
+                for (var i in keys) {
+                    if (xpdlProcessesAttrs[p]['-Value'].indexOf("JaWE_GRAPH_PARTICIPANT_ID=" + keys[i] + ",") !== -1) {
+                        xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID="+keys[i] + ",", "JaWE_GRAPH_PARTICIPANT_ID="+participantKeys[keys[i]] + ",");
+                        break;
+                    }
+                }
             }
         }
         ProcessBuilder.setArray(cloneProcessData, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
         
         var xpdlActivities = ProcessBuilder.getArray(cloneProcessData['Activities'], 'Activity');
         for (var a in xpdlActivities) {
-            xpdlActivities[a]['Performer'] = id + "_" + xpdlActivities[a]['Performer'];
+            var newpid = participantKeys[xpdlActivities[a]['Performer']];
+            xpdlActivities[a]['Performer'] = newpid;
             
             var attrs = ProcessBuilder.getArray(xpdlActivities[a]['ExtendedAttributes'], 'ExtendedAttribute');
             for (var at in attrs) {
                 if (attrs[at]['-Name'] === "JaWE_GRAPH_PARTICIPANT_ID") {
-                    attrs[at]['-Value'] = id + "_" + attrs[at]['-Value'];
+                    attrs[at]['-Value'] = newpid;
                 }
             }
         }
@@ -1626,7 +1664,11 @@ ProcessBuilder = {
         var newParticipantMapping = {};
         for (var key in CustomBuilder.data.participants) {
             if (key.indexOf(oriId + "::") === 0) {
-                newParticipantMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.participants[key];
+                var newpid = participantKeys[key.substring(key.indexOf("::") + 2)];
+                if (key === oriId + "::processStartWhiteList") {
+                    newpid = "processStartWhiteList";
+                }
+                newParticipantMapping[id + "::" + newpid] = CustomBuilder.data.participants[key];
             }
         }
         $.extend(CustomBuilder.data.participants, newParticipantMapping);
