@@ -728,7 +728,7 @@ DatalistBuilder = {
                                                         {{rowActions data-cbuilder-sort-horizontal data-cbuilder-style="[{\'class\' : \'.rowAction_body\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'.rowAction_header\', \'label\' : \'Header\'}, {\'prefix\' : \'link\', \'class\' : \'.rowAction_body > a\', \'label\' : \'Link\'}]"}}\
                                                             <th>\
                                                                 {{rowAction}}\
-                                                                    <div class="rowAction rowAction_header">{{header_label|| }}<span class="overlay"></span></div>\
+                                                                    <div class="rowAction rowAction_header" data-cbuilder-visible>{{header_label|| }}<span class="overlay"></span></div>\
                                                                 {{rowAction}}\
                                                             </th>\
                                                         {{rowActions}}\
@@ -1796,8 +1796,12 @@ DatalistBuilder = {
             var height = $(table).height();
             var thHeight = $(table).find("thead").height();
             var bottom = height - thHeight;
-            $(table).find("thead .overlay").each(function(){
+            $(table).find("thead th > .overlay").each(function(){
                 $(this).css("bottom", "-" + bottom + "px");
+            });
+            $(table).find("thead th.rowActions > div > .overlay").each(function(){
+                $(this).css("top", "-10px");
+                $(this).css("bottom", "-" + (bottom + 13) + "px");
             });
         }
     },
