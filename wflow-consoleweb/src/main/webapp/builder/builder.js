@@ -5497,8 +5497,8 @@ _CustomBuilder.Builder = {
             }
 
             self.checkVisible(parent);
-            self.checkVisible(newParent);
             self.checkVisible(self.selectedEl);
+            self.checkVisible(newParent);
             
             if (self.subSelectedEl) {
                 self.selectNodeAndShowProperties(self.subSelectedEl, false, (!$("body").hasClass("no-right-panel")));
@@ -5825,13 +5825,23 @@ _CustomBuilder.Builder = {
     },
     
     /*
+     * Check visible from the most inner node
+     */
+    recursiveCheckVisible : function(node) {
+        $(node).find("> [data-cbuilder-classname]").each(function(){
+            CustomBuilder.Builder.recursiveCheckVisible($(this));
+        });
+        CustomBuilder.Builder.checkVisible($(node));
+    },
+    
+    /*
      * Check an element is visible or not, if not show an invisible flag
      */
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
         if (!$(node).is('[data-cbuilder-uneditable]') && !$(node).is('[data-cbuilder-visible]')) { //use "data-cbuilder-visible" to skip visiblity check
             var temp = $('<div>'+$(node).html()+'</div>');
-            $(temp).find('style').remove();
+            $(temp).find('style, script').remove();
             if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
