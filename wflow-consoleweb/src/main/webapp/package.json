@@ -8,6 +8,6 @@
     "font-awesome": "4.7.0",
     "ionicons": "6.0.1",
     "bootstrap": "3.3.7",
-    "select2": "4.0.13"
+    "select2": "~4.0"
   }
 }
