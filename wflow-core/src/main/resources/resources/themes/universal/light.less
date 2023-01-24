@@ -31,14 +31,14 @@ a:focus, a:hover {
     color: @lightAccent;
 }
 header.navbar a {
-    color: @defaultFontColor;
-//     color: #4591a7;
+//     color: @defaultFontColor;
+    color: #4591a7;
 }
 
 #header-name a {
     padding: 7px 10px;
-    color: @defaultFontColor;
-//     color: #4591a7;
+//     color: @defaultFontColor;
+    color: #4591a7;
 }
 .hi-trigger:before {
     background: @primary;
@@ -56,9 +56,9 @@ header.navbar .header-nav .nav>li>a .badge{
     background: #C13228;
 }
 
-header.navbar .header-nav .nav>li{
-    background-color: transparent;
-}
+// header.navbar .header-nav .nav>li{
+//     background-color: transparent;
+// }
 
 header.navbar .dropdown-menu a{ 
     color: #4592a8;
@@ -147,8 +147,8 @@ body.horizontal_menu #sidebar a,
         background: @primary;
     }
     body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs>li.active>a{
-//         box-shadow: 0 2px 0 0 #4591a7;
-        box-shadow: 0 2px 0 0 @primary;
+        box-shadow: 0 2px 0 0 #4591a7;
+//         box-shadow: 0 2px 0 0 @defaultFontColor;
     }
     body.horizontal_menu.inline_menu header.navbar .header-nav .nav>li.user-link img {
         border: 2px solid fade(@defaultFontColor, 13%);
@@ -203,8 +203,10 @@ body:not(#login).embeded #content > main > table{
 }
 .btn.waves-input-wrapper{
     color: @buttonText !important;
-    background-color: @button !important;
+//     background-color: @button !important;
+    background-color: #4591a7 !important;
 }
+
 main .dataList table {
     border-bottom: 2px solid @darkPrimary;
 }
