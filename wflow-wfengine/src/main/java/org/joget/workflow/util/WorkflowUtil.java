@@ -1,17 +1,14 @@
 package org.joget.workflow.util;
 
 import org.joget.commons.util.LogUtil;
+import org.joget.directory.model.Employment;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.commons.util.SetupManager;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.DynamicDataSourceManager;
@@ -206,6 +203,26 @@ public class WorkflowUtil implements ApplicationContextAware {
         } else {
             return workflowUserManager.getCurrentUsername();
         }
+    }
+
+
+    /**
+     * Convenient method used to get organization id
+     *
+     * @return
+     */
+    public static String getCurrentUserOrgId() {
+        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+        String username = getCurrentUsername();
+        return Optional.of(username)
+                .map(directoryManager::getUserByUsername)
+                .map(User::getEmployments)
+                .map(o -> (Set<Employment>)o)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .map(Employment::getOrganizationId)
+                .orElse("");
     }
 
     /**

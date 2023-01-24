@@ -13,16 +13,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
@@ -61,6 +52,7 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
@@ -79,6 +71,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final String FORM_PREFIX_ENTITY = "FormRow_";
     public static final String FORM_PREFIX_TABLE_NAME = "app_fd_";
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
+    public static final String FORM_ANY_ORG_ID = "*";
     public static final String FORM_PREFIX_COLUMN = "c_";
     public static final int ACTION_TYPE_LOAD = 0;
     public static final int ACTION_TYPE_STORE = 1;
@@ -236,8 +229,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         // load by primary key
         FormRow row = null;
+
         try {
-            row = (FormRow) session.load(tableName, primaryKey);
+            final String userOrgId = WorkflowUtil.getCurrentUserOrgId();
+            row = Optional.ofNullable(primaryKey)
+                    .map(s -> session.load(tableName, s))
+                    .map(o -> (FormRow) o)
+                    .filter(r ->(r.getOrgId() == null || r.getOrgId().equals(FORM_ANY_ORG_ID) || r.getOrgId().equals(userOrgId)))
+                    .orElse(null);
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         } catch (ObjectNotFoundException e) {
@@ -321,9 +320,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         try {
             String query = "SELECT e FROM " + tableName + " e ";
-            if (condition != null) {
-                query += condition;
-            }
+            query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ")
+                    + "(" + (FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?)") + ") ";
 
             if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
                 String sortProperty = sort;
@@ -410,8 +408,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + condition));
+            String query = "SELECT COUNT(*) FROM " + tableName + " e ";
+            query += (condition != null && !condition.isEmpty() ? (condition + " AND ") : " WHERE ") + "(" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
 
+            Query q = session.createQuery(query);
             if (params != null) {
                 int i = 0;
                 for (Object param : params) {
@@ -469,7 +469,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? order by e.dateCreated";
+            String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ? AND (" + FormUtil.PROPERTY_ORG_ID + " IS NULL OR " + FormUtil.PROPERTY_ORG_ID + " IN ('" + FORM_ANY_ORG_ID + "', ?))";
 
             Query q = session.createQuery(processQuery(query));
 
@@ -1265,9 +1265,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             Pattern pattern = Pattern.compile("^[0-9a-zA-Z_\\-]+$");
             for (Object column : columnsName) {
                 String columnName = (String) column;
-                if (columnName != null && !columnName.isEmpty() && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)
-                         && !FormUtil.PROPERTY_CREATED_BY.equals(columnName) && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(columnName)
-                         && !FormUtil.PROPERTY_MODIFIED_BY.equals(columnName) && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(columnName)) {
+                if (columnName != null && !columnName.isEmpty() && !isDefaultFormColumns(columnName)) {
                     String lowerCasePropName = columnName.toLowerCase();
                     
                     if (pattern.matcher(columnName).matches() && !lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
@@ -1285,6 +1283,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
             columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
             columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+            columnList.remove(FormUtil.PROPERTY_ORG_ID);
         }
         return columnList;
     }
@@ -1382,6 +1381,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+                columnList.remove(FormUtil.PROPERTY_ORG_ID);
 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
@@ -1733,5 +1733,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             LogUtil.error(query, e, query);
         }
         return query;
+    }
+
+    protected boolean isDefaultFormColumns(String column) {
+        return FormUtil.PROPERTY_ID.equals(column)
+                || FormUtil.PROPERTY_DATE_CREATED.equals(column) || FormUtil.PROPERTY_DATE_MODIFIED.equals(column)
+                || FormUtil.PROPERTY_CREATED_BY.equals(column) || FormUtil.PROPERTY_MODIFIED_BY.equals(column);
     }
 }

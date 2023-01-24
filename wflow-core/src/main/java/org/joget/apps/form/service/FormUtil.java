@@ -132,6 +132,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String FORM_BUILDER_ACTIVE = "formBuilderActive";
     public static final String FORM_ERRORS_PARAM = "_FORM_ERRORS";
     public static final String FORM_RESULT_LOAD_ALL_DATA = "FORM_RESULT_LOAD_ALL_DATA";
+    public static final String PROPERTY_ORG_ID = "orgId";
     
     static ApplicationContext appContext;
     

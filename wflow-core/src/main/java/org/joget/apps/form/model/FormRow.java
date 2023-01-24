@@ -167,6 +167,23 @@ public class FormRow extends Properties {
         }
     }
 
+    public String getOrgId() {
+        String orgId = null;
+        Object obj = get(FormUtil.PROPERTY_ORG_ID);
+        if (obj != null) {
+            orgId = (String) obj;
+        }
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        if(orgId != null) {
+            put(FormUtil.PROPERTY_ORG_ID, orgId);
+        } else {
+            remove(FormUtil.PROPERTY_ORG_ID);
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         FormRow row = (FormRow) obj;
