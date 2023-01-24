@@ -31,14 +31,14 @@ a:focus, a:hover {
     color: @lightAccent;
 }
 header.navbar a {
-//     color: @defaultFontColor;
-    color: #4591a7;
+    color: @defaultFontColor;
+//     color: #4591a7;
 }
 
 #header-name a {
     padding: 7px 10px;
-//     color: @defaultFontColor;
-    color: #4591a7;
+    color: @defaultFontColor;
+//     color: #4591a7;
 }
 .hi-trigger:before {
     background: @primary;
@@ -74,8 +74,8 @@ li.dropdown-menu-title {
     color: #4C4C4C;
 }
 #sidebar {
-//     background: @lightPrimary;
-    background: #4591a7;
+    background: @lightPrimary;
+//     background: #4591a7;
     box-shadow: 0 1px 1px rgba(0,0,0,.1);
 }
 #page > footer {
@@ -98,8 +98,8 @@ body#login #main > div {
     color: @fontLightColor;
 }
 .breadcrumb a:last-child {
-//     color: @lightAccent;
-    color: #4591a7;
+    color: @lightAccent;
+//     color: #4591a7;
 }
 body.horizontal_menu #sidebar a,
 #sidebar li ul li.active a, #sidebar li ul li.active a,
@@ -107,8 +107,8 @@ body.horizontal_menu #sidebar a,
 .main-menu.nav>li>a:focus, .main-menu.nav>li>a:hover,
 .main-menu.nav-tabs>li.active>a, .main-menu.nav-tabs>li.active>a:focus, .main-menu.nav-tabs>li.active>a:hover,
 .main-menu.nav-tabs .active>a, .main-menu.nav-tabs a.active, .main-menu.nav-tabs a:hover {
-//     color: @menuFont;
-    color: #4591a7;
+    color: @menuFont;
+//     color: #4591a7;
 }
 .main-menu.nav-tabs>li>a {
     color: fade(@menuFont, 65%);
@@ -147,7 +147,8 @@ body.horizontal_menu #sidebar a,
         background: @primary;
     }
     body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs>li.active>a{
-        box-shadow: 0 2px 0 0 #4591a7;;
+//         box-shadow: 0 2px 0 0 #4591a7;
+        box-shadow: 0 2px 0 0 @primary;
     }
     body.horizontal_menu.inline_menu header.navbar .header-nav .nav>li.user-link img {
         border: 2px solid fade(@defaultFontColor, 13%);
@@ -158,11 +159,12 @@ body.horizontal_menu #sidebar a,
     body.horizontal_menu .main-menu.nav>li>a:focus, body.horizontal_menu .main-menu.nav>li>a:hover,
     body.horizontal_menu .main-menu.nav-tabs>li.active>a, body.horizontal_menu .main-menu.nav-tabs>li.active>a:focus, body.horizontal_menu .main-menu.nav-tabs>li.active>a:hover,
     body.horizontal_menu .main-menu.nav-tabs .active>a, body.horizontal_menu .main-menu.nav-tabs a.active, body.horizontal_menu .main-menu.nav-tabs a:hover {
-//         color: @defaultFontColor;
-        color: #4591a7;
+        color: @defaultFontColor;
+//         color: #4591a7;
     }
     body.horizontal_menu .main-menu.nav-tabs>li>a {
-        color: fade(#4591a7, 65%);
+//         color: fade(#4591a7, 65%);
+        color: fade(@primary, 65%);
     }
     body.horizontal_menu .main-menu.nav>li>a:focus, body.horizontal_menu .main-menu.nav>li>a:hover,
     body.horizontal_menu .main-menu.nav-tabs>li.active>a, body.horizontal_menu .main-menu.nav-tabs>li>a:hover {
@@ -523,8 +525,8 @@ body #form-canvas .label {
 }
 legend,
 body #form-canvas .form-section-title span, body #form-canvas .subform-section-title span {
-//     background: fade(@primary, 80%);
-    background: fade(#4591a7, 80%);
+    background: fade(@primary, 80%);
+//     background: fade(#4591a7, 80%);
     color:@defaultFontColor;
 }
 body .subform-container.has-frame .subform-title {
