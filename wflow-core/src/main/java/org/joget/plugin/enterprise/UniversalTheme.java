@@ -401,7 +401,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     
     protected String getDefaultColor(String defaultColor) {
         if (defaultColor.equals("primary")) {
-            defaultColor = "DARKROYALBLUE";
+            defaultColor = "KECAK";
         }
         else if (defaultColor.equals("accent")) {
             defaultColor = "#0D6EFD";
