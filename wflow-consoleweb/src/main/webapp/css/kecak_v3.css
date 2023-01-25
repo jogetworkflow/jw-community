@@ -238,7 +238,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
     outline:none;
-    background: #00897b !important;
+    background: #20444f !important;
 }
 button:before, input[type='button']:before, input[type='submit']:before, .smallbutton:before, .btn:before{
     content: "";

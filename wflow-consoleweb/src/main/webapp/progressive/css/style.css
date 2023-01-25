@@ -79,6 +79,7 @@ a:active, a:hover {
 
 header.navbar a {
     background: transparent;
+    color: #627aad;
 }
 
 #header-message, #header-description {
@@ -233,7 +234,7 @@ header.navbar .header-nav{
 
 header.navbar .header-nav .nav>li {
     display: inline-block;
-    background-color: #4591a7;
+    background-color: #fbf9fd;
 }
 header.navbar .header-nav .nav>li>a {
     padding: 0px 10px;

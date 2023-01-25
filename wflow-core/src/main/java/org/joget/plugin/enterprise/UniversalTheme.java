@@ -49,6 +49,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     protected static LessEngine lessEngine = new LessEngine();
 
     public enum Color {
+        KECAK("#4591a7", "#4490a6", "#f8f8f8"),
         RED("#F44336", "#D32F2F", ""),
         PINK("#E91E63", "#C2185B", ""),
         PURPLE("#9C27B0", "#7B1FA2", ""),
