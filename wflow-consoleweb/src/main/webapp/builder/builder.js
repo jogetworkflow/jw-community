@@ -1400,6 +1400,24 @@
                 $("body").addClass("no-right-panel");
                 CustomBuilder.merge(CustomBuilder.save);
             });
+        } else if ($("body").hasClass("properties-builder-view")) {
+            var editor = $("#propertiesView .builder-view-body").data("editor");
+            if (editor !== undefined && editor.isChange()) {
+                if (editor.options.orgSaveCallback === undefined || editor.options.orgSaveCallback === null) {
+                    editor.options.orgSaveCallback = editor.options.saveCallback;
+                    editor.options.saveCallback = function(container, properties) {
+                        editor.options.orgSaveCallback(container, properties);
+                        $("#save-btn").attr("disabled", "disabled");
+                        CustomBuilder.merge(CustomBuilder.save);
+                    };
+                }
+                editor.save();
+                editor.options.saveCallback = editor.options.orgSaveCallback;
+                editor.options.orgSaveCallback = null;
+            } else {
+                $("#save-btn").attr("disabled", "disabled");
+                CustomBuilder.merge(CustomBuilder.save);
+            }
         } else {
             $("#save-btn").attr("disabled", "disabled");
             CustomBuilder.merge(CustomBuilder.save);
