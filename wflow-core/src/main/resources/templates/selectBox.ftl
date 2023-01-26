@@ -19,6 +19,10 @@
             .select2-container {
                 margin-bottom:18px
             }
+
+            .select2-search--dropdown .select2-search__field{
+            float:none;
+            }
         </style>
         <select class="js-select2" <#if element.properties.readonly! != 'true'>id="${elementParamName!}${element.properties.elementUniqueKey!}"</#if> name="${elementParamName!}" <#if element.properties.size?? && element.properties.size != ''> style="width:${element.properties.size!}%"</#if> <#if element.properties.multiple! == 'true'>multiple="multiple" data-role="none" data-native-menu="true"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled </#if>>
             <#list options as option>
@@ -56,7 +60,7 @@
             $('select#${elementParamName!}${element.properties.elementUniqueKey!}.js-select2').select2({
                 dropdownAutoWidth : true,
                 width : '${width!'resolve'}',
-                theme : 'classic',
+                theme : 'default',
                 language : {
                    errorLoading: () => '${element.properties.messageErrorLoading!'@@form.selectbox.messageErrorLoading.value@@'}',
                    loadingMore: () => '${element.properties.messageLoadingMore!'@@form.selectbox.messageLoadingMore.value@@'}',
