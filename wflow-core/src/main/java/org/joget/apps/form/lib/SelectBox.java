@@ -49,8 +49,8 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
      * @param formData
      * @return
      */
-    public Collection<Map> getOptionMap(FormData formData) {
-        Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+    public Collection getOptionMap(FormData formData) {
+        Collection<Map<String, String>> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
         return optionMap;
     }
     
@@ -79,7 +79,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                     }
                 }
             } else {
-                Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+                Collection<Map<String, String>> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
                 
                 //for other child implementation which does not using options binder & option grid, do nothing
                 if (optionMap == null || optionMap.isEmpty()) {

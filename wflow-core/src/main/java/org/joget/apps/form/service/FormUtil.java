@@ -1223,8 +1223,8 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      * @return
      */
-    public static <M extends Map, C extends Collection<M>> C getElementPropertyOptionsMap(Element element, FormData formData) {
-        Collection<M> optionsMap = new ArrayList<>();
+    public static Collection<Map<String, String>> getElementPropertyOptionsMap(Element element, FormData formData) {
+        Collection<Map<String, String>> optionsMap = new ArrayList<>();
 
         if (isAjaxOptionsSupported(element, formData)) {
             // load from binder if available
@@ -1234,7 +1234,7 @@ public class FormUtil implements ApplicationContextAware {
                 if (rowSet != null) {
                     optionsMap = new ArrayList<>();
                     for (FormRow row : rowSet) {
-                        optionsMap.add((M) row);
+                        optionsMap.add(row.getCustomProperties());
                     }
                 }
             }
@@ -1243,7 +1243,7 @@ public class FormUtil implements ApplicationContextAware {
             Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
             if (optionProperty != null && optionProperty instanceof Collection) {
                 for (FormRow opt : (FormRowSet) optionProperty) {
-                    optionsMap.add((M) opt);
+                    optionsMap.add(opt.getCustomProperties());
                 }
             }
 
@@ -1254,13 +1254,13 @@ public class FormUtil implements ApplicationContextAware {
                 if (rowSet != null) {
                     optionsMap = new ArrayList<>();
                     for (FormRow row : rowSet) {
-                        optionsMap.add((M) row);
+                        optionsMap.add(row.getCustomProperties());
                     }
                 }
             }
         }
 
-        return (C) optionsMap;
+        return optionsMap;
     }
 
     /**
@@ -1885,7 +1885,7 @@ public class FormUtil implements ApplicationContextAware {
                 } else {
                     // other binder type is used, so just load available options
                     Map<String, String> optionMap = new HashMap<String, String>();
-                    Collection<Map> options = FormUtil.getElementPropertyOptionsMap(e, formData);
+                    Collection<Map<String, String>> options = FormUtil.getElementPropertyOptionsMap(e, formData);
                     for (Map<String, String> opt: options) {
                         String key = opt.get(FormUtil.PROPERTY_VALUE);
                         String label = opt.get(FormUtil.PROPERTY_LABEL);
