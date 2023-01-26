@@ -407,7 +407,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             defaultColor = "#0D6EFD";
         }
         else if (defaultColor.equals("button")) {
-            defaultColor = "#6c757D";
+//            defaultColor = "#6c757D";
+            defaultColor = "#4591a7";
         }
         else if (defaultColor.equals("buttonText")) {
             defaultColor = "#FFFFFF";
@@ -417,6 +418,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }
         else if (defaultColor.equals("font")) {
             defaultColor = "#FFFFFF";
+        }
+        else if (defaultColor.equals("kecakFont")) {
+            defaultColor = "#4591a7";
         }
         return defaultColor;
     }
@@ -432,6 +436,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String button = getDefaultColor("button");
         String buttonText = getDefaultColor("buttonText");
         String font = getDefaultColor("font");
+        String kecakFont = getDefaultColor("kecakFont");
         
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
@@ -508,9 +513,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
             }
             
-            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + "; @kecakFontColor : " + kecakFont + ";";
         } else {
-            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + "; @kecakFontColor : " + kecakFont + ";";
         }
         
         // process LESS

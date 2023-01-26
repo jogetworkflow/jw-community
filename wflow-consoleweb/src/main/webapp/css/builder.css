@@ -38,13 +38,13 @@ div, label, input, button, select, th, td, a, span {
     z-index: -1;
 }
 #datalistbuilder #builder-header:before {
-    background: #6638b6;
+    background: #4591a7;
 }
 #userviewbuilder #builder-header:before {
     background: #4591a7;
 }
 #pbuilder #builder-header:before {
-    background: #dc4438;
+    background: #4591a7;
 }
 #builder-header > i {
     float: left;
