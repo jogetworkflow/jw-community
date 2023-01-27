@@ -319,7 +319,7 @@ $(function() {
     var banner = $("#banner h1");
     if (AppCenter.showNotifications && banner.length > 0) {
         AppCenter.updateNotifications(banner);
-        window.setInterval(function() {
+        UI.visibilityChangeSetInterval("notifications", function() {
             AppCenter.updateNotifications(banner);
         }, 30000);
     }
