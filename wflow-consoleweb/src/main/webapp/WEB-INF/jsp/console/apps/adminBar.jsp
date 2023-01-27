@@ -12,7 +12,7 @@
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
         <div id="adminBar" class="adminBarInactive">
-            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
+            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fas fa-user-cog"></i></a>
             <div id="adminBarButtons">
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <c:set var="key" value="1" />

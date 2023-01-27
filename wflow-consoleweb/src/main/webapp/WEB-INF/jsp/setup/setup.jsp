@@ -23,7 +23,7 @@
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title")%></title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/kecak_v3.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css">
         <style>
             body {

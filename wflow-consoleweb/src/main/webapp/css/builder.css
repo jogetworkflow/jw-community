@@ -33,18 +33,18 @@ div, label, input, button, select, th, td, a, span {
     position: absolute;
     top:0;
     left:0;
-    width: 121px;
+    width: 95px;
     height: 39px;
     z-index: -1;
 }
 #datalistbuilder #builder-header:before {
-    background: #6638b6;
+    background: #4591a7;
 }
 #userviewbuilder #builder-header:before {
-    background: #f3b328;
+    background: #4591a7;
 }
 #pbuilder #builder-header:before {
-    background: #dc4438;
+    background: #4591a7;
 }
 #builder-header > i {
     float: left;
@@ -75,10 +75,10 @@ div, label, input, button, select, th, td, a, span {
 #builder-logo {
     background: url(../images/v3/builder/logo.png) no-repeat;
     background-size: cover;
-    width: 68px;
+    width: 28px;
     height: 24px;
     float: left;
-    background-position: 0px 0px;
+    background-position: 3px 0px;
     margin-left: 16px;
     position: relative;
 }
@@ -244,7 +244,7 @@ div, label, input, button, select, th, td, a, span {
     display: none;
 }
 #builder-palette h3 {
-    background: #00695c;
+    background: #4591a7;
     color: white;
     text-shadow: 0px 0px 1px black;
     padding: 5px;
@@ -474,7 +474,7 @@ body.rtl #advancedToolsOverlayButton {
 #advancedToolsFrame > h1{
     font-size: 20px;
     padding: 10px 20px 0;
-    color:#00695c;
+    color:#4591a7;
     text-transform: uppercase;
 }
 #advancedToolsFrame .ui-tabs,
@@ -550,10 +550,10 @@ body.rtl #advancedToolsOverlayButton {
 .builder_tool_tabs_container .tab-content h2 {
     font-size: 18px;
     text-transform: uppercase;
-    color: #00695c;
+    color: #4591a7;
 }
 #advancedToolsFrame .builder_tool_tabs_container .tab-content .button {
-    background: #00695c;
+    background: #4591a7;
     font-family: Arial;
     text-decoration: none;
     box-shadow: none;
@@ -602,7 +602,7 @@ body.rtl #advancedToolsOverlayButton {
     right:0;
 }
 #builder-bar .highlight-button a{
-    background: #00695c;
+    background: #4591a7;
     padding-right: 0;
 }
 #builder-bar .highlight-button a:hover{
@@ -720,7 +720,7 @@ body.popupBody {
     padding-top: 48px;
 }
 body .boxy-wrapper .title-bar {
-    background: #00695c;
+    background: #4591a7;
     margin: 3px 3px 0 3.5px;
 }
 body .boxy-wrapper .title-bar h2:after {
@@ -738,7 +738,7 @@ body .boxy-wrapper .title-bar .close:hover {
     color: #ccc;
 }
 body .property-editor-page-button-panel input[type=button]{
-    background: #00695c;
+    background: #4591a7;
     color: #fff;
     border:0;
     appearance: none;
@@ -775,7 +775,7 @@ body .property-editor-page-button-panel input[type=button]:before{
     left: 0;
     right: 0;
     bottom: 0;
-    background: #00695c;
+    background: #4591a7;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
     -webkit-transform-origin: 0 50%;

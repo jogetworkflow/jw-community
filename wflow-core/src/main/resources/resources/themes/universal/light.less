@@ -10,11 +10,13 @@ body.embeded {
     background-color: transparent;
 }
 header.navbar {
-    background-color: @primary;
+//     background-color: @primary;
+    background-color: transparent;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
 }
 header.navbar .header-nav {
-    background-color: @primary;
+//     background-color: @primary;
+       background-color: transparent;
 }
 main .reset_position,
 main .grid-stack-item-header-action,
@@ -29,11 +31,16 @@ a:focus, a:hover {
     color: @lightAccent;
 }
 header.navbar a {
-    color: @defaultFontColor;
+//     color: @defaultFontColor;
+//     color: #4591a7;
+    color: @kecakFontColor;
 }
+
 #header-name a {
     padding: 7px 10px;
-    color: @defaultFontColor;
+//     color: @defaultFontColor;
+    color: #4591a7;
+    color: @kecakFontColor;
 }
 .hi-trigger:before {
     background: @primary;
@@ -50,8 +57,13 @@ header.navbar .header-nav .nav>li>a.btn:focus, header.navbar .header-nav .nav>li
 header.navbar .header-nav .nav>li>a .badge{
     background: #C13228;
 }
+
+// header.navbar .header-nav .nav>li{
+//     background-color: transparent;
+// }
+
 header.navbar .dropdown-menu a{ 
-    color: #000;
+    color: @kecakFontColor;
 }
 header.navbar .dropdown-menu .dropdown-menu-sub-footer {
     color: #828282;
@@ -123,7 +135,8 @@ body.horizontal_menu #sidebar a,
         background: screen(@primary, #333333);
     }
     body.horizontal_menu.inline_menu #sidebar {
-        background: @primary;
+//         background: @primary;
+        background: transparent;
     }
     body.horizontal_menu #sidebar .nav>li ul{
         background: @primary;
@@ -132,7 +145,8 @@ body.horizontal_menu #sidebar a,
         background: @primary;
     }
     body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs>li.active>a{
-        box-shadow: 0 2px 0 0 @defaultFontColor;
+        box-shadow: 0 2px 0 0 @kecakFontColor;
+//         box-shadow: 0 2px 0 0 @defaultFontColor;
     }
     body.horizontal_menu.inline_menu header.navbar .header-nav .nav>li.user-link img {
         border: 2px solid fade(@defaultFontColor, 13%);
@@ -146,7 +160,7 @@ body.horizontal_menu #sidebar a,
         color: @defaultFontColor;
     }
     body.horizontal_menu .main-menu.nav-tabs>li>a {
-        color: fade(@defaultFontColor, 65%);
+        color: fade(@kecakFontColor, 65%);
     }
     body.horizontal_menu .main-menu.nav>li>a:focus, body.horizontal_menu .main-menu.nav>li>a:hover,
     body.horizontal_menu .main-menu.nav-tabs>li.active>a, body.horizontal_menu .main-menu.nav-tabs>li>a:hover {

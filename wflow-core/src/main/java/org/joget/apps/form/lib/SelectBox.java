@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SelectBox extends Element implements FormBuilderPaletteElement, FormAjaxOptionsElement, PwaOfflineValidation, PluginWebSupport {
@@ -61,7 +62,10 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
      * @return
      */
     public Collection<Map> getOptionMap(FormData formData) {
-        Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+        Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData)
+                .stream()
+                .map(FormRow::getCustomProperties)
+                .collect(Collectors.toList());
         return optionMap;
     }
 
@@ -90,8 +94,8 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                     }
                 }
             } else {
-                Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
-
+                Collection<FormRow> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
+                
                 //for other child implementation which does not using options binder & option grid, do nothing
                 if (optionMap == null || optionMap.isEmpty()) {
                     return formData;
@@ -316,7 +320,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             throw new ApiException(HttpServletResponse.SC_BAD_REQUEST, "Element [" + fieldId + "] is not found in form [" + formDefId + "]");
 
         FormUtil.executeOptionBinders(element, formData);
-        List<FormRow> optionsRowSet = FormUtil.getElementPropertyOptionsMap(element, formData);
+        List<FormRow> optionsRowSet = new ArrayList<>(FormUtil.getElementPropertyOptionsMap(element, formData));
         if (values.length > 0) {
             for (FormRow row : optionsRowSet) {
                 boolean found = false;
