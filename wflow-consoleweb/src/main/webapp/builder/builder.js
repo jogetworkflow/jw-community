@@ -1620,6 +1620,12 @@
                 
                 var newPropertiesJson = JSON.encode(elementProperty);
                 if (oldPropertiesJson !== newPropertiesJson) {
+                    if ($(element).is('[data-cbuilder-style-id]')) {
+                        var style = $(element).next('[data-cbuilder-style]');
+                        $(element).append(style);
+                        $(element).removeAttr("data-cbuilder-style-id");
+                    }
+                    
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["saveEditProperties"], [container, elementProperty, elementObj, element]);
                     
                     if ($("body").hasClass("default-builder")) {
@@ -3834,6 +3840,11 @@ _CustomBuilder.Builder = {
             try {
                 self.iframe.contentWindow.tinymce.get($(this).attr("id")).destroy();
                 $(this).removeAttr('data-cbuilder-inlineedit');
+                if ($(this).is('[data-cbuilder-style-id]')) {
+                    var style = $(this).next('[data-cbuilder-style]');
+                    $(this).append(style);
+                    $(this).removeAttr("data-cbuilder-style-id");
+                }
                 $(this).off("change.inlineedit");
             }catch(err){}
         });
@@ -3987,6 +3998,11 @@ _CustomBuilder.Builder = {
                             $(inilineEditEl).removeAttr('data-cbuilder-desktop-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-tablet-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-mobile-invisible');
+                            
+                            if ($(inilineEditEl).find("style[data-cbuilder-style]").length > 0) {
+                                $(inilineEditEl).attr('data-cbuilder-style-id', $(inilineEditEl).find("style[data-cbuilder-style]").attr("data-cbuilder-style"));
+                                $(inilineEditEl).after($(inilineEditEl).find("style[data-cbuilder-style]"));
+                            }
                             
                             try {
                                 var toolbar = 'styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
@@ -5091,7 +5107,6 @@ _CustomBuilder.Builder = {
     },
     
     missingComponent: function (className) {
-        console.log(className);
         CustomBuilder.Builder.frameBody.find("[data-cbuilder-classname='"+className+"']").attr("data-cbuilder-missing-plugin", "");
         
         CustomBuilder.initPaletteElement("", className, get_advtool_msg('dependency.tree.Missing.Plugin') + " ("+className+")", "", "", "", false, "", {builderTemplate: {
