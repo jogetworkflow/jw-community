@@ -218,3 +218,8 @@ nbdist/
 #################
 
 wflow-consoleweb/src/main/webapp/wro/
+
+
+## NPM
+*/node_modules/
+*/package-lock.json

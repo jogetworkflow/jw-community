@@ -28,7 +28,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css?build=<fmt:message key="build.number"/>">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/kecak_v3.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">
         <script>
             var Template = {

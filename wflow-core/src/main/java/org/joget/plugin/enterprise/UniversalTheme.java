@@ -49,6 +49,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     protected static LessEngine lessEngine = new LessEngine();
 
     public enum Color {
+        KECAK("#4591a7", "#4490a6", "#f8f8f8"),
         RED("#F44336", "#D32F2F", ""),
         PINK("#E91E63", "#C2185B", ""),
         PURPLE("#9C27B0", "#7B1FA2", ""),
@@ -400,13 +401,14 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     
     protected String getDefaultColor(String defaultColor) {
         if (defaultColor.equals("primary")) {
-            defaultColor = "DARKROYALBLUE";
+            defaultColor = "KECAK";
         }
         else if (defaultColor.equals("accent")) {
             defaultColor = "#0D6EFD";
         }
         else if (defaultColor.equals("button")) {
-            defaultColor = "#6c757D";
+//            defaultColor = "#6c757D";
+            defaultColor = "#4591a7";
         }
         else if (defaultColor.equals("buttonText")) {
             defaultColor = "#FFFFFF";
@@ -416,6 +418,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }
         else if (defaultColor.equals("font")) {
             defaultColor = "#FFFFFF";
+        }
+        else if (defaultColor.equals("kecakFont")) {
+            defaultColor = "#4591a7";
         }
         return defaultColor;
     }
@@ -431,6 +436,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String button = getDefaultColor("button");
         String buttonText = getDefaultColor("buttonText");
         String font = getDefaultColor("font");
+        String kecakFont = getDefaultColor("kecakFont");
         
         if ("custom".equals(getPropertyString("primaryColor"))) {
             primary = getPropertyString("customPrimary");
@@ -507,9 +513,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
             }
             
-            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + "; @kecakFontColor : " + kecakFont + ";";
         } else {
-            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + "; @kecakFontColor : " + kecakFont + ";";
         }
         
         // process LESS
@@ -712,8 +718,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
 
             } else {
                 html += "<li class=\"user-link\">\n"
-                      + "    <a href=\"" + data.get("login_link") + "\" class=\"btn\">\n"
-                      + "	     <i class=\"fa fa-user white\"></i> " + ResourceBundleUtil.getMessage("ubuilder.login") + "\n"
+                      + "    <a href=\"" + data.get("login_link") + "\" class=\"btn\" title=\""+ ResourceBundleUtil.getMessage("ubuilder.login") +"\">\n"
+                      + "	     <i class=\"fa fa-user white\"></i> \n"
                       + "    </a>\n";
             }
             html += "</li>";

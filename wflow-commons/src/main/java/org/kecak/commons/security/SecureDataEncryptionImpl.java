@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SecureDataEncryptionImpl implements DataEncryption {
-    public final static String PROPERTY_SETUP_SECURITY_SALT = "securitySalt";
-    public final static String PROPERTY_SETUP_SECURITY_KEY = "securityKey";
     private SetupManager setupManager;
 
     private static Map<String, String> cache = new HashMap<String, String>();
@@ -23,11 +21,11 @@ public class SecureDataEncryptionImpl implements DataEncryption {
         this.setupManager = setupManager;
     }
     public String getSalt() {
-        return setupManager.getSettingValue(PROPERTY_SETUP_SECURITY_SALT);
+        return setupManager.getSettingValue(SetupManager.PROPERTY_SETUP_SECURITY_SALT);
     }
 
     public String getKey() {
-        return setupManager.getSettingValue(PROPERTY_SETUP_SECURITY_KEY);
+        return setupManager.getSettingValue(SetupManager.PROPERTY_SETUP_SECURITY_KEY);
     }
 
     public String encrypt(String rawContent) {

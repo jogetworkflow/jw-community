@@ -30,7 +30,11 @@
         options : [{
             value : 'light',
             label : '@@theme.progressive.themeScheme.light@@'
-        }]
+        },
+            {
+                value : 'dark',
+                label : '@@theme.progressive.themeScheme.dark@@'
+            }]
     },
     {
         name : 'primaryColor',

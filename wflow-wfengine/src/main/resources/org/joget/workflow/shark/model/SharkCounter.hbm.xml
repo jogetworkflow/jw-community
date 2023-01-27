@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="SharkCounter" lazy="false" name="org.joget.workflow.shark.model.SharkCounter" table="SHKCounters">
+        <id column="oid" name="oid" type="long"/>
+        <property column="name" name="name" type="string"/>
+        <property column="the_number" name="nextNumber" type="long"/>
+        <property column="version" name="version" type="int"/>
+    </class>
+</hibernate-mapping>
+

@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-core</artifactId>
     <packaging>jar</packaging>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.0.36</version>
     <name>wflow-core</name>
     <url>http://www.joget.org</url>
     <build>
@@ -24,6 +24,14 @@
                 <version>2.15</version>
                 <configuration>
                     <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -307,7 +315,7 @@
         <dependency>
             <groupId>com.kinnarastudio</groupId>
             <artifactId>kinnara-commons</artifactId>
-            <version>1.2.5</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>

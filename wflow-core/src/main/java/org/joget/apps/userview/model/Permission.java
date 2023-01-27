@@ -1,11 +1,14 @@
 package org.joget.apps.userview.model;
 
 import org.joget.directory.model.User;
+import org.kecak.apps.userview.model.Platform;
 
 public abstract class Permission extends ExtElement {
     
-    public static final String DEFAULT = "default"; 
-    
+    public static final String DEFAULT = "default";
+
+    private Platform platform = Platform.WEB;
+
     private User currentUser;
 
     /**
@@ -29,4 +32,12 @@ public abstract class Permission extends ExtElement {
      * @return 
      */
     public abstract boolean isAuthorize();
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
 }

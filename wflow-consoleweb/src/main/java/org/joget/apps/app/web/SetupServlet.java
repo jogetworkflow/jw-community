@@ -242,14 +242,14 @@ public class SetupServlet extends HttpServlet {
                 final SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
                 {
                     final Setting setting = new Setting();
-                    setting.setProperty(SecureDataEncryptionImpl.PROPERTY_SETUP_SECURITY_SALT);
+                    setting.setProperty(SetupManager.PROPERTY_SETUP_SECURITY_SALT);
                     setting.setValue(SecurityUtil.generateRandomString(32, true, true, true, false, true));
                     setupManager.saveSetting(setting);
                 }
 
                 {
                     final Setting setting = new Setting();
-                    setting.setProperty(SecureDataEncryptionImpl.PROPERTY_SETUP_SECURITY_KEY);
+                    setting.setProperty(SetupManager.PROPERTY_SETUP_SECURITY_KEY);
                     setting.setValue(SecurityUtil.generateRandomString(16, true, true, true, false, true));
                     setupManager.saveSetting(setting);
                 }

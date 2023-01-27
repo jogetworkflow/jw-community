@@ -107,6 +107,7 @@ import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PagedList;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -1152,6 +1153,7 @@ public class ConsoleWebController {
             Set<String> existingDepartments = new HashSet<String>();
             Set<String> existingHods = new HashSet<String>();
             Set<String> existingGrades = new HashSet<String>();
+            Set<String> existingOrgs = new HashSet<String>();
             if (u.getEmployments() != null && !u.getEmployments().isEmpty()) {
                 for (Employment e : (Set<Employment>) u.getEmployments()) {
                     if (e.getDepartmentId() != null) {
@@ -1163,12 +1165,16 @@ public class ConsoleWebController {
                     if (e.getGradeId() != null) {
                         existingGrades.add(e.getGradeId());
                     }
+                    if (e.getOrganizationId() != null) {
+                        existingOrgs.add(e.getOrganizationId());
+                    }
                 }
             }
             if (employeeDepartment != null) {
                 for (int i = 0; i < employeeDepartment.length; i++) {
                     if (existingDepartments.contains(employeeDepartment[i])) {
                         existingDepartments.remove(employeeDepartment[i]);
+                        existingOrgs.remove(employeeDeptOrganization[i]);
                     } else {
                         employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
                     }
@@ -1186,6 +1192,7 @@ public class ConsoleWebController {
                 for (int i = 0; i < employeeGrade.length; i++) {
                     if (existingGrades.contains(employeeGrade[i])) {
                         existingGrades.remove(employeeGrade[i]);
+                        existingOrgs.remove(employeeGradeOrganization[i]);
                     } else {
                         employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
                     }
@@ -1199,6 +1206,10 @@ public class ConsoleWebController {
             }
             for (String d : existingGrades) {
                 employmentDao.unassignUserFromGrade(u.getId(), d);
+            }
+            //if user not assign to any dept & grade of an org, remove the org
+            for (String d : existingOrgs) {
+                employmentDao.unassignUserFromOrganization(u.getId(), d);
             }
             
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
@@ -5295,7 +5306,7 @@ public class ConsoleWebController {
         }
         JSONObject jsonObject = new JSONObject();
         File[] files = LogUtil.tomcatLogFiles();
-        Collection<File> fileList = new ArrayList<File>();
+        List<Map> fileList = new ArrayList<Map>();
 
         if (files != null && files.length > 0) {
             for (File file : files) {
@@ -5306,22 +5317,24 @@ public class ConsoleWebController {
 
                     if ("catalina.out".equals(lowercaseFN) || (lowercaseFN.indexOf(".log") > 0 && !lowercaseFN.startsWith("admin") && !lowercaseFN.startsWith("host-manager") && !lowercaseFN.startsWith("manager"))
                         && (lastModified.getTime() > (current.getTime() - (5*1000*60*60*24))) && file.length() > 0) {
-                        fileList.add(file);
+                        Map data = new HashMap();
+                        data.put("filename", file.getName());
+                        data.put("filesize", file.length());
+                        data.put("date", TimeZoneUtil.convertToTimeZone(new Date(file.lastModified()), null, AppUtil.getAppDateFormat()));
+                        fileList.add(data);
                     }
                 }
             }
         }
-        files = fileList.toArray(new File[0]);
+        
+        if (sort == null || sort.isEmpty()) {
+            sort = "filename";
+        }
+        
+        PagedList<Map> pagedList = new PagedList<Map>(true, fileList, sort, desc, start, rows, fileList.size());
 
-        Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
-
-        for (File file : files) {
-            Map data = new HashMap();
-            data.put("filename", file.getName());
-            data.put("filesize", file.length());
-            data.put("date", TimeZoneUtil.convertToTimeZone(new Date(file.lastModified()), null, AppUtil.getAppDateFormat()));
-
-            jsonObject.accumulate("data", data);
+        for (Map file : pagedList) {
+            jsonObject.accumulate("data", file);
         }
 
         jsonObject.accumulate("total", fileList.size());
@@ -5649,7 +5662,27 @@ public class ConsoleWebController {
     }    
 
     @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp() {
+    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
+        boolean trusted = false;
+        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
+        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
+        if (trustedUrls != null && !trustedUrls.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
+            while (st.hasMoreTokens()) {
+                String trustedUrl = st.nextToken().trim();
+                if (url.startsWith(trustedUrl)) {
+                    trusted = true;
+                    break;
+                }
+            }
+        }
+        
+        if (trusted) {
+            model.addAttribute("appUrl", url);
+        } else {
+            model.addAttribute("appUrl", "");
+        }
+        
         return "desktop/marketplaceApp";
     }
     

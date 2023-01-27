@@ -4,6 +4,7 @@ import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.spring.model.Setting;
 import java.io.Serializable;
 import java.util.Collection;
+import org.hibernate.StaleStateException;
 
 public class SetupDao extends AbstractSpringDao {
 
@@ -30,6 +31,13 @@ public class SetupDao extends AbstractSpringDao {
     }
 
     public void saveOrUpdate(Object obj) {
-        super.saveOrUpdate(ENTITY_NAME, obj);
+        try {
+            super.saveOrUpdate(ENTITY_NAME, obj);
+        } catch (StaleStateException e) {
+            //ignore exception when trying to update a setting which deleted by another cluster node 
+            if (!e.getMessage().equals("Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1")) {
+                throw e;
+            }
+        }
     }
 }

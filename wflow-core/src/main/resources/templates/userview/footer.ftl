@@ -3,7 +3,7 @@ ${footer_before!}
 <footer class="${footer_classes!}">
     ${footer_inner_before!}
     <div id="footer-message">
-        <p><span id="footerMessage">${userview.properties.footerMessage!}</span></p>
+        <p><span id="footerMessage">${footerMessage}</span></p>
     </div>
     ${footer_inner_after!}
 </footer>

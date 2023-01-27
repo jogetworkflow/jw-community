@@ -1,6 +1,5 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<c:set var="appUrl" value="${param.url}"/>
 <c:set var="appName" value="${param.name}"/>
 <c:set var="appId" value="${param.appId}"/>
 
