@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-core</artifactId>
-            <version>${project.version}</version>
+            <version>[${project.version}],[7.0,8.0)</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>

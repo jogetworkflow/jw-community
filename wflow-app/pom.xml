@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-app</artifactId>
-    <version>7.0.36</version>
+    <version>7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
-        <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
-        <url>ssh://git@repo.joget.org:2224/joget/jw-community.git</url>
+        <connection>scm:git:ssh://git@github.com:kinnara-digital-studio/kecak-workflow-v3.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:kinnara-digital-studio/kecak-workflow-v3.git</developerConnection>
+        <url>ssh://git@github.com:kinnara-digital-studio/kecak-workflow-v3.git</url>
         <tag>7.0.36</tag>
     </scm>
     <modules>
