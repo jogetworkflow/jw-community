@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.Calendar;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -84,6 +85,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         }
         
         dataModel.put("locale", getLocale());
+        dataModel.put("isBE", isBE());
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
@@ -124,6 +126,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                                 data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
                             }
                             Date date = display.parse(value);
+                            if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isBE()) {
+                                date = convertThaiYearToGregorianYear(date);
+                            }
                             value = data.format(date);
                         }
                     } catch (Exception e) {}
@@ -361,7 +366,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         
         return valid;
     }
-    
+
     private String formatCompareValue(String value, String displayFormat) {
         String dataFormat = getPropertyString("dataFormat");
         
@@ -426,12 +431,29 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                         display.setTimeZone(getUserTZ());
                     }
                     Date date = data.parse(value);
+                    if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isBE()) {
+                        date = convertGregorianYearToThaiYear(date);
+                    }
                     value = display.format(date);
                 }
             } catch (Exception e) {
             }
         }
         return value;
+    }
+
+    public static Date convertGregorianYearToThaiYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, 543);
+        return calendar.getTime();
+    }
+
+    public static Date convertThaiYearToGregorianYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, -543);
+        return calendar.getTime();
     }
     
     private String formattedValue(String value, String displayFormat, FormData formData) {
@@ -450,6 +472,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/css/datePicker.css");
         urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css");
         urls.add(contextPath + "/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js");
+        if (isBE()) {
+            urls.add(contextPath + "/js/jquery/ui/i18n/jquery.ui.datepicker.ext.be.js");
+        }
         
         return urls;
     }
@@ -468,5 +493,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             }
         }   
         return "";
+    }
+    
+    public static boolean isBE() {
+        String locale = AppUtil.getAppLocale();
+        return (locale != null && locale.equals("th_TH"));
     }
 }

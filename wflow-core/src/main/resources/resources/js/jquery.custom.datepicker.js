@@ -169,7 +169,11 @@
                     var option = $(element).datepicker( "option", o.currentDateAs);
                     if (option === undefined || option === null) {
                         $(element).next(".trigger").remove();
-                        $(element).datepicker("option", o.currentDateAs, new Date());
+                        var date = new Date();
+                        if (o.isBE !== undefined && o.isBE) {
+                            date = convertToBe(date);
+                        }
+                        $(element).datepicker("option", o.currentDateAs, date);
                         $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
                     }
                 }
@@ -304,6 +308,10 @@
         if ($.datepicker._getInst($(element)[0]) !== undefined) {
             //use to make sure the value use as min/max are always a valid date if the element itself is a datapicker field
             value = $(element).datepicker("getDate"); 
+            if (o.isBE !== undefined && o.isBE) {
+                value = convertToBe(value);
+            }
+            console.log(value);
         }
         $(target).next(".trigger").remove();
         if (o.datePickerType === "dateTime") {
@@ -341,5 +349,14 @@
                 }
             }
         }
+    }
+    
+    function convertToBe(date) {
+        var year = date.getFullYear();
+        if ((parseInt(year) - 543) < 1900) {
+            year = parseInt(year) + 543;
+            date.setFullYear(year);
+        }
+        return date;
     }
 })(jQuery);
