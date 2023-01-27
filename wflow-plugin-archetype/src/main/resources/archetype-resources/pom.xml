@@ -6,7 +6,7 @@
     <packaging>bundle</packaging>
     <version>${dollar}{version}</version>
     <name>${dollar}{artifactId}</name>
-    <url>http://www.joget.org</url>
+    <url>http://www.kecak.org</url>
     <scm>
         <connection>scm:git:ssh://</connection>
         <developerConnection>scm:git:ssh://</developerConnection>
@@ -124,6 +124,11 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kinnarastudio</groupId>
+            <artifactId>kinnara-commons</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <!-- Change plugin specific dependencies here -->
         
