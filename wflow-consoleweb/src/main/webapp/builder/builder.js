@@ -1046,7 +1046,7 @@
                 if(d.success == true){
                     $("#save-btn").removeClass("unsaved");
                     CustomBuilder.savedJson = json;
-                    $('#cbuilder-json-original').val(CustomBuilder.processJsonProtectedValue(json));
+                    $('#cbuilder-json-original').val(d.data);
                     CustomBuilder.updateSaveStatus("0");
                     CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
 
@@ -1079,26 +1079,6 @@
                 $("#save-btn").removeAttr("disabled");
             }, 1000);
         }
-    },
-    
-    //the protected value in saved json need to change to %%%%****SECURE_VALUE****-X%%%%, else the merge will incorrectly handle it.
-    processJsonProtectedValue : function(json) {
-        if (json.indexOf("%%%%") !== -1) {
-            var regex = /%%%%((?!%%%%).)*%%%%/g;
-            var matches = json.match(regex);
-            
-            var found = []; //filter out same values
-            for (var i in matches) {
-                if ($.inArray(matches[i], found) === -1) {
-                    found.push(matches[i]);
-                }
-            }
-            
-            for (var i in found) {
-                json = json.replace(found[i], "%%%%****SECURE_VALUE****-"+i+"%%%%");
-            }
-        }
-        return json;
     },
 
     /*
@@ -4007,7 +3987,7 @@ _CustomBuilder.Builder = {
                             $(inilineEditEl).removeAttr('data-cbuilder-desktop-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-tablet-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-mobile-invisible');
-
+                            
                             try {
                                 var toolbar = 'styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
                                 if (inlineEditor.mode === "full") {

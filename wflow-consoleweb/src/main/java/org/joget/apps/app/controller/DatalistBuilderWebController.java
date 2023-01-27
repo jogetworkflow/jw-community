@@ -132,7 +132,8 @@ public class DatalistBuilderWebController {
 
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("success", success);
+        jsonObject.put("success", success);
+        jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(datalist.getJson()));
         jsonObject.write(writer);
         return null;
     }

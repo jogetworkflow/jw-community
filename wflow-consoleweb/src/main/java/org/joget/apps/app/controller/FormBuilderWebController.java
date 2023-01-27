@@ -165,7 +165,8 @@ public class FormBuilderWebController {
         boolean success = formDefinitionDao.update(formDef);
         formDataDao.clearFormCache(form);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("success", success);
+        jsonObject.put("success", success);
+        jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(formDef.getJson()));
         jsonObject.write(writer);
         return null;
     }
