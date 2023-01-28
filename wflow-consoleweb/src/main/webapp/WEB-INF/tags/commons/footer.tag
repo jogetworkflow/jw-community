@@ -104,11 +104,17 @@
         });
         
         if ($("form.blockui select, #main-body-content-filter select").length > 0) {
-            $("form.blockui select, #main-body-content-filter select").find("select").each(function(){
-                if ($("body").hasClass("rtl")) {
-                    $(this).addClass("chosen-rtl");
+            $("form.blockui select, #main-body-content-filter select").each(function(){
+                if (!$(this).parent().is("td")) {
+                    if ($("body").hasClass("rtl")) {
+                        $(this).addClass("chosen-rtl");
+                    }
+                    $(this).off("change.chosenupdate");
+                    $(this).chosen({width: "50%", placeholder_text: " "});
+                    $(this).on("change.chosenupdate", function(){
+                        $(this).trigger("chosen:updated");
+                    });
                 }
-                $(this).chosen({width: "50%", placeholder_text: " "});
             });
         }
     });
