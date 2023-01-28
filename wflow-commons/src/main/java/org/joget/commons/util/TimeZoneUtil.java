@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class TimeZoneUtil {
 
     private static String serverTimeZone;
     private static String serverTimeZoneId;
-    public static ListOrderedMap list;
+    public static Map<String, ListOrderedMap> localeList = new HashMap<String, ListOrderedMap>();
 
     private TimeZoneUtil() {
     }
@@ -30,6 +31,8 @@ public class TimeZoneUtil {
      * @return a map of time zone id and its description
      */
     public static Map<String, String> getList() {
+        String locale = LocaleContextHolder.getLocale().toString();
+        ListOrderedMap list = localeList.get(locale);
         if (list == null) {
             list = new ListOrderedMap();
             list.put("", "");
@@ -83,6 +86,7 @@ public class TimeZoneUtil {
             }
             
             list.putAll(otherList);
+            localeList.put(locale, list);
         }
 
         return list;
