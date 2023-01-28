@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -66,6 +65,7 @@ import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.MarketplaceUtil;
 import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.app.service.TaggingUtil;
+import org.joget.apps.app.web.LocalLocaleResolver;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -4590,6 +4590,9 @@ public class ConsoleWebController {
             }
         }
 
+        //clear all caches & update the settings
+        setupManager.clearCache();
+        ((LocalLocaleResolver) localeResolver).reset(request);
         pluginManager.refresh();
         workflowManager.internalUpdateDeadlineChecker();
         FileStore.updateFileSizeLimit();

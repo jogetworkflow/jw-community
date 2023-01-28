@@ -109,7 +109,6 @@
                         <label for="systemLocale"><fmt:message key="console.setting.general.label.systemLocale"/></label>
                         <span class="form-input">
                             <select id="systemLocale" name="systemLocale">
-                                <option></option>
                                 <c:forEach var="locale" items="${localeList}">
                                     <c:set var="selected"><c:if test="${locale.key == settingMap['systemLocale']}"> selected</c:if></c:set>
                                     <option value="${locale.key}" ${selected}>${locale.value}</option>
