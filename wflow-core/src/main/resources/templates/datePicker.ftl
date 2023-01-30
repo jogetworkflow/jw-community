@@ -7,6 +7,9 @@
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js"></script>
         <link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css" />
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js"></script>
+        <#if isBE!>
+            <script type="text/javascript" src="${request.contextPath}/js/jquery/ui/i18n/jquery.ui.datepicker.ext.be.js"></script>
+        </#if>
     </#if>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -40,6 +43,10 @@
                         </#if>
                         <#if element.properties.firstday! != ''>
                         ,firstDay: "${element.properties.firstday}"
+                        </#if>
+                        <#if isBE! && element.properties.datePickerType! != 'timeOnly'>
+                        ,isBE: true
+                        ,autoConversionField: false
                         </#if>
         });
     });

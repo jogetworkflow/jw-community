@@ -249,6 +249,7 @@ FormBuilder = {
                         $(newElement).find("> *:not(.form-section):not(style)").remove();
                         
                         $(element).replaceWith(wrapper);
+                        CustomBuilder.Builder.recursiveCheckVisible(newElement);
                     } else {
                         $(element).replaceWith(newElement);
                     }

@@ -5388,7 +5388,7 @@ body .ui-icon-closethick{
     text-rendering: auto;
     line-height: 1;
     font-weight: 900;
-    text-indent: unset !important;
+    text-indent: 0px !important;
     font-size: 20px;
     width: 20px !important;
     height: 20px !important;
@@ -5527,6 +5527,9 @@ a {
 }
 #adminBar {
     display:none;
+}
+.form-button, .btn, .button{
+    margin-bottom: 5px !important;
 }
 @media (min-width: 1921px) {
     .horizontal_menu .navbar-inner,

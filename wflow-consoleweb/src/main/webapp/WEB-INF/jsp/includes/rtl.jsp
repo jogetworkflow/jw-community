@@ -5,14 +5,35 @@
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
     pageContext.setAttribute("rightToLeft", rightToLeft);
 %>
-    
-<c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css?build=<fmt:message key="build.number"/>">
-    <script type="text/javascript">
-        UI.rtl = true;
-        $(document).ready(function(){
-            $("body").addClass("rtl");
-            $(".row-content").append("<div style=\"clear:both\"></div>");
-        });
-    </script>
-</c:if>
+
+<c:choose>
+    <c:when test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
+        <link id="rtlcss" rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css?build=<fmt:message key="build.number"/>">
+        <script type="text/javascript">
+            UI.rtl = true;
+            $(document).ready(function(){
+                $("body").addClass("rtl");
+                $(".row-content").append("<div style=\"clear:both\"></div>");
+
+                if( window.self !== window.parent ) {
+                    window.parent.UI.rtl = true;
+                    $(window.parent.document).find('body').addClass("rtl");
+                    if ($(window.parent.document).find('link#rtlcss').length === 0) {
+                        $(window.parent.document).find('head').append('<link id="rtlcss" rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css?build=<fmt:message key="build.number"/>">');
+                    }
+                }
+            });
+        </script>
+    </c:when>
+    <c:otherwise>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                if( window.self !== window.parent ) {
+                    window.parent.UI.rtl = false;
+                    $(window.parent.document).find('body').removeClass("rtl");
+                    $(window.parent.document).find('link#rtlcss').remove();
+                }
+            });
+        </script>
+    </c:otherwise>
+</c:choose>

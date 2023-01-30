@@ -15,6 +15,12 @@ AjaxMenusCount = {
             
             var url = window.location.href;
             
+            //handle for UI builder preview
+            if (url.indexOf("/web/console/app/") !== -1 && url.indexOf("/userview/builderPreview/") !== -1) {
+                $("[data-ajaxmenucount]").text("0");
+                return;
+            }
+            
             //add a param to prevent it override cache
             if (url.indexOf("?") === -1) {
                 url += "?__ajax_menu_count=1";

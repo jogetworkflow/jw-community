@@ -56,6 +56,7 @@ body.rtl #adminBar {
     transform-origin: 100% 50%;
     left: 0;
     right: auto;
+    direction: rtl;
 }
 body.embeded #adminBar {
     display: none;
@@ -92,6 +93,8 @@ body.rtl #adminBar #appCenter {
 body.rtl #adminBarButtons {
     margin-left: 0px;
     margin-right: 55px;
+    position: relative;
+    float: right;
 }
 #quickEditModeOption > div,
 #adminBarButtons > div {
@@ -152,6 +155,7 @@ body.rtl div#quickEditModeOption {
     padding-left: 0px;
     margin-right: 6px;
     padding-right: 10px;
+    float: right;
 }
 div#quickEditModeOption:before,
 #adminBarButtons .separator:after {

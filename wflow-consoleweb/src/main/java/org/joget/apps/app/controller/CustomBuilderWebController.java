@@ -387,7 +387,8 @@ public class CustomBuilderWebController {
         def.setJson(PropertyUtil.propertiesJsonStoreProcessing(def.getJson(), json));
 
         boolean success = builderDefinitionDao.update(def);
-        jsonObject.accumulate("success", success);
+        jsonObject.put("success", success);
+        jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(def.getJson()));
 
         jsonObject.write(writer);
         return null;

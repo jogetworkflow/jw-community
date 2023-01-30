@@ -379,13 +379,20 @@ public class WorkflowUtil implements ApplicationContextAware {
      * @return 
      */
     public static Map<String, Collection<String>> getReplacementUsers(String username) {
+        String key = "replacementUsers_" + username;
+        Map<String, Collection<String>> result = (Map<String, Collection<String>>)WorkflowUtil.readRequestCache(key);
+        if (result != null) {
+            return result;
+        }
+
         try {
             WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
-            return workflowMapper.getReplacementUsers(username);
+            result = workflowMapper.getReplacementUsers(username);
+            WorkflowUtil.writeRequestCache(key, result);
         } catch (Exception e) {
             LogUtil.error(WorkflowUtil.class.getName(), e, "Error retrieve absence users replaced by" + username);
         }
-        return null;
+        return result;
     }
     
     /**
@@ -416,4 +423,26 @@ public class WorkflowUtil implements ApplicationContextAware {
             FileStore.updateFileSizeLimit();
         }
     }
+    
+    public static final String REQUEST_CACHE_KEY_PREFIX = "RequestCacheKey_";
+    
+    public static Object readRequestCache(String key) {
+        Object cachedObject = null;
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
+            cachedObject = request.getAttribute(attributeName);            
+        }
+        return cachedObject;
+    }
+    
+    public static void writeRequestCache(String key, Object value) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
+            request.setAttribute(attributeName, value);            
+        }        
+    }
+    
+    
 }

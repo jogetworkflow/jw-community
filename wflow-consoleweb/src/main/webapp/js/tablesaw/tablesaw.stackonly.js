@@ -172,6 +172,7 @@ if( !Tablesaw.config ) {
 		});
 	};
 
+        $( document ).off( "enhance.tablesaw");
 	$( document ).on( "enhance.tablesaw", function( e ) {
 		$( e.target ).find( initSelector )[ pluginName ]();
 	});
@@ -258,6 +259,7 @@ if( !Tablesaw.config ) {
 	};
 
 	// on tablecreate, init
+        $( document ).off( "tablesawcreate");
 	$( document ).on( "tablesawcreate", function( e, Tablesaw, colstart ){
 		if( Tablesaw.mode === 'stack' ){
 			var table = new Stack( Tablesaw.table );
@@ -266,6 +268,7 @@ if( !Tablesaw.config ) {
 
 	} );
 
+        $( document ).on( "tablesawdestroy");
 	$( document ).on( "tablesawdestroy", function( e, Tablesaw ){
 
 		if( Tablesaw.mode === 'stack' ){

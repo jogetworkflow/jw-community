@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.HashVariableSupportedMapImpl;
 import org.joget.apps.app.model.ProcessMappingInfo;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
@@ -109,7 +110,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                             ApplicationPlugin p = (ApplicationPlugin) pluginManager.getPlugin(className);
 
                             if (p != null) {
-                                final Map propertiesMap = new HashMap(properties);
+                                final Map propertiesMap = new HashVariableSupportedMapImpl(properties); //need to use HashVariableSupportedMap, else the properties will processing all hash variable in value
                                 propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) toolMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
                                 final ApplicationPlugin appPlugin = (ApplicationPlugin) p;
 
@@ -122,13 +123,13 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                         public void run() {
                                             AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
                                             workflowUserManager.setCurrentThreadUser(currentUser);
-                                            appPlugin.execute(propertiesMap);
+                                            appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
                                         }
                                     });
                                     newThread.start();
                                     threads.add(newThread);
                                 } else {
-                                    appPlugin.execute(propertiesMap);
+                                    appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
                                 }
                             }
                         }

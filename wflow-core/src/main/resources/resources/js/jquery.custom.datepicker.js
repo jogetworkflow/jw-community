@@ -5,6 +5,7 @@
                 var element = $(this);
                 var elementParent = element.parent();
                 var uid = $(element).attr("id");
+                var value = $(element).val();
 
                 if (!/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                     o.beforeShow = function(input, inst) {
@@ -90,6 +91,9 @@
                 }
                 
                 var a = $("<a>").attr("href","#");
+                if(!$(element).next("img.ui-datepicker-trigger").length){
+                    $(element).insertBefore($(element).prev('img.ui-datepicker-trigger'));
+                }
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
 
                 $(element).next("a.trigger").after("<a class=\"close-icon\" type=\"reset\"></a>");
@@ -165,9 +169,25 @@
                     var option = $(element).datepicker( "option", o.currentDateAs);
                     if (option === undefined || option === null) {
                         $(element).next(".trigger").remove();
-                        $(element).datepicker("option", o.currentDateAs, new Date());
+                        var date = new Date();
+                        if (o.isBE !== undefined && o.isBE) {
+                            date = convertToBe(date);
+                        }
+                        $(element).datepicker("option", o.currentDateAs, date);
                         $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
                     }
+                }
+                
+                if ((o.datePickerType !== "dateTime" && o.datePickerType !== "timeOnly") //only apply for datepicker
+                        && o.dateFormat.indexOf("d") === -1  //when the format is without a day syntax
+                        && value !== null && value !== undefined && value !== "") { //there is a default value
+                    //use setTimeout to make sure if there is set other field as min/max, the field are ready before setting this value
+                    setTimeout(function(){
+                        //set the value again with a first day of the month, 
+                        //just simple add the day syntax and 01 value and it seem to work with all formats.
+                        //it is ok to set a date over the min/max date limit, the field will auto adjust to the min/max date value if it is invalid/over the limit
+                        $(element).datepicker("setDate", $.datepicker.parseDate('dd/'+ o.dateFormat, '01/'+value));
+                    }, 1);
                 }
             });
         }
@@ -285,6 +305,14 @@
         if (value === "" && $(target).datetimepicker("option", type) === null) {
             return;
         }
+        if ($.datepicker._getInst($(element)[0]) !== undefined) {
+            //use to make sure the value use as min/max are always a valid date if the element itself is a datapicker field
+            value = $(element).datepicker("getDate"); 
+            if (o.isBE !== undefined && o.isBE) {
+                value = convertToBe(value);
+            }
+            console.log(value);
+        }
         $(target).next(".trigger").remove();
         if (o.datePickerType === "dateTime") {
             $(target).datetimepicker("option", type, value);
@@ -321,5 +349,14 @@
                 }
             }
         }
+    }
+    
+    function convertToBe(date) {
+        var year = date.getFullYear();
+        if ((parseInt(year) - 543) < 1900) {
+            year = parseInt(year) + 543;
+            date.setFullYear(year);
+        }
+        return date;
     }
 })(jQuery);

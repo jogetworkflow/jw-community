@@ -71,6 +71,10 @@
     padding-left: 15px;
     padding-right: 15px;
 }
+.form-column-label, .subform-column-label{
+    padding-left: 13px;
+    padding-right: 13px;
+}
 .form-cell + .form-cell,
 .subform-cell + .subform-cell,
 .form-cell + .subform-cell,
@@ -199,7 +203,13 @@ textarea{
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
+    float: left;
+    width: 50%;
+}
+.form-cell-value.fullWidth > label,
+.subform-cell-value.fullWidth > label{
     width: auto;
+    float: unset;
 }
 .form-cell-value > label:last-child,
 .subform-cell-value > label:last-child{
@@ -248,6 +258,11 @@ textarea{
     font-size: 16px;
     color: #ced4da;
 }
+body.rtl .hasDatepicker + a,
+body.rtl .hasDatepicker + a + a{
+    left: 20px;
+    right: unset !important;
+}
 .hasDatepicker + a:before{
     content: '\f073';
 }
@@ -256,6 +271,10 @@ textarea{
     right: 42px;
     top: 10px;
     z-index: 4;
+}
+body.rtl .hasDatepicker + a + a{
+    left: 42px;
+    right: unset !important;
 }
 .hasDatepicker + a + a:before{
     content: '\f057';

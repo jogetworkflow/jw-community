@@ -10,6 +10,11 @@ DatalistBuilder = {
     filterIndexCounter : 0,
     actionIndexCounter : 0,
     
+    chosenColumns : new Array(),
+    chosenActions : new Array(),
+    chosenRowActions : new Array(),
+    chosenFilters : new Array(),
+
     availableActions : {},
     availableFilters : {},
     availableFormatters : {},
@@ -391,6 +396,8 @@ DatalistBuilder = {
                     }
                 }
                 $("#iframe-wrapper").show();
+                
+                DatalistBuilder.afterUpdate(CustomBuilder.data);
             });
         });
     },
@@ -721,7 +728,7 @@ DatalistBuilder = {
                                                         {{rowActions data-cbuilder-sort-horizontal data-cbuilder-style="[{\'class\' : \'.rowAction_body\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'.rowAction_header\', \'label\' : \'Header\'}, {\'prefix\' : \'link\', \'class\' : \'.rowAction_body > a\', \'label\' : \'Link\'}]"}}\
                                                             <th>\
                                                                 {{rowAction}}\
-                                                                    <div class="rowAction rowAction_header">{{header_label|| }}<span class="overlay"></span></div>\
+                                                                    <div class="rowAction rowAction_header" data-cbuilder-visible>{{header_label|| }}<span class="overlay"></span></div>\
                                                                 {{rowAction}}\
                                                             </th>\
                                                         {{rowActions}}\
@@ -914,12 +921,15 @@ DatalistBuilder = {
         }
         DatalistBuilder.availableColumns = fields;
         
+        var change = false;
+        
         //remove not exist columns and filters
         var i = CustomBuilder.data.filters.length;
         while (i--) {
             var filter = CustomBuilder.data.filters[i];
             if (DatalistBuilder.availableColumns[filter.name] === undefined) { 
                 CustomBuilder.data.filters.splice(i, 1);
+                change = true;
             } 
         }
         var i = CustomBuilder.data.columns.length;
@@ -927,6 +937,7 @@ DatalistBuilder = {
             var column = CustomBuilder.data.columns[i];
             if (DatalistBuilder.availableColumns[column.name] === undefined) { 
                 CustomBuilder.data.columns.splice(i, 1);
+                change = true;
             } 
         }
         
@@ -934,7 +945,12 @@ DatalistBuilder = {
         if (CustomBuilder.data.orderBy !== undefined && CustomBuilder.data.orderBy !== "") {
             if (DatalistBuilder.availableColumns[CustomBuilder.data.orderBy] === undefined) { 
                 CustomBuilder.data.orderBy = "";
+                change = true;
             }
+        }
+        
+        if (change) {
+            CustomBuilder.update(false);
         }
         
         deferrer.resolve();
@@ -1780,8 +1796,12 @@ DatalistBuilder = {
             var height = $(table).height();
             var thHeight = $(table).find("thead").height();
             var bottom = height - thHeight;
-            $(table).find("thead .overlay").each(function(){
+            $(table).find("thead th > .overlay").each(function(){
                 $(this).css("bottom", "-" + bottom + "px");
+            });
+            $(table).find("thead th.rowActions > div > .overlay").each(function(){
+                $(this).css("top", "-10px");
+                $(this).css("bottom", "-" + (bottom + 13) + "px");
             });
         }
     },
@@ -2061,6 +2081,21 @@ DatalistBuilder = {
         var templateJson = "";
         if (CustomBuilder.data.template !== undefined && CustomBuilder.data.template !== null) {
             templateJson = JSON.encode(CustomBuilder.data.template);
+            
+            if (CustomBuilder.data.template.className !== properties.template.className) {
+                //change of template, prompt to check for remove custom style
+                if (confirm("Detected changing template. Do you want to remove previous custom styling?")) {
+                    CustomBuilder.clearCustomStyling(CustomBuilder.data, function(name){
+                        return (name.indexOf("-style-") !== -1 && (
+                                name.indexOf("action") === 0 ||
+                                name.indexOf("rowAction") === 0 ||
+                                name.indexOf("column") === 0 ||
+                                name.indexOf("filter") === 0 ||
+                                name.indexOf("card") === 0
+                                ));
+                    });
+                }
+            }
         }
         CustomBuilder.data = $.extend(CustomBuilder.data, properties);
         CustomBuilder.update();
@@ -2845,5 +2880,94 @@ DatalistBuilder = {
      */            
     unloadBuilder : function() {
         $("#binder-btn").remove();
-    } 
+    },
+    
+    /*
+     * Check and remove orphaned columns 
+     */ 
+    beforeMerge : function() {
+        var self = CustomBuilder.Builder;
+        
+        var change = false;
+        
+        var ids = [];
+        for(var ee in DatalistBuilder.availableColumns){
+            ids.push(DatalistBuilder.availableColumns[ee].id);
+        }
+        
+        
+        //find all placeholder key
+        var placeholder = [];
+        self.frameBody.find(".dataList [data-placeholder-key]").each(function(){
+            if ($.inArray($(this).data("placeholder-key"), placeholder) === -1) {
+                placeholder.push($(this).data("placeholder-key"));
+            }
+        });
+        
+        //remove unused placeholder in data
+        for (var prop in CustomBuilder.data) {
+            if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) && (prop.indexOf("column") === 0 || prop.indexOf("rowAction") === 0 || prop === "filters")) {
+                if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
+                    if (prop === "columns"  || prop === "rowActions") {
+                        CustomBuilder.data[prop] = [];
+                    } else if (prop.indexOf("-style-") === -1) {
+                        delete CustomBuilder.data[prop];
+                    }
+                    change = true;
+                } else if (prop.indexOf("column") === 0 || prop === "filters") {
+                    var nonExistIndex = [];
+                    
+                    for (var i in CustomBuilder.data[prop]) {
+                        var name = CustomBuilder.data[prop][i].name;
+                        if ($.inArray(name, ids) === -1) {
+                            nonExistIndex.push(i);
+                        }
+                    }
+                    
+                    //remove non exist column
+                    if (nonExistIndex.length > 0) {
+                        nonExistIndex.reverse();
+                        for (var i in nonExistIndex) {
+                            CustomBuilder.data[prop].splice(nonExistIndex[i], 1);
+                            change = true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (change) {
+            CustomBuilder.update(false);
+        }
+    },
+    
+    /*
+     * update the variables used by other plugins for backward compatible
+     */
+    afterUpdate : function(data) {
+        DatalistBuilder.chosenColumns = [];
+        DatalistBuilder.chosenActions = [];
+        DatalistBuilder.chosenRowActions = [];
+        DatalistBuilder.chosenFilters = [];
+        
+        for (var prop in CustomBuilder.data) {
+            if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) 
+                    && (prop.indexOf("column") === 0  || prop.indexOf("rowAction") === 0 
+                    || prop === "filters" || prop === "actions")) {
+                for (var i in CustomBuilder.data[prop]) {
+                    var id =  CustomBuilder.data[prop][i].id;
+                       
+                    if (prop === "columns") {
+                        DatalistBuilder.chosenColumns[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "rowActions" || prop.indexOf("rowAction") === 0) {
+                        DatalistBuilder.chosenRowActions[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "filters") {
+                        DatalistBuilder.chosenFilters[id] = CustomBuilder.data[prop][i];
+                    } else if (prop === "actions") {
+                        DatalistBuilder.chosenActions[id] = CustomBuilder.data[prop][i];
+                    }
+                }
+            }
+        }
+    }
 }

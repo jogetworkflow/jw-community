@@ -71,6 +71,7 @@ import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.PagedList;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -301,6 +302,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public byte[] getPackageContent(String packageId, String version) {
+        if (HostManager.isVirtualHostEnabled()) {
+            getPackage(packageId, version); //fix for xpdl return null issue in multitenant
+        }
 
         SharkConnection sc = null;
         byte[] data = null;
@@ -953,6 +957,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (entity != null) {
                 instanceId = entity.getId();
             }
+            
+            WorkflowUtil.writeRequestCache("xpdlCurrentVersion_" + packageId, null);
         } catch (PackageInvalid ex) {
             String errors = ex.getXPDLValidationErrors();
             if (errors != null) {

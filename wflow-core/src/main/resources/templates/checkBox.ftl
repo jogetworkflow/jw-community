@@ -1,6 +1,10 @@
 <div class="form-cell" ${elementMetaData!}>
     <label field-tooltip="${elementParamName!}" class="label" for="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <div class="form-cell-value" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    <#if (element.properties.fullWidth?? && element.properties.fullWidth! != "" && element.properties.fullWidth! == 'true') >
+        <div class="form-cell-value fullWidth" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    <#else>
+        <div class="form-cell-value" id="${elementParamName!}${element.properties.elementUniqueKey!}">
+    </#if>
     <#list options as option>
         <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
             <#if values?? && values?seq_contains(option.value!)>
@@ -14,7 +18,7 @@
                 <#if element.properties.readonly! == 'true' && values?? && values?seq_contains(option.value!)>
                     <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!?html}" />
                 </#if>
-                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}" name="${elementParamName!}"</#if> type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
                 <i></i>
                 ${option.label!?html}
             </label>

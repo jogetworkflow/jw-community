@@ -42,7 +42,6 @@ UserviewBuilder = {
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
-            CustomBuilder.Builder.setHead('<link data-datalist-card-style href="' + CustomBuilder.contextPath + '/css/datalist_cardlayout.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-form-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<link data-ubuilder-style href="' + CustomBuilder.contextPath + '/css/ubuilder.css" rel="stylesheet" />');
@@ -53,7 +52,6 @@ UserviewBuilder = {
             $("#iframe_screenshot").on("load", function(){
                 var frameHead = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("head");
                 frameHead.append('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
-                frameHead.append('<link data-datalist-card-style href="' + CustomBuilder.contextPath + '/css/datalist_cardlayout.css" rel="stylesheet" />');
                 frameHead.append('<link data-form-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
                 frameHead.append('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
                 frameHead.append('<link data-ubuilder-style href="' + CustomBuilder.contextPath + '/css/ubuilder.css" rel="stylesheet" />');
@@ -529,6 +527,14 @@ UserviewBuilder = {
     getBuilderProperties : function() {
         CustomBuilder.data.setting.properties.userviewId = CustomBuilder.data.properties.id;
         return CustomBuilder.data.setting.properties;
+    },
+    
+    /*
+     * Retrieve the builder item name
+     */
+    getBuilderItemName : function() {
+        var props = UserviewBuilder.getBuilderProperties();
+        return props['userviewName'];
     },
     
     /*
@@ -2092,6 +2098,8 @@ UserviewBuilder = {
             var menuObj = UserviewBuilder.selectedMenu;
             if (menuObj !== undefined && menuObj.properties.customId !== undefined && menuObj.properties.customId !== "") {
                 menuId = menuObj.properties.customId;
+            } else {
+                menuId = menuObj.properties.id;
             }
             menuId = "/" + menuId;
         } else {

@@ -210,9 +210,6 @@ public class AppDevUtil {
         FS fs = null;
         if (HostManager.isVirtualHostEnabled()) {
             fs = FS.DETECTED;
-            File config = new File(projectDir.getAbsolutePath() + File.separator + "gitconfig");
-            fs.setGitSystemConfig(config);
-            fs.setUserHome(projectDir);
         }
 
         Git git = Git.init()

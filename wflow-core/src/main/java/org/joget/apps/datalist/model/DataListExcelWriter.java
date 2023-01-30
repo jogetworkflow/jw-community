@@ -81,7 +81,7 @@ public class DataListExcelWriter {
             if (customStyles.get(backgroundColor) == null) {
                 XSSFCellStyle custom = (XSSFCellStyle) wb.createCellStyle();
                 custom.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                custom.setFillForegroundColor(new XSSFColor(backgroundColor));
+                custom.setFillForegroundColor(new XSSFColor(backgroundColor, wb.getXSSFWorkbook().getStylesSource().getIndexedColors()));
                 custom.setFont(headerFont);
                 customStyles.put(backgroundColor, custom);
             }

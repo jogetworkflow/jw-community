@@ -67,20 +67,6 @@ function setFontSize(size) {
             setCookie("20");
         });
         
-        //fix tinymce position
-        if ($(".tinymce").length > 0) {
-            function overrideTinymce() {
-                if (window["tinymce"] !== undefined) {
-                    tinymce.Env.container = document.getElementById("form-canvas").offsetParent;
-                } else {
-                    setTimeout(function(){
-                        overrideTinymce();
-                    }, 100);
-                }
-            }
-            overrideTinymce();
-        }
-        
         $(".rowCount").each(function() {
             var count = $(this).text().replace("(", "").replace(")", "");
             $(this).text(count);

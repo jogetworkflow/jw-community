@@ -183,45 +183,7 @@ public class AppPluginUtil implements ApplicationContextAware {
      * @return 
      */
     public static String getRuleEditorScript(HttpServletRequest request, HttpServletResponse response) {
-        String variables = "";
-        String transitions = "";
-        
-        String processId = SecurityUtil.validateStringInput(request.getParameter("processId"));
-        
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        if (packageDef != null) {
-            processId = AppUtil.getProcessDefIdWithVersion(packageDef.getId(), packageDef.getVersion().toString(), processId);
-        }
-        if (!processId.isEmpty()) {
-            String actId = SecurityUtil.validateStringInput(request.getParameter("actId"));
-            
-            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            
-            //get variable list
-            Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processId);
-            if (variableList != null && !variableList.isEmpty()) {
-                for (WorkflowVariable v : variableList) {
-                    if (!variables.isEmpty()) {
-                        variables += ",";
-                    }
-                    variables += "\"" + v.getId() + "\"";
-                }
-            }
-            
-            //get transision list
-            Map<String, String> transitionsList = workflowManager.getNonExceptionalOutgoingTransitions(processId, actId);
-            if (transitionsList != null && !transitionsList.isEmpty()) {
-                for (String t : transitionsList.keySet()) {
-                    if (!transitions.isEmpty()) {
-                        transitions += ",";
-                    }
-                    transitions += "{\"value\":\"" + t + "\", \"label\":\"" + StringUtil.escapeString(transitionsList.get(t), StringUtil.TYPE_JSON, null) + "\"}";
-                }
-            }
-        }
-        
-        return AppUtil.readPluginResource(RulesDecisionPlugin.class.getName(), "/properties/app/rulesEditor.js", new String[]{variables, transitions}, false, null);
+        return AppUtil.readPluginResource(RulesDecisionPlugin.class.getName(), "/properties/app/rulesEditor.js", null, false, null);
     }
     
     /**

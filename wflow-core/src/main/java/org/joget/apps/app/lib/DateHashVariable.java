@@ -11,12 +11,15 @@ import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
-import static org.joget.commons.util.TimeZoneUtil.getTimeZoneByGMT;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
+        return getValue(variableKey, null);
+    }
+    
+    protected String getValue(String variableKey, String locale) {
         try {
             Calendar cal = Calendar.getInstance();
             
@@ -51,7 +54,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                                 if ("default".equalsIgnoreCase(timezone)) {
                                     tz = TimeZone.getDefault();
                                 } else {
-                                    tz = TimeZone.getTimeZone(getTimeZoneByGMT(timezone));
+                                    tz = TimeZone.getTimeZone(TimeZoneUtil.getTimeZoneByGMT(timezone));
                                 }
                                 if (tz != null) {
                                     df.setTimeZone(tz);
@@ -101,7 +104,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                 }
             }
 
-            return TimeZoneUtil.convertToTimeZone(cal.getTime(), timezone, variableKey);
+            return TimeZoneUtil.convertToTimeZoneWithLocale(cal.getTime(), timezone, variableKey, locale);
         } catch (IllegalArgumentException iae) {
             return new Date().toString();
         } catch (Exception ex) {

@@ -2,14 +2,14 @@
     <group name="common.preload">
         <js>/js/jquery/jquery-3.5.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
-        <js>/js/jquery/ui/jquery-ui-1.13.1.custom.min.js</js>
+        <js>/js/jquery/ui/jquery-ui.min.js</js>
         <js>/js/json/ui.js</js>
         <js>/js/json/ui_ext.js</js>
         <js>/js/json/util.js</js>
         <js>/js/loadCSS/loadCSS.js</js>
     </group>
     <group name="common">
-        <css>/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css</css>
+        <css>/js/jquery/themes/ui-lightness/jquery-ui.min.css</css>
         <css>/js/fontawesome5/css/all.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>

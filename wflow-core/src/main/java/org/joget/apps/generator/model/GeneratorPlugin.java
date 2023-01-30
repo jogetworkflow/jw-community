@@ -1,5 +1,6 @@
 package org.joget.apps.generator.model;
 
+import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -13,6 +14,15 @@ public abstract class GeneratorPlugin extends ExtDefaultPlugin implements Proper
     protected String formId;
     protected AppDefinition appDef;
 
+    /**
+     * Set plugin properties.
+     * @param properties 
+     */
+    @Override
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+    
     /**
      * Gets the current working form id  
      * @return 

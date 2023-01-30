@@ -26,6 +26,7 @@
                 load : "",
                 saveEditProperties : "",
                 cancelEditProperties : "",
+                getBuilderItemName : "",
                 getBuilderProperties : "",
                 saveBuilderProperties : ""
             }
@@ -147,6 +148,8 @@
     builderItems : null,
     builderItemsLoading : [],
     
+    builderShortcutActionHandlers : [],
+    
     /*
      * Utility method to call a function by name
      */
@@ -180,6 +183,10 @@
     },
     
     ajaxRenderBuilder: function(url) {
+        var rtl;
+        if($('body').hasClass('rtl')){
+           rtl=true;
+        }
         //check url is same
         var temp = url;
         var hash = ""
@@ -251,6 +258,8 @@
             $("#design-btn").trigger("click");
     
             CustomBuilder.updatePresenceIndicator();
+            
+            CustomBuilder.unbindBuilderShortcutActionHandlers();
             
             data = eval("[" + data.trim() + "]")[0];
             
@@ -343,7 +352,9 @@
                     $("head").append(data.builderJS);
                 }
             }
-            
+            if(rtl === true) {
+                $('body').addClass("rtl");
+            }
             //update admin bar
             var acBtn = $("#adminBarButtons .adminBarButton").eq(0);
             $(acBtn).attr("href", CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath +'/builders');
@@ -531,6 +542,9 @@
             container = "body";
         }
         
+        jQuery.hotkeys.options.filterInputAcceptingElements = false;
+        jQuery.hotkeys.options.filterTextInputs = false;
+        
         $(container).find("[data-cbuilder-action]").each(function () {
             var on = "click";
             var target = $(this);
@@ -549,8 +563,15 @@
                 if ($("#quick-nav-bar").hasClass("active")) {
                    $("#closeQuickNav").trigger("click");
                 }
+                
+                var isShortcut = event.type === "keydown";
                 if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
-                    action.call(this, event);
+                    var result = action.call(this, event);
+                    if (result) {
+                        return result;
+                    }
+                } else if (isShortcut) {
+                    return; //let default shortcut key handler to proceed
                 }
                 return false;
             };
@@ -558,14 +579,24 @@
             $(this).on(on, buttonAction);
             if (this.dataset.cbuilderShortcut)
             {
-                $(document).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                $(document).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                CustomBuilder.builderShortcutActionHandlers.push(buttonAction);
+                $(document).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
                 if (window.FrameDocument) {
-                    $(window.FrameDocument).unbind('keydown.shortcut', this.dataset.cbuilderShortcut);
-                    $(window.FrameDocument).bind('keydown.shortcut', this.dataset.cbuilderShortcut, buttonAction);
+                    $(window.FrameDocument).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
                 }
             }
         });
+    },
+    
+    unbindBuilderShortcutActionHandlers : function() {
+        for (var i in CustomBuilder.builderShortcutActionHandlers) {
+            $(document).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+            if (window.FrameDocument) {
+                $(window.FrameDocument).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+            }
+        }
+        
+        CustomBuilder.builderShortcutActionHandlers = [];
     },
     
     /*
@@ -664,6 +695,22 @@
             return CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getBuilderProperties"], []);
         } else {
             return CustomBuilder.data.properties;
+        }
+    },
+    
+    /*
+     * Retrieve the builder item name
+     */
+    getBuilderItemName : function() {
+        if (CustomBuilder.config.builder.callbacks["getBuilderItemName"] !== "") {
+            return CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getBuilderItemName"], []);
+        } else {
+            var props = CustomBuilder.getBuilderProperties();
+            if (props) {
+                return props['name'];
+            } else {
+                return null;
+            }
         }
     },
     
@@ -804,21 +851,29 @@
                 $(container).append(li);
             }
         }
+        CustomBuilder.updatePaletteFav();
     },
     
     /*
      * Check a palette element is in fav list and flag it
      */
     updatePaletteFav : function() {
-        var list = CustomBuilder.getBuilderSetting("paletteFavList");
-        if (list !== undefined && list !== null) {
-            for (var i in list) {
-                var div = $("li div#"+list[i]);
-                if ($(div).length > 0) {
-                    $(div).parent().addClass("fav");
+        if (CustomBuilder.updatePaletteFavTimeout !== undefined && CustomBuilder.updatePaletteFavTimeout !== null) {
+            clearTimeout(CustomBuilder.updatePaletteFavTimeout);
+        }
+        
+        CustomBuilder.updatePaletteFavTimeout = setTimeout(function() {
+            var list = CustomBuilder.getBuilderSetting("paletteFavList");
+            if (list !== undefined && list !== null) {
+                for (var i in list) {
+                    var div = $("li div#"+list[i]);
+                    if ($(div).length > 0) {
+                        $(div).parent().addClass("fav");
+                    }
                 }
             }
-        }
+            CustomBuilder.updatePaletteFavTimeout = null;
+        }, 300);    
     },
     
     /*
@@ -834,7 +889,7 @@
         if ($(li).hasClass("fav")) {
             $(li).removeClass("fav");
             if ($.inArray(id, list) !== -1) {
-                list = list.splice( $.inArray(id, list), 1);
+                list.splice( $.inArray(id, list), 1);
             }
         } else {
             $(li).addClass("fav");
@@ -990,7 +1045,8 @@
                 var d = JSON.decode(data);
                 if(d.success == true){
                     $("#save-btn").removeClass("unsaved");
-                    $('#cbuilder-json-original').val(json);
+                    CustomBuilder.savedJson = json;
+                    $('#cbuilder-json-original').val(d.data);
                     CustomBuilder.updateSaveStatus("0");
                     CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
 
@@ -1000,6 +1056,20 @@
 
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                 }
+                
+                //check builder name change
+                var name = CustomBuilder.getBuilderItemName();
+                if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
+                    if (name !== null) {
+                        $("#builderElementName .title span.item_name").text(name);
+
+                        $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                    }
+                    
+                    //reload nav
+                    CustomBuilder.reloadBuilderMenu();
+                }
+        
                 setTimeout(function(){
                     $("#save-btn").removeAttr("disabled");
                 }, 3000);
@@ -1168,6 +1238,18 @@
     },
     
     /*
+     * Remove copied element and clear clipboard
+     */
+    clearCopiedElement : function() {
+        var data = CustomBuilder.getCopiedElement();
+        if (data) {
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+".copyTime");
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+".copy");
+            $("#paste-element-btn").addClass("disabled");
+        }
+    },
+    
+    /*
      * Retrieve copied element in cache
      */
     getCopiedElement : function() {
@@ -1264,6 +1346,11 @@
      * Merge the diff between local and remote
      */
     merge: function (callback) {
+        if (CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== "") {
+            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderBeforeMerge"]);
+        }
+        
         // get current remote definition
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.merging'));
         var thisObject = CustomBuilder;
@@ -1286,16 +1373,40 @@
     /*
      * Merge remote change and save
      */
-    mergeAndSave: function() {
+    mergeAndSave: function(event) {
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
             CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
                 $("#save-btn").attr("disabled", "disabled");
                 $("body").addClass("no-right-panel");
                 CustomBuilder.merge(CustomBuilder.save);
             });
+        } else if ($("body").hasClass("properties-builder-view")) {
+            var editor = $("#propertiesView .builder-view-body").data("editor");
+            if (editor !== undefined && editor.isChange()) {
+                if (editor.options.orgSaveCallback === undefined || editor.options.orgSaveCallback === null) {
+                    editor.options.orgSaveCallback = editor.options.saveCallback;
+                    editor.options.saveCallback = function(container, properties) {
+                        editor.options.orgSaveCallback(container, properties);
+                        $("#save-btn").attr("disabled", "disabled");
+                        CustomBuilder.merge(CustomBuilder.save);
+                    };
+                }
+                editor.save();
+                editor.options.saveCallback = editor.options.orgSaveCallback;
+                editor.options.orgSaveCallback = null;
+            } else {
+                $("#save-btn").attr("disabled", "disabled");
+                CustomBuilder.merge(CustomBuilder.save);
+            }
         } else {
             $("#save-btn").attr("disabled", "disabled");
             CustomBuilder.merge(CustomBuilder.save);
+        }
+        
+        if (event) {
+            //to stop browser save dialog
+            event.preventDefault();
+            return false;
         }
     }, 
     
@@ -1509,6 +1620,12 @@
                 
                 var newPropertiesJson = JSON.encode(elementProperty);
                 if (oldPropertiesJson !== newPropertiesJson) {
+                    if ($(element).is('[data-cbuilder-style-id]')) {
+                        var style = $(element).next('[data-cbuilder-style]');
+                        $(element).append(style);
+                        $(element).removeAttr("data-cbuilder-style-id");
+                    }
+                    
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["saveEditProperties"], [container, elementProperty, elementObj, element]);
                     
                     if ($("body").hasClass("default-builder")) {
@@ -2137,7 +2254,7 @@
                     I18nEditor.renderTable($(view), labels, config);
                     I18nEditor.refresh($(view));
                     
-                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus-circle"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                    $(view).find(".i18n_table tbody").prepend('<tr class="even addnew"><td class="label"><a class="addNewKey btn btn-primary btn-sm"><i class="las la-plus"></i> '+get_cbuilder_msg('abuilder.addNewKey')+'</a></td><td class="lang1"></td><td class="lang2"></td></tr>');
                     $(view).find(".i18n_table .addNewKey").on("click", function(){
                         CustomBuilder.appMessageAddNewKey($(this));
                     });
@@ -2370,7 +2487,7 @@
                                     return false;
                                 }
                             } else if ($(this).is('.tinymce')) {
-                                var value = tinyMCE.editors[$(this).attr('id')].getContent();
+                                var value = tinymce.get($(this).attr('id')).getContent();
                                 if (CustomBuilder.isSearchMatch(value, searchText)) {
                                     show = true;
                                     return false;
@@ -2466,7 +2583,12 @@
     /*
      * Method used for toolbar to copy an element
      */
-    copyElement : function() {
+    copyElement : function(event) {
+        if (event && /textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) {
+            //clear element clipboard
+            CustomBuilder.clearCopiedElement();
+            return true; //to continue to the default handler to copy text
+        }
         if (CustomBuilder.Builder.selectedEl !== null) {
             CustomBuilder.Builder.copyNode();
         }
@@ -2475,7 +2597,10 @@
     /*
      * Method used for toolbar to paste an element
      */
-    pasteElement : function() {
+    pasteElement : function(event) {
+        if (event && /textarea|input|select/i.test(event.target.nodeName) && CustomBuilder.getCopiedElement() === null) {
+            return true; //to continue to the default handler to paste text
+        }
         CustomBuilder.Builder.pasteNode();
     },
     
@@ -2595,7 +2720,8 @@
             });
         }
         
-        if($('#cbuilder-json-original').val() === $('#cbuilder-json').val() && !hasChange){
+        if(((CustomBuilder.savedJson !== undefined && CustomBuilder.savedJson === $('#cbuilder-json').val()) ||
+            ($('#cbuilder-json-original').val() === $('#cbuilder-json').val())) && !hasChange){
             return true;
         }else{
             return false;
@@ -2743,7 +2869,7 @@
         for (var i in data) {
             var builder = data[i];
             var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
-            $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus-circle"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
+            $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             CustomBuilder.builderTypes.push(builder.value);
             if (builder.elements) {
                 for (var j in builder.elements) {
@@ -2929,6 +3055,25 @@
             }
         }
     },
+    
+    /*
+     *  remove all the custom styling from all elements 
+     */
+    clearCustomStyling : function(data, checker) {
+        var props = Object.getOwnPropertyNames(data);
+        for (var i = 0; i < props.length; i++) {
+            var name = props[i];
+            if (typeof data[name] === "object") {
+                CustomBuilder.clearCustomStyling(data[name]);
+            } else if (Array.isArray(data[name])) {
+                for (var j = 0; j < data[name].length; j++) {
+                    CustomBuilder.clearCustomStyling(data[name][j]);
+                }
+            } else if (name.indexOf("style-") === 0 || (checker !== undefined && checker(name))) {
+                delete data[name];
+            }
+        }
+    }
 };
 
 /*
@@ -3632,16 +3777,28 @@ _CustomBuilder.Builder = {
         if (parent.length === 0) {
             parent = $(node).closest("body");
         }
-        var parentDataArray = $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)];
+        
+        var parentDataHolder = component.builderTemplate.getParentDataHolder(elementObj, component);
+        
+        if (parentDataHolder === null) { //if it is missing plugin, this will return null. getting it from parent element
+            var parentObj = $(parent).data("data");
+            if (parentObj) {
+                var parentComponent = self.parseDataToComponent(parentObj);
+                parentDataHolder = parentComponent.builderTemplate.getChildsDataHolder(parentObj, parentComponent);
+            } else {
+                parentDataHolder = component.builderTemplate.parentDataHolder; //default back to "elements"
+            }
+        }
+        
+        var parentDataArray = $(parent).data("data")[parentDataHolder];
         if (parentDataArray === undefined) {
             parentDataArray = [];
-            $(parent).data("data")[component.builderTemplate.getParentDataHolder(elementObj, component)] = parentDataArray;
+            $(parent).data("data")[parentDataHolder] = parentDataArray;
         }
         var index = $.inArray($(node).data("data"), parentDataArray);
         if (index !== -1) {
             parentDataArray.splice(index, 1);
         }
-
 
         if (component.builderTemplate.unload)
             component.builderTemplate.unload($(node), elementObj, component);
@@ -3681,8 +3838,13 @@ _CustomBuilder.Builder = {
         
         self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
             try {
-                self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                self.iframe.contentWindow.tinymce.get($(this).attr("id")).destroy();
                 $(this).removeAttr('data-cbuilder-inlineedit');
+                if ($(this).is('[data-cbuilder-style-id]')) {
+                    var style = $(this).next('[data-cbuilder-style]');
+                    $(this).append(style);
+                    $(this).removeAttr("data-cbuilder-style-id");
+                }
                 $(this).off("change.inlineedit");
             }catch(err){}
         });
@@ -3836,13 +3998,18 @@ _CustomBuilder.Builder = {
                             $(inilineEditEl).removeAttr('data-cbuilder-desktop-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-tablet-invisible');
                             $(inilineEditEl).removeAttr('data-cbuilder-mobile-invisible');
-
+                            
+                            if ($(inilineEditEl).find("style[data-cbuilder-style]").length > 0) {
+                                $(inilineEditEl).attr('data-cbuilder-style-id', $(inilineEditEl).find("style[data-cbuilder-style]").attr("data-cbuilder-style"));
+                                $(inilineEditEl).after($(inilineEditEl).find("style[data-cbuilder-style]"));
+                            }
+                            
                             try {
-                                var toolbar = 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                var toolbar = 'styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
                                 if (inlineEditor.mode === "full") {
-                                    toolbar = 'styleselect | fontselect fontsizeselect forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image';
+                                    toolbar = 'styles | fontfamily fontsize forecolor backcolor | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat';
                                 } else if (inlineEditor.mode === "simple") {
-                                    toolbar = 'bold italic | alignleft aligncenter alignright alignjustify';
+                                    toolbar = 'bold italic | alignleft aligncenter alignright alignjustify | removeformat';
                                 }
                                 setTimeout(function(){
                                     //find propety field
@@ -3856,14 +4023,10 @@ _CustomBuilder.Builder = {
                                         extended_valid_elements:"style,link[href|rel]",
                                         custom_elements:"style,link,~link",
                                         valid_elements: '*[*]',
-                                        plugins: [
-                                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'hr',
-                                            'insertdatetime', 'media', 'table', 'contextmenu',
-                                            'textcolor', 'colorpicker', 'textpattern', 'imagetools'
-                                        ],
-                                        forced_root_block : '',
+                                        plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons codesample',
                                         toolbar: toolbar,
                                         menubar: false,
+                                        promotion: false,
                                         init_instance_callback: function(editor) {
                                             editor.focus();
 
@@ -4055,7 +4218,7 @@ _CustomBuilder.Builder = {
             if (self.isDragging && self.dragElement) {
                 self.frameBody.find('[data-cbuilder-inlineedit]').each(function(){
                     try {
-                        self.iframe.contentWindow.tinymce.EditorManager.execCommand('mceRemoveEditor',true, $(this).attr("id"));
+                        self.iframe.contentWindow.tinymce.get($(this).attr("id")).destroy();
                         $(this).removeAttr('data-cbuilder-inlineedit');
                         $(this).off("change.inlineedit");
                     }catch(err){}
@@ -4376,7 +4539,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0) {
                 self.mousedown = false;
                 return true;
             }
@@ -4958,6 +5121,9 @@ _CustomBuilder.Builder = {
                     newcallback(element);
                 }
             },
+            'getParentDataHolder' : function(elementObj, component) {
+                return null;
+            },
             'supportProperties' : false,
             'supportStyle' : false,
             'draggable' : false,
@@ -5344,8 +5510,8 @@ _CustomBuilder.Builder = {
             }
 
             self.checkVisible(parent);
-            self.checkVisible(newParent);
             self.checkVisible(self.selectedEl);
+            self.checkVisible(newParent);
             
             if (self.subSelectedEl) {
                 self.selectNodeAndShowProperties(self.subSelectedEl, false, (!$("body").hasClass("no-right-panel")));
@@ -5672,14 +5838,24 @@ _CustomBuilder.Builder = {
     },
     
     /*
+     * Check visible from the most inner node
+     */
+    recursiveCheckVisible : function(node) {
+        $(node).find("> [data-cbuilder-classname]").each(function(){
+            CustomBuilder.Builder.recursiveCheckVisible($(this));
+        });
+        CustomBuilder.Builder.checkVisible($(node));
+    },
+    
+    /*
      * Check an element is visible or not, if not show an invisible flag
      */
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
-        if (!$(node).is('[data-cbuilder-uneditable]')) {
+        if (!$(node).is('[data-cbuilder-uneditable]') && !$(node).is('[data-cbuilder-visible]')) { //use "data-cbuilder-visible" to skip visiblity check
             var temp = $('<div>'+$(node).html()+'</div>');
-            $(temp).find('style').remove();
-            if ($(node).is('div, p') && $(temp).html() === "") {
+            $(temp).find('style, script').remove();
+            if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
                 var height = $(node).outerHeight(false);
@@ -6354,7 +6530,11 @@ _CustomBuilder.Builder = {
             }
         }
         
-        setTimeout(function() {
+        if (CustomBuilder.screenshotTimeout !== undefined && CustomBuilder.screenshotTimeout !== null) {
+            clearTimeout(CustomBuilder.screenshotTimeout);
+        }
+        
+        CustomBuilder.screenshotTimeout = setTimeout(function() {
             CustomBuilder.getScreenshot(target, function(image){
                 $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
                 
@@ -6366,8 +6546,10 @@ _CustomBuilder.Builder = {
                 $("#screenshotView .sticky-buttons").append(link);
                 
                 self.frameBody.removeClass("screenshot-in-progress");
+                CustomBuilder.screenshotTimeout = null;
             }, function(error) {
                 self.frameBody.removeClass("screenshot-in-progress");
+                CustomBuilder.screenshotTimeout = null;
             });
         }, 300);
     },

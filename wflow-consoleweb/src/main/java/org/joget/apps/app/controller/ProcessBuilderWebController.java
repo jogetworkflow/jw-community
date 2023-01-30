@@ -276,9 +276,10 @@ public class ProcessBuilderWebController {
         }
 
         if (success) {
-            jsonObject.accumulate("success", success);
+            jsonObject.put("success", success);
+            jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
         } else {
-            jsonObject.accumulate("error", error);
+            jsonObject.put("error", error);
         }
         jsonObject.write(writer);
         

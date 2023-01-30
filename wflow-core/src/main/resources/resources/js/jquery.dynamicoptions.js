@@ -155,6 +155,12 @@
         });
     }
     
+    function intersectArray(a, b) {
+        return a.filter(function(value) {
+            return b.indexOf(value) !== -1;
+        });
+    }
+    
     function showHideOption(target, o){
         var controlValues = getValues(o.controlField);
         var values = getValues(o.paramName);
@@ -168,8 +174,12 @@
             
             $(target).find("option:not(.label)").each(function(){
                 var option = $(this);
-                if ($(option).attr("grouping") != "" && $.inArray($(option).attr("grouping"), controlValues) == -1) {
-                    $(option).remove();
+                if ($(option).attr("value") !== "" && $(option).attr("grouping") !== undefined && $(option).attr("grouping") !== null) {
+                    var groups = $(option).attr("grouping").split(";");
+                    var intersect = intersectArray(groups, controlValues);
+                    if (intersect.length === 0) {
+                        $(option).remove();
+                    }
                 }
             });
             for (var i in values) {
@@ -182,13 +192,17 @@
             $(target).find("input").each(function(){
                 var option = $(this);
                 var label = $(option).parent();
-                if ($(option).attr("grouping") == "" || $.inArray($(option).attr("grouping"), controlValues) > -1) {
-                    $(label).show();
-                } else {
-                    if ($(option).is(":checked")) {
-                        $(option).removeAttr("checked");
+                if ($(option).attr("grouping") !== undefined && $(option).attr("grouping") !== null) {
+                    var groups = $(option).attr("grouping").split(";");
+                    var intersect = intersectArray(groups, controlValues);
+                    if (intersect.length > 0) {
+                       $(label).show();
+                    } else {
+                        if ($(option).is(":checked")) {
+                            $(option).removeAttr("checked");
+                        }
+                        $(label).hide();
                     }
-                    $(label).hide();
                 }
             });
         }

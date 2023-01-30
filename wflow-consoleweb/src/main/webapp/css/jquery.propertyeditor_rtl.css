@@ -14,10 +14,6 @@
     float:right;
 }
 
-.page-button-navigation input{
-    float:right;
-}
-
 .page-button-action {
     float: left;
 }
@@ -31,16 +27,12 @@
     margin-left:3px;
 }
 
-.property-type-grid .property-input table tr th, .property-type-grid .property-input table tr td {
-    float: right;
-}
-
 .property-type-grid-action-column a{
     float: right;
 }
 
 .property-type-grid .property-input table {
-    float:right;
+    direction: rtl;
 }
 
 .property-type-grid-action-add{

@@ -138,8 +138,40 @@ UI = {
             $(iframe).removeClass("maxsize");
             $(iframe).trigger("iframe-ui-restore");
         }
+    },
+    /*
+     * Use to replace the window.setInterval with added window visibility change into consideration.
+     * Clear the interval when it is hidden and start it again when it is visible.
+     */
+    visibilityChangeSetInterval : function(name, callback, milliseconds) {
+        if (!(typeof document.addEventListener === "undefined")) {
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            } else if (typeof document.msHidden !== "undefined") {
+                hidden = "msHidden";
+                visibilityChange = "msvisibilitychange";
+            } else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
+            if (UI.visibilityChangeIntervals === undefined) {
+                UI.visibilityChangeIntervals = {};
+            }
+            document.addEventListener(visibilityChange, function(event){
+                if (!document[hidden]) {
+                    callback();
+                    UI.visibilityChangeIntervals[name] = setInterval(callback, milliseconds);
+                } else if (UI.visibilityChangeIntervals[name] !== undefined && UI.visibilityChangeIntervals[name] !== null) {
+                    clearInterval(UI.visibilityChangeIntervals[name]);
+                    delete UI.visibilityChangeIntervals[name];
+                }
+            }, false);
+        }
+        UI.visibilityChangeIntervals[name] = setInterval(callback, milliseconds);
     }
-}
+};
 
 /*
  * Modal popup dialog box showing a URL in an IFRAME

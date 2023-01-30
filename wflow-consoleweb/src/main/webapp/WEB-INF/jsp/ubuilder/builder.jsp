@@ -118,6 +118,7 @@
                 "load" : "UserviewBuilder.load",
                 "saveEditProperties" : "UserviewBuilder.saveEditProperties",
                 "getBuilderProperties" : "UserviewBuilder.getBuilderProperties",
+                "getBuilderItemName" : "UserviewBuilder.getBuilderItemName",
                 "saveBuilderProperties" : "UserviewBuilder.saveBuilderProperties",
                 "getRuleObject" : "UserviewBuilder.getRuleObject",
                 "previewViewInit" : "UserviewBuilder.previewViewInit",

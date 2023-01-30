@@ -61,7 +61,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
             }
             if (processor.getRedirectUrl() != null && !processor.getRedirectUrl().isEmpty() && !isCurrentUserviewUrl(processor.getRedirectUrl())) {
-                data.put("content", "<script>top.location.href = \""+processor.getRedirectUrl()+"\";</script>");
+                String redirectUrl = processor.getRedirectUrl(); //the redirect url from UserviewThemeProcesser.handleMenuResponse() usually without context path
+                if (redirectUrl.startsWith("/web/")) {
+                    redirectUrl = data.get("context_path") + redirectUrl;
+                }
+                data.put("content", "<script>top.location.href = \""+redirectUrl+"\";</script>");
                 processor.setRedirectUrl(null);
             }
             
@@ -252,8 +256,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String name = "<div class=\"login_form_brand\">";
         if (!getPropertyString("logo").isEmpty()) {
             name += "<div class=\"login_form_logo_container\"><img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" /></div>";
+        } else {
+            name += "<div class=\"login_form_logo_container\"><i class=\"fas fa-user-circle\"></i></div>";
         }
-        name += "<h1>" + userview.getPropertyString("name") + "</h1></div>";
+        name += "<h1>Login to " + userview.getPropertyString("name") + "</h1></div>";
         data.put("login_form_inner_before", name);
         return super.getLoginForm(data);
     }

@@ -747,6 +747,7 @@ body.right-panel-resizing #right-panel-resize-block{
 .drag-elements-sidepane ul > li ol li {
     list-style: none;
     float: left; 
+    border-radius: 5px;
 }
 .drag-elements-sidepane ul > li ol li a {
     color: #333;
@@ -800,7 +801,8 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 .components-list li ol li:hover{
     box-shadow: 0px 0px 1px 0px #4285f4;
-    background-color: #007bff; 
+    background-color: #007bff;
+    border-color: #007bff;
     color:#fff;
 }
 .components-list li ol li:hover a {
@@ -2362,3 +2364,8 @@ body.rtl div#builderModeOption:before {
         display: none;
     }
 } 
+
+/* tinymce fix */
+#cbuilder > .tox-tinymce-aux{
+    width:0px !important;
+}

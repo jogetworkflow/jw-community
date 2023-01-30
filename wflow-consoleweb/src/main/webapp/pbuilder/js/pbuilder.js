@@ -176,6 +176,7 @@ ProcessBuilder = {
             $('#process-selector .process_action').append('&nbsp;&nbsp;&nbsp;<a class="graybtn" id="process-clone-btn" title="'+get_cbuilder_msg("cbuilder.clone")+'" style=""><i class="la la-copy"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-add-btn" title="'+get_cbuilder_msg("cbuilder.addnew")+'" style=""><i class="la la-plus"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-def-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessDef")+'" style=""><i class="las la-notes-medical"></i></a>');
+            $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-link-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessStartLink")+'" style=""><i class="las la-link"></i></a>');
             
             $("#process-edit-btn").on("click", function(event){
                 ProcessBuilder.editProcess();
@@ -206,6 +207,20 @@ ProcessBuilder = {
                 $temp.remove();
                 
                 CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
+                
+                event.preventDefault();
+                return false;
+            });
+            $("#process-copy-link-btn").on("click", function(event){
+                var url = document.URL.substring(0, document.URL.indexOf("/web/console"));
+                url += "/web/client/app" + CustomBuilder.appPath + "/process/" + ProcessBuilder.currentProcessData.properties.id + "?start=true";
+                var $temp = $("<input style='height:1px;opacity:0'>");
+                $("body").append($temp);
+                $temp.val(url).select();
+                document.execCommand("copy");
+                $temp.remove();
+                
+                CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessStartLink.copied'), "info", true);
                 
                 event.preventDefault();
                 return false;
@@ -872,7 +887,7 @@ ProcessBuilder = {
         }
         
         //remove participants not used by any processes
-        var partipantKeys = {};
+        var participantKeys = {};
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
         for (var p in xpdlProcesses) {
             var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
@@ -880,7 +895,7 @@ ProcessBuilder = {
                 if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                     var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
                     for (var i in ids) {
-                        partipantKeys[ids[i]] = "";
+                        participantKeys[ids[i]] = "";
                     }
                     break;
                 }
@@ -888,14 +903,22 @@ ProcessBuilder = {
         }
         
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
-        xpdlParticipants.forEach(function(xpdlParticipant, index, object) {
-            if (partipantKeys[xpdlParticipant['-Id']] === undefined) {
-                object.splice(index, 1);
+        for (var i = xpdlParticipants.length - 1; i >= 0; i--) {
+            if (participantKeys[xpdlParticipants[i]['-Id']] === undefined) {
+                xpdlParticipants.splice(i, 1);
                 
-                //delete mapping
             }
-        });
+        }
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
+        
+        //remove unused participant mapping
+        var keys = Object.keys(CustomBuilder.data.participants);
+        for (var i in keys) {
+            var pid = keys[i].substring(keys[i].indexOf("::") + 2);
+            if (participantKeys[pid] === undefined) {
+                delete CustomBuilder.data.participants[keys[i]];
+            }
+        }
         
         ProcessBuilder.validate();
     },
@@ -1545,13 +1568,57 @@ ProcessBuilder = {
         cloneProcessData['-Id'] = id;  
         cloneProcessData['-Name'] = cloneProcessData['-Name'] + " " + get_cbuilder_msg("pbuilder.label.copy");
         
-        //clone participant
+        //remove participants not used by any processes
+        var participantKeys = {};
+        var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        for (var p in xpdlProcesses) {
+            var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
+            for (var a = 0; a < xpdlProcessesAttrs.length; p++) {
+                if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
+                    var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
+                    for (var i in ids) {
+                        participantKeys[ids[i]] = "";
+                    }
+                    break;
+                }
+            }
+        }
+        
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+        for (var i = xpdlParticipants.length - 1; i >= 0; i--) {
+            if (participantKeys[xpdlParticipants[i]['-Id']] === undefined) {
+                xpdlParticipants.splice(i, 1);
+            }
+        }
+        
+        //remove unused participant mapping
+        var keys = Object.keys(CustomBuilder.data.participants);
+        for (var i in keys) {
+            var pid = keys[i].substring(keys[i].indexOf("::") + 2);
+            if (participantKeys[pid] === undefined) {
+                delete CustomBuilder.data.participants[keys[i]];
+            }
+        }
+        
+        //clone participant
         var currentParticipants = ProcessBuilder.currentProcessData.participants;
         for (var c in currentParticipants) {
             var xpdlObj = $.extend(true, {}, currentParticipants[c].xpdlObj);
-            xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
-            xpdlParticipants.push(xpdlObj);
+            
+            //check the participant is exist
+            if (participantKeys[xpdlObj['-Id']] !== undefined) {
+                var oriPid = xpdlObj['-Id'];
+                if (xpdlObj['-Id'].indexOf(oriId) === 0) { //if keep prepending the process id, the participant id will become very long and over 255 chars
+                    xpdlObj['-Id'] = id + xpdlObj['-Id'].substring(oriId.length);
+                } else {
+                    xpdlObj['-Id'] = id + "_" + xpdlObj['-Id'];
+                }
+                if (participantKeys[xpdlObj['-Id']] === undefined) {     
+                    xpdlParticipants.push(xpdlObj);
+                    participantKeys[xpdlObj['-Id']] = "";
+                    participantKeys[oriPid] = xpdlObj['-Id'];
+                }
+            }
         }
         ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
         
@@ -1559,21 +1626,32 @@ ProcessBuilder = {
         var xpdlProcessesAttrs = ProcessBuilder.getArray(cloneProcessData['ExtendedAttributes'], 'ExtendedAttribute');
         for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
-                xpdlProcessesAttrs[p]['-Value'] = id + "_" + xpdlProcessesAttrs[p]['-Value'].replace(/;/g, ";"+ id + "_");
+                var porders = xpdlProcessesAttrs[p]['-Value'].split(";");
+                for (var j in porders) {
+                    porders[j] = participantKeys[porders[j]];
+                }
+                xpdlProcessesAttrs[p]['-Value'] = porders.join(";");
             } else if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
-                xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID=", "JaWE_GRAPH_PARTICIPANT_ID="+id + "_" );
+                var keys = Object.keys(participantKeys);
+                for (var i in keys) {
+                    if (xpdlProcessesAttrs[p]['-Value'].indexOf("JaWE_GRAPH_PARTICIPANT_ID=" + keys[i] + ",") !== -1) {
+                        xpdlProcessesAttrs[p]['-Value'] = xpdlProcessesAttrs[p]['-Value'].replace("JaWE_GRAPH_PARTICIPANT_ID="+keys[i] + ",", "JaWE_GRAPH_PARTICIPANT_ID="+participantKeys[keys[i]] + ",");
+                        break;
+                    }
+                }
             }
         }
         ProcessBuilder.setArray(cloneProcessData, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
         
         var xpdlActivities = ProcessBuilder.getArray(cloneProcessData['Activities'], 'Activity');
         for (var a in xpdlActivities) {
-            xpdlActivities[a]['Performer'] = id + "_" + xpdlActivities[a]['Performer'];
+            var newpid = participantKeys[xpdlActivities[a]['Performer']];
+            xpdlActivities[a]['Performer'] = newpid;
             
             var attrs = ProcessBuilder.getArray(xpdlActivities[a]['ExtendedAttributes'], 'ExtendedAttribute');
             for (var at in attrs) {
                 if (attrs[at]['-Name'] === "JaWE_GRAPH_PARTICIPANT_ID") {
-                    attrs[at]['-Value'] = id + "_" + attrs[at]['-Value'];
+                    attrs[at]['-Value'] = newpid;
                 }
             }
         }
@@ -1586,7 +1664,11 @@ ProcessBuilder = {
         var newParticipantMapping = {};
         for (var key in CustomBuilder.data.participants) {
             if (key.indexOf(oriId + "::") === 0) {
-                newParticipantMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.participants[key];
+                var newpid = participantKeys[key.substring(key.indexOf("::") + 2)];
+                if (key === oriId + "::processStartWhiteList") {
+                    newpid = "processStartWhiteList";
+                }
+                newParticipantMapping[id + "::" + newpid] = CustomBuilder.data.participants[key];
             }
         }
         $.extend(CustomBuilder.data.participants, newParticipantMapping);
@@ -2406,7 +2488,7 @@ ProcessBuilder = {
                 $('#process-selector select [value="'+id+'"]').attr("value", elementObj.properties.id);
                 $('#process-selector select').val(elementObj.properties.id);
                 $('#process-selector select').trigger("chosen:updated");
-                element.attr("id", elementObj.properties.id);
+                element.attr("id", "process_" + elementObj.properties.id);
                 
                 $(window).off('hashchange');
                 window.location.hash = elementObj.properties.id;
@@ -2426,7 +2508,7 @@ ProcessBuilder = {
             ProcessBuilder.initJsPlumb();
             
             element.addClass("process");
-            element.attr("id", elementObj.properties.id);
+            element.attr("id", "process_" + elementObj.properties.id);
             element.html("");
             element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
 
@@ -2569,6 +2651,7 @@ ProcessBuilder = {
         
         element.addClass("node " + elementObj.className);
         element.attr("id", elementObj.properties.id);
+        element.attr("data-cbuilder-visible", "");
         
         if (elementObj.className !== "end") {
             ProcessBuilder.jsPlumb.makeSource($(element), {
@@ -3897,6 +3980,46 @@ ProcessBuilder = {
         
         return options;
     },
+            
+    /*
+     * return a array of available workflow variables
+     */                
+    getWorkflowVariables : function() {
+        var options = [];
+        
+        for (var i in ProcessBuilder.currentProcessData.properties.dataFields) {
+            var id = ProcessBuilder.currentProcessData.properties.dataFields[i].variableId;
+            options.push(id);    
+        }
+        
+        return options;
+    },
+          
+    /*
+     * return a list of of outgoing transitions options of the current selected activity 
+     */                
+    getCurrentActivityOutgoingTransition : function() {
+        var options = [];
+        
+        var act = CustomBuilder.Builder.selectedEl;
+        var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(act)});
+        for (var i = sourceConnSet.length - 1; i >= 0; i--) {
+            if (!$(sourceConnSet[i].target).hasClass("end")) { 
+                var id = $(sourceConnSet[i].canvas).data("data").properties.id;
+                var label = $(sourceConnSet[i].canvas).data("data").properties.label;
+                if (label === undefined || label === "") {
+                    label = id + " (" + $(sourceConnSet[i].target).data("data").properties.label +")";
+                }
+                
+                options.push({
+                    value : id,
+                    label : label
+                });
+            }
+        }
+        
+        return options;
+    },
     
     /*
      * Retrive the multi tools properties options for tool mapping
@@ -4483,6 +4606,9 @@ ProcessBuilder = {
      * escape unsafe char in xml attr value
      */                
     escapeXml : function(unsafe) {
+        if (unsafe === undefined || unsafe === null || unsafe === "") {
+            return unsafe;
+        }
         return unsafe.replace(/[<>&'"]/g, function (c) {
             switch (c) {
                 case '<': return '&lt;';
@@ -4703,64 +4829,62 @@ ProcessBuilder = {
      * A callback method called from CustomBuilder.applyElementProperties when properties saved
      */
     saveEditProperties : function(container, elementProperty, elementObj, element) {
-        if (elementProperty.id !== $(element).attr("id")) {
-            if (elementObj.process !== "process") {
-                var self = CustomBuilder.Builder;
-                
-                ProcessBuilder.jsPlumb.unbind("connection");
-                ProcessBuilder.jsPlumb.unbind("connectionDetached");
-                ProcessBuilder.jsPlumb.unbind();
-                
-                // update transition
-                var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(element)});
-                var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(element)});
-                var transition = [];
-                
-                for (var i in sourceConnSet) {
-                    var data = $(sourceConnSet[i].canvas).data("data");
-                    data.properties.from = elementProperty.id;
-                    if (data['xpdlObj'] !== undefined) { //end node is target, xpdl object is undefined
-                        data['xpdlObj']['-From'] = elementProperty.id;
-                    }
-                    ProcessBuilder.jsPlumb.detach(sourceConnSet[i]);
-                    transition.push(data);
-                }
-                for (var i in targetConnSet) {
-                    var data = $(targetConnSet[i].canvas).data("data");
-                    data.properties.to = elementProperty.id;
-                    if (data['xpdlObj'] !== undefined) { //start node is source, xpdl object is undefined
-                        data['xpdlObj']['-To'] = elementProperty.id;
-                    }
-                    ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
-                    transition.push(data);
-                }
-                
-                $(element).attr("id", elementProperty.id);
-                
-                for (var i in transition) {
-                    var data = transition[i];
-                    var childComponent = self.parseDataToComponent(data);
-                    var temp = $('<div></div>');
-                    $(element).closest(".process").append(temp);
-                    self.renderElement(data, temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
-                }
-                
-                // bind event handling to new or moved connections
-                ProcessBuilder.jsPlumb.bind("connection", function(info) {
-                    var connection = info.connection;
-                    ProcessBuilder.addConnection(connection);
-                });
+        if (elementProperty.id !== $(element).attr("id") && elementObj.className !== "process") {
+            var self = CustomBuilder.Builder;
 
-                // bind event handling to detached connections
-                ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
-                    var connection = info.connection;
-                    if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
-                        ProcessBuilder.showConnectionDialog(connection);
-                    } else {
-                        ProcessBuilder.removeConnection(connection);
-                    }
-                });
+            ProcessBuilder.jsPlumb.unbind("connection");
+            ProcessBuilder.jsPlumb.unbind("connectionDetached");
+            ProcessBuilder.jsPlumb.unbind();
+
+            // update transition
+            var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(element)});
+            var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(element)});
+            var transition = [];
+
+            for (var i in sourceConnSet) {
+                var data = $(sourceConnSet[i].canvas).data("data");
+                data.properties.from = elementProperty.id;
+                if (data['xpdlObj'] !== undefined) { //end node is target, xpdl object is undefined
+                    data['xpdlObj']['-From'] = elementProperty.id;
+                }
+                ProcessBuilder.jsPlumb.detach(sourceConnSet[i]);
+                transition.push(data);
             }
+            for (var i in targetConnSet) {
+                var data = $(targetConnSet[i].canvas).data("data");
+                data.properties.to = elementProperty.id;
+                if (data['xpdlObj'] !== undefined) { //start node is source, xpdl object is undefined
+                    data['xpdlObj']['-To'] = elementProperty.id;
+                }
+                ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
+                transition.push(data);
+            }
+
+            $(element).attr("id", elementProperty.id);
+
+            for (var i in transition) {
+                var data = transition[i];
+                var childComponent = self.parseDataToComponent(data);
+                var temp = $('<div></div>');
+                $(element).closest(".process").append(temp);
+                self.renderElement(data, temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
+            }
+
+            // bind event handling to new or moved connections
+            ProcessBuilder.jsPlumb.bind("connection", function(info) {
+                var connection = info.connection;
+                ProcessBuilder.addConnection(connection);
+            });
+
+            // bind event handling to detached connections
+            ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
+                var connection = info.connection;
+                if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
+                    ProcessBuilder.showConnectionDialog(connection);
+                } else {
+                    ProcessBuilder.removeConnection(connection);
+                }
+            });
         }
         
         if (elementObj.className === "transition") {

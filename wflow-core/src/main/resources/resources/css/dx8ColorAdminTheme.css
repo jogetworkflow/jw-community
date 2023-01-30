@@ -42,14 +42,13 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 }
 #sidebar .nav > li > a{
     font-size: 13px;
-    font-weight: 300;
+    font-weight: 500;
     line-height: 25px;
 }
 #sidebar .nav > li:not(.active) > a:hover,
 #sidebar .nav > li > ul > li > a:hover,
 #sidebar .nav > li > ul > li.active > a{
     background: var(--theme-sidebar-link-bg, transparent) !important; 
-    font-weight: 500;
 }
 #sidebar .nav > li.active > a,
 #sidebar .nav > li > ul > li.active > a{
@@ -363,10 +362,17 @@ footer{
 }
 
 body#login #page #content {
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.9));
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.2));
 }
 body#login #loginForm{
     background: transparent;
+    box-shadow: none;
+}
+#loginForm > div > h1 {
+    color: #fff;
+}
+body#login label {
+    color: #fff;
 }
 #loginForm table{
     width: 350px;

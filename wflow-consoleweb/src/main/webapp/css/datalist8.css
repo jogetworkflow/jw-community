@@ -19,6 +19,9 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
+.dataList td {
+    vertical-align: top;
+}
 .dataList tbody tr:first-child td{
     border-top: 0px;
 }
@@ -286,7 +289,8 @@ body.rtl .dataList span.pagelinks{
     text-align: center;
 }
 .dataList .rowaction_body a:not(.stretched-link),
-.dataList a.rowaction_body:not(.stretched-link) {
+.dataList a.rowaction_body:not(.stretched-link),
+.dataList .column_body a {
     z-index: 2;
     position: relative;
 }

@@ -16,6 +16,16 @@
         value : '@@org.joget.apps.form.lib.CheckBox.pluginLabel@@'
     },
     {
+        name : 'fullWidth',
+        label : '@@form.radio.fullWidth@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'options',
         label : '@@form.checkbox.options@@',
         type : 'grid',

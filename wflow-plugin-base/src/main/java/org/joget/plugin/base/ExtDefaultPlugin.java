@@ -9,7 +9,7 @@ import org.joget.plugin.property.service.PropertyUtil;
  * 
  */
 public abstract class ExtDefaultPlugin extends DefaultPlugin {
-    private Map<String, Object> properties;
+    protected Map<String, Object> properties;
     
     /**
      * Get plugin properties.

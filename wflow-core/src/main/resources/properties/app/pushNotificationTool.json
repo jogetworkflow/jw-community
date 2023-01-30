@@ -1,0 +1,33 @@
+[{
+    "title" : "@@pushNotificationTool.configure@@",
+    "properties" : [{
+        "name" : "toSpecific",
+        "label" : "@@pushNotificationTool.to@@",
+        "type" : "textfield",
+        "description" : "@@pushNotificationTool.to.desc@@"
+    },
+    {
+        "name" : "toParticipantId",
+        "label" : "@@app.emailtool.toPid@@",
+        "type" : "textfield"
+    },
+    {
+        "name" : "url",
+        "label" : "@@app.usernotificationaudittrail.url@@",
+        "type" : "textfield",
+        "description" : "@@pushNotificationTool.url.desc@@",
+        "required" : "true"
+    },
+    {
+        "name" : "subject",
+        "label" : "@@app.emailtool.subject@@",
+        "type" : "textfield"
+    },
+    {
+        "name" : "message",
+        "label" : "@@app.emailtool.message@@",
+        "type" : "textarea",
+        "cols" : "60",
+        "rows" : "15"
+    }]
+}]

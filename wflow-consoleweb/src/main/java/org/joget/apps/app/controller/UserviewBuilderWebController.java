@@ -170,11 +170,14 @@ public class UserviewBuilderWebController {
         
         UserviewDefinition migratedUserview = userviewService.combinedUserviewDefinition(userview);
         
-        json = userviewService.saveUserviewPages(PropertyUtil.propertiesJsonStoreProcessing(migratedUserview.getJson(), json), userviewId, appDef);
+        String processedJson = PropertyUtil.propertiesJsonStoreProcessing(migratedUserview.getJson(), json);
+        
+        json = userviewService.saveUserviewPages(processedJson, userviewId, appDef);
         userview.setJson(json);
 
         boolean success = userviewDefinitionDao.update(userview);
-        jsonObject.accumulate("success", success);
+        jsonObject.put("success", success);
+        jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(processedJson));
 
         jsonObject.write(writer);
         return null;

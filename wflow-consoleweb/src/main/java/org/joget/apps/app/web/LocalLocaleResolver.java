@@ -18,6 +18,7 @@ import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.i18n.LocaleContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import static org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME;
@@ -360,4 +361,31 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         return setupManager;
     }
     
+    /**
+     * Remove all cache in request & session attribute and reset the default locale & timezone.
+     * Used when general setting saved
+     */
+    public void reset(HttpServletRequest request) {
+        LocaleContextHolder.resetLocaleContext();
+        setDefaultLocale(null);
+        setDefaultTimeZone(null);
+        
+        //remove locale & timezone related request & session attribute used by locale resolver
+        request.removeAttribute(LocalLocaleResolver.SYSTEM_TIMEZONE);
+        request.removeAttribute(LocalLocaleResolver.DEFAULT_LOCALE_KEY);
+        request.removeAttribute(LocalLocaleResolver.CURRENT_LOCALE_KEY);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.SYSTEM_TIMEZONE, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.TIMEZONE_OF_USER, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.SYSTEM_TIMEZONE_EXPIRY_KEY, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.DEFAULT_LOCALE_KEY, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.CURRENT_LOCALE_KEY, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.DEFAULT_LOCALE_EXPIRY_KEY, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, null);
+        WebUtils.setSessionAttribute(request, LocalLocaleResolver.TIME_ZONE_SESSION_ATTRIBUTE_NAME, null);
+        
+        //Resolve the new default locale and timezone. 
+        LocaleContext localeContext = resolveLocaleContext(request);
+        LocaleContextHolder.setLocaleContext(localeContext, true);
+        resolveLocale(request);
+    }
 }
