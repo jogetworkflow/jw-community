@@ -40,6 +40,10 @@
         padding:0.25em;
         text-align:left;
     }
+
+    body.rtl .form-row label, body.rtl .form-row .form-input{
+        text-align: right;
+    }
 </style>
 <#if element.properties.isPreview! == 'true' >
     <script>
