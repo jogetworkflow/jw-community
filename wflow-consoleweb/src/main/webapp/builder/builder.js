@@ -1374,13 +1374,7 @@
      * Merge remote change and save
      */
     mergeAndSave: function(event) {
-        if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
-            CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
-                $("#save-btn").attr("disabled", "disabled");
-                $("body").addClass("no-right-panel");
-                CustomBuilder.merge(CustomBuilder.save);
-            });
-        } else if ($("body").hasClass("properties-builder-view")) {
+        if ($("body").hasClass("properties-builder-view")) {
             var editor = $("#propertiesView .builder-view-body").data("editor");
             if (editor !== undefined && editor.isChange()) {
                 if (editor.options.orgSaveCallback === undefined || editor.options.orgSaveCallback === null) {
@@ -1398,6 +1392,12 @@
                 $("#save-btn").attr("disabled", "disabled");
                 CustomBuilder.merge(CustomBuilder.save);
             }
+        } else if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
+            CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
+                $("#save-btn").attr("disabled", "disabled");
+                $("body").addClass("no-right-panel");
+                CustomBuilder.merge(CustomBuilder.save);
+            });
         } else {
             $("#save-btn").attr("disabled", "disabled");
             CustomBuilder.merge(CustomBuilder.save);
