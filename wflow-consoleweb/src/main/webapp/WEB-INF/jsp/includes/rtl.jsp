@@ -15,12 +15,9 @@
                 $("body").addClass("rtl");
                 $(".row-content").append("<div style=\"clear:both\"></div>");
 
-                if( window.self !== window.parent ) {
+                if( window.self !== window.parent) {
                     window.parent.UI.rtl = true;
                     $(window.parent.document).find('body').addClass("rtl");
-                    if ($(window.parent.document).find('link#rtlcss').length === 0) {
-                        $(window.parent.document).find('head').append('<link id="rtlcss" rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css?build=<fmt:message key="build.number"/>">');
-                    }
                 }
             });
         </script>
@@ -31,7 +28,6 @@
                 if( window.self !== window.parent ) {
                     window.parent.UI.rtl = false;
                     $(window.parent.document).find('body').removeClass("rtl");
-                    $(window.parent.document).find('link#rtlcss').remove();
                 }
             });
         </script>
