@@ -97,6 +97,35 @@
     width:60vw;
     padding: 15px !important;
 }
+.filter-cell{
+    vertical-align: bottom;
+    position: relative;
+}
+.dataList .filter-cell .close-icon:after{ 
+    right: 20px !important;
+    top: 21px !important;
+}
+body .filter-cell input.hasDatepicker {
+    padding-right: 40px;
+}
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 40px;
+    padding-right: auto;
+}
+body .filter-cell .hasDatepicker + a{
+    right: 2px;
+}
+body .filter-cell .hasDatepicker + a + a{
+    right: 22px;
+}
+body.rtl .filter-cell .hasDatepicker + a{
+    right: unset;
+    left: 2px;
+}
+body.rtl .filter-cell .hasDatepicker + a + a{
+    right: unset;
+    left: 22px;
+}
 .search_filter_popup .filter-cell{
     margin-bottom: 10px;
     display: block;

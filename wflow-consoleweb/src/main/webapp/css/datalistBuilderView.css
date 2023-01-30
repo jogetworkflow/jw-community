@@ -155,6 +155,11 @@
 }
 .dataList .filter-cell{
     vertical-align: bottom;
+    position: relative;
+}
+.dataList .filter-cell .close-icon:after{ 
+    right: 20px !important;
+    top: 21px !important;
 }
 .dataList .filter-cell.hidden-filter,
 .search_filter_popup .filter-cell.hidden-filter{

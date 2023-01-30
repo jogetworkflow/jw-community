@@ -492,10 +492,10 @@ body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker +
     margin-right: -21px;
 }
 body .filter-cell input.hasDatepicker {
-    padding-right: 25px;
+    padding-right: 40px;
 }
 body.rtl .filter-cell input.hasDatepicker {
-    padding-left: 25px;
+    padding-left: 40px;
     padding-right: auto;
 }
 

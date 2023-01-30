@@ -636,16 +636,21 @@ body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker +
     margin-right: -21px;
 }
 body .filter-cell input.hasDatepicker {
-    padding-right: 25px;
+    padding-right: 40px;
 }
 body.rtl .filter-cell input.hasDatepicker {
-    padding-left: 25px;
+    padding-left: 40px;
     padding-right: auto;
 }
 body .hasDatepicker + a + .close-icon, body .hasDatepicker + img + .close-icon{
     position: relative;
     top: -3px;
     left: 15px;
+}
+body .dataList .filter-cell .close-icon:after{
+    right: 34px !important;
+    top: 11px !important;
+
 }
 body .ui-timepicker-div .ui_tpicker_time .ui_tpicker_time_input{
     float:none;

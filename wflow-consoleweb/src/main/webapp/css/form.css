@@ -325,17 +325,17 @@ span.tablesaw-cell-content {
 /* date picker */
 .close-icon:after {
     content: "x";
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     position: absolute;
     text-align: center;
-    line-height: 15px;
+    line-height: 14px;
     margin-left: 10px;
     top: 10px;
     background-color: #FA9595;
     border-radius: 50%;
     color: white;
-    font-size: 15px;
+    font-size: 12px;
     box-shadow: 0 0 2px #E50F0F;
     cursor: pointer;
 }
