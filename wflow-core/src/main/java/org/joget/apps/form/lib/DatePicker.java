@@ -86,6 +86,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         
         dataModel.put("locale", getLocale());
         dataModel.put("isBE", isBE());
+        dataModel.put("isRTL", AppUtil.isRTL());
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

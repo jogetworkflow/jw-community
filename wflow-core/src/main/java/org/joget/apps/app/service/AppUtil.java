@@ -336,6 +336,14 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     /**
+     * Check it is in RTL mode
+     * @return Locale code
+     */
+    public static boolean isRTL() {
+        return "true".equalsIgnoreCase(WorkflowUtil.getSystemSetupValue("rightToLeft")) || getAppLocale().startsWith("ar");
+    }
+    
+    /**
      * Read firstDayifWeek from locale
      * @return fdow
      */

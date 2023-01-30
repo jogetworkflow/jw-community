@@ -48,6 +48,9 @@
                         ,isBE: true
                         ,autoConversionField: false
                         </#if>
+                        <#if isRTL!>
+                            ,isRTL: true
+                        </#if>
         });
     });
 </script>
