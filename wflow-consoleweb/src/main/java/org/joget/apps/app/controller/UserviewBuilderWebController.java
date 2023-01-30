@@ -432,7 +432,7 @@ public class UserviewBuilderWebController {
 
         try {
             JSONObject jObj = new JSONObject(tempJson);
-            UniversalTheme theme = (UniversalTheme) pluginManager.getPlugin(jObj.getString("className"));
+            UserviewV5Theme theme = (UserviewV5Theme) pluginManager.getPlugin(jObj.getString("className"));
             
             if (theme != null && theme instanceof SupportBuilderColorConfig) {
                 theme.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
