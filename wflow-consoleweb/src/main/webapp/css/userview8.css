@@ -153,6 +153,9 @@ header.navbar .dropdown-menu a span.header, header.navbar .dropdown-menu a span.
     overflow-wrap: break-word;
     white-space: normal;
 }
+body.rtl header.navbar .dropdown-menu a span.header, body.rtl header.navbar .dropdown-menu a span.message{
+    padding-right: unset;
+}
 body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.header, body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.message{
     padding-right: unset;
 }
@@ -784,6 +787,10 @@ body.horizontal_menu #header-info{
     }
     body.horizontal_menu header.navbar #header-message{
         padding-left: 25px; 
+    }
+    body.rtl.horizontal_menu header.navbar #header-message{
+        padding-right: 25px;
+        padding-left: unset; 
     }
     body.horizontal_menu.inline_menu #sidebar {
         width: auto;
