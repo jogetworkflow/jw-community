@@ -254,6 +254,10 @@ body.rtl .nv-link {
     margin-left: 10px;
 }
 
+body.rtl .chosen-rtl.chosen-container:not(.chosen-with-drop) .chosen-drop{
+    display:none;
+}
+
 @media screen and (max-width:680px) {
     body.rtl #header-links {
         right: auto;
