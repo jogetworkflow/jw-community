@@ -54,6 +54,14 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         Element element = cache.get(cacheKey, appDefinition);
         if (element == null) {
             messageMap = new HashMap<String, Message>();
+            
+            if (!"en_US".equals(locale)) {
+                Map<String, Message> enResults = getCachedMessageList("en_US", appDefinition);
+                if (!enResults.isEmpty()) {
+                    messageMap.putAll(enResults);
+                }
+            }
+            
             Collection<Message> results = getMessageList(null, locale, appDefinition, null, null, null, null);
             for (Message message : results) {
                 messageMap.put(message.getMessageKey(), message);
