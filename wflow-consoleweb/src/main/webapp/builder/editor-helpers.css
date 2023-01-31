@@ -104,16 +104,12 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
     overflow: hidden;
     display: flex;
     align-items: center;}
-body [data-cbuilder-missing-plugin]::after {
-    background-color: #ffd6d6 !important;
-    border: 1px dashed #f00 !important;
-    color:#f00 !important;
-}
 body [data-cbuilder-invisible],
 body [data-cbuilder-element-invisible]{
     min-height: 35px;
     position: relative;
 }
+body [data-cbuilder-missing-plugin]::after,
 body [data-cbuilder-element-invisible]::after,
 body [data-cbuilder-invisible]::after,
 body [data-cbuilder-desktop-invisible]::after,
@@ -144,6 +140,11 @@ body [data-cbuilder-invisible][data-cbuilder-label]::after{
     content: attr(data-cbuilder-label);
     justify-content: left; 
     padding-left: 15px;
+}
+body [data-cbuilder-missing-plugin]::after {
+    background-color: #ffd6d6 !important;
+    border: 1px dashed #f00 !important;
+    color:#f00 !important;
 }
 body.show-node-details [data-cbuilder-element-invisible]::after,
 body.show-node-details [data-cbuilder-invisible]::after,

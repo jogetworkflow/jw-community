@@ -3927,6 +3927,12 @@ _CustomBuilder.Builder = {
             try {
                 var box = self.getBox(node);
                 $("#element-parent-box").hide();
+                
+                $("#element-select-box").removeClass("missing_component");
+                if ($(node).is("[data-cbuilder-missing-plugin]")) {
+                    $("#element-select-box").addClass("missing_component");
+                } 
+                
                 $("#element-select-box").css(
                     {
                         "top": box.top - self.frameDoc.scrollTop(),
@@ -4724,6 +4730,8 @@ _CustomBuilder.Builder = {
         if ($(target).length > 0 && !$(target).is(self.frameBody) && !$(target).is('[data-cbuilder-uneditable]')) {
             var box = self.getBox(target);
             
+            $("#element-highlight-box").removeClass("missing_component");
+            
             $("#element-highlight-box").css(
                     {"top": box.top - self.frameDoc.scrollTop(),
                         "left": box.left - self.frameDoc.scrollLeft(),
@@ -4732,6 +4740,10 @@ _CustomBuilder.Builder = {
                         "display": event.target.hasAttribute('contenteditable') ? "none" : "block",
                         "border": self.isDragging ? "1px dashed aqua" : "", //when dragging highlight parent with green
                     });
+                    
+            if ($(target).is("[data-cbuilder-missing-plugin]")) {
+                $("#element-highlight-box").addClass("missing_component");
+            }        
 
             var nameOffset = $("#element-highlight-box").offset();
             if (nameOffset.top <= 76) {

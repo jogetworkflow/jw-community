@@ -505,6 +505,12 @@ body.right-panel-resizing #right-panel-resize-block{
     top: 0px;
     left: 0px;
     display: none; }
+#cbuilder #element-select-box.missing_component{
+    border: 1px solid #f00;
+}
+#cbuilder #element-highlight-box.missing_component {
+    border: 1px solid #ff7373;
+}
 #cbuilder #wysiwyg-editor {
     position: absolute;
     right: -1px;
@@ -650,6 +656,12 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #element-parent-name{
     background: #08565c;
+}
+#cbuilder .missing_component #element-highlight-name{
+    background: #ff7373;
+}
+#cbuilder .missing_component #element-select-name {
+    background: #f00;
 }
 #cbuilder .nav-tabs .nav-item:first-child .nav-link {
     border-left: none; 
