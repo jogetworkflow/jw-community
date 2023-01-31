@@ -8565,20 +8565,26 @@ PropertyEditor.Type.HtmlEditor.prototype = {
     shortname: "htmleditor",
     getData: function(useDefault) {
         var data = new Object();
-        var value = "";
-        if ($('[name=' + this.id + ']:not(.hidden)').length > 0) {
-            value = tinymce.get($('[name=' + this.id + ']:not(.hidden)').attr('id')).getContent();
-        }
-        if (value === undefined || value === null || value === "") {
-            if (useDefault !== undefined && useDefault &&
-                this.defaultValue !== undefined && this.defaultValue !== null) {
-                value = this.defaultValue;
+        
+        if (this.isDataReady) {
+            var value = "";
+            if ($('[name=' + this.id + ']:not(.hidden)').length > 0) {
+                value = tinymce.get($('[name=' + this.id + ']:not(.hidden)').attr('id')).getContent();
             }
+            if (value === undefined || value === null || value === "") {
+                if (useDefault !== undefined && useDefault &&
+                    this.defaultValue !== undefined && this.defaultValue !== null) {
+                    value = this.defaultValue;
+                }
+            }
+            data[this.properties.name] = value;
+        } else {
+            data[this.properties.name] = this.value;
         }
-        data[this.properties.name] = value;
         return data;
     },
     renderField: function() {
+        this.isDataReady = false;
         var rows = ' rows="15"';
         if (this.properties.rows !== undefined && this.properties.rows !== null) {
             rows = ' rows="' + this.properties.rows + '"';
@@ -8621,6 +8627,10 @@ PropertyEditor.Type.HtmlEditor.prototype = {
                     $(thisObj.editor).find(".property-description").hide();
                     var property = $("#" + e.target.id).parentsUntil(".property-editor-property-container", ".property-editor-property");
                     $(property).find(".property-description").show();
+                });
+                editor.off('SetContent');
+                editor.on('SetContent', function(e){
+                    thisObj.isDataReady = true;
                 });
             }
         });
