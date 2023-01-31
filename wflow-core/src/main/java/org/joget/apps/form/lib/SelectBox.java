@@ -319,25 +319,27 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             throw new ApiException(HttpServletResponse.SC_BAD_REQUEST, "Element [" + fieldId + "] is not found in form [" + formDefId + "]");
 
         FormUtil.executeOptionBinders(element, formData);
-        List<FormRow> optionsRowSet = new ArrayList<>(FormUtil.getElementPropertyOptionsMap(element, formData));
+        final List<FormRow> optionsRowSet = new ArrayList<>(FormUtil.getElementPropertyOptionsMap(element, formData));
         if (values.length > 0) {
+            boolean found = false;
             for (FormRow row : optionsRowSet) {
-                boolean found = false;
                 for (String value : values) {
-                    if (found = value.equals(row.getProperty(FormUtil.PROPERTY_VALUE))) {
-                        break;
+                    found = value.equals(row.getProperty(FormUtil.PROPERTY_VALUE));
+                    if (found) {
+                        try {
+                            JSONObject jsonRow = new JSONObject();
+                            jsonRow.put("id", row.getProperty(FormUtil.PROPERTY_VALUE));
+                            jsonRow.put("text", row.getProperty(FormUtil.PROPERTY_LABEL));
+                            jsonResults.put(jsonRow);
+
+                            break;
+                        } catch (JSONException ignored) {
+                        }
                     }
                 }
 
-                if (found) {
-                    try {
-                        JSONObject jsonRow = new JSONObject();
-                        jsonRow.put("id", row.getProperty(FormUtil.PROPERTY_VALUE));
-                        jsonRow.put("text", row.getProperty(FormUtil.PROPERTY_LABEL));
-                        jsonResults.put(jsonRow);
-                    } catch (JSONException ignored) {
-                    }
-                }
+                if(found)
+                    break;
             }
         } else {
             int skip = (int) ((page - 1) * PAGE_SIZE);
@@ -362,21 +364,21 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                     }
                 }
             }
+        }
 
-            try {
-                JSONObject jsonPagination = new JSONObject();
-                jsonPagination.put("more", jsonResults.length() >= PAGE_SIZE);
+        try {
+            JSONObject jsonPagination = new JSONObject();
+            jsonPagination.put("more", jsonResults.length() >= PAGE_SIZE);
 
-                JSONObject jsonData = new JSONObject();
-                jsonData.put("results", jsonResults);
-                jsonData.put("pagination", jsonPagination);
-                jsonData.put("page", page);
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("results", jsonResults);
+            jsonData.put("pagination", jsonPagination);
+            jsonData.put("page", page);
 
-                response.setContentType("application/json");
-                response.getWriter().write(jsonData.toString());
-            } catch (JSONException | IOException e) {
-                throw new ApiException(HttpServletResponse.SC_BAD_REQUEST, e);
-            }
+            response.setContentType("application/json");
+            response.getWriter().write(jsonData.toString());
+        } catch (JSONException | IOException e) {
+            throw new ApiException(HttpServletResponse.SC_BAD_REQUEST, e);
         }
     }
 
