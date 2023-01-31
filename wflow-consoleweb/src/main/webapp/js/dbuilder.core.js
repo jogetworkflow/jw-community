@@ -875,6 +875,13 @@ DatalistBuilder = {
                         }
                         return dragElement;
                     },
+                    'afterMoved' : function(element, elementObj, component) {
+                        var syncElements = $(element).data("syncElements");
+                        if ($(element).parent().is("[data-placeholder-key]") 
+                                && syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
+                            DatalistBuilder.syncElements(element, elementObj, component, syncElements);
+                        }
+                    },
                     'customPropertiesData' : function(props, elementObj, component) {
                         if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
                             props.datalist_type = 'filter';
@@ -1093,6 +1100,13 @@ DatalistBuilder = {
                                     CustomBuilder.Builder.frameBody.find("[data-cbuilder-dragSubElement]").remove();
                                 }
                                 return dragElement;
+                            },
+                            'afterMoved' : function(element, elementObj, component) {
+                                var syncElements = $(element).data("syncElements");
+                                if ($(element).parent().is("[data-placeholder-key]") 
+                                        && syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
+                                    DatalistBuilder.syncElements(element, elementObj, component, syncElements);
+                                }
                             },
                             'customPropertiesData' : function(props, elementObj, component) {
                                 if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
@@ -1362,6 +1376,41 @@ DatalistBuilder = {
         DatalistBuilder.adjustTableOverlaySize($(dragElement).closest(".dataList"));
         
         return dragElement;
+    },
+    
+    /**
+     * Sync the table body cells after moving column using left right button
+     */
+    syncElements : function(element, elementObj, component, syncElements) {
+        var key = $(element).parent().attr('data-placeholder-key');
+        if (CustomBuilder.Builder.frameBody.find(".dataList [data-placeholder-key=\""+key+"\"][data-cbuilder-sync]").length > 0) {
+            var index = $(element).parent().find("> *").index($(element));
+            
+            //move to the index
+            for (var i in syncElements) {
+                var cIndex = $(syncElements[i]).parent().find('> *').index($(syncElements[i]));
+                if (index === 0) {
+                    $(syncElements[i]).parent().prepend(syncElements[i]);
+                } else if (cIndex < index) {
+                    $(syncElements[i]).parent().find('> *:eq('+(index)+')').after(syncElements[i]);
+                } else {
+                    $(syncElements[i]).parent().find('> *:eq('+(index-1)+')').after(syncElements[i]);
+                }
+
+                if (key.indexOf("rowAction") === 0) {
+                    var width = $(element).width();
+                    var synceWidth = $(element[i]).width();
+                    if (synceWidth > width) {
+                        $(element).width(synceWidth);
+                    } else {
+                        $(syncElements[i]).width(width);
+                    }
+                }
+                DatalistBuilder.updateStyle(syncElements[i], elementObj, component, $(element).parent());
+            }
+            
+            DatalistBuilder.adjustTableOverlaySize($(element).closest(".dataList"));
+        }
     },
     
     /*
