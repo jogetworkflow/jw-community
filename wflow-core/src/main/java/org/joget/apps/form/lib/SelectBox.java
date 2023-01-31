@@ -14,7 +14,6 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.plugin.property.model.PropertyEditable;
-import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -184,7 +183,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             dataModel.put("appVersion", appDefinition.getVersion());
 
             final String fieldId = getPropertyString(FormUtil.PROPERTY_ID);
-            final String nonce = SecurityUtil.generateNonce(new String[]{getName(), appId, appVersion, formDefId, fieldId}, 1);
+            final String nonce = generateNonce(appId, appVersion, formDefId, fieldId);
             dataModel.put("nonce", nonce);
         }
 
@@ -306,7 +305,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         final String appId = appDefinition.getAppId();
         final String appVersion = appDefinition.getVersion().toString();
 
-        if(!SecurityUtil.verifyNonce(nonce, new String[]{getName(), appId, appVersion, formDefId, fieldId})) {
+        if(!verifyNonce(nonce, appId, appVersion, formDefId, fieldId)) {
             throw new ApiException(HttpServletResponse.SC_UNAUTHORIZED, "Invalid nonce token");
         }
 
@@ -371,6 +370,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                 JSONObject jsonData = new JSONObject();
                 jsonData.put("results", jsonResults);
                 jsonData.put("pagination", jsonPagination);
+                jsonData.put("page", page);
 
                 response.setContentType("application/json");
                 response.getWriter().write(jsonData.toString());
@@ -457,6 +457,14 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
             }
         }
         return null;
+    }
+
+    protected String generateNonce(String appId, String appVersion, String formDefId, String fieldId) {
+        return SecurityUtil.generateNonce(new String[]{getName(), appId, appVersion, formDefId, fieldId}, 1);
+    }
+
+    protected boolean verifyNonce(String nonce, String appId, String appVersion, String formDefId, String fieldId) {
+        return SecurityUtil.verifyNonce(nonce, new String[]{getName(), appId, appVersion, formDefId, fieldId});
     }
 }
 
