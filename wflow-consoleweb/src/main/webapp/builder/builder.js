@@ -903,9 +903,13 @@
     /*
      * Add palette category to tab
      */
-    createPaletteCategory : function(category, tab) {
+    createPaletteCategory : function(category, tab, cssClass) {
         if (tab === undefined || tab === "") {
             tab = "components";
+        }
+        
+        if (cssClass === undefined || cssClass === null) {
+            cssClass = "";
         }
         
         var categoryId = "default";
@@ -919,7 +923,7 @@
         }
         var list = $("#"+tab + " .components-list");
         if ($('#'+ tab + '_comphead_' + categoryId + '_list').length === 0) {
-            list.append('<li class="header clearfix" data-section="' + tab + '-' + categoryId + '"  data-search=""><label class="header" for="' + tab + '_comphead_' + categoryId + '">' + category + '  <div class="la la-angle-down header-arrow"></div>\
+            list.append('<li class="header clearfix '+cssClass+'" data-section="' + tab + '-' + categoryId + '"  data-search=""><label class="header" for="' + tab + '_comphead_' + categoryId + '">' + category + '  <div class="la la-angle-down header-arrow"></div>\
                             </label><input class="header_check" type="checkbox" checked="true" id="' + tab + '_comphead_' + categoryId + '">  <ol id="' + tab + '_comphead_' + categoryId + '_list"></ol></li>');
         }
         return categoryId;

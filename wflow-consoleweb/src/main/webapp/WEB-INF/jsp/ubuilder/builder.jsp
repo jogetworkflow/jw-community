@@ -26,7 +26,7 @@
         <c:forEach items="${categories}" var="category">
             CustomBuilder.createPaletteCategory('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>');
         </c:forEach>
-        CustomBuilder.createPaletteCategory('<ui:msgEscJS key="ubuilder.pageComponents"/>');    
+        CustomBuilder.createPaletteCategory('<ui:msgEscJS key="ubuilder.pageComponents"/>', "", "page_components_palette");    
         <c:forEach items="${pageComponent}" var="element">
             <c:set var="category" value=""/>
             <c:set var="pwaValidation" value=""/>

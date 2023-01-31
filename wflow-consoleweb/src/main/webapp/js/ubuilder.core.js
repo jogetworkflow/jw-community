@@ -676,7 +676,7 @@ UserviewBuilder = {
             UserviewBuilder.loadContentPage();
         } else {
             $(".components-list > li").show();
-            $("[data-section='components-Page-Components']").hide();
+            $("[data-section].page_components_palette").hide();
             
             if(data.properties === null || data.properties === undefined){
                 data = UserviewBuilder.initDefaultUserviewDataModel();
@@ -727,7 +727,7 @@ UserviewBuilder = {
         $("#save-content-btn").removeClass("hasChange");
         
         $(".components-list > li").hide();
-        $("[data-section='components-Page-Components']").show();
+        $("[data-section].page_components_palette").show();
         
         var menu = UserviewBuilder.selectedMenu;
         if (menu.referencePage === undefined) {
