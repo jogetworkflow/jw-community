@@ -128,18 +128,6 @@ DatalistBuilder = {
         deferreds.push(wait);
         
         if(mode === DatalistBuilder.UPDATE){
-            //reset all fields
-            CustomBuilder.data.filters = new Array();
-            CustomBuilder.data.columns = new Array();
-            CustomBuilder.data.actions = new Array();
-            CustomBuilder.data.rowActions = new Array();
-            DatalistBuilder.columnIndexCounter = 0;
-            DatalistBuilder.rowActionIndexCounter = 0;
-            DatalistBuilder.filterIndexCounter = 0;
-            DatalistBuilder.actionIndexCounter = 0;
-            
-            CustomBuilder.data['orderBy'] = "";
-            CustomBuilder.data['order'] = "";
             if (CustomBuilder.data['pageSizeSelectorOptions'] === undefined) {
                 CustomBuilder.data['pageSizeSelectorOptions'] = "10,20,30,40,50,100";
             }
@@ -148,9 +136,6 @@ DatalistBuilder = {
         wait.resolve();
         
         $.when.apply($, deferreds).then(function() {
-            if (DatalistBuilder.availableColumns !== null) {
-                CustomBuilder.update();
-            }
             DatalistBuilder.load(CustomBuilder.data);
         });
     },
@@ -798,6 +783,13 @@ DatalistBuilder = {
     retrieveColumnsCallback : function(data, deferrer) {
         CustomBuilder.clearPaletteCategory(get_cbuilder_msg('dbuilder.columnsFilters'));
         
+        //clear missing columns
+        for (var i in CustomBuilder.paletteElements) {
+            if (CustomBuilder.paletteElements[i].isMissingColumn !== undefined) {
+                delete CustomBuilder.paletteElements[i];
+            }
+        }
+        
         DatalistBuilder.sampleData = data.sample;
         
         var columns = data.columns;
@@ -814,138 +806,45 @@ DatalistBuilder = {
             }
             fields[temp.id] = temp;
             
-            var cssClass = "";
-            if (column.name === column.label) {
-                cssClass = " key";
-            }
-            var meta = {
-                filterable : column.filterable,
-                builderTemplate : {
-                    'getParentContainerAttr' : function(elementObj, component) {
-                        if (elementObj === undefined || elementObj === null) {
-                            if (component.filterable) {
-                                return "columns_filters";
-                            } else {
-                                return "columns";
-                            }
-                        } else if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
-                            return "filters";
-                        } else {
-                            return "columns";
-                        }
-                    },
-                    'getParentDataHolder' : function(elementObj, component) {
-                        var self = CustomBuilder.Builder;
-                        var parent = null;
-                        if (self.dragElement) {
-                            parent = self.dragElement.parent();
-                        } else if (self.selectedEl) {
-                            parent = self.selectedEl.parent();
-                        }
-                        if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('column_') === 0) {
-                            return $(parent).attr('data-placeholder-key');
-                        } else {
-                            if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
-                                return "filters";
-                            } else {
-                                return "columns";
-                            }
-                        }
-                    },
-                    'getLabel' : function(elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
-                            var className = "org.joget.apps.datalist.lib.TextFieldDataListFilterType";
-                            if (elementObj.type !== undefined && elementObj.type.className !== undefined && elementObj.type.className !== "") {
-                                className = elementObj.type.className;
-                            }
-                            return DatalistBuilder.availableFilters[className];
-                        } else {
-                            return elementObj.name;
-                        }
-                    },
-                    'dragging' : function(dragElement, component) {
-                        if ($(dragElement).parent().is("[data-placeholder-key]")) {
-                            dragElement = DatalistBuilder.draggingElement(dragElement, component);
-                        } else if (!$(dragElement).is("span.filter-cell")) { //is filter
-                            var replace = $('<span class="filter-cell "><input type="text" size="10" placeholder="'+UI.escapeHTML(component.label)+'"/></span></div>');
-                            dragElement.replaceWith(replace);
-                            dragElement = replace;
-                            
-                            CustomBuilder.Builder.frameBody.find("[data-cbuilder-dragSubElement]").remove();
-                        }
-                        return dragElement;
-                    },
-                    'afterMoved' : function(element, elementObj, component) {
-                        var syncElements = $(element).data("syncElements");
-                        if ($(element).parent().is("[data-placeholder-key]") 
-                                && syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
-                            DatalistBuilder.syncElements(element, elementObj, component, syncElements);
-                        }
-                    },
-                    'customPropertiesData' : function(props, elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
-                            props.datalist_type = 'filter';
-                        } else {
-                            props.datalist_type = 'column';
-                        }
-                        return props;
-                    },
-                    'customPropertyOptions' : function(elementOptions, element, elementObj, paletteElement) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
-                            return DatalistBuilder.getFilterPropertiesDefinition();
-                        } else {
-                            return DatalistBuilder.getColumnPropertiesDefinition();
-                        }
-                    },
-                    'getStylePropertiesDefinition' : function(elementObj, component) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
-                            return component.builderTemplate.stylePropertiesDefinition;
-                        } else {
-                            return DatalistBuilder.getElementStylePropertiesDefinition(elementObj, component);
-                        }
-                    },
-                    'isPastable' : function(elementObj, component){
-                        var copied = CustomBuilder.getCopiedElement();
-                        if (copied !== null && copied !== undefined) {
-                            return true;
-                        }
-                        return false;
-                    },
-                    'renderPermission' : function(row, elementObj, permissionObj, key, level) {
-                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
-                            PermissionManager.renderElementDefault(elementObj, row, permissionObj, key, level);
-                        } else {
-                            DatalistBuilder.renderColumnPermission(elementObj, row, permissionObj, key, level);
-                        }
-                    },
-                    'navigable' : false,
-                    'dragHtml' : '<span></span>'
-                }
-            };
-        
-            //populate palette
-            CustomBuilder.initPaletteElement(get_cbuilder_msg('dbuilder.columnsFilters'), temp.name, temp.displayLabel, '<i class="far fa-hdd"></i>', {}, {}, true, cssClass, meta);
+            DatalistBuilder.initColumn(column, false);
         }
         DatalistBuilder.availableColumns = fields;
         
         var change = false;
         
-        //remove not exist columns and filters
+        //handle non exist columns and filters
+        var missingColumns = [];
         var i = CustomBuilder.data.filters.length;
         while (i--) {
             var filter = CustomBuilder.data.filters[i];
             if (DatalistBuilder.availableColumns[filter.name] === undefined) { 
-                CustomBuilder.data.filters.splice(i, 1);
-                change = true;
+                if ($.inArray(filter.name, missingColumns) === -1) {
+                    missingColumns.push(filter.name);
+                }
             } 
         }
         var i = CustomBuilder.data.columns.length;
         while (i--) {
             var column = CustomBuilder.data.columns[i];
             if (DatalistBuilder.availableColumns[column.name] === undefined) { 
-                CustomBuilder.data.columns.splice(i, 1);
-                change = true;
+                if ($.inArray(column.name, missingColumns) === -1) {
+                    missingColumns.push(column.name);
+                }
             } 
+        }
+        
+        if (missingColumns.length > 0) {
+            for(var e in missingColumns){
+                var column = {
+                    id : missingColumns[e],
+                    name : missingColumns[e],
+                    label : get_cbuilder_msg('cbuilder.missing') + " ("+missingColumns[e]+")",
+                    displayLabel : get_cbuilder_msg('cbuilder.missing') + " ("+missingColumns[e]+")",
+                    filterable : false
+                };
+
+                DatalistBuilder.initColumn(column, true);
+            }
         }
         
         //handle order by
@@ -961,6 +860,150 @@ DatalistBuilder = {
         }
         
         deferrer.resolve();
+    },
+    
+    initColumn: function(column, isMissing) {
+        var cssClass = "";
+        if (column.name === column.label) {
+            cssClass = " key";
+        }
+        var meta = {
+            filterable : column.filterable,
+            builderTemplate : {
+                'getParentContainerAttr' : function(elementObj, component) {
+                    if (elementObj === undefined || elementObj === null) {
+                        if (component.filterable) {
+                            return "columns_filters";
+                        } else {
+                            return "columns";
+                        }
+                    } else if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                        return "filters";
+                    } else {
+                        return "columns";
+                    }
+                },
+                'getParentDataHolder' : function(elementObj, component) {
+                    var self = CustomBuilder.Builder;
+                    var parent = null;
+                    if (self.dragElement) {
+                        parent = self.dragElement.parent();
+                    } else if (self.selectedEl) {
+                        parent = self.selectedEl.parent();
+                    }
+                    if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('column_') === 0) {
+                        return $(parent).attr('data-placeholder-key');
+                    } else {
+                        if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                            return "filters";
+                        } else {
+                            return "columns";
+                        }
+                    }
+                },
+                'getLabel' : function(elementObj, component) {
+                    if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                        var className = "org.joget.apps.datalist.lib.TextFieldDataListFilterType";
+                        if (elementObj.type !== undefined && elementObj.type.className !== undefined && elementObj.type.className !== "") {
+                            className = elementObj.type.className;
+                        }
+                        return DatalistBuilder.availableFilters[className];
+                    } else {
+                        return elementObj.name;
+                    }
+                },
+                'dragging' : function(dragElement, component) {
+                    if ($(dragElement).parent().is("[data-placeholder-key]")) {
+                        dragElement = DatalistBuilder.draggingElement(dragElement, component);
+                    } else if (!$(dragElement).is("span.filter-cell")) { //is filter
+                        var replace = $('<span class="filter-cell "><input type="text" size="10" placeholder="'+UI.escapeHTML(component.label)+'"/></span></div>');
+                        dragElement.replaceWith(replace);
+                        dragElement = replace;
+
+                        CustomBuilder.Builder.frameBody.find("[data-cbuilder-dragSubElement]").remove();
+                    }
+                    return dragElement;
+                },
+                'afterMoved' : function(element, elementObj, component) {
+                    var syncElements = $(element).data("syncElements");
+                    if ($(element).parent().is("[data-placeholder-key]") 
+                            && syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
+                        DatalistBuilder.syncElements(element, elementObj, component, syncElements);
+                    }
+                },
+                'customPropertiesData' : function(props, elementObj, component) {
+                    if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
+                        props.datalist_type = 'filter';
+                    } else {
+                        props.datalist_type = 'column';
+                    }
+                    return props;
+                },
+                'customPropertyOptions' : function(elementOptions, element, elementObj, paletteElement) {
+                    if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
+                        return DatalistBuilder.getFilterPropertiesDefinition();
+                    } else {
+                        return DatalistBuilder.getColumnPropertiesDefinition();
+                    }
+                },
+                'getStylePropertiesDefinition' : function(elementObj, component) {
+                    if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
+                        return component.builderTemplate.stylePropertiesDefinition;
+                    } else {
+                        return DatalistBuilder.getElementStylePropertiesDefinition(elementObj, component);
+                    }
+                },
+                'isPastable' : function(elementObj, component){
+                    var copied = CustomBuilder.getCopiedElement();
+                    if (copied !== null && copied !== undefined) {
+                        return true;
+                    }
+                    return false;
+                },
+                'renderPermission' : function(row, elementObj, permissionObj, key, level) {
+                    if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) !== -1) {
+                        PermissionManager.renderElementDefault(elementObj, row, permissionObj, key, level);
+                    } else {
+                        DatalistBuilder.renderColumnPermission(elementObj, row, permissionObj, key, level);
+                    }
+                },
+                'navigable' : false,
+                'dragHtml' : '<span></span>'
+            }
+        };
+
+        if (isMissing) {
+            CustomBuilder.Builder.frameBody.find("[data-cbuilder-classname='"+column.name+"']").attr("data-cbuilder-missing-plugin", "");
+            
+            meta['builderTemplate']['render'] = function(element, elementObj, component, callback) {
+                var newcallback = function(element) {
+                    $(element).attr("data-cbuilder-missing-plugin", "");
+                    callback(element);
+                };
+                if (CustomBuilder.Builder.options.callbacks["renderElement"] !== undefined && CustomBuilder.Builder.options.callbacks["renderElement"] !== "") {
+                    CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["renderElement"], [element, elementObj, component, newcallback]);
+                } else if (callback) {
+                    newcallback(element);
+                }
+            };
+            meta['builderTemplate']['isPastable'] = function(elementObj, component){
+                return false;
+            };
+            meta['builderTemplate']['getLabel'] = function(elementObj, component) {
+                return component.label;
+            };
+            meta['builderTemplate']['draggable'] = false;
+            meta['builderTemplate']['movable'] = false;
+            meta['builderTemplate']['deletable'] = true;
+            meta['builderTemplate']['copyable'] = false;
+            meta['builderTemplate']['navigable'] = false;
+            meta["isMissingColumn"] = true;
+
+            CustomBuilder.initPaletteElement("", column.name, column.displayLabel, "", "", "", false, "", meta);
+        } else {
+            //populate palette
+            CustomBuilder.initPaletteElement(get_cbuilder_msg('dbuilder.columnsFilters'), column.name, column.displayLabel, '<i class="far fa-hdd"></i>', {}, {}, true, cssClass, meta);
+        }
     },
     
     /*
@@ -1883,6 +1926,10 @@ DatalistBuilder = {
             type = "action";
         } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
             type = "rowAction";
+        }
+        
+        if ($(element).is("[data-cbuilder-missing-plugin]")) {
+            return;
         }
         
         if (type !== "") {
@@ -2970,10 +3017,29 @@ DatalistBuilder = {
                         var name = CustomBuilder.data[prop][i].name;
                         if ($.inArray(name, ids) === -1) {
                             nonExistIndex.push(i);
+                            
+                            //find and remove from canvas
+                            var id = CustomBuilder.data[prop][i].id;
+                            var element;
+                            
+                            if (prop === "filters") {
+                                element = self.frameBody.find(".dataList [data-cbuilder-filters] [data-cbuilder-id='"+id+"']");
+                            } else {
+                                element = self.frameBody.find(".dataList [data-placeholder-key='"+prop+"'] [data-cbuilder-id='"+id+"']");
+                            }
+                            
+                            var syncElements = $(element).data("syncElements");
+                            if (syncElements !== null && syncElements !== undefined) {
+                                for (var i in syncElements) {
+                                    $(syncElements[i]).remove();
+                                }
+                            }
+                            
+                            $(element).remove();
                         }
                     }
                     
-                    //remove non exist column
+                    //remove non exist column 
                     if (nonExistIndex.length > 0) {
                         nonExistIndex.reverse();
                         for (var i in nonExistIndex) {
@@ -2986,6 +3052,8 @@ DatalistBuilder = {
         }
         
         if (change) {
+            $("#element-parent-box, #element-highlight-box").hide();
+            CustomBuilder.Builder.selectNode(false);
             CustomBuilder.update(false);
         }
     },
