@@ -1640,10 +1640,12 @@ UserviewBuilder = {
                 }
             };
 
-            var classname = UserviewBuilder.selectedMenu.className;
-            var component = self.getComponent(classname);
-            if (component.builderTemplate.supportPageBuilder === undefined || component.builderTemplate.supportPageBuilder === true) {
-                self.frameBody.find("#btn_container").show();
+            if (UserviewBuilder.selectedMenu) {
+                var classname = UserviewBuilder.selectedMenu.className;
+                var component = self.getComponent(classname);
+                if (component.builderTemplate.supportPageBuilder === undefined || component.builderTemplate.supportPageBuilder === true) {
+                    self.frameBody.find("#btn_container").show();
+                }
             }
 
             if (UserviewBuilder.screenshots[screenshotKey] === undefined) {
