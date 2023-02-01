@@ -102,7 +102,7 @@
                             $(element).after($(element).prev('img.ui-datepicker-trigger'));
                         }
                         if($(element).next("img.ui-datepicker-trigger").length !== 0){
-                            $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
+                            $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");
                         }
 
                         var clearBtn = $("<a class=\"close-icon\" type=\"reset\"></a>");
@@ -125,22 +125,25 @@
                             $(element).val("").change();
                         });
 
-                        $(elementParent).find("input[readonly] , a.trigger").off("click.dp");
-                        $(elementParent).find("input[readonly] , a.trigger").on("click.dp", function(evt){
+                        $(elementParent).off("click.dp", "input[readonly] , a.trigger");
+                        $(elementParent).on("click.dp", "input[readonly] , a.trigger", function(evt){
                             evt.preventDefault();
                             evt.stopImmediatePropagation();
                             showDatepicker($(element));
                         });
-                        $(elementParent).find("input , a.trigger").off("keydown.dp").off("focus.dp").off("focusout.dp")
-                        .on("keydown", function(evt){
+                        $(elementParent)
+                        .off("keydown.dp", "input , a.trigger")
+                        .off("focus.dp", "input , a.trigger")
+                        .off("focusout.dp", "input , a.trigger")
+                        .on("keydown", "input , a.trigger", function(evt){
                             if (evt.keyCode === 13) {
                                 evt.preventDefault();
                                 evt.stopPropagation();
                                 showDatepicker($(element));
                             }
-                        }).on("focus.dp", function() {
+                        }).on("focus.dp", "input , a.trigger", function() {
                             $(element).addClass("focus");
-                        }).on("focusout.dp", function(){
+                        }).on("focusout.dp", "input , a.trigger", function(){
                             if (!$(element).hasClass("popup-picker")) {
                                 $(element).removeClass("focus");
                             }
@@ -352,10 +355,10 @@
                 $(target).after($(target).prev('img.ui-datepicker-trigger'));
             }
             if($(element).next("img.ui-datepicker-trigger").length !== 0){
-                $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
+                $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");
             }
             if($(target).next("img.ui-datepicker-trigger").length !== 0){
-                $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
+                $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");
             }
         },1);
         
