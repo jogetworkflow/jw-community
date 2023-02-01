@@ -320,15 +320,18 @@ public class SharkUtilitiesAspect {
         String processId = (String) args[1];
         int mode = (int) args[2];
         
-        String key = "processId_" + processId + "_" + mode;
+        String key = "processId_" + processId;
+        if (mode == 1) {
+            // write mode, clear cache and proceed without caching
+            WorkflowUtil.writeRequestCache(key, null);
+            return pjp.proceed();
+        }
         Object result = WorkflowUtil.readRequestCache(key);
         if (result != null) {
             return result;
         } else {
             result = pjp.proceed();
-            if (result != null) {
-                WorkflowUtil.writeRequestCache(key, result);
-            }
+            WorkflowUtil.writeRequestCache(key, result);
         }        
         return result;
     }
@@ -368,15 +371,18 @@ public class SharkUtilitiesAspect {
         String activityId = (String) args[2];
         int mode = (int) args[3];
         
-        String key = "activityId_" + activityId + "_" + mode;
+        String key = "activityId_" + activityId;
+        if (mode == 1) {
+            // write mode, clear cache and proceed without caching
+            WorkflowUtil.writeRequestCache(key, null);
+            return pjp.proceed();
+        }
         Object result = WorkflowUtil.readRequestCache(key);
         if (result != null) {
             return result;
         } else {
             result = pjp.proceed();
-            if (result != null) {
-                WorkflowUtil.writeRequestCache(key, result);
-            }
+            WorkflowUtil.writeRequestCache(key, result);
         }        
         return result;
     }
