@@ -118,6 +118,7 @@ public class AppPluginUtil implements ApplicationContextAware {
      * @return 
      */
     public static Map getDefaultProperties(Plugin plugin, Map propertyMap, AppDefinition appDef, WorkflowAssignment assignment) {
+        AppUtil.setCurrentAssignment(assignment, true); // set the assignment for HashVariableSupportedMapImpl
         
         if (propertyMap == null) {
             propertyMap = new HashMap();

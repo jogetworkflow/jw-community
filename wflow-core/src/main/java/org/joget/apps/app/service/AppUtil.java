@@ -112,6 +112,7 @@ public class AppUtil implements ApplicationContextAware {
     
     static ApplicationContext appContext;
     static ThreadLocal currentAssignment = new ThreadLocal();
+    static ThreadLocal currentAssignmentRequiredReset = new ThreadLocal();
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static ThreadLocal processAppDefinition = new ThreadLocal();
@@ -157,7 +158,49 @@ public class AppUtil implements ApplicationContextAware {
      * @throws BeansException
      */
     public static void setCurrentAssignment(WorkflowAssignment assignment) throws BeansException {
+        setCurrentAssignment(assignment, false);
+    }
+    
+    /**
+     * Ties an Assignment to the current thread. Set requiredReset to true if for temporary.
+     * Used by AppPluginUtil.getDefaultProperties
+     * @param assignment
+     * @param requiredReset
+     * @throws BeansException
+     */
+    public static void setCurrentAssignment(WorkflowAssignment assignment, boolean requiredReset) throws BeansException {
+        if (requiredReset) {
+            WorkflowAssignment current = (WorkflowAssignment) currentAssignment.get();
+            if ((assignment != null && current != null && !assignment.equals(current))
+                    || (assignment != null && current == null)
+                    || (assignment == null && current != null)) {
+                if (current != null) {
+                    currentAssignmentRequiredReset.set(current);
+                } else {
+                    currentAssignmentRequiredReset.set(Boolean.TRUE);
+                }
+            } else {
+                currentAssignmentRequiredReset.set(null); //it is same, no need reset
+            }
+        }
+        
         currentAssignment.set(assignment);
+    }
+    
+    /**
+     * Reset the Assignment tied to the current thread. Used by HashVariableSupportedMapImpl
+     * @throws BeansException
+     */
+    public static void resetCurrentAssignment() throws BeansException {
+        Object resetAssignment = currentAssignmentRequiredReset.get();
+        if (resetAssignment != null) {
+            if (resetAssignment instanceof WorkflowAssignment) {
+                currentAssignment.set((WorkflowAssignment) resetAssignment);
+            } else {
+                currentAssignment.set(null);
+            }
+            currentAssignmentRequiredReset.set(null);
+        }
     }
 
     /**
@@ -1073,6 +1116,8 @@ public class AppUtil implements ApplicationContextAware {
     public static void initRequest() {
         // clear current app in thread
         AppUtil.resetAppDefinition();
+        currentAssignment.set(null);
+        currentAssignmentRequiredReset.set(null);
     }
 
     /**
@@ -1081,6 +1126,8 @@ public class AppUtil implements ApplicationContextAware {
     public static void clearRequest() {
         AppUtil.clearAppMessages();
         processAppDefinition.remove();
+        currentAssignment.remove();
+        currentAssignmentRequiredReset.remove();
     }
 
     /**

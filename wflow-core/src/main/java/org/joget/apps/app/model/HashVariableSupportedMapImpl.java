@@ -14,8 +14,15 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
     
     public HashVariableSupportedMapImpl(Map<K,V> initialValues) {
         super(initialValues);
-        this.assignment = AppUtil.getCurrentAssignment();
-        this.appDef = AppUtil.getCurrentAppDefinition();
+        
+        if (initialValues instanceof HashVariableSupportedMapImpl) {
+            this.assignment = ((HashVariableSupportedMapImpl) initialValues).assignment;
+            this.appDef = ((HashVariableSupportedMapImpl) initialValues).appDef;
+        } else {
+            this.assignment = AppUtil.getCurrentAssignment();
+            this.appDef = AppUtil.getCurrentAppDefinition();
+        }
+        AppUtil.resetCurrentAssignment(); //reset the current assignment after use it
     }
     
     protected HashVariableSupportedMapImpl(AppDefinition appDef, WorkflowAssignment assignment, Map<K,V> initialValues) {

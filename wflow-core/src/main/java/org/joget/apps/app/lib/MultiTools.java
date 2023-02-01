@@ -85,14 +85,14 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                     ApplicationPlugin p = (ApplicationPlugin) pluginManager.getPlugin(className);
 
                                     if (p != null) {
-                                        Map propertiesMap = new HashMap(properties);
+                                        AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
+                                        Map propertiesMap = new HashVariableSupportedMapImpl(properties); //need to use HashVariableSupportedMap, else the properties will processing all hash variable in value
                                         propertiesMap.putAll(AppPluginUtil.getDefaultProperties((Plugin) p, (Map) toolMap.get("properties"), (AppDefinition) properties.get("appDef"), (WorkflowAssignment) properties.get("workflowAssignment")));
                                         ApplicationPlugin appPlugin = (ApplicationPlugin) p;
 
                                         if (appPlugin instanceof PropertyEditable) {
                                             ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                                         }
-                                        AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
                                         appPlugin.execute(propertiesMap);
                                     }
                                 }
