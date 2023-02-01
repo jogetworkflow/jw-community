@@ -5977,6 +5977,8 @@ _CustomBuilder.Builder = {
                 $(li).data("node", $(this));
                 $(li).attr("data-cbuilder-node-id", props.id);
                 
+                //create a refer from element back to the tree node
+                $(this).data("tree-node", $(li));
                 
                 $(this).off("builder.selected");
                 $(this).on("builder.selected", function(event) {
@@ -6115,6 +6117,9 @@ _CustomBuilder.Builder = {
             if (component.builderTemplate.getLabel) {
                 label = component.builderTemplate.getLabel(data, component);
             }
+            if ($(element).is("[data-cbuilder-missing-plugin]")) {
+                label = '<span class="missing-plugin">' + label + "</span>";
+            }
             dl.append('<dt><i class="las la-cube" title="'+get_cbuilder_msg('cbuilder.type')+'"></i></dt><dd>'+label+'</dd>');
 
             var props = self.parseElementProps(data);
@@ -6201,6 +6206,13 @@ _CustomBuilder.Builder = {
         $(detailsDiv).uitooltip({
             position: { my: "left+15 center", at: "right center" }
         });
+        
+        if ($(detailsDiv).find("span.missing-plugin").length > 0) {
+            var treeNode = $(target).data("tree-node");
+            if ($(treeNode).length > 0) {
+                $(treeNode).find("> label > a").css("color", "#fb8e8e");
+            }
+        }
     },
     
     /*

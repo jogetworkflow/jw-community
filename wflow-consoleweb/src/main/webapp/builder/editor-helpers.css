@@ -109,6 +109,9 @@ body [data-cbuilder-element-invisible]{
     min-height: 35px;
     position: relative;
 }
+body [data-cbuilder-missing-plugin]{
+    position: relative;
+}
 body [data-cbuilder-missing-plugin]::after,
 body [data-cbuilder-element-invisible]::after,
 body [data-cbuilder-invisible]::after,
@@ -376,4 +379,19 @@ body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details 
 [data-cbuilder-classname] textarea:not([data-cbuilder-classname]),
 [data-cbuilder-classname] select:not([data-cbuilder-classname]){
     pointer-events: none;
+}
+
+span.missing-plugin {
+    animation: alert-glowing 2000ms infinite;
+}
+@keyframes alert-glowing {
+  0% {
+    color: #ffd6d6;
+  }
+  50% {
+    color: #ff5656;
+  }
+  100% {
+    color: #ffd6d6;
+  }
 }

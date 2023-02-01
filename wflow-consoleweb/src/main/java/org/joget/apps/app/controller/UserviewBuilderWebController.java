@@ -375,6 +375,16 @@ public class UserviewBuilderWebController {
                 html = html.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
 
                 writer.write(html);
+            } else {
+                //it is missing component
+                String id = "";
+                JSONObject prop = jObj.getJSONObject("properties");
+                if (prop != null) {
+                    id = prop.getString("id");
+                }
+                
+                String html = "<div data-cbuilder-classname=\""+jObj.getString("className")+"\" data-cbuilder-id=\""+id+"\" ></div>";
+                writer.write(html);
             }
         } catch (Exception e) {
             LogUtil.error(UserviewBuilderWebController.class.getName(), e, "");

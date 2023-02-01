@@ -4444,7 +4444,7 @@ ProcessBuilder = {
             if (elementObj.properties.mapping_act_modifier !== undefined 
                     && elementObj.properties.mapping_act_modifier["className"] !== undefined 
                     && elementObj.properties.mapping_act_modifier["className"] !== "") {
-                var label = elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                var label = '<span class="missing-plugin">' + elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                 if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
                     label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]];
                 } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
@@ -4465,7 +4465,7 @@ ProcessBuilder = {
                         }
                         var plugin = ProcessBuilder.availableTools[className];
                         if (plugin === undefined) {
-                            label = className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
+                            label = '<span class="missing-plugin">' + className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                         } else {
                             label = plugin.label;
                         }
@@ -4481,7 +4481,7 @@ ProcessBuilder = {
                     && elementObj.properties.mapping_act_plugin["className"] !== "") {
                 var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_act_plugin["className"]];
                 if (plugin === undefined) {
-                    label = elementObj.properties.mapping_act_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                    label = '<span class="missing-plugin">' + elementObj.properties.mapping_act_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                 } else {
                     label = plugin.label;
                 }
@@ -4538,7 +4538,7 @@ ProcessBuilder = {
                 } else if (elementObj.properties.mapping_par_type === "plugin") {
                     var plugin = ProcessBuilder.availableParticipantPlugin[elementObj.properties.mapping_par_plugin["className"]];
                     if (plugin === undefined) {
-                        label = elementObj.properties.mapping_par_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")"
+                        label = '<span class="missing-plugin">' + elementObj.properties.mapping_par_plugin["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                     } else {
                         label = plugin.label;
                     }

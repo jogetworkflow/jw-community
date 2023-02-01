@@ -1800,6 +1800,7 @@ UserviewBuilder = {
                         label = CustomBuilder.availablePermission[label];
                     } else {
                         label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                        label = '<span class="missing-plugin">' + label + '</span>';
                     }
                     permissionLabel.push(label);
                 }
@@ -1813,6 +1814,7 @@ UserviewBuilder = {
                                 label = FormBuilder.availablePermission[label];
                             } else {
                                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                                label = '<span class="missing-plugin">' + label + '</span>';
                             }
                             if ($.inArray(label, permissionLabel) === -1) {
                                 permissionLabel.push(label);

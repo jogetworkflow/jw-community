@@ -329,6 +329,7 @@ FormBuilder = {
                 label = FormBuilder.availableBinder[label];
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                label = '<span class="missing-plugin">' + label + '</span>';
             }
             dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Load.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
@@ -338,6 +339,7 @@ FormBuilder = {
                 label = FormBuilder.availableBinder[label];
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                label = '<span class="missing-plugin">' + label + '</span>';
             }
             dl.append('<dt><i class="las la-download" title="'+get_advtool_msg('dependency.tree.Store.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
@@ -347,6 +349,7 @@ FormBuilder = {
                 label = FormBuilder.availableBinder[label];
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                label = '<span class="missing-plugin">' + label + '</span>';
             }
             dl.append('<dt><i class="las la-upload" title="'+get_advtool_msg('dependency.tree.Options.Binder')+'"></i></dt><dd>'+label+'</dd>');
         }
@@ -356,6 +359,7 @@ FormBuilder = {
                 label = FormBuilder.availableValidator[label];
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                label = '<span class="missing-plugin">' + label + '</span>';
             }
             dl.append('<dt><i class="las la-asterisk" title="'+get_advtool_msg('dependency.tree.Validator')+'"></i></dt><dd>'+label+'</dd>');
         }
@@ -366,6 +370,7 @@ FormBuilder = {
                 label = CustomBuilder.availablePermission[label];
             } else {
                 label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                label = '<span class="missing-plugin">' + label + '</span>';
             }
             permissionLabel.push(label);
         }
@@ -379,6 +384,7 @@ FormBuilder = {
                         label = FormBuilder.availablePermission[label];
                     } else {
                         label += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                        label = '<span class="missing-plugin">' + label + '</span>';
                     }
                     if ($.inArray(label, permissionLabel) === -1) {
                         permissionLabel.push(label);

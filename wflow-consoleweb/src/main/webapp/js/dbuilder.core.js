@@ -2053,6 +2053,7 @@ DatalistBuilder = {
                     action = DatalistBuilder.availableActions[action].label;
                 } else {
                     action += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                    action = '<span class="missing-plugin">' + action + '</span>';
                 }
             }
             dl.append('<dt><i class="las la-link" title="'+get_cbuilder_msg('dbuilder.action')+'"></i></dt><dd>'+action+'</dd>');
@@ -2063,6 +2064,7 @@ DatalistBuilder = {
                     format = DatalistBuilder.availableFormatters[format];
                 } else {
                     format += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                    format = '<span class="missing-plugin">' + format + '</span>';
                 }
             }
             dl.append('<dt><i class="las la-paint-brush" title="'+get_cbuilder_msg('dbuilder.formatter')+'"></i></dt><dd>'+format+'</dd>');
@@ -2075,6 +2077,7 @@ DatalistBuilder = {
                     type = DatalistBuilder.availableFilters[type];
                 } else {
                     type += " ("+get_advtool_msg('dependency.tree.Missing.Plugin')+")";
+                    type = '<span class="missing-plugin">' + type + '</span>';
                 }
             }
             dl.find("> *:eq(1)").after('<dt><i class="las la-cube" title="'+get_cbuilder_msg('dbuilder.filter')+'"></i></dt><dd>'+type+'</dd>');
