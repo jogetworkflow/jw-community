@@ -1281,6 +1281,8 @@
         
         $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copy", JSON.encode(copy));
         $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copyTime", new Date());
+        CustomBuilder.copyTextToClipboard(" ", false); //to clear the clipboard
+        $.localStorage.removeItem("customBuilder.copiedText");
         
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.copied'), "info");
     },
@@ -1305,6 +1307,30 @@
             type = copied['type'];
         }
         CustomBuilder.updatePasteIcon(type);
+    },
+    
+    /*
+     * Copy text to clipboard, option to clear the element clipboard.
+     */
+    copyTextToClipboard : function(text, clearElementClipboard) {
+        var $temp = $("<input style='height:1px;opacity:0'>");
+        $("body").append($temp);
+        $temp.val(text).select();
+        document.execCommand("copy");
+        $temp.remove(); 
+        
+        $.localStorage.setItem("customBuilder.copiedText", text);
+        
+        if (clearElementClipboard) {
+            CustomBuilder.clearCopiedElement();
+        }
+    },
+    
+    /*
+     * Retrieve copied text in cache
+     */
+    getCopiedText : function() {
+        return $.localStorage.getItem("customBuilder.copiedText");
     },
     
     /*
@@ -2602,10 +2628,30 @@
      * Method used for toolbar to paste an element
      */
     pasteElement : function(event) {
-        if (event && /textarea|input|select/i.test(event.target.nodeName) && CustomBuilder.getCopiedElement() === null) {
-            return true; //to continue to the default handler to paste text
+        if (event && /textarea|input|select/i.test(event.target.nodeName)) {
+            if (CustomBuilder.getCopiedElement() === null) {
+                return true; //to continue to the default handler to paste text
+            } else {
+                try {
+                    navigator.clipboard.readText().then(clipText => {
+                        if (clipText === undefined || clipText === null ||
+                                clipText === "" || clipText.trim().length === 0 || 
+                                clipText === CustomBuilder.getCopiedText()) {
+                            CustomBuilder.Builder.pasteNode();
+                        } else {
+                            var caret = PropertyAssistant.doGetCaretPosition(event.target);
+                            var text = $(event.target).val();
+                            var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
+                            $(event.target).val(output);
+                        }
+                    });
+                } catch (err) {
+                    CustomBuilder.Builder.pasteNode();
+                }
+            }
+        } else {
+            CustomBuilder.Builder.pasteNode();
         }
-        CustomBuilder.Builder.pasteNode();
     },
     
     /*

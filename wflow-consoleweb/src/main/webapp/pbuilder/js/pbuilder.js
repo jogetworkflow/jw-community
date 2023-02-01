@@ -200,11 +200,7 @@ ProcessBuilder = {
             });
             $("#process-copy-def-btn").on("click", function(event){
                 var processDefId = CustomBuilder.appId + ":latest:" + ProcessBuilder.currentProcessData.properties.id;
-                var $temp = $("<input style='height:1px;opacity:0'>");
-                $("body").append($temp);
-                $temp.val(processDefId).select();
-                document.execCommand("copy");
-                $temp.remove();
+                CustomBuilder.copyTextToClipboard(processDefId, true);
                 
                 CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
                 
@@ -214,11 +210,7 @@ ProcessBuilder = {
             $("#process-copy-link-btn").on("click", function(event){
                 var url = document.URL.substring(0, document.URL.indexOf("/web/console"));
                 url += "/web/client/app" + CustomBuilder.appPath + "/process/" + ProcessBuilder.currentProcessData.properties.id + "?start=true";
-                var $temp = $("<input style='height:1px;opacity:0'>");
-                $("body").append($temp);
-                $temp.val(url).select();
-                document.execCommand("copy");
-                $temp.remove();
+                CustomBuilder.copyTextToClipboard(url, true);
                 
                 CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessStartLink.copied'), "info", true);
                 

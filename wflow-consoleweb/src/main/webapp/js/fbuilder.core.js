@@ -1268,11 +1268,7 @@ FormBuilder = {
      */
     copyElement: function(data, type) {
         if (type === "elements") {
-            var $temp = $("<input>");
-            $("body").append($temp);
-            $temp.val("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#").select();
-            document.execCommand("copy");
-            $temp.remove();            
+            CustomBuilder.copyTextToClipboard("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#", false);
         }
     },
 
