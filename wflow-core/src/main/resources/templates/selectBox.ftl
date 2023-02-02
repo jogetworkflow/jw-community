@@ -1,6 +1,7 @@
 <div class="form-cell" ${elementMetaData!}>
     <script type="text/javascript" src="${request.contextPath}/node_modules/select2/dist/js/select2.full.min.js"></script>
     <link rel="stylesheet" href="${request.contextPath}/node_modules/select2/dist/css/select2.min.css">
+    <script type="text/javascript" src="${request.contextPath}/js/select2.kecak.js"></script>
 
     <label class="label" for="${elementParamName!}${element.properties.elementUniqueKey!}" field-tooltip="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
@@ -66,7 +67,7 @@
     <#-- Select2 Implementation -->
     <script type="text/javascript">
         $(document).ready(function(){
-            $('select#${elementParamName!}${element.properties.elementUniqueKey!}.js-select2').select2({
+            let $selectbox = $('select#${elementParamName!}${element.properties.elementUniqueKey!}.js-select2').kecakSelect2({
                 dropdownAutoWidth : true,
                 width : '${width!'resolve'}',
                 theme : 'default',
