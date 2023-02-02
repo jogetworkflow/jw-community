@@ -244,7 +244,13 @@ function draggableTable(datalist) {
             
             var columns = [];
             $(table).find('> thead > tr > th.column_header').each(function(){
-                columns.push($(this).attr("class").split(" ")[2]);
+                var cssclasses = $(this).attr("class").split(" ");
+                for (var i = 2; i < cssclasses.length; i++) {
+                    if (cssclasses[i].indexOf("header_") === 0) { //find the header class with id. 
+                        columns.push(cssclasses[i]);
+                        break;
+                    }
+                }
             });
             localStorage.setItem(key, JSON.stringify(columns));
         });
@@ -273,6 +279,10 @@ function rearrangeColumns(datalist, cache) {
     for (var i = 0; i < columns.length - 1; i++) {
         var current = "."+columns[i];
         var next = "."+columns[i+1];
+        
+        if (current.indexOf("header_") !== 0) {
+            continue;
+        }
         
         var currentheader = $(table).find(current);
         var nextHeader = $(table).find(next);
