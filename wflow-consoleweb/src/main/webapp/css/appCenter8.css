@@ -196,7 +196,7 @@ body.rtl #sidebar .nav > li > a > span:not(.badge) {
     box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
     background-color: #fff !important;
     border-radius: 10px;
-    background-image: url(../web/app/appcenter/resources/finalBanner.png);
+    background-image: url(/jw/images/appCenterBanner.png);
     background-repeat: no-repeat;
     background-size: 100% 360px;
     margin-bottom: 50px;
