@@ -2624,7 +2624,8 @@
      * Method used for toolbar to copy an element
      */
     copyElement : function(event) {
-        if (event && /textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) {
+        if (event && ((/textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) || 
+                (window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
             //clear element clipboard
             CustomBuilder.clearCopiedElement();
             return true; //to continue to the default handler to copy text
