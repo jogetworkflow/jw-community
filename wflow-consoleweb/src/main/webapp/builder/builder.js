@@ -148,7 +148,7 @@
     builderItems : null,
     builderItemsLoading : [],
     
-    builderShortcutActionHandlers : [],
+    builderShortcutActionHandlers : {},
     
     /*
      * Utility method to call a function by name
@@ -259,8 +259,6 @@
     
             CustomBuilder.updatePresenceIndicator();
             
-            CustomBuilder.unbindBuilderShortcutActionHandlers();
-            
             data = eval("[" + data.trim() + "]")[0];
             
             //to standardize formatting
@@ -295,6 +293,8 @@
                 CustomBuilder.loadJson($("#cbuilder-json").val());
                 CustomBuilder.intBuilderMenu();
             } else {
+                CustomBuilder.unbindBuilderShortcutActionHandlers();
+                
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["unloadBuilder"], []);
                 
                 CustomBuilder.removeVisibilityChangeEvent("paste");
@@ -579,7 +579,15 @@
             $(this).on(on, buttonAction);
             if (this.dataset.cbuilderShortcut)
             {
-                CustomBuilder.builderShortcutActionHandlers.push(buttonAction);
+                if (CustomBuilder.builderShortcutActionHandlers[this.dataset.cbuilderShortcut] !== undefined) {
+                    $(document).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[this.dataset.cbuilderShortcut]);
+                    if (window.FrameDocument) {
+                        $(window.FrameDocument).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[this.dataset.cbuilderShortcut]);
+                    }
+                    delete CustomBuilder.builderShortcutActionHandlers[this.dataset.cbuilderShortcut];
+                }
+                
+                CustomBuilder.builderShortcutActionHandlers[this.dataset.cbuilderShortcut] = buttonAction;
                 $(document).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
                 if (window.FrameDocument) {
                     $(window.FrameDocument).on('keydown.shortcut', null, this.dataset.cbuilderShortcut, buttonAction);
@@ -590,13 +598,15 @@
     
     unbindBuilderShortcutActionHandlers : function() {
         for (var i in CustomBuilder.builderShortcutActionHandlers) {
-            $(document).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
-            if (window.FrameDocument) {
-                $(window.FrameDocument).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+            if (CustomBuilder.builderShortcutActionHandlers.hasOwnProperty(i)) {
+                $(document).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+                if (window.FrameDocument) {
+                    $(window.FrameDocument).unbind('keydown.shortcut', CustomBuilder.builderShortcutActionHandlers[i]);
+                }
             }
         }
         
-        CustomBuilder.builderShortcutActionHandlers = [];
+        CustomBuilder.builderShortcutActionHandlers = {};
     },
     
     /*
