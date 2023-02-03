@@ -10,18 +10,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -39,6 +45,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
@@ -49,6 +56,8 @@ import org.joget.workflow.util.WorkflowUtil;
 public class LogViewerAppender extends AbstractAppender {
 
     protected LoadingCache<String, Writer> qwCache = null;
+    protected static final Map<String, BlockingQueue<String>> messages = new HashMap<String, BlockingQueue<String>>();
+    protected static final Map<String, Boolean> processingMessage = new HashMap<String, Boolean>();
 
     protected static final int SIZE = 40;
     public static final int MAX_FILESIZE = 200 * 1024; //200kb
@@ -300,40 +309,52 @@ public class LogViewerAppender extends AbstractAppender {
         broadcast(appId, message, null);
     }
 
-    public static void broadcast(String appId, String message, String node) {
-        String key;
-        if (node == null) {
-            key = ServerUtil.getServerName() + ":" + HostManager.getCurrentProfile() + ":" + appId;
-        } else {
-            key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
-        }
-        String lines[] = message.split(Strings.LINE_SEPARATOR);
-        Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
-        if (endpoints != null && lines.length > 0) {
-            Set<LogViewerEndpoint> invalidEndpoints = new HashSet<LogViewerEndpoint>();
-            for (LogViewerEndpoint endpoint : endpoints) {
-                synchronized (endpoint) {
-                    try {
-                        for (String line: lines) {
-                            endpoint.session.getBasicRemote().sendText(line);
+    public static void broadcast(final String appId, final String message, final String node) {
+        // run it in new thread, so it won't block the current thread when something is not right with broadcast.
+        Thread newThread = new PluginThread(new Runnable() {
+            @Override
+            public void run() {
+                
+                String key;
+                if (node == null) {
+                    key = ServerUtil.getServerName() + ":" + HostManager.getCurrentProfile() + ":" + appId;
+                } else {
+                    key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
+                }
+                
+                //broadcast to registered endpoints based on key  
+                String lines[] = message.split(Strings.LINE_SEPARATOR);
+                Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
+                if (endpoints != null && lines.length > 0) {
+                    Set<LogViewerEndpoint> invalidEndpoints = new HashSet<LogViewerEndpoint>();
+                    for (LogViewerEndpoint endpoint : endpoints) {
+                        synchronized (endpoint) {
+                            try {
+                                for (String line: lines) {
+                                    endpoint.session.getBasicRemote().sendText(line);
+                                }
+                            } catch (IllegalStateException e) {
+                                // WebSocket connection closed, ignore
+                                invalidEndpoints.add(endpoint);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                invalidEndpoints.add(endpoint);
+                            }
                         }
-                    } catch (IllegalStateException e) {
-                        // WebSocket connection closed, ignore
-                        invalidEndpoints.add(endpoint);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        invalidEndpoints.add(endpoint);
+                    }
+                    if (!invalidEndpoints.isEmpty()) {
+                        endpoints.removeAll(invalidEndpoints);
+
+                        if (endpoints.isEmpty()) {
+                            broadcastEndpoints.remove(key);
+                        }
                     }
                 }
             }
-            if (!invalidEndpoints.isEmpty()) {
-                endpoints.removeAll(invalidEndpoints);
-
-                if (endpoints.isEmpty()) {
-                    broadcastEndpoints.remove(key);
-                }
-            }
-        }
+        });
+        newThread.start();
+        
+        //if the server list having other cluster node, broadcast to other server
         if (node == null && appId !=null && !appId.isEmpty()) {
             String[] servers = ServerUtil.getServerList();
             if (servers.length > 1) {
@@ -346,33 +367,114 @@ public class LogViewerAppender extends AbstractAppender {
         }
     }
     
-    //broadcast message to cluster node with token
+    /**
+     * queue message to broadcast to cluster node
+     * @param message
+     * @param node
+     * @param appId 
+     */
     public static void broadcastClusterNode(String message, String node, String appId) {
-        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-        String nodeIp = ServerUtil.getIPAddress(node);
-        if (httpRequest != null && nodeIp != null && !nodeIp.isEmpty()) {
-            String currentNode = ServerUtil.getServerName();
-            String token = getLogViewerToken(currentNode);
-            updateJsonIPWhitelist(currentNode);
-            CloseableHttpClient client = null;
-            String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
-
-            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "message", message);
-            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
-            broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
-            try {
-                client = HttpClients.createDefault();
-                HttpRequestBase request = new HttpGet(broadcastURL);
-                request.setHeader("token", token);
-                HttpResponse transcationResponse = client.execute(request);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (client != null) {
-                    try {
-                        client.close();
-                    } catch (Exception e){}
+        String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
+        
+        BlockingQueue<String> queue = messages.get(key);
+        if (queue == null) {
+            queue = new LinkedBlockingQueue<String>();
+            messages.put(key, queue);
+        }
+        queue.offer(message);
+        
+        sendMessage(node, appId);
+    }
+    
+    /**
+     * Send queued message to cluster node with token
+     * @param node
+     * @param appId 
+     */
+    protected static void sendMessage(final String node, final String appId) {
+        final String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
+        
+        synchronized (processingMessage) {
+            Boolean isProcessing = processingMessage.get(key);
+            if (isProcessing == null || !isProcessing) {
+                processingMessage.put(key, true); //stop sending message and start collecting it
+                
+                final BlockingQueue<String> queue = messages.get(key);
+                if (queue == null || queue.isEmpty()) {
+                    processingMessage.put(key, false); 
+                    return;
                 }
+                
+                // run it in new thread, so it won't block the current thread when something is not right with http call.
+                Thread newThread = new PluginThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //prepare message
+                        int i = 0;
+                        StringBuilder sb = new StringBuilder();
+                        do {
+                            if (i != 0) {
+                                sb.append(Strings.LINE_SEPARATOR);
+                            }  
+                            sb.append(queue.poll());
+                            i++;
+                        } while (i < 20 && !queue.isEmpty());
+
+                        String message = sb.toString();
+                        
+                        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+                        String nodeIp = ServerUtil.getIPAddress(node);
+                        if (httpRequest != null && nodeIp != null && !nodeIp.isEmpty()) {
+                            CloseableHttpClient client = null;
+                            try {
+                                String currentNode = ServerUtil.getServerName();
+                                final String token = getLogViewerToken(currentNode);
+                                updateJsonIPWhitelist(currentNode);
+
+                                String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
+
+                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
+                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "profile", HostManager.getCurrentProfile());
+                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
+
+                                String url = broadcastURL;
+                                
+                                client = HttpClients.custom()
+                                .setRetryHandler(new HttpRequestRetryHandler() {
+                                    @Override
+                                    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+                                        return false; // do not need to retry as it is not critical
+                                    }
+                                }).build();
+                                HttpRequestBase request = new HttpPost(url);
+                                StringEntity requestEntity = new StringEntity(message, "UTF-8");
+                                ((HttpPost) request).setEntity(requestEntity);
+                                request.setHeader("token", token);
+                                client.execute(request);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
+                                //remove from server list when the server is not reachable
+                                if (e instanceof ConnectTimeoutException || e instanceof ConnectException) {
+                                    ServerUtil.deleteNode(new String[]{node});
+                                }
+                            } finally {
+                                if (client != null) {
+                                    try {
+                                        client.close();
+                                    } catch (Exception e){}
+                                }
+                                
+                                synchronized (processingMessage) { //release the processing
+                                    processingMessage.put(key, false);
+                                }
+                                
+                                sendMessage(node, appId); //if there is unsend message, send it now
+                            }
+                        }
+                    }
+                });
+                newThread.start();
             }
         }
     }

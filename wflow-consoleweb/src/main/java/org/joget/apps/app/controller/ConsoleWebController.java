@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -6267,13 +6268,23 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/log/broadcast")
-    public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "message", required = false) String message, @RequestParam(value = "node", required = false) String node) {
+    public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "profile") String profile, @RequestParam(value = "node") String node) {
         Setting setting = setupManager.getSettingByProperty(node + "LogToken");
         if (setting != null) {
-            String httpToken = httpRequest.getHeader("token");
-            //validate token
-            if (setting.getValue().equals(httpToken)){
-                LogViewerAppender.broadcast(appId, message, node);
+            if (profile != null) {
+                try {
+                    HostManager.setCurrentProfile(profile);
+                    
+                    String httpToken = httpRequest.getHeader("token");
+                    //validate token
+                    if (setting.getValue().equals(httpToken)){
+                        LogViewerAppender.broadcast(appId, IOUtils.toString(httpRequest.getReader()), node);
+                    }
+                } catch (Exception e) {
+                    //ignore it
+                } finally {
+                    HostManager.resetProfile();
+                }
             }
         }
     }

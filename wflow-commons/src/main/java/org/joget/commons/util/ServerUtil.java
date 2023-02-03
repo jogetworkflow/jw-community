@@ -42,11 +42,11 @@ public class ServerUtil {
     }
     
     public static void registerServer() {
-        writeServer();
+        writeServer(false);
     }
     
     public static void unregisterServer() {
-        writeServer();
+        writeServer(true);
     }
     
     public static String getServerName() {
@@ -196,7 +196,7 @@ public class ServerUtil {
         return nodeList.toArray(new String[0]);
     }
     
-    protected static void writeServer() {
+    protected static void writeServer(boolean unregister) {
         Set<String> servers = new HashSet<String>();
         Gson gson = new Gson();
                 
@@ -215,10 +215,12 @@ public class ServerUtil {
         
         String lServerName = getServerName();
         
-        if (!servers.contains(lServerName)) {
+        if (!unregister && !servers.contains(lServerName)) {
             servers.add(lServerName);
-        } else {
-            servers.remove(lServerName);
+        } else if (unregister) {
+            if (servers.contains(lServerName)) {
+                servers.remove(lServerName);
+            }
 
             if (!cleaningTasks.isEmpty()) {
                 for (Runnable runnable : cleaningTasks.values()) {
