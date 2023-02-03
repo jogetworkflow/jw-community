@@ -244,13 +244,7 @@ function draggableTable(datalist) {
             
             var columns = [];
             $(table).find('> thead > tr > th.column_header').each(function(){
-                var cssclasses = $(this).attr("class").split(" ");
-                for (var i = 2; i < cssclasses.length; i++) {
-                    if (cssclasses[i].indexOf("header_") === 0) { //find the header class with id. 
-                        columns.push(cssclasses[i]);
-                        break;
-                    }
-                }
+                columns.push(getKey($(this)));
             });
             localStorage.setItem(key, JSON.stringify(columns));
         });
@@ -280,7 +274,7 @@ function rearrangeColumns(datalist, cache) {
         var current = "."+columns[i];
         var next = "."+columns[i+1];
         
-        if (current.indexOf("header_") !== 0) {
+        if (current.indexOf(".header_") !== 0) {
             continue;
         }
         
@@ -341,7 +335,9 @@ function showHideColumns(datalist) {
 
         var dropdown = $('<div class="show_hide_control"><span class="toggle"></span><ul></ul></div>');
         $(headers).each(function(){
-            $(dropdown).find('ul').append('<li><label><input type="checkbox" value="'+($(this).attr("class").split(" ")[2])+ '" ' + (!$(this).hasClass('control_hide')?'checked':'') +'/> '+$(this).text()+'</label></li>');
+            if (!$(this).is(".column-hidden")) {
+                $(dropdown).find('ul').append('<li><label><input type="checkbox" value="'+(getKey($(this)))+ '" ' + (!$(this).hasClass('control_hide')?'checked':'') +'/> '+$(this).text()+'</label></li>');
+            }
         });
 
         $(dropdown).find('input').on('click', function(){
@@ -353,11 +349,21 @@ function showHideColumns(datalist) {
 
             var columns = [];
             $(table).find('> thead > tr > th.column_header.control_hide').each(function(){
-                columns.push($(this).attr("class").split(" ")[2]);
+                columns.push(getKey($(this)));
             });
             localStorage.setItem(key, JSON.stringify(columns));
         });
 
         $(table).before(dropdown);
     }, 2);
+}
+
+function getKey(header) {
+    var cssclasses = $(header).attr("class").split(" ");
+    for (var i = 2; i < cssclasses.length; i++) {
+        if (cssclasses[i].indexOf("header_") === 0) { //find the header class with id. 
+            return cssclasses[i];
+        }
+    }
+    return "";
 }
