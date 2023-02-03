@@ -383,7 +383,7 @@ public class UserviewBuilderWebController {
                     id = prop.getString("id");
                 }
                 
-                String html = "<div data-cbuilder-classname=\""+jObj.getString("className")+"\" data-cbuilder-id=\""+id+"\" ></div>";
+                String html = "<div data-cbuilder-classname=\""+StringUtil.escapeString(jObj.getString("className"), StringUtil.TYPE_HTML)+"\" data-cbuilder-id=\""+StringUtil.escapeString(id, StringUtil.TYPE_HTML)+"\" ></div>";
                 writer.write(html);
             }
         } catch (Exception e) {

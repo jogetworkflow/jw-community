@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.service.AppPluginUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.property.service.PropertyUtil;
 
@@ -110,7 +111,7 @@ public abstract class PageComponent extends ExtElement {
         
         boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isBuilder"));
         if (isBuilder) {
-            attr += " data-cbuilder-classname=\"" + getClassName() + "\" data-cbuilder-id=\"" + getPropertyString("id") + "\" data-cbuilder-label=\"" + getI18nLabel() + "\"";
+            attr += " data-cbuilder-classname=\"" + StringUtil.escapeString(getClassName(), StringUtil.TYPE_HTML) + "\" data-cbuilder-id=\"" + StringUtil.escapeString(getPropertyString("id"), StringUtil.TYPE_HTML) + "\" data-cbuilder-label=\"" + StringUtil.escapeString(getI18nLabel(), StringUtil.TYPE_HTML) + "\"";
         }
 
         return render(id, cssClass, builderStyles, attr, isBuilder);
