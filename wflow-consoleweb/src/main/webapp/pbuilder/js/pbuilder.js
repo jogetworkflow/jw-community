@@ -585,7 +585,12 @@ ProcessBuilder = {
                 ProcessBuilder.populateActivityMapping(obj);
             }
             
-            participants[participantId]['activities'].push(obj);
+            //if participant not exist add to the first participant
+            if (participants[participantId] !== undefined) {
+                participants[participantId]['activities'].push(obj);
+            } else {
+                participants[Object.keys(participants)[0]]['activities'].push(obj);
+            }
         }
         
         //add start and end node
