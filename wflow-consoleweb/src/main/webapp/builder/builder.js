@@ -2625,7 +2625,8 @@
      */
     copyElement : function(event) {
         if (event && ((/textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) || 
-                (window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
+                (window.getSelection() !== undefined && window.getSelection().anchorNode !== undefined && 
+                window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
             //clear element clipboard
             CustomBuilder.clearCopiedElement();
             return true; //to continue to the default handler to copy text
@@ -2650,10 +2651,16 @@
                                 clipText === CustomBuilder.getCopiedText()) {
                             CustomBuilder.Builder.pasteNode();
                         } else {
-                            var caret = PropertyAssistant.doGetCaretPosition(event.target);
-                            var text = $(event.target).val();
-                            var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
-                            $(event.target).val(output);
+                            if ($(event.target).hasClass("ace_text-input") || $(event.target).hasClass("ace_editor")) {
+                                var id = $(event.target).closest(".ace_editor").attr("id");
+                                var codeeditor = ace.edit(id);
+                                codeeditor.session.insert(codeeditor.getCursorPosition(), clipText);
+                            } else {
+                                var caret = PropertyAssistant.doGetCaretPosition(event.target);
+                                var text = $(event.target).val();
+                                var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
+                                $(event.target).val(output);
+                            }
                         }
                     });
                 } catch (err) {
