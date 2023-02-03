@@ -292,6 +292,16 @@ public class StringUtil {
     }
     
     /**
+     * Unescape a string based on format
+     * @param inStr input String
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @return 
+     */
+    public static String unescapeString(String inStr, String format) {
+        return unescapeString(inStr, format, null);
+    }
+    
+    /**
      * Unescape a string based on format and replaced string based on the replace keyword map
      * @param inStr input String
      * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
@@ -398,6 +408,16 @@ public class StringUtil {
         }
 
         return builder.toString();
+    }
+    
+    /**
+     * Escape a string based on format
+     * @param inStr input String
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @return 
+     */
+    public static String escapeString(String inStr, String format) {
+        return escapeString(inStr, format, null);
     }
 
     /**
