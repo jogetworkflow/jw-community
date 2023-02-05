@@ -136,6 +136,7 @@ DatalistBuilder = {
         wait.resolve();
         
         $.when.apply($, deferreds).then(function() {
+            CustomBuilder.update();
             DatalistBuilder.load(CustomBuilder.data);
         });
     },
