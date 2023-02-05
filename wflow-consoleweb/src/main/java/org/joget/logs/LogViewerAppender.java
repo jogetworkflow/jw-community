@@ -58,6 +58,7 @@ public class LogViewerAppender extends AbstractAppender {
     protected LoadingCache<String, Writer> qwCache = null;
     protected static final Map<String, BlockingQueue<String>> messages = new HashMap<String, BlockingQueue<String>>();
     protected static final Map<String, Boolean> processingMessage = new HashMap<String, Boolean>();
+    protected static final Set<String> unreachableNodes = new HashSet<String>();
 
     protected static final int SIZE = 40;
     public static final int MAX_FILESIZE = 200 * 1024; //200kb
@@ -359,7 +360,7 @@ public class LogViewerAppender extends AbstractAppender {
             String[] servers = ServerUtil.getServerList();
             if (servers.length > 1) {
                 for (String server : servers) {
-                    if (!ServerUtil.getServerName().equalsIgnoreCase(server)) {
+                    if (!ServerUtil.getServerName().equalsIgnoreCase(server) && !unreachableNodes.contains(server)) {
                         broadcastClusterNode(message, server, appId);
                     }
                 }
@@ -393,6 +394,12 @@ public class LogViewerAppender extends AbstractAppender {
      */
     protected static void sendMessage(final String node, final String appId) {
         final String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
+        
+        if (unreachableNodes.contains(node)) {
+            messages.remove(key);
+            processingMessage.remove(key);
+            return;
+        }
         
         synchronized (processingMessage) {
             Boolean isProcessing = processingMessage.get(key);
@@ -456,7 +463,7 @@ public class LogViewerAppender extends AbstractAppender {
 
                                 //remove from server list when the server is not reachable
                                 if (e instanceof ConnectTimeoutException || e instanceof ConnectException) {
-                                    ServerUtil.deleteNode(new String[]{node});
+                                    unreachableNodes.add(node);
                                 }
                             } finally {
                                 if (client != null) {

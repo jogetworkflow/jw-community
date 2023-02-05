@@ -6269,22 +6269,22 @@ public class ConsoleWebController {
 
     @RequestMapping("/json/log/broadcast")
     public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "profile") String profile, @RequestParam(value = "node") String node) {
-        Setting setting = setupManager.getSettingByProperty(node + "LogToken");
-        if (setting != null) {
-            if (profile != null) {
-                try {
-                    HostManager.setCurrentProfile(profile);
-                    
+        if (profile != null) {
+            try {
+                HostManager.setCurrentProfile(profile);
+                
+                Setting setting = setupManager.getSettingByProperty(node + "LogToken");
+                if (setting != null) {
                     String httpToken = httpRequest.getHeader("token");
                     //validate token
                     if (setting.getValue().equals(httpToken)){
                         LogViewerAppender.broadcast(appId, IOUtils.toString(httpRequest.getReader()), node);
                     }
-                } catch (Exception e) {
-                    //ignore it
-                } finally {
-                    HostManager.resetProfile();
                 }
+            } catch (Exception e) {
+                //ignore it
+            } finally {
+                HostManager.resetProfile();
             }
         }
     }
