@@ -24,14 +24,13 @@ import org.joget.apps.app.service.RegexMatchesFunctionResolver;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.StringUtil;
 import org.joget.governance.model.GovHealthCheckAbstract;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
-
+    
     @Override
     public String getName() {
         return "OrphanedFormDataCheck";
@@ -111,13 +110,15 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
             
             //find usages
             for (AppDefinition appDef : appDefinitionList) {
-                checkUsages(appDef, tables, appService, xpath);
+                byte[] defXml = appService.getAppDefinitionXml(appDef, false);
+                checkUsages(defXml, tables, xpath);
                 checked.add(appDef.getAppId() + "::" + appDef.getVersion());
             }
             
             for (AppDefinition appDef : latestAppDefinitionList) {
                 if (!checked.contains(appDef.getAppId() + "::" + appDef.getVersion())) {
-                    checkUsages(appDef, tables, appService, xpath);
+                    byte[] defXml = appService.getAppDefinitionXml(appDef, false);
+                    checkUsages(defXml, tables, xpath);
                     checked.add(appDef.getAppId() + "::" + appDef.getVersion());
                 }
             }
@@ -134,11 +135,10 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
         return result;
     }
     
-    protected void checkUsages(AppDefinition appDef, Set<String> tables, AppService appService, XPath xpath) {
+    protected static void checkUsages(byte[] defXml, Set<String> tables, XPath xpath) {
         if (!tables.isEmpty()) {
             Set<String> temp = new HashSet<String>();
             temp.addAll(tables);
-            byte[] defXml = appService.getAppDefinitionXml(appDef, false);
             
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -148,24 +148,32 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
                 Document xml = builder.parse(input);
                 
                 for (String keyword : temp) {
-                    String expression = "//json[contains(text(),'\""+keyword+"\"')]";
+                    String expression = "//json[contains(text(),'\""+keyword+"\"')]";    // "keyword"
                     expression += " | //pluginProperties[contains(text(),'\""+keyword+"\"')] ";
 
                     //Hash variable
-                    String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
-                    expression += " | //json[jfn:regexmatches(text(),'"+regex+"')]";
-                    expression += " | //pluginProperties[jfn:regexmatches(text(),'"+regex+"')] ";
+                    //String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
+                    expression += " | //json[contains(text(),'."+keyword+"}')]";    // .keyword}
+                    expression += " | //pluginProperties[contains(text(),'."+keyword+"}')] ";
+                    expression += " | //json[contains(text(),'."+keyword+"?')]";    // .keyword?
+                    expression += " | //pluginProperties[contains(text(),'."+keyword+"?')] ";
+                    expression += " | //json[contains(text(),'."+keyword+".')]";    // .keyword.
+                    expression += " | //pluginProperties[contains(text(),'."+keyword+".')] ";
+                    expression += " | //json[contains(text(),'."+keyword+"[')]";    // .keyword[
+                    expression += " | //pluginProperties[contains(text(),'."+keyword+"[')] ";
+                    expression += " | //json[contains(text(),'."+keyword+"#')]";    // .keyword#
+                    expression += " | //pluginProperties[contains(text(),'."+keyword+"#')] ";
                     
                     //handle for beanshell
-                    expression += " | //json[contains(text(),'\""+keyword+"\\\"')]";
+                    expression += " | //json[contains(text(),'\""+keyword+"\\\"')]";   // "keyword\"
                     expression += " | //pluginProperties[contains(text(),'\""+keyword+"\\\"')] ";
 
                     //handle for jdbc query
-                    expression += " | //json[contains(text(),'app_fd_"+keyword+"')]";
+                    expression += " | //json[contains(text(),'app_fd_"+keyword+"')]";   // app_fd_keyword
                     expression += " | //pluginProperties[contains(text(),'app_fd_"+keyword+"')] ";
 
                     //handle for form hash variable
-                    expression += " | //json[contains(text(),'form."+keyword+".')]";
+                    expression += " | //json[contains(text(),'form."+keyword+".')]";   // form.keyword.
                     expression += " | //pluginProperties[contains(text(),'form."+keyword+".')] ";
                     
                     NodeList nodeList = (NodeList) xpath.compile(expression).evaluate(xml, XPathConstants.NODESET);
@@ -174,7 +182,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
                     }
                 }
             } catch (Exception e) {
-                LogUtil.error(getClassName(), e, "");
+                LogUtil.error(OrphanedFormDataCheck.class.getName(), e, "");
             }
         }
     }

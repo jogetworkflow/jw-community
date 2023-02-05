@@ -1,0 +1,140 @@
+<appDefinition>
+   <id>testtableusage</id>
+   <version>1</version>
+   <name>Test Table Usage</name>
+   <dateCreated class="java.sql.Timestamp">2023-02-04 16:43:07.0 MYT</dateCreated>
+   <dateModified class="java.sql.Timestamp">2023-02-04 16:55:16.0 MYT</dateModified>
+   <packageDefinitionList>
+      <packageDefinition>
+         <appId>testtableusage</appId>
+         <id>testtableusage</id>
+         <version>1</version>
+         <name>Test Table Usage</name>
+         <dateCreated class="java.sql.Timestamp">2023-02-04 16:44:29.0 MYT</dateCreated>
+         <dateModified class="java.sql.Timestamp">2023-02-04 16:44:30.0 MYT</dateModified>
+         <packageActivityFormMap>
+            <entry>
+               <string>process1::runProcess</string>
+               <packageActivityForm>
+                  <processDefId>process1</processDefId>
+                  <activityDefId>runProcess</activityDefId>
+                  <formId></formId>
+                  <type>SINGLE</type>
+                  <autoContinue>false</autoContinue>
+                  <!--disableSaveAsDraft>false</disableSaveAsDraft-->
+               </packageActivityForm>
+            </entry>
+         </packageActivityFormMap>
+         <packageActivityPluginMap>
+            <entry>
+               <string>process1::tool1</string>
+               <packageActivityPlugin>
+                  <processDefId>process1</processDefId>
+                  <activityDefId>tool1</activityDefId>
+                  <pluginName>org.joget.apps.app.lib.MultiTools</pluginName>
+                  <pluginProperties>{&quot;runInMultiThread&quot;:&quot;&quot;,&quot;comment&quot;:&quot;&quot;,&quot;tools&quot;:[{&quot;className&quot;:&quot;org.joget.apps.app.lib.BeanShellTool&quot;,&quot;properties&quot;:{&quot;script&quot;:&quot;String tabkeName = \&quot;beanshellTN\&quot;;&quot;}}]}</pluginProperties>
+               </packageActivityPlugin>
+            </entry>
+         </packageActivityPluginMap>
+         <packageParticipantMap>
+            <entry>
+               <string>process1::processStartWhiteList</string>
+               <packageParticipant>
+                  <processDefId>process1</processDefId>
+                  <participantId>processStartWhiteList</participantId>
+                  <type>role</type>
+                  <value>adminUser</value>
+               </packageParticipant>
+            </entry>
+         </packageParticipantMap>
+      </packageDefinition>
+   </packageDefinitionList>
+  <formDefinitionList>
+      <formDefinition>
+         <id>tableTN</id>
+         <appId>testtableusage</appId>
+         <appVersion>1</appVersion>
+         <name>tableTN</name>
+         <tableName>test</tableName>
+         <json>{&quot;className&quot;:&quot;org.joget.apps.form.model.Form&quot;,&quot;properties&quot;:{&quot;id&quot;:&quot;tableTN&quot;,&quot;name&quot;:&quot;tableTN&quot;,&quot;tableName&quot;:&quot;quotedTN&quot;,&quot;loadBinder&quot;:{&quot;className&quot;:&quot;org.joget.apps.form.lib.WorkflowFormBinder&quot;,&quot;properties&quot;:{}},&quot;storeBinder&quot;:{&quot;className&quot;:&quot;org.joget.apps.form.lib.WorkflowFormBinder&quot;,&quot;properties&quot;:{}},&quot;description&quot;:&quot;&quot;,&quot;permission&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;noPermissionMessage&quot;:&quot;&quot;,&quot;postProcessor&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;postProcessorRunOn&quot;:&quot;create&quot;},&quot;elements&quot;:[{&quot;elements&quot;:[{&quot;elements&quot;:[{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field1&quot;,&quot;value&quot;:&quot;#sample.{table.hashNestedTN}#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}},{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field2&quot;,&quot;value&quot;:&quot;#sample.hashEscapeTN?sql#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}},{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field3&quot;,&quot;value&quot;:&quot;#sample.hashDotTN.field#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}},{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field4&quot;,&quot;value&quot;:&quot;#sample.hashParamTN[key=1]#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}},{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field5&quot;,&quot;value&quot;:&quot;#sample.hashTN#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}},{&quot;className&quot;:&quot;org.joget.apps.form.lib.TextField&quot;,&quot;properties&quot;:{&quot;encryption&quot;:&quot;&quot;,&quot;readonly&quot;:&quot;&quot;,&quot;style&quot;:&quot;&quot;,&quot;label&quot;:&quot;Text Field&quot;,&quot;readonlyLabel&quot;:&quot;&quot;,&quot;storeNumeric&quot;:&quot;&quot;,&quot;id&quot;:&quot;field6&quot;,&quot;value&quot;:&quot;#form.formHashTN.field1#&quot;,&quot;maxlength&quot;:&quot;&quot;,&quot;validator&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}},&quot;placeholder&quot;:&quot;&quot;,&quot;size&quot;:&quot;&quot;,&quot;workflowVariable&quot;:&quot;&quot;}}],&quot;className&quot;:&quot;org.joget.apps.form.model.Column&quot;,&quot;properties&quot;:{&quot;width&quot;:&quot;100%&quot;}}],&quot;className&quot;:&quot;org.joget.apps.form.model.Section&quot;,&quot;properties&quot;:{&quot;label&quot;:&quot;Section&quot;,&quot;id&quot;:&quot;section1&quot;}}]}</json>
+         <!--description></description-->
+         <dateCreated class="java.sql.Timestamp">2023-02-04 16:46:38.0 MYT</dateCreated>
+         <dateModified class="java.sql.Timestamp">2023-02-04 16:46:38.0 MYT</dateModified>
+      </formDefinition>
+  </formDefinitionList>
+   <userviewDefinitionList>
+      <userviewDefinition>
+         <id>v</id>
+         <appId>testtableusage</appId>
+         <appVersion>1</appVersion>
+         <name>Test Table Usage</name>
+         <description></description>
+         <json>{
+&quot;categories&quot;: [{
+&quot;className&quot;: &quot;org.joget.apps.userview.model.UserviewCategory&quot;,
+&quot;menus&quot;: [{
+&quot;className&quot;: &quot;org.joget.apps.userview.lib.HtmlPage&quot;,
+&quot;properties&quot;: {
+&quot;content&quot;: &quot;&lt;div class=\&quot;ui-welcome\&quot;&gt;\n&lt;h1&gt;Apps and Workflow Made Simple&lt;\/h1&gt;\n&lt;p&gt;&amp;nbsp;&lt;\/p&gt;\n&lt;div class=\&quot;icon\&quot; style=\&quot;margin-right: 20px; margin-bottom: 20px; float: left; clear: left;\&quot;&gt;&lt;img src=\&quot;/jw/images/icon_idea.png\&quot; alt=\&quot;Build apps\&quot; width=\&quot;120\&quot; height=\&quot;85\&quot;&gt;&lt;\/div&gt;\n&lt;div class=\&quot;message\&quot;&gt;\n&lt;h3&gt;Build apps, not just processes!&lt;\/h3&gt;\n&lt;p&gt;Create full-fledged apps with support for data records management.&lt;\/p&gt;\n&lt;\/div&gt;\n&lt;p&gt;&amp;nbsp;&lt;\/p&gt;\n&lt;div class=\&quot;icon\&quot; style=\&quot;margin-right: 20px; margin-bottom: 20px; float: left; clear: left;\&quot;&gt;&lt;img src=\&quot;/jw/images/icon_rocket.png\&quot; alt=\&quot;Increased efficiency\&quot; width=\&quot;120\&quot; height=\&quot;85\&quot;&gt;&lt;\/div&gt;\n&lt;div class=\&quot;message\&quot;&gt;\n&lt;h3&gt;Increased Efficiency and Productivity&lt;\/h3&gt;\n&lt;p&gt;Faster and more consistent completion of manual processes, and with minimal errors.&lt;\/p&gt;\n&lt;\/div&gt;\n&lt;p&gt;&amp;nbsp;&lt;\/p&gt;\n&lt;div class=\&quot;icon\&quot; style=\&quot;margin-right: 20px; margin-bottom: 20px; float: left; clear: left;\&quot;&gt;&lt;img src=\&quot;/jw/images/icon_cost.png\&quot; alt=\&quot;Lowered cost\&quot; width=\&quot;120\&quot; height=\&quot;85\&quot;&gt;&lt;\/div&gt;\n&lt;div class=\&quot;message\&quot;&gt;\n&lt;h3&gt;Lowered Cost&lt;\/h3&gt;\n&lt;p&gt;Employees can be guided through complex procedures, hence reducing the cost of training.&lt;\/p&gt;\n&lt;\/div&gt;\n&lt;\/div&gt;&quot;,
+&quot;customId&quot;: &quot;welcome&quot;,
+&quot;enableOffline&quot;: &quot;&quot;,
+&quot;id&quot;: &quot;3B6F25A638EF40FFAD3C5DAAC41BA98F&quot;,
+&quot;label&quot;: &quot;Welcome&quot;,
+&quot;userviewCacheDuration&quot;: &quot;&quot;,
+&quot;userviewCacheScope&quot;: &quot;&quot;
+}
+}],
+&quot;properties&quot;: {
+&quot;id&quot;: &quot;category-EE74E4F4426241BD9BC3BC73B1D24AC7&quot;,
+&quot;label&quot;: &quot;&lt;i class=&apos;fa fa-home&apos;&gt;&lt;\/i&gt; Home&quot;
+}
+}],
+&quot;className&quot;: &quot;org.joget.apps.userview.model.Userview&quot;,
+&quot;properties&quot;: {
+&quot;description&quot;: &quot;&quot;,
+&quot;footerMessage&quot;: &quot;Powered by Joget&quot;,
+&quot;id&quot;: &quot;v&quot;,
+&quot;logoutText&quot;: &quot;Logout&quot;,
+&quot;name&quot;: &quot;Test Table Usage&quot;,
+&quot;welcomeMessage&quot;: &quot;#date.EEE, d MMM yyyy#&quot;
+},
+&quot;setting&quot;: {&quot;properties&quot;: {
+&quot;permission&quot;: {
+&quot;className&quot;: &quot;org.joget.apps.userview.lib.LoggedInUserPermission&quot;,
+&quot;properties&quot;: {}
+},
+&quot;theme&quot;: {
+&quot;className&quot;: &quot;org.joget.apps.userview.lib.AjaxUniversalTheme&quot;,
+&quot;properties&quot;: {
+&quot;dx8colorScheme&quot;: &quot;#e9e9e9;#FFFFFF;#AECAC7;#2C6562;#1976d2;#004ba0&quot;,
+&quot;mobileCacheEnabled&quot;: &quot;&quot;,
+&quot;mobileViewDisabled&quot;: &quot;&quot;,
+&quot;userImage&quot;: &quot;no&quot;
+}
+},
+&quot;userviewDescription&quot;: &quot;&quot;,
+&quot;userviewName&quot;: &quot;Test Table Usage&quot;
+}}
+}</json>
+         <dateCreated class="java.sql.Timestamp">2023-02-04 16:47:22.0 MYT</dateCreated>
+         <dateModified class="java.sql.Timestamp">2023-02-04 16:47:22.0 MYT</dateModified>
+      </userviewDefinition>
+   </userviewDefinitionList>
+   <datalistDefinitionList>
+      <datalistDefinition>
+         <id>list</id>
+         <appId>testtableusage</appId>
+         <appVersion>1</appVersion>
+         <name>list</name>
+         <description></description>
+         <json>{&quot;id&quot;:&quot;list&quot;,&quot;name&quot;:&quot;list&quot;,&quot;pageSize&quot;:&quot;0&quot;,&quot;pageSizeSelectorOptions&quot;:&quot;10,20,30,40,50,100&quot;,&quot;order&quot;:&quot;&quot;,&quot;orderBy&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;actions&quot;:[],&quot;rowActions&quot;:[],&quot;filters&quot;:[],&quot;binder&quot;:{&quot;className&quot;:&quot;org.joget.plugin.enterprise.DatabaseWizardDatalistBinder&quot;,&quot;properties&quot;:{&quot;jdbcDatasource&quot;:&quot;default&quot;,&quot;tableName&quot;:&quot;app_fd_tableTN&quot;,&quot;joins&quot;:[],&quot;primaryKey&quot;:&quot;id&quot;,&quot;filters&quot;:[],&quot;extraCondition&quot;:&quot;&quot;,&quot;groupBy&quot;:&quot;&quot;,&quot;functionColumns&quot;:[]}},&quot;columns&quot;:[{&quot;id&quot;:&quot;column_0&quot;,&quot;name&quot;:&quot;app_fd_tableTN.id&quot;,&quot;label&quot;:&quot;id&quot;,&quot;filterable&quot;:true,&quot;hidden&quot;:&quot;false&quot;,&quot;sortable&quot;:&quot;false&quot;}],&quot;template&quot;:{&quot;className&quot;:&quot;&quot;,&quot;properties&quot;:{}}}</json>
+         <dateCreated class="java.sql.Timestamp">2023-02-04 16:44:48.0 MYT</dateCreated>
+         <dateModified class="java.sql.Timestamp">2023-02-04 16:44:48.0 MYT</dateModified>
+      </datalistDefinition>
+   </datalistDefinitionList>
+   <!--builderDefinitionList/-->
+   <pluginDefaultPropertiesList/>
+   <environmentVariableList/>
+   <messageList/>   <!--resourceList/-->
+   <license>ZC/ZrhTUNpmfhVmxkNQhp6b3n11sUodRrKnEZeZzQLJzDLof25vHbg7zbjy5kwxa</license>
+</appDefinition>
