@@ -94,11 +94,10 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .subform-cell > label.label{
     white-space: normal;
     position: relative;
-    flex: 0 0 30%;
+    flex: 1 1 auto;
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
     min-height: 34px;
-    word-break: break-all;
     font-weight: bold;
 }
 .label-top.form-cell > label.label,
@@ -112,6 +111,10 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     white-space: normal;
     position: relative;
     flex: 0 0 70%;
+}
+.form-cell > label.label + div.form-clear,
+.subform-cell > label.label + div.subform-clear{
+    flex: 0 0 100%;
 }
 .label-top.form-cell > label.label + *:not(.ui-screen-hidden),
 .label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
@@ -129,6 +132,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .form-cell-full {
     flex: 0 0 100%;
 }
+.subform-clear + *,
 .form-clear + * {
     flex: 0 0 100%;
 }
