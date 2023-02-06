@@ -719,7 +719,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             } else {
                 html += "<li class=\"user-link\">\n"
                       + "    <a href=\"" + data.get("login_link") + "\" class=\"btn\" title=\""+ ResourceBundleUtil.getMessage("ubuilder.login") +"\">\n"
-                      + "	     <i class=\"fa fa-user white\"></i> \n"
+                      + "	     <i class=\"fa fa-sign-in white\"></i> \n"
                       + "    </a>\n";
             }
             html += "</li>";
