@@ -8,7 +8,7 @@
         let $select2 = this.select2(arguments);
 
         // handle on change values
-        $select2.on('change.select2', function(e) {
+        $select2.on('select2:select', function(e) {
             if(e && e.params && e.params.value) {
                 let newValue = e.params.value;
 
@@ -22,6 +22,8 @@
 
                 if(!exists && ajax) {
                     triggerAjaxForValues($(this), ajax, newValue);
+                } else {
+                    triggerChangeOfValues($(this), newValue);
                 }
             }
         });
@@ -41,15 +43,20 @@
                 type: 'GET',
                 url: url,
                 data: data
-            }).then(function (data) {
+            }).done(function (data) {
                 // create the option and append to Select2
                 let results = data.results;
                 for(let i in results) {
                     let result = results[i];
                     let option = new Option(result.text, result.id, true, true);
-                    $selector.append(option).trigger('change.select2');
+                    $selector.append(option).trigger('change');
                 }
             });
         }
+    }
+
+    function triggerChangeOfValues($selector, value) {
+        $selector.val(value);
+        $selector.trigger('change');
     }
 })(jQuery);
