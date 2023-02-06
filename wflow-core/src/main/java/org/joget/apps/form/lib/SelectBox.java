@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import org.kecak.apps.exception.ApiException;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,7 +71,10 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
 
     @Override
     public FormData formatDataForValidation(FormData formData) {
-        String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
+        String[] paramValues = Arrays.stream(FormUtil.getRequestParameterValues(this, formData))
+                .map(this::decrypt)
+                .toArray(String[]::new);
+
         String paramName = FormUtil.getElementParameterName(this);
 
         if ((paramValues == null || paramValues.length == 0) && FormUtil.isFormSubmitted(this, formData)) {
@@ -127,8 +131,11 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         // get value
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
-            String[] values = FormUtil.getElementPropertyValues(this, formData);
-            if (values != null && values.length > 0) {
+            String[] values = Arrays.stream(FormUtil.getElementPropertyValues(this, formData))
+                    // descrypt before storing to database
+                    .map(this::decrypt)
+                    .toArray(String[]::new);
+            if (values.length > 0) {
                 // check for empty submission via parameter
                 String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
                 if ((paramValues == null || paramValues.length == 0) && FormUtil.isFormSubmitted(this, formData)) {
@@ -156,13 +163,31 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         dynamicOptions(formData);
 
         // set value
-        String[] valueArray = FormUtil.getElementPropertyValues(this, formData);
-        List<String> values = Arrays.asList(valueArray);
-        dataModel.put("values", values);
+        @Nonnull
+        final List<String> databasePlainValues = Arrays.stream(FormUtil.getElementPropertyValues(this, formData))
+                .collect(Collectors.toList());
 
-        // set options
-        Collection<Map> optionMap = getOptionMap(formData);
-        dataModel.put("options", optionMap);
+        @Nonnull
+        final List<String> databaseEncryptedValues = new ArrayList<>();
+
+        @Nonnull
+        final List<Map> optionsMap = getOptionMap(formData)
+                .stream()
+                .peek(r -> {
+                    final String value = r.get(FormUtil.PROPERTY_VALUE).toString();
+                    final String encrypted = encrypt(value);
+
+                    r.put(FormUtil.PROPERTY_VALUE, encrypted);
+
+                    if(databasePlainValues.stream().anyMatch(value::equals)) {
+                        databaseEncryptedValues.add(encrypted);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        dataModel.put("values", databaseEncryptedValues);
+        dataModel.put("options", optionsMap);
+
         dataModel.put("className", getClassName());
 
         final String formDefId;
@@ -312,13 +337,14 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         final JSONArray jsonResults = new JSONArray();
         final Element element = FormUtil.findElement(fieldId, form, formData);
 
-        if (element == null) {
+        if (!(element instanceof SelectBox)) {
             throw new ApiException(HttpServletResponse.SC_BAD_REQUEST, "Element [" + fieldId + "] is not found in form [" + formDefId + "]");
         }
 
         final JSONObject jsonData = new JSONObject();
 
         FormUtil.executeOptionBinders(element, formData);
+
         final List<FormRow> optionsRowSet = new ArrayList<>(FormUtil.getElementPropertyOptionsMap(element, formData));
         if (values.length > 0) {
             for (String value : values) {
@@ -327,7 +353,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                     if (found) {
                         try {
                             JSONObject jsonRow = new JSONObject();
-                            jsonRow.put("id", row.getProperty(FormUtil.PROPERTY_VALUE));
+                            jsonRow.put("id", ((SelectBox) element).encrypt(row.getProperty(FormUtil.PROPERTY_VALUE)));
                             jsonRow.put("text", row.getProperty(FormUtil.PROPERTY_LABEL));
                             jsonResults.put(jsonRow);
 
@@ -357,7 +383,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
                         } else {
                             try {
                                 JSONObject jsonRow = new JSONObject();
-                                jsonRow.put("id", formRow.getProperty(FormUtil.PROPERTY_VALUE));
+                                jsonRow.put("id", ((SelectBox) element).encrypt(formRow.getProperty(FormUtil.PROPERTY_VALUE)));
                                 jsonRow.put("text", formRow.getProperty(FormUtil.PROPERTY_LABEL));
                                 jsonResults.put(jsonRow);
                                 pageSize--;
@@ -467,6 +493,45 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
 
     protected boolean verifyNonce(String nonce, String appId, String appVersion, String formDefId, String fieldId) {
         return SecurityUtil.verifyNonce(nonce, new String[]{getName(), appId, appVersion, formDefId, fieldId});
+    }
+
+    protected String encrypt(String rawContent) {
+        return encrypt(rawContent, "true".equalsIgnoreCase(getPropertyString("encryption")));
+    }
+
+    protected String encrypt(String rawContent, boolean encryption) {
+        if(encryption) {
+            String encrypted = SecurityUtil.encrypt(rawContent);
+            if(verifyEncryption(rawContent, encrypted)) {
+                return encrypted;
+            } else {
+                LogUtil.warn(getClassName(), "Failed to verify encrypted value, use raw content");
+                return rawContent;
+            }
+        }
+        return rawContent;
+    }
+
+    /**
+     * For testing purpose
+     * @param rawContent
+     * @param encryptedValue
+     * @return
+     */
+    protected boolean verifyEncryption(String rawContent, String encryptedValue) {
+        // try to decrypt
+        return (rawContent.equals(decrypt(encryptedValue)));
+    }
+
+    protected String decrypt(String protectedContent) {
+        return decrypt(protectedContent, "true".equalsIgnoreCase(getPropertyString("encryption")));
+    }
+
+    protected String decrypt(String protectedContent, boolean encryption) {
+        if (encryption) {
+            return SecurityUtil.decrypt(protectedContent);
+        }
+        return protectedContent;
     }
 }
 
