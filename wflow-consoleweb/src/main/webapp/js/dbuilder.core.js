@@ -3010,7 +3010,7 @@ DatalistBuilder = {
                 if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
                     if (prop === "columns"  || prop === "rowActions") {
                         CustomBuilder.data[prop] = [];
-                    } else if (prop.indexOf("-style-") === -1) {
+                    } else if (prop.indexOf("-style-") === -1 && prop !== "rowActionsMode") {
                         delete CustomBuilder.data[prop];
                     }
                     change = true;
