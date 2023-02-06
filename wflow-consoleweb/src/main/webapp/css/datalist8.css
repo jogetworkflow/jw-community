@@ -100,6 +100,7 @@
 .filter-cell{
     vertical-align: bottom;
     position: relative;
+    margin-bottom: 10px;
 }
 .dataList .filter-cell .close-icon:after{ 
     right: 20px !important;
@@ -288,8 +289,8 @@ body.rtl .dataList span.pagelinks{
     margin-bottom: 0;
 }
 .dataList .filter-cell input[type="submit"]{
-    padding: 8px 15px;
-    height: 38px;
+    padding: 5px 15px;
+    height: 34px;
     vertical-align: baseline;
     margin-bottom: 0px !important;
 }

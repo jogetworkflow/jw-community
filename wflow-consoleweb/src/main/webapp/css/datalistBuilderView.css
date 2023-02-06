@@ -165,7 +165,9 @@
 .search_filter_popup .filter-cell.hidden-filter{
     display:none !important;
 }
-
+body .filter-cell .form-button {
+    margin-bottom: 15px !important;
+}
 .dataList .actions.right{
     text-align:right;
 }
@@ -581,4 +583,8 @@
 }
 .dataList .show_hide_control:hover ul {
     display: block;
+}
+.body .dataList th.row_action:empty,
+.body .dataList td.row_action:empty{
+    padding: 0 !important;
 }
