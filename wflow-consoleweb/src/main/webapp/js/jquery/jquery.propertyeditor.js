@@ -1699,11 +1699,6 @@ PropertyEditor.Model.Editor.prototype = {
             $(this.editor).find('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect').each(function(){
                 $(this).prevUntil('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect', ":not(.hidden):first").addClass("property-last");
             });
-            $(this.editor).find('.property-plugin-selection').each(function(){
-                if ($(this).prev().is('.property-type-header') && ($(this).next().length === 0 || $(this).next().is('.property-type-header, .property-plugin-selection, .property-type-elementmultiselect'))) {
-                    $(this).prev().remove(); //remove the additional label
-                }
-            });
             $(this.editor).find('.property-editor-property-container').each(function(){
                 $(this).find('> .property-editor-property:not(.hidden):not(.property-type-hidden):first').addClass("property-first");
                 $(this).find('> .property-editor-property:not(.hidden):not(.property-type-hidden):last').addClass("property-last");
