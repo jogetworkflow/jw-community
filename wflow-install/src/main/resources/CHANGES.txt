@@ -2,6 +2,153 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0-RC
+======
+8038aec50 Fixed: wflow-wfengine - Monitoring - Exception thrown when deleting running process when "Process Completion Data Handling" set to "Archive Process On Completion". @8.0-SNAPSHOT
+b1a33110e Fixed: wflow-consoleweb - Properties Editor - Header before a plugin select field is wrongly removed. @8.0-SNAPSHOT
+72dae874d Fixed: wflow-core - DX 8 Theme - List filter not render correctly when filter wrapped to second row. @8.0-SNAPSHOT
+024c0c09c Fixed: wflow-core - List Builder - Classic Table - Display row actions as single column setting can't save. @8.0-SNAPSHOT
+8199a9eca Fixed: wflow-core - Form - Grid label is not display in full length. @8.0-SNAPSHOT
+f20af245c Fixed: wflow-core - Orphaned Form Data Health Check - Having exception in multi tenant environment. @8.0-SNAPSHOT
+1530c0146 Fixed: wflow-consoleweb - Log Viewer - Correction for 63faf68e. @8.0-SNAPSHOT
+62a78df23 Fixed: wflow-consoleweb - Classic Table List Template - Hidden column is show in the show/hide options. @8.0-SNAPSHOT
+e589c3158 Fixed: wflow-consoleweb - Builders - CTRL+V is not working when pasting value to code editor property field. @8.0-SNAPSHOT
+63faf68e6 Fixed: wflow-consoleweb - Log Viewer - Broadcast message to other cluster node causing server unstable. @8.0-SNAPSHOT
+1a5278c8f Fixed: wflow-consoleweb - Process Builder - Fixed when the participant does not exist, opening Process Builder will keep loading. @8.0-SNAPSHOT
+8da250b96 Fixed: wflow-consoleweb - UI Builder - HTML attribute value is not proper escaped. @8.0-SNAPSHOT
+0bb0963dd Modified: wflow-install - Update default apps, SQL files & DB data. @8.0-SNAPSHOT
+3a7dd5d5c Fixed: wflow-consoleweb - Builders - Copy text out of input field using shortcut key is not working. @8.0-SNAPSHOT
+461a7701c Fixed: wflow-consoleweb - Builders - Shortcut keys not working when switch editing builder item within same builder. @8.0-SNAPSHOT
+c4b71c3dc Updated: wflow-consoleweb - App Center - Changed login page logo to new logo. @8.0-SNAPSHOT
+2b656ad71 Updated: wflow-consoleweb - App Center - Change to new logo. @8.0-SNAPSHOT
+663e49c00 Modified: wflow-consoleweb - App Center - Change image link to jw path instead of embedded in the app. @8.0-SNAPSHOT
+93b8d89f3 Added: wflow-consoleweb - App Center - Added images for App Center. @8.0-SNAPSHOT
+dd9bd458c Fixed: wflow-consoleweb - List - Distorted view after rearrange columns with `Table - Classic` template and enabled `Allow User Rearrange Columns?`. @8.0-SNAPSHOT
+3e708acb4 Fixed: wflow-core - Date Picker - Click on calendar icon redirected to homepage when configured start/end date. @8.0-SNAPSHOT
+57df00aa0 Modified: wflow-consoleweb - Builders - Missing plugin is not noticeable in X-RAY viewer. @8.0-SNAPSHOT
+e51f2c6e3 Fixed: wflow-consoleweb - Builders - CTRL+V can't paste text content from clipboard to property field when there is a copied element. @8.0-SNAPSHOT
+c4103904f Fixed: wflow-consoleweb - Process Builder - Node endpoints are too small and hard to drag a new connection from it. @8.0-SNAPSHOT
+1e4133a2a Fixed: wflow-core - Process Tool - Process related hash variable is not parsed in process tool properties. @8.0-SNAPSHOT
+f64017d0d Fixed: wflow-consoleweb - UI Builder - JS error when click to edit category. @8.0-SNAPSHOT
+c809f53f2 Fixed: wflow-consoleweb - UI Builder - Prompt to save change when there is no change on HTML menu properties. @8.0-SNAPSHOT
+9e99307b3 Fixed: wflow-consoleweb - UI Builder - Palette is empty when edit page components in Arabic locale. @8.0-SNAPSHOT
+306e4e83f Modified: wflow-consoleweb - List Builder - Retain missing columns when switching binder until saving the design. @8.0-SNAPSHOT
+f47a2bcc4 Modified: wflow-consoleweb - Builders - Highlighting the missing element in red color. @8.0-SNAPSHOT
+073762dd0 Fixed: wflow-consoleweb - List Builder - Column body does not move with header when move using action buttons. @8.0-SNAPSHOT
+bad8e6c23 Fixed: wflow-core - UI - Chosen dropdown can't select option in RTL mode. @8.0-SNAPSHOT
+bbb28dad2 Fixed: wflow-core - Builders - Can't use CTRL+S to save in builder settings view when there is an element selected in canvas. @8.0-SNAPSHOT
+f3c02dc78 Fixed: wflow-core - List - Date filter icon not position correctly. @8.0-SNAPSHOT
+f210d5ed0 Fixed: wflow-core - UI - Exception in log when using Janux theme. @8.0-SNAPSHOT
+c6ff7a555 Fixed: wflow-core - Date Picker - Can't render correctly in Arabic locale. @8.0-SNAPSHOT
+b4054e3b5 Fixed: wflow-consoleweb - App Message - When app message is not available for a locale, message key is shown. @8.0-SNAPSHOT
+f21fb525e Fixed: wflow-core - User Profile Menu - Fixed label and span does not position correctly in RTL mode. @8.0-SNAPSHOT
+b3beaa9cc Fixed: wflow-consoleweb - App Center - App center login form does not position correctly in RTL mode. @8.0-SNAPSHOT
+b8f5cd455 Fixed: wflow-consoleweb - Admin Bar - When switch language, admin bar is not reflected. @8.0-SNAPSHOT
+d5950f3a7 Fixed: wflow-consoleweb - DX8 themes - added padding right for header message and remove padding right for inbox msg in rtl mode. @8.0-SNAPSHOT
+2efa63b2f Modified: wflow-consoleweb - Updated and checked ar message bundle. 8.0-SNAPSHOT
+fa4d53425 Fixed: wflow-consoleweb - Edit User - NPE when setting grade. @8.0-SNAPSHOT
+7a95df6dd Fixed: wflow-consoleweb - General Setting - Switching locale does not take effect immediately after saved. @8.0-SNAPSHOT
+8e34b8d40 Fixed: wflow-commons - General Setting - Timezone options not following locale. @8.0-SNAPSHOT
+4d241f22b Fixed: wflow-consoleweb - Builders - Inline edit element can't display with custom styles. @8.0-SNAPSHOT
+091adb262 Fixed: wflow-consoleweb - Builders - Merge incorrectly handled secure value on next save. @8.0-SNAPSHOT
+f7425e25b Modified: wflow-core - Date Field - Support Thai years for th_TH locale. @8.0-SNAPSHOT
+29c83a7e7 Fixed: wflow-consoleweb - Builders - Changes in builder settings is not saved when press CTRL+S. @8.0-SNAPSHOT
+84625884d Fixed: wflow-consoleweb - List Builder - Row action is wrongly show as invisible. @8.0-SNAPSHOT
+b18cf82bf Fixed: wflow-consoleweb - Form Builder - Invisible element is not correct marked when form first loaded. @8.0-SNAPSHOT
+2da291855 Fixed: wflow-consoleweb - App Center - Login button is vertically misaligned. @8.0-SNAPSHOT
+3416ea2c3 Modified: wflow-consoleweb - Process Builder - Clone process does not handle participant correctly. @8.0-SNAPSHOT
+860cd73e9 Fixed: wflow-consoleweb - Fixed form/subform column label is misaligned. @8.0-SNAPSHOT
+cf97b487b Modified: wflow-consoleweb - List/Process Builder - Palette favor feature not working. @8.0-SNAPSHOT
+ac0a12429 Modified: wflow-consoleweb - Process Builder - Add button to copy run process link to clipboard. @8.0-SNAPSHOT
+8b3838019 Modified: wflow-install - Add default encoding to startup script. @8.0-SNAPSHOT
+0d01e281f Fixed: wflow-consoleweb - UI Builder - Preview not working when edit page component and the menu without custom menu id. @8.0-SNAPSHOT
+97460b284 Fixed: wflow-wfengine - Process Builder - Builder need to save 2 times for a change. @8.0-SNAPSHOT
+f68e783d6 Added: wflow-core - Plugin - Added Push Notification tool. @8.0-SNAPSHOT
+6030e8a48 Fixed: wflow-consoleweb - List Builder - Cards of Card template having border not visible correctly in builder. @8.0-SNAPSHOT
+f403f4d84 Fixed: wflow-consoleweb - Process Builder - Switching process in screenshot viewer took longer to render and rendered multiple times. @8.0-SNAPSHOT
+b4c84feb0 Fixed: wflow-consoleweb - Process Builder - Start/End node is wrongly mark as invisible element. @8.0-SNAPSHOT
+951ceab59 Fixed: wflow-consoleweb - Builders - When set an element to display none, there is a label overlapped with the element.  @8.0-SNAPSHOT
+55b3b4f07 Fixed: wflow-consoleweb - List Builder - Set column to hidden having a confusing eye icons.  @8.0-SNAPSHOT
+631171355 Fixed: wflow-consoleweb - Builder - Settings value is not saved correctly.  @8.0-SNAPSHOT
+56e50321f Modified: wflow-consoleweb - List Builder - When template changed, prompt to confirm removing custom styling. @8.0-SNAPSHOT
+08308b7e7 Modified: jw-community - Upgraded to Apache Tomcat 9.0.71 @8.0-SNAPSHOT
+301a628c3 Fixed: wflow-core - Multi Tool - Wrongly parsed all the hash variables in properties before it is in use. @8.0-SNAPSHOT
+0f653ffbe Fixed: wflow-consoleweb - Builders - Merge incorrectly handled secure value on next save. @8.0-SNAPSHOT
+f76d56068 Fixed: wflow-plugin-base - Builders - Secure value with `/` char in JSON Definition is incorrectly encrypted. @8.0-SNAPSHOT
+37b80ac09 Fixed: wflow-core/wflow-consolweb - CheckBox & Radio Button -  Added new option 'Display Option Vertically' to display option line by line. @8.0-SNAPSHOT
+965d54cbf Fixed: wflow-consoleweb/wflow-core - DX8 Userview theme - redesign login page. @8.0-SNAPSHOT
+22274ff07 Fixed: wflow-consoleweb - Admin Bar - Not in RTL without refresh page after switch to Arabic locale. @8.0-SNAPSHOT
+141841d4c Modified: wflow-core - User Profile - Added option to choose western digit for date. @8.0-SNAPSHOT
+aa818d335 Added: wflow-core - Added Date English Hash Variable to always return result in English locale. @8.0-SNAPSHOT
+9b99d1caf Fixed: wflow-wfengine - Process Builder - Shark duplicate id issue in long transaction. @7.0-SNAPSHOT
+9308dd11b Fixed: wflow-consoleweb - App Center - adjusted the CSS for applist and template list. @8.0-SNAPSHOT
+2c33f1bf8 Fixed: wflow-consoleweb - Process Builder - JS error when adding subflow without configure it and view the XPDL. @8.0-SNAPSHOT
+baf396361 Fixed: wflow-consoleweb - Builders - Can't delete a missing plugin element. @8.0-SNAPSHOT
+f5d21f8c2 Fixed: wflow-consoleweb - Grid - Table header rendered multiple time when using AJAX theme and mobile. T1795 @8.0-SNAPSHOT
+d81d7327a Fixed: wflow-consoleweb - List - Column link not clickable on mobile device. T1795 @8.0-SNAPSHOT
+bf8b53cb0 Fixed: wflow-core - Ajax Theme - Redirection in embed mode is not working. T1795 @8.0-SNAPSHOT
+8be72f490 Fixed: wflow-consoleweb - Fixed miss-aligned link and Image. @8.0-SNAPSHOT
+c5d9ea4bc Fixed: wflow-core - Generator - Generator plugin should not parse hash variable in configuration. @7.0-SNAPSHOT
+5f94cfd46 Fixed: wflow-consoleweb - UI Builder - Ajax menu count throw js error when generate UI screenshot. @8.0-SNAPSHOT
+72585acf0 Fixed: wflow-consoleweb - UI Builder - Linked a delete style sheet. @8.0-SNAPSHOT
+5b0ac919c Fixed: wflow-consoleweb - Builders - Shortcut keys does not work correctly. @8.0-SNAPSHOT
+ce3446f5c Fixed: wflow-commons - SetupDao - Suppress cluster node license update exception due to node setting deleted when cluster node shutdown. @8.0-SNAPSHOT
+06d26a69d Fixed: wflow-core - Process Builder - Transition can't connect correctly when activity id is same with process id. @8.0-SNAPSHOT
+19f409610 Fixed: wflow-core - Process Tool - Hash Variable in properties does not parse. @8.0-SNAPSHOT
+f2487b8be Fixed: wflow-consoleweb - Janux/Universal/Progressive Theme - Added margin-bottom for button. @8.0-SNAPSHOT
+cd1b463f1 Fixed: wflow-consoelweb - List Builder - Backward compatible issue caused by some builder variables available in DX 7 is removed. @8.0-SNAPSHOT
+7570eaf2c Modified: wflow-core - X-admin Theme - Remove close window notification. @8.0-SNAPSHOT
+1b9e53fb9 Modified: wflow-consoleweb - Card Icon List Template - Update labels. @8.0-SNAPSHOT
+91dba8936 Fixed: wflow-wfengine - Process - Correction for Object Id changes. @8.0-SNAPSHOT
+1c7a0d534 Modified: wflow-consoleweb - Export App - Added check all to toggle all other checkboxes. @8.0-SNAPSHOT
+c0b82965a Modified: wflow-core - Form - Dynamic Options - Support options having multiple groups. @8.0-SNAPSHOT
+853c55353 Fixed: wflow-consolewbe - Builders - Builder item name does not update after changed in settings and saved. @8.0-SNAPSHOT
+489d38736 Fixed: wflow-consolewbe - Builders - Pallette favorite feature can't remove favorite correctly. @8.0-SNAPSHOT
+938d4af9e Fixed: wflow-consolewbe - List Builder - Orphaned columns still remain in the JSON Definition after switch data store or template. @8.0-SNAPSHOT
+64e1cef20 Fixed: wflow-core - ID Generator Field - App variable name with `-` cannot used. @8.0-SNAPSHOT
+1d0b81033 Modified: wflow-consoleweb - UI - All list button position changed default to both top left & bottom left. @8.0-SNAPSHOT
+8c57d41ef Fixed: wflow-consoleweb - List - Table cell should vertical align top. @8.0-SNAPSHOT
+236e88018 Fixed: wflow-consoleweb - Inbox - Date format is wrong in Arabic language. @8.0-SNAPSHOT
+706e119ed Modified: wflow-core - App Icons List Template - Support super app listing feature. @8.0-SNAPSHOT
+ef4115cb9 Fixed: wflow-consoleweb - DX8 Themes - Added padding for readonly field. @8.0-SNAPSHOT
+31f8e22bc Fixed: wflow-consoleweb - App Center - Inbox notifications causing session can't timeout. T1604 @7.0-SNAPSHOT
+55234bf45 Fixed: wflow-consoleweb - X-admin Theme - Prevent open redirection. T1604 @7.0-SNAPSHOT
+45cfe7a6a Fixed: wflow-consoleweb - App Center - Marketplace - Prevent open redirection. T1604 @7.0-SNAPSHOT
+d1556316e Fixed: wflow-consoleweb - Manage Users - User did not auto remove from organization when removed from all department and grade or an organization. T1744 @7.0-SNAPSHOT
+d80527ae8 Fixed: wflow-consoleweb - Monitoring - Tomcat logs - List does not change when switch page. @7.0-SNAPSHOT
+a69004048 Fixed: wflow-commons - SetupDao - Suppress cluster node license update exception due to node setting deleted when cluster node shutdown. @7.0-SNAPSHOT
+42b9c1dd4 Fixed: wflow-wfengine - Process - Prevent unique constraint issue in cluster environment. T1572 @7.0-SNAPSHOT
+d5e76fa7f Fixed: wflow-consoleweb - App Composer - redesign the add new form/list/ui buttons to make it more obvious. @8.0-SNAPSHOT
+e77074c86 Fixed: wflow-consoleweb/wflow-core - DX8/Progressive/Universal/Xadmin Themes - Fixed on RTL mode UI no displaying correctly. @8.0-SNAPSHOT
+fb6a54893 Modified: wflow-core, wflow-wfengine - Performance - Added caching to reduce repeated database calls within the same HTTP request @8.0-SNAPSHOT
+b78be2188 Fixed: wflow-consoleweb - Monitoring - Tomcat logs - List does not change when switch page. @8.0-SNAPSHOT
+34f59c2de Fixed: wflow-consoleweb - Simple Tensorflow/Rule Decision Plugin - Can't get new added variables & transition in the options. @8.0-SNAPSHOT
+309669c0e Fixed: wflow-consoleweb - Help Guide - Typo correction. @8.0-SNAPSHOT
+0adc13776 Fixed: wflow-consoleweb - Process Builder - Can't save after clone process due to duplicate participant id. @8.0-SNAPSHOT
+58df6a790 Fixed: wflow-core - Process - Add checking to prevent infinite loop in process migration. @7.0-SNAPSHOT
+d5b33ebe4 Fixed: wflow-commons - Fixed form Image Upload, thumbnail show in portrait mode but photos taken in landscape. #T1200. @7.0-SNAPSHOT
+7e67c2609 Fixed: jw-community - Update jQuery UI to 1.13.2 for CVE-2022-31160. @7.0-SNAPSHOT
+32b988857 Fixed: wflow-core - Date Picker - Date picker can't work with date limit when the date format is without day syntax. T1673 @7.0-SNAPSHOT
+252f63cca Modified: wflow-core - JSON Tool - Added {} annotation to handle the keys which contains ".". @7.0-SNAPSHOT
+0d2e8d55b Fixed: wflow-wfengine - Workflow Manager - Process completed checking run even when activity on created and running state. T1513 @7.0-SNAPSHOT
+14b9e83b5 Fixed: wflow-wfengine - Process - Tool abort itself using JSON API but process still continue to next activity. T1513 @7.0-SNAPSHOT
+5811d1213 Fixed: wflow-core - Update TinyMCE to 6.3.0  @8.0-SNAPSHOT
+6e2ce04d1 Fixed: wflow-core - User Profile Menu - Validate input length. T1604 @7.0-SNAPSHOT
+a020eaa4d Fixed: wflow-consoleweb - Fixed Issue cant find the control field if the target field is on another page level. #T1598 @7.0-SNAPSHOT
+b93cced4f Fixed: wflow-core - Form - Store binders under visibility hidden section is still executed. T1640 @7.0-SNAPSHOT
+9edcf9f16 Fixed: wflow-core - Update poi library to 5.2.3. @8.0-SNAPSHOT
+9a77f508a Fixed: wflow-core - User Profile Menu - Prevent XSS. T1604 @7.0-SNAPSHOT
+2e33ea3bc Fixed: wflow-core - Form Section Visibility - fails if on checkbox set to readonly. @7.0-SNAPSHOT #T1624
+473338a6f Fixed: jw-community - Update csrfguard to 4.2.0 & commons-lang3 to 3.12.0 for CVE-2021-28490. @8.0-SNAPSHOT
+28d803e14 Modified: wflow-core - UI Theme - Retrieve menu count in separated AJAX call. @7.0-SNAPSHOT
+502a8b2ba Fixed: wflow-consoleweb - Fixed CSS issues when in RTL mode. @8.0-SNAPSHOT.
+3c0ba2094 Fixed: wflow-wfengine - WorkflowManager - XPDL return null in multitenant environment. @7.0-SNAPSHOT
+977fe76b2 Fixed: wflow-core - AppDevUtil - Git having file permission issue during heavy concurrent requests on multitenant environment. @7.0-SNAPSHOT
+0f3c88255 Modified: wflow-core - Tensorflow Plugin - Update protobuf-java to 3.21.9. @8.0-SNAPSHOT
+e43f37d9e Modified: wflow-commons - Update Apache Tomcat JDBC to 9.0.68. @8.0-SNAPSHOT
+045ee9ebc Modified: jw-community - Update jQuery UI to 1.13.2 for CVE-2022-31160. @8.0-SNAPSHOT
+f57bfa97d Modified: jw-community - Update Spring Framework to 5.3.23, Spring Security to 5.7.5, Spring LDAP to 2.4.1. @8.0-SNAPSHOT
+
 8.0-BETA
 ========
 3ff1a3530 Fixed: jw-community - Update app center. @8.0-SNAPSHOT
