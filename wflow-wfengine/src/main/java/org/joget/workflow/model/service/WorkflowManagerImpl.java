@@ -2821,7 +2821,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 
                 if (wfProcess != null && !wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
                     WAPI wapi = Shark.getInstance().getWAPIConnection();
-                    wapi.terminateProcessInstance(sessionHandle, procInstanceId);
+                    wapi.abortProcessInstance(sessionHandle, procInstanceId);
                 }
 
                 ea.deleteProcessesWithFiltering(sessionHandle, filter);
