@@ -1726,7 +1726,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .editor-panel-mode .element-pages .element-pages .property-editor-page-title{
     background: #9fa9b1;
-    cursor: default;
     border-radius: 0;
 }
 .editor-panel-mode .element-pages > :nth-child(2) > .property-editor-page-title:after{
@@ -1756,9 +1755,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .element-pages > :nth-child(2).collapsed > .property-editor-page-title:after{
     content: '\f07b';
 }
-.editor-panel-mode .element-pages .element-pages > :nth-child(2) > .property-editor-page-title:after{
-    display: none;
-}
 .editor-panel-mode .element-pages .element-pages .property-editor-page.collapsed .property-editor-property-container{
     display: block !important;
 }
@@ -1772,6 +1768,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     background: #718595;
     cursor: default;
     border-radius: 0;
+}
+.editor-panel-mode .element-pages .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title {
+    background: #9fa9b1;
 }
 .editor-panel-mode .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title:after{
     display: none !important;
