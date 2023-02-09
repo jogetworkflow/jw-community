@@ -9,12 +9,16 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -188,5 +192,33 @@ public class UserviewWebController {
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.println(cacheUrlsJSON);
+    }
+    
+    @RequestMapping({"/userview/(*:appId)/appI18nMessages"})
+    public void i18n(HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("keys[]") String[] keys) throws IOException {
+        appId = SecurityUtil.validateStringInput(appId); 
+        appService.getPublishedAppDefinition(appId);
+        
+        JSONObject messages = new JSONObject();
+        
+        if (keys != null && keys.length > 0) {
+            try {
+                for (String k : keys) {
+                    String value = AppUtil.replaceAppMessage(k);
+                    if (k.equals(value)) {
+                        value = ResourceBundleUtil.getMessage(k);
+                    }
+                    if (!k.equals(value)) {
+                        messages.put(k, value);
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(UserviewWebController.class.getName(), e, "");
+            }
+        }
+        
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.println(messages.toString());
     }
 }

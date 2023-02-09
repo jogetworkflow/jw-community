@@ -600,3 +600,22 @@ body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover
         height: 100% !important;
     }
 }
+#NoAppAvailable{
+    padding: 100px 20px;
+    border-radius: 15px;
+    background-color: #F5F8FA;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+}
+#NoAppAvailable > i{
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 60px;
+    margin-bottom: 25px;
+    color: #009265;
+}
+#NoAppAvailable > h2{
+    text-align: center;
+    color: #72777a;
+    font-weight: 400;
+}

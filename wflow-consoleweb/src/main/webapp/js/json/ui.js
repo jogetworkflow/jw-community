@@ -170,6 +170,36 @@ UI = {
             }, false);
         }
         UI.visibilityChangeIntervals[name] = setInterval(callback, milliseconds);
+    },
+    /*
+     * Retreive i18n messages for javascript usage
+     */
+    loadMsg : function(keys, callback) {
+        if (callback !== undefined && (typeof callback === "function")) {
+            if (UI.messages === undefined) {
+                UI.messages = {};
+            }
+            var missingKeys = [];
+            if (keys !== undefined && keys !== null && keys.length > 0) {
+                for (var i = 0; i < keys.length; i++) {
+                    if (UI.messages[keys[i]] === undefined) {
+                        missingKeys.push(keys[i]);
+                    }
+                }
+            }
+            if (missingKeys.length > 0) {
+                ConnectionManager.post(UI.base + '/web/userview/'+UI.userview_app_id+'/appI18nMessages', {
+                    success : function(data) {
+                        UI.messages = $.extend(UI.messages, eval('['+data+']')[0]);
+                        callback(UI.messages);
+                    }
+                }, {
+                   'keys' : missingKeys
+                });
+            } else {
+                callback(UI.messages);
+            }
+        }
     }
 };
 
