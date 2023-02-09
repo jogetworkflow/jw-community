@@ -2324,7 +2324,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-radius: 3px;
     display: inline-block;
     height: 34px;
-    width:138px;
+    min-width: 74px;
     background: #f9fafb;
     text-align: center;
     vertical-align: middle;
@@ -2340,7 +2340,7 @@ body .ui-dialog .button_form.ui-dialog-content{
 .property-type-colorscheme .color_values colorgroup{
     padding: 8px 5px;
     height: 42px;
-    width: 170px;
+    min-width: 74px;
     cursor: text;
     border-radius: 3px 0px 0px 3px;
 }

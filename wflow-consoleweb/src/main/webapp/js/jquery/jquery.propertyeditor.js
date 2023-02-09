@@ -10418,17 +10418,39 @@ PropertyEditor.Type.ColorScheme.prototype = {
             this.value = "";
         }
         
+        var noOfColors = 6;
+        if (thisObj.properties.noOfColors !== undefined) {
+            if (jQuery.type(thisObj.properties.noOfColors) === "number") {
+                noOfColors = thisObj.properties.noOfColors;
+            } else if (jQuery.type(thisObj.properties.noOfColors) === "string") {
+                try {
+                    noOfColors = parseInt(thisObj.properties.noOfColors);
+                } catch (err) {}
+            }
+            if (noOfColors < 1) {
+                noOfColors = 6;
+            }
+        }
+        thisObj.properties.noOfColors = noOfColors;
+        
         var html = '<div id="' + this.id + '_scheme_selector" class="selector"><div class="color_values">';
         
         var colors = this.value.split(";");
-        if (colors.length === 6) {
+        if (colors.length > 1) {
             html += '<colorgroup style="background:'+colors[0]+';">';
-            for (var i=1; i<6; i++) {
+            for (var i=1; i<noOfColors; i++) {
+                if (colors[i] === undefined) {
+                    colors[i] = "";
+                }
                 html += '<color style="background:'+colors[i]+';"></color>';
             }
             html += '</colorgroup>';
         } else {
-            html += '<colorgroup><color></color><color></color><color></color><color></color><color></color></colorgroup>';
+            html += '<colorgroup>';
+            for (var i=1; i<noOfColors; i++) {
+                html += '<color></color>';
+            }
+            html += '</colorgroup>';
         }
         
         html += '<span class="trigger"><i class="fas fa-chevron-down"></i></span></div><div class="color-input" style="display:none;"><input type="text"/></div><ul style="display:none;">';
@@ -10447,7 +10469,10 @@ PropertyEditor.Type.ColorScheme.prototype = {
             var values = option.split(";");
             html += '<li data-value="' + PropertyEditor.Util.escapeHtmlTag(option) + '" class="' + selected + '">';
             html += '<colorgroup style="background:'+values[0]+';">';
-            for (var i = 1; i < 6; i++) {
+            for (var i = 1; i < noOfColors; i++) {
+                if (values[i] === undefined) {
+                    values[i] = "";
+                }
                 html += '<color style=\"background:'+values[i]+';\"></color>';
             }
             html += '</colorgroup></li>';
@@ -10481,6 +10506,9 @@ PropertyEditor.Type.ColorScheme.prototype = {
                     $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
                     $(e.target).addClass("editing");
                     var color = $(e.target).css("background-color");
+                    if ($(e.target).attr("style") === undefined || $(e.target).attr("style") === "") {
+                        color = "#000000"; // if there is no value set before, set it to black instead of transparent
+                    }
                     $(selector).find(".color-input input").val("");
                     $(selector).find(".color-input").show();
                     $(selector).find(".color-input input").val(color).trigger("click");
