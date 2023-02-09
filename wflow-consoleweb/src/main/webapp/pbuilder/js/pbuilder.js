@@ -912,7 +912,7 @@ ProcessBuilder = {
         var keys = Object.keys(CustomBuilder.data.participants);
         for (var i in keys) {
             var pid = keys[i].substring(keys[i].indexOf("::") + 2);
-            if (participantKeys[pid] === undefined) {
+            if (participantKeys[pid] === undefined && pid.indexOf("::processStartWhiteList") === -1) {
                 delete CustomBuilder.data.participants[keys[i]];
             }
         }
@@ -1592,7 +1592,7 @@ ProcessBuilder = {
         var keys = Object.keys(CustomBuilder.data.participants);
         for (var i in keys) {
             var pid = keys[i].substring(keys[i].indexOf("::") + 2);
-            if (participantKeys[pid] === undefined) {
+            if (participantKeys[pid] === undefined && pid.indexOf("::processStartWhiteList") === -1) {
                 delete CustomBuilder.data.participants[keys[i]];
             }
         }
