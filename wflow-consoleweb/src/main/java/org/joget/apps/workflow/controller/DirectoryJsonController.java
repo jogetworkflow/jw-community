@@ -34,6 +34,7 @@ import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -398,6 +399,7 @@ public class DirectoryJsonController {
             //JSONArray deptArray = new JSONArray();
             departments = getRecursiveDepartmentList(orgId);
             if (departments != null) {
+                jsonObject.put("departments", new JSONArray());
                 jsonObject.accumulate("departments", empty);
                 for (Department department : departments) {
                     Map data = new HashMap();
@@ -411,6 +413,7 @@ public class DirectoryJsonController {
             //JSONArray gradeArray = new JSONArray();
             grades = directoryManager.getGradesByOrganizationId(null, orgId, "name", false, null, null);
             if (grades != null) {
+                jsonObject.put("grades", new JSONArray());
                 jsonObject.accumulate("grades", empty);
                 for (Grade grade : grades) {
                     Map data = new HashMap();

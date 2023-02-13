@@ -121,7 +121,7 @@
                             </tr>
                             <c:if test="${!empty employments}">
                                 <c:forEach items="${employments}" var="e" >
-                                    <c:if test="${!empty e.departmentId}">
+                                    <c:if test="${!empty e.organizationId || !empty e.departmentId}">
                                         <tr class="row">
                                             <td class="delete">
                                                 <a class="delete"><i class="fas fa-minus-circle"></i><a>
@@ -328,9 +328,11 @@
                 if (dvalue === undefined || dvalue === null) {
                     dvalue = "";
                 }
-                $(field).find("option:not(:eq(1))").remove();
+                $(field).find("option:not([value=''])").remove();
                 for(var i=0; i < options.length; i++){
-                    $(field).append('<option value="' + UI.escapeHTML(options[i].id) + '">' + UI.escapeHTML(options[i].name) + '</option>');
+                    if (options[i].id !== "") {
+                        $(field).append('<option value="' + UI.escapeHTML(options[i].id) + '">' + UI.escapeHTML(options[i].name) + '</option>');
+                    }
                 }
                 $(field).val(dvalue);
             }
