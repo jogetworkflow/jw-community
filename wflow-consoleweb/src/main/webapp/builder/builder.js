@@ -2069,7 +2069,7 @@
     permissionViewBeforeClosed : function(view) {
         CustomBuilder.Builder.selectedEl = null;
         
-        if (CustomBuilder.Builder.selectedElBeforePermission !== null) {
+        if (CustomBuilder.Builder.selectedElBeforePermission !== null && CustomBuilder.Builder.selectedElBeforePermission !== undefined) {
             CustomBuilder.Builder.selectNode(CustomBuilder.Builder.selectedElBeforePermission);
         }
         
