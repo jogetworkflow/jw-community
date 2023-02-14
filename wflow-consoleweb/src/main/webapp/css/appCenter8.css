@@ -448,6 +448,10 @@ header.navbar {
 body.rtl #pc-07863BFB349747ED1A6E45812F7C5F97{
     margin-right: 15px;
 }
+body .dataList#dataList_applist .appIcon{
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+}
 
 @media (max-width: 450px) {
     #clock,#date, #assignment_msg > a, #assignment_msg > h3{
@@ -455,6 +459,11 @@ body.rtl #pc-07863BFB349747ED1A6E45812F7C5F97{
     }
     #home_column #home {
         margin-top:30px;
+    }
+}
+@media (max-width: 680px){
+    #clock, #date{
+        display: none !important;
     }
 }
 @media (max-width: 767px){
@@ -495,6 +504,9 @@ body.rtl #pc-07863BFB349747ED1A6E45812F7C5F97{
     }
     #pc-96141190357145C9478235142772AEC5{
          display:none;
+    }
+    #assignment_msg{
+        margin-top: 50px !important;
     }
 }
 @media (max-width: 1279px) {
