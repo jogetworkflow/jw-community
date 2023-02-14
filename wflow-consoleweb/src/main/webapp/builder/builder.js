@@ -463,6 +463,13 @@
             $("#collapse-all-props-btn").hide();
         }
         
+        if (CustomBuilder.getBuilderSetting("right-panel-mode") === "window") {
+            $("body").addClass("right-panel-mode-window");
+        } else {
+            $("body").removeClass("right-panel-mode-window");
+        }
+        CustomBuilder.adjustPropertyPanelSize();
+        
 //        var builderMode = $.localStorage.getItem("builderMode");
 //        if (builderMode === undefined || builderMode === null || builderMode === "" || !(builderMode === "mode-basic" || builderMode === "mode-advanced")) {
 //            builderMode = "mode-basic";
@@ -1589,7 +1596,7 @@
             };
             
             $("#right-panel #element-properties-tab").propertyEditor(options);
-            if ($("body").hasClass("max-property-editor")) {
+            if ($("body").hasClass("max-property-editor") || $("body").hasClass("right-panel-mode-window")) {
                 CustomBuilder.adjustPropertyPanelSize();
             }
             
@@ -1811,12 +1818,12 @@
         $("body").addClass("right-panel-resizing");
         
         var stopResize = function() {
-            $("body").off("mousemove.resize touchmove.resize");
-            $("body").off("mouseup.resize touchend.resize");
+            $("body").off("mousemove.rpresize touchmove.rpresize");
+            $("body").off("mouseup.rpresize touchend.rpresize");
             
             if ($("body").hasClass("default-builder")) {
-                CustomBuilder.Builder.frameHtml.off("mousemove.resize touchmove.resize");
-                CustomBuilder.Builder.frameHtml.off("mouseup.resize touchend.resize");
+                CustomBuilder.Builder.frameHtml.off("mousemove.rpresize touchmove.rpresize");
+                CustomBuilder.Builder.frameHtml.off("mouseup.rpresize touchend.rpresize");
             }
             $(panel).removeClass("resizing");
             $("body").removeClass("right-panel-resizing");
@@ -1847,18 +1854,182 @@
         };
         
         if ($("body").hasClass("default-builder")) {
-            CustomBuilder.Builder.frameHtml.off("mousemove.resize touchmove.resize");
-            CustomBuilder.Builder.frameHtml.off("mouseup.resize touchend.resize");
+            CustomBuilder.Builder.frameHtml.off("mousemove.rpresize touchmove.rpresize");
+            CustomBuilder.Builder.frameHtml.off("mouseup.rpresize touchend.rpresize");
             
-            CustomBuilder.Builder.frameHtml.on("mousemove.resize touchmove.resize", resize);
-            CustomBuilder.Builder.frameHtml.on("mouseup.resize touchend.resize", stopResize);
+            CustomBuilder.Builder.frameHtml.on("mousemove.rpresize touchmove.rpresize", resize);
+            CustomBuilder.Builder.frameHtml.on("mouseup.rpresize touchend.rpresize", stopResize);
         }
         
-        $("body").off("mousemove.resize touchmove.resize");
-        $("body").off("mouseup.resize touchend.resize");
+        $("body").off("mousemove.rpresize touchmove.rpresize");
+        $("body").off("mouseup.rpresize touchend.rpresize");
         
-        $("body").on("mousemove.resize touchmove.resize", resize);
-        $("body").on("mouseup.resize touchend.resize", stopResize);
+        $("body").on("mousemove.rpresize touchmove.rpresize", resize);
+        $("body").on("mouseup.rpresize touchend.rpresize", stopResize);
+    },
+    
+    /*
+     * Resize builder right panel window
+     */
+    resizeRightPanelWindow : function(event) {
+        var button = $(this);
+        var panel = $("#right-panel");
+        $(panel).addClass("resizing");
+        $("body").addClass("right-panel-resizing");
+        
+        var stopResize = function() {
+            $("body").off("mousemove.rpwresize touchmove.rpwresize");
+            $("body").off("mouseup.rpwresize touchend.rpwresize");
+            
+            if ($("body").hasClass("default-builder")) {
+                CustomBuilder.Builder.frameHtml.off("mousemove.rpwresize touchmove.rpwresize");
+                CustomBuilder.Builder.frameHtml.off("mouseup.rpwresize touchend.rpwresize");
+            }
+            $(panel).removeClass("resizing");
+            $("body").removeClass("right-panel-resizing");
+        };
+        
+        var resize = function(e) {
+            var x = e.clientX;
+            if (e.originalEvent) {
+                x = e.originalEvent.clientX;
+            }
+            if (e.type === "touchmove") {
+                x = e.touches[0].clientX;
+                if (e.touches[0].originalEvent) {
+                    x= e.touches[0].originalEvent.clientX;
+                }
+            }
+            if (!$(e.currentTarget).is("#cbuilder")) {
+                x += $(CustomBuilder.Builder.iframe).offset().left;
+            }
+            
+            var y = e.clientY;
+            if (e.originalEvent) {
+                y = e.originalEvent.clientY;
+            }
+            if (e.type === "touchmove") {
+                y = e.touches[0].clientY;
+                if (e.touches[0].originalEvent) {
+                    y= e.touches[0].originalEvent.clientY;
+                }
+            }
+            if (!$(e.currentTarget).is("#cbuilder")) {
+                y += $(CustomBuilder.Builder.iframe).offset().top;
+            }
+            
+            var top = $(panel).offset().top;
+            var left = $(panel).offset().left;
+            
+            var newWidth = x - left + 5;
+            var newHeight = y - top + 5;
+            
+            if (newWidth < 150) {
+                newWidth = 150;
+            }
+            if (newHeight < 300) {
+                newHeight = 300;
+            }
+            
+            CustomBuilder.setBuilderSetting("right-panel-window-width", newWidth);
+            CustomBuilder.setBuilderSetting("right-panel-window-height", newHeight);
+            
+            CustomBuilder.adjustPropertyPanelSize();
+        };
+        
+        if ($("body").hasClass("default-builder")) {
+            CustomBuilder.Builder.frameHtml.off("mousemove.rpwresize touchmove.rpwresize");
+            CustomBuilder.Builder.frameHtml.off("mouseup.rpwresize touchend.rpwresize");
+            
+            CustomBuilder.Builder.frameHtml.on("mousemove.rpwresize touchmove.rpwresize", resize);
+            CustomBuilder.Builder.frameHtml.on("mouseup.rpwresize touchend.rpwresize", stopResize);
+        }
+        
+        $("body").off("mousemove.rpwresize touchmove.rpwresize");
+        $("body").off("mouseup.rpwresize touchend.rpwresize");
+        
+        $("body").on("mousemove.rpwresize touchmove.rpwresize", resize);
+        $("body").on("mouseup.rpwresize touchend.rpwresize", stopResize);
+    },
+    
+    /*
+     * Move builder right panel window
+     */
+    moveRightPanelWindow : function(event) {
+        var button = $(this);
+        var panel = $("#right-panel");
+        $(panel).addClass("resizing");
+        $("body").addClass("right-panel-resizing");
+        
+        var stopMove = function() {
+            $("body").off("mousemove.rpwmove touchmove.rpwmove");
+            $("body").off("mouseup.rpwmove touchend.rpwmove");
+            
+            if ($("body").hasClass("default-builder")) {
+                CustomBuilder.Builder.frameHtml.off("mousemove.rpwmove touchmove.rpwmove");
+                CustomBuilder.Builder.frameHtml.off("mouseup.rpwmove touchend.rpwmove");
+            }
+            $(panel).removeClass("resizing");
+            $("body").removeClass("right-panel-resizing");
+        };
+        
+        var move = function(e) {
+            var x = e.clientX;
+            if (e.originalEvent) {
+                x = e.originalEvent.clientX;
+            }
+            if (e.type === "touchmove") {
+                x = e.touches[0].clientX;
+                if (e.touches[0].originalEvent) {
+                    x= e.touches[0].originalEvent.clientX;
+                }
+            }
+            if (!$(e.currentTarget).is("#cbuilder")) {
+                x += $(CustomBuilder.Builder.iframe).offset().left;
+            }
+            if (x < 60) {
+                x = 60;
+            }
+            
+            var y = e.clientY;
+            if (e.originalEvent) {
+                y = e.originalEvent.clientY;
+            }
+            if (e.type === "touchmove") {
+                y = e.touches[0].clientY;
+                if (e.touches[0].originalEvent) {
+                    y= e.touches[0].originalEvent.clientY;
+                }
+            }
+            if (!$(e.currentTarget).is("#cbuilder")) {
+                y += $(CustomBuilder.Builder.iframe).offset().top;
+            }
+            if (y < 60) {
+                y = 60;
+            }
+            
+            var newTop = y - 20;
+            var newLeft = x - 20;
+            
+            CustomBuilder.setBuilderSetting("right-panel-window-top", newTop);
+            CustomBuilder.setBuilderSetting("right-panel-window-left", newLeft);
+     
+            CustomBuilder.adjustPropertyPanelSize();
+        };
+        
+        if ($("body").hasClass("default-builder")) {
+            CustomBuilder.Builder.frameHtml.off("mousemove.rpwmove touchmove.rpwmove");
+            CustomBuilder.Builder.frameHtml.off("mouseup.rpwmove touchend.rpwmove");
+            
+            CustomBuilder.Builder.frameHtml.on("mousemove.rpwmove touchmove.rpwmove", move);
+            CustomBuilder.Builder.frameHtml.on("mouseup.rpwmove touchend.rpwmove", stopMove);
+        }
+        
+        $("body").off("mousemove.rpwmove touchmove.rpwmove");
+        $("body").off("mouseup.rpwmove touchend.rpwmove");
+        
+        $("body").on("mousemove.rpwmove touchmove.rpwmove", move);
+        $("body").on("mouseup.rpwmove touchend.rpwmove", stopMove);
     },
     
     /*
@@ -2451,6 +2622,49 @@
         $("body").addClass("max-property-editor");
         
         var width = CustomBuilder.getBuilderSetting("right-panel-width");
+        if ($("body").hasClass("right-panel-mode-window")) {
+            width = CustomBuilder.getBuilderSetting("right-panel-window-width");
+            if (isNaN(width)) { //if width is not defined, set it to 80% of window width
+                width = $(window).width() * 0.8;
+            }
+            if (width < 150) {
+                width = 150;
+            } else if (width > ($(window).width() * 0.95)) {
+                width = $(window).width() * 0.95;
+            }
+            
+            //set top, left & height too
+            var top = CustomBuilder.getBuilderSetting("right-panel-window-top");
+            if (isNaN(top)) { //if top is not defined, set it to 10% of window height
+                top = $(window).height() * 0.1;
+            }
+            
+            var left = CustomBuilder.getBuilderSetting("right-panel-window-left");
+            if (isNaN(left)) { //if top is not defined, set it to 10% of window height
+                left = $(window).width() * 0.1;
+            }
+            
+            var height = CustomBuilder.getBuilderSetting("right-panel-window-height");
+            if (isNaN(height)) { //if top is not defined, set it to 80% of window height
+                height = $(window).height() * 0.8;
+            }
+            if (height < ($(window).height() * 0.4)) {
+                height = $(window).height() * 0.4;
+            } else if (height > ($(window).height() * 0.90)) {
+                height = $(window).height() * 0.90;
+            }
+            
+            $("#right-panel").css("top", top+"px");
+            $("#right-panel").css("left", left+"px");
+            $("#right-panel").css("height", height+"px");
+        } else {
+            //remove top, left, height, width
+            $("#right-panel").css("top", "");
+            $("#right-panel").css("left", "");
+            $("#right-panel").css("height", "");
+            $("#right-panel").css("width", "");
+        }
+        
         if (!isNaN(width)) {
             var winWidth = $("body").width() - 60;
             if (width > winWidth) {
@@ -2462,9 +2676,9 @@
         }
         
         if (width > 680) {
-            $("#right-panel .property-editor-container").addClass("wider");
+            $("#right-panel, #right-panel .property-editor-container").addClass("wider");
         } else {
-            $("#right-panel .property-editor-container").removeClass("wider");
+            $("#right-panel, #right-panel .property-editor-container").removeClass("wider");
         }
     },
     
@@ -2475,6 +2689,26 @@
         CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
             $("body").addClass("no-right-panel");
         });
+    },
+    
+    /*
+     * Show the right panel as window
+     */
+    maxPropertiesWindow : function() {
+        $("body").addClass("right-panel-mode-window");
+        CustomBuilder.setBuilderSetting("right-panel-mode", "window");
+        
+        CustomBuilder.adjustPropertyPanelSize();
+    },
+    
+    /*
+     * Restore the right panel from window
+     */
+    dockPropertiesWindow : function() {
+        $("body").removeClass("right-panel-mode-window");
+        CustomBuilder.setBuilderSetting("right-panel-mode", "");
+        
+        CustomBuilder.adjustPropertyPanelSize();
     },
     
     /*

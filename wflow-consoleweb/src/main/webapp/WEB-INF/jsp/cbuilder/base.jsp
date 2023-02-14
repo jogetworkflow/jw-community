@@ -223,11 +223,20 @@
                 <div id="right-panel-resize-block"></div>
                 <div id="right-panel">
                     <div id="right-panel-content" class="element-properties ">
+                        <button id="right-panel-window-move" title="<fmt:message key="cbuilder.moveWindow"/>" data-cbuilder-action="moveRightPanelWindow" data-cbuilder-on="mousedown touchstart" style="display:none">
+                            <i class="las la-arrows-alt"></i>
+                        </button>
                         <div class="element-properties-header-actions">
                             <div class="float-left">
                                 <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.close"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
                                     <i class="las la-times"></i>
                                 </button>
+                                <button id="window-properties-btn" title="<fmt:message key="cbuilder.window"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="maxPropertiesWindow">
+                                    <i class="las la-window-maximize"></i>
+                                </button>
+                                <button id="dock-properties-btn" title="<fmt:message key="cbuilder.dockWindow"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="dockPropertiesWindow">
+                                    <i class="las la-map-pin"></i>
+                                </button>    
                                 <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
                             <div class="float-right">
@@ -274,9 +283,11 @@
                             </button>
                         </div>    
                     </div>
-                    <button id="right-panel-resize" data-cbuilder-action="resizeRightPanel" data-cbuilder-on="mousedown touchstart" style="display:none">
+                    <button id="right-panel-resize" title="<fmt:message key="cbuilder.resizePanel"/>" data-cbuilder-action="resizeRightPanel" data-cbuilder-on="mousedown touchstart" style="display:none">
                         <i class="las la-grip-lines-vertical"></i>
                     </button>
+                    <span id="right-panel-window-resize" title="<fmt:message key="cbuilder.resizeWindow"/>" data-cbuilder-action="resizeRightPanelWindow" data-cbuilder-on="mousedown touchstart" style="display:none">
+                    </span>
                 </div>    
                 <div id="bottom-panel">
                     <div id="cbuilder-advanced">

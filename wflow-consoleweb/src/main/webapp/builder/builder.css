@@ -1615,9 +1615,6 @@ div.section, .header > ol {
     text-align: right;
     background: #dee2e6;
 }
-.element-properties .element-properties-header-actions button {
-    font-size: 60%;
-}
 .element-properties .tab-content {
     height : calc(100% - 150px);
     padding-top: 32px;
@@ -1635,10 +1632,15 @@ div.section, .header > ol {
 }
 #expand-all-props-btn,
 #collapse-all-props-btn,
-#cancel-properties-btn{
+#cancel-properties-btn,
+#right-panel-window-move,
+.element-properties-header-actions .btn-link-secondary{
     font-size: 18px;
     line-height: 18px;
     padding: 2px;
+}
+body.right-panel-mode-window #right-panel{
+    
 }
 .viewport-icon {
     font-size: 20px;
@@ -2380,4 +2382,125 @@ body.rtl div#builderModeOption:before {
 /* tinymce fix */
 #cbuilder > .tox-tinymce-aux{
     width:0px !important;
+}
+
+/* properties panel window */
+#dock-properties-btn,  
+body.right-panel-mode-window #window-properties-btn,
+body.right-panel-mode-window.max-property-editor #right-panel-resize{
+    display:none !important;
+}
+body.right-panel-mode-window #right-panel{
+    outline: none;
+    border-radius: 8px;
+    transition: all 0.3s ease 0s;
+    box-shadow: 0 5px 15px rgb(0 0 0 / 65%);
+    overflow: hidden;
+    background-clip: padding-box;
+    border: 1px solid #ddd !important;
+    border-top: 3px solid #dee2e6 !important;
+}
+body.right-panel-mode-window #dock-properties-btn{
+    display: inline-block !important;
+}
+body.right-panel-mode-window #right-panel-window-move{
+    position: absolute;
+    top: 8px;
+    left: 9px;
+    cursor: move;
+    display: block !important;
+    z-index: 10;
+    border: 0px;
+    background: transparent;
+    outline:none;
+}
+body.right-panel-mode-window .element-properties{
+    background-color: #fff;
+}
+body.right-panel-mode-window .element-properties-header-actions{
+    width: 30%;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    padding: 6px;
+}
+body.right-panel-mode-window .element-properties-header-actions .float-left {
+    float: right !important;
+}
+body.right-panel-mode-window .element-properties-header-actions .float-left > * {
+    float: right !important;
+}
+body.right-panel-mode-window .element-properties-header-actions .float-right {
+    position: absolute;
+    top: 47px;
+    right: 18px;
+    z-index: 30;
+}
+body.right-panel-mode-window #properties-tabs{
+    width: 70%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    padding-left: 40px;
+}
+body.right-panel-mode-window .element-properties-footer-actions{
+    background: #fff;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+body.right-panel-mode-window .element-properties-header{
+    border-bottom: 0;
+    background: #fff;
+    padding: 10px 15px;
+    top: 36px;
+    left: -3px;
+    right: -2px;
+    width: auto;
+    padding-right: 48px;
+}
+body.right-panel-mode-window .element-properties-header .search input{
+    border-right-color: #ced4da !important;
+    border-bottom-color: #ced4da !important;
+}
+body.right-panel-mode-window .element-properties .tab-content{
+    height: calc(100% - 48px);
+    padding-top: 90px;
+}
+body.right-panel-mode-window .editor-panel-mode .property-editor-pages{
+    background: #fff;
+}
+body.right-panel-mode-window #right-panel .nav-tabs .nav-link.active, 
+body.right-panel-mode-window #right-panel .nav-tabs .nav-item.show .nav-link{
+    border-color: #fff;
+    background-color: #fff;
+}
+
+body.right-panel-mode-window #right-panel-window-resize  {
+  display: block !important;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+}
+#right-panel-window-resize,
+#right-panel-window-resize:before,
+#right-panel-window-resize:after {
+  background-image: radial-gradient(#fff 40%, transparent 40%);
+  background-size: 5px 5px;
+  background-position: 0 100%;
+  background-repeat: repeat-x;
+}
+#right-panel-window-resize:before,
+#right-panel-window-resize:after {
+  content: '';
+  display: block;
+  height: 34%;
+  margin-left: 32%;
+}
+#right-panel-window-resize:before {
+  width: 34%;
+  margin-left: 64%;
 }
