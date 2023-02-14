@@ -424,13 +424,27 @@ ProcessBuilder = {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                 var orders = xpdlProcessesAttrs[p]['-Value'].split(";");
                 for (var o in orders) {
-                    if (participants[orders[o]] !== undefined) {
-                        ProcessBuilder.currentProcessData['participants'].push(participants[orders[o]]);
-                        
-                        if (!ProcessBuilder.readonly) {
-                            //find mapping
-                            ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
+                    if (participants[orders[o]] === undefined) { //used to correct the corrupted process design
+                        var label = orders[o];
+                        if (label.indexOf(id) === 0) {
+                            label = label.substring(id.length + 1);
                         }
+                        label = label.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/(\d+)$/, ' $1');
+                        participants[orders[o]] = {
+                            className : 'participant',
+                            properties : {
+                                id : orders[o],
+                                label : label
+                            },
+                            activities : []
+                        };
+                    }
+                    
+                    ProcessBuilder.currentProcessData['participants'].push(participants[orders[o]]);
+                        
+                    if (!ProcessBuilder.readonly) {
+                        //find mapping
+                        ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
                     }
                 }
                 break;
@@ -794,6 +808,7 @@ ProcessBuilder = {
                 ProcessBuilder.updateParticipantMapping(participant);
             }
             ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
+            ProcessBuilder.setArray(xpdl, 'Participants', 'Participant', xpdlParticipants);
 
             //update participant order
             for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
