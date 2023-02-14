@@ -141,13 +141,6 @@
                                         <include name="*/jw.war" />
                                     </fileset>
                                 </copy>
-                                <!--
-                                <copy flatten="true" todir="target/apache-tomcat-${tomcat.version}/webapps">
-                                    <fileset dir="../wflow-designerweb/">
-                                        <include name="*/jwdesigner.war" />
-                                    </fileset>
-                                </copy>
-                                -->                                
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true" />
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/context.xml" file="src/main/resources/context.xml" overwrite="true" />
                                 <copy todir="target/mariadb-${mariadb.version}-win32/" file="src/main/resources/my.ini" />
