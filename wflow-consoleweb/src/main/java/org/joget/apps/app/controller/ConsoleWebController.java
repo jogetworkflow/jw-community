@@ -1144,18 +1144,26 @@ public class ConsoleWebController {
             }
             if (employeeDepartment != null) {
                 for (int i = 0; i < employeeDepartment.length; i++) {
-                    if (existingDepartments.contains(employeeDepartment[i])) {
-                        existingDepartments.remove(employeeDepartment[i]);
-                        existingOrgs.remove(employeeDeptOrganization[i]);
+                    if (employeeDepartment[i].isEmpty()) { //if department id is empty
+                        if (existingOrgs.contains(employeeDeptOrganization[i])) {
+                            existingOrgs.remove(employeeDeptOrganization[i]);
+                        } else if (!employeeDeptOrganization[i].isEmpty()) {
+                            employmentDao.assignUserToOrganization(u.getId(), employeeDeptOrganization[i]);
+                        }
                     } else {
-                        employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
-                    }
-
-                    if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
-                        if (existingHods.contains(employeeDepartment[i])) {
-                            existingHods.remove(employeeDepartment[i]);
+                        if (existingDepartments.contains(employeeDepartment[i])) {
+                            existingDepartments.remove(employeeDepartment[i]);
                         } else {
-                            employmentDao.assignUserAsDepartmentHOD(u.getId(), employeeDepartment[i]);
+                            employmentDao.assignUserToDepartment(u.getId(), employeeDepartment[i]);
+                        }
+                        existingOrgs.remove(employeeDeptOrganization[i]);
+
+                        if ("true".equalsIgnoreCase(employeeDepartmentHod[i])) {
+                            if (existingHods.contains(employeeDepartment[i])) {
+                                existingHods.remove(employeeDepartment[i]);
+                            } else {
+                                employmentDao.assignUserAsDepartmentHOD(u.getId(), employeeDepartment[i]);
+                            }
                         }
                     }
                 }
@@ -1164,10 +1172,10 @@ public class ConsoleWebController {
                 for (int i = 0; i < employeeGrade.length; i++) {
                     if (existingGrades.contains(employeeGrade[i])) {
                         existingGrades.remove(employeeGrade[i]);
-                        existingOrgs.remove(employeeGradeOrganization[i]);
                     } else {
                         employmentDao.assignUserToGrade(u.getId(), employeeGrade[i]);
                     }
+                    existingOrgs.remove(employeeGradeOrganization[i]);
                 }
             }
             for (String d : existingHods) {

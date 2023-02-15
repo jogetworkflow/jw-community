@@ -19,6 +19,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -154,6 +155,9 @@ public class FileUtil implements ApplicationContextAware {
         if (fileName.contains(".")) {
             name = fileName.substring(0, fileName.lastIndexOf("."));
             ext = fileName.substring(fileName.lastIndexOf("."));
+        }
+        if (name.contains(";")) {
+            name = name.replaceAll(StringUtil.escapeRegex(";"), "");
         }
         fileName = name + ext;
         

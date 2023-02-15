@@ -90,6 +90,26 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.endDate"/></label>
                 <span class="form-input"><c:out value="${employment.endDate}"/></span>
             </div>
+            <div class="form-row">
+                <label for="field1"><fmt:message key="console.directory.employment.common.label.organization"/></label>
+                <span class="form-input">
+                    <c:set var="counter" value="0" />
+                    <c:set var="displayed" value="" />
+                    <c:forEach items="${user.employments}" var="e">
+                        <c:if test="${!empty e.organization}">
+                            <c:set var="check" value="${e.organization.id};" />
+                            <c:if test="${!fn:contains(displayed, check)}">
+                               <c:if test="${counter gt 0}">
+                                   , 
+                               </c:if>
+                               <a href="${pageContext.request.contextPath}/web/console/directory/org/view/${e.organization.id}"><c:out value="${e.organization.name}"/></a>
+                               <c:set var="counter" value="${counter + 1}" />
+                               <c:set var="displayed" value="${displayed}${e.organization.id};" />
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                </span>
+            </div>
             <c:set var="hasHod" value="false" />
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
