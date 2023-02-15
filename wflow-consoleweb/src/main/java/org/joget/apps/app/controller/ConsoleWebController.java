@@ -6275,7 +6275,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/log/broadcast")
+    @RequestMapping(value = "/json/log/broadcast", method = RequestMethod.POST)
     public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "profile") String profile, @RequestParam(value = "node") String node) {
         if (profile != null) {
             try {
