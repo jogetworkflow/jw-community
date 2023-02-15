@@ -173,17 +173,17 @@ public class ProcessBuilderWebController {
                         if (mapping.has("type") && mapping.has("formUrl") && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
                             activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
                             activityForm.setFormUrl(mapping.getString("formUrl"));
-                            activityForm.setFormIFrameStyle(mapping.getString("formIFrameStyle"));
+                            activityForm.setFormIFrameStyle(mapping.has("formIFrameStyle")?mapping.getString("formIFrameStyle"):"");
                             activityForm.setFormId(null);
                             activityForm.setDisableSaveAsDraft(null);
                         } else if (mapping.has("formId")) {
                             activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
                             activityForm.setFormId(mapping.getString("formId"));
-                            activityForm.setDisableSaveAsDraft(mapping.getBoolean("disableSaveAsDraft"));
+                            activityForm.setDisableSaveAsDraft(mapping.has("disableSaveAsDraft")?mapping.getBoolean("disableSaveAsDraft"):false);
                             activityForm.setFormUrl(null);
                             activityForm.setFormIFrameStyle(null);
                         }
-                        activityForm.setAutoContinue(mapping.getBoolean("autoContinue"));
+                        activityForm.setAutoContinue(mapping.has("autoContinue")?mapping.getBoolean("autoContinue"):false);
                         if (isNew) {
                             packageDef.addPackageActivityForm(activityForm);
                         }
@@ -217,8 +217,8 @@ public class ProcessBuilderWebController {
                             activityPlugin.setActivityDefId(temp[1]);
                         }
 
-                        activityPlugin.setPluginName(mapping.getString("className"));
-                        activityPlugin.setPluginProperties(mapping.getJSONObject("properties").toString());
+                        activityPlugin.setPluginName(mapping.has("className")?mapping.getString("className"):"");
+                        activityPlugin.setPluginProperties(mapping.has("properties")?mapping.getJSONObject("properties").toString():"");
 
                         if (isNew) {
                             packageDef.addPackageActivityPlugin(activityPlugin);
@@ -253,10 +253,10 @@ public class ProcessBuilderWebController {
                             participant.setParticipantId(temp[1]);
                         }
 
-                        participant.setType(mapping.getString("type"));
-                        participant.setValue(mapping.getString("value"));
+                        participant.setType(mapping.has("type")?mapping.getString("type"):"");
+                        participant.setValue(mapping.has("value")?mapping.getString("value"):"");
 
-                        if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType())) {
+                        if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType()) && mapping.has("properties")) {
                             participant.setPluginProperties(mapping.getJSONObject("properties").toString());
                         } else {
                             participant.setPluginProperties(null);
