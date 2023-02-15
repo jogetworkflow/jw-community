@@ -15,7 +15,7 @@
                 $("body").addClass("rtl");
                 $(".row-content").append("<div style=\"clear:both\"></div>");
 
-                if( window.self !== window.parent) {
+                if( window.self !== window.parent && window.parent.UI !== undefined) {
                     window.parent.UI.rtl = true;
                     $(window.parent.document).find('body').addClass("rtl");
                 }
@@ -25,7 +25,7 @@
     <c:otherwise>
         <script type="text/javascript">
             $(document).ready(function(){
-                if( window.self !== window.parent ) {
+                if( window.self !== window.parent && window.parent.UI !== undefined) {
                     window.parent.UI.rtl = false;
                     $(window.parent.document).find('body').removeClass("rtl");
                 }

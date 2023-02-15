@@ -46,7 +46,9 @@
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         UI.locale = "<c:out value="${currentLocale}"/>";
         
-        if (window.self !== window.parent && window.parent.UI !== undefined && window.parent.UI.locale !== UI.locale) {
+        if (window.self !== window.parent && window.parent.UI !== undefined
+                && window.parent.UI.locale !== undefined && window.parent.UI.locale !== ""
+                && window.parent.UI.locale !== UI.locale) {
             if (confirm("<ui:msgEscJS key="general.label.languageSwitching"/>")) {
                 window.top.location.reload(true);
             }
