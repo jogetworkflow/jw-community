@@ -233,7 +233,7 @@ Section "Java 11" SecJava
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"  
     ;Java Files Here
-    File /r jre11.0.13
+    File /r jre11.0.18
   ${EndIf}  
 
 SectionEnd
@@ -364,7 +364,7 @@ Section "Uninstall"
   RMDir /r "$SMPROGRAMS\Joget DX 8"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
-  RmDir /r "$INSTDIR\jre11.0.13"
+  RmDir /r "$INSTDIR\jre11.0.18"
   RmDir /r "$INSTDIR\apache-tomcat-9.0.71\webapps\jw"
   Delete "$INSTDIR\apache-tomcat-9.0.71\webapps\jw.war"
   Delete "$INSTDIR\build.xml"

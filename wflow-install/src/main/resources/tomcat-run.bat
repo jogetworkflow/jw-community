@@ -1,6 +1,6 @@
 chcp 65001
 
-set JAVA_HOME=.\jre11.0.13
+set JAVA_HOME=.\jre11.0.18
 set CATALINA_HOME=.\apache-tomcat-9.0.71
 
 set JAVA_OPTS=-Xmx768M -Dfile.encoding=UTF-8 -Dwflow.home=./wflow/
