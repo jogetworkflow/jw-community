@@ -336,6 +336,7 @@ ProcessBuilder = {
      */
     generateProcessData : function(id) {
         var xpdlProcess = null;
+        ProcessBuilder.currentProcessData = null;
         var xpdl = CustomBuilder.data.xpdl['Package'];
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
         for (var p in xpdlProcesses) {
@@ -2516,6 +2517,8 @@ ProcessBuilder = {
             ProcessBuilder.jsPlumb.unbind();
             ProcessBuilder.jsPlumb.detachEveryConnection();
             ProcessBuilder.jsPlumb.deleteEveryEndpoint();
+            ProcessBuilder.jsPlumb.unmakeEverySource();
+            ProcessBuilder.jsPlumb.unmakeEveryTarget();
             ProcessBuilder.jsPlumb.reset();
             ProcessBuilder.initJsPlumb();
             
@@ -4753,6 +4756,8 @@ ProcessBuilder = {
         ProcessBuilder.jsPlumb.unbind();
         ProcessBuilder.jsPlumb.detachEveryConnection();
         ProcessBuilder.jsPlumb.deleteEveryEndpoint();
+        ProcessBuilder.jsPlumb.unmakeEverySource();
+        ProcessBuilder.jsPlumb.unmakeEveryTarget();
         ProcessBuilder.jsPlumb.reset();
             
         $("#process-selector, .toolzoom-buttons, #listviewer-btn, #xpdl-btn").remove();

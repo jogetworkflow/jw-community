@@ -863,7 +863,7 @@
                 var categoryId = CustomBuilder.createPaletteCategory(category, tab);
                 var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
                 var eid = categoryId+"_"+className.replace(/\./g, "_");
-                var li = $('<li class="'+licss+'"><div id="'+eid+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a href="#">'+UI.escapeHTML(label)+'</a></div><i class="lar la-star"></i></li>');
+                var li = $('<li class="'+licss+'"><div id="'+eid+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a>'+UI.escapeHTML(label)+'</a></div><i class="lar la-star"></i></li>');
                 $(li).find('.builder-palette-element').prepend($(iconObj).clone());
                 $(container).append(li);
             }
