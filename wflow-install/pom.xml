@@ -119,7 +119,7 @@
                                 <mkdir dir="downloads" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="https://dev.joget.org/downloads/dependencies/mariadb-noinstall-${mariadb.version}-win32.zip" dest="downloads/mariadb-noinstall-${mariadb.version}-win32.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/mariadb-noinstall-${mariadb.version}-winx64.zip" dest="downloads/mariadb-noinstall-${mariadb.version}-winx64.zip" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
                                 
                                 <untar compression="gzip" dest="target">
@@ -132,7 +132,7 @@
 
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
-                                        <include name="mariadb-noinstall-${mariadb.version}-win32.zip" />
+                                        <include name="mariadb-noinstall-${mariadb.version}-winx64.zip" />
                                     </fileset>
                                 </unzip>
 
@@ -143,8 +143,8 @@
                                 </copy>
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true" />
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/context.xml" file="src/main/resources/context.xml" overwrite="true" />
-                                <copy todir="target/mariadb-${mariadb.version}-win32/" file="src/main/resources/my.ini" />
-                                <copy todir="target/mariadb-${mariadb.version}-win32/data/" overwrite="true">
+                                <copy todir="target/mariadb-${mariadb.version}-winx64/" file="src/main/resources/my.ini" />
+                                <copy todir="target/mariadb-${mariadb.version}-winx64/data/" overwrite="true">
                                     <fileset dir="src/main/resources/mariadb-data" />
                                 </copy>
 
@@ -159,7 +159,7 @@
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
                                         <include name="jre${jre.version}/**" />
-                                        <include name="mariadb-${mariadb.version}-win32/**" />
+                                        <include name="mariadb-${mariadb.version}-winx64/**" />
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />

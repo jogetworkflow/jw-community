@@ -245,7 +245,7 @@ Section "MariaDB 10" SecMariaDB
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
     ;MariaDB Files Here
-    File /r mariadb-10.3.9-win32
+    File /r mariadb-10.6.12-winx64
     File mariadb-start.bat
     File mariadb-stop.bat
   ${EndIf}
