@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
@@ -31,10 +32,12 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
 
     public Object execute(Map properties) {
         Object result = null;
+        DataSource ds = null;
+        
         try {
             String query = (String) properties.get("query");
             String driver = "";
-            DataSource ds = null;
+            
             String datasource = (String)properties.get("jdbcDatasource");
             if (datasource != null && "default".equals(datasource)) {
                 // use current datasource
@@ -75,7 +78,15 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "Error executing plugin");
             return null;
-        }
+        } finally {
+            try {
+                if (ds != null && ds instanceof BasicDataSource) {
+                    ((BasicDataSource) ds).close();
+                }
+            } catch (Exception e) {
+                LogUtil.error(getClassName(), e, "");
+            }
+        } 
     }
 
     protected DataSource createDataSource(Properties props) throws Exception {
