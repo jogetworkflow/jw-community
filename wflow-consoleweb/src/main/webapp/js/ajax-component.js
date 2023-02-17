@@ -214,7 +214,7 @@ AjaxComponent = {
             $(".ma-backdrop").trigger("click.sidebar-toggled");
         }
         
-        if (!AjaxComponent.isCurrentUserviewUrl(url) || PwaUtil.isOnline === false) {
+        if (!AjaxComponent.isCurrentUserviewUrl(url) || PwaUtil.isOnline === false || AjaxComponent.isLanguageSwitching(url)) {
             window.top.location.href = url;
             return;
         }
@@ -350,6 +350,9 @@ AjaxComponent = {
             } else {
                 if (response.url.indexOf("/web/login") !== -1) {
                     document.location.href = url;
+                    return null;
+                } else if (AjaxComponent.isLanguageSwitching(response.url)) {    
+                    document.location.href = response.url;
                     return null;
                 } else if ((method === "GET" || response.redirected) && response.status === 200) {
                     //only change url if is page change or main component
@@ -807,6 +810,22 @@ AjaxComponent = {
                 if (currentPath === url) {
                     return true;
                 }
+            }
+        }
+        
+        return false;
+    },
+    
+    /*
+     * Check is language switching using parameter
+     */
+    isLanguageSwitching : function(url) {
+        if (url !== null && url !== undefined && url.indexOf("_lang=") !== -1) {
+            var params = UrlUtil.getUrlParams(url);
+            var lang = params['_lang'][0];
+            
+            if (UI.locale !== lang) {
+                return true;
             }
         }
         
