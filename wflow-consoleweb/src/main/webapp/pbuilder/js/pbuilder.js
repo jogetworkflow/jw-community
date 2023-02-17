@@ -2775,6 +2775,18 @@ ProcessBuilder = {
             $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
             
             element = $(connection.canvas);
+            
+            $(connection.canvas).addClass("transition").attr("id", transitionId).attr("data-cbuilder-ignore-dragging", "");
+            
+            //add group select
+            for (var e in connection.endpoints) {
+                $(connection.endpoints[e].canvas).attr("data-cbuilder-group", transitionId).attr("data-cbuilder-ignore-dragging", "");
+            }
+
+            //to make the transition label not draggable
+            for (var e in connection._jsPlumb.overlays) {
+                $(connection._jsPlumb.overlays[e].canvas).attr("data-cbuilder-ignore-dragging", "");
+            }
         } else {
             var connection = ProcessBuilder.jsPlumb.connect({
                 source: self.frameBody.find("#" + elementObj.properties.from),
@@ -2799,8 +2811,11 @@ ProcessBuilder = {
             for (var e in connection.endpoints) {
                 $(connection.endpoints[e].canvas).attr("data-cbuilder-group", transitionId).attr("data-cbuilder-ignore-dragging", "");
             }
-
-            $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
+            
+            //to make the transition label not draggable
+            for (var e in connection._jsPlumb.overlays) {
+                $(connection._jsPlumb.overlays[e].canvas).attr("data-cbuilder-ignore-dragging", "");
+            }
             
             elementObj.connection = connection;
         }
