@@ -35,6 +35,8 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.servlet.LocaleContextResolver;
+import org.joget.apps.app.web.LocalLocaleResolver;
 
 public class UserProfileMenu extends UserviewMenu {
     
@@ -347,6 +349,14 @@ public class UserProfileMenu extends UserviewMenu {
                 
                 if (us != null) {
                     us.updateUserProfilePostProcessing(currentUser);
+                }
+                
+                if (!AppUtil.getAppLocale().equals(currentUser.getLocale())) {
+                    workflowUserManager.setCurrentThreadUser(currentUser);
+                    LocaleContextResolver localeResolver = (LocaleContextResolver) WorkflowUtil.getApplicationContext().getBean("localeResolver");
+                    ((LocalLocaleResolver) localeResolver).reset(WorkflowUtil.getHttpServletRequest());
+                    setProperty("view", "redirect");
+                    setRedirectUrl(getUrl()+"?_lang=", false);
                 }
 
                 setAlertMessage(getPropertyString("message"));
