@@ -1343,7 +1343,7 @@ form.form .btn {
     color:red;
 }
 body .form-container [class*=form-cell-value]{
-    padding: 10px 12px;
+    padding: 6px 10px 0 1px;
 }
 /* dashboard */
 #content .main-body-content.Dashboard {

@@ -75,6 +75,7 @@
     padding-left: 13px;
     padding-right: 13px;
 }
+input[type=hidden] + .form-cell,
 .form-cell + .form-cell,
 .subform-cell + .subform-cell,
 .form-cell + .subform-cell,
@@ -97,7 +98,6 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     flex: 1 1 auto;
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
-    min-height: 34px;
     font-weight: bold;
 }
 .label-top.form-cell > label.label,
@@ -167,6 +167,59 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     display: flex;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+}
+
+body #form-canvas {
+    margin: 0;
+}
+
+body #form-canvas .h1,
+body #form-canvas h1 {
+    font-size: 27px
+}
+
+body #form-canvas .h2,
+body #form-canvas h2 {
+    font-size: 22px
+}
+
+body #form-canvas .h3,
+body #form-canvas h3 {
+    font-size: 18px
+}
+
+body #form-canvas .h4,
+body #form-canvas h4 {
+    font-size: 16px
+}
+
+body #form-canvas .h5,
+body #form-canvas h5 {
+    font-size: 13px
+}
+
+body #form-canvas .h6,
+body #form-canvas h6 {
+    font-size: 12px
+}
+
+.form-cell table, .subform-cell table {
+    width: 100%;
+}
+
+legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {
+    background: none;
+    padding-left: 4px;
+    font-size: 18px;
+}
+
+legend, body #form-canvas .form-section-title span, body #form-canvas .subform-section-title span {
+    text-shadow: none;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    font-weight: bold;
+    font-size: 16px;
+    display: block;
 }
 
 /* input */
