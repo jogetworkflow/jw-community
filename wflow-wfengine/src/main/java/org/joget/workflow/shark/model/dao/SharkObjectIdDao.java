@@ -1,6 +1,7 @@
 package org.joget.workflow.shark.model.dao;
 
 import java.util.Collection;
+import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
@@ -31,10 +32,13 @@ public class SharkObjectIdDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
+                session.setFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the last next oid
-                Collection<SharkObjectId> result = (Collection<SharkObjectId>) super.find(ENTITY_NAME, "", null, null, null, null, null);
+                Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e");
+                Collection<SharkObjectId> result = (Collection<SharkObjectId>) find.list();
+                
                 if (!result.isEmpty()) {
                     SharkObjectId nextOid = result.iterator().next();
                     
@@ -52,8 +56,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     query.setLong(1, temp.getNextoid());
                     query.executeUpdate();
                     
-                    session.flush(); 
-                    transaction.commit();
+                    session.evict(nextOid);
                     
                     return temp;
                 }
@@ -62,7 +65,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                 
                 //retry when update fail for 50 times
                 if (retryCount++ >= 50) {
-                    LogUtil.error(SharkObjectIdDao.class.getName(), e, "ObjectIdAllocator: Failed to allocate object ids. Tried 50 times. Giving up. Last number is " + old.toString());
+                    LogUtil.error(SharkObjectIdDao.class.getName(), e, "ObjectIdAllocator: Failed to allocate object ids. Tried 50 times. Giving up. Last number is " + old);
                     retry = false;
                     break;
                 } else {
@@ -71,6 +74,10 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                 LogUtil.info(SharkObjectIdDao.class.getName(), "ObjectIdAllocator: Failed to allocate object ids. Trying again....");
             } finally {
                 if (session != null) {
+                    session.flush();
+                    if (transaction != null) {
+                        transaction.commit();
+                    }
                     session.clear();
                     session.close();
                 }

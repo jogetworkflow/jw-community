@@ -2,6 +2,7 @@ package org.joget.workflow.shark.model.dao;
 
 import com.lutris.appserver.server.sql.ObjectIdAllocationError;
 import java.util.Collection;
+import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
@@ -32,10 +33,13 @@ public class SharkCounterDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
+                session.setFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the counter by object name
-                Collection<SharkCounter> result = (Collection<SharkCounter>) super.find(ENTITY_NAME, " where name = ?", new String[]{objectName}, null, null, null, null);
+                Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e where name = ?");
+                find.setString(0, objectName);
+                Collection<SharkCounter> result = (Collection<SharkCounter>) find.list();
                 
                 if (!result.isEmpty()) {
                     SharkCounter next = result.iterator().next();
@@ -49,15 +53,15 @@ public class SharkCounterDao extends AbstractSpringDao {
                     temp.setMaxNumber(next.getNextNumber() + CACHE_SIZE);
                     
                     //update the next oid
-                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextNumber=?, version=? where name=? and nextNumber=?");
-                    query.setLong(0, temp.getMaxNumber());
-                    query.setInteger(1, next.getVersion() + 1);
-                    query.setString(2, objectName);
-                    query.setLong(3, temp.getNextNumber());
-                    query.executeUpdate();
+                    next.setNextNumber(temp.getMaxNumber());
+                    next.setVersion(next.getVersion() + 1);
                     
-                    session.flush(); 
+                    session.update(ENTITY_NAME, next);
+                    
+                    session.flush();
                     transaction.commit();
+                    
+                    session.evict(next);
                     
                     return temp;
                 } else {
@@ -68,8 +72,10 @@ public class SharkCounterDao extends AbstractSpringDao {
                     
                     session.save(ENTITY_NAME, temp);
                     
-                    session.flush(); 
+                    session.flush();
                     transaction.commit();
+                    
+                    session.evict(temp);
                     
                     temp.setNextNumber(1l);
                     temp.setMaxNumber(1 + CACHE_SIZE);
@@ -80,7 +86,7 @@ public class SharkCounterDao extends AbstractSpringDao {
                 
                 //retry when update fail for 50 times
                 if (retryCount++ >= 50) {
-                    LogUtil.error(SharkCounterDao.class.getName(), e, "ObjectIdAllocator: Failed to allocate counter for " +objectName+ ". Tried 50 times. Giving up. Last number is " + old.toString());
+                    LogUtil.error(SharkCounterDao.class.getName(), e, "ObjectIdAllocator: Failed to allocate counter for " +objectName+ ". Tried 50 times. Giving up. Last number is " + old);
                     retry = false;
                     break;
                 } else {
@@ -89,6 +95,10 @@ public class SharkCounterDao extends AbstractSpringDao {
                 LogUtil.info(SharkCounterDao.class.getName(), "ObjectIdAllocator: Failed to allocate counter for " +objectName+ ". Trying again....");
             } finally {
                 if (session != null) {
+                    session.flush();
+                    if (transaction != null && !transaction.wasCommitted()) {
+                        transaction.commit();
+                    }
                     session.clear();
                     session.close();
                 }
