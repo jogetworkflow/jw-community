@@ -207,7 +207,7 @@ Section "Joget DX" SecJoget
 
 SectionEnd
 
-Section "Apache Tomcat 8" SecTomcat
+Section "Apache Tomcat 9" SecTomcat
 
   SectionIn RO
   SetOutPath "$INSTDIR"
