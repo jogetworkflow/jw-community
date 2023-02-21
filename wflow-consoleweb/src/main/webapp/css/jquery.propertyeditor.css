@@ -1724,11 +1724,14 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .element-pages .element-pages {
     margin: 15px -15px 0px;
 }
+.editor-panel-mode .element-pages .element-pages .property-editor-page.collapsed .property-editor-property-container{
+    padding-bottom: 0px !important;
+}
 .editor-panel-mode .element-pages .element-pages .property-editor-page-title{
     background: #9fa9b1;
     border-radius: 0;
 }
-.editor-panel-mode .element-pages > :nth-child(2) > .property-editor-page-title:after{
+.editor-panel-mode .element-pages .property-editor-page-title:after{
     display: inline-block;
     top: 50%;
     right: 15px;
@@ -1739,7 +1742,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     font-size: 16px;
     transform: translateY(-50%);
 }
-.editor-panel-mode .element-pages > :nth-child(2).collapsed > .property-editor-page-title:before{
+.editor-panel-mode .element-pages > .collapsed > .property-editor-page-title:before{
     display: inline-block;
     bottom: -30px;
     right: 50%;
@@ -1752,7 +1755,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     cursor: pointer;
     z-index: 10;
 }
-.editor-panel-mode .element-pages > :nth-child(2).collapsed > .property-editor-page-title:after{
+.editor-panel-mode .element-pages > .collapsed > .property-editor-page-title:after{
     content: '\f07b';
 }
 .editor-panel-mode .element-pages .element-pages .property-editor-page.collapsed .property-editor-property-container{
@@ -1772,9 +1775,6 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .element-pages .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title {
     background: #9fa9b1;
 }
-.editor-panel-mode .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title:after{
-    display: none !important;
-}
 .editor-panel-mode .element-pages > .property-editor-page.collapsed:nth-child(2) ~ .property-editor-page{
     display: none !important;
 }
@@ -1782,7 +1782,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     display: block;
     height: 0px !important;
     overflow: hidden;
-    padding-bottom: 0px !important;
+    padding-bottom: 15px !important;
 }
 .editor-panel-mode .element-pages .property-editor-page.collapsed .property-editor-property-container * {
     display: none;
