@@ -70,7 +70,7 @@
     </bean>
     
     <bean id="sharkIdSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-        <qualifier value="workflow"/>
+        <qualifier value="sharkId"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
