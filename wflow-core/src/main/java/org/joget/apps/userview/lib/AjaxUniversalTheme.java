@@ -259,7 +259,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         } else {
             name += "<div class=\"login_form_logo_container\"><i class=\"fas fa-user-circle\"></i></div>";
         }
-        name += "<h1>Login to " + userview.getPropertyString("name") + "</h1></div>";
+        name += "<h1>" + ResourceBundleUtil.getMessage("console.login.label.loginTo") + " " + userview.getPropertyString("name") + "</h1></div>";
         data.put("login_form_inner_before", name);
         return super.getLoginForm(data);
     }

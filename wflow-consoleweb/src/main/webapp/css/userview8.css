@@ -573,6 +573,12 @@ body.rtl .hi-trigger{
 .line-wrap .line.center {
     margin: 3px 0
 }
+@media(max-width:1600px) {
+    body#login #loginForm {
+        width: 35vw !important;
+        padding: 35px !important;
+    }
+}
 @media (max-width:1279px) {   
     body#login #loginForm {
         width: 60vw !important;
