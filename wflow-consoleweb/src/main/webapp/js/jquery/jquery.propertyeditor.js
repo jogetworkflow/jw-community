@@ -6325,7 +6325,7 @@ PropertyEditor.Type.Number.prototype = {
             }
             unitSelector += '</select>';
             
-            value = value.replace(/[^0-9]/g, '');
+            value = value.replace(/[^\d.-]/g, '');
         }
 
         return '<input type="number" class="'+cssClass+'" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(value) + '"/>' + unitSelector;
