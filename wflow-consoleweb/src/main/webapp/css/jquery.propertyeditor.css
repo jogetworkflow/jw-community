@@ -329,7 +329,7 @@
 .property-input .withPrefix .prefix{
     position: absolute;
     background: #ccc;
-    padding: 8px 8px 7px;
+    padding: 5px 8px 7px;
     box-sizing: border-box;
     z-index: 2;
     border-radius: 0.25rem 0 0 0.25rem;

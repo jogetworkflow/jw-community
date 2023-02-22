@@ -1025,7 +1025,7 @@ fieldset legend,
 }
 .form-row .form-input.withPrefix .prefix {
     background: #edecec;
-    height: 29px;
+    height: 32px;
     position: absolute;
     top: 0px;
     padding-top: 3px;
@@ -1034,6 +1034,8 @@ fieldset legend,
     z-index: 2;
     width: 50px;
     text-align: right;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 .form-row .form-input.withPrefix input {
     padding-left: 55px;
