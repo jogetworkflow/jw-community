@@ -1,6 +1,5 @@
 package org.joget.apps.app.service;
 
-import java.util.Date;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,11 +8,12 @@ import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.UserMetaData;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Aspect
 public class DateFormatAspect {
     
-    @Pointcut("execution(* org.joget.commons.util.TimeZoneUtil.convertToTimeZone(..))")
+    @Pointcut("execution(* org.joget.commons.util.TimeZoneUtil.convertToTimeZoneWithLocale(..))")
     private void convertToTimeZoneMethod() {
     }
 
@@ -44,11 +44,13 @@ public class DateFormatAspect {
             }
         }
         
+        obj = pjp.proceed();
+       
         if ("true".equalsIgnoreCase(value)) {
             Object[] args = pjp.getArgs();
-            obj = TimeZoneUtil.convertToTimeZoneWithLocale((Date) args[0], (String) args[1], (String) args[2], "en");
-        } else {
-            obj = pjp.proceed();
+            if (args[3] == null || args[3].toString().isEmpty() || args[3] != null && args[3].toString().equals(AppUtil.getAppLocale())) {
+                obj = TimeZoneUtil.convertDateDigitsFromLocaleToEnglish((String) obj, LocaleContextHolder.getLocale());
+            }
         }
         
         return obj;
