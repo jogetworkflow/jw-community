@@ -441,10 +441,13 @@
             $("#preview-btn").hide();
         }
         
-        if (CustomBuilder.config.builder.options['rightPropertyPanel'] === true) {
-            $("body").addClass("property-editor-right-panel");
+        $("body").addClass("property-editor-right-panel");
+        
+        //use for old builder implementation like api builder & report builder
+        if (CustomBuilder.config.builder.options['rightPropertyPanel'] !== true) { 
+            $("body").addClass("property-editor-migrated");
         } else {
-            $("body").removeClass("property-editor-right-panel");
+            $("body").removeClass("property-editor-migrated");
         }
         
         if (CustomBuilder.getBuilderSetting("autoApplyChanges") === true) {
@@ -463,7 +466,8 @@
             $("#collapse-all-props-btn").hide();
         }
         
-        if (CustomBuilder.getBuilderSetting("right-panel-mode") === "window") {
+        if (CustomBuilder.getBuilderSetting("right-panel-mode") === "window" 
+                || (CustomBuilder.getBuilderSetting("right-panel-mode") === undefined && CustomBuilder.config.builder.options['rightPropertyPanel'] !== true)) {
             $("body").addClass("right-panel-mode-window");
         } else {
             $("body").removeClass("right-panel-mode-window");
@@ -1524,6 +1528,19 @@
      * Edit an element properties in right panel or popup dialog
      */
     editProperties: function(elementClass, elementProperty, elementObj, element) {
+        if ($("body").hasClass("property-editor-migrated")) {
+            if (!$("body").hasClass("no-right-panel")) {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
+                    $("body").addClass("no-right-panel");
+                    CustomBuilder.editProperties(elementClass, elementProperty, elementObj, element);
+                });   
+                return;
+            } else {
+                $("body").removeClass("no-right-panel");
+                $("#right-panel .property-editor-container").remove();
+            }
+        }
+        
         $(".element-properties .nav-tabs .nav-link").removeClass("has-properties-errors");
         
         var paletteElement = CustomBuilder.paletteElements[elementClass];
@@ -1603,7 +1620,7 @@
             if (CustomBuilder.getBuilderSetting("expandProps") === true) {
                 $("#right-panel .property-editor-container > .property-editor-pages > .property-editor-page ").removeClass("collapsed");
             }
-        
+            
             $("#element-properties-tab-link").show();
         } else {
             // show popup dialog
