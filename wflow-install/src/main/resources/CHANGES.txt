@@ -3,6 +3,16 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.37
+=================
+29d5ecc86 Modified: wflow-plugin-base - Plugin Manager - Added singularity package to OSGI config. @7.0-SNAPSHOT
+fb2190922 Fixed: wflow-core - Database Update Tool - Custom datasource is required to close. @7.0-SNAPSHOT
+bdd6d6808 Fixed: wflow-wfengine - Process - Unique constraint violated after transaction rollback. #T1917 @7.0-SNAPSHOT
+c107ba759 Modified: jw-community - Upgraded to Apache Tomcat 9.0.71 @7.0-SNAPSHOT
+98bb3d7e8 Fixed: wflow-core - File Upload - Prevent file name to contains `;` char. #T1823 @7.0-SNAPSHOT
+70bd643d3 Fixed: wflow-consoleweb - Edit User - User removed from organization when not belong to any department or grade. @7.0-SNAPSHOT
+4520525ba Fixed: wflow-consoleweb - Edit User - NPE when setting grade. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.36
 =================
 9b99d1caf Fixed: wflow-wfengine - Process Builder - Shark duplicate id issue in long transaction. @7.0-SNAPSHOT
