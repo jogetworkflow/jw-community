@@ -21,6 +21,10 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
     
     protected String getValue(String variableKey, String locale) {
         try {
+            if (locale == null || locale.isEmpty()) {
+                locale = "en_US";
+            }
+            
             Calendar cal = Calendar.getInstance();
             
             if (variableKey.contains("[") && variableKey.contains("]")) {

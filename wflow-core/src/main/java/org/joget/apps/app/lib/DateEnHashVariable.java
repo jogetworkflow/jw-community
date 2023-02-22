@@ -1,9 +1,8 @@
 package org.joget.apps.app.lib;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.joget.apps.app.service.AppUtil;
-
+/**
+ * This class only for backward compatible for a Hash added during 8.0-BETA
+ */
 public class DateEnHashVariable extends DateHashVariable {
     
     @Override
@@ -13,7 +12,7 @@ public class DateEnHashVariable extends DateHashVariable {
     
     @Override
     public String getName() {
-        return "Date English Locale Hash Variable";
+        return "Date Hash Variable";
     }
 
     @Override
@@ -44,25 +43,5 @@ public class DateEnHashVariable extends DateHashVariable {
     @Override
     public String getPropertyOptions() {
         return "";
-    }
-    
-    @Override
-    public Collection<String> availableSyntax() {
-        Collection<String> syntax = new ArrayList<String>();
-        syntax.add("dateEN.FORMAT");
-        syntax.add("dateEN.FORMAT|TIMEZONE");
-        syntax.add("dateEN.DAY+/-INTEGER.FORMAT");
-        syntax.add("dateEN.MONTH+/-INTEGER.FORMAT");
-        syntax.add("dateEN.YEAR+/-INTEGER.FORMAT");
-        syntax.add("dateEN.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
-        syntax.add("dateEN.DAY+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
-        syntax.add("dateEN.MONTH+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
-        syntax.add("dateEN.YEAR+/-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|TIMEZONE]");
-        return syntax;
-    }
-    
-    @Override
-    public String getPropertyAssistantDefinition() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/assist/dateENHashVariable.json", null, true, null);
     }
 }

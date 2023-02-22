@@ -1,11 +1,11 @@
 {
     "optionGroup" : {
-        "@@assist.DateEN@@" : [
+        "@@assist.DateLocale@@" : [
             {
-                "value" : "#dateEN.FORMAT|TIMEZONE#",
+                "value" : "#dateLocale.FORMAT|TIMEZONE#",
                 "label" : "@@assist.Date.format@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "FORMAT",
                         "option" : "dateFormat",
@@ -20,10 +20,10 @@
                 ]
             },
             {
-                "value" : "#dateEN.UNIT+INTEGER.FORMAT|TIMEZONE#",
+                "value" : "#dateLocale.UNIT+INTEGER.FORMAT|TIMEZONE#",
                 "label" : "@@assist.Date.formatPlus@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "UNIT",
                         "option" : "dateUnit",
@@ -50,10 +50,10 @@
                 ]
             },
             {
-                "value" : "#dateEN.UNIT-INTEGER.FORMAT|TIMEZONE#",
+                "value" : "#dateLocale.UNIT-INTEGER.FORMAT|TIMEZONE#",
                 "label" : "@@assist.Date.formatMinus@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "UNIT",
                         "option" : "dateUnit",
@@ -80,10 +80,10 @@
                 ]
             },
             {
-                "value" : "#dateEN.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "value" : "#dateLocale.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
                 "label" : "@@assist.Date.value@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "FORMAT",
                         "option" : "dateFormat",
@@ -114,10 +114,10 @@
                 ]
             },
             {
-                "value" : "#dateEN.UNIT+INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "value" : "#dateLocale.UNIT+INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
                 "label" : "@@assist.Date.valuePlus@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "UNIT",
                         "option" : "dateUnit",
@@ -160,10 +160,10 @@
                 ]
             },
             {
-                "value" : "#dateEN.UNIT-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
+                "value" : "#dateLocale.UNIT-INTEGER.FORMAT|TIMEZONE[DATE_VALUE|DATE_VALUE_FORMAT|DATE_VALUE_TIMEZONE]#",
                 "label" : "@@assist.Date.valueMinus@@",
                 "syntax" : [
-                    "#dateEN.",
+                    "#dateLocale.",
                     {
                         "placeholder" : "UNIT",
                         "option" : "dateUnit",
