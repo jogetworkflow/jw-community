@@ -68,9 +68,10 @@
         .diagram-actions {text-align: right;}
         .diagram-actions a {cursor: pointer;}
         #diagram-grid {position: relative;}
-        #diagram-grid .col .row {padding: 50px 20px;}
-        #diagram-grid .col:nth-child(even) {padding-top: 30px;}
+        #diagram-grid .col:nth-child(even) {padding-top:150px;}
+        #diagram-grid .col .row {padding: 80px 100px;}
         #diagram-grid .col .row:nth-child(even) {padding-left:50px;}
+        #diagram-grid .col .row:nth-child(odd) {padding-right:50px;}
         #diagram-grid .entity-container {max-width: 350px; margin: auto; border: 1px solid #333; border-radius: 5px; overflow: hidden; position: relative;}
         #diagram-grid .entity-container h5 {text-align: center; padding: 20px; cursor: pointer; margin-bottom: 0; background: #e9f2ff;}
         #diagram-grid .entity-container h5 .la-exclamation-circle {position: absolute; display: block; top: 3px; right: 3px; color: #fe9600;}

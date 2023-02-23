@@ -797,7 +797,7 @@ FormBuilder = {
                         $("#diagram-grid").append($("#diagram-grid .col:eq(0)").clone());
                         $("#diagram-grid .col").append('<div class="row"></div>');
                     }
-
+                    
                     function findEmptyCell(x, y) {
                         if ($('#diagram-grid .col:eq('+x+') .row:eq('+y+') .entity-container').length === 0) {
                             return [x, y];
@@ -807,6 +807,7 @@ FormBuilder = {
                                 for (var j=x-1; j<=x+1; j++) {
                                     if (j >= 0 && i >= 0 && j < limit && i < limit 
                                             && !((j === x && (i === y-1 || i === y+1))) //not putting on direct top & bottom
+                                            && !((j === y && (i === x-1 || i === x+1))) //not putting on direct left & right
                                             && $('#diagram-grid .col:eq('+j+') .row:eq('+i+') .entity-container').length === 0) {
                                         return [j, i];
                                     }
@@ -873,6 +874,31 @@ FormBuilder = {
                     
                     var unindexed = {};
                     
+                    function getRandomRGBColor() {
+                        return [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
+                    }
+                    
+                    function getRGBLightness(color) {
+                        return ((color[0]*299)+(color[1]*587)+(color[2]*114))/1000;
+                    }
+                    
+                    function rgbToHex(color) {
+                        var hexR = color[0].toString(16).padStart(2, "0");
+                        var hexG = color[1].toString(16).padStart(2, "0");
+                        var hexB = color[2].toString(16).padStart(2, "0");
+                        return "#" + hexR + hexG + hexB;
+                    }
+                    
+                    function getRandomDarkColor() {
+                        var color;
+                        do {
+                            color = getRandomRGBColor();
+                        } while (getRGBLightness(color) > 70);
+
+                        // return the color in hexadecimal format
+                        return rgbToHex(color);
+                    }
+                    
                     function checkIndexField(entity, field) {
                         if (!$("#" + entity + "_field_" + field + " .label .markindex").hasClass("indexed") && !$("#"+entity+"_container").hasClass("external")) {
                             if (unindexed[entity] === undefined) {
@@ -902,12 +928,14 @@ FormBuilder = {
                                 jsPlumb.connect({
                                     source: $("#" + entity1 + "_field_" + entityField1),
                                     target: $("#" + entity2 + "_field_" + entityField2),
-                                    connector: ["Flowchart", {midpoint: (Math.random() * 0.6 + 0.3)}]
+                                    connector: ["Flowchart", {cornerRadius: 5, stub : (Math.random() * 40 + 15)}],
+                                    anchors: ['ContinuousLeft', 'ContinuousRight'],
+                                    paintStyle: {strokeStyle: getRandomDarkColor(), lineWidth: 2, outlineWidth: 15, outlineColor: 'transparent'}
                                 });
                             } catch (err) {}
                         }
                     }
-
+                    
                     function placeEntity(entity, x, y) {
                         if (x === undefined) {
                             x = Math.round($("#diagram-grid .col").length/2) - 1;
@@ -1322,5 +1350,5 @@ FormBuilder = {
         jsPlumb.detachEveryConnection();
         jsPlumb.deleteEveryEndpoint();
         jsPlumb.reset();
-    } 
+    }
 }
