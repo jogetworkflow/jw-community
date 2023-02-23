@@ -47,13 +47,13 @@
                         <c:when test="${actionResult.type == 'REDIRECT' && actionResult.url == 'REFERER'}">
                             <c:set var="redirected" value="true" />
                             <script>
-                                location.href = "<c:out value="${header['Referer']}"/>";
+                                location.href = "<c:out escapeXml="false" value="${header['Referer']}"/>";
                             </script>
                         </c:when>
                         <c:when test="${actionResult.type == 'REDIRECT'  && !empty actionResult.url}">
                             <c:set var="redirected" value="true" />
                             <script>
-                                location.href = "<c:out value="${actionResult.url}"/>";
+                                location.href = "<c:out escapeXml="false" value="${actionResult.url}"/>";
                             </script>
                         </c:when>
                         <c:otherwise>   
