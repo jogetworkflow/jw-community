@@ -29,6 +29,8 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
 
     public void addWorkflowProcessLink(WorkflowProcessLink wfProcessLink){
         saveOrUpdate(ENTITY_NAME, wfProcessLink);
+        
+        super.findSession().evict(wfProcessLink);
     }
 
     public WorkflowProcessLink getWorkflowProcessLink(String processId){
