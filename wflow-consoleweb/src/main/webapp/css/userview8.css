@@ -962,8 +962,8 @@ body.horizontal_menu #header-info{
 #content main input.btn-primary
 {
     color: #fff;
-    background-color: var(--theme-button-bg, #007bff);
-    border-color: var(--theme-button-bg, #007bff);
+    background-color: var(--theme-button-bg, #0d6efd);
+    border-color: var(--theme-button-bg, #0d6efd);
 }
 #content main button[class*=button],
 #content main input[class*=button],
