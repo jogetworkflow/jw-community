@@ -232,6 +232,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String link = href;
         String targetString = "";
         String confirmationString = "";
+        String arialLabel= "";
 
         if (link == null || text == null || text.isEmpty()) {
             link = text;
@@ -311,8 +312,11 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     confirmationString = " onclick=\"return confirm('" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
                 }
             }
-            link = "<a href=\"" + link + "\"" + targetString + confirmationString + " class=\""+cssClasses+"\">" + text + "</a>";
-        }
+            if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
+                arialLabel = " aria-label=\"link\"";
+            }
+            link = "<a href=\"" + link + "\"" + targetString + confirmationString + arialLabel + " class=\""+cssClasses+"\">" + text + "</a>";
+            }
         return link;
     }
 

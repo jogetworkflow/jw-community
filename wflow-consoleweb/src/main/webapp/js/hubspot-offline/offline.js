@@ -258,7 +258,7 @@
     if (!window.Offline)
         throw new Error("Offline UI brought in without offline.js");
     TEMPLATE = '<div class="offline-ui"><div class="offline-ui-content"></div></div>',
-            RETRY_TEMPLATE = '<a href class="offline-ui-retry"></a>', createFromHTML = function (html) {
+            RETRY_TEMPLATE = '<a href class="offline-ui-retry" aria-label="retry"></a>', createFromHTML = function (html) {
                 var el;
                 return el = document.createElement("div"), el.innerHTML = html, el.children[0];
             }, el = content = null, addClass = function (name) {
