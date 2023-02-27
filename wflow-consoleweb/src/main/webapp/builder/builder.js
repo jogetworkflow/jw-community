@@ -2705,7 +2705,9 @@
             }
             $("#right-panel").css("width", width + 'px');
         } else {
-            width = $("#right-panel").width();
+            try {
+                width = parseInt($("#right-panel").css("min-width").replace("px", ""));
+            } catch (e){}
         }
         
         if (width > 680) {
