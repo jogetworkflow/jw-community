@@ -514,6 +514,11 @@
             $(document).uitooltip({
                 position: { my: "left top+5", at: "left bottom", collision: "flipfit" },
                 open: function (event, ui) {
+                    $(".ui-tooltip").each(function(){
+                       if (!($(this).is($(ui.tooltip)))) {
+                           $(this).remove(); //remove the other tooltips that fail to hide itself.
+                       } 
+                    });
                     if ($(event.originalEvent.target).is("iframe")) {
                         $(ui.tooltip).hide();
                         return false;
@@ -525,9 +530,20 @@
                         $(ui.tooltip).css("left", (offset.left + el.width() + 5) + "px");
                         $(ui.tooltip).css("top", (offset.top + 5) + "px");
                     }
+                    
+                    if (CustomBuilder.tooltipTimeout !== undefined && CustomBuilder.tooltipTimeout !== null) {
+                        clearTimeout(CustomBuilder.tooltipTimeout);
+                    }
+                    CustomBuilder.tooltipTimeout = setTimeout(function() {
+                        $(".ui-tooltip").remove();
+                        CustomBuilder.tooltipTimeout = null;
+                    }, 2000); //force tooltip to remove after 2s
                 },
                 close: function (event, ui) {
                     $(".ui-helper-hidden-accessible").remove();
+                    if (CustomBuilder.tooltipTimeout !== undefined && CustomBuilder.tooltipTimeout !== null) {
+                        clearTimeout(CustomBuilder.tooltipTimeout);
+                    }
                 } 
             });
             
