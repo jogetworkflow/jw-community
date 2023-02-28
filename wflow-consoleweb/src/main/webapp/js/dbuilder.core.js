@@ -2044,9 +2044,11 @@ DatalistBuilder = {
      */
     renderXray : function(detailsDiv, element, elementObj, component , callback) {
         var dl = detailsDiv.find('dl');
-        
+        if ((elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0 || elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) && elementObj.name !== undefined) {
+            dl.append('<dt><i class="las la-user" title="' + get_cbuilder_msg('cbuilder.name') + '"></i></dt><dd>' + elementObj.name + '</dd>');
+        } 
         if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
-            dl.find('> *:eq(1)').text(elementObj.name);
+            dl.find('> *:eq(1)').text(elementObj.datalist_type);
             var action = "-";
             if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
                 action = elementObj.action.className;
@@ -2070,7 +2072,6 @@ DatalistBuilder = {
             }
             dl.append('<dt><i class="las la-paint-brush" title="'+get_cbuilder_msg('dbuilder.formatter')+'"></i></dt><dd>'+format+'</dd>');
         } else if (elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) {
-            dl.find('> *:eq(1)').text(elementObj.name);
             var type = "-";
             if (elementObj.type !== undefined && elementObj.type.className !== undefined && elementObj.type.className !== "") {
                 type = elementObj.type.className;
@@ -2081,7 +2082,7 @@ DatalistBuilder = {
                     type = '<span class="missing-plugin">' + type + '</span>';
                 }
             }
-            dl.find("> *:eq(1)").after('<dt><i class="las la-cube" title="'+get_cbuilder_msg('dbuilder.filter')+'"></i></dt><dd>'+type+'</dd>');
+            dl.find('> *:eq(1)').text(type);
         } else if (elementObj.id.indexOf(DatalistBuilder.actionPrefix) === 0) {
             //nothing
         } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
