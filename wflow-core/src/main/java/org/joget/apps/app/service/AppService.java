@@ -716,6 +716,16 @@ public interface AppService {
     public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException;   
     
     /**
+     * Import Messages from a PO file and return the PO file locale
+     * @param appId
+     * @param version
+     * @param locale
+     * @param multipartFile
+     * @throws IOException 
+     */
+    public String importPOAndReturnLocale(String appId, String version, String locale, MultipartFile multipartFile) throws IOException;
+    
+    /**
      * Retrieve all apps without check for permission
      * @return 
      */

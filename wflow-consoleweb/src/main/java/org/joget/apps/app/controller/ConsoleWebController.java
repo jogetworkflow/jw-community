@@ -3236,7 +3236,7 @@ public class ConsoleWebController {
 
         if (multiPartfile != null) {
             try {
-                appService.importPO(appId, version, systemLocale, multiPartfile);
+                lang = appService.importPOAndReturnLocale(appId, version, systemLocale, multiPartfile);
             } catch (IOException e) {
                 errorMsg = ResourceBundleUtil.getMessage("console.app.message.import.po.error.invalidPoFile");
             }

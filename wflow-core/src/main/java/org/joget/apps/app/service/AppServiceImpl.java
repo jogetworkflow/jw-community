@@ -3455,6 +3455,19 @@ public class AppServiceImpl implements AppService {
      */
     @Transactional
     public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException {
+        importPOAndReturnLocale(appId, version, locale, multipartFile);
+    }
+    
+    /**
+     * Import Messages from a PO file
+     * @param appId
+     * @param version
+     * @param locale
+     * @param multipartFile
+     * @throws IOException 
+     */
+    @Transactional
+    public String importPOAndReturnLocale(String appId, String version, String locale, MultipartFile multipartFile) throws IOException {
         InputStream inputStream = null;
         
         String line = null, key = null, translated = null;
@@ -3510,6 +3523,7 @@ public class AppServiceImpl implements AppService {
                 inputStream.close();
             }
         }
+        return locale;
     }
     
     /**
