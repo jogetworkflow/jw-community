@@ -78,6 +78,7 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
             UserviewDefinition uvDef = super.loadById(id, appDefinition);
             
             if (uvDef != null) {
+                findSession().evict(uvDef);
                 element = new Element(cacheKey, (Serializable) uvDef);
                 cache.put(element, appDefinition);
             }

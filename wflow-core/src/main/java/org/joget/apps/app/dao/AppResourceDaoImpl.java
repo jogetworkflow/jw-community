@@ -52,6 +52,7 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
             AppResource r = super.loadById(id, appDefinition);
             
             if (r != null) {
+                findSession().evict(r);
                 element = new Element(cacheKey, (Serializable) r);
                 cache.put(element, appDefinition);
             }

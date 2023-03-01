@@ -52,6 +52,7 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
             PluginDefaultProperties props = super.loadById(id, appDefinition);
             
             if (props != null) {
+                findSession().evict(props);
                 element = new Element(cacheKey, (Serializable) props);
                 cache.put(element, appDefinition);
             }

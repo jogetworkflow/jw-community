@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.ehcache.Element;
+import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.Message;
@@ -43,7 +44,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     private String getCacheKey(String locale, String appId, String version){
         return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_MSG_"+locale;
     }
-
+    
     public Message loadByMessageKey(String messageKey, String locale, AppDefinition appDefinition) {
         return getCachedMessageList(locale, appDefinition).get(messageKey);
     }
@@ -75,6 +76,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     }
 
     public Collection<Message> getMessageList(String filterString, String locale, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
+        Session s = findSession();
+        
         String conditions = "";
         List params = new ArrayList();
 
@@ -90,7 +93,11 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             params.add(locale);
         }
 
-        return this.find(conditions, params.toArray(), appDefinition, sort, desc, start, rows);
+        Collection<Message> messages = this.find(conditions, params.toArray(), appDefinition, sort, desc, start, rows);
+        for (Message m : messages) {
+            s.evict(m);
+        }
+        return messages;
     }
 
     public Long getMessageListCount(String filterString, String locale, AppDefinition appDefinition) {
@@ -229,7 +236,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
         }
-
+        
         return result;
     }    
     

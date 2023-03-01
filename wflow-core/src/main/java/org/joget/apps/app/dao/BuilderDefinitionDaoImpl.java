@@ -93,6 +93,7 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             BuilderDefinition def = super.loadById(id, appDefinition);
             
             if (def != null) {
+                findSession().evict(def);
                 element = new Element(cacheKey, (Serializable) def);
                 cache.put(element, appDefinition);
             }
