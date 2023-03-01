@@ -1580,7 +1580,7 @@ DatalistBuilder = {
         if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
             var colStr = JSON.encode(elementObj);
             var rowStr = JSON.encode(rowData);
-
+            
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
@@ -1588,7 +1588,9 @@ DatalistBuilder = {
                     "value" : value,
                     "row" : rowStr,
                     "appId" : CustomBuilder.appId,
-                    "listId" : CustomBuilder.data.id
+                    "listId" : CustomBuilder.data.id,
+                    "binderJson" : JSON.encode(CustomBuilder.data.binder.properties),
+                    "binderId" : CustomBuilder.data.binder.className
                 },
                 url: CustomBuilder.contextPath + '/web/dbuilder/getFormatterTemplate',
                 dataType : "json",
