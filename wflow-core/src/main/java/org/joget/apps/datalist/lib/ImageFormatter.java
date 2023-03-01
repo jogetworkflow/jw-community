@@ -3,6 +3,7 @@ package org.joget.apps.datalist.lib;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
@@ -52,6 +53,12 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         String style = "";
         
         if(!height.isEmpty() && !width.isEmpty()){
+            if (StringUtils.isNumeric(height)){
+                height = height + "px";
+            }
+            if (StringUtils.isNumeric(width)){
+                width = width + "px";
+            }
             style = "height:"+height+";width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";
         }
         
