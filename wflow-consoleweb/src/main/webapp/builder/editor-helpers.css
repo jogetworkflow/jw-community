@@ -385,6 +385,11 @@ body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details 
 span.missing-plugin {
     animation: alert-glowing 2000ms infinite;
 }
+
+.show-node-details .dataList tbody td.rowActions div{
+    min-width: 200px
+}
+
 @keyframes alert-glowing {
   0% {
     color: #ffd6d6;
