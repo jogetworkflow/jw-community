@@ -13,6 +13,8 @@ public class ReportAppDaoImpl extends AbstractSpringDao implements ReportAppDao 
     public boolean saveReportApp(ReportApp reportApp) {
         try {
             saveOrUpdate(ENTITY_NAME, reportApp);
+            
+            super.findSession().evict(reportApp);
             return true;
         } catch (Exception e) {
             LogUtil.error(ReportAppDaoImpl.class.getName(), e, "saveReportApp Error!");

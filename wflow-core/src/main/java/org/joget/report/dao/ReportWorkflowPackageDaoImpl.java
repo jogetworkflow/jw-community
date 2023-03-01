@@ -14,6 +14,8 @@ public class ReportWorkflowPackageDaoImpl extends AbstractSpringDao implements R
     public boolean saveReportWorkflowPackage(ReportWorkflowPackage reportWorkflowPackage) {
         try {
             saveOrUpdate(ENTITY_NAME, reportWorkflowPackage);
+        
+            super.currentSession().evict(reportWorkflowPackage);
             return true;
         } catch (Exception e) {
             LogUtil.error(ReportWorkflowPackageDaoImpl.class.getName(), e, "saveReportWorkflowPackage Error!");

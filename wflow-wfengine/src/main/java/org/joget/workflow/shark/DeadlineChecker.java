@@ -4,13 +4,20 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 import org.enhydra.shark.client.utilities.LimitStruct;
 import org.enhydra.shark.utilities.MiscUtilities;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.ServerUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.shark.model.dao.DeadlineDao;
 import org.springframework.context.i18n.LocaleContext;
@@ -18,6 +25,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.LocaleContextResolver;
 
 public class DeadlineChecker extends Thread {
+    
+    public static final String DEADLINE_PREFIX = "deadlinecheker_";
 
     protected String profile;
     protected long delay;
@@ -153,52 +162,92 @@ public class DeadlineChecker extends Thread {
             
             LogUtil.debug(getClass().getName(), "Checking deadlines for profile " + profile);
             long start = System.currentTimeMillis();
+            
+            String serverName = ServerUtil.getServerName();
 
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
             DeadlineDao deadlineDao = (DeadlineDao) WorkflowUtil.getApplicationContext().getBean("deadlineDao");
-                    
+            SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+            Setting setting = null;
+            
             LocaleContextResolver localeResolver = (LocaleContextResolver) WorkflowUtil.getApplicationContext().getBean("localeResolver");
             if (localeResolver != null) {
                 LocaleContext localeContext = localeResolver.resolveLocaleContext(null);
                 LocaleContextHolder.setLocaleContext(localeContext, true);
             }
             
-            int sizeToCheck = 0;
-            List<String> instancesFailed2check = new ArrayList<String>();
-            Collection<String> instancesToCheck = deadlineDao.getProcessIdsWithDeadlines(System.currentTimeMillis());
-            
-            if (instancesToCheck != null && !instancesToCheck.isEmpty()) {
-                sizeToCheck = instancesToCheck.size();
-                Iterator iterProcesses = instancesToCheck.iterator();
-                List<String> currentBatch = null;
-                do {
-                    currentBatch = new ArrayList<String>(); 
-                    try {
-                        for (int n = 0; n < this.instancesPerTransaction; ++n) {
-                            if (!iterProcesses.hasNext()) {
-                                break;
-                            }
-                            String procId = (String) iterProcesses.next();
-                            iterProcesses.remove();
-                            currentBatch.add(procId);
-                        }
-                        String[] pids = new String[currentBatch.size()];
-                        currentBatch.toArray(pids);
+            try {
+                int sizeToCheck = 0;
+                List<String> instancesFailed2check = new ArrayList<String>();
+                Collection<String> instancesToCheck = deadlineDao.getProcessIdsWithDeadlines(System.currentTimeMillis());
+
+                if (instancesToCheck != null && !instancesToCheck.isEmpty()) {
+                    sizeToCheck = instancesToCheck.size();
+                    Iterator iterProcesses = instancesToCheck.iterator();
+                    List<String> currentBatch = null;
+                    Set<String> currentCheck = null;
+                    do {
+                        currentBatch = new ArrayList<String>(); 
+                        currentCheck = new HashSet<String>();
                         
-                        workflowManager.internalCheckDeadlines(pids);
-                    } catch (Exception ex) {
-                        LogUtil.error(getClass().getName(), ex, "Profile : " + profile);
-                        instancesFailed2check.addAll(currentBatch);
-                    }
-                } while (instancesFailed2check.size() <= this.failuresToIgnore && iterProcesses.hasNext());
+                        //find current deadline thread
+                        Collection<Setting> deadlines = setupDao.find("WHERE property like '" + DEADLINE_PREFIX + "%'", null, "property", Boolean.TRUE, null, null);
+                        if (deadlines != null) {
+                            for (Setting s : deadlines) {
+                                if (s.getProperty().equals(DEADLINE_PREFIX+serverName)) {
+                                    setting = s;
+                                }
+                                if (s.getValue() != null && !s.getValue().isEmpty()) {
+                                    currentCheck.addAll(Arrays.asList(s.getValue().split(";")));
+                                }
+                            }
+                        }
+                        
+                        try {
+                            for (int n = 0; n < this.instancesPerTransaction;) {
+                                if (!iterProcesses.hasNext()) {
+                                    break;
+                                }
+                                
+                                String procId = (String) iterProcesses.next();
+                                iterProcesses.remove();
+                                
+                                if (currentCheck.contains(procId)) {
+                                    continue;
+                                }
+                                
+                                currentBatch.add(procId);
+                                n++;
+                            }
+                            String[] pids = new String[currentBatch.size()];
+                            currentBatch.toArray(pids);
+                            
+                            if (setting == null) {
+                                setting = new Setting();
+                                setting.setProperty(DEADLINE_PREFIX+serverName);
+                            }
+                            setting.setValue(StringUtils.join(pids, ";"));
+                            setupDao.saveOrUpdate(setting);
+                            
+                            workflowManager.internalCheckDeadlines(pids);
+                        } catch (Exception ex) {
+                            LogUtil.error(getClass().getName(), ex, "Profile : " + profile);
+                            instancesFailed2check.addAll(currentBatch);
+                        }
+                    } while (instancesFailed2check.size() <= this.failuresToIgnore && iterProcesses.hasNext());
+                }
+
+                long end = System.currentTimeMillis();
+
+                LogUtil.debug(getClass().getName(), "Deadline check lasted " + (end - start) + " ms for profile " + profile + ". Checked:" + sizeToCheck + ". Failed:" + instancesFailed2check.size());
+            } finally {
+                if (setting != null) {
+                    setupDao.delete(setting);
+                }
+                
+                WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+                workflowMapper.cleanForDeadline();
             }
-
-            long end = System.currentTimeMillis();
-
-            LogUtil.debug(getClass().getName(), "Deadline check lasted " + (end - start) + " ms for profile " + profile + ". Checked:" + sizeToCheck + ". Failed:" + instancesFailed2check.size());
-            
-            WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
-            workflowMapper.cleanForDeadline();
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
         }
