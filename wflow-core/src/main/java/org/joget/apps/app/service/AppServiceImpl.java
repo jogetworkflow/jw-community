@@ -2885,9 +2885,14 @@ public class AppServiceImpl implements AppService {
             }
 
             if (appDef.getMessageList() != null) {
+                Set<String> keys = new HashSet<String>();
                 for (Message o : appDef.getMessageList()) {
-                    o.setAppDefinition(newAppDef);
-                    messageDao.add(o);
+                    String k = o.getMessageKey() + AbstractAppVersionedObject.ID_SEPARATOR + o.getLocale();
+                    if (!keys.contains(k)) {
+                        o.setAppDefinition(newAppDef);
+                        messageDao.add(o);
+                        keys.add(k);
+                    }
                 }
                 LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
             }
