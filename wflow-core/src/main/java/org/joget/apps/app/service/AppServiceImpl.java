@@ -3468,7 +3468,7 @@ public class AppServiceImpl implements AppService {
                 } else if (line.startsWith("msgid \"") && !line.equals("msgid \"\"")) {
                     key = line.substring(7, line.length() - 1);
                     translated = null;
-                } else if (line.startsWith("msgstr \"") && line.endsWith("\"")) {
+                } else if (line.startsWith("msgstr \"") && line.endsWith("\"") && line.length() > 8) {
                     translated = line.substring(8, line.length() - 1);
                 } else if (line.startsWith("msgstr \"")) {
                     translated = line.substring(8, line.length());
