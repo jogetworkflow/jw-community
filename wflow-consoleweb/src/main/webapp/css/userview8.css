@@ -629,6 +629,9 @@ body.rtl .hi-trigger{
     body.sidebar-toggled .hi-trigger {
         
     }
+    body.rtl:not(.horizontal_menu) #page{
+        padding-right: 0px;
+    }
 }
 @media (min-width:1280px) {
     body.sidebar-minimized #page {
