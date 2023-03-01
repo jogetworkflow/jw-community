@@ -53,6 +53,7 @@ import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -3496,7 +3497,7 @@ public class AppServiceImpl implements AppService {
                 }
                 
                 if (key != null && translated != null) {
-                    Message message = messageDao.loadByMessageKey(key, locale, appDef);
+                    Message message = messageDao.loadById(key + "_" + locale, appDef);
                     if (message == null && !translated.isEmpty()) {
                         message = new Message();
                         message.setLocale(locale);
