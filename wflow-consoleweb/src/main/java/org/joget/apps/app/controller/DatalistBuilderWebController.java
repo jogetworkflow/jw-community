@@ -317,13 +317,26 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping(value = "/dbuilder/getFormatterTemplate", method = RequestMethod.POST)
-    public void getColumnFormatterTemplate(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String listId, @RequestParam String value, @RequestParam String row, @RequestParam String column, HttpServletRequest request) throws Exception {
+    public void getColumnFormatterTemplate(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String listId, @RequestParam String value, @RequestParam String row, @RequestParam String column, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request) throws Exception {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         try {
+            // get data list
+            DataList dataList = new DataList();
+
+            // parse JSON from request if available
+            dataList = parseFromJsonParameter(map, dataList, listId, request);
+
+            // get binder from request
+            DataListBinder binder = createDataListBinderFromRequestInternal(appDef, listId, binderId, binderJson);
+            if (binder != null) {
+                dataList.setBinder(binder);
+            }
+        
             DataListColumn c = JsonUtil.parseColumnFromJsonObject(new JSONObject(column), Permission.DEFAULT);
             Map rowData = PropertyUtil.getPropertiesValueFromJson(row);
             
             JSONObject jsonObject = new JSONObject();
-            DataListDecorator deco = new DataListDecorator(new DataList());
+            DataListDecorator deco = new DataListDecorator(dataList);
             String formatted = deco.formatColumn(c, rowData, value);
             
             jsonObject.accumulate("formatted", formatted);
