@@ -53,6 +53,7 @@ import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -2884,9 +2885,14 @@ public class AppServiceImpl implements AppService {
             }
 
             if (appDef.getMessageList() != null) {
+                Set<String> keys = new HashSet<String>();
                 for (Message o : appDef.getMessageList()) {
-                    o.setAppDefinition(newAppDef);
-                    messageDao.add(o);
+                    String k = o.getMessageKey() + AbstractAppVersionedObject.ID_SEPARATOR + o.getLocale();
+                    if (!keys.contains(k)) {
+                        o.setAppDefinition(newAppDef);
+                        messageDao.add(o);
+                        keys.add(k);
+                    }
                 }
                 LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
             }
@@ -3455,6 +3461,19 @@ public class AppServiceImpl implements AppService {
      */
     @Transactional
     public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException {
+        importPOAndReturnLocale(appId, version, locale, multipartFile);
+    }
+    
+    /**
+     * Import Messages from a PO file
+     * @param appId
+     * @param version
+     * @param locale
+     * @param multipartFile
+     * @throws IOException 
+     */
+    @Transactional
+    public String importPOAndReturnLocale(String appId, String version, String locale, MultipartFile multipartFile) throws IOException {
         InputStream inputStream = null;
         
         String line = null, key = null, translated = null;
@@ -3468,7 +3487,7 @@ public class AppServiceImpl implements AppService {
                 } else if (line.startsWith("msgid \"") && !line.equals("msgid \"\"")) {
                     key = line.substring(7, line.length() - 1);
                     translated = null;
-                } else if (line.startsWith("msgstr \"") && line.endsWith("\"")) {
+                } else if (line.startsWith("msgstr \"") && line.endsWith("\"") && line.length() > 8) {
                     translated = line.substring(8, line.length() - 1);
                 } else if (line.startsWith("msgstr \"")) {
                     translated = line.substring(8, line.length());
@@ -3483,7 +3502,7 @@ public class AppServiceImpl implements AppService {
                 }
                 
                 if (key != null && translated != null) {
-                    Message message = messageDao.loadByMessageKey(key, locale, appDef);
+                    Message message = messageDao.loadById(key + "_" + locale, appDef);
                     if (message == null && !translated.isEmpty()) {
                         message = new Message();
                         message.setLocale(locale);
@@ -3510,6 +3529,7 @@ public class AppServiceImpl implements AppService {
                 inputStream.close();
             }
         }
+        return locale;
     }
     
     /**

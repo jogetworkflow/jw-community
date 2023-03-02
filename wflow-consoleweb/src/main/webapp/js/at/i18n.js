@@ -197,6 +197,11 @@ I18nEditor = {
             options = $(container).find(".i18n_table").data("options");
         }
         
+        if ($(container).find("select#"+id).val() !== locale) {
+            $(container).find("select#"+id).val(locale).trigger("change").trigger("chosen:updated");
+            return;
+        }
+        
         if (locale === "") {
             $(container).find("td."+id).html("");
         } else {
