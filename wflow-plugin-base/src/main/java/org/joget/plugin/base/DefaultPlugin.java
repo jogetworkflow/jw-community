@@ -51,7 +51,7 @@ public abstract class DefaultPlugin implements Plugin, BundleActivator {
             if (this instanceof PropertyEditable) {
                 label = ((PropertyEditable) this).getLabel();
             }
-            if (label == null) {
+            if (label == null || label.isEmpty()) {
                 label = getName();
             }
             if (label == null) {
