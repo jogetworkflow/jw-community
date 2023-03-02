@@ -181,7 +181,7 @@ public abstract class PageComponent extends ExtElement {
         return "";
     }
     
-    public boolean isMenu() {
+    public boolean isUiMenu() {
         return this instanceof UserviewMenu;
     }
     

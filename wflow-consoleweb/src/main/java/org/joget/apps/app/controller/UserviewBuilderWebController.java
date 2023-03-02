@@ -442,9 +442,9 @@ public class UserviewBuilderWebController {
 
         try {
             JSONObject jObj = new JSONObject(tempJson);
-            UserviewV5Theme theme = (UserviewV5Theme) pluginManager.getPlugin(jObj.getString("className"));
+            UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(jObj.getString("className"));
             
-            if (theme != null && theme instanceof SupportBuilderColorConfig) {
+            if (theme != null && theme instanceof UserviewV5Theme && theme instanceof SupportBuilderColorConfig) {
                 theme.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
             
                 Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());

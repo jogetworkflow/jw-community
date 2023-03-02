@@ -36,7 +36,7 @@
             <c:if test="${empty propertyOptions}">
                 <c:set var="propertyOptions" value="''"/>
             </c:if>
-            <c:if test="${element.isMenu()}">
+            <c:if test="${element.isUiMenu()}">
                 <c:set var="type" value="menu"/>   
                 <c:set var="pwaValidation" value="'pwaValidation' : '${element.pwaValidationType}', "/>    
                 <c:set var="category" value='${category};${fn:replace(element.category, "\'", "\\\\\'")}'/>
