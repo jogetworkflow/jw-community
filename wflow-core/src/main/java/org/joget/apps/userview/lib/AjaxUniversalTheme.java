@@ -284,7 +284,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String css = ":root{";
         if (!getPropertyString("dx8colorScheme").isEmpty()) {
             String[] colors = getPropertyString("dx8colorScheme").split(";");
-            for (int i=0; i < 6; i++) {
+            for (int i=0; i < colors.length; i++) {
                 if (!colors[i].isEmpty()) {
                     css += "--theme-color"+(i+1)+":"+colors[i]+ ";";
                 }
