@@ -60,7 +60,7 @@
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
                 <prop key="hibernate.allow_update_outside_transaction">true</prop>
-                <prop key="hibernate.transaction.coordinator_class">jta</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
                 <prop key="hibernate.query.plan_cache_max_size">16</prop>
@@ -69,7 +69,7 @@
         </property>
     </bean>
     
-    <bean id="sharkIdSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="sharkIdSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <qualifier value="sharkId"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -82,6 +82,9 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">none</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
                 <prop key="hibernate.query.plan_cache_max_size">16</prop>

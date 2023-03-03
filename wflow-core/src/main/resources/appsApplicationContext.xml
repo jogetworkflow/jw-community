@@ -93,7 +93,7 @@
                 <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
                 <prop key="hibernate.allow_update_outside_transaction">true</prop>
-                <prop key="hibernate.transaction.coordinator_class">jta</prop>                
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>                
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
                 <prop key="hibernate.query.plan_cache_max_size">16</prop>
@@ -185,7 +185,7 @@
                 <prop key="hibernate.format_sql">false</prop>
                 <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
                 <prop key="hibernate.allow_update_outside_transaction">true</prop>
-                <prop key="hibernate.transaction.coordinator_class">jta</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
@@ -213,7 +213,7 @@
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
                 <prop key="hibernate.allow_update_outside_transaction">true</prop>
-                <prop key="hibernate.transaction.coordinator_class">jta</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>

@@ -97,7 +97,7 @@ public class SharkCounterDao extends AbstractSpringDao {
             } finally {
                 if (session != null) {
                     session.flush();
-                    if (transaction != null && !transaction.getStatus().equals(TransactionStatus.COMMITTED)) {
+                    if (transaction != null && !transaction.getStatus().equals(TransactionStatus.COMMITTED) && transaction.getStatus().equals(TransactionStatus.ACTIVE)) {
                         transaction.commit();
                     }
                     session.clear();
