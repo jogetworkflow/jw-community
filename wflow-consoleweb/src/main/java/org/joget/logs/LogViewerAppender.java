@@ -505,7 +505,7 @@ public class LogViewerAppender extends AbstractAppender {
         Setting setting = setupManager.getSettingByProperty("jsonpIPWhitelist");
         String JsonIPWhitelist = "";
         String currentIpAddress = ServerUtil.getIPAddress(node);
-        if (setting != null) {
+        if (setting != null && setting.getValue() != null) {
             JsonIPWhitelist = setting.getValue();
         }
         if (!JsonIPWhitelist.contains(currentIpAddress)) {
