@@ -1,6 +1,7 @@
 package org.joget.workflow.shark.model.dao;
 
 import java.util.Collection;
+import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.query.Query;
@@ -31,6 +32,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
+                session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the last next oid

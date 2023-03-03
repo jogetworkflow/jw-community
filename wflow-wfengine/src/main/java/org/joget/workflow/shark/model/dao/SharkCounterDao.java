@@ -2,6 +2,7 @@ package org.joget.workflow.shark.model.dao;
 
 import com.lutris.appserver.server.sql.ObjectIdAllocationError;
 import java.util.Collection;
+import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.query.Query;
@@ -33,6 +34,7 @@ public class SharkCounterDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
+                session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the counter by object name
