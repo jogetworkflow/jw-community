@@ -415,6 +415,14 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     /**
+     * Read timezone from Setup
+     * @return timezone id
+     */
+    public static String getAppTimezone() {
+        return LocaleContextHolder.getTimeZone().getID();
+    }
+    
+    /**
      * Read date format from Setup
      * @return Date format
      */

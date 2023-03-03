@@ -35,6 +35,22 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
             }
         } else if (variableKey.startsWith("license")) {
             result = "";
+        } else if (variableKey.startsWith("currentLocale")) {
+            result = AppUtil.getAppLocale();
+        } else if (variableKey.startsWith("currentLanguage")) {
+            result = AppUtil.getAppLanguage();
+        } else if (variableKey.startsWith("currentTimezone")) {
+            result = AppUtil.getAppTimezone();
+        } else if (variableKey.startsWith("currentDateFormat")) {
+            result = AppUtil.getAppDateFormat();
+        } else if (variableKey.startsWith("isRTL")) {
+            result = Boolean.toString(AppUtil.isRTL());
+        } else if (variableKey.startsWith("firstDayOfWeek")) {
+            result = AppUtil.getAppFirstDayOfWeek();
+        } else if (variableKey.startsWith("isEnterprise")) {
+            result = Boolean.toString(AppUtil.isEnterprise());
+        } else if (variableKey.startsWith("isQuickEditEnabled")) {
+            result = Boolean.toString(AppUtil.isQuickEditEnabled());
         } else if (variableKey.startsWith("setting.")) {
             String property = variableKey.substring("setting.".length());
             SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
@@ -78,7 +94,15 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
         syntax.add("platform.version");
         syntax.add("platform.build");
         syntax.add("platform.jdbcDriver");
+        syntax.add("platform.currentLocale");
+        syntax.add("platform.currentLanguage");
+        syntax.add("platform.currentTimezone");
+        syntax.add("platform.currentDateFormat");
+        syntax.add("platform.firstDayOfWeek");
         syntax.add("platform.marketplaceUrl");
+        syntax.add("platform.isEnterprise");
+        syntax.add("platform.isQuickEditEnabled");
+        syntax.add("platform.isRTL");
         syntax.add("platform.setting.dataFileBasePath");
         syntax.add("platform.setting.deadlineCheckerInterval");
         syntax.add("platform.setting.fileSizeLimit");

@@ -18,6 +18,42 @@
                 "label" : "@@assist.platform.jdbcDriver@@"
             },
             {
+                "value" : "#platform.currentLocale#",
+                "label" : "@@assist.platform.currentLocale@@"
+            },
+            {
+                "value" : "#platform.currentLanguage#",
+                "label" : "@@assist.platform.currentLanguage@@"
+            },
+            {
+                "value" : "#platform.currentTimezone#",
+                "label" : "@@assist.platform.currentTimezone@@"
+            },
+            {
+                "value" : "#platform.currentDateFormat#",
+                "label" : "@@assist.platform.currentDateFormat@@"
+            },
+            {
+                "value" : "#platform.firstDayOfWeek#",
+                "label" : "@@assist.platform.firstDayOfWeek@@"
+            },
+            {
+                "value" : "#platform.marketplaceUrl#",
+                "label" : "@@assist.platform.marketplaceUrl@@"
+            },
+            {
+                "value" : "#platform.isEnterprise#",
+                "label" : "@@assist.platform.isEnterprise@@"
+            },
+            {
+                "value" : "#platform.isQuickEditEnabled#",
+                "label" : "@@assist.platform.isQuickEditEnabled@@"
+            },
+            {
+                "value" : "#platform.isRTL#",
+                "label" : "@@assist.platform.isRTL@@"
+            },
+            {
                 "value" : "#platform.setting.dataFileBasePath#",
                 "label" : "@@assist.platform.dataFileBasePath@@"
             },
