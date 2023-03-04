@@ -42,6 +42,10 @@
             "label" : "@@form.jsonapibinder.postMethod.formpayload@@"
         },
         {
+            "value" : "formDataParam",
+            "label" : "@@form.jsonapibinder.postMethod.formDataParam@@"
+        },
+        {
             "value" : "jsonPayload",
             "label" : "@@app.jsontool.postMethod.jsonPayload@@"
         },

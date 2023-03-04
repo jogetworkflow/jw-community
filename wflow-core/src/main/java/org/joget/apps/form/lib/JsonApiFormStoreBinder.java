@@ -1,5 +1,7 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class JsonApiFormStoreBinder extends FormBinder implements FormStoreBinder, FormStoreElementBinder, FormStoreMultiRowElementBinder {
     @Override
@@ -53,6 +56,15 @@ public class JsonApiFormStoreBinder extends FormBinder implements FormStoreBinde
 
     @Override
     public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
+        
+        //prevent recursive call
+        if (JsonApiUtil.isRecursiveCall(getPropertyString("jsonUrl"), WorkflowUtil.getHttpServletRequest())) {
+            //fallback to use workflow form binder
+            WorkflowFormBinder binder = new WorkflowFormBinder();
+            return binder.store(element, rows, formData);
+        }
+        
+        
         boolean isUpdate = true;
         // find root form
         Form form = FormUtil.findRootForm(element);
@@ -112,6 +124,25 @@ public class JsonApiFormStoreBinder extends FormBinder implements FormStoreBinde
                 jsonPayload = jsonPayload.substring(1, jsonPayload.length()-1);
             }
             setProperty("customPayload", jsonPayload);
+        } else if ("formDataParam".equalsIgnoreCase(getPropertyString("postMethod")) && !rows.isMultiRow() && !rows.isEmpty()) {
+            Collection<Map> temp = new ArrayList<Map>();
+            Object[] paramsValues = (Object[]) getProperty("params");
+            if (paramsValues != null) {
+                for (Object o : paramsValues) {
+                    Map mapping = (HashMap) o;
+                    temp.add(mapping);
+                }
+            }
+            
+            FormRow row = rows.get(0);
+            for (Object k : row.keySet()) {
+                Map data = new HashMap();
+                data.put("name", k);
+                data.put("value", row.getProperty(k.toString()));
+                temp.add(data);
+            }
+            
+            setProperty("params", temp.toArray(new Object[0]));
         }
         
         JsonApiUtil.callApi(getProperties(), params);

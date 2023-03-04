@@ -16,15 +16,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
@@ -48,6 +44,11 @@ public class JsonApiUtil {
 
             HttpClientBuilder httpClientBuilder = HttpClients.custom();
             URL urlObj = new URL(jsonUrl);
+            
+            //prevent recursive call
+            if (isRecursiveCall(jsonUrl, httpRequest)) {
+                return new HashMap<String, Object>();
+            }
 
 //            if ("https".equals(urlObj.getProtocol()) && "true".equalsIgnoreCase("allowedUntrustedCert")) {
 //                SSLContextBuilder builder = new SSLContextBuilder();
@@ -178,6 +179,13 @@ public class JsonApiUtil {
         }
         
         return result;
+    }
+    
+    public static boolean isRecursiveCall(String jsonUrl, HttpServletRequest httpRequest) {
+        return jsonUrl != null && httpRequest != null &&
+                (httpRequest.getRequestURL().toString().equals(jsonUrl) ||
+                (httpRequest.getRequestURL().toString() + "?" + httpRequest.getQueryString()).contains(jsonUrl) ||
+                jsonUrl.contains(httpRequest.getRequestURI()));
     }
     
     public static String replaceParam(String content, Map<String, String> params) {
