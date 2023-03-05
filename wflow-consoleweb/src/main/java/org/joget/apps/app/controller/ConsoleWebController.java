@@ -4396,6 +4396,8 @@ public class ConsoleWebController {
         booleanSettingsList.add("disableWebConsole");
         booleanSettingsList.add("disablePerformanceAnalyzer");
         booleanSettingsList.add("disableListRenderHtml");
+        
+        boolean refreshPlugins = false;
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -4412,6 +4414,13 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty(paramName);
+            }
+            
+            if ("dataFileBasePath".equals(paramName)) {
+                String orgValue = (setting.getValue() != null)?setting.getValue():"";
+                if (!orgValue.equals(paramValue)) {
+                    refreshPlugins = true;
+                }
             }
             
             if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName)) {
@@ -4441,7 +4450,11 @@ public class ConsoleWebController {
             }
         }
 
-        pluginManager.refresh();
+        if (refreshPlugins) {
+            pluginManager.refresh();
+        } else {
+            pluginManager.clearCache();
+        }
         workflowManager.internalUpdateDeadlineChecker();
         FileStore.updateFileSizeLimit();
 
