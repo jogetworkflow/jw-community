@@ -638,7 +638,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                             }
                         }
                     }
-                    pluginManager.refresh();
+                    pluginManager.clearCache();
                 }
             }
         } catch (IOException ex) {

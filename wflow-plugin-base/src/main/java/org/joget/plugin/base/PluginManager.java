@@ -338,7 +338,7 @@ public class PluginManager implements ApplicationContextAware {
                 newBundle = null;
             } else {
                 newBundle.update();
-            }           
+            }  
             // clear cache
             clearCache();
             return newBundle;
@@ -364,7 +364,7 @@ public class PluginManager implements ApplicationContextAware {
         }
     }
     
-    protected void clearCache() {
+    public void clearCache() {
         getCache().clearCache();
     }
 
@@ -373,6 +373,9 @@ public class PluginManager implements ApplicationContextAware {
             //bundle.update();
             bundle.start();
             LogUtil.info(PluginManager.class.getName(), "Bundle " + bundle.getSymbolicName() + " started");
+            
+            // clear cache
+            clearCache();
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle start for " + bundle + ": " + be.toString());
             return true;
