@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
 import org.joget.plugin.base.HashVariableSupportedMap;
 import org.joget.workflow.model.WorkflowAssignment;
 
@@ -58,6 +60,16 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
             }
         } else if (value instanceof String) {
             newValue = AppUtil.processHashVariable((String) value, assignment, null, null, appDef, true);
+        } else if (value instanceof FormRowSet) {
+            for (FormRow r : (FormRowSet) value) {
+                for (String k : r.stringPropertyNames()) {
+                    String t = r.getProperty(k);
+                    if (AppUtil.containsHashVariable(t)) {
+                        r.setProperty(k, AppUtil.processHashVariable(t, assignment, null, null, appDef, true));
+                    }
+                }
+            }
+            newValue = value;
         } else {
             newValue = value;
         }
