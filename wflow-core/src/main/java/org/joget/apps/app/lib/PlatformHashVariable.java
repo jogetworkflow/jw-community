@@ -2,6 +2,7 @@ package org.joget.apps.app.lib;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TimeZone;
 import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
@@ -9,6 +10,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
+import static org.joget.commons.util.TimeZoneUtil.getTimeZoneByGMT;
 
 /**
  * The Platform Hash Variable is used to retrieve platform specific information.
@@ -49,12 +51,19 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
             result = AppUtil.getAppFirstDayOfWeek();
         } else if (variableKey.startsWith("isEnterprise")) {
             result = Boolean.toString(AppUtil.isEnterprise());
-        } else if (variableKey.startsWith("isQuickEditEnabled")) {
+        } else if (variableKey.startsWith("isQuickEditAvailable")) {
             result = Boolean.toString(AppUtil.isQuickEditEnabled());
         } else if (variableKey.startsWith("setting.")) {
             String property = variableKey.substring("setting.".length());
             SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
             result = setupManager.getSettingValue(property);
+            
+            if ("systemTimeZone".equals(property) && result != null && !result.isEmpty()) {
+                TimeZone tz = TimeZone.getTimeZone(getTimeZoneByGMT(result));
+                if (tz != null) {
+                    result = tz.getID();
+                }
+            }
         }
         return result;
     }
@@ -101,7 +110,7 @@ public class PlatformHashVariable extends DefaultHashVariablePlugin {
         syntax.add("platform.firstDayOfWeek");
         syntax.add("platform.marketplaceUrl");
         syntax.add("platform.isEnterprise");
-        syntax.add("platform.isQuickEditEnabled");
+        syntax.add("platform.isQuickEditAvailable");
         syntax.add("platform.isRTL");
         syntax.add("platform.setting.dataFileBasePath");
         syntax.add("platform.setting.deadlineCheckerInterval");

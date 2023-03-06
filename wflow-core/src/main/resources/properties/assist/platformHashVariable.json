@@ -46,8 +46,8 @@
                 "label" : "@@assist.platform.isEnterprise@@"
             },
             {
-                "value" : "#platform.isQuickEditEnabled#",
-                "label" : "@@assist.platform.isQuickEditEnabled@@"
+                "value" : "#platform.isQuickEditAvailable#",
+                "label" : "@@assist.platform.isQuickEditAvailable@@"
             },
             {
                 "value" : "#platform.isRTL#",
