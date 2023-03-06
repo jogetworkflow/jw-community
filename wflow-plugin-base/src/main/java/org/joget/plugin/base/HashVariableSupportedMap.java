@@ -11,7 +11,12 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     
     public HashVariableSupportedMap(Map<K,V> initialValues) {
         if (initialValues != null) {
-            initialMap.putAll(initialValues);
+            if (initialValues instanceof HashVariableSupportedMap) {
+                initialMap.putAll(((HashVariableSupportedMap) initialValues).initialMap);
+                super.putAll(initialValues);
+            } else {
+                initialMap.putAll(initialValues);
+            }
         }
     }
     
