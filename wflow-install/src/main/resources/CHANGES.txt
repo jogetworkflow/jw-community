@@ -2,6 +2,74 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0-RC2
+=======
+a9afde50b Fixed: wflow-plugin-base - Plugin Manager - Plugin randomly not exist after reload plugins. @8.0-SNAPSHOT
+28401adb3 Modified: wflow-core - JSON API Form Data Store - Support post form data as post request parameters. @8.0-SNAPSHOT
+60db05044 Modified: wflow-core - Platform Hash Variable - Support to retrieve more platform settings. @8.0-SNAPSHOT
+23b015dfa Fixed: jw-community - Process - Unique constraint issue. @8.0-SNAPSHOT
+8a78763fd Fixed: wflow-consoleweb - Log Viewer - Prevent NPE. @8.0-SNAPSHOT
+a7c013679 Fixed: wflow-wfenigne - Process - Unique constraint issue under high load. @8.0-SNAPSHOT
+0fb6b3fa1 Fixed: wflow-plugin-base - Plugin - When a plugin having an empty label, use its name as label. @8.0-SNAPSHOT
+1f301a923 Fixed: wflow-core - UI - Deprecated theme can't render menu. @8.0-SNAPSHOT
+8053e4e5f Modified: wflow-core - DX 8 Ajax Theme - Set theme colors based on the number of available schema colors. @8.0-SNAPSHOT
+4083d382d Added: wflow-core - Governance Health Check - Added checker to find emails used in the configuration. @8.0-SNAPSHOT
+4d80fd8be Fixed: wflow-plugin-base - HashVariableSupportedMap - The initial map passed to constructor is having value get removed incorrectly. @8.0-SNAPSHOT
+aefe5fb62 Fixed: wflow-consoleweb - List builder - Xray - row action after the second row action is not align with header. @8.0-SNAPSHOT
+4e0aa17a8 Fixed: wflow-core - Import App - Having exception in log when having duplicated app messages with same key and locale but with different id. @8.0-SNAPSHOT
+735acc797 Fixed: wflow-core - App Messages - Import PO - Imported messages having wrong id when when it is new added. @8.0-SNAPSHOT
+529e5279d Fixed: wflow-core - App Messages - Did not showing the correct language and messages after import PO of other language. @8.0-SNAPSHOT
+ff2b4f546 Fixed: wflow-core - App Messages - Fail to import PO when contains multi lines message started with empty line. @8.0-SNAPSHOT
+b4af494bc Fixed: wflow-core - App Definition - Evict data from session before cache it. @8.0-SNAPSHOT
+0f73bfbe2 Fixed: wflow-consoleweb - DX8 Themes - RTL mode on mobile screen size not working. @8.0-SNAPSHOT
+ff72e7fc2 Fixed: wflow-core -  Image Formatter - The image can't display when the width & height is missing unit. @8.0-SNAPSHOT
+361b29277 Fixed: wflow-consoleweb -  List Builder - Image Formatter throw NPE when render sample data in builder. @8.0-SNAPSHOT
+27ce4ec2f Fixed: wflow-wfengine - Update hibernate setting to prevent update schema on Shark table. @7.0-SNAPSHOT
+38b5add3e Fixed: wflow-commons - Setting - Evict data for ehcache caching. @7.0-SNAPSHOT
+9349f202c Fixed: wflow-consoleweb - List builder - xray - type value is wrong and filter having extra type attribute. @8.0-SNAPSHOT
+3838f19f8 Fixed: wflow-consoleweb - Builders - Fields in properties panel sometime overflow outside the container when switching mode. @8.0-SNAPSHOT
+f5619b165 Fixed: wflow-consoleweb - Builders - Tooltip can't disappear sometime when button is clicked. @8.0-SNAPSHOT
+8ddc49c17 Fixed: wflow-consoleweb - accessibility issues reported for Lighthouse accessibility audit. @8.0-SNAPSHOT
+18c3d3045 Fixed: wflow-wfengine - Deadline Checker - Deadline Checkers from different cluster node are always checking on same instance concurrently when deadline interval is very short. @7.0-SNAPSHOT
+3e3e2e916 Fixed: jw-community - Data - Evict entity data from database session for those high frequency save/update data. @7.0-SNAPSHOT
+96debef53 Fixed: wflow-consoleweb - Builders - Make the scrollbar more obvious. @8.0-SNAPSHOT
+b4e9717a9 Fixed: wflow-consoleweb - Form Builder - ERD relationship lines overlap. @8.0-SNAPSHOT
+0cb18da50 Modified: wflow-consoleweb - Updated commons-fileupload to 1.5 for CVE-2023-24998. @8.0-SNAPSHOT
+e17c168b1 Fixed: wflow-core - Date Hash Variable - #date# Should always return in English Locale. Added #dateLocale# to return in user locale. @8.0-SNAPSHOT
+648dac60c Modified: wflow-core - User Profile - When choose to display date in western digit should only change the digit. @8.0-SNAPSHOT
+386934912 Fixed: wflow-consoleweb - Style Property Editor - Negative value will revert back to positive value upon opening the style config. @8.0-SNAPSHOT
+bc48b1b04 Fixed: wflow-consoleweb - DX8 themes - login form is broken in smaller screen. @8.0-SNAPSHOT
+a4eca44ee Modified: wflow-consoleweb - Builders - Changed DX 7 custom builder to use the same properties editor. @8.0-SNAPSHOT
+29d5ecc86 Modified: wflow-plugin-base - Plugin Manager - Added singularity package to OSGI config. @7.0-SNAPSHOT
+90286228e Fixed: wflow-consoleweb - Builders - Properties panel having missing icon on multipaged form property & missing padding on process tool property container when collapsed. @8.0-SNAPSHOT
+fb2190922 Fixed: wflow-core - Database Update Tool - Custom datasource is required to close. @7.0-SNAPSHOT
+bdd6d6808 Fixed: wflow-wfengine - Process - Unique constraint violated after transaction rollback. #T1917 @7.0-SNAPSHOT
+46a83f88d Added: wflow-consoleweb - Missing some CSS is in dx8 themes, add them back. @8.0-SNAPSHOT.
+faba68fd9 Fixed: wflow-consoleweb - Process Builder - Transition id is duplicated. T1791 @8.0-SNAPSHOT
+fac93d580 Fixed: wflow-core - User Profile - Switching locale in user profile does not switch language without refresh page. @8.0-SNAPSHOT
+6da6577f7 Fixed: wflow-consoleweb - UI Ajax Theme - Changing locale by URL is not correctly switching the whole theme. @8.0-SNAPSHOT
+1051808c1 Modified: jw-community - Upgraded to Java 11.0.18 @8.0-SNAPSHOT
+ada2b274b Fixed: wflow-core - Database Update Tool - Custom datasource is required to close. @8.0-SNAPSHOT
+08c187324 Modified: jw-community - Upgraded to MariaDB 10.6.12 @8.0-SNAPSHOT
+13092a87e Fixed: wflow-consoleweb - Process Builder - Wrong process rendered when click on palette. @8.0-SNAPSHOT
+d9191c9e9 Fixed: wflow-consoleweb - Log Viewer - Changed broadcast API to only allow Post request. @8.0-SNAPSHOT
+5c8c7545f Fixed: wflow-consoleweb - UI Builder - Wrong message show on load when a menu is using process status formatter. @8.0-SNAPSHOT
+21c5c2270 Fixed: wflow-consoleweb - Property Assistant - Missing label. @8.0-SNAPSHOT
+584bdad51 Fixed: wflow-consoleweb - Process Builder - Participant mapping not save correctly. @8.0-SNAPSHOT
+f05143967 Fixed: wflow-consoleweb - App Center - Text stacked in small screen. @8.0-SNAPSHOT
+b5fe3595a Fixed: wflow-consoleweb - Process Builder - New participant is not save when there is only one process. #T1904 @8.0-SNAPSHOT
+1d129377a Modified: wflow-consoleweb - Builders - Options to show right panel as window. @8.0-SNAPSHOT
+9650addbd Deleted: jw-community - Remove old unused wflow-designer and wflow-designerweb projects @7.0-SNAPSHOT
+ffba3b2e2 Fixed: wflow-consoleweb - Fixed changing view from permission view not working. @8.0-SNAPSHOT
+98bb3d7e8 Fixed: wflow-core - File Upload - Prevent file name to contains `;` char. #T1823 @7.0-SNAPSHOT
+70bd643d3 Fixed: wflow-consoleweb - Edit User - User removed from organization when not belong to any department or grade. @7.0-SNAPSHOT
+4520525ba Fixed: wflow-consoleweb - Edit User - NPE when setting grade. @7.0-SNAPSHOT
+e05c6df19 Fixed: wflow-consoleweb - Builders - Properties panel having missing icon on third level collapsible section. @8.0-SNAPSHOT
+e4d86e573 Fixed: wflow-consoleweb - Process Builder - Process start white list is not saved. @8.0-SNAPSHOT
+287062422 Modified: wflow-consoleweb - App Center - Handling when no app to show. @8.0-SNAPSHOT
+ede18d735 Fixed: wflow-consoleweb - App Center - Does not render correctly on screen width of 991-1278px. @8.0-SNAPSHOT
+48212a133 Modified: wflow-consoleweb - Properties Editor - Color Scheme field type to support different number of colors. @8.0-SNAPSHOT
+
 8.0-RC
 ======
 8038aec50 Fixed: wflow-wfengine - Monitoring - Exception thrown when deleting running process when "Process Completion Data Handling" set to "Archive Process On Completion". @8.0-SNAPSHOT
