@@ -54,6 +54,7 @@ h1, h2, h3, h4, h5 {
     top: 1px;
     position: relative;
     margin-left: 4px;
+    background-size: 30px;
 }
 #logo-title {
     display: inline-block;

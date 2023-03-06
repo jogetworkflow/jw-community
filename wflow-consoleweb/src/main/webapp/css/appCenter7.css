@@ -226,9 +226,9 @@ body > #page > footer {
 body#home div#brand_logo img {
     display: block;
     position: absolute;
-    top: 38px;
+    top: 48px;
     left: 10px;
-    width: 360px;
+    width: 250px;
 }
 body#home div#clock {
     position: absolute;

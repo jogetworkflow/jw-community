@@ -102,10 +102,10 @@
                                 <copy file="src/main/resources/LICENSE.txt" todir="target" />
                                 <copy file="src/main/resources/NOTICE.txt" todir="target" />
                                 <copy file="src/main/resources/setup.nsi" todir="target" />
-                                <copy file="src/main/resources/joget_logo.bmp" todir="target" />
-                                <copy file="src/main/resources/joget.ico" todir="target" />
-                                <copy file="src/main/resources/joget_start.ico" todir="target" />
-                                <copy file="src/main/resources/joget_stop.ico" todir="target" />
+                                <copy file="src/main/resources/kecak_logo.bmp" todir="target" />
+                                <copy file="src/main/resources/kecak.ico" todir="target" />
+                                <copy file="src/main/resources/kecak_start.ico" todir="target" />
+                                <copy file="src/main/resources/kecak_stop.ico" todir="target" />
                                 <copy file="src/main/resources/mariadb-start.bat" todir="target" />
                                 <copy file="src/main/resources/mariadb-stop.bat" todir="target" />
                                 <copy file="src/main/resources/tomcat8-run.bat" todir="target" />
