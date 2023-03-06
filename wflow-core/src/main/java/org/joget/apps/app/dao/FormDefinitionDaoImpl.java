@@ -101,6 +101,10 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         FormDefinition formDef = super.loadById(id, appDefinition);
         return formDef;
     }
+    
+    protected boolean shouldEvict(AppDefinition appDefinition) {
+        return true;
+    }
 
     @Override
     public FormDefinition loadById(String id, AppDefinition appDefinition) {
@@ -111,7 +115,9 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             FormDefinition formDef = load(id, appDefinition);
 
             if (formDef != null) {
-                findSession().evict(formDef);
+                if (shouldEvict(appDefinition)) {
+                    findSession().evict(formDef);
+                }
                 element = new Element(cacheKey, (Serializable) formDef);
                 cache.put(element, appDefinition);
             }
