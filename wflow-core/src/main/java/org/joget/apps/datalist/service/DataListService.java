@@ -57,7 +57,7 @@ public class DataListService {
      * @return
      */
     public DataList fromJson(String json) {
-        return fromJson(json, null);
+        return fromJson(json, null, false);
     }
 
     /**
@@ -66,7 +66,7 @@ public class DataListService {
      * @param theme
      * @return
      */
-    public DataList fromJson(String json, @Nullable UserviewTheme theme) {
+    public DataList fromJson(String json, @Nullable UserviewTheme theme, boolean ignorePermission) {
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
         final DataList dataList = JsonUtil.fromJson(json, DataList.class);
@@ -74,7 +74,7 @@ public class DataListService {
         final Optional<UserviewPermission> optPermission = Optional.ofNullable(dataList)
                 .map(DataList::getPermission);
 
-        if (optPermission.isPresent()) {
+        if (!ignorePermission&& optPermission.isPresent()) {
             final UserviewPermission permission = optPermission.get();
             final DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
             final User user = directoryManager.getUserByUsername(WorkflowUtil.getCurrentUsername());

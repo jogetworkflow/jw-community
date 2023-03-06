@@ -117,7 +117,7 @@ public class DatalistBuilderWebController {
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
-        DataList dlist = dataListService.fromJson(json);
+        DataList dlist = dataListService.fromJson(json, null, true);
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getDescription());
         datalist.setJson(PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), json));
