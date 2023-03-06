@@ -4,14 +4,14 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-consoleweb</artifactId>
     <packaging>war</packaging>
-    <version>8.0-RC2</version>
+    <version>8.0-SNAPSHOT</version>
     <name>wflow-consoleweb</name>
     <url>http://www.joget.org</url>
     <scm>
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
         <url>ssh://git@repo.joget.org:2224/joget/jw-community.git</url>
-        <tag>8.0-RC2</tag>
+        <tag>HEAD</tag>
     </scm>
     <dependencies>
         <dependency>
