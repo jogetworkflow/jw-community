@@ -48,6 +48,7 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.jar.JarEntry;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -80,8 +81,10 @@ public class PluginManager implements ApplicationContextAware {
     private static ProfilePluginCache pluginCache = new ProfilePluginCache();
     private Set<String> blackList;
     private Set<String> scanPackageList;
+    protected Set<String> filesInProgress = new HashSet<String>(); //don't need to consider profile as the plugin for each profile having differrent absolute path
     
     public final static String ESCAPE_JAVASCRIPT = "javascript";
+    protected final static String COMPLETED = "COMPLETED::";
     
     private FileAlterationMonitor monitor = null;
     
@@ -233,7 +236,7 @@ public class PluginManager implements ApplicationContextAware {
                     }
                 };
                 
-                monitor = new FileAlterationMonitor(1000);
+                monitor = new FileAlterationMonitor(20000); //change to 20s
                 
                 if (!(new File(baseDirectory)).exists()) {
                     (new File(baseDirectory)).mkdirs();
@@ -258,7 +261,31 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     protected void handleFileChange(File file) {
+        String fullFileName = null;
         try {
+            if (filesInProgress.contains(file.getAbsolutePath())) {
+                filesInProgress.remove(COMPLETED + file.getAbsolutePath()); //remove it just in case there is previous 1 did not remove.
+                
+                LogUtil.debug(PluginManager.class.getName(), "Plugin " + file.getName() + " detected. Skip it due to already in progress installing it.");
+                return;
+            }
+            if (filesInProgress.contains(COMPLETED + file.getAbsolutePath())) {
+                filesInProgress.remove(COMPLETED + file.getAbsolutePath());
+                LogUtil.debug(PluginManager.class.getName(), "Plugin " + file.getName() + " is just installed with upload feature. Skip it.");
+                return;
+            }
+            
+            fullFileName = file.getAbsolutePath();
+            LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
+            filesInProgress.add(fullFileName);
+            
+            // wait and check for file upload finish
+            long prevSize = 0;
+            do {
+                prevSize = file.length();
+                Thread.sleep(50);
+            } while (prevSize < file.length());
+            
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
                 startBundle(bundle);
@@ -266,6 +293,11 @@ public class PluginManager implements ApplicationContextAware {
             }
         } catch (Exception e) {
             LogUtil.error(PluginManager.class.getName(), e, "");
+        } finally {
+            if (fullFileName != null) {
+                filesInProgress.remove(fullFileName);
+                LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing completed.");
+            }
         }
     }
     
@@ -563,6 +595,7 @@ public class PluginManager implements ApplicationContextAware {
         
         filename = SecurityUtil.normalizedFileName(filename);
         
+        String fullFileName = null;
         try {
             // check filename
             if (filename == null || filename.trim().length() == 0) {
@@ -593,6 +626,11 @@ public class PluginManager implements ApplicationContextAware {
                 if (!outputDir.exists()) {
                     outputDir.mkdirs();
                 }
+                
+                fullFileName = outputFile.getAbsolutePath();
+                LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
+                filesInProgress.add(fullFileName);
+                
                 out = new FileOutputStream(outputFile);
                 BufferedInputStream bin = new BufferedInputStream(in);
                 int len = 0;
@@ -679,6 +717,14 @@ public class PluginManager implements ApplicationContextAware {
         } catch (Exception ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");
             throw new PluginException("Unable to write plugin file", ex);
+        } finally {
+            if (fullFileName != null) {
+                filesInProgress.remove(fullFileName);
+                LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing completed.");
+                
+                //add to skip one observer file change
+                filesInProgress.add(COMPLETED + fullFileName);
+            }
         }
     }
     
