@@ -48,6 +48,8 @@
         <!-- Custom logger levels -->
         <Logger name="bitronix.tm.twopc" level="error" additivity="true">
         </Logger>
+        <Logger name="com.atomikos" level="error" additivity="true">
+        </Logger>
         <Logger name="org.directwebremoting.util.SwallowingHttpServletResponse" level="error" additivity="true">
         </Logger>
         <Logger name="org.displaytag.util.LookupUtil" level="error" additivity="true">
