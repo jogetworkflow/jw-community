@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +117,7 @@ public class PluginJsonController {
 
     @RequestMapping("/json/plugin/list")
     public void pluginList(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
-        Collection<Plugin> pluginList = null;
+        List<Plugin> pluginList = null;
 
         try {
             if (className != null && !className.trim().isEmpty()) {
@@ -126,9 +127,9 @@ public class PluginJsonController {
                 } else {
                     clazz = Class.forName(className);
                 }
-                pluginList = pluginManager.list(clazz);
+                pluginList = new ArrayList<Plugin>(pluginManager.list(clazz));
             } else {
-                pluginList = pluginManager.list();
+                pluginList = new ArrayList<Plugin>(pluginManager.list());
             }
 
             try {
@@ -203,7 +204,7 @@ public class PluginJsonController {
 
     @RequestMapping("/json/plugin/listOsgi")
     public void pluginListOsgi(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
-        Collection<Plugin> pluginList = null;
+        List<Plugin> pluginList = null;
 
         try {
             if (className != null && !className.trim().isEmpty()) {
@@ -213,9 +214,9 @@ public class PluginJsonController {
                 } else {
                     clazz = Class.forName(className);
                 }
-                pluginList = pluginManager.listOsgiPlugin(clazz);
+                pluginList = new ArrayList<Plugin>(pluginManager.listOsgiPlugin(clazz));
             } else {
-                pluginList = pluginManager.listOsgiPlugin(null);
+                pluginList = new ArrayList<Plugin>(pluginManager.listOsgiPlugin(null));
             }
         
             try {
