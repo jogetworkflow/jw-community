@@ -363,6 +363,9 @@ body.rtl .dataList span.pagelinks{
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td{
     display: block !important;
     border:0;
+    width: auto !important;
+    text-align: left;
+    padding: 5px 10px !important;
 }
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.rowaction_body,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.rowaction_body{
