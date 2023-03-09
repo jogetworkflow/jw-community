@@ -13,6 +13,7 @@
     builderType: '',
     builderLabel: '',
     id: '',
+    isViewerWithPE: false, //is current viewer using properties editor for other purpose
     config : {},
     defaultConfig: {
         builder : {
@@ -1706,9 +1707,11 @@
                         $(element).removeAttr("data-cbuilder-style-id");
                     }
                     
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["saveEditProperties"], [container, elementProperty, elementObj, element]);
+                    if (CustomBuilder.isViewerWithPE === undefined || CustomBuilder.isViewerWithPE === false) {
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["saveEditProperties"], [container, elementProperty, elementObj, element]);
+                    }
                     
-                    if ($("body").hasClass("default-builder")) {
+                    if ($("body").hasClass("default-builder") || CustomBuilder.isViewerWithPE) {
                         var updateDeferreds = [];
                         var dummy = $.Deferred();
                         updateDeferreds.push(dummy);
@@ -2248,6 +2251,7 @@
      * Show the permission editor view, called by switchView method
      */
     permissionViewInit : function(view) {
+        CustomBuilder.isViewerWithPE = true;
         CustomBuilder.Builder.selectedElBeforePermission = CustomBuilder.Builder.selectedEl;
         
         $("body").addClass("no-right-panel");
@@ -2271,6 +2275,7 @@
      * Run before permission editor dismiss, called by switchView method
      */
     permissionViewBeforeClosed : function(view) {
+        CustomBuilder.isViewerWithPE = false;
         CustomBuilder.Builder.selectedEl = null;
         
         if (CustomBuilder.Builder.selectedElBeforePermission !== null && CustomBuilder.Builder.selectedElBeforePermission !== undefined) {
