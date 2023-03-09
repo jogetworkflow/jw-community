@@ -21,9 +21,15 @@ body {
 
 body:not(.embeded) {
     width: 100%;
-    overflow-y: auto;
+    overflow: hidden;
     height: calc(100% - 65px);
     margin-top: 65px;
+}
+
+body:not(.embeded) #page {
+    width: 100%;
+    overflow-y: auto;
+    height: 100%;
 }
 
 body.popupBody:not(.embeded) {
