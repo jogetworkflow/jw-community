@@ -3450,7 +3450,7 @@ ProcessBuilder = {
                 }
             }
             
-            if (starts.length === 0 || starts.length > 1 || ends.length === 0) {
+            if (starts.length === 0 || starts.length > 1) {
                 validProcess = false;
             }
             
