@@ -6789,7 +6789,7 @@ PropertyEditor.Type.SelectBox.prototype = {
                     for (var i in processors) {
                         if ("color" === processors[i]) {
                             var regex = new RegExp("\\[color\\](.+)\\[/color\\]", "g");
-                            html = html.replace(regex, "<span style=\"background:$1;width:10px;height:10px;display:inline-block;margin:0 2px;\"></span>");
+                            html = html.replace(regex, "<span style=\"background:$1;width:10px;height:10px;min-height:auto;min-width:auto;display:inline-block;margin:0 2px;\"></span>");
                         }
                     }
                     $(this).html(html);
