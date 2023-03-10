@@ -5528,8 +5528,8 @@ a {
 #adminBar {
     display:none;
 }
-.form-button, .btn, .button{
-    margin-bottom: 5px !important;
+#content .form-button, #content .btn, #content .button{
+    margin-bottom: 5px;
 }
 
 
