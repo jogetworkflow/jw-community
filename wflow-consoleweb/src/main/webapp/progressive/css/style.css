@@ -1538,7 +1538,7 @@ div#main {
 }
 #login div#main {
     background: #f8f8f8a6;
-    height: 80vh;
+    min-height: 80vh;
 }
 body#welcome .breadcrumb {
     display: none;
