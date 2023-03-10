@@ -36,11 +36,16 @@ body .menu-link:hover .badge {
 body .login .message,
 body .login input[type=submit],
 body .login input[type=button],
-.form-button, .btn, .button,
+.form-button, .button,
 .layui-btn,
 body .dataList span.pagelinks strong{
     background-color: @buttonBackground !important;
     color: @buttonColor !important;
+    border-color: @buttonBackground;
+}
+.btn:not(.btn-link){
+    background-color: @buttonBackground;
+    color: @buttonColor;
     border-color: @buttonBackground;
 }
 body .dataList .pagelinks a:hover {
@@ -48,7 +53,7 @@ body .dataList .pagelinks a:hover {
     border-color: @buttonBackground;
 }
 body .dataList .filters .filter-cell input[type=submit]{
-    color: @buttonBackground !important;
+    color: transparent !important;
 }
 body .dataList .filters .filter-cell:last-child:after{
     color: @buttonColor;

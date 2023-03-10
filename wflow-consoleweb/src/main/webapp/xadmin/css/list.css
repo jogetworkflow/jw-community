@@ -106,10 +106,6 @@ body .dataList .actions.bottom {
     clear: both;
     max-width: 98%;
 }
-body .dataList td a.btn-danger{
-    background-color: transparent !important;
-    color: #FF5722;
-}
 body .dataList form:after,
 body .dataList .pagebanner:after{
     clear: both;

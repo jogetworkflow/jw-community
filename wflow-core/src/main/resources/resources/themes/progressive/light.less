@@ -175,11 +175,11 @@ body:not(#login).embeded #content > main > table{
 .preloader .plc-path, .plc-path {
     stroke: @defaultFontColor;
 }
-.btn, .btn.focus, .btn:focus, .btn:hover, .btn:active {
+.btn:not(.btn-link), .btn.focus:not(.btn-link), .btn:not(.btn-link):focus, .btn:not(.btn-link):hover, .btn:not(.btn-link):active {
     color: @buttonText;
     background-color: @button;
 }
-.btn.waves-input-wrapper{
+.btn.waves-input-wrapper:not(.btn-link){
     color: @buttonText !important;
     background-color: @button !important;
 }

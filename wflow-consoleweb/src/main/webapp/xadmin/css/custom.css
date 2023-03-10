@@ -5497,7 +5497,7 @@ body.popupBody #listGridPopup,
 body.popupBody > #form-canvas{
     box-shadow:none; 
 }
-.form-button, .btn, .button {
+.form-button, .btn:not(.btn-link), .button {
     border: 1px solid #009688;
     background-color: #009688;
     color: #fff;
