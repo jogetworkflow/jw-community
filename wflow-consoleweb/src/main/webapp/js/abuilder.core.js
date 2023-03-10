@@ -339,10 +339,16 @@ AppBuilder = {
             $("#unpublish-btn").show();
             $("#publish-btn").hide();
             CustomBuilder.appPublished = "true";
+            $("#builderElementName .title .published").remove();
             $("#builderElementName .title").append('<small class="published">('+AppBuilder.msg('published')+')</small>');
         }
-        AppBuilder.reloadVersions();
-        AppBuilder.renderBuilders(CustomBuilder.builderItems);
+        
+        if (!isUnpublish && CustomBuilder.appVersion !== version) { //publish other version
+            CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/'+version+'/builders');
+        } else {
+            AppBuilder.reloadVersions();
+            AppBuilder.renderBuilders(CustomBuilder.builderItems);
+        }
     },
     
     /*
