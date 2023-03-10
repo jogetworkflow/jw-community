@@ -12,8 +12,11 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     public HashVariableSupportedMap(Map<K,V> initialValues) {
         if (initialValues != null) {
             if (initialValues instanceof HashVariableSupportedMap) {
-                initialMap.putAll(((HashVariableSupportedMap) initialValues).initialMap);
-                super.putAll(initialValues);
+                HashVariableSupportedMap hvm = (HashVariableSupportedMap) initialValues;
+                hvm.isInternal = true;
+                super.putAll(hvm);
+                initialMap.putAll(hvm.initialMap);
+                hvm.isInternal = null;
             } else {
                 initialMap.putAll(initialValues);
             }
@@ -63,9 +66,14 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
         if (m instanceof HashVariableSupportedMap) {
-            initialMap.putAll(((HashVariableSupportedMap) m).initialMap);
+            HashVariableSupportedMap hvm = (HashVariableSupportedMap) m;
+            hvm.isInternal = true;
+            super.putAll(m);
+            initialMap.putAll(hvm.initialMap);
+            hvm.isInternal = null;
+        } else {
+            super.putAll(m);
         }
-        super.putAll(m);
     }
     
     @Override
@@ -117,10 +125,14 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     }
     
     protected Boolean isInternal = null;
-
+    
+    public void setInternal(boolean isInternal) {
+        this.isInternal = isInternal;
+    }
+    
     @Override
     public Set<Map.Entry<K,V>> entrySet() {
-        if (isInternal == null) {
+        if (isInternal == null && !initialMap.isEmpty()) { //only check when isInternal is null && initialMap has value for performance reason
             int i = 0;
             for (StackTraceElement elem : new Throwable().getStackTrace()) {
                 if (i++ < 2) {
@@ -136,9 +148,12 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
                     break;
                 }
             }
-            if (!isInternal) {
-                processAllValues();
+            if (isInternal == null) {
+                isInternal = false;
             }
+        }
+        if (isInternal != null && !isInternal && !initialMap.isEmpty()) {
+            processAllValues();
         }
         return super.entrySet();
     }

@@ -38,7 +38,7 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
         this.isInternal = true;
         HashVariableSupportedMapImpl<K,V> clone = new HashVariableSupportedMapImpl<>(appDef, assignment, (HashMap<K,V>) ((HashMap) this.initialMap).clone());
         clone.putAll(this);
-        clone.isInternal = this.isInternal;
+        this.isInternal = null; //reset it after clone
         return clone;
     }
 
@@ -47,12 +47,19 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
         Object newValue = null;
         if (value instanceof Map && !(value instanceof HashVariableSupportedMapImpl)) {
             newValue = new HashVariableSupportedMapImpl(appDef, assignment, (Map) value);
+            if (this.isInternal != null && !this.isInternal) { //if this child map is created for external, set it for external too
+                ((HashVariableSupportedMap) newValue).setInternal(false);
+            }
         } else if (value instanceof Object[]) {
             Object[] objArr = (Object[]) value;
             if (objArr.length > 0 && objArr[0] instanceof Map && !(objArr[0] instanceof HashVariableSupportedMapImpl)) {
                 Collection arr = new ArrayList();
                 for (Object v : objArr) {
-                    arr.add(new HashVariableSupportedMapImpl(appDef, assignment, (Map) v));
+                    HashVariableSupportedMap m = new HashVariableSupportedMapImpl(appDef, assignment, (Map) v);
+                    if (this.isInternal != null && !this.isInternal) { //if this child map is created for external, set it for external too
+                        m.setInternal(false);
+                    }
+                    arr.add(m);
                 }
                 newValue = arr.toArray(new HashVariableSupportedMapImpl[0]);
             } else {
