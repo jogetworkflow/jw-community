@@ -9,7 +9,7 @@ AjaxUniversalTheme = {
             if (event.state) {
                 var url = event.state.url;
                 if (AjaxComponent.isCurrentUserviewUrl(url)) {
-                    AjaxComponent.call($("#content"), url, "GET", null);
+                    AjaxComponent.call($("#content.page_content"), url, "GET", null);
                 }
             }
         };

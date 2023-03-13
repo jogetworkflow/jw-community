@@ -1,4 +1,4 @@
-body #content{
+body #content.page_content{
      padding: 85px 5%!important;
 }
 body.popupBody{
@@ -204,10 +204,10 @@ body.rtl #sidebar .nav > li > a > span:not(.badge) {
 body#home #main{
     overflow: hidden;
 }
-body#home #content{
+body#home #content.page_content{
     padding:0;
 }
-#home #content {
+#home #content.page_content {
     background-color: transparent !important;
 }
 
@@ -344,7 +344,7 @@ body#home #home_column .row{
     border: none !important;
     border-radius: 7px !important;
 }
-#designApp > #content{
+#designApp > #content.page_content{
     padding: 85px 20px 20px !important;
 }
 #designApp{
@@ -393,7 +393,7 @@ body#home #home_column .row{
     background-size: 100px 100px !important;
 }
 
-body#login #page #content {
+body#login #page #content.page_content {
     padding: 0px !important;
 }
 body.rtl#login #page{

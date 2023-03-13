@@ -37,7 +37,7 @@ body {
     padding: 20px;
     min-height: 80vh;
 }
-#page.page-content-wrapper #content {
+#page.page-content-wrapper #content.page_content {
     padding: 0px;
 }
 @media (max-width: 1279px){

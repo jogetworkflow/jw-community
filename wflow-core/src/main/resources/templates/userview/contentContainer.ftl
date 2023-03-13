@@ -12,7 +12,7 @@ ${main_container_before!}
             ${sidebar_after!}
         </#if>
         ${content_before!}
-        <div id="${content_id!}" class="${content_classes!}">
+        <div id="${content_id!}" class="${content_classes!} page_content">
             <main>
                 ${content_inner_before!}
                 ${content!}

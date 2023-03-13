@@ -13,7 +13,7 @@ AjaxComponent = {
         
         setTimeout(function(){
             AjaxComponent.triggerPageLoadedEvent();
-            AjaxComponent.triggerEvents($("#content"), window.location.href, "get");
+            AjaxComponent.triggerEvents($("#content.page_content"), window.location.href, "get");
         }, 2);
         
         setTimeout(function(){
@@ -228,7 +228,7 @@ AjaxComponent = {
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
         headers.append("__ajax_theme_loading", "true");
         
-        var contentConatiner = $("#content");
+        var contentConatiner = $("#content.page_content");
         
         if (AjaxComponent.isCurrentUserviewPage(url)) {
             if ($(element).closest("[data-ajax-component]").length > 0) {
@@ -376,7 +376,7 @@ AjaxComponent = {
 
                         //if redirect url is not same with current userview page
                         if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                            AjaxComponent.call($("#content"), part[1], "GET", null);
+                            AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
                         } else {
                             AjaxComponent.triggerEvents(contentConatiner, url, method);
                             AjaxComponent.call(contentConatiner, part[1], "GET", null);
@@ -693,14 +693,14 @@ AjaxComponent = {
             $(element).attr("aria-live", "polite");
         } else if (action === "reloadPage") {
             if (AjaxUniversalTheme !== undefined) {
-                AjaxComponent.call($("#content"), window.location.href, "GET", null);
+                AjaxComponent.call($("#content.page_content"), window.location.href, "GET", null);
             } else {
                 window.location.reload(true);
             }
         } else if (action === "redirectPage") {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
             if (AjaxUniversalTheme !== undefined) {
-               AjaxComponent.call($("#content"), url, "GET", null);
+               AjaxComponent.call($("#content.page_content"), url, "GET", null);
             } else {
                 window.location.href = url;
             }

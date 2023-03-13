@@ -361,7 +361,7 @@ footer{
     background: var(--theme-footer-bg, var(--theme-background, #f9fafb));
 }
 
-body#login #page #content {
+body#login #page #content.page_content {
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0, rgba(0, 0, 0, 0.2));
 }
 body#login #loginForm{

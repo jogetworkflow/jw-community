@@ -700,7 +700,7 @@ ul.breadcrumb i.fa-angle-right{
 }
 
 /* content */
-#content{
+#content.page_content{
     padding: 85px 20px 20px;
     min-height: calc(100vh - 51px);
 }
@@ -908,7 +908,7 @@ body.horizontal_menu #header-info{
     body.horizontal_menu #sidebar .nav > li > ul > li{
         display: block;
     }
-    body.horizontal_menu #content{
+    body.horizontal_menu #content.page_content{
         padding: 20px;
     }
     body.horizontal_menu header.navbar .user-link a {
@@ -1136,7 +1136,7 @@ body#login {
     background-color: var(--theme-header, #f8f9fd);
     background-size: cover;
 }
-body#login #page #content{
+body#login #page #content.page_content{
     height: 100vh;
     padding: 0;
 }
@@ -1525,7 +1525,7 @@ body.rtl.embeded #page{
     padding-right: 0;
 }
 body.embeded,
-body.embeded #content{
+body.embeded #content.page_content{
     padding: 0px;
     background-color: transparent;
 }
@@ -1712,7 +1712,7 @@ body #ui-datepicker-div {
 @media (min-width: 1921px) {
     .horizontal_menu .navbar-inner,
     .horizontal_menu #sidebar #navigation,
-    .horizontal_menu #content{
+    .horizontal_menu #content.page_content{
         max-width: 1920px;
         margin: auto;
     }

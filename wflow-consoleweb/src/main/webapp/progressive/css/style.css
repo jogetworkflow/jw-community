@@ -459,20 +459,20 @@ ul#category-container {
 
 @media (min-width: 1280px) {
     body:not(#login) #page > footer, 
-    body:not(#login) div#content {
+    body:not(#login) div#content.page_content {
         padding-left: 283px;
         padding-right: 15px;
     }
     body.rtl:not(#login) #page > footer, 
-    body.rtl:not(#login) div#content {
+    body.rtl:not(#login) div#content.page_content {
         padding-right: 283px;
         padding-left: 15px;
     }
     
-    body.embeded #page div#content {
+    body.embeded #page div#content.page_content {
         padding-left: 20px;
     }
-    body.rtl.embeded #page div#content {
+    body.rtl.embeded #page div#content.page_content {
         padding-right: 20px;
     }
     
@@ -492,7 +492,7 @@ ul#category-container {
 
 @media (min-width:768px) and (max-width:1279px) {
     #page > footer, 
-    div#content {
+    div#content.page_content {
         padding-left: 15px;
         padding-right: 15px
     }
@@ -621,7 +621,7 @@ body#login.rtl #main > div {
     text-align: right;
 }
 
-body#login #page div#content {
+body#login #page div#content.page_content {
     padding: 10px 25px;
 }
 
@@ -908,7 +908,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     body.horizontal_menu .sidebar-toggled #main{
         height:auto;
     }
-    body.horizontal_menu:not(#login) #page > footer, body.horizontal_menu:not(#login) div#content, body.embeded div#content {
+    body.horizontal_menu:not(#login) #page > footer, body.horizontal_menu:not(#login) div#content.page_content, body.embeded div#content.page_content {
         padding-left: 20px;
         padding-right: 20px;
     }  
