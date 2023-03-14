@@ -156,6 +156,8 @@ public class AppPluginUtil implements ApplicationContextAware {
         } catch (Exception e) {
             LogUtil.error(AppPluginUtil.class.getName(), e, "Error @ getDefaultProperties");
         }
+        
+        propertyMap = PropertyUtil.getHashVariableSupportedMap(propertyMap);
 
         return propertyMap;
     }

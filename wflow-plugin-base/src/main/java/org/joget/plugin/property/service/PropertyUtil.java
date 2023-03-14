@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.HashVariableSupportedMap;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.json.JSONArray;
@@ -326,7 +327,11 @@ public class PropertyUtil implements ApplicationContextAware {
     }
     
     public static Map<String, Object> getHashVariableSupportedMap(Map<String, Object> properties) {
-        return getHelper().getHashVariableSupportedMap(properties);
+        if (!(properties instanceof HashVariableSupportedMap)) {
+            return getHelper().getHashVariableSupportedMap(properties);
+        } else {
+            return properties;
+        }
     }
     
     private static PluginHashVariableHelper getHelper() {
