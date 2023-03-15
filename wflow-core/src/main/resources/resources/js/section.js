@@ -92,6 +92,8 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
             controlEl = $(controlEl).filter(":checked");
         } else if ($(controlEl).is("select")) {
             controlEl = $(controlEl).find("option:selected");
+        } else if ($(controlEl).attr("type") === "hidden") {
+            controlEl = $(controlEl).filter("input[type=hidden]");
         }
         
         if ($(controlEl).length > 0) {
