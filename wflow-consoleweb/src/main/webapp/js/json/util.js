@@ -254,6 +254,32 @@ UrlUtil = {
             }
         }catch(err){}
         return queryString;
+    },
+    
+    /*
+     * To fix the url parameter and form fields having same key,
+     * Spring framework 5 will return an array for both value in URL and Field.
+     */
+    solveUrlParamFormFieldConflict: function(form) {
+        if (!form) {
+            return;
+        }
+        var url = $(form).attr("action");
+        if (url !== null && url !== undefined && url !== "" && url.indexOf("?") !== -1) {
+            var changed = false;
+            var params = UrlUtil.getUrlParams(url);
+            for (var p in params) {
+                var field = FormUtil.getField(p, form);
+                if (field.length > 0 && !field.prop('disabled')) {
+                    delete params[p];
+                    changed = true;
+                }
+            }
+            if (changed) {
+                url = url.substring(0, url.indexOf("?")) + "?" + UrlUtil.constructUrlQueryString(params);
+                $(form).attr("action", url);
+            }
+        }
     }
 };
 

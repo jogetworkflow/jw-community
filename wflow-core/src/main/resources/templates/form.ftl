@@ -39,6 +39,8 @@
             });
 
             $(function(){
+                UrlUtil.solveUrlParamFormFieldConflict($("form#${element.properties.id!}"));
+
                 $("#section-actions button, #section-actions input").click(function(){
                     $.blockUI({ css: { 
                         border: 'none', 
