@@ -898,7 +898,11 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     body.horizontal_menu {
         height: auto;
         margin-top: 0px;
-        overflow-y: visible;
+        overflow: unset;
+    }
+    body.horizontal_menu #page {
+        overflow-y: unset;
+        height: unset;
     }
     body.horizontal_menu #main {
         margin-top: 0;
