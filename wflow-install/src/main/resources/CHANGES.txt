@@ -2,6 +2,27 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0-RC3
+=======
+1b8ad42b3 Fixed: wflow-core - Form - When URL Parameter & Form Field having same key, an array is return. @8.0-SNAPSHOT
+f345fe7ff Fixed: wflow-core - Form visibility section on checkbox field set to readonly fails. @7.0-SNAPSHOT. #T2044
+b2eb36c21 Fixed: wflow-consoleweb - Form - Post Process Tool does not parse hash variable. @8.0-SNAPSHOT
+f791f4fd9 Fixed: wflow-consoleweb - UI Theme - Styling affected field with id "content". @8.0-SNAPSHOT
+88b8f15d0 Fixed: wflow-consoleweb - Progressive/Universal Theme - Extra margin bottom added to header buttons. @8.0-SNAPSHOT
+5180a4fdf Fixed: wflow-consoleweb - App Composer - Publish other app version is not redirecting to the published app version. @8.0-SNAPSHOT
+55da57fcc Fixed: wflow-consoleweb - Property Editor - Color sample in selector is not display correctly. @8.0-SNAPSHOT
+457ec38f3 Fixed: wflow-plugin-base - HashVariableSupportedMap - entrySet() not returning all entries. @8.0-SNAPSHOT
+18c0c29f6 Fixed: wflow-consoleweb - Process Builder - Validation error due to no end node. @8.0-SNAPSHOT
+022bc543f Fixed: wflow-consoleweb - Progressive, X-admin, Universal Theme - List - Row action button does not follow the styles of selected display type. @8.0-SNAPSHOT
+efcb31c82 Fixed: wflow-consoleweb - Progressive & Universal Theme - Dropdown menu of TinyMCE editor is not show in correct position. @8.0-SNAPSHOT
+088c552d4 Fixed: wflow-consoleweb - List - Classic Table layout - "Width" & "Alignment" in column properties affected the mobile card display. @8.0-SNAPSHOT
+dbad2bbae Fixed: wflow-consoleweb - Builders - Permission - Can't edit permission rule in addon builder. @8.0-SNAPSHOT
+57fa33050 Fixed: wflow-consoleweb - Manage Plugins - Handle exceptions caused by plugin removed by other threads during retrieve listing. @8.0-SNAPSHOT
+7af6b3590 Fixed: wflow-plugin-base - Plugin Manager - Exception due to file observer wrongly installed incomplete uploading plugin file. @8.0-SNAPSHOT
+bbf70ee69 Fixed: wflow-core - Hash Variable - Used in field options are not able to parse. @8.0-SNAPSHOT
+bbaac1d1d Fixed: wflow-core - Platform Hash Variable - Rename the variable to reduce confusion. @8.0-SNAPSHOT
+a91a963bb Fixed: wflow-core - Form - Protected app can't retrieve form. @8.0-SNAPSHOT
+
 8.0-RC2
 =======
 a9afde50b Fixed: wflow-plugin-base - Plugin Manager - Plugin randomly not exist after reload plugins. @8.0-SNAPSHOT
