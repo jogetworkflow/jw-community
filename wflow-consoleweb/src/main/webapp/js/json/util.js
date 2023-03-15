@@ -270,7 +270,7 @@ UrlUtil = {
             var params = UrlUtil.getUrlParams(url);
             for (var p in params) {
                 var field = FormUtil.getField(p, form);
-                if (field.length > 0 && !field.prop('disabled')) {
+                if (field.length > 0 && !field.prop('disabled') && field.attr("id") === p) {
                     delete params[p];
                     changed = true;
                 }
