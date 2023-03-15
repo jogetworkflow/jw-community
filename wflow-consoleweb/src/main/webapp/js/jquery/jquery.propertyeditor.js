@@ -10822,9 +10822,13 @@ PropertyAssistant = {
                                 var range = document.createRange();
                                 range.selectNodeContents($(this)[0]);
                                 range.collapse(false);
-                                var sel = window.getSelection();
-                                sel.removeAllRanges();
-                                sel.addRange(range);
+                                if (window.getSelection) {
+                                    var sel = window.getSelection();
+                                    if (sel !== undefined && sel !== null) {
+                                        sel.removeAllRanges();
+                                        sel.addRange(range);
+                                    }
+                                }
                             } else if (typeof document.body.createTextRange != "undefined") {
                                 var textRange = document.body.createTextRange();
                                 textRange.moveToElementText($(this)[0]);

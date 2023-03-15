@@ -2899,7 +2899,8 @@
      */
     copyElement : function(event) {
         if (event && ((/textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) || 
-                (window.getSelection() !== undefined && window.getSelection().anchorNode !== undefined && 
+                (window.getSelection && window.getSelection() !== undefined && window.getSelection() !== null && 
+                window.getSelection().anchorNode !== undefined && window.getSelection().anchorNode !== null &&
                 window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
             //clear element clipboard
             CustomBuilder.clearCopiedElement();
