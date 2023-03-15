@@ -2213,7 +2213,20 @@ UserviewBuilder = {
                 var target = $(iframe.contentWindow.document).find("body");
                 
                 CustomBuilder.getScreenshot(target, function(image){
-                    callback(image);
+                    
+                    //resize image
+                    const img = new Image();
+                    img.onload = () => {
+                      const canvas = document.createElement('canvas');
+                      const ctx = canvas.getContext('2d');
+                      canvas.width = 700;
+                      canvas.height = 500;
+                      ctx.drawImage(img, 0, 0, 700, 500);
+                      const resizedBase64 = canvas.toDataURL('image/jpeg');
+                      callback(resizedBase64);
+                    };
+                    img.src = image;
+                    
                     $(iframe).remove();
                 }, function(error) {
                     $(iframe).remove();
