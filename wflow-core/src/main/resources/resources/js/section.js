@@ -71,7 +71,7 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
     } catch (err) {}
     
     if (match && (targetEl.hasClass("section-visibility-hidden") || !targetEl.is(":visible"))) {
-        targetEl.css("display", "block");
+        targetEl.css("display", "");
         targetEl.removeClass("section-visibility-hidden");
         thisObject.enableInputField(targetEl);
     } else if (!match && (!targetEl.hasClass("section-visibility-hidden") || targetEl.is(":visible"))) {
