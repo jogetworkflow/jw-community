@@ -33,6 +33,7 @@ import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
@@ -582,7 +583,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }
         
         // process LESS
-        String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/" + getPropertyString("themeScheme") + ".less");
+        String less = getLess();
+        if (less == null) {
+            less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + SecurityUtil.normalizedFileName(getPathName()) + "/" + SecurityUtil.normalizedFileName(getPropertyString("themeScheme")) + ".less");
+        }        
+        
         less = lessVariables + "\n" + less;
         // read CSS from cache
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
@@ -602,6 +607,16 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             }
         }
         return css;
+    }
+    
+    protected String getLess() {
+        String path = getPathName();
+        String scheme = getPropertyString("themeScheme");
+        if ((path.equals("universal") || path.equals("progressive")) && (scheme.equals("dark") || scheme.equals("light"))) {
+            return AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + path + "/" + scheme + ".less");
+        } else {
+            return null;
+        }
     }
 
     protected String compileLess(String less) {
