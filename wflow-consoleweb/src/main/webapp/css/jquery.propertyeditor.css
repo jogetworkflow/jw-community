@@ -921,7 +921,11 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .repeater-row.compress > .inputs > div > .property-editor-property.default-hidden{
     display: none;
 }
-.repeater-row .inputs .property-editor-property {
+.repeater-row .inputs .property-editor-property,
+.repeater-row .inputs .property-editor-property .property-input{
+    width: 100%;
+}
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property {
     padding: 5px;
     margin-bottom: 0px;
     width: 45%;
@@ -929,31 +933,32 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     display: inline-block;
     vertical-align: top;
 }
-.repeater-row .inputs .property-editor-property.property-type-header,
-.repeater-row .inputs .property-editor-property.property-type-sortableselect,
-.repeater-row .inputs .property-editor-property.property-type-grid,
-.repeater-row .inputs .property-editor-property.property-type-gridcombine,
-.repeater-row .inputs .property-editor-property.property-type-gridfixedrow,
-.repeater-row .inputs .property-editor-property.property-type-repeater,
-.repeater-row .inputs .property-editor-property.property-type-htmleditor,
-.repeater-row .inputs .property-editor-property.property-type-codeeditor,
-.repeater-row .inputs .property-editor-property.property-type-elementselect,
-.repeater-row .inputs .property-editor-property.property-type-elementmultiselect,
-.repeater-row .inputs .property-editor-property.property-type-custom{
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-header,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-sortableselect,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-grid,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-gridcombine,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-gridfixedrow,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-repeater,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-htmleditor,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-elementselect,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-elementmultiselect,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-custom{
     width: 100%;
     margin-right: 0% !important;
 }
-.repeater-row .inputs .property-editor-property.property-type-header .property-input,
-.repeater-row .inputs .property-editor-property.property-type-sortableselect .property-input,
-.repeater-row .inputs .property-editor-property.property-type-grid .property-input,
-.repeater-row .inputs .property-editor-property.property-type-gridcombine .property-input,
-.repeater-row .inputs .property-editor-property.property-type-gridfixedrow .property-input,
-.repeater-row .inputs .property-editor-property.property-type-repeater .property-input,
-.repeater-row .inputs .property-editor-property.property-type-htmleditor .property-input,
-.repeater-row .inputs .property-editor-property.property-type-codeeditor .property-input,
-.repeater-row .inputs .property-editor-property.property-type-elementselect .property-input,
-.repeater-row .inputs .property-editor-property.property-type-elementmultiselect .property-input,
-.repeater-row .inputs .property-editor-property.property-type-custom .property-input{
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-header .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-sortableselect .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-grid .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-gridcombine .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-gridfixedrow .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-repeater .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-htmleditor .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-elementselect .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-elementmultiselect .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-custom .property-input,
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.repeater-row{
     width: 100%;
 }
 .repeater-row .inputs .property-label-container {
@@ -962,7 +967,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .repeater-row .inputs .property-input {
     width: 70%;
 }
-.repeater-row .inputs .property-editor-property:nth-child(odd) {
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property:nth-child(odd) {
     margin-right: 5%;
 }
 .repeater-row .inputs .default-hidden .property-label{
@@ -1288,7 +1293,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     max-width: 100%;
     width: 100%;
 }
-.property-editor-container.narrow .property-input > .chosen-container{
+.property-editor-container.narrow:not(.wider) .property-input > .chosen-container{
     width: 100% !important;
     font-size: 11px;
     line-height: 1.5;
@@ -1725,7 +1730,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     margin: 15px -15px 0px;
 }
 .editor-panel-mode .element-pages .element-pages .property-editor-page.collapsed .property-editor-property-container{
-    padding-bottom: 0px !important;
+    padding-bottom: 15px !important;
 }
 .editor-panel-mode .element-pages .element-pages .property-editor-page-title{
     background: #9fa9b1;
@@ -1935,7 +1940,7 @@ body .ui-dialog .button_form.ui-dialog-content{
 .editor-panel-mode .elementmultiselect > .repeater-row > .inputs{
     padding: 0px 8px 0 0px;
 }
-.editor-panel-mode .elementmultiselect > .repeater-row > .inputs .chosen-container{
+.editor-panel-mode .elementmultiselect > .repeater-row > .inputs > .inputs-container > .chosen-container{
     width: 100% !important;
 }
 .editor-panel-mode .elementmultiselect > .repeater-row > .actions.rowbuttons{
