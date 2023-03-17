@@ -4,6 +4,8 @@ For more information, please refer to https://community.joget.org
 
 8.0-RC3
 =======
+092a671c3 Fixed: wflow-consoleweb - Property Editor - Add/delete button not working when a multi elements select field is loaded in the configuration of another multi elements select field. @8.0-SNAPSHOT
+e4f67bcbb Fixed: wflow-consoleweb - Ajax Component - Ajax theme checking is not done correctly. @8.0-SNAPSHOT
 a2a9b6745 Fixed: wflow-consoleweb - Property Editor - Multi elements select field is affected by the style of repeater field. @8.0-SNAPSHOT
 2a7f90382 Fixed: wflow-consoleweb - List Builder - Datalist datasource advform join "form data table name" shows duplicate table names. @8.0-SNAPSHOT #T2066
 58fd19e73 Fixed: wflow-consoleweb - Universal Theme - User Profile - Field does not render correctly. @8.0-SNAPSHOT
