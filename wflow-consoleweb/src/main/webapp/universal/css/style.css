@@ -1463,7 +1463,6 @@ main :-ms-input-placeholder{
 main #profile legend {
     padding: 10px;
 } 
-/*
 main .form-row label {
     width: 30%;
 }
@@ -1475,7 +1474,7 @@ main .form-row .form-input input,
 main .form-row .form-input select,
 main .form-row .form-input textarea{
     max-width: 95%;
-}*/
+}
 @media screen and (max-width: 480px) {
     /*main .form-row .form-input {
         max-width: 100%;
