@@ -260,6 +260,11 @@ AjaxComponent = {
                 return;
             }
         } else {
+            if (window['AjaxUniversalTheme'] === undefined) { 
+                window.top.location.href = url;
+                return;
+            }
+            
             AjaxComponent.unbindEvents();
         }
         
@@ -385,8 +390,8 @@ AjaxComponent = {
                     }
                 }
 
-                if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
-                    AjaxUniversalTheme.callback(data);
+                if (!isAjaxComponent && window['AjaxUniversalTheme'] !== undefined) {
+                    window['AjaxUniversalTheme'].callback(data);
                 } else {
                     AjaxComponent.callback(contentConatiner, data, url);
                 }
@@ -406,8 +411,8 @@ AjaxComponent = {
             }
         })
         .catch(function (error) {
-            if (!isAjaxComponent && AjaxUniversalTheme !== undefined) {
-                AjaxUniversalTheme.errorCallback(error);
+            if (!isAjaxComponent && window['AjaxUniversalTheme'] !== undefined) {
+                window['AjaxUniversalTheme'].errorCallback(error);
             } else {
                 AjaxComponent.errorCallback(element, error);
             }
@@ -692,14 +697,14 @@ AjaxComponent = {
             }
             $(element).attr("aria-live", "polite");
         } else if (action === "reloadPage") {
-            if (AjaxUniversalTheme !== undefined) {
+            if (window['AjaxUniversalTheme'] !== undefined) {
                 AjaxComponent.call($("#content.page_content"), window.location.href, "GET", null);
             } else {
                 window.location.reload(true);
             }
         } else if (action === "redirectPage") {
             var url = AjaxComponent.getEventRedirectURL(eventObj.redirectUrl, urlParams);
-            if (AjaxUniversalTheme !== undefined) {
+            if (window['AjaxUniversalTheme'] !== undefined) {
                AjaxComponent.call($("#content.page_content"), url, "GET", null);
             } else {
                 window.location.href = url;
