@@ -4,6 +4,13 @@ For more information, please refer to https://community.joget.org
 
 8.0-RC3
 =======
+a2a9b6745 Fixed: wflow-consoleweb - Property Editor - Multi elements select field is affected by the style of repeater field. @8.0-SNAPSHOT
+2a7f90382 Fixed: wflow-consoleweb - List Builder - Datalist datasource advform join "form data table name" shows duplicate table names. @8.0-SNAPSHOT #T2066
+58fd19e73 Fixed: wflow-consoleweb - Universal Theme - User Profile - Field does not render correctly. @8.0-SNAPSHOT
+bbb93c337 Fixed: wflow-core - Section - Multiple columns does not align correctly when having visibility control rules. @8.0-SNAPSHOT
+0a5b86274 Fixed: wflow-core - Plugin - OSGI theme plugin extends Universal/Progressive theme throw security exception. @8.0-SNAPSHOT
+67029ab3d Fixed: wflow-consoleweb - Builders - Can't copy element in Safari browser. @8.0-SNAPSHOT
+570657672 Fixed: wflow-consoleweb - UI Builder - Can't save screenshot when image size too large. @8.0-SNAPSHOT
 1b8ad42b3 Fixed: wflow-core - Form - When URL Parameter & Form Field having same key, an array is return. @8.0-SNAPSHOT
 f345fe7ff Fixed: wflow-core - Form visibility section on checkbox field set to readonly fails. @7.0-SNAPSHOT. #T2044
 b2eb36c21 Fixed: wflow-consoleweb - Form - Post Process Tool does not parse hash variable. @8.0-SNAPSHOT
