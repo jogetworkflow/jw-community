@@ -3899,13 +3899,14 @@ public class ConsoleWebController {
         } else {
             tableNameList = new ArrayList<String>();
         }
-
+        Set<String> existingTables = new HashSet<String>();
         JSONArray jsonArray = new JSONArray();
         Map blank = new HashMap();
         blank.put("value", "");
         blank.put("label", "");
         jsonArray.put(blank);
         for (String name : tableNameList) {
+            existingTables.add(name);
             Map data = new HashMap();
             data.put("value", name);
             data.put("label", name);
@@ -3914,10 +3915,12 @@ public class ConsoleWebController {
         
         Collection<String> customTables = CustomFormDataTableUtil.getTables(appDef);
         for (String table : customTables) {
-            Map data = new HashMap();
-            data.put("value", table);
-            data.put("label", table);
-            jsonArray.put(data);
+            if (!existingTables.contains(table)) {
+                Map data = new HashMap();
+                data.put("value", table);
+                data.put("label", table);
+                jsonArray.put(data);
+            }
         }
         
         jsonArray = sortJSONArray(jsonArray, "label", false);
