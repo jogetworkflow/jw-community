@@ -10264,16 +10264,41 @@ PropertyEditor.Type.CssStyle.prototype = {
     initScripting : function() {
         var field = this;
         
+        var updateLabel = function(chosen) {
+            var options = chosen.results_data;
+            for (var i=0; i<options.length; i++) {
+                if (options[i].original === undefined) {
+                    const element = document.createElement('div');
+                    element.innerHTML = options[i].text;
+                    options[i].original = element.textContent;
+                    var temp = $('<div>'+options[i].original+'</div>');
+                    options[i].textonly = $(temp).text();
+                    options[i].icon = $(temp).find('i');
+                }
+                options[i].text = options[i].textonly;
+            }
+            
+            $(chosen.container).find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
+                var index = $(this).attr('data-option-array-index');
+                if (chosen.results_data[index]) {
+                    var icon = chosen.results_data[index].icon;
+                    $(this).prepend(icon);
+                }
+            });
+        };
+        
         $("#" + this.id).find(".add_new_style").chosen({ width: "100%", placeholder_text: get_peditor_msg("style.addNew") })
         .off('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel')
         .on('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel', function() {
-            $("#" + field.id + " .add_new_style").next().find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function() {
-                var html = $(this).text();
-                if (html.indexOf('<') !== -1) {
-                    $(this).html(html);
-                }
-            });
+            updateLabel($("#" + field.id + " .add_new_style").data("chosen"));
         });
+        setTimeout(function() {
+            $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").off("keydown");
+            $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").on("keydown", function() {
+                setTimeout(function() { updateLabel($("#" + field.id + " .add_new_style").data("chosen")); }, 5);
+            });
+        }, 1000);
+        updateLabel($("#" + field.id + " .add_new_style").data("chosen"));
         
         for (var g in field.styleGroups) {
             field.renderGroup(g, field.options.propertyValues);
