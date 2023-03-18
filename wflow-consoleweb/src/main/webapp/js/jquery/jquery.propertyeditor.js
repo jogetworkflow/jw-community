@@ -9270,13 +9270,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         thisObj.loadValues(true);
         
-        $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .addrow");
-        $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container .repeater-row > .actions > .addrow", function(){
+        $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > .actions > .addrow");
+        $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > .actions > .addrow", function(){
             thisObj.addRow(this);
         });
         
-        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container .repeater-row > .actions > .deleterow");
-        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container .repeater-row > .actions > .deleterow", function(){
+        $("#" + thisObj.id + "_input").off("click", "> div > .repeater-rows-container > .repeater-row > .actions > .deleterow");
+        $("#" + thisObj.id + "_input").on("click", "> div > .repeater-rows-container > .repeater-row > .actions > .deleterow", function(){
             thisObj.deleteRow(this);
         });
         
