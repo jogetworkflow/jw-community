@@ -1021,15 +1021,32 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static String getUserviewThemeCss() {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null
-                && request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0
-                && request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) {
+        if (request != null && 
+                ((request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0 && 
+                request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) || 
+                (request.getRequestURI().contains("/jsp/userview/popupTemplate.jsp") && //is userview popup & referer is userview
+                request.getHeader("referer") != null && (request.getHeader("referer").contains("/web/userview/") || 
+                request.getHeader("referer").contains("/web/embed/userview/"))))) { 
             
             AppDefinition oriAppDef = AppUtil.getCurrentAppDefinition();
             
             try {
-                String appId = request.getParameterValues("__a_")[0];
-                String uId = request.getParameterValues("__u_")[0];
+                String appId = "";
+                String uId = "";
+                
+                if (request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0 && 
+                    request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) {
+                    appId = request.getParameterValues("__a_")[0];
+                    uId = request.getParameterValues("__u_")[0];
+                } else {
+                    String[] temp = request.getHeader("referer").substring(request.getHeader("referer").indexOf("/userview/") + 10).split("/");
+                    if (temp.length > 2) {
+                        appId = temp[0];
+                        uId = temp[1];
+                    }
+                }
+                appId = SecurityUtil.validateStringInput(appId);
+                uId = SecurityUtil.validateStringInput(uId);
 
                 if (!appId.isEmpty() && !uId.isEmpty()) {
                     UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
