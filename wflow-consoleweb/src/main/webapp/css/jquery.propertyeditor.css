@@ -1228,6 +1228,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 }
 .css-styles-container .style-group {
     border: 1px solid #9eadba;
+    position: relative;
 }
 .css-styles-container .style-group.hide {
     display:none;
@@ -1245,6 +1246,17 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .css-styles-container .style-group > h6 > i {
     font-size: 16px;
     vertical-align: top;
+}
+.css-styles-container .style-group > i.delete_action{
+    position: absolute;
+    color: white;
+    cursor: pointer;
+    top: 5px;
+    right: 35px;
+    font-size: 12px;
+}
+.css-styles-container .style-group > i.delete_action:hover{
+    color:red;
 }
 .css-styles-container .style-group .style-group-input-container{
     display: flex;

@@ -10358,12 +10358,15 @@ PropertyEditor.Type.CssStyle.prototype = {
                 gHtml += '<div class="'+group.fields[f].class+'">' + type.render() + '</div>';
             }
         }
-        var group = $('<div class="style-group" data-style-group="'+g+'"><h6>'+group.header+'</h6><div class="style-group-input-container">' + gHtml + '</div></div>');
+        var group = $('<div class="style-group" data-style-group="'+g+'"><h6>'+group.header+'</h6><i class="delete_action fas fa-trash"></i><div class="style-group-input-container">' + gHtml + '</div></div>');
         $(container).append(group);
         $(group).data("fields", fields);
         
         $(group).find("> h6").off("click").on("click", function(){
             $(this).toggleClass("collapsed");
+        });
+        $(group).find("> .delete_action").off("click").on("click", function(){
+            $(this).parent().remove();
         });
         
         $.each(fields, function(i, property) {
