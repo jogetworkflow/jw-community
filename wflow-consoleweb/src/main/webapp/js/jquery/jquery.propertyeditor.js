@@ -10358,7 +10358,7 @@ PropertyEditor.Type.CssStyle.prototype = {
                 gHtml += '<div class="'+group.fields[f].class+'">' + type.render() + '</div>';
             }
         }
-        var group = $('<div class="style-group" data-style-group="'+g+'"><h6>'+group.header+'</h6><i class="delete_action fas fa-trash"></i><div class="style-group-input-container">' + gHtml + '</div></div>');
+        var group = $('<div class="style-group" data-style-group="'+g+'"><i class="delete_action fas fa-trash"></i><h6>'+group.header+'</h6><div class="style-group-input-container">' + gHtml + '</div></div>');
         $(container).append(group);
         $(group).data("fields", fields);
         

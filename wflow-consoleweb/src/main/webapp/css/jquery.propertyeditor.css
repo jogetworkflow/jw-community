@@ -1254,6 +1254,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     top: 5px;
     right: 35px;
     font-size: 12px;
+    z-index: 1;
 }
 .css-styles-container .style-group > i.delete_action:hover{
     color:red;
