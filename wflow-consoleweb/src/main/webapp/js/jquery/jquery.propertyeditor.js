@@ -10367,6 +10367,20 @@ PropertyEditor.Type.CssStyle.prototype = {
         });
         $(group).find("> .delete_action").off("click").on("click", function(){
             $(this).parent().remove();
+            
+            var options = '<option value=""></option>';
+            for (var g in thisObj.styleGroups) {
+                if ($("#" + thisObj.id).find(".css-styles-container .style-group[data-style-group='"+g+"']").length > 0) {
+                    continue;
+                }
+                options += '<option value="'+g+'" >'+UI.escapeHTML(thisObj.styleGroups[g].header)+'</option>';
+            }
+            $("#" + thisObj.id).find(".add_new_style").html(options);
+            $("#" + thisObj.id).find(".add_new_style").trigger("chosen:updated");
+            
+            if ($("#" + thisObj.id).find(".add_new_style option").length > 1) {
+                $("#" + thisObj.id).find(".add_new_style").parent().show();
+            }
         });
         
         $.each(fields, function(i, property) {
