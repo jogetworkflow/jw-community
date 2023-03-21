@@ -5936,7 +5936,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
         JSONObject var = new JSONObject();
         for (Iterator j = varMap.keySet().iterator(); j.hasNext();) {
             String key = (String) j.next();
-            String val = varMap.get(key).toString();
+            Object valObj = varMap.get(key);
+            String val = (valObj != null)?valObj.toString():"";
             var.put(key, val);
         }
         history.setVariables(var.toString());
@@ -6089,7 +6090,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
             JSONObject avar = new JSONObject();
             for (Iterator j = avarMap.keySet().iterator(); j.hasNext();) {
                 String key = (String) j.next();
-                String val = avarMap.get(key).toString();
+                Object valObj = varMap.get(key);
+                String val = (valObj != null)?valObj.toString():"";
                 avar.put(key, val);
             }
             aHistory.setVariables(avar.toString());
