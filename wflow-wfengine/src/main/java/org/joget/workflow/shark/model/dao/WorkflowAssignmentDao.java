@@ -942,6 +942,22 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         super.saveOrUpdate(ACTIVITY_HISTORY_ENTITY_NAME, history);
     }
     
+    /**
+     * Used to check is there any completed process in shark table
+     */
+    public boolean hasNonHistoryCompletedProcess() {
+        //required to disable lazy loading 
+        String condition = "join e.state s";
+        Collection<String> params = new ArrayList<String>();
+        
+        condition += " where 1=1";
+        condition += " and s.name like ?";
+        params.add("closed.%");
+        Collection shProcess = find(PROCESS_ENTITY_NAME, "", condition, params.toArray(new String[0]), null, null, 0, 1);
+        
+        return !shProcess.isEmpty();
+    }
+    
     public Collection<WorkflowProcess> getProcessHistories(String packageId, String processDefId, String processId, String processName, String version, String recordId, String username, String sort, Boolean desc, Integer start, Integer rows) {
         //required to disable lazy loading 
         String condition = "join fetch e.link link";

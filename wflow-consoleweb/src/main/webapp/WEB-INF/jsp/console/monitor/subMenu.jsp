@@ -2,9 +2,17 @@
 <%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ page import="org.joget.commons.util.HostManager"%>
 <%@ page import="org.joget.apm.APMUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 
 <li id="nav-monitor-running"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/running"><span class="nav-steps"><i class="fas fa-play"></i></span><fmt:message key="console.header.submenu.label.runningProcesses"/></a></li>
-<li id="nav-monitor-completed"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/completed"><span class="nav-steps"><i class="fas fa-stop"></i></span><fmt:message key="console.header.submenu.label.completedProcesses"/></a></li>
+<c:set var="hasNonArchivedProcessData" value="<%= AppUtil.hasNonArchivedProcessData() %>"/>
+<c:set var="isArchivedProcessDataModeEnabled" value="<%= AppUtil.isArchivedProcessDataModeEnabled() %>"/>
+<c:if test="${hasNonArchivedProcessData}">
+    <li id="nav-monitor-completed"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/completed"><span class="nav-steps"><i class="fas fa-stop"></i></span><fmt:message key="console.header.submenu.label.completedProcesses"/></a></li>
+</c:if>
+<c:if test="${isArchivedProcessDataModeEnabled}">    
+    <li id="nav-monitor-archived"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/archived"><span class="nav-steps"><i class="fas fa-stop"></i></span><fmt:message key="console.header.submenu.label.archivedProcesses"/></a></li>
+</c:if>
 <li id="nav-monitor-audit"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/monitor/audit"><span class="nav-steps"><i class="fas fa-shoe-prints fa-rotate-270"></i></span><fmt:message key="console.header.submenu.label.auditTrail"/></a></li>
 <c:set var="isTomcat" value="<%= LogUtil.isDeployInTomcat() %>"/>
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>

@@ -66,7 +66,7 @@
                        width="100%"
                        sort="dateCreated"
                        desc="true"
-                       href="${pageContext.request.contextPath}/web/console/monitor/completed/process/activity/view"
+                       href="${pageContext.request.contextPath}/web/console/monitor/${mode}/process/activity/view"
                        hrefParam="id"
                        hrefQuery="false"
                        hrefDialog="false"
@@ -89,7 +89,7 @@
             UI.blockUI(); 
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/completed';
+                    document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
@@ -101,7 +101,7 @@
         window.open(url);
     }
     
-    Template.init("#menu-monitor", "#nav-monitor-completed");
+    Template.init("#menu-monitor", "#nav-monitor-${mode}");
 </script>
 
 <commons:footer />

@@ -84,6 +84,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1789,5 +1790,22 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         return config;
+    }
+    
+    /**
+     * Used to check is there any completed process in shark table
+     */
+    public static boolean hasNonArchivedProcessData() {
+        WorkflowAssignmentDao workflowAssignmentDao = (WorkflowAssignmentDao)AppUtil.getApplicationContext().getBean("workflowAssignmentDao");
+        return workflowAssignmentDao.hasNonHistoryCompletedProcess() || !isArchivedProcessDataModeEnabled();
+    }
+    
+    /**
+     * Used to check is archive process is enabled in system setting
+     */
+    public static boolean isArchivedProcessDataModeEnabled() {
+        SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+        String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
+        return "archive".equalsIgnoreCase(mode);
     }
 }

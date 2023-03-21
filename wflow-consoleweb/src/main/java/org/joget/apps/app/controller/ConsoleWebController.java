@@ -129,6 +129,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -218,6 +219,8 @@ public class ConsoleWebController {
     UserMetaDataDao userMetaDataDao;
     @Autowired
     AuditTrailManager auditTrailManager;
+    @Autowired
+    WorkflowAssignmentDao workflowAssignmentDao;
 
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
@@ -5180,12 +5183,19 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/monitor/completed")
-    public String consoleMonitorCompleted(ModelMap map) {
+    @RequestMapping("/console/monitor/(*:mode)")
+    public String consoleMonitorCompleted(ModelMap map, @RequestParam("mode") String mode) {
+        if (!("completed".equals(mode) || "archived".equals(mode))) {
+            mode = "completed";
+        }
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", false, null, null);
         map.addAttribute("appDefinitionList", appDefinitionList);
-        String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
-        map.addAttribute("completedProcessMode", (mode != null)?mode:"");
+        map.addAttribute("mode", mode);
+        
+        if ("completed".equals(mode)) {
+            map.addAttribute("hasNonArchivedProcessData", AppUtil.hasNonArchivedProcessData());
+        }
+        
         return "console/monitor/completed";
     }
     
@@ -5203,16 +5213,28 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/json/console/monitor/completed/list")
-    public void consoleMonitorCompletedListJson(Writer writer, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "recordId", required = false) String recordId, @RequestParam(value = "requester", required = false) String requester, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/monitor/(*:mode)/list")
+    public void consoleMonitorCompletedListJson(Writer writer, @RequestParam("mode") String mode, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "recordId", required = false) String recordId, @RequestParam(value = "requester", required = false) String requester, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        if (!("completed".equals(mode) || "archived".equals(mode))) {
+            mode = "completed";
+        }
+        
         if ("startedTime".equals(sort)) {
             sort = "Started";
         } else if ("createdTime".equals(sort)) {
             sort = "Created";
         }
 
-        Collection<WorkflowProcess> processList = workflowManager.getCompletedProcessList(appId, processId, processName, version, recordId, requester, sort, desc, start, rows);
-        int count = workflowManager.getCompletedProcessSize(appId, processId, processName, version, recordId, requester);
+        Collection<WorkflowProcess> processList;
+        int count;
+        
+        if (mode.equals("completed")) {
+            processList = workflowManager.getCompletedProcessList(appId, processId, processName, version, recordId, requester, sort, desc, start, rows);
+            count = workflowManager.getCompletedProcessSize(appId, processId, processName, version, recordId, requester);
+        } else {
+            processList = workflowAssignmentDao.getProcessHistories(appId, null, processId, processName, version, recordId, requester, sort, desc, start, rows);
+            count = (int) workflowAssignmentDao.getProcessHistoriesSize(appId, null, processId, processName, version, recordId, requester);
+        }
 
         JSONObject jsonObject = new JSONObject();
         for (WorkflowProcess workflowProcess : processList) {
@@ -5239,8 +5261,12 @@ public class ConsoleWebController {
         jsonObject.write(writer);
     }
 
-    @RequestMapping("/console/monitor/completed/process/view/(*:id)")
-    public String consoleMonitorCompletedProcess(ModelMap map, @RequestParam("id") String processId) {
+    @RequestMapping("/console/monitor/(*:mode)/process/view/(*:id)")
+    public String consoleMonitorCompletedProcess(ModelMap map, @RequestParam("mode") String mode, @RequestParam("id") String processId) {
+        if (!("completed".equals(mode) || "archived".equals(mode))) {
+            mode = "completed";
+        }
+        
         WorkflowProcess wfProcess = workflowManager.getRunningProcessById(processId);
         double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(processId);
 
@@ -5274,7 +5300,7 @@ public class ConsoleWebController {
             }
         }
         map.addAttribute("appDef", appDef);
-        
+        map.addAttribute("mode", mode);
         return "console/monitor/completedProcess";
     }
 
@@ -5406,7 +5432,10 @@ public class ConsoleWebController {
 //            }
 //        }
 
-        processStatus = ("running").equals(processStatus) ? "running" : "completed";
+        if (!("running".equals(processStatus) || "completed".equals(processStatus) || "archived".equals(processStatus))) {
+            processStatus = "completed";
+        }
+
         map.addAttribute("processStatus", processStatus);
         return "console/monitor/activity";
     }

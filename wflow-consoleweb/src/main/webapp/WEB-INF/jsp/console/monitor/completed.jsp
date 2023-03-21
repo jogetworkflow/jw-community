@@ -17,7 +17,7 @@
     <div id="main-action">
     </div>
     <div id="main-body">
-        <c:if test="${completedProcessMode eq ''}">
+        <c:if test="${mode == 'completed' && hasNonArchivedProcessData}">
             <div class="alert alert-warning">
                 <p><fmt:message key="console.monitoring.archiveProcessData"/></p>
                 <button id="enableArchive" class="btn"><fmt:message key="console.monitoring.enable"/></button>
@@ -29,7 +29,7 @@
                             UI.blockUI(); 
                             var callback = {
                                 success : function() {
-                                    document.location = '${pageContext.request.contextPath}/web/console/monitor/completed';
+                                    document.location = '${pageContext.request.contextPath}/web/console/monitor/archived';
                                 }
                             };
                             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/completed/process/archive', callback, '');
@@ -52,7 +52,7 @@
             </form>
         </div>
 
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/completed/list?${pageContext.request.queryString}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/${mode}/list?${pageContext.request.queryString}"
                var="JsonDataTable"
                divToUpdate="processList"
                jsonData="data"
@@ -60,7 +60,7 @@
                width="100%"
                sort="createdTime"
                desc="true"
-               href="${pageContext.request.contextPath}/web/console/monitor/completed/process/view"
+               href="${pageContext.request.contextPath}/web/console/monitor/${mode}/process/view"
                hrefParam="id"
                hrefQuery="false"
                hrefDialog="false"
@@ -101,14 +101,14 @@
             UI.blockUI(); 
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/completed';
+                    document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids='+selectedList);
         }
     }
 
-    Template.init("#menu-monitor", "#nav-monitor-completed");
+    Template.init("#menu-monitor", "#nav-monitor-${mode}");
 </script>
 
 <commons:footer />
