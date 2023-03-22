@@ -269,13 +269,6 @@ public class UserviewThemeProcesser {
             }
         }
 
-        if (mobileAgent && !disableMobileView && !desktopCookie) {
-            String url = "/web/mobile/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + userview.getParamString("key") + "/";
-            if (!userview.getParamString("menuId").isEmpty()) {
-                url += userview.getParamString("menuId"); 
-            }
-            return "redirect:" + url;
-        }
         return null;
     }
 

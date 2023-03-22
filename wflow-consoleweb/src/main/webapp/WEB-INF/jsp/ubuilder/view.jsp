@@ -4,21 +4,11 @@
 <%@page import="org.springframework.util.StopWatch"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
-<%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ page import="org.joget.apps.userview.model.Userview"%>
 <%@ page contentType="text/html" pageEncoding="utf-8"%>
 
-<%
-if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
-    pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
-}
-%>
-<c:set var="mobileViewDisabled" value="${userview.setting.theme.mobileViewDisabled}"/>
-<c:if test="${mobileUserAgent && !mobileViewDisabled && (empty cookie['desktopSite'].value || cookie['desktopSite'].value != 'true')}">
-    <c:redirect url="/web/mobile/${appId}/${userview.properties.id}/${key}"/>
-</c:if>
 
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
