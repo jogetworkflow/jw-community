@@ -2,6 +2,20 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.0
+=====
+b71983121 Fixed: wflow-consoleweb - Assignment - Legacy assignment link redirected to deprecated mobile view. @8.0-SNAPSHOT
+e2a928082 Fixed: wflow-consoleweb - Monitor - Not able to view archived process data if completed process data is not migrated. @8.0-SNAPSHOT
+ea3c3d68c Fixed: wflow-install - Update installer data. @8.0-SNAPSHOT
+60271dd24 Fixed: wflow-wfengine - Workflow Manager - Can't save history when variable value is null. @8.0-SNAPSHOT
+7ff1ead94 Fixed: wflow-commons - Request Hash Variable - Hash variable is not parse in a new thread. @8.0-SNAPSHOT
+b42822243 Fixed: wflow-install - Update default app and SQL. @8.0-SNAPSHOT
+461e1924f Fixed: wflow-core - UI - Plugin service page render using UI popup template does not having theme style. @8.0-SNAPSHOT
+244df4efa Fixed: wflow-consoleweb - Properties Editor - CSS Styles - Can't delete style group after added. @8.0-SNAPSHOT
+d3dc46b1b Fixed: wflow-consoleweb - Properties Editor - Multi Elements Select Field added 2 rows when it is nested inside another Multi Elements Select Field. @8.0-SNAPSHOT
+6f4412745 Fixed: wflow-consoleweb - Properties Editor - CSS Styling field show HTML when search the group. @8.0-SNAPSHOT
+4bf2fcc67 Modified: wflow-core - Date Hash Variable - Correct label. @8.0-SNAPSHOT
+
 8.0-RC3
 =======
 092a671c3 Fixed: wflow-consoleweb - Property Editor - Add/delete button not working when a multi elements select field is loaded in the configuration of another multi elements select field. @8.0-SNAPSHOT
