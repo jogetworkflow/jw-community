@@ -904,9 +904,40 @@ body#pviewer {
     z-index: 200;
     padding: 0px;
 }
-.ui-dialog .ui-dialog-titlebar-close {
-    top: 70%;
-    right: 15px;
+body .boxy-wrapper .title-bar a.close,
+body .ui-dialog-titlebar-close{
+    top: 15px !important;
+    right: 10px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    display: block;
+}
+body .ui-dialog-titlebar-close:before {
+    display: none !important;
+}
+body .ui-icon-closethick{
+    background: transparent !important;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-weight: 900;
+    text-indent: 0px !important;
+    font-size: 20px;
+    width: 20px !important;
+    height: 20px !important;
+    color:#ccc !important;
+}
+body .ui-icon-closethick:hover {
+    color: #aaa !important;
+}
+body .ui-icon-closethick:before{
+    content: '\f00d';
 }
 .ui-dialog-content.ui-widget-content {
     overflow : hidden;
