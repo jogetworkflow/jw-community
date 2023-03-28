@@ -12,6 +12,15 @@ UI = {
           return span.html();
       }
    },
+   stripHtmlTags: function(c) {
+        if (c == null || c == undefined) {
+            return '';
+        } else {
+            let div= document.createElement("div");
+            div.innerHTML= c;
+            return (div.textContent || div.innerText || "");
+        } 
+   },
    userviewThemeParams: function () {
       var params = ''; 
       if (UI.userview_app_id != undefined && UI.userview_app_id != '') {

@@ -6257,13 +6257,15 @@ _CustomBuilder.Builder = {
                     if (props.label !== undefined && props.label !== "") {
                         label = props.label;
                     } else if (props.textContent !== undefined && props.textContent !== "") {
-                        label = UI.escapeHTML(props.textContent);
-                        if (label.length > 30) {
-                            label += label.substring(0, 27) + "...";
-                        }
+                        label = props.textContent;
                     } else if (props.id !== undefined && props.id !== "" && props.id.length < 32) {
                         label = props.id;
                     }
+                }
+                
+                label = UI.stripHtmlTags(label);
+                if (label.length > 30) {
+                    label += label.substring(0, 27) + "...";
                 }
                 
                 var li = $('<li class="tree-viewer-item"><label>'+component.icon+' <a>'+label+'</a></label><input type="checkbox" id="'+rid+'" checked/></li>');
