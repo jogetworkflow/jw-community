@@ -43,8 +43,10 @@ body.popupBody:not(.embeded) {
         margin-top: 0px;
         height: 100%;
         box-sizing: border-box;
-        padding-top:65px;
         -webkit-overflow-scrolling: touch;
+    }
+    body:not(.embeded) #page {
+        padding-top:65px;
     }
     body.popupBody:not(.embeded) {
         padding-top:0px;
