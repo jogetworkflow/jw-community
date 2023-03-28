@@ -166,7 +166,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     }
                 } else {
                     if (i > 0) {
-                        output += "</td><td class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
+                        output += "</td><td class=\"row_action rowaction_body row_action_inner body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
                     }
                     
                     output += " " + link + " ";
