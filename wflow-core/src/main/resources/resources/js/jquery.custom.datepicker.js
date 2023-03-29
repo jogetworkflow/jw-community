@@ -158,9 +158,20 @@
                             }
                         });
                     }, 1);  
-
+                    
+                    var parent;
+                    if ($(element).closest(".subform-container").length > 0) {
+                        parent = $(element).closest(".subform-container");
+                    }
+                
                     if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
-                        var startDate = FormUtil.getField(o.startDateFieldId);
+                        // try get from the same subform first
+                        var startDate = FormUtil.getField(o.startDateFieldId, parent);
+                        if (parent && $(startDate).length === 0) {
+                            //find from the entire form
+                            startDate = FormUtil.getField(o.startDateFieldId);
+                        }
+                    
                         var startDateOrg = null;
                         startDate.off("change.startdate"+uid);
                         startDate.on("change.startdate"+uid, function() {
@@ -173,7 +184,13 @@
                     }
 
                     if (o.endDateFieldId  !== undefined && o.endDateFieldId !== "") {
-                        var endDate = FormUtil.getField(o.endDateFieldId);
+                        // try get from the same subform first
+                        var endDate = FormUtil.getField(o.endDateFieldId, parent);
+                        if (parent && $(endDate).length === 0) {
+                            //find from the entire form
+                            endDate = FormUtil.getField(o.endDateFieldId);
+                        }
+                        
                         var endDateOrg = null;
                         endDate.off("change.endDate"+uid);
                         endDate.on("change.endDate"+uid, function() {
