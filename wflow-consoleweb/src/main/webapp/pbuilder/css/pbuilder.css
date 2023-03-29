@@ -904,7 +904,6 @@ body#pviewer {
     z-index: 200;
     padding: 0px;
 }
-body .boxy-wrapper .title-bar a.close,
 body .ui-dialog-titlebar-close{
     top: 15px !important;
     right: 10px !important;
