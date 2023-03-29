@@ -3,6 +3,23 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.38
+=================
+799242030 Fixed: wflow-consoleweb - Process Mapper - Missing close button on popup dialog. @7.0-SNAPSHOT
+554bd2ba1 Fixed: wflow-core - Date Picker - Start/End Date validation not working in subform repeater plugin. @7.0-SNAPSHOT
+bdc30975b Fixed: wflow-core - Plugin - OSGI theme plugin extends Universal/Progressive theme throw security exception. @7.0-SNAPSHOT
+357977397 Fixed: wflow-consoleweb - List Builder - Datalist datasource advform join "form data table name" shows duplicate table names. @7.0-SNAPSHOT #T2066
+a1d22e3ee Fixed: wflow-core - Form visibility section on checkbox field set to readonly fails. @7.0-SNAPSHOT. #T2044
+b80238caf Fixed: wflow-consoleweb - Manage Plugins - Handle exceptions caused by plugin removed by other threads during retrieve listing. @7.0-SNAPSHOT
+e85e85a66 Fixed: wflow-plugin-base - Plugin Manager - Exception due to file observer wrongly installed incomplete uploading plugin file. @7.0-SNAPSHOT
+6a436b850 Fixed: wflow-plugin-base - Plugin - When a plugin having an empty label, use its name as label. @7.0-SNAPSHOT
+c28e4d3b2 Fixed: wflow-plugin-base - Plugin Manager - Plugin randomly not exist after reload plugins. @7.0-SNAPSHOT
+27ce4ec2f Fixed: wflow-wfengine - Update hibernate setting to prevent update schema on Shark table. @7.0-SNAPSHOT
+38b5add3e Fixed: wflow-commons - Setting - Evict data for ehcache caching. @7.0-SNAPSHOT
+18c3d3045 Fixed: wflow-wfengine - Deadline Checker - Deadline Checkers from different cluster node are always checking on same instance concurrently when deadline interval is very short. @7.0-SNAPSHOT
+3e3e2e916 Fixed: jw-community - Data - Evict entity data from database session for those high frequency save/update data. @7.0-SNAPSHOT
+406cad9e2 Modified: wflow-consoleweb - Updated commons-fileupload to 1.3.3 for CVE-2023-24998. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.37
 =================
 29d5ecc86 Modified: wflow-plugin-base - Plugin Manager - Added singularity package to OSGI config. @7.0-SNAPSHOT
