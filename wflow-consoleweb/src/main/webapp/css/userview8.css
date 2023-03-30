@@ -890,6 +890,7 @@ body.horizontal_menu #header-info{
         min-width: 200px;
         background: var(--theme-sidebar, var(--theme-color4,#fff));
         top: 46px;
+        width: max-content;
     }
     body.horizontal_menu #sidebar .nav > li:not(.active) > a:hover, 
     body.horizontal_menu #sidebar .nav > li > ul > li > a:hover, 
