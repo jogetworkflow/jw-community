@@ -599,7 +599,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
 
         if (form != null && formData != null && redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
             String passoverFieldName = getPropertyString("fieldPassover");
-            String passoverValue = "";
+            String passoverValue = null;
             
             if (FormUtil.PROPERTY_ID.equals(passoverFieldName)) {
                 passoverValue = form.getPrimaryKeyValue(formData);
@@ -611,18 +611,20 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             }
             
             try {
-                if ("append".equals(getPropertyString("fieldPassoverMethod"))) {
-                    if (!redirectUrl.endsWith("/")) {
-                        redirectUrl += "/";
-                    }
-                    redirectUrl += URLEncoder.encode(passoverValue, "UTF-8");
-                } else {
-                    if (redirectUrl.contains("?")) {
-                        redirectUrl += "&";
+                if (passoverValue != null) {
+                    if ("append".equals(getPropertyString("fieldPassoverMethod"))) {
+                        if (!redirectUrl.endsWith("/")) {
+                            redirectUrl += "/";
+                        }
+                        redirectUrl += URLEncoder.encode(passoverValue, "UTF-8");
                     } else {
-                        redirectUrl += "?";
+                        if (redirectUrl.contains("?")) {
+                            redirectUrl += "&";
+                        } else {
+                            redirectUrl += "?";
+                        }
+                        redirectUrl += URLEncoder.encode(getPropertyString("paramName"), "UTF-8") + "=" + URLEncoder.encode(passoverValue, "UTF-8");
                     }
-                    redirectUrl += URLEncoder.encode(getPropertyString("paramName"), "UTF-8") + "=" + URLEncoder.encode(passoverValue, "UTF-8");
                 }
             } catch (Exception e) {}
         }
