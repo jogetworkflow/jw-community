@@ -911,7 +911,8 @@ a.guider_button:hover {
 }
 @media screen and (max-width:680px) { 
     #main-action-help,
-    .guider {
+    .guider,
+    .guider_hloverlay{
         display: none !important;
     }
 }
