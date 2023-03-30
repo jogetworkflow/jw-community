@@ -129,6 +129,16 @@
         }]
     },
     {
+        "name" : "emptyDependencyValueCheck",
+        "label" : "@@app.jsontool.emptyDependencyValueCheck@@",
+        "type" : "checkbox",
+        "value" : "false",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
+    },
+    {
         "name" : "debugMode",
         "label" : "@@app.jsontool.debugMode@@",
         "description" : "@@app.jsontool.debugMode.desc@@",
