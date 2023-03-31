@@ -99,6 +99,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
     font-weight: bold;
+    width: 30%;
 }
 .label-top.form-cell > label.label,
 .label-top.subform-cell > label.label{
