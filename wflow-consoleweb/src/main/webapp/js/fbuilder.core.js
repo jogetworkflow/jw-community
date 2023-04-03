@@ -18,7 +18,7 @@ FormBuilder = {
                 "renderElement" : "FormBuilder.renderElement",
                 "updateElementId" : "FormBuilder.updateElementId",
                 "unloadElement" : "FormBuilder.unloadElement",
-                "selectElement" : "FormBuilder.selectElement",
+                "decorateBoxActions" : "FormBuilder.decorateBoxActions",
                 "renderXray" : "FormBuilder.renderXray",
                 "copyElement" : "FormBuilder.copyElement",
                 "pasteElement" : "FormBuilder.pasteElement"
@@ -273,18 +273,20 @@ FormBuilder = {
     },
     
     /*
-     * A callback method called from the default component.builderTemplate.selectNode method.
+     * A callback method called from the default component.builderTemplate.decorateBoxActions method.
      * It used to add column and add section action button when a section is selected
      */
-    selectElement : function(element, elementObj, component) {
+    decorateBoxActions : function(element, elementObj, component, box) {
+        var builder = CustomBuilder.Builder;
+        
         if (elementObj.className === "org.joget.apps.form.model.Section") {
-            $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="'+get_cbuilder_msg("fbuilder.addColumn")+'"><i class="las la-columns"></i></a><a id="default-style-btn" href="" title="'+get_cbuilder_msg('style.defaultStyles')+'" style=""><i class="las la-palette"></i></a>');
+            $(box).find(".element-options").append('<a class="columns-btn" title="'+get_cbuilder_msg("fbuilder.addColumn")+'"><i class="las la-columns"></i></a><a class="default-style-btn" title="'+get_cbuilder_msg('style.defaultStyles')+'" style=""><i class="las la-palette"></i></a>');
             
-            $("#element-select-box #element-bottom-actions").append('<a id="add-section-btn" href="" title="'+get_cbuilder_msg("fbuilder.addSection")+'"><i class="las la-plus"></i></a>');
+            $(box).find(".element-bottom-actions").append('<a class="add-section-btn" href="" title="'+get_cbuilder_msg("fbuilder.addSection")+'"><i class="las la-plus"></i></a>');
             
-            $("#columns-btn").off("click");
-            $("#columns-btn").on("click", function(event) {
-                $("#element-select-box").hide();
+            $(box).find(".columns-btn").off("click");
+            $(box).find(".columns-btn").on("click", function(event) {
+                builder.boxActionSetElement(event);
                 
                 FormBuilder.addColumn();
                 
@@ -292,9 +294,9 @@ FormBuilder = {
                 return false;
             });
             
-            $("#add-section-btn").off("click");
-            $("#add-section-btn").on("click", function(event) {
-                $("#element-select-box").hide();
+            $(box).find(".add-section-btn").off("click");
+            $(box).find(".add-section-btn").on("click", function(event) {
+                builder.boxActionSetElement(event);
                 
                 FormBuilder.addSection();
                 
@@ -302,9 +304,10 @@ FormBuilder = {
                 return false;
             });
             
-            $("#default-style-btn").off("click");
-            $("#default-style-btn").on("click", function(){
-                var builder = CustomBuilder.Builder;
+            $(box).find(".default-style-btn").off("click");
+            $(box).find(".default-style-btn").on("click", function(event){
+                builder.boxActionSetElement(event);
+                
                 $("body").removeClass("no-right-panel");
                 $("#element-properties-tab-link").hide();
                 $("#right-panel #element-properties-tab").find(".property-editor-container").remove();

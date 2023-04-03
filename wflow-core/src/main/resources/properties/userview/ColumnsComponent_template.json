@@ -86,14 +86,14 @@
         }
         CustomBuilder.Builder.editStyles(properties, element, elementObj, component);
     },
-    "selectNode" : function(element, elementObj, component) {
-        $("#element-select-box #element-options").append('<a id="columns-btn" href="" title="@@fbuilder.addColumn@@"><i class="las la-columns"></i></a>');
+    "decorateBoxActions" : function(element, elementObj, component, box) {
+        $(box).find(".element-options").append('<a class="columns-btn" title="@@fbuilder.addColumn@@"><i class="las la-columns"></i></a>');
         
-        $("#columns-btn").off("click");
-        $("#columns-btn").on("click", function(event) {
-            $("#element-select-box").hide();
-
+        $(box).find(".columns-btn").off("click");
+        $(box).find(".columns-btn").on("click", function(event) {
             var self = CustomBuilder.Builder;
+            self.boxActionSetElement(event);
+            
             self.component = self.getComponent("org.joget.apps.userview.lib.component.ColumnComponent");
             var classname = self.component.className;
             var elements = [];
