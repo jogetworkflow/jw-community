@@ -1736,6 +1736,13 @@
                         callback();
                     }
                 }
+                
+                //close the properties editor if it is window mode
+                if ($("body").hasClass("right-panel-mode-window")) {
+                    $("body").addClass("no-right-panel");
+                    $("#right-panel .property-editor-container").remove();
+                }
+                
             } else {
                 CustomBuilder.showMessage(get_cbuilder_msg("cbuilder.pleaseCorrectErrors"), "danger");
             }
