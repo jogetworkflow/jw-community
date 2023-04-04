@@ -1928,6 +1928,11 @@ a.bg-dark:focus,a.bg-dark:hover,button.bg-dark:focus,button.bg-dark:hover {
 }
 
 @media print {
+
+    body #form-canvas .label{
+        border: 0;
+    }
+    
     .d-print-none {
         display: none!important
     }
@@ -5471,9 +5476,15 @@ a {
 #help-container #main-action-help {position: relative; right:0px; width: 0; padding: 10px 0px;}
 
 @media print {    
+
+    body #form-canvas .label{
+        border: 0;
+    }
+    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
     #adminControl {display:none !important;}
+    
 }
 #jqueryDialogDiv {overflow: hidden;}
 

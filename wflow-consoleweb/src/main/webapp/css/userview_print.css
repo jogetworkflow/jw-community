@@ -41,10 +41,6 @@ body .section-actions{
     display:none;
 }
 
-body #form-canvas .label{
-    border: 0;
-}
-
 @media print {    
     body #main div.span3 {
         width: 0px;
