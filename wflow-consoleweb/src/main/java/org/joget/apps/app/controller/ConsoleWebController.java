@@ -1553,11 +1553,20 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/versioning")
     public String consoleAppVersioning(ModelMap map, @RequestParam(value = "appId") String appId) throws JSONException {
+        appId = SecurityUtil.validateStringInput(appId);
         AppDefinition appDef = appService.getAppDefinition(appId, null);
         if (appDef == null) {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/desktop/apps";
-            map.addAttribute("url", url);
+            
+            //make it redirect to app center using app version 0 and show the overlay with all apps.
+            String acUrl = StringUtil.escapeString(contextPath + "/web/console/app/"+appId+"/0/builders", StringUtil.TYPE_JAVASCIPT);
+            String script = "if (parent && parent.PopupDialog !== undefined){parent.PopupDialog.closeDialog();}\n";
+            script += "if (parent && parent.AdminBar !== undefined){parent.AdminBar.showQuickOverlay('"+StringUtil.escapeString(url, StringUtil.TYPE_JAVASCIPT)+"');}\n";
+            script += "history.pushState({url: '"+acUrl+"'}, \"\", '"+acUrl+"');";
+            
+            map.addAttribute("script", script);
+            
             return "console/dialogClose";
         }
         map.addAttribute("appId", appDef.getId());
