@@ -426,12 +426,7 @@ public class DataJsonController implements Declutter {
                 .collect(JSONCollectors.toJSONObject(e -> e.getPropertyString(FormUtil.PROPERTY_ID), e -> {
                     String elementId = e.getPropertyString(FormUtil.PROPERTY_ID);
                     String parameterName = FormUtil.getElementParameterName(e);
-                    String[] filePaths = Optional.of(elementId)
-                            .map(Try.onFunction(FileStore::getFiles))
-                            .map(Arrays::stream)
-                            .orElseGet(Stream::empty)
-                            .map(FileManager::storeFile)
-                            .toArray(String[]::new);
+                    String[] filePaths = getTempFilePath(elementId);
 
                     formData.addRequestParameterValues(parameterName, filePaths);
 
@@ -3735,6 +3730,8 @@ public class DataJsonController implements Declutter {
             }
         }
 
+        final Map<String, MultipartFile[]> fileMap = FileStore.getFileMap();
+
         FormDataUtil.elementStream(form, formData)
                 .filter(e -> !(e instanceof FormContainer))
                 .forEach(e -> {
@@ -3742,12 +3739,32 @@ public class DataJsonController implements Declutter {
                     String elementId = e.getPropertyString(FormUtil.PROPERTY_ID);
 
                     Optional.of(elementId)
-                            .map(data::get)
+                            .map(key -> {
+                                if(e instanceof FileDownloadSecurity && fileMap.containsKey(key)) {
+                                    return getTempFilePath(key);
+                                } else {
+                                    return data.get(key);
+                                }
+                            })
                             .map(Try.onFunction(s -> e.handleMultipartDataRequest(s, e, formData)))
                             .ifPresent(s -> formData.addRequestParameterValues(parameterName, s));
                 });
 
         return formData;
+    }
+
+    /**
+     *
+     * @param elementId
+     * @return
+     */
+    protected String[] getTempFilePath(String elementId) {
+        return Optional.of(elementId)
+                .map(Try.onFunction(FileStore::getFiles))
+                .map(Arrays::stream)
+                .orElseGet(Stream::empty)
+                .map(FileManager::storeFile)
+                .toArray(String[]::new);
     }
 
     /**
