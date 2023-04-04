@@ -6202,9 +6202,6 @@ public class ConsoleWebController {
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);
 
-            appDef.setName(jsonObject.getString("name"));
-            appDefinitionDao.merge(appDef);
-
             if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
                 appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
             }
@@ -6223,6 +6220,9 @@ public class ConsoleWebController {
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
             }
             AppDevUtil.setAppDevProperties(appDef, appProps);
+            
+            appDef.setName(jsonObject.getString("name"));
+            appDefinitionDao.merge(appDef);
 
             JSONObject result = new JSONObject();
             result.accumulate("success", true);
