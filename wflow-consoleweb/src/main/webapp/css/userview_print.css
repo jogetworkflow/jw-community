@@ -41,10 +41,6 @@ body .section-actions{
     display:none;
 }
 
-body #form-canvas .label{
-    border: 0;
-}
-
 @media print {    
     body #main div.span3 {
         width: 0px;
@@ -56,6 +52,6 @@ body #form-canvas .label{
     
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
-    legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {border: 1px solid #00000000;}
+    legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {border: 1px solid #000;}
     #adminControl, footer {display:none !important;}
 }

@@ -5472,6 +5472,10 @@ a {
 #help-container #main-action-help {position: relative; right:0px; width: 0; padding: 10px 0px;}
 
 @media print {    
+
+    body #form-canvas .label{
+        border: 0;
+    }
     
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
