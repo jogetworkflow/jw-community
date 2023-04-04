@@ -3697,6 +3697,15 @@ _CustomBuilder.Builder = {
                 });
             }
         }
+        
+        var childsContainerAttr = component.builderTemplate.getChildsContainerAttr(elementObj, component);
+        if (childsContainerAttr !== undefined && childsContainerAttr !== null && childsContainerAttr !== "" && 
+            ($(element).is('[data-cbuilder-'+childsContainerAttr+']') || 
+            $(element).find('[data-cbuilder-'+childsContainerAttr+']').length > 0)) {
+            $(element).attr('data-cbuilder-iscontainer', '');
+        } else {
+            $(element).attr('data-cbuilder-noncontainer', '');
+        }
     },
     
     /*
