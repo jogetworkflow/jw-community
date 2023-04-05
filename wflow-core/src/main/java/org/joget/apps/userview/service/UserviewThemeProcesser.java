@@ -638,7 +638,7 @@ public class UserviewThemeProcesser {
         
         String analyzerData = getAnalyzerStatus();
         if (analyzerData != null && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !"true".equalsIgnoreCase(userview.getParamString("isTemplate"))) {
-            content += "<textarea id=\"ajaxAnalyzerJson\" rows=\"1\" cols=\"1\" style=\"display:none;\">"+analyzerData+"</textarea>";
+            content += "<textarea id=\"ajaxAnalyzerJson\" rows=\"1\" cols=\"1\" style=\"display:none;\">"+StringUtil.escapeString(analyzerData, StringUtil.TYPE_HTML)+"</textarea>";
         }
         return content;
     }
