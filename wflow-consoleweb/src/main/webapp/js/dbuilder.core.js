@@ -34,7 +34,7 @@ DatalistBuilder = {
                 "renderElement" : "DatalistBuilder.renderElement",
                 "updateElementId" : "DatalistBuilder.updateElementId",
                 "unloadElement" : "DatalistBuilder.unloadElement",
-                "selectElement" : "DatalistBuilder.selectElement",
+                "decorateBoxActions" : "DatalistBuilder.decorateBoxActions",
                 "pasteElement" : "DatalistBuilder.pasteElement",
                 "renderXray" : "DatalistBuilder.renderXray",
                 "parseDataToComponent" : "DatalistBuilder.parseDataToComponent",
@@ -1914,10 +1914,10 @@ DatalistBuilder = {
     },
     
     /*
-     * A callback method called from the default component.builderTemplate.selectNode method.
-     * It used to add column and add section action button when a section is selected
+     * A callback method called from the default component.builderTemplate.decorateBoxActions method.
+     * It used to add the syling options for all elements
      */
-    selectElement : function(element, elementObj, component) {
+    decorateBoxActions : function(element, elementObj, component, box) {
         var builder = CustomBuilder.Builder;
         
         var type = "";
@@ -1936,9 +1936,11 @@ DatalistBuilder = {
         }
         
         if (type !== "") {
-            $("#element-options").append('<a id="default-style-btn" href="" title="'+get_cbuilder_msg('style.defaultStyles')+'" style=""><i class="las la-palette"></i></a>');
-            $("#default-style-btn").off("click");
-            $("#default-style-btn").on("click", function(){
+            $(box).find(".element-options").append('<a class="default-style-btn" title="'+get_cbuilder_msg('style.defaultStyles')+'" style=""><i class="las la-palette"></i></a>');
+            $(box).find(".default-style-btn").off("click");
+            $(box).find(".default-style-btn").on("click", function(event){
+                builder.boxActionSetElement(event);
+                
                 $("body").removeClass("no-right-panel");
                 $("#element-properties-tab-link").hide();
                 $("#right-panel #element-properties-tab").find(".property-editor-container").remove();

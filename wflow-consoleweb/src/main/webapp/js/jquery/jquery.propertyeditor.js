@@ -6816,10 +6816,12 @@ PropertyEditor.Type.SelectBox.prototype = {
                 updateLabel($("#" + field.id).data("chosen"));
             });
             setTimeout(function() {
-                $($("#" + field.id).data("chosen").container).find(".chosen-search input").off("keydown");
-                $($("#" + field.id).data("chosen").container).find(".chosen-search input").on("keydown", function() {
-                    setTimeout(function() { updateLabel($("#" + field.id).data("chosen")); }, 5);
-                });
+                if ($("#" + field.id).length > 0) {
+                    $($("#" + field.id).data("chosen").container).find(".chosen-search input").off("keydown");
+                    $($("#" + field.id).data("chosen").container).find(".chosen-search input").on("keydown", function() {
+                        setTimeout(function() { updateLabel($("#" + field.id).data("chosen")); }, 5);
+                    });
+                }
             }, 1000);
             updateLabel($("#" + field.id).data("chosen"));
         }
@@ -10293,10 +10295,12 @@ PropertyEditor.Type.CssStyle.prototype = {
             updateLabel($("#" + field.id + " .add_new_style").data("chosen"));
         });
         setTimeout(function() {
-            $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").off("keydown");
-            $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").on("keydown", function() {
-                setTimeout(function() { updateLabel($("#" + field.id + " .add_new_style").data("chosen")); }, 5);
-            });
+            if ($("#" + field.id + " .add_new_style").length > 0) {
+                $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").off("keydown");
+                $($("#" + field.id + " .add_new_style").data("chosen").container).find(".chosen-search input").on("keydown", function() {
+                    setTimeout(function() { updateLabel($("#" + field.id + " .add_new_style").data("chosen")); }, 5);
+                });
+            }
         }, 1000);
         updateLabel($("#" + field.id + " .add_new_style").data("chosen"));
         

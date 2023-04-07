@@ -201,11 +201,14 @@
                                                <c:choose>
                                                    <c:when test="${rowActionStatus.index == 0}">
                                                        <c:set var="actionTitle" value="${headerTitle}" />
-                                                       <c:set var="firstHeaderCssClass" value="rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
-                                                       <c:set var="firstBodyCssClass" value="rowaction_body body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
+                                                       <c:set var="firstHeaderCssClass" value="rowaction_header footable-visible header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
+                                                       <c:set var="firstBodyCssClass" value="rowaction_body row_action_inner body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
+                                                   </c:when>
+                                                   <c:when test="${rowActionStatus.last}">
+                                                       <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header footable-last-column row_action_last footable-visible header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
                                                    </c:when>
                                                    <c:otherwise>
-                                                       <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
+                                                       <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header footable-visible header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
                                                    </c:otherwise>
                                                 </c:choose>
                                            </c:forEach>

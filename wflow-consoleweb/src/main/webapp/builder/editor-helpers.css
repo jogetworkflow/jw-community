@@ -105,6 +105,17 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
     overflow: hidden;
     display: flex;
     align-items: center;}
+[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]){
+    position: relative;
+}
+[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):after{
+    content: '';
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
 body [data-cbuilder-invisible],
 body [data-cbuilder-element-invisible]{
     min-height: 35px;
@@ -141,7 +152,7 @@ body [data-cbuilder-tablet-invisible]::after {
     align-items: center;
     justify-content: center; }
 body [data-cbuilder-invisible][data-cbuilder-label]::after{
-    content: attr(data-cbuilder-label);
+    content: attr(data-cbuilder-label) !important;
     justify-content: left; 
     padding-left: 15px;
 }

@@ -1736,6 +1736,13 @@
                         callback();
                     }
                 }
+                
+                //close the properties editor if it is window mode
+                if ($("body").hasClass("right-panel-mode-window")) {
+                    $("body").addClass("no-right-panel");
+                    $("#right-panel .property-editor-container").remove();
+                }
+                
             } else {
                 CustomBuilder.showMessage(get_cbuilder_msg("cbuilder.pleaseCorrectErrors"), "danger");
             }
@@ -3474,23 +3481,37 @@ _CustomBuilder.Builder = {
                         <div id="element-parent-name"></div> \
                     </div> \
                     <div id="element-highlight-box"> \
-                        <div id="element-highlight-name"></div> \
-                    </div> \
-                    <div id="element-select-box"> \
-                        <div id="element-select-name"><div id="element-name"></div> \
-                            <div id="element-actions">   \
-                                <a id="parent-btn" href="" title="'+get_cbuilder_msg("cbuilder.selectParent")+'"><i class="las la-level-up-alt"></i></a> \
-                                <a id="up-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveUp")+'"><i class="la la-arrow-up"></i></a> \
-                                <a id="down-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveDown")+'"><i class="la la-arrow-down"></i></a> \
-                                <a id="left-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveLeft")+'"><i class="la la-arrow-left"></i></a> \
-                                <a id="right-btn" href="" title="'+get_cbuilder_msg("cbuilder.moveRight")+'"><i class="la la-arrow-right"></i></a> \
-                                <span id="element-options"> \
+                        <div id="element-highlight-name"><div class="element-name"></div> \
+                            <div class="element-actions">   \
+                                <a class="parent-btn" title="'+get_cbuilder_msg("cbuilder.selectParent")+'"><i class="las la-level-up-alt"></i></a> \
+                                <a class="up-btn" title="'+get_cbuilder_msg("cbuilder.moveUp")+'"><i class="la la-arrow-up"></i></a> \
+                                <a class="down-btn" title="'+get_cbuilder_msg("cbuilder.moveDown")+'"><i class="la la-arrow-down"></i></a> \
+                                <a class="left-btn" title="'+get_cbuilder_msg("cbuilder.moveLeft")+'"><i class="la la-arrow-left"></i></a> \
+                                <a class="right-btn" title="'+get_cbuilder_msg("cbuilder.moveRight")+'"><i class="la la-arrow-right"></i></a> \
+                                <span class="element-options"> \
                                     \
                                 </span>   \
-                                <a id="delete-btn" href="" title="'+get_cbuilder_msg("cbuilder.remove")+'"><i class="la la-trash"></i></a> \
+                                <a class="delete-btn" href="" title="'+get_cbuilder_msg("cbuilder.remove")+'"><i class="la la-trash"></i></a> \
                             </div> \
                         </div> \
-                        <div id="element-bottom-actions">   \
+                        <div class="element-bottom-actions">   \
+                        </div> \
+                    </div> \
+                    <div id="element-select-box"> \
+                        <div id="element-select-name"><div class="element-name"></div> \
+                            <div class="element-actions">   \
+                                <a class="parent-btn" title="'+get_cbuilder_msg("cbuilder.selectParent")+'"><i class="las la-level-up-alt"></i></a> \
+                                <a class="up-btn" title="'+get_cbuilder_msg("cbuilder.moveUp")+'"><i class="la la-arrow-up"></i></a> \
+                                <a class="down-btn" title="'+get_cbuilder_msg("cbuilder.moveDown")+'"><i class="la la-arrow-down"></i></a> \
+                                <a class="left-btn" title="'+get_cbuilder_msg("cbuilder.moveLeft")+'"><i class="la la-arrow-left"></i></a> \
+                                <a class="right-btn" title="'+get_cbuilder_msg("cbuilder.moveRight")+'"><i class="la la-arrow-right"></i></a> \
+                                <span class="element-options"> \
+                                    \
+                                </span>   \
+                                <a class="delete-btn" href="" title="'+get_cbuilder_msg("cbuilder.remove")+'"><i class="la la-trash"></i></a> \
+                            </div> \
+                        </div> \
+                        <div class="element-bottom-actions">   \
                         </div> \
                     </div> \
                 </div> \
@@ -3560,8 +3581,9 @@ _CustomBuilder.Builder = {
             if (selectedELSelector !== "") {
                 var element = self.frameBody.find(selectedELSelector);
                 if (element.length > 1) {
+                    var elements = element;
                     do {
-                        element = element[selectedElIndex];
+                        element = elements[selectedElIndex];
                     } while (element === undefined && selectedElIndex-- > 0);
                 }
                 if ($(element).length > 0) {
@@ -3681,6 +3703,15 @@ _CustomBuilder.Builder = {
                     i++;
                 });
             }
+        }
+        
+        var childsContainerAttr = component.builderTemplate.getChildsContainerAttr(elementObj, component);
+        if (childsContainerAttr !== undefined && childsContainerAttr !== null && childsContainerAttr !== "" && 
+            ($(element).is('[data-cbuilder-'+childsContainerAttr+']') || 
+            $(element).find('[data-cbuilder-'+childsContainerAttr+']').length > 0)) {
+            $(element).attr('data-cbuilder-iscontainer', '');
+        } else {
+            $(element).attr('data-cbuilder-noncontainer', '');
         }
     },
     
@@ -4285,38 +4316,20 @@ _CustomBuilder.Builder = {
                         "display": "block"
                     });
                 
-                if (!isSubSelect || (isSubSelect && component.builderTemplate.isSubSelectAllowActions(data, component))) {
-                    $("#paste-element-btn").addClass("disabled");
-                    if (component.builderTemplate.isPastable(data, component)) {
-                        $("#paste-element-btn").removeClass("disabled");
-                    }
-                    
-                    $("#up-btn, #down-btn, #left-btn, #right-btn").hide();
-                    if (component.builderTemplate.isMovable(data, component)) {
-                        if ((!isSubSelect && $(self.selectedEl).closest('[data-cbuilder-sort-horizontal]').length > 0) || (isSubSelect && $(self.subSelectedEl).closest('[data-cbuilder-alternative-drop]').is('[data-cbuilder-sort-horizontal]'))) {
-                            $("#left-btn, #right-btn").show();
-                        } else {
-                            $("#up-btn, #down-btn").show();
-                        }
-                    }
-
-                    $("#delete-btn").hide();
-                    if (component.builderTemplate.isDeletable(data, component)) {
-                        $("#delete-btn").show();
-                    }
-
-                    $("#copy-element-btn").addClass("disabled");
-                    if (component.builderTemplate.isCopyable(data, component)) {
-                        $("#copy-element-btn").removeClass("disabled");
-                    }
-
-                    $("#parent-btn").hide();
-                    if (component.builderTemplate.isNavigable(data, component)) {
-                        $("#parent-btn").show();
-                    }
-                    $("#element-select-box #element-actions").show();
+                $("#element-select-box #element-select-name").attr("style", "");
+                $("#element-select-name .element-name").html(this._getElementType(data, component));
+                
+                var offset = $("#element-select-box #element-select-name").offset();
+                if (offset.top <= 55) {
+                    $("#element-select-box #element-select-name").css("top", "0px");
                 } else {
-                    $("#element-select-box #element-actions").hide();
+                    $("#element-select-box #element-select-name").css("top", "");
+                }
+                
+                if (!isSubSelect || (isSubSelect && component.builderTemplate.isSubSelectAllowActions(data, component))) {
+                    self.decorateBoxActions(node, data, component, $("#element-select-box"), box);
+                } else {
+                    $("#element-select-box .element-actions").hide();
                 }
                 
                 if (show) {
@@ -4436,30 +4449,8 @@ _CustomBuilder.Builder = {
                     }
                 }
                 
-                $("#element-select-box #element-select-name").attr("style", "");
-                $("#element-select-name #element-name").html(this._getElementType(data, component));
-                
-                $("#element-select-box #element-options").html("");
-                $("#element-select-box #element-bottom-actions").html("");
-                
                 if (component.builderTemplate.selectNode)
                     component.builderTemplate.selectNode(target, data, component);
-                
-                var offset = $("#element-select-box #element-select-name").offset();
-                if (offset.top <= 55) {
-                    $("#element-select-box #element-select-name").css("top", "0px");
-                } else {
-                    $("#element-select-box #element-select-name").css("top", "");
-                }
-                var right = offset.left + $("#element-select-box #element-select-name").width();
-                var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
-                if (right > frameRight) {
-                    $("#element-select-box #element-select-name").css("right", ($("#element-select-box #element-select-name").width() - box.width) + "px");
-                    $("#element-select-box #element-select-name").css("left", "unset");
-                } else {
-                    $("#element-select-box #element-select-name").css("right", "unset");
-                    $("#element-select-box #element-select-name").css("left", "-1px");
-                }
                 
                 $("#element-highlight-box").hide();
                 self.highlightEl = null;
@@ -5071,30 +5062,6 @@ _CustomBuilder.Builder = {
         }
         
         if ($(target).length > 0 && !$(target).is(self.frameBody) && !$(target).is('[data-cbuilder-uneditable]')) {
-            var box = self.getBox(target);
-            
-            $("#element-highlight-box").removeClass("missing_component");
-            
-            $("#element-highlight-box").css(
-                    {"top": box.top - self.frameDoc.scrollTop(),
-                        "left": box.left - self.frameDoc.scrollLeft(),
-                        "width": box.width,
-                        "height": box.height,
-                        "display": event.target.hasAttribute('contenteditable') ? "none" : "block",
-                        "border": self.isDragging ? "1px dashed aqua" : "", //when dragging highlight parent with green
-                    });
-                    
-            if ($(target).is("[data-cbuilder-missing-plugin]")) {
-                $("#element-highlight-box").addClass("missing_component");
-            }        
-
-            var nameOffset = $("#element-highlight-box").offset();
-            if (nameOffset.top <= 76) {
-                $("#element-highlight-name").css("top", "0px");
-            } else {
-                $("#element-highlight-name").css("top", "");
-            }
-            
             var data = target.data("data");
             if (data === undefined && $(target).is('[data-cbuilder-select]')) {
                 var id = $(target).attr('data-cbuilder-select');
@@ -5102,8 +5069,36 @@ _CustomBuilder.Builder = {
             }
             if (data !== undefined) {
                 self.highlightEl = target;
+                
+                var box = self.getBox(target);
+            
+                $("#element-highlight-box").removeClass("missing_component");
+
+                $("#element-highlight-box").css(
+                        {"top": box.top - self.frameDoc.scrollTop(),
+                            "left": box.left - self.frameDoc.scrollLeft(),
+                            "width": box.width,
+                            "height": box.height,
+                            "display": event.target.hasAttribute('contenteditable') ? "none" : "block",
+                            "border": self.isDragging ? "1px dashed aqua" : "", //when dragging highlight parent with green
+                        });
+
+                if ($(target).is("[data-cbuilder-missing-plugin]")) {
+                    $("#element-highlight-box").addClass("missing_component");
+                }
+                
                 var component = self.parseDataToComponent(data);
-                $("#element-highlight-name").html(self._getElementType(data, component));
+                
+                $("#element-highlight-box .element-name").html(self._getElementType(data, component));
+                
+                var nameOffset = $("#element-highlight-box").offset();
+                if (nameOffset.top <= 76) {
+                    $("#element-highlight-name").css("top", "0px");
+                } else {
+                    $("#element-highlight-name").css("top", "");
+                }
+                
+                self.decorateBoxActions(target, data, component, $("#element-highlight-box"), box);
             } else {
                 $("#element-highlight-box").hide();
                 self.highlightEl = null;
@@ -5113,15 +5108,94 @@ _CustomBuilder.Builder = {
             self.highlightEl = null;
         }
     },
+    
+    /* 
+     * decorate the highlight or select box of an element
+     */
+    decorateBoxActions : function(element, data, component, box, boxOffset) {
+        var boxElement = $(box).data("element");
+        if (boxElement === element) { //it is still same element, do need to do it again
+            return;
+        }
+        
+        $("#paste-element-btn").addClass("disabled");
+        if (component.builderTemplate.isPastable(data, component)) {
+            $("#paste-element-btn").removeClass("disabled");
+        }
 
+        $(box).find(".up-btn, .down-btn, .left-btn, .right-btn").hide();
+        if (component.builderTemplate.isMovable(data, component)) {
+            if ($(element).closest('[data-cbuilder-sort-horizontal]').length > 0) {
+                $(box).find(".left-btn, .right-btn").show();
+            } else {
+                $(box).find(".up-btn, .down-btn").show();
+            }
+        }
+
+        $(box).find(".delete-btn").hide();
+        if (component.builderTemplate.isDeletable(data, component)) {
+            $(box).find(".delete-btn").show();
+        }
+
+        $("#copy-element-btn").addClass("disabled");
+        if (component.builderTemplate.isCopyable(data, component)) {
+            $("#copy-element-btn").removeClass("disabled");
+        }
+
+        $(box).find(".parent-btn").hide();
+        if (component.builderTemplate.isNavigable(data, component)) {
+            $(box).find(".parent-btn").show();
+        }
+        $(box).find(".element-actions").show();
+
+        $(box).find(".element-options").html("");
+        $(box).find(".element-bottom-actions").html("");
+
+        if (component.builderTemplate.decorateBoxActions)
+            component.builderTemplate.decorateBoxActions(element, data, component, box);
+        
+        var nameWrapper = $(box).find("#element-highlight-name");
+        if ($(box).is("#element-select-box")) {
+            nameWrapper = $(box).find("#element-select-name");
+        }
+        
+        $(nameWrapper).css("left", "unset");
+        $(nameWrapper).css("right", "unset");
+
+        var offset = $(nameWrapper).offset();
+        var right = offset.left + $(nameWrapper).width();
+        var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
+        if (right > frameRight) {
+            $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width) + "px");
+            $(nameWrapper).css("left", "unset");
+        } else {
+            $(nameWrapper).css("right", "unset");
+            $(nameWrapper).css("left", "-1px");
+        }
+        
+        $(box).data("element", element);
+    },
+    
+    /*
+     * set the selected element when highlight box action is clicked.
+     */
+    boxActionSetElement : function(event) {
+        var self = CustomBuilder.Builder;
+        
+        $("#element-highlight-box, #element-select-box").hide();
+        if ($(event.target).closest("#element-highlight-box").length > 0) {
+            self.selectNodeAndShowProperties(self.highlightEl, false, false);
+        }
+    },
+    
     /*
      * Initialize the select box buttons action
      */
     _initBox: function () {
         var self = this;
         
-        $("#element-select-name #element-name").off("mousedown.builder touchstart.builder");
-        $("#element-select-name #element-name").on("mousedown.builder touchstart.builder", function (event) {
+        $("#element-highlight-name .element-name, #element-select-name .element-name").off("mousedown.builder touchstart.builder");
+        $("#element-highlight-name .element-name, #element-select-name .element-name").on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             try {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
@@ -5129,6 +5203,8 @@ _CustomBuilder.Builder = {
                         self.mousedown = false;
                     }
                     if (self.mousedown) {
+                        self.boxActionSetElement(event);
+                        
                         if (self.component.builderTemplate.isDraggable(self.selectedElData, self.component)) {
                             $("#element-select-box").hide();
                             if (self.subSelectedEl){
@@ -5182,50 +5258,57 @@ _CustomBuilder.Builder = {
             return false;
         });
 
-        $("#down-btn, #right-btn").off("click");
-        $("#down-btn, #right-btn").on("click", function (event) {
-            $("#element-select-box").hide();
+        $(".element-actions .down-btn, .element-actions .right-btn").off("click");
+        $(".element-actions .down-btn, .element-actions .right-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
             self.moveNodeDown();
             event.preventDefault();
             return false;
         });
 
-        $("#up-btn, #left-btn").off("click");
-        $("#up-btn, #left-btn").on("click", function (event) {
-            $("#element-select-box").hide();
+        $(".element-actions .up-btn, .element-actions .left-btn").off("click");
+        $(".element-actions .up-btn, .element-actions .left-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
             self.moveNodeUp();
             event.preventDefault();
             return false;
         });
 
-        $("#copy-btn").off("click");
-        $("#copy-btn").on("click", function (event) {
-            $("#element-select-box").hide();
+        $(".element-actions .copy-btn").off("click");
+        $(".element-actions .copy-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
             self.copyNode();
             event.preventDefault();
             return false;
         });
 
-        $("#paste-btn").off("click");
-        $("#paste-btn").on("click", function (event) {
-            $("#element-select-box").hide();
+        $(".element-actions .paste-btn").off("click");
+        $(".element-actions .paste-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
             self.pasteNode();
             event.preventDefault();
             return false;
         });
 
-        $("#parent-btn").off("click");
-        $("#parent-btn").on("click", function (event) {
-            $("#element-select-box").hide();
-            node = self.selectedEl.parent().closest("[data-cbuilder-classname]");
+        $(".element-actions .parent-btn").off("click");
+        $(".element-actions .parent-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
+            var node = self.selectedEl.parent().closest("[data-cbuilder-classname]");
             self.selectNode(node);
             
             event.preventDefault();
             return false;
         });
 
-        $("#delete-btn").off("click");
-        $("#delete-btn").on("click", function (event) {
+        $(".element-actions .delete-btn").off("click");
+        $(".element-actions .delete-btn").on("click", function (event) {
+            self.boxActionSetElement(event);
+            
             self.deleteNode();
             event.preventDefault();
             return false;
@@ -5358,6 +5441,11 @@ _CustomBuilder.Builder = {
                 'selectNode' : function(element, elementObj, component) {
                     if (CustomBuilder.Builder.options.callbacks["selectElement"] !== undefined && CustomBuilder.Builder.options.callbacks["selectElement"] !== "") {
                         CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["selectElement"], [element, elementObj, component]);
+                    }
+                },
+                'decorateBoxActions' : function(element, elementObj, component, box) {
+                    if (CustomBuilder.Builder.options.callbacks["decorateBoxActions"] !== undefined && CustomBuilder.Builder.options.callbacks["decorateBoxActions"] !== "") {
+                        CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["decorateBoxActions"], [element, elementObj, component, box]);
                     }
                 },
                 'getDragHtml' : function(elementObj, component) {
@@ -6257,13 +6345,15 @@ _CustomBuilder.Builder = {
                     if (props.label !== undefined && props.label !== "") {
                         label = props.label;
                     } else if (props.textContent !== undefined && props.textContent !== "") {
-                        label = UI.escapeHTML(props.textContent);
-                        if (label.length > 30) {
-                            label += label.substring(0, 27) + "...";
-                        }
+                        label = props.textContent;
                     } else if (props.id !== undefined && props.id !== "" && props.id.length < 32) {
                         label = props.id;
                     }
+                }
+                
+                label = UI.stripHtmlTags(label);
+                if (label.length > 30) {
+                    label += label.substring(0, 27) + "...";
                 }
                 
                 var li = $('<li class="tree-viewer-item"><label>'+component.icon+' <a>'+label+'</a></label><input type="checkbox" id="'+rid+'" checked/></li>');

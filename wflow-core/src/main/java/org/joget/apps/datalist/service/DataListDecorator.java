@@ -166,10 +166,14 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     }
                 } else {
                     if (i > 0) {
-                        output += "</td><td class=\"row_action rowaction_body body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
+                        String lastClass = "";
+                        if (i == actions.length - 1) {
+                            lastClass = "footable-last-column row_action_last";
+                        }
+                        output += "</td><td class=\"row_action rowaction_body "+lastClass+" body_"+action.getPropertyString("id")+" " + action.getPropertyString("BUILDER_GENERATED_CSS") + "\">";
                     }
                     
-                    output += " " + link + " ";
+                    output += " <span class=\"row_action_inner\">" + link + "</span> ";
                 }
                 
                 i++;

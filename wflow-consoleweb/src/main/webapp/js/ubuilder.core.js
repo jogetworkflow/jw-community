@@ -35,6 +35,7 @@ UserviewBuilder = {
             callbacks : {
                 "initComponent" : "UserviewBuilder.initComponent",
                 "renderElement" : "UserviewBuilder.renderElement",
+                "decorateBoxActions" : "UserviewBuilder.decorateBoxActions",
                 "selectElement" : "UserviewBuilder.selectElement",
                 "updateElementId" : "UserviewBuilder.updateElementId",
                 "unselectElement" : "UserviewBuilder.unselectElement",
@@ -1533,6 +1534,40 @@ UserviewBuilder = {
     },
     
     /*
+     * A callback method called from the default component.builderTemplate.decorateBoxActions method.
+     * It used to add the button for add categories
+     */
+    decorateBoxActions : function(element, elementObj, component, box) {
+        var builder = CustomBuilder.Builder;
+        
+        if (elementObj.className === "userview-categories") {
+            $(box).find(".element-options").append('<a class="category-btn" title="'+get_cbuilder_msg('ubuilder.addCategory')+'"><i class="las la-plus"></i></a>');
+            
+            $(box).find(".category-btn").off("click");
+            $(box).find(".category-btn").on("click", function(event) {
+                builder.boxActionSetElement(event);
+                
+                UserviewBuilder.addCategory(true);
+                
+                event.preventDefault();
+                return false;
+            });
+        } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
+            $(box).find(".element-bottom-actions").append('<a class="add-category-btn" title="'+get_cbuilder_msg("ubuilder.addCategory")+'"><i class="las la-plus"></i></a>');
+            
+            $(box).find(".add-category-btn").off("click");
+            $(box).find(".add-category-btn").on("click", function(event) {
+                builder.boxActionSetElement(event);
+                
+                UserviewBuilder.addCategory();
+                
+                event.preventDefault();
+                return false;
+            });
+        }
+    },
+    
+    /*
      * A callback method called from the default component.builderTemplate.selectNode method.
      * It used to listen to navigator scroll event
      */
@@ -1548,31 +1583,7 @@ UserviewBuilder = {
             var menuId = self.frameBody.find(".userview-body-content").attr("data-ubuilder-menuid");
             self.selectNode(self.frameBody.find('[data-cbuilder-id="'+menuId+'"]'));
             return;
-        } else if (elementObj.className === "userview-categories") {
-            $("#element-select-box #element-options").append('<a id="category-btn" href="" title="'+get_cbuilder_msg('ubuilder.addCategory')+'"><i class="las la-plus"></i></a>');
-            
-            $("#category-btn").off("click");
-            $("#category-btn").on("click", function(event) {
-                $("#element-select-box").hide();
-                
-                UserviewBuilder.addCategory(true);
-                
-                event.preventDefault();
-                return false;
-            });
         } else if (elementObj.className === "org.joget.apps.userview.model.UserviewCategory") {
-            $("#element-select-box #element-bottom-actions").append('<a id="add-category-btn" href="" title="'+get_cbuilder_msg("ubuilder.addCategory")+'"><i class="las la-plus"></i></a>');
-            
-            $("#add-category-btn").off("click");
-            $("#add-category-btn").on("click", function(event) {
-                $("#element-select-box").hide();
-                
-                UserviewBuilder.addCategory();
-                
-                event.preventDefault();
-                return false;
-            });
-            
             var firstMenu = $(element).find(".menu-container li.menu:eq(0)");
             if ($(firstMenu).length > 0) {
                 UserviewBuilder.showMenuSnapshot($(firstMenu).attr("id"));

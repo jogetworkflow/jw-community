@@ -25,6 +25,10 @@
                     <span class="form-input"><c:out value="${environmentVariable.id}"/><input id="id" type="hidden" value="<c:out value="${environmentVariable.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
+                    <label for="field1"><fmt:message key="setting.plugin.hashVariable"/></label>
+                    <span class="form-input">#appVariable.<c:out value="${environmentVariable.id}"/>#</span>
+                </div>
+                <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.remarks"/></label>
                     <span class="form-input"><form:textarea path="remarks" cssErrorClass="form-input-error" cols="60" /></span>
                 </div>

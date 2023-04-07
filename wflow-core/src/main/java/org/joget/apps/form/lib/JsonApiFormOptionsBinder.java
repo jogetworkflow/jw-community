@@ -85,7 +85,11 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
             options.add(emptyRow);
         }
         
-        Map<String,Object> results = JsonApiUtil.callApi(getProperties(), params);
+        Map<String,Object> results = null;
+        if (!"true".equals(getPropertyString("emptyDependencyValueCheck")) || (values != null && values.length > 0 && !values[0].isEmpty())) {
+            results = JsonApiUtil.callApi(getProperties(), params);
+        }
+
         if (results != null) {
             String multirowBaseObjectName = getPropertyString("multirowBaseObject");
             if (!multirowBaseObjectName.isEmpty()) {

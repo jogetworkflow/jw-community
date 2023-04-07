@@ -519,23 +519,14 @@ body.right-panel-resizing #right-panel-resize-block{
     color: #fff;
     padding: 0px 0px;
     border-radius: 3px 3px 0px 0px; }
-#cbuilder #element-actions a, #cbuilder #wysiwyg-editor a, #cbuilder #element-highlight-box-actions a#add-section-btn {
+#cbuilder .element-actions a, #cbuilder #wysiwyg-editor a, #cbuilder #element-highlight-box .element-bottom-actions a {
     pointer-events: auto;
+    cursor: pointer;
     color: #fff;
     font-size: 16px;
     padding-right: 2px;
     padding: 2px 5px; }
-#cbuilder #element-actions a:hover, #cbuilder #wysiwyg-editor a:hover, #cbuilder #element-highlight-box-actions a#add-section-btn:hover, #cbuilder #element-bottom-actions a:hover {
-    text-decoration: none;
-    background: #1266f1; }
-#cbuilder #element-bottom-actions{
-    position: absolute;
-    bottom : -28px;
-    left : 50%;
-    transform: translateX(-50%);
-    color: #fff;
-}
-#cbuilder #element-bottom-actions a {
+#cbuilder .element-bottom-actions a {
     text-decoration: none;
     pointer-events: auto;
     color: #fff;
@@ -549,6 +540,28 @@ body.right-panel-resizing #right-panel-resize-block{
     line-height: 24px;
     border-radius: 50%;
     margin: 1px;
+    padding: 0 !important;
+}
+#cbuilder #element-highlight-box .element-bottom-actions a {
+    background: #54c5fd;
+}
+#cbuilder .element-actions a:hover, #cbuilder #wysiwyg-editor a:hover, #cbuilder .element-bottom-actions a:hover {
+    text-decoration: none;
+    background: #1266f1; }
+#cbuilder #element-highlight-box .element-actions a:hover, #cbuilder #element-highlight-box .element-bottom-actions a:hover {
+    background: #00a5f5; }
+#cbuilder .element-bottom-actions{
+    position: absolute;
+    bottom : -15px;
+    left : 50%;
+    transform: translateX(-50%);
+    color: #fff;
+}
+#cbuilder #element-highlight-box .element-options,
+#cbuilder #element-select-box .element-options{
+    display: inline-block;
+    visibility: visible;
+    position: relative;
 }
 #cbuilder #wysiwyg-editor {
     top: -2.4rem;
@@ -594,33 +607,6 @@ body.right-panel-resizing #right-panel-resize-block{
     font-size: 1rem; }
 #cbuilder #wysiwyg-editor div.dropdown a.dropdown-item i {
     margin-right: 0; }
-#cbuilder #element-highlight-box-actions {
-    bottom: 0px;
-    position: absolute;
-    border-radius: 3px 3px 0px 0px;
-    bottom: -10px;
-    left: 50%;
-    left: calc(50% - 12px); 
-}
-#cbuilder #element-highlight-box-actions.outside {
-    bottom: -25px; 
-}
-#cbuilder #element-highlight-box-actions a#add-btn {
-    position: relative;
-    bottom: 0px;
-    background: #4285f4;
-    color: #fff;
-    font-size: 18px;
-    border-radius: 20px;
-    width: 32px;
-    height: 32px;
-    padding: 3px 7px;
-    cursor: pointer;
-    display: block; 
-}
-#cbuilder #element-highlight-box-actions a#add-btn i {
-    font-weight: 600; 
-}
 #cbuilder #element-parent-name,
 #cbuilder #element-highlight-name,
 #cbuilder #element-select-name{
@@ -634,21 +620,29 @@ body.right-panel-resizing #right-panel-resize-block{
     display: inline-block;
     border-radius: 3px 3px 0px 0px; 
 }
-#cbuilder #element-parent-name,
 #cbuilder #element-highlight-name,
-#cbuilder #element-select-name #element-name{
+#cbuilder #element-select-name{
+    pointer-events: auto;
+}
+#cbuilder #element-parent-name,
+#cbuilder #element-highlight-name .element-name,
+#cbuilder #element-select-name .element-name{
     padding: 3px 8px;
 }
-#cbuilder #element-select-name #element-name{
+#cbuilder #element-highlight-name .element-name,
+#cbuilder #element-select-name .element-name{
     cursor: move;
     pointer-events: auto;
 }   
-#cbuilder #element-select-name #element-name,
-#cbuilder #element-select-name #element-actions{
+#cbuilder #element-highlight-name .element-name,
+#cbuilder #element-highlight-name .element-actions,
+#cbuilder #element-select-name .element-name,
+#cbuilder #element-select-name .element-actions{
     display:inline-block;
     vertical-align: top;
 }
-#cbuilder #element-select-name #element-actions{
+#cbuilder #element-highlight-name .element-actions
+#cbuilder #element-select-name .element-actions{
     margin-left: 3px;
 }
 #cbuilder #element-select-name{
@@ -1522,7 +1516,7 @@ div.section, .header > ol {
     background: #718595;
 }
 .xray-builder-view #element-select-name,
-.xray-builder-view #element-bottom-actions{
+.xray-builder-view .element-bottom-actions{
     display:none;
 }
 #permissionView .builder-view-body{
