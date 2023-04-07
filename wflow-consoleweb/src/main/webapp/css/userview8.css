@@ -30,6 +30,11 @@ input, select, textarea{
     outline-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 
+/* tinymce */
+.tox.tox-tinymce{
+    margin-bottom: 15px;
+}
+
 /* page */
 #page {
     min-height: 100vh;
