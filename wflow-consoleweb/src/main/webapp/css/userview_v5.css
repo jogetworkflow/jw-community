@@ -2,6 +2,12 @@
 html, body {
     overscroll-behavior: none;
 }
+
+/* tinymce */
+.tox.tox-tinymce{
+    margin-bottom: 15px;
+}
+
 .row {
     display: -ms-flexbox;
     display: flex;
