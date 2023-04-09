@@ -431,7 +431,7 @@ body.right-panel-resizing #right-panel-resize-block{
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.mobile{
-    width: 320px !important;
+    width: 375px !important;
     background: #eee;
     max-width: calc(100vw - 10px - 13.5vw);
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));

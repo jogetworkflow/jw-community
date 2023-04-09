@@ -5118,32 +5118,36 @@ _CustomBuilder.Builder = {
             return;
         }
         
+        var isSubSelect = $(element).is('[data-cbuilder-select]');
+        
         $("#paste-element-btn").addClass("disabled");
         if (component.builderTemplate.isPastable(data, component)) {
             $("#paste-element-btn").removeClass("disabled");
         }
 
         $(box).find(".up-btn, .down-btn, .left-btn, .right-btn").hide();
-        if (component.builderTemplate.isMovable(data, component)) {
+        $(box).find(".element-name").removeClass("moveable");
+        if (!isSubSelect && component.builderTemplate.isMovable(data, component)) {
             if ($(element).closest('[data-cbuilder-sort-horizontal]').length > 0) {
                 $(box).find(".left-btn, .right-btn").show();
             } else {
                 $(box).find(".up-btn, .down-btn").show();
             }
+            $(box).find(".element-name").addClass("moveable");
         }
 
         $(box).find(".delete-btn").hide();
-        if (component.builderTemplate.isDeletable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isDeletable(data, component)) {
             $(box).find(".delete-btn").show();
         }
 
         $("#copy-element-btn").addClass("disabled");
-        if (component.builderTemplate.isCopyable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isCopyable(data, component)) {
             $("#copy-element-btn").removeClass("disabled");
         }
 
         $(box).find(".parent-btn").hide();
-        if (component.builderTemplate.isNavigable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isNavigable(data, component)) {
             $(box).find(".parent-btn").show();
         }
         $(box).find(".element-actions").show();
@@ -5151,7 +5155,7 @@ _CustomBuilder.Builder = {
         $(box).find(".element-options").html("");
         $(box).find(".element-bottom-actions").html("");
 
-        if (component.builderTemplate.decorateBoxActions)
+        if (!isSubSelect && component.builderTemplate.decorateBoxActions)
             component.builderTemplate.decorateBoxActions(element, data, component, box);
         
         var nameWrapper = $(box).find("#element-highlight-name");
@@ -5194,8 +5198,8 @@ _CustomBuilder.Builder = {
     _initBox: function () {
         var self = this;
         
-        $("#element-highlight-name .element-name, #element-select-name .element-name").off("mousedown.builder touchstart.builder");
-        $("#element-highlight-name .element-name, #element-select-name .element-name").on("mousedown.builder touchstart.builder", function (event) {
+        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").off("mousedown.builder touchstart.builder");
+        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             try {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {

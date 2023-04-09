@@ -3,11 +3,15 @@ body{
     min-width: fit-content;
 }
 .dataList{
-    min-width: 100%;
+    min-width: max-content;
 }
 .dataList table {
     width: 100%;
     min-width: min-content;
+}
+.dataList .table-wrapper{
+    overflow-x:unset;
+    overflow:unset !important;
 }
 .filters, actions {
     min-height: 35px;

@@ -291,6 +291,7 @@ DatalistBuilder = {
             self.frameBody.append(html);
             self.frameBody.find(".dataList").data("data", CustomBuilder.data);
             self.frameBody.find(".dataList").attr("data-cbuilder-id", CustomBuilder.data.id);
+            self.frameBody.find(".dataList").attr("id", CustomBuilder.data.id);
             
             self.frameBody.find(".dataList [data-placeholder-key]:not([data-cbuilder-sync])").each(function(){
                 if ($(this).closest("[data-cbuilder-replicate]").length === 0) {
@@ -2390,6 +2391,33 @@ DatalistBuilder = {
                         options : [
                             {value : 'true', label : ''}
                         ]
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.mobileCardLayout'),
+                        name: 'mobileCardLayout',
+                        type: 'header',
+                        control_field: 'disableResponsive',
+                        control_value: '',
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.cardCollapsible'),
+                        name: 'cardCollapsible',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ],
+                        control_field: 'disableResponsive',
+                        control_value: '',
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.cardCollapseByDefault'),
+                        name: 'cardCollapseByDefault',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ],
+                        control_field: 'cardExpanable',
+                        control_value: 'true',
                     }
                 ],
                 control_field: 'template',
@@ -2818,6 +2846,10 @@ DatalistBuilder = {
                         type : 'selectbox',
                         value : 'btn btn-sm btn-primary',
                         options : [{
+                            label : get_cbuilder_msg('dbuilder.default'),
+                            value : ''
+                        },
+                        {
                             label : get_cbuilder_msg('dbuilder.btn.link'),
                             value : 'btn btn-link'
                         },
@@ -2962,6 +2994,8 @@ DatalistBuilder = {
         var table = self.frameBody.find(".dataList table.responsivetable");
         if (table.length > 0) {
             self.iframe.contentWindow.responsiveTable($(datalist));
+        } else {
+            $(window).off("resize."+$(datalist).attr("id"));
         }
         self.iframe.contentWindow.responsiveTemplate();
     },

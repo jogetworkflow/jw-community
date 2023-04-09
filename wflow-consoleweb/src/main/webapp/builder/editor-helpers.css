@@ -105,10 +105,10 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
     overflow: hidden;
     display: flex;
     align-items: center;}
-[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]){
+[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):not([data-cbuilder-uneditable]){
     position: relative;
 }
-[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):after{
+[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):not([data-cbuilder-uneditable]):after{
     content: '';
     position: absolute;
     left: 0px;
