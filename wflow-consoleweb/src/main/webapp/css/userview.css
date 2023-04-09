@@ -11,6 +11,11 @@ body, ul{
     padding:0px;
 }
 
+/* tinymce */
+.tox.tox-tinymce{
+    margin-bottom: 15px;
+}
+
 #page{
     width:960px;
     margin: 0 auto;
