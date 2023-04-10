@@ -1559,11 +1559,10 @@ public class ConsoleWebController {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/desktop/apps";
             
-            //make it redirect to app center using app version 0 and show the overlay with all apps.
-            String acUrl = StringUtil.escapeString(contextPath + "/web/console/app/"+appId+"/0/builders", StringUtil.TYPE_JAVASCIPT);
+            //make it redirect to app version 0 and show the overlay with all apps.
             String script = "if (parent && parent.PopupDialog !== undefined){parent.PopupDialog.closeDialog();}\n";
             script += "if (parent && parent.AdminBar !== undefined){parent.AdminBar.showQuickOverlay('"+StringUtil.escapeString(url, StringUtil.TYPE_JAVASCIPT)+"');}\n";
-            script += "history.pushState({url: '"+acUrl+"'}, \"\", '"+acUrl+"');";
+            script += "if (parent && parent.CustomBuilder !== undefined){parent.CustomBuilder.renderAppNotExist('"+StringUtil.escapeString(appId, StringUtil.TYPE_JAVASCIPT)+"');}\n";
             
             map.addAttribute("script", script);
             

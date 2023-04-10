@@ -183,6 +183,22 @@
         }
     },
     
+    /* 
+     * to show an overlay and error message when app is not found
+     */
+    renderAppNotExist: function(appId) {
+        $("body").removeClass("initializing");
+        appId = UI.escapeHTML(appId);
+        
+        //add a overlay with message, add it to quick nav so that it get removed together when navigate to other app
+        $("#builder-quick-nav #builder-menu ul #appNotExist").remove();
+        $("#builder-quick-nav #builder-menu ul").append('<li id="appNotExist"><div class="error">'+get_cbuilder_msg('abuilder.appNotExist', [appId])+'</div></li>');
+        
+        var url = CustomBuilder.contextPath+'/web/console/app/'+appId+'/0/builders';
+        //change the browser URL, so the next import can redirect correctly.
+        history.pushState({url: url}, "", url);
+    },
+    
     ajaxRenderBuilder: function(url) {
         var rtl;
         if($('body').hasClass('rtl')){
@@ -244,6 +260,16 @@
         .then(function (response) {
             if (response.url.indexOf("/web/login") !== -1) {
                 document.location.href = url;
+                redirect = true;
+                return false;
+            } else if (response.url.indexOf("/web/console/home") !== -1) {
+                var appId = "";
+                if (url.indexOf("/web/console/app/") !== -1) {
+                    appId = url.substring(url.indexOf("/web/console/app/") + 17);
+                    appId = appId.substring(0, appId.indexOf("/"));
+                }
+                //app not exist
+                CustomBuilder.renderAppNotExist(appId);
                 redirect = true;
                 return false;
             } else {

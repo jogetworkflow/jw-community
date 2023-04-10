@@ -170,7 +170,7 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
         // get latest version
         Long latestVersion = appDefinitionDao.getLatestVersion(appId);
         if (latestVersion != null && latestVersion != 0) {
-            return "redirect:/web/console/app/" + appId + "/processes";
+            return "redirect:/web/console/app/" + appId + "/" + latestVersion + "/builders";
         } else {
             // no version found, redirect to home page
             return "redirect:/web/console/home";
