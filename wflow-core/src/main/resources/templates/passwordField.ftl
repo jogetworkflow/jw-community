@@ -4,6 +4,6 @@
         <span>*************</span>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>
-        <input id="${elementParamName!}" name="${elementParamName!}" type="password" size="${element.properties.size!}" value="${value!?html}" maxlength="${element.properties.maxlength!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+        <input id="${elementParamName!}" name="${elementParamName!}" type="password" <#if element.properties.size??>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength??>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
     </#if> 
 </div>
