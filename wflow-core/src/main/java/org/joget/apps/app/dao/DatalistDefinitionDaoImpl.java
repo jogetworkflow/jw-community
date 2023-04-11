@@ -89,7 +89,10 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
     }
 
     @Override
-    public boolean add(DatalistDefinition object) {
+    public boolean add(DatalistDefinition object) {// save in db
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
+        
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
         
@@ -104,14 +107,14 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
         
-        // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         return result;
     }
 
     @Override
     public boolean update(DatalistDefinition object) {
+        // save in db
+        object.setDateModified(new Date());
+        
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -129,8 +132,6 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         // remove from cache
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         
-        // save in db
-        object.setDateModified(new Date());
         return result;
     }
 

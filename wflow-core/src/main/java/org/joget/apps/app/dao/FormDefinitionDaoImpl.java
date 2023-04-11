@@ -129,6 +129,10 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     
     @Override
     public boolean add(FormDefinition object) {
+        // save in db
+        object.setDateCreated(new Date());
+        object.setDateModified(new Date());
+        
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -145,15 +149,14 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         
         // clear cache
         formColumnCache.remove(object.getTableName());
-        
-        // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
         return result;
     }
 
     @Override
     public boolean update(FormDefinition object) {
+        // update object
+        object.setDateModified(new Date());
+        
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
 
@@ -172,8 +175,6 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         formColumnCache.remove(object.getTableName());
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         
-        // update object
-        object.setDateModified(new Date());
         return result;
     }
 

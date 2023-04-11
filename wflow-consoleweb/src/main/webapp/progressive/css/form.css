@@ -151,6 +151,11 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
+body input[size],
+body .editor-cell input[size]{
+    width: auto;
+}
+
 body .mce-form input:not([type]),
 body .mce-form input[type=text],
 body .mce-form input[type=password],
