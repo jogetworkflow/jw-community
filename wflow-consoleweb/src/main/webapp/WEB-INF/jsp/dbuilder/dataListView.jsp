@@ -225,7 +225,7 @@
                                                    </c:otherwise>
                                                 </c:choose>
                                            </c:forEach>
-                                           <c:if test="${!empty dataList.properties.rowActionsMode && dataList.properties.rowActionsMode eq 'true'}">
+                                           <c:if test="${!empty dataList.properties.rowActionsMode && (dataList.properties.rowActionsMode eq 'true' || dataList.properties.rowActionsMode eq 'dropdown')}">
                                                <c:set var="actionTitle" value=""/>
                                                <c:set var="firstHeaderCssClass" value="rowaction_header"/>
                                                <c:set var="firstBodyCssClass" value="rowaction_body"/>

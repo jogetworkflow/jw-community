@@ -2363,10 +2363,19 @@ DatalistBuilder = {
                     {
                         label : get_cbuilder_msg('dbuilder.rowActionsMode'),
                         name  : 'rowActionsMode',
-                        type : 'checkbox',
+                        type : 'selectbox',
                         options : [
-                            {label : '', value : 'true'}
+                            {label : get_cbuilder_msg('dbuilder.default'), value : ''},
+                            {label : get_cbuilder_msg('dbuilder.rowActionsMode.singlecolumn'), value : 'true'},
+                            {label : get_cbuilder_msg('dbuilder.rowActionsMode.dropdown'), value : 'dropdown'}
                         ]
+                    },
+                    {
+                        label : get_cbuilder_msg('dbuilder.rowActionsDropdownLabel'),
+                        name  : 'rowActionsDropdownLabel',
+                        type : 'textfield',
+                        control_field: 'rowActionsMode',
+                        control_value: 'dropdown',
                     },
                     {
                         label: get_cbuilder_msg('dbuilder.disableResponsive'),

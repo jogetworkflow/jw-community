@@ -1,3 +1,9 @@
+.dataList .table-wrapper{
+    overflow-x: auto;
+    width: 100%;
+    min-height: 300px;
+    padding-bottom: 50px;
+}
 .dataList table {
     margin:0px 0 !important;
     -moz-border-radiusx:12px;
@@ -639,6 +645,26 @@ body .filter-cell .form-button {
 }
 .dataList .show_hide_control:hover ul {
     display: block;
+}
+.dataList .rowActionsDropdown .dropdown-menu.dropdown-menu-left{
+    left:0;
+    right: auto;
+}
+.dataList .rowActionsDropdown .dropdown-menu{
+    top: 26px;
+    padding: 5px;
+}
+.dataList .rowActionsDropdown .dropdown-menu .row_action{
+    padding: 5px;
+    display: block;
+}
+.dataList .rowActionsDropdown .dropdown-menu .row_action a {
+    background: transparent;
+    border:0;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    color: inherit;
 }
 .body .dataList th.row_action:empty,
 .body .dataList td.row_action:empty{
