@@ -1366,6 +1366,10 @@ DatalistBuilder = {
     
     draggingElement : function(dragElement, component) {
         var key = $(dragElement).parent().attr('data-placeholder-key');
+        if (key === undefined) {
+            return dragElement;
+        }
+        
         var data = component.label;
         var rowData = DatalistBuilder.sampleData;
         if (rowData !== undefined && rowData !== null 
@@ -3287,7 +3291,7 @@ DatalistBuilder = {
      */
     validateDuplicateId : function (name, value) {
         var self = CustomBuilder.Builder;
-        var found = self.frameBody.find('[data-cbuilder-id="'+value+'"]');
+        var found = $(self.selectedEl).parent().find('[data-cbuilder-id="'+value+'"]');
         if (found.length > 0 && !(found.length === 1 && found.is(self.selectedEl))) {
             return get_cbuilder_msg("cbuilder.duplicateId");
         }

@@ -369,7 +369,7 @@ public class DatalistBuilderWebController {
             if (colObj.has(JsonUtil.PROPERTY_CLASS_NAME)) {
                 c = JsonUtil.parseDisplayColumnFromJsonObject(colObj, Permission.DEFAULT);
                 ((DataListDisplayColumnProxy) c).setDatalist(dataList);
-                value = ((DataListDisplayColumnProxy) c).getRowValue(rowData, 1);
+                value = ((DataListDisplayColumnProxy) c).getRowValue(rowData, 0);
             } else {
                 c = JsonUtil.parseColumnFromJsonObject(colObj, Permission.DEFAULT);
             }
