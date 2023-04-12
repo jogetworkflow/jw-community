@@ -690,3 +690,16 @@ body.rtl .dataList span.pagelinks{
     margin: 0;
     color: var(--theme-link, var(--theme-color4, #007bff));
 }
+.dataList .card .card-text.has-inline-label:after{
+    clear: both;
+}
+.dataList .card .card-text > .label{
+    display: inline-block;
+    width: 40%;
+    float: left;
+    font-weight: bold;
+}
+.dataList .card .card-text > .column-value{
+    display: inline-block;
+    width: 60%;
+}

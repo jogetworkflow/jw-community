@@ -666,6 +666,19 @@ body .filter-cell .form-button {
     margin: 0;
     color: inherit;
 }
+.dataList .card .card-text.has-inline-label:after{
+    clear: both;
+}
+.dataList .card .card-text > .label{
+    display: inline-block;
+    width: 40%;
+    float: left;
+    font-weight: bold;
+}
+.dataList .card .card-text > .column-value{
+    display: inline-block;
+    width: 60%;
+}
 .body .dataList th.row_action:empty,
 .body .dataList td.row_action:empty{
     padding: 0 !important;
