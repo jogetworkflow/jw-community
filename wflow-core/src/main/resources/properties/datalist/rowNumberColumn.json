@@ -1,0 +1,8 @@
+[{
+    "title" : "@@datalist.rowNumberColumn.config@@",
+    "properties" : [{
+        "name" : "addLeadingZero",
+        "label" : "@@datalist.rowNumberColumn.addLeadingZero@@",
+        "type" : "number"
+    }]
+}]
