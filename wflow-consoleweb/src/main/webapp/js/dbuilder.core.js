@@ -1647,7 +1647,7 @@ DatalistBuilder = {
         }
         
         var formatDeferrer = $.Deferred();
-        if ((elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") || component.isDisplayColumn) {
+        if ((DatalistBuilder.availableColumns[elementObj.name] !== undefined && elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") || component.isDisplayColumn) {
             var colStr = JSON.encode(elementObj);
             var rowStr = JSON.encode(rowData);
 
