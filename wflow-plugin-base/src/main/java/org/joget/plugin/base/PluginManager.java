@@ -1472,6 +1472,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListAction", ResourceBundleUtil.getMessage("setting.plugin.datalistAction"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListBinder", ResourceBundleUtil.getMessage("setting.plugin.datalistBinder"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListColumnFormat", ResourceBundleUtil.getMessage("setting.plugin.datalistColumnFormatter"));
+        pluginTypeMap.put("org.joget.apps.datalist.model.DataListDisplayColumn", ResourceBundleUtil.getMessage("setting.plugin.datalistDisplayColumn"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListFilterType", ResourceBundleUtil.getMessage("setting.plugin.datalistFilterType"));
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListTemplate", ResourceBundleUtil.getMessage("setting.plugin.dataListTemplate"));
         pluginTypeMap.put("org.joget.workflow.model.DeadlinePlugin", ResourceBundleUtil.getMessage("setting.plugin.deadline"));

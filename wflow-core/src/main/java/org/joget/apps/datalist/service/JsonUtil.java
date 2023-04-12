@@ -21,6 +21,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
+import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterType;
@@ -36,6 +37,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
+import org.joget.apps.datalist.model.DataListDisplayColumn;
 
 /**
  * Utility class containing methods to create datalist from JSON
@@ -604,9 +606,14 @@ public class JsonUtil {
             
             for (int i = 0; i < columns.length(); i++) {
                 JSONObject column = columns.getJSONObject(i);
-                DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
                 
-                property.add(dataListColumn);
+                if (column.has(PROPERTY_CLASS_NAME)) {
+                    DataListDisplayColumnProxy dataListColumn = parseDisplayColumnFromJsonObject(column, permissionKey);
+                    property.add(dataListColumn);
+                } else {
+                    DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
+                    property.add(dataListColumn);
+                }
             }
         }
         return property;
@@ -626,9 +633,14 @@ public class JsonUtil {
         
         for (int i = 0; i < columns.length(); i++) {
             JSONObject column = columns.getJSONObject(i);
-            DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
-
-            property.add(dataListColumn);
+            
+            if (column.has(PROPERTY_CLASS_NAME)) {
+                DataListDisplayColumnProxy dataListColumn = parseDisplayColumnFromJsonObject(column, permissionKey);
+                property.add(dataListColumn);
+            } else {
+                DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
+                property.add(dataListColumn);
+            }
         }
         return property;
     }
@@ -717,6 +729,60 @@ public class JsonUtil {
         JsonUtil.generateBuilderProperties(dataListColumn.getProperties(), new String[]{"", "header-"});
                 
         return dataListColumn;
+    }
+    
+    /**
+     * Used to retrieves datalist display column from JSON Object
+     * @param obj
+     * @param permissionKey
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static DataListDisplayColumnProxy parseDisplayColumnFromJsonObject(JSONObject column, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
+        String className = column.getString(PROPERTY_CLASS_NAME);
+        DataListDisplayColumn displayColumn = (DataListDisplayColumn) loadPlugin(className);
+        if (displayColumn != null) {
+            displayColumn.setProperties(PropertyUtil.getProperties(column.getJSONObject(PROPERTY_PROPERTIES)));
+
+            JsonUtil.generateBuilderProperties(displayColumn.getProperties(), new String[]{"", "header-"});
+        }
+                
+        DataListDisplayColumnProxy proxy = new DataListDisplayColumnProxy(displayColumn);
+        
+        if (!Permission.DEFAULT.equals(permissionKey)) {
+            if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
+                JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                    proxy.setHidden(true);
+                    if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
+                        proxy.setProperty("include_export", "true");
+                        proxy.setProperty("exclude_export", "");
+                    } else {
+                        proxy.setProperty("include_export", "");
+                        proxy.setProperty("exclude_export", "");
+                    }
+                } else {
+                    proxy.setHidden(false);
+                    if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
+                        proxy.setProperty("include_export", "");
+                        proxy.setProperty("exclude_export", "true");
+                    } else {
+                        proxy.setProperty("include_export", "");
+                        proxy.setProperty("exclude_export", "");
+                    }
+                }
+            } else {
+                proxy.setHidden(false);
+                proxy.setProperty("include_export", "");
+                proxy.setProperty("exclude_export", "");
+            }
+        } else {
+            proxy.setHidden("true".equalsIgnoreCase(displayColumn.getPropertyString(PROPERTY_HIDDEN)));
+        }
+        
+        return proxy;
     }
     
     /**

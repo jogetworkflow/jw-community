@@ -254,6 +254,9 @@ public class DataList {
                 if (c.getAction() != null && c.getAction() instanceof DataListActionDefault) {
                     ((DataListActionDefault) c.getAction()).setDatalist(this);
                 }
+                if (c instanceof DataListDisplayColumnProxy) {
+                    ((DataListDisplayColumnProxy) c).setDatalist(this);
+                }
             }
         }
         
@@ -879,6 +882,9 @@ public class DataList {
                             }
                         }
                     }
+                }
+                if (column instanceof DataListDisplayColumnProxy) {
+                    injectedHTML += ((DataListDisplayColumnProxy) column).getDisplayColumn().getInjectedHtml();
                 }
             }
         }

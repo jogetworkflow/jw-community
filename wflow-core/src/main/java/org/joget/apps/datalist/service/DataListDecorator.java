@@ -19,6 +19,7 @@ import org.displaytag.properties.MediaTypeEnum;
 import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
+import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -341,6 +342,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
 
     public String formatColumn(DataListColumn column, Object row, Object value) {
         Object result = value;
+        
+        if (column instanceof DataListDisplayColumnProxy) {
+            result = ((DataListDisplayColumnProxy) column).getRowValue(row, getViewIndex());
+        }
         
         // decrypt protected data 
         if (result != null && result instanceof String) {

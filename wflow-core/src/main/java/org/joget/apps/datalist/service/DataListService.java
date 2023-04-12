@@ -26,6 +26,7 @@ import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.joget.apps.datalist.model.DataListDisplayColumn;
 
 /**
  * Service class to manage data lists
@@ -106,6 +107,22 @@ public class DataListService {
             }
         }
         DataListAction[] result = (DataListAction[]) list.toArray(new DataListAction[0]);
+        return result;
+    }
+    
+    /**
+     * Returns an array of available display column plugins. 
+     * @return
+     */
+    public DataListDisplayColumn[] getAvailableDisplayColumns() {
+        Collection<DataListDisplayColumn> list = new ArrayList<DataListDisplayColumn>();
+        Collection<Plugin> pluginList = pluginManager.list(DataListDisplayColumn.class);
+        for (Plugin plugin : pluginList) {
+            if (plugin instanceof DataListDisplayColumn && !(plugin instanceof HiddenPlugin)) {
+                list.add((DataListDisplayColumn) plugin);
+            }
+        }
+        DataListDisplayColumn[] result = (DataListDisplayColumn[]) list.toArray(new DataListDisplayColumn[0]);
         return result;
     }
 
