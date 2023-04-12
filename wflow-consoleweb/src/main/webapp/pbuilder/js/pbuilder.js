@@ -1742,7 +1742,7 @@ ProcessBuilder = {
                     validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
                 },{
                     name: 'label',
-                    label: get_cbuilder_msg("pbuilder.label.name"),
+                    label: get_cbuilder_msg("pbuilder.label"),
                     type: 'textfield',
                     required: 'True',
                     value: get_cbuilder_msg("pbuilder.label.process")
@@ -1824,19 +1824,20 @@ ProcessBuilder = {
                 title: get_cbuilder_msg("pbuilder.label.participantProperties"),
                 helplink: get_cbuilder_msg("pbuilder.label.participantProperties.helplink"),
                 properties: [{
+                    name: 'label',
+                    label: get_cbuilder_msg("pbuilder.label"),
+                    type: 'textfield',
+                    required: 'True',
+                    value: get_cbuilder_msg("pbuilder.label.participant")
+                },{
                     name: 'id',
                     label: get_cbuilder_msg("pbuilder.label.id"),
                     type: 'textfield',
                     required: 'True',
                     js_validation: "ProcessBuilder.validateParticipantDuplicateId",
                     regex_validation: '^[a-zA-Z0-9_]+$',
-                    validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
-                },{
-                    name: 'label',
-                    label: get_cbuilder_msg("pbuilder.label.name"),
-                    type: 'textfield',
-                    required: 'True',
-                    value: get_cbuilder_msg("pbuilder.label.participant")
+                    validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
+                    id_suggestion: 'label'
                 }]
             }]
         , "", true, "", {builderTemplate: {
@@ -1881,19 +1882,20 @@ ProcessBuilder = {
                     title: get_cbuilder_msg("pbuilder.label.activityProperties"),
                     helplink : get_cbuilder_msg("pbuilder.label.activityProperties.helplink"),
                     properties: [{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    },{
                         name: 'id',
                         label: get_cbuilder_msg("pbuilder.label.id"),
                         type: 'textfield',
                         required: 'True',
                         js_validation: "ProcessBuilder.validateDuplicateId",
                         regex_validation: '^[a-zA-Z0-9_]+$',
-                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
-                    },{
-                        name: 'label',
-                        label: get_cbuilder_msg("pbuilder.label.name"),
-                        type: 'textfield',
-                        required: 'True',
-                        value: this.type
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
+                        id_suggestion: 'label'
                     }]
                 },{
                     title: get_cbuilder_msg("pbuilder.label.deadlines"),
@@ -2015,19 +2017,20 @@ ProcessBuilder = {
                     title: get_cbuilder_msg("pbuilder.label.toolProperties"),
                     helplink : get_cbuilder_msg("pbuilder.label.toolProperties.helplink"),
                     properties: [{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    },{     
                         name: 'id',
                         label: get_cbuilder_msg("pbuilder.label.id"),
                         type: 'textfield',
                         required: 'True',
                         js_validation: "ProcessBuilder.validateDuplicateId",
                         regex_validation: '^[a-zA-Z0-9_]+$',
-                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
-                    },{
-                        name: 'label',
-                        label: get_cbuilder_msg("pbuilder.label.name"),
-                        type: 'textfield',
-                        required: 'True',
-                        value: this.type
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
+                        id_suggestion: 'label'
                     }]
                 }];
                 if (elementObj.properties.join !== "") {
@@ -2095,7 +2098,7 @@ ProcessBuilder = {
                         validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
                     },{
                         name: 'label',
-                        label: get_cbuilder_msg("pbuilder.label.name"),
+                        label: get_cbuilder_msg("pbuilder.label"),
                         type: 'textfield'
                     }]
                 }];
@@ -2155,19 +2158,20 @@ ProcessBuilder = {
                     title: get_cbuilder_msg("pbuilder.label.subflowProperties"),
                     helplink : get_cbuilder_msg("pbuilder.label.subflowProperties.helplink"),
                     properties: [{
+                        name: 'label',
+                        label: get_cbuilder_msg("pbuilder.label"),
+                        type: 'textfield',
+                        required: 'True',
+                        value: this.type
+                    },{
                         name: 'id',
                         label: get_cbuilder_msg("pbuilder.label.id"),
                         type: 'textfield',
                         required: 'True',
                         js_validation: "ProcessBuilder.validateDuplicateId",
                         regex_validation: '^[a-zA-Z0-9_]+$',
-                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId")
-                    },{
-                        name: 'label',
-                        label: get_cbuilder_msg("pbuilder.label.name"),
-                        type: 'textfield',
-                        required: 'True',
-                        value: this.type
+                        validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
+                        id_suggestion: 'label'
                     },{
                         name: 'subflowId',
                         label: get_cbuilder_msg("pbuilder.label.subProcessId"),
@@ -2324,7 +2328,7 @@ ProcessBuilder = {
                 helplink : get_cbuilder_msg("pbuilder.label.transitionProperties.helplink"),
                 properties: [{
                     name: 'label',
-                    label: get_cbuilder_msg("pbuilder.label.name"),
+                    label: get_cbuilder_msg("pbuilder.label"),
                     type: 'textfield',
                     required: 'False',
                     value: get_cbuilder_msg("pbuilder.label.transition")
@@ -4437,10 +4441,10 @@ ProcessBuilder = {
         dl.append('<dt class="header"></dt><dd><h6 class="header">'+label+'</h6></dd>');
         
         if (obj.properties.label !== undefined && obj.properties.label !== "") {
-            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label.name')+'"></i></dt><dd>'+obj.properties.label+'</dd>');
+            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label')+'"></i></dt><dd>'+obj.properties.label+'</dd>');
         }
         if (obj.className === "start") {
-            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label.name')+'"></i></dt><dd>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</dd>');
+            dl.append('<dt><i class="las la-signature" title="'+get_cbuilder_msg('pbuilder.label')+'"></i></dt><dd>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</dd>');
         }
         
         var component = self.getComponent(obj.className);
