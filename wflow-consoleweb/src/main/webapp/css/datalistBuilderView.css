@@ -463,6 +463,12 @@ body .filter-cell .form-button {
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > :checked + i {
     box-shadow: 0px 0px 8px 0 rgb(0 67 255 / 70%) !important;
 }
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after ,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after {
+    display:none;
+}
 
 .filter_form .mobile_search_trigger,
 .search_filter_popup .filter_form.popup .mobile_search_trigger,
