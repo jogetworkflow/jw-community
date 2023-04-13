@@ -544,7 +544,7 @@ body#login #page #content main{
 }
 #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img.h-60px.h-lg-75px{
     width: 200px;
-    height: 55px;
+    height: auto !important;
     margin-top: 4rem!important;
 }
 #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img:nth-child(3){
