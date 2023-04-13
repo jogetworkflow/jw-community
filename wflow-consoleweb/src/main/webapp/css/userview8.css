@@ -405,6 +405,7 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
 }
 #sidebar .nav > li > ul > li > a > span:first-child {
     max-width: 160px;
+    padding-right: 10px;
     display: inline-block;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
