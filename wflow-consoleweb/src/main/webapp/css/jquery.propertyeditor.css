@@ -1332,10 +1332,14 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     right: 50px;
     top: 7px;
 }
+.property-editor-container.narrow.wider .builder-link a.openbuilder{
+    right: auto;
+    left: calc(54% - 65px);
+}
 .property-type-selectbox a.builderAddNew{
     position: absolute;
     top: -20px;
-    right: 4px;
+    margin-left: -15px;
 }
 /* field */
 .property-editor-container select {
@@ -2265,6 +2269,10 @@ body .ui-dialog .button_form.ui-dialog-content{
 }
 .assist_icon:hover {
     opacity: 1;
+}
+.property-editor-container.narrow.wider .assist_icon{
+    right: auto;
+    left: 54%;
 }
 .property-type-colorscheme .selector {
     position: relative;
