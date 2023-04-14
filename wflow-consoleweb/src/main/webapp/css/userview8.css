@@ -50,6 +50,11 @@ input, select, textarea{
     background-size:cover !important;
     background-position:center bottom;
 }
+@media print {  
+    #page {
+        min-height: unset;
+    }
+}
 
 body.rtl:not(.horizontal_menu) #page{
     padding-right: 280px;
