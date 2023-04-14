@@ -991,4 +991,9 @@ a.btn.disabled,fieldset:disabled a.btn {
     .ui-dialog {
         max-width: 95%;
     }
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
+    }
 }

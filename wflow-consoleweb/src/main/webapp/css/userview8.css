@@ -935,6 +935,11 @@ body.horizontal_menu #header-info{
         width: 90vw !important;
         padding: 25px !important;
     }
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 /* horizontal inline menu */

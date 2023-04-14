@@ -6122,3 +6122,11 @@ a.btn.disabled,fieldset:disabled a.btn {
         max-width: 1920px;
     }
 }
+
+@media (max-width: 767px) {
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
