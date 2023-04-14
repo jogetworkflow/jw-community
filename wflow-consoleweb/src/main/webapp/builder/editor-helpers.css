@@ -401,6 +401,10 @@ span.missing-plugin {
     min-width: 200px
 }
 
+.clear-float {
+    clear: both;
+}
+
 @keyframes alert-glowing {
   0% {
     color: #ffd6d6;

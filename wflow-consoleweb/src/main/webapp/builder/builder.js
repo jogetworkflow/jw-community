@@ -3723,6 +3723,9 @@ _CustomBuilder.Builder = {
                         //TODO: if differrent, need add it?
                     }
                     
+                    if ($(this).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                        $(this).append('<div class="clear-float"></div>');
+                    }
                     if ($(this).outerHeight(false) === 0) {
                         $(this).attr("data-cbuilder-invisible", "");
                     }
@@ -6331,6 +6334,9 @@ _CustomBuilder.Builder = {
             if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
+                if ($(node).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                    $(node).append('<div class="clear-float"></div>');
+                }
                 var height = $(node).outerHeight(false);
                 if ($(node).find("> .cbuilder-node-details").length > 0) {
                     height = height - $(node).find("> .cbuilder-node-details").outerHeight();
