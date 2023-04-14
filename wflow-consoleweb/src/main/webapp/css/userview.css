@@ -14,6 +14,9 @@ body, ul{
     margin:0px;
     padding:0px;
 }
+body.popupBody{
+    padding-top: unset;
+}
 
 /* tinymce */
 .tox.tox-tinymce{
@@ -418,6 +421,10 @@ input[type="button"], input[type="submit"], input[type="reset"] {
         flex: 0 0 100% !important;
         max-width: 100% !important;
     }
+}
+
+.btn {
+    background-image: none !important;
 }
 
 .btn:hover {
@@ -983,6 +990,10 @@ a.btn.disabled,fieldset:disabled a.btn {
 }
 .btn.btn-link, .btn.btn-link.focus, .btn.btn-link:focus, .btn.btn-link:active {
     box-shadow:none !important;
+}
+
+body .boxy-wrapper .title-bar a.close {
+    color: unset;
 }
 
 @media print {    
