@@ -103,10 +103,14 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 30%;
     float: left;
 }
+.rtl .form-cell > label.label, 
+.rtl .subform-cell > label.label {
+    float: right;
+}
 .label-top.form-cell > label.label,
 .label-top.subform-cell > label.label{
     width: 100%;
-    float: none;
+    float: none !important;
 }
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
@@ -114,18 +118,27 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .subform-cell > label.label + .ui-screen-hidden + *{
     white-space: normal;
     position: relative;
-    width:70%
+    width:70%;
+    float: left;
+}
+.rtl .form-cell > label.label + *:not(.ui-screen-hidden),
+.rtl .subform-cell > label.label + *:not(.ui-screen-hidden),
+.rtl .form-cell > label.label + .ui-screen-hidden + *,
+.rtl .subform-cell > label.label + .ui-screen-hidden + *{
+    float: right;
 }
 .form-cell > label.label + div.form-clear,
 .subform-cell > label.label + div.subform-clear{
     clear: both;
+    float: unset !important;
+    width: unset !important;
 }
 .label-top.form-cell > label.label + *:not(.ui-screen-hidden),
 .label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
 .label-top.form-cell > label.label + .ui-screen-hidden + *,
 .label-top.subform-cell > label.label + .ui-screen-hidden + *{
     width: 100%;
-    float: none;
+    float: none !important;
 }
 .ui-screen-hidden{
     display: none;
@@ -286,13 +299,15 @@ textarea{
     width: 50%;
 }
 @media screen and (max-width: 480px) {
-    float: unset;
-    width: 100%;
+    .form-container [class*=form-cell-value]{
+        float: unset !important;
+        width: 100% !important;
+    }
 }
 .form-cell-value.fullWidth > label,
 .subform-cell-value.fullWidth > label{
-    width: auto;
-    float: unset;
+    width: auto !important;
+    float: unset !important;
 }
 .form-cell-value > label:last-child,
 .subform-cell-value > label:last-child{
@@ -1261,6 +1276,11 @@ body.rtl .form-edit-btn{
 }
 .form-edit-btn.bottom{
     bottom:20px;
+}
+
+/* advanced grid */
+.grid.adgrid .pq-header-outer {
+    height: 25px !important;
 }
 
 /* process enhancement comments*/
