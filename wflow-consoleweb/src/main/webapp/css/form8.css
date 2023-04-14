@@ -571,10 +571,11 @@ body.rtl .hasDatepicker + a + a{
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+    float: left;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 34px;
+    height: 30px;
     padding: 2px 10px;
     line-height: 1.5;
     color: #495057;
