@@ -17,7 +17,7 @@
                     {{column_title}}
                     {{columns<#if element.properties.inlineLabel! == 'true'> data-cbuilder-style="[{}, {'prefix' : 'header', 'class' : '.card-text > .label', 'label' : '@@datalist.simpleCardTemplate.label@@'}, {'prefix' : 'column-value', 'class' : '.card-text > .column-value', 'label' : '@@form.grid.value@@'}]"</#if>}}
                          {{column}}
-                            <div class="card-text mb-1 <#if element.properties.inlineLabel! == 'true'>has-inline-label</#if>">
+                            <div class="card-text mb-2 <#if element.properties.inlineLabel! == 'true'>has-inline-label</#if>">
                                 <#if element.properties.inlineLabel! == 'true'>
                                     <div class="label">{{label||@@datalist.simpleCardTemplate.label@@}}</div>
                                     <div class="column-value">{{body||@@datalist.simpleCardTemplate.textContent@@}}</div>

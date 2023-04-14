@@ -692,12 +692,20 @@ body.rtl .dataList span.pagelinks{
 }
 .dataList .card .card-text.has-inline-label:after{
     clear: both;
+    content:"";
+    display: block;
 }
 .dataList .card .card-text > .label{
     display: inline-block;
     width: 40%;
     float: left;
     font-weight: bold;
+    color: unset;
+    text-align: left;
+    font-size: inherit;
+    padding-left: 0px;
+    padding-right: 15px;
+    background: unset;
 }
 .dataList .card .card-text > .column-value{
     display: inline-block;
