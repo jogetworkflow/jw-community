@@ -1701,6 +1701,7 @@ body .ui-front {
     overflow: hidden;
 }
 #jqueryDialogDiv {overflow: hidden;}
+body textarea#HandsontableCopyPaste,
 body #ui-datepicker-div {
     display:none;
 }
