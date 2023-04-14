@@ -8,6 +8,10 @@ a:hover {
 html, body {
     overscroll-behavior: none;
 }
+b,
+strong {
+  font-weight: 700;
+}
 body{
     margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;

@@ -5,6 +5,10 @@ html, body {
     font-family: PT Sans,Arial,serif;
     font-size: 13px;
 }
+b,
+strong {
+  font-weight: 700;
+}
 
 body, ul{
     margin:0px;

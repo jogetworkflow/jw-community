@@ -2,6 +2,10 @@
 html, body {
     overscroll-behavior: none;
 }
+b,
+strong {
+  font-weight: 700;
+}
 
 /* tinymce */
 .tox.tox-tinymce{
