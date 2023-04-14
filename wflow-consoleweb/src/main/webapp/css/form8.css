@@ -70,6 +70,8 @@
 .form-cell:after,
 .subform-cell:after{
     clear: both;
+    content: "";
+    display: block;
 }
 .form-column-label, .subform-column-label{
     padding-left: 13px;
@@ -263,11 +265,29 @@ textarea{
 }
 
 /* checkbox & radio */
+.form-container .form-cell-value, 
+.form-container .subform-cell-value, 
+.form-container .selector_element, 
+.form-container .form-fileupload, 
+.form-container .subform-fileupload, 
+.form-container .grid, 
+.form-container .spreadsheet_container {
+    min-height: 31px;
+}
+.form-container [class*=form-cell-value]{
+    padding: 6px 10px 0 1px;
+    float: left;
+    width: 70%;
+}
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
     float: left;
     width: 50%;
+}
+@media screen and (max-width: 480px) {
+    float: unset;
+    width: 100%;
 }
 .form-cell-value.fullWidth > label,
 .subform-cell-value.fullWidth > label{
