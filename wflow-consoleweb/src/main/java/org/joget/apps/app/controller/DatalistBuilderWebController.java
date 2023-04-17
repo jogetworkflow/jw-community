@@ -322,7 +322,7 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping(value = "/dbuilder/getRenderingTemplate", method = RequestMethod.POST)
-    public void getRenderingTemplate(ModelMap model, Writer writer, @RequestParam("json") String json) throws Exception {
+    public void getRenderingTemplate(ModelMap model, Writer writer, @RequestParam("json") String json, @RequestParam("listId") String listId) throws Exception {
         try {
             json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
             JSONObject obj = new JSONObject(json);
@@ -332,11 +332,38 @@ public class DatalistBuilderWebController {
                 String className = obj.getString("className");
                 DataListTemplate template = (DataListTemplate) pluginManager.getPlugin(className);
                 if (template != null) {
+                    DataList datalist = new DataList();
+                    datalist.setId(listId);
+                    template.setDatalist(datalist);
+                    
                     if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
                         JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
                         template.setProperties(PropertyUtil.getProperties(objProperty));
                     }
-                    writer.write(template.getTemplate());
+                    
+                    
+                    //Handle template styling
+                    Map<String, String> styles = new HashMap<String, String>();
+                    styles.put("MOBILE_STYLE", "");
+                    styles.put("TABLET_STYLE", "");
+                    styles.put("STYLE", "");
+                    
+                    Map<String, String> templateStyles = template.getStyles();
+                    for (String key : templateStyles.keySet()) {
+                        styles.put(key, styles.get(key) + " " + templateStyles.get(key));
+                    }
+                    String css = styles.get("STYLE");
+                    if (!styles.get("TABLET_STYLE").isEmpty()) {
+                        css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
+                    }
+                    if (!styles.get("MOBILE_STYLE").isEmpty()) {
+                        css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+                    }
+                    if (!css.isEmpty()) {
+                        css = "<style>"+ css + "</style>";
+                    }
+                    
+                    writer.write(css + template.getTemplate());
                 }
             }
         } catch (Exception e) {

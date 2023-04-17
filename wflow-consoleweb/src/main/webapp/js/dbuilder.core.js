@@ -683,7 +683,8 @@ DatalistBuilder = {
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
-                    "json": JSON.encode(data.template)
+                    "json": JSON.encode(data.template),
+                    "listId" : CustomBuilder.data.id
                 },
                 url: CustomBuilder.contextPath + '/web/dbuilder/getRenderingTemplate',
                 dataType : "text",
@@ -705,7 +706,8 @@ DatalistBuilder = {
                 className : '',
                 properties : {}
             };
-            DatalistBuilder.template = '<table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
+            DatalistBuilder.template = '<style>body{overflow: visible;min-width:fit-content;}.dataList{min-width: max-content;}</style>\
+                                        <table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
                                             <thead>\
                                                 {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
                                                     <tr>\

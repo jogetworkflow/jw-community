@@ -308,7 +308,11 @@ body .filter-cell .form-button {
 .dataList .dropdown-menu a {
     display: block;
 }
-
+.dataList .column_body strong.label{
+    color: inherit;
+    text-align: unset;
+    padding: 0;
+}
 
 .dataList .responsivetable .cell-label {
     display:none;
@@ -389,6 +393,9 @@ body .filter-cell .form-button {
 }
 .cardLayout.cardCollapsible > tbody > tr.collapsed > td.collapsible_toggle_column > .collapsible_toggle > .fa-plus-square{
     display: block;
+}
+.card-actions a{
+    margin-right: 5px;
 }
 .dataList .collapsibleBtns {
     text-align: right;
@@ -688,9 +695,11 @@ body .filter-cell .form-button {
     padding-left: 0px;
     padding-right: 15px;
     background: unset;
+    box-sizing: border-box;
 }
 .dataList .card .card-text > .column-value{
     display: inline-block;
+    box-sizing: border-box;
     width: 60%;
 }
 .body .dataList th.row_action:empty,

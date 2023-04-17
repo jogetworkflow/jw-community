@@ -1,9 +1,5 @@
-body{
-    overflow: visible;
-    min-width: fit-content;
-}
 .dataList{
-    min-width: max-content;
+    min-width: 100%;
 }
 .dataList table {
     width: 100%;
