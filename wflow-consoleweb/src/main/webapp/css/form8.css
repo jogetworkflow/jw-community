@@ -140,6 +140,20 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
+@media (max-width: 991px) and (min-width : 768px) {
+    .tablet-label-top.form-cell > label.label,
+    .tablet-label-top.subform-cell > label.label{
+        width: 100%;
+        float: none !important;
+    }
+    .tablet-label-top.form-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.form-cell > label.label + .ui-screen-hidden + *,
+    .tablet-label-top.subform-cell > label.label + .ui-screen-hidden + *{
+        width: 100%;
+        float: none !important;
+    }
+}
 .ui-screen-hidden{
     display: none;
 }

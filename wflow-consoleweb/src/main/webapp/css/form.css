@@ -100,6 +100,18 @@
     max-width: 100%;
     float:none;
 }
+@media (max-width: 991px) and (min-width : 768px) {
+    .tablet-label-top > .label{
+        width: 100%;
+        float:none;
+    }
+    .tablet-label-top > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top > label.label + .ui-screen-hidden + *{
+        width: 100%;
+        max-width: 100%;
+        float:none;
+    }
+}
 .form-cell-highlight {
     padding-bottom: 0px;
     background: #f0ffcc;

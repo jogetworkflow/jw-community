@@ -297,9 +297,49 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         }
         if (!attrs.get("hoverMobileStyle").isEmpty()) {
             styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover{" + attrs.get("hoverMobileStyle") + "} ");
-        }      
+        }    
+        
+        addingLabelAndInputStyle(styleClass, styles);
         
         return styles;
+    }
+    
+    public void addingLabelAndInputStyle(String styleClass, Map<String, String> styles) {
+        String[] keys = new String[]{"fieldLabel-", "fieldInput-"};
+        String[] cssClass = new String[] {
+            "form.form-container  ." + styleClass + " > label.label",
+            "form.form-container  ." + styleClass + " > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
+                "form.form-container  ." + styleClass + " > label.label + .ui-screen-hidden + *, "+
+                "form.form-container  ." + styleClass + " > label.label + div.form-clear + * "
+        };
+        String[] cssHoverClass = new String[] {
+            "form.form-container  ." + styleClass + ":hover > label.label",
+            "form.form-container  ." + styleClass + ":hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
+                "form.form-container  ." + styleClass + ":hover > label.label + .ui-screen-hidden + *, "+
+                "form.form-container  ." + styleClass + ":hover > label.label + div.form-clear + * "
+        };
+
+        for (int i=0; i < keys.length; i++) {
+            Map<String, String> tempAttrs = AppPluginUtil.generateAttrAndStyles(getProperties(), keys[i]);
+            if (!tempAttrs.get("desktopStyle").isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " " + cssClass[i] +" {" + tempAttrs.get("desktopStyle") + "} ");
+            }
+            if (!tempAttrs.get("tabletStyle").isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " " + cssClass[i] +" {" + tempAttrs.get("tabletStyle") + "} ");
+            }
+            if (!tempAttrs.get("mobileStyle").isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " " + cssClass[i] +" {" + tempAttrs.get("mobileStyle") + "} ");
+            }
+            if (!tempAttrs.get("hoverDesktopStyle").isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " " + cssHoverClass[i] +" {" + tempAttrs.get("hoverDesktopStyle") + "} ");
+            }
+            if (!tempAttrs.get("hoverTabletStyle").isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " " + cssHoverClass[i] +" {" + tempAttrs.get("hoverTabletStyle") + "} ");
+            }
+            if (!tempAttrs.get("hoverMobileStyle").isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " " + cssHoverClass[i] +" {" + tempAttrs.get("hoverMobileStyle") + "} ");
+            }
+        }
     }
     
     public String decorateWithBuilderProperties(String html, FormData formData) {

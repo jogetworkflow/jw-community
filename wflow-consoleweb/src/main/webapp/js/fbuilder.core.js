@@ -131,7 +131,42 @@ FormBuilder = {
                     return component.builderTemplate.sectionStylePropertiesDefinition;
                 }
             };
-            component.builderTemplate.sectionStylePropertiesDefinition = $.extend(true, [], self.generateStylePropertiesDefinition("section", [{}, {'prefix' : 'header', 'label' : get_cbuilder_msg('ubuilder.header')}]));
+            component.builderTemplate.sectionStylePropertiesDefinition = $.extend(true, [], 
+                self.generateStylePropertiesDefinition("section", [
+                    {}, 
+                    {'prefix' : 'header', 'label' : get_cbuilder_msg('ubuilder.header')},
+                    {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')},
+                    {'prefix' : 'fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput')}
+                ]));
+                
+            component.builderTemplate.sectionStylePropertiesDefinition.push({
+                title:'Others',
+                properties:[
+                    {
+                        name : 'css-label-position',
+                        label : get_cbuilder_msg('fbuilder.fieldLabelPosition'),
+                        type : 'selectbox',
+                        options : [
+                            {value : '', label : 'Default'},
+                            {value : 'label-left', label : 'Left'},
+                            {value : 'label-top', label : 'Top'}
+                        ],
+                        viewport : 'desktop'
+                    },
+                    {
+                        name : 'css-tablet-label-position',
+                        label : get_cbuilder_msg('fbuilder.fieldLabelPosition'),
+                        type : 'selectbox',
+                        options : [
+                            {value : '', label : 'Default'},
+                            {value : 'tablet-label-left', label : 'Left'},
+                            {value : 'tablet-label-top', label : 'Top'}
+                        ],
+                        viewport : 'tablet'
+                    }
+                ]
+            }); 
+                        
         } else if (component.className === "org.joget.apps.form.model.Section") {
             component.builderTemplate.parentContainerAttr = "sections";
             component.builderTemplate.childsContainerAttr = "columns";
@@ -168,27 +203,19 @@ FormBuilder = {
                 FormBuilder.recalculateColumnWidth($(parent));
             };
         } else {
+            component.builderTemplate.getStylePropertiesDefinition = FormBuilder.getStylePropertiesDefinition;
+            component.builderTemplate.renderPermission = FormBuilder.renderPermission;            
+            
             component.builderTemplate.stylePropertiesDefinition.push({
-                title:'Others',
+                title: get_cbuilder_msg('fbuilder.others'),
                 properties:[
                     {
                         name : 'css-classes',
-                        label : 'CSS Classes',
+                        label : get_cbuilder_msg('fbuilder.cssClasses'),
                         type : 'textfield'
-                    },
-                    {
-                        name : 'css-label-position',
-                        label : 'Label Position',
-                        type : 'selectbox',
-                        options : [
-                            {value : '', label : 'Default'},
-                            {value : 'label-left', label : 'Left'},
-                            {value : 'label-top', label : 'Top'}
-                        ]
                     }
                 ]
             });
-            component.builderTemplate.renderPermission = FormBuilder.renderPermission;
         }
     },
     
@@ -538,6 +565,69 @@ FormBuilder = {
             event.preventDefault();
             return false;
         });
+    },
+    
+    /*
+     * Return custom styling definition to support styling for label and input field
+     */
+    getStylePropertiesDefinition: function(elementObj, component) {
+        var self = CustomBuilder.Builder;
+        
+        //if having label
+        if ($(self.selectedEl).find('> label.label').length > 0) {
+            var style;
+            if (component.builderTemplate.valueStylePropertiesDefinition === undefined || component.builderTemplate.labelStylePropertiesDefinition === undefined) {
+                style = $.extend(true, [] , component.builderTemplate.stylePropertiesDefinition);
+                
+                //tempory remove the last and adding label position for it
+                var other = style.pop();
+                other.properties.push({
+                        name : 'css-label-position',
+                        label : get_cbuilder_msg('fbuilder.fieldLabelPosition'),
+                        type : 'selectbox',
+                        options : [
+                            {value : '', label : 'Default'},
+                            {value : 'label-left', label : 'Left'},
+                            {value : 'label-top', label : 'Top'}
+                        ],
+                        viewport : 'desktop'
+                    });
+                other.properties.push({
+                        name : 'css-tablet-label-position',
+                        label : get_cbuilder_msg('fbuilder.fieldLabelPosition'),
+                        type : 'selectbox',
+                        options : [
+                            {value : '', label : 'Default'},
+                            {value : 'tablet-label-left', label : 'Left'},
+                            {value : 'tablet-label-top', label : 'Top'}
+                        ],
+                        viewport : 'tablet'
+                    });     
+                    
+                component.builderTemplate.labelStylePropertiesDefinition = $.merge([], style);
+                component.builderTemplate.labelStylePropertiesDefinition = $.merge(component.builderTemplate.labelStylePropertiesDefinition, self.generateStylePropertiesDefinition("", [
+                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')}
+                    ]));
+                component.builderTemplate.labelStylePropertiesDefinition = $.merge(component.builderTemplate.labelStylePropertiesDefinition, [other]);    
+                
+                
+                component.builderTemplate.valueStylePropertiesDefinition = $.merge([], style);
+                component.builderTemplate.valueStylePropertiesDefinition = $.merge(component.builderTemplate.valueStylePropertiesDefinition, self.generateStylePropertiesDefinition("", [
+                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')},
+                        {'prefix' : 'fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput')}
+                    ]));
+                component.builderTemplate.valueStylePropertiesDefinition = $.merge(component.builderTemplate.valueStylePropertiesDefinition, [other]); 
+            }
+            
+            //if having input field
+            if ($(self.selectedEl).find('> label.label + *:not(.ui-screen-hidden):not(div.form-clear), > label.label + .ui-screen-hidden + *, > label.label + div.form-clear + *').length > 0) {
+                return component.builderTemplate.valueStylePropertiesDefinition;
+            } else {
+                return component.builderTemplate.labelStylePropertiesDefinition;
+            }
+        } else {
+            return component.builderTemplate.stylePropertiesDefinition;
+        }
     },
     
     /*

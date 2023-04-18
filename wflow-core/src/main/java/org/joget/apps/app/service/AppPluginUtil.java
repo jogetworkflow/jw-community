@@ -236,7 +236,9 @@ public class AppPluginUtil implements ApplicationContextAware {
         String cacheKey = prefix + "::";
         for (Object keyObj: properties.keySet()) {
             String key = keyObj.toString();
-            if (key.startsWith(prefix) && !key.equals("elementUniqueKey")) { // ignore random generated elementUniqueKey
+            
+            // should only cache style related value, else when no prefix, it parsed all hash variable unnecessary
+            if (key.startsWith(prefix+"css-") || key.startsWith(prefix+"attr-") || key.startsWith(prefix+"style-")) { 
                 Object val = properties.get(keyObj);
                 String strVal = "";
                 if (val != null) {

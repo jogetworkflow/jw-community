@@ -5641,8 +5641,12 @@ _CustomBuilder.Builder = {
             if (html === undefined || html === null) {
                 html = self.component.builderTemplate.getHtml(self.data, self.component);
             }
-
+            
             self.dragElement = $(html);
+            
+            if ($(self.dragElement).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                $(self.dragElement).append('<div class="clear-float"></div>');
+            }
 
             if (self.component.builderTemplate.dragStart)
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
