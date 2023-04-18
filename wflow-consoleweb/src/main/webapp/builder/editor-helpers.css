@@ -403,6 +403,8 @@ span.missing-plugin {
 
 .clear-float {
     clear: both;
+    height: 0 !important;
+    display: block !important;
 }
 
 @keyframes alert-glowing {
