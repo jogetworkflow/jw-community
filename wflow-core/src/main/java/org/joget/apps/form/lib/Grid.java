@@ -188,7 +188,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
                 if (fields != null && fields.length() > 0) {
                     for (int k = 0; k < fields.length(); k++) {
                         String fieldName = fields.getString(k);
-                        String value = jsonRow.getString(fieldName);
+                        String value = jsonRow.get(fieldName).toString();
                         row.setProperty(fieldName, value);
                     }
                 }

@@ -74,7 +74,7 @@ public class MarketplaceUtil {
                         continue;
                     }
                     
-                    if (isNew != null && isNew && !obj.getString("isNew").equals("New")) {
+                    if (isNew != null && isNew && !"New".equals(obj.get("isNew").toString())) {
                         continue;
                     }
                     

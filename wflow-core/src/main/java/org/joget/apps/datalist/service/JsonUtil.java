@@ -324,7 +324,7 @@ public class JsonUtil {
                 if (!Permission.DEFAULT.equals(permissionKey)) {
                     if (filter.has("permission_rules") && filter.getJSONObject("permission_rules").has(permissionKey)) {
                         JSONObject rule = filter.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                             dataListFilter.setHidden(true);
                         } else {
                             dataListFilter.setHidden(false);
@@ -374,11 +374,11 @@ public class JsonUtil {
                 if (!Permission.DEFAULT.equals(permissionKey)) {
                     if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
                         JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                             isHidden = true;
                         }
                     }
-                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
                     isHidden = true;
                 }
                 
@@ -416,11 +416,11 @@ public class JsonUtil {
             if (!Permission.DEFAULT.equals(permissionKey)) {
                 if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
                     JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                    if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                    if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                         isHidden = true;
                     }
                 }
-            } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+            } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
                 isHidden = true;
             }
 
@@ -475,11 +475,11 @@ public class JsonUtil {
                 if (!Permission.DEFAULT.equals(permissionKey)) {
                     if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
                         JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                             isHidden = true;
                         }
                     }
-                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
                     isHidden = true;
                 }
                 
@@ -533,7 +533,7 @@ public class JsonUtil {
      */
     public static DataListAction parseActionFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         try {
-            if (!obj.isNull(PROPERTY_ACTION) && !"".equals(obj.getString(PROPERTY_ACTION))) {
+            if (!obj.isNull(PROPERTY_ACTION) && obj.get(PROPERTY_ACTION) instanceof JSONObject) {
                 JSONObject actionObj = obj.getJSONObject(PROPERTY_ACTION);
                 if (actionObj.has(PROPERTY_CLASS_NAME)) {
                     String className = actionObj.getString(PROPERTY_CLASS_NAME);
@@ -560,7 +560,7 @@ public class JsonUtil {
      */
     public static DataListColumnFormat parseFormatterFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         try {
-            if (!obj.isNull(PROPERTY_FORMAT) && !"".equals(obj.getString(PROPERTY_FORMAT))) {
+            if (!obj.isNull(PROPERTY_FORMAT) && obj.get(PROPERTY_FORMAT) instanceof JSONObject) {
                 JSONObject formatterObj = obj.getJSONObject(PROPERTY_FORMAT);
                 if (formatterObj.has(PROPERTY_CLASS_NAME)) {
                     String className = formatterObj.getString(PROPERTY_CLASS_NAME);
@@ -700,9 +700,9 @@ public class JsonUtil {
         if (!Permission.DEFAULT.equals(permissionKey)) {
             if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
                 JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                     dataListColumn.setHidden(true);
-                    if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
+                    if (rule.has("include_export") && "true".equals(rule.get("include_export").toString())) {
                         dataListColumn.setProperty("include_export", "true");
                         dataListColumn.setProperty("exclude_export", "");
                     } else {
@@ -711,7 +711,7 @@ public class JsonUtil {
                     }
                 } else {
                     dataListColumn.setHidden(false);
-                    if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
+                    if (rule.has("exclude_export") && "true".equals(rule.get("exclude_export").toString())) {
                         dataListColumn.setProperty("include_export", "");
                         dataListColumn.setProperty("exclude_export", "true");
                     } else {
@@ -754,9 +754,9 @@ public class JsonUtil {
         if (!Permission.DEFAULT.equals(permissionKey)) {
             if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
                 JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
                     proxy.setHidden(true);
-                    if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
+                    if (rule.has("include_export") && "true".equals(rule.get("include_export").toString())) {
                         proxy.setProperty("include_export", "true");
                         proxy.setProperty("exclude_export", "");
                     } else {
@@ -765,7 +765,7 @@ public class JsonUtil {
                     }
                 } else {
                     proxy.setHidden(false);
-                    if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
+                    if (rule.has("exclude_export") && "true".equals(rule.get("exclude_export").toString())) {
                         proxy.setProperty("include_export", "");
                         proxy.setProperty("exclude_export", "true");
                     } else {

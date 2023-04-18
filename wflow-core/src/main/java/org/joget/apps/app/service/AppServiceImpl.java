@@ -1488,7 +1488,7 @@ public class AppServiceImpl implements AppService {
                             JSONArray jsonArray = templateConfig.getJSONArray(key);
                             List<String> list = new ArrayList<String>();
                             for (int i=0; i<jsonArray.length(); i++) {
-                                list.add( jsonArray.getString(i) );
+                                list.add( jsonArray.get(i).toString() );
                             }
                             //sort by length
                             Collections.sort(list, new Comparator<String>() {

@@ -469,7 +469,7 @@ public class FormBuilderWebController {
             JSONArray arr = obj.getJSONArray(tableName);
             String[] indexArray = new String[arr.length()];
             for (int i = 0; i < arr.length(); i++) {
-                indexArray[i] = SecurityUtil.validateStringInput(arr.getString(i));
+                indexArray[i] = SecurityUtil.validateStringInput(arr.get(i).toString());
             }
             if (tableName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
                 tableName = tableName.substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());

@@ -6223,9 +6223,9 @@ public class ConsoleWebController {
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT).toString());
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_PULL).toString());
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC).toString());
             }
             AppDevUtil.setAppDevProperties(appDef, appProps);
             
