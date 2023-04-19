@@ -89,7 +89,7 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
         // check session for app admin role
         String key = EnhancedWorkflowUserManager.ROLE_APPADMIN;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {
+        if (request != null && request.getSession() != null && request.getSession().getAttribute(key) != null) {
             isAppAdmin = Boolean.valueOf((String)request.getSession().getAttribute(key));
         }
         return isAppAdmin;        
