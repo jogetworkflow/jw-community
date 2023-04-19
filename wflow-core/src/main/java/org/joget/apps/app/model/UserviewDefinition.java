@@ -1,6 +1,7 @@
 package org.joget.apps.app.model;
 
 import java.util.Date;
+import org.joget.commons.util.StringUtil;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.NotBlank;
@@ -44,6 +45,9 @@ public class UserviewDefinition extends AbstractAppVersionedObject {
     }
 
     public String getJson() {
+        //fix for wrong json in userview settings created during DX 8 beta
+        json = json.replaceAll(StringUtil.escapeRegex("\"__\": \"\","), "");
+        
         return json;
     }
 
