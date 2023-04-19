@@ -996,6 +996,12 @@ body .boxy-wrapper .title-bar a.close {
     color: unset;
 }
 
+body .filter-cell input,
+body .filter-cell select{
+    margin-bottom: 15px;
+    min-height: 30px;
+}
+
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
