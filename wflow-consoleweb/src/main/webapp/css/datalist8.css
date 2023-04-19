@@ -715,9 +715,11 @@ body.rtl .dataList span.pagelinks{
     padding-right: 15px;
     background: unset;
     box-sizing: border-box;
+    white-space: unset !important;
 }
 .dataList .card .card-text > .column-value{
     display: inline-block;
     box-sizing: border-box;
     width: 60%;
+    white-space: unset !important;
 }
