@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>7.0-SNAPSHOT</version>
     <name>wflow-commons</name>
-    <url>http://www.joget.org</url>
+    <url>http://kecak.org</url>
     <build>
         <plugins>
             <plugin>

@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <version>7.0-SNAPSHOT</version>
     <name>wflow-consoleweb</name>
-    <url>http://www.joget.org</url>
+    <url>http://kecak.org</url>
     <scm>
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
