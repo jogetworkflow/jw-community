@@ -113,7 +113,7 @@
                                 <div class="form-row">
                                     <label for="dbHost"><%= ResourceBundleUtil.getMessage("setup.datasource.label.dbHost")%></label>
                                     <span class="form-input">
-                                        <input type="text" size="40" id="dbHost" name="dbHost" value="localhost"/>
+                                        <input type="text" size="40" id="dbHost" name="dbHost" value="db"/>
                                     </span>
                                 </div>
                                 <div class="form-row">
@@ -125,7 +125,7 @@
                                 <div class="form-row">
                                     <label for="dbName"><%= ResourceBundleUtil.getMessage("setup.datasource.label.dbName")%></label>
                                     <span class="form-input">
-                                        <input type="text" size="40" id="dbName" name="dbName" value="jwdb"/>
+                                        <input type="text" size="40" id="dbName" name="dbName" value="kecakdb"/>
                                     </span>
                                 </div>
                                 <div class="form-row">
