@@ -27,7 +27,12 @@ JPopup = {
                             $("html").css("background", "transparent");
                         }
                     } catch (err) {}    
-                }
+                };
+                
+                JPopup.dialogboxes[id].orgHide = JPopup.dialogboxes[id].hide;
+                JPopup.dialogboxes[id].hide = function(after) {
+                    JPopup.hide(id, true, after);
+                };
             } else {
                 JPopup.dialogboxes[id] = Boxy.get($("#"+id));
             }
@@ -55,7 +60,7 @@ JPopup = {
         
         $(".boxy-modal-blackout").off("click");
         $(".boxy-modal-blackout").on("click", function(){
-            if (JPopup.hide(id)) {
+            if (JPopup.hide(id, true)) {
                 $(".boxy-modal-blackout").off("click");
             }
         });
@@ -91,9 +96,9 @@ JPopup = {
         }, 120);
     },
     
-    hide : function (id) {
-        if (JPopup.checkChangesAndConfirmHide(id)) {
-            JPopup.dialogboxes[id].hide();
+    hide : function (id, check, after) {
+        if (check === undefined || !check || (check && JPopup.checkChangesAndConfirmHide(id))) {
+            JPopup.dialogboxes[id].orgHide(after);
             JPopup.isChanges[id] = '';
             return true;
         }
