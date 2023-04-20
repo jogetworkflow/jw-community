@@ -399,7 +399,7 @@ public class FormServiceImpl implements FormService {
                     Iterator keys = errors.keys();
                     while (keys.hasNext()) {
                         String key = (String) keys.next();
-                        formData.addPreviousFormError(key, (String) errors.getString(key));
+                        formData.addPreviousFormError(key, (String) errors.get(key).toString());
                     }
                 }
             } catch (Exception e) {}

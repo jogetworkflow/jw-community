@@ -23,6 +23,7 @@ public class WorkflowUserManager {
     
     public static final String ROLE_ANONYMOUS = "roleAnonymous";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
 
     private ThreadLocal currentThreadUser = new ThreadLocal();
     private ThreadLocal currentThreadUserRoles = new ThreadLocal();
@@ -141,8 +142,10 @@ public class WorkflowUserManager {
                             for (Role role : roles) {
                                 results.add(role.getId());
                             }
-                            currentThreadUserRoles.set(results);
+                        } else {
+                            results.add(ROLE_USER);
                         }
+                        currentThreadUserRoles.set(results);
                     }
                     return user;
                 }
@@ -216,6 +219,9 @@ public class WorkflowUserManager {
                     for (GrantedAuthority ga: authorities) {
                         results.add(ga.getAuthority());
                     }
+                }
+                if (results.isEmpty()) {
+                    results.add(ROLE_USER);
                 }
             }
             currentThreadUserRoles.set(results);

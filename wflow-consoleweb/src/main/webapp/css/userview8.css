@@ -8,6 +8,10 @@ a:hover {
 html, body {
     overscroll-behavior: none;
 }
+b,
+strong {
+  font-weight: 700;
+}
 body{
     margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
@@ -45,6 +49,11 @@ input, select, textarea{
     background-image: var(--theme-background-image, none);
     background-size:cover !important;
     background-position:center bottom;
+}
+@media print {  
+    #page {
+        min-height: unset;
+    }
 }
 
 body.rtl:not(.horizontal_menu) #page{
@@ -405,6 +414,7 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
 }
 #sidebar .nav > li > ul > li > a > span:first-child {
     max-width: 160px;
+    padding-right: 10px;
     display: inline-block;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
@@ -933,6 +943,11 @@ body.horizontal_menu #header-info{
     body#login #loginForm {
         width: 90vw !important;
         padding: 25px !important;
+    }
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -1686,6 +1701,7 @@ body .ui-front {
     overflow: hidden;
 }
 #jqueryDialogDiv {overflow: hidden;}
+body textarea#HandsontableCopyPaste,
 body #ui-datepicker-div {
     display:none;
 }

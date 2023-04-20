@@ -15,6 +15,7 @@ DatalistBuilder = {
     chosenRowActions : new Array(),
     chosenFilters : new Array(),
 
+    availableDisplayColumns : {},
     availableActions : {},
     availableFilters : {},
     availableFormatters : {},
@@ -291,6 +292,7 @@ DatalistBuilder = {
             self.frameBody.append(html);
             self.frameBody.find(".dataList").data("data", CustomBuilder.data);
             self.frameBody.find(".dataList").attr("data-cbuilder-id", CustomBuilder.data.id);
+            self.frameBody.find(".dataList").attr("id", CustomBuilder.data.id);
             
             self.frameBody.find(".dataList [data-placeholder-key]:not([data-cbuilder-sync])").each(function(){
                 if ($(this).closest("[data-cbuilder-replicate]").length === 0) {
@@ -681,7 +683,8 @@ DatalistBuilder = {
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
-                    "json": JSON.encode(data.template)
+                    "json": JSON.encode(data.template),
+                    "listId" : CustomBuilder.data.id
                 },
                 url: CustomBuilder.contextPath + '/web/dbuilder/getRenderingTemplate',
                 dataType : "text",
@@ -703,7 +706,8 @@ DatalistBuilder = {
                 className : '',
                 properties : {}
             };
-            DatalistBuilder.template = '<table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
+            DatalistBuilder.template = '<style>body{overflow: visible;min-width:fit-content;}.dataList{min-width: max-content;}</style>\
+                                        <table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
                                             <thead>\
                                                 {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
                                                     <tr>\
@@ -827,7 +831,7 @@ DatalistBuilder = {
         var i = CustomBuilder.data.columns.length;
         while (i--) {
             var column = CustomBuilder.data.columns[i];
-            if (DatalistBuilder.availableColumns[column.name] === undefined) { 
+            if (column.name !== undefined && DatalistBuilder.availableColumns[column.name] === undefined) { 
                 if ($.inArray(column.name, missingColumns) === -1) {
                     missingColumns.push(column.name);
                 }
@@ -1085,6 +1089,60 @@ DatalistBuilder = {
         $.getJSON(
             CustomBuilder.contextPath + '/web/json/console/app/' + CustomBuilder.appId + '/' +  CustomBuilder.appVersion + '/builder/actions',
             function(returnedData){
+                
+                if (returnedData.displayColumns) {
+                    for(var e in returnedData.displayColumns){
+                        var column = returnedData.displayColumns[e];
+                        
+                        DatalistBuilder.availableDisplayColumns[column.className] = column;
+                        var icon = column.icon;
+                        if (icon === undefined || icon === null && icon === "") {
+                            icon = '<i class="fas fa-info"></i>';
+                        }
+                        
+                        var meta = {
+                            isDisplayColumn : true,
+                            builderTemplate : {
+                                'customPropertyOptions' : function(elementOptions, element, elementObj, paletteElement) {
+                                    return DatalistBuilder.getDisplayColumnPropertiesDefinition(elementOptions);
+                                },
+                                'dragging' : function(dragElement, component) {
+                                    dragElement = DatalistBuilder.draggingElement(dragElement, component);
+                                    return dragElement;
+                                },
+                                'afterMoved' : function(element, elementObj, component) {
+                                    var syncElements = $(element).data("syncElements");
+                                    if ($(element).parent().is("[data-placeholder-key]") 
+                                            && syncElements !== undefined && syncElements !== null && syncElements.length > 0) {
+                                        DatalistBuilder.syncElements(element, elementObj, component, syncElements);
+                                    }
+                                },
+                                'getStylePropertiesDefinition' : function(elementObj, component) {
+                                    return DatalistBuilder.getElementStylePropertiesDefinition(elementObj, component);
+                                },
+                                'renderPermission' : function(row, elementObj, permissionObj, key, level) {
+                                    DatalistBuilder.renderColumnPermission(elementObj, row, permissionObj, key, level);
+                                },
+                                'parentContainerAttr' : 'columns',
+                                'parentDataHolder' : 'columns',
+                                'navigable' : false,
+                                'dragHtml' : '<span></span>'
+                            }
+                        };
+                        
+                        if (column.jscomponent !== undefined && column.jscomponent !== "" && column.jscomponent !== null) {
+                            try {
+                                var temp = eval('[' + column.jscomponent + ']')[0];  
+                                meta.builderTemplate = $.extend(true, meta.builderTemplate, temp);
+                            } catch (err){
+                                //ignore
+                            }
+                        }
+
+                        CustomBuilder.initPaletteElement(get_cbuilder_msg('dbuilder.displayColumns'), column.className, column.label, icon, column.propertyOptions, column.defaultPropertyValues, true, "", meta);
+                    }
+                }
+                
                 for(e in returnedData.actions){
                     var action = returnedData.actions[e];
                     
@@ -1265,7 +1323,12 @@ DatalistBuilder = {
             id : DatalistBuilder.getId(type)
         };
         
-        if (type === "filter" || type === "column") {
+        if (component.isDisplayColumn) {
+            elementObj.className = component.className;
+            elementObj.properties = $.extend(true, {}, component.properties);
+            elementObj.properties.label = component.label;
+            elementObj.properties.id = elementObj.id;
+        } else if (type === "filter" || type === "column") {
             elementObj.name = component.className;
             elementObj.label = component.label;
             
@@ -1305,6 +1368,10 @@ DatalistBuilder = {
     
     draggingElement : function(dragElement, component) {
         var key = $(dragElement).parent().attr('data-placeholder-key');
+        if (key === undefined) {
+            return dragElement;
+        }
+        
         var data = component.label;
         var rowData = DatalistBuilder.sampleData;
         if (rowData !== undefined && rowData !== null 
@@ -1483,6 +1550,8 @@ DatalistBuilder = {
             DatalistBuilder.renderAction(element, elementObj, component, deferrer);
         } else if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) === 0) {
             DatalistBuilder.renderRowActions(element, elementObj, component, deferrer);
+        } else if (component.isDisplayColumn) {
+            DatalistBuilder.renderColumn(element, elementObj, component, deferrer);
         } else if (elementObj.id === CustomBuilder.data.id) {
             DatalistBuilder.updateDatalistStyle(element, elementObj, component, deferrer);
         }
@@ -1567,6 +1636,9 @@ DatalistBuilder = {
         var self = CustomBuilder.Builder;
         
         var value = elementObj.label;
+        if (component.isDisplayColumn) {
+            value = component.label;
+        }
         var rowData = DatalistBuilder.sampleData;
         if (rowData !== undefined && rowData !== null) {
             if (rowData[elementObj.name] !== undefined && rowData[elementObj.name] !== null && rowData[elementObj.name] !== "") {
@@ -1577,10 +1649,10 @@ DatalistBuilder = {
         }
         
         var formatDeferrer = $.Deferred();
-        if (elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") {
+        if ((DatalistBuilder.availableColumns[elementObj.name] !== undefined && elementObj.format !== undefined && elementObj.format.className !== undefined && elementObj.format.className !== "") || component.isDisplayColumn) {
             var colStr = JSON.encode(elementObj);
             var rowStr = JSON.encode(rowData);
-            
+
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {
@@ -1617,6 +1689,11 @@ DatalistBuilder = {
 
         $.when.apply($, [formatDeferrer]).then(function() {
             var obj = $.extend(true, {}, elementObj);
+            if (component.isDisplayColumn) {
+                obj = $.extend(true, {}, elementObj.properties);
+            } else {
+                obj = $.extend(true, {}, elementObj);
+            }
             obj.body = '<span>' + value + '</span>';
             var html = DatalistBuilder.convertTemplate($(element).parent().attr('data-placeholder-template'), obj);
             var replace = $(html);
@@ -2051,7 +2128,13 @@ DatalistBuilder = {
         if ((elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0 || elementObj.id.indexOf(DatalistBuilder.filterPrefix) === 0) && elementObj.name !== undefined) {
             dl.append('<dt><i class="las la-user" title="' + get_cbuilder_msg('cbuilder.name') + '"></i></dt><dd>' + elementObj.name + '</dd>');
         } 
-        if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
+        if (component.isDisplayColumn) {
+            dl.append('<dt><i class="las la-user" title="' + get_cbuilder_msg('cbuilder.name') + '"></i></dt><dd>' + elementObj.properties.label + '</dd>');
+            
+            //to make it consistent hight
+            dl.append('<dt>&nbsp;</dt><dd>&nbsp;</dd>');
+            dl.append('<dt>&nbsp;</dt><dd>&nbsp;</dd>');
+        } else if (elementObj.id.indexOf(DatalistBuilder.columnPrefix) === 0) {
             dl.find('> *:eq(1)').text(elementObj.datalist_type);
             var action = "-";
             if (elementObj.action !== undefined && elementObj.action.className !== undefined && elementObj.action.className !== "") {
@@ -2099,7 +2182,11 @@ DatalistBuilder = {
                     }
                 }
             }
-            dl.append('<dt><i class="las la-eye" title="'+get_cbuilder_msg('dbuilder.rowAction.visibility')+'"></i></dt><dd>'+fields.join(', ')+'</dd>');
+            dl.append('<dt><i class="las la-eye" title="'+get_cbuilder_msg('dbuilder.rowAction.visibility')+'"></i></dt><dd>'+fields.join(', ')+'&nbsp;</dd>');
+            
+            //to make it consistent hight
+            dl.append('<dt>&nbsp;</dt><dd>&nbsp;</dd>');
+            dl.append('<dt>&nbsp;</dt><dd>&nbsp;</dd>');
         }
         
         callback();
@@ -2362,10 +2449,19 @@ DatalistBuilder = {
                     {
                         label : get_cbuilder_msg('dbuilder.rowActionsMode'),
                         name  : 'rowActionsMode',
-                        type : 'checkbox',
+                        type : 'selectbox',
                         options : [
-                            {label : '', value : 'true'}
+                            {label : get_cbuilder_msg('dbuilder.default'), value : ''},
+                            {label : get_cbuilder_msg('dbuilder.rowActionsMode.singlecolumn'), value : 'true'},
+                            {label : get_cbuilder_msg('dbuilder.rowActionsMode.dropdown'), value : 'dropdown'}
                         ]
+                    },
+                    {
+                        label : get_cbuilder_msg('dbuilder.rowActionsDropdownLabel'),
+                        name  : 'rowActionsDropdownLabel',
+                        type : 'textfield',
+                        control_field: 'rowActionsMode',
+                        control_value: 'dropdown',
                     },
                     {
                         label: get_cbuilder_msg('dbuilder.disableResponsive'),
@@ -2390,6 +2486,33 @@ DatalistBuilder = {
                         options : [
                             {value : 'true', label : ''}
                         ]
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.mobileCardLayout'),
+                        name: 'mobileCardLayout',
+                        type: 'header',
+                        control_field: 'disableResponsive',
+                        control_value: '',
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.cardCollapsible'),
+                        name: 'cardCollapsible',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ],
+                        control_field: 'disableResponsive',
+                        control_value: '',
+                    },
+                    {
+                        label: get_cbuilder_msg('dbuilder.cardCollapseByDefault'),
+                        name: 'cardCollapseByDefault',
+                        type: 'checkbox',
+                        options : [
+                            {value : 'true', label : ''}
+                        ],
+                        control_field: 'cardExpanable',
+                        control_value: 'true',
                     }
                 ],
                 control_field: 'template',
@@ -2818,6 +2941,10 @@ DatalistBuilder = {
                         type : 'selectbox',
                         value : 'btn btn-sm btn-primary',
                         options : [{
+                            label : get_cbuilder_msg('dbuilder.default'),
+                            value : ''
+                        },
+                        {
                             label : get_cbuilder_msg('dbuilder.btn.link'),
                             value : 'btn btn-link'
                         },
@@ -2859,6 +2986,68 @@ DatalistBuilder = {
         }
         
         return component.rowActionPropertyOptions;
+    },
+    
+    /*
+     * Get properties definition for display column
+     */
+    getDisplayColumnPropertiesDefinition : function(elementOptions) {
+        if (elementOptions !== null && elementOptions !== undefined && elementOptions.length > 0) {
+            //add label & id field if does exist
+            var hasId = false;
+            var hasLabel = false;
+            var labelIndex = 0;
+            for (var p in elementOptions[0].properties) {
+                if (elementOptions[0].properties[p].name === "id") {
+                    hasId = true;
+                } else if (elementOptions[0].properties[p].name === "label") {
+                    hasLabel = true;
+                    labelIndex = p;
+                }
+            }
+            if (!hasId) {
+                elementOptions[0].properties.splice(labelIndex, 0 , {
+                    label : 'ID',
+                    name  : 'id',
+                    required : 'true',
+                    type : 'textfield',
+                    js_validation: "DatalistBuilder.validateDuplicateId",
+                    regex_validation: '^[a-zA-Z0-9_]+$',
+                    validation_message: get_cbuilder_msg("cbuilder.invalidId"),
+                    id_suggestion: 'label'
+                });
+            }
+            if (!hasLabel) {
+                elementOptions[0].properties.unshift({
+                    label : get_cbuilder_msg('dbuilder.label'),
+                    name  : 'label',
+                    required : 'true',
+                    type : 'textfield'
+                });
+            }
+            return elementOptions;
+        } else {
+            return [{
+                title : get_cbuilder_msg('dbuilder.general'),
+                properties :[
+                {
+                    label : get_cbuilder_msg('dbuilder.label'),
+                    name  : 'label',
+                    required : 'true',
+                    type : 'textfield'
+                },
+                {
+                    label : 'ID',
+                    name  : 'id',
+                    required : 'true',
+                    type : 'textfield',
+                    js_validation: "DatalistBuilder.validateDuplicateId",
+                    regex_validation: '^[a-zA-Z0-9_]+$',
+                    validation_message: get_cbuilder_msg("cbuilder.invalidId"),
+                    id_suggestion: 'label'
+                }]
+            }];
+        }
     },
     
     /*
@@ -2962,6 +3151,8 @@ DatalistBuilder = {
         var table = self.frameBody.find(".dataList table.responsivetable");
         if (table.length > 0) {
             self.iframe.contentWindow.responsiveTable($(datalist));
+        } else {
+            $(window).off("resize."+$(datalist).attr("id"));
         }
         self.iframe.contentWindow.responsiveTemplate();
     },
@@ -3015,7 +3206,7 @@ DatalistBuilder = {
                 if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
                     if (prop === "columns"  || prop === "rowActions") {
                         CustomBuilder.data[prop] = [];
-                    } else if (prop.indexOf("-style-") === -1 && prop !== "rowActionsMode") {
+                    } else if (prop.indexOf("-style-") === -1 && prop !== "rowActionsMode" && prop !== "rowActionsDropdownLabel") {
                         delete CustomBuilder.data[prop];
                     }
                     change = true;
@@ -3024,7 +3215,7 @@ DatalistBuilder = {
                     
                     for (var i in CustomBuilder.data[prop]) {
                         var name = CustomBuilder.data[prop][i].name;
-                        if ($.inArray(name, ids) === -1) {
+                        if (name !== undefined && $.inArray(name, ids) === -1) {
                             nonExistIndex.push(i);
                             
                             //find and remove from canvas
@@ -3095,5 +3286,17 @@ DatalistBuilder = {
                 }
             }
         }
+    },
+            
+    /*
+     * Validation for duplicate id of columns
+     */
+    validateDuplicateId : function (name, value) {
+        var self = CustomBuilder.Builder;
+        var found = $(self.selectedEl).parent().find('[data-cbuilder-id="'+value+'"]');
+        if (found.length > 0 && !(found.length === 1 && found.is(self.selectedEl))) {
+            return get_cbuilder_msg("cbuilder.duplicateId");
+        }
+        return null;
     }
 }

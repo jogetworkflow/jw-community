@@ -11450,11 +11450,22 @@ PropertyAssistant = {
         }
         $(result).removeClass('editing');
         
-        if ($(result).prev('.chunk').length > 0) {
-            var prev = $(result).prev('.chunk');
-            while ($(prev).find('> .chunk').length > 0) {
-                //find inner last
-                prev = $(prev).find('> .chunk:last-child')[0];
+        var prev = null;
+        var current = $(result);
+        
+        //find previous visible chunk
+        do {
+            current = $(current).prev('.chunk');
+            if ($(current).is(":visible")) {
+                prev = current;
+            }
+        } while (prev === null && $(current).next('.chunk').length > 0);
+        
+        if (prev !== null && $(prev).length > 0) {
+            //find inner visible chunk
+            while ($(prev).find('> .chunk:visible').length > 0) {
+                //set to last chunk
+                prev = $(prev).find('> .chunk:visible').last();
             }
             
             $(prev).addClass("editing");
@@ -11490,17 +11501,35 @@ PropertyAssistant = {
         
         var next = null;
         
-        if ($(result).next('.chunk').length > 0) {
-            next = $(result).next('.chunk');
-        } else {
-            var current = $(result);
+        var findNextVisibleChunk = function(current) {
+            var temp = null;
+            //find next visible chunk
             do {
-                current = $(current).parent('.chunk');
-                next = $(current).next('.chunk');
-            } while ($(next).length === 0 && $(current).length > 0);
+                current = $(current).next('.chunk');
+                if ($(current).is(":visible")) {
+                    temp = current;
+                }
+            } while (temp === null && $(current).next('.chunk').length > 0);
+            
+            return temp;
+        };
+        next = findNextVisibleChunk($(result));
+        
+        if (next === null) { //find parent visible sibling
+            var parent = $(result);
+            do {
+                parent = $(parent).parent('.chunk');
+                next = findNextVisibleChunk($(parent));
+            } while (next === null && $(parent).length > 0);
         }
         
         if (next !== null && $(next).length > 0) {
+            //find inner visible chunk
+            if ($(next).find('> .chunk:visible').length > 0) {
+                //set to first chunk
+                next = $(next).find('> .chunk:visible').first();
+            }
+            
             $(next).addClass("editing");
             PropertyAssistant.updateOptionField($(next));
             return;

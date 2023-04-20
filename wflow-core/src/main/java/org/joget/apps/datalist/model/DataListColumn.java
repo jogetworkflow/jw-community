@@ -10,7 +10,7 @@ import org.joget.plugin.property.service.PropertyUtil;
  * Contains meta data regarding a data list column
  */
 public class DataListColumn {
-    private Map<String, Object> properties;
+    protected Map<String, Object> properties;
     
     public Map<String, Object> getProperties() {
         return properties;

@@ -63,13 +63,15 @@
 .form-cell,
 .subform-cell{
     position: relative;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
+    display: block;
     padding-left: 15px;
     padding-right: 15px;
+}
+.form-cell:after,
+.subform-cell:after{
+    clear: both;
+    content: "";
+    display: block;
 }
 .form-column-label, .subform-column-label{
     padding-left: 13px;
@@ -95,15 +97,20 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .subform-cell > label.label{
     white-space: normal;
     position: relative;
-    flex: 1 1 auto;
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
     font-weight: bold;
     width: 30%;
+    float: left;
+}
+.rtl .form-cell > label.label, 
+.rtl .subform-cell > label.label {
+    float: right;
 }
 .label-top.form-cell > label.label,
 .label-top.subform-cell > label.label{
-    flex: 0 0 100%;
+    width: 100%;
+    float: none !important;
 }
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
@@ -111,17 +118,41 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .subform-cell > label.label + .ui-screen-hidden + *{
     white-space: normal;
     position: relative;
-    flex: 0 0 70%;
+    width:70%;
+    float: left;
+}
+.rtl .form-cell > label.label + *:not(.ui-screen-hidden),
+.rtl .subform-cell > label.label + *:not(.ui-screen-hidden),
+.rtl .form-cell > label.label + .ui-screen-hidden + *,
+.rtl .subform-cell > label.label + .ui-screen-hidden + *{
+    float: right;
 }
 .form-cell > label.label + div.form-clear,
 .subform-cell > label.label + div.subform-clear{
-    flex: 0 0 100%;
+    clear: both;
+    float: unset !important;
+    width: unset !important;
 }
 .label-top.form-cell > label.label + *:not(.ui-screen-hidden),
 .label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
 .label-top.form-cell > label.label + .ui-screen-hidden + *,
 .label-top.subform-cell > label.label + .ui-screen-hidden + *{
-    flex: 0 0 100%;
+    width: 100%;
+    float: none !important;
+}
+@media (max-width: 991px) and (min-width : 768px) {
+    .tablet-label-top.form-cell > label.label,
+    .tablet-label-top.subform-cell > label.label{
+        width: 100%;
+        float: none !important;
+    }
+    .tablet-label-top.form-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.form-cell > label.label + .ui-screen-hidden + *,
+    .tablet-label-top.subform-cell > label.label + .ui-screen-hidden + *{
+        width: 100%;
+        float: none !important;
+    }
 }
 .ui-screen-hidden{
     display: none;
@@ -250,6 +281,9 @@ textarea {
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+input[size]{
+    width: auto !important;
+}
 select[multiple]{
     height: auto;
 }
@@ -258,16 +292,36 @@ textarea{
 }
 
 /* checkbox & radio */
+.form-container .form-cell-value, 
+.form-container .subform-cell-value, 
+.form-container .selector_element, 
+.form-container .form-fileupload, 
+.form-container .subform-fileupload, 
+.form-container .grid, 
+.form-container .spreadsheet_container {
+    min-height: 31px;
+}
+.form-container [class*=form-cell-value]{
+    padding: 6px 10px 0 1px;
+    float: left;
+    width: 70%;
+}
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
     float: left;
     width: 50%;
 }
+@media screen and (max-width: 480px) {
+    .form-container [class*=form-cell-value]{
+        float: unset !important;
+        width: 100% !important;
+    }
+}
 .form-cell-value.fullWidth > label,
 .subform-cell-value.fullWidth > label{
-    width: auto;
-    float: unset;
+    width: auto !important;
+    float: unset !important;
 }
 .form-cell-value > label:last-child,
 .subform-cell-value > label:last-child{
@@ -546,10 +600,11 @@ body.rtl .hasDatepicker + a + a{
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+    float: left;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 34px;
+    height: 30px;
     padding: 2px 10px;
     line-height: 1.5;
     color: #495057;
@@ -1181,7 +1236,8 @@ body.rtl .handsontable .htCore tr td:last-child {
     .subform-cell > label.label + .ui-screen-hidden + *{
         white-space: normal;
         position: relative;
-        flex: 0 0 100%;
+        width: 100%;
+        float: none;
     }
     .hasDatepicker + a{
         top: unset;
@@ -1234,6 +1290,11 @@ body.rtl .form-edit-btn{
 }
 .form-edit-btn.bottom{
     bottom:20px;
+}
+
+/* advanced grid */
+.grid.adgrid .pq-header-outer {
+    height: 25px !important;
 }
 
 /* process enhancement comments*/

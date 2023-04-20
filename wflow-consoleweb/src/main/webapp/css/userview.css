@@ -5,10 +5,22 @@ html, body {
     font-family: PT Sans,Arial,serif;
     font-size: 13px;
 }
+b,
+strong {
+  font-weight: 700;
+}
 
 body, ul{
     margin:0px;
     padding:0px;
+}
+body.popupBody{
+    padding-top: unset;
+}
+
+/* tinymce */
+.tox.tox-tinymce{
+    margin-bottom: 15px;
 }
 
 /* tinymce */
@@ -414,6 +426,10 @@ input[type="button"], input[type="submit"], input[type="reset"] {
         flex: 0 0 100% !important;
         max-width: 100% !important;
     }
+}
+
+.btn {
+    background-image: none !important;
 }
 
 .btn:hover {
@@ -981,6 +997,16 @@ a.btn.disabled,fieldset:disabled a.btn {
     box-shadow:none !important;
 }
 
+body .boxy-wrapper .title-bar a.close {
+    color: unset;
+}
+
+body .filter-cell input,
+body .filter-cell select{
+    margin-bottom: 15px;
+    min-height: 30px;
+}
+
 @media print {    
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
@@ -990,5 +1016,10 @@ a.btn.disabled,fieldset:disabled a.btn {
 @media screen and (max-width:680px) {
     .ui-dialog {
         max-width: 95%;
+    }
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
     }
 }

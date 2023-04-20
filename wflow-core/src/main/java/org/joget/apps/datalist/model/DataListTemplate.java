@@ -252,9 +252,11 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
     public String fillRows(DataListCollection rows, String childtemplate) {
         String value = "";
         if (rows != null && !rows.isEmpty()) {
+            int index = 0;
             for (Object r : rows) {
-                decorator.initRow(r, 0, 0);
+                decorator.initRow(r, index, index);
                 value += fillData(childtemplate, r);
+                index++;
             }
         }
         return value;

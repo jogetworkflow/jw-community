@@ -183,6 +183,22 @@
         }
     },
     
+    /* 
+     * to show an overlay and error message when app is not found
+     */
+    renderAppNotExist: function(appId) {
+        $("body").removeClass("initializing");
+        appId = UI.escapeHTML(appId);
+        
+        //add a overlay with message, add it to quick nav so that it get removed together when navigate to other app
+        $("#builder-quick-nav #builder-menu ul #appNotExist").remove();
+        $("#builder-quick-nav #builder-menu ul").append('<li id="appNotExist"><div class="error">'+get_cbuilder_msg('abuilder.appNotExist', [appId])+'</div></li>');
+        
+        var url = CustomBuilder.contextPath+'/web/console/app/'+appId+'/0/builders';
+        //change the browser URL, so the next import can redirect correctly.
+        history.pushState({url: url}, "", url);
+    },
+    
     ajaxRenderBuilder: function(url) {
         var rtl;
         if($('body').hasClass('rtl')){
@@ -244,6 +260,16 @@
         .then(function (response) {
             if (response.url.indexOf("/web/login") !== -1) {
                 document.location.href = url;
+                redirect = true;
+                return false;
+            } else if (response.url.indexOf("/web/console/home") !== -1) {
+                var appId = "";
+                if (url.indexOf("/web/console/app/") !== -1) {
+                    appId = url.substring(url.indexOf("/web/console/app/") + 17);
+                    appId = appId.substring(0, appId.indexOf("/"));
+                }
+                //app not exist
+                CustomBuilder.renderAppNotExist(appId);
                 redirect = true;
                 return false;
             } else {
@@ -3697,6 +3723,9 @@ _CustomBuilder.Builder = {
                         //TODO: if differrent, need add it?
                     }
                     
+                    if ($(this).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                        $(this).append('<div class="clear-float"></div>');
+                    }
                     if ($(this).outerHeight(false) === 0) {
                         $(this).attr("data-cbuilder-invisible", "");
                     }
@@ -5118,32 +5147,36 @@ _CustomBuilder.Builder = {
             return;
         }
         
+        var isSubSelect = $(element).is('[data-cbuilder-select]');
+        
         $("#paste-element-btn").addClass("disabled");
         if (component.builderTemplate.isPastable(data, component)) {
             $("#paste-element-btn").removeClass("disabled");
         }
 
         $(box).find(".up-btn, .down-btn, .left-btn, .right-btn").hide();
-        if (component.builderTemplate.isMovable(data, component)) {
+        $(box).find(".element-name").removeClass("moveable");
+        if (!isSubSelect && component.builderTemplate.isMovable(data, component)) {
             if ($(element).closest('[data-cbuilder-sort-horizontal]').length > 0) {
                 $(box).find(".left-btn, .right-btn").show();
             } else {
                 $(box).find(".up-btn, .down-btn").show();
             }
+            $(box).find(".element-name").addClass("moveable");
         }
 
         $(box).find(".delete-btn").hide();
-        if (component.builderTemplate.isDeletable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isDeletable(data, component)) {
             $(box).find(".delete-btn").show();
         }
 
         $("#copy-element-btn").addClass("disabled");
-        if (component.builderTemplate.isCopyable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isCopyable(data, component)) {
             $("#copy-element-btn").removeClass("disabled");
         }
 
         $(box).find(".parent-btn").hide();
-        if (component.builderTemplate.isNavigable(data, component)) {
+        if (!isSubSelect && component.builderTemplate.isNavigable(data, component)) {
             $(box).find(".parent-btn").show();
         }
         $(box).find(".element-actions").show();
@@ -5151,7 +5184,7 @@ _CustomBuilder.Builder = {
         $(box).find(".element-options").html("");
         $(box).find(".element-bottom-actions").html("");
 
-        if (component.builderTemplate.decorateBoxActions)
+        if (!isSubSelect && component.builderTemplate.decorateBoxActions)
             component.builderTemplate.decorateBoxActions(element, data, component, box);
         
         var nameWrapper = $(box).find("#element-highlight-name");
@@ -5194,8 +5227,8 @@ _CustomBuilder.Builder = {
     _initBox: function () {
         var self = this;
         
-        $("#element-highlight-name .element-name, #element-select-name .element-name").off("mousedown.builder touchstart.builder");
-        $("#element-highlight-name .element-name, #element-select-name .element-name").on("mousedown.builder touchstart.builder", function (event) {
+        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").off("mousedown.builder touchstart.builder");
+        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             try {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
@@ -5608,8 +5641,12 @@ _CustomBuilder.Builder = {
             if (html === undefined || html === null) {
                 html = self.component.builderTemplate.getHtml(self.data, self.component);
             }
-
+            
             self.dragElement = $(html);
+            
+            if ($(self.dragElement).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                $(self.dragElement).append('<div class="clear-float"></div>');
+            }
 
             if (self.component.builderTemplate.dragStart)
                 self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
@@ -6301,6 +6338,9 @@ _CustomBuilder.Builder = {
             if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
+                if ($(node).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
+                    $(node).append('<div class="clear-float"></div>');
+                }
                 var height = $(node).outerHeight(false);
                 if ($(node).find("> .cbuilder-node-details").length > 0) {
                     height = height - $(node).find("> .cbuilder-node-details").outerHeight();

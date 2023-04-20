@@ -817,7 +817,7 @@ public class AppDevUtil {
                         }
                     }
                 }
-            } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException ne) {
+            } catch(Exception ne) {
                 LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + ne.getMessage());
             }
             
@@ -1088,7 +1088,7 @@ public class AppDevUtil {
                     }
                 }
             }
-        } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException re) {
+        } catch(Exception re) {
             LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDefinition.getAppId() + ". Reason :" + re.getMessage());
         }
         File file = new File(projectDir, path);

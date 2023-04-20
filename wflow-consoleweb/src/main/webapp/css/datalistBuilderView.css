@@ -1,3 +1,9 @@
+.dataList .table-wrapper{
+    overflow-x: auto;
+    width: 100%;
+    min-height: 300px;
+    padding-bottom: 50px;
+}
 .dataList table {
     margin:0px 0 !important;
     -moz-border-radiusx:12px;
@@ -302,7 +308,11 @@ body .filter-cell .form-button {
 .dataList .dropdown-menu a {
     display: block;
 }
-
+.dataList .column_body strong.label{
+    color: inherit;
+    text-align: unset;
+    padding: 0;
+}
 
 .dataList .responsivetable .cell-label {
     display:none;
@@ -327,13 +337,74 @@ body .filter-cell .form-button {
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody,
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr,
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td,
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td{
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]),
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]){
     display: block !important;
     border:0;
     width: auto !important;
     text-align: left;
-    padding: 5px 10px !important;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]),
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]){
+    padding: 0px !important;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value{
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label.column-hidden,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label.column-hidden,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value.column-hidden,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value.column-hidden{
+    display: none;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label{
+    width:40%;
+    margin-top: 2px;    
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-value{
+    width:60%
+}
+.dataList.size_sm > form > .table-wrapper > table.cardLayout.cardCollapsible > tbody > tr.collapsed > td[xclass]:not(.collapsible_toggle_column), 
+.dataList.size_sm > .table-wrapper > table.cardLayout.cardCollapsible > tbody > tr.collapsed > td[xclass]:not(.collapsible_toggle_column),
+.dataList.size_sm > form > .table-wrapper > table.cardLayout.cardCollapsible > tbody > tr.collapsed > td.rowaction_body, 
+.dataList.size_sm > .table-wrapper > table.cardLayout.cardCollapsible > tbody > tr.collapsed > td.rowaction_body{
+    display: none !important;
+} 
+.cardLayout.cardCollapsible > tbody > tr > td.collapsible_toggle_column > .collapsible_toggle {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+    right:15px;
+    top:16px;
+    font-size: 16px;
+    color: #737373;
+}
+.cardLayout.cardCollapsible > tbody > tr > td.collapsible_toggle_column > .collapsible_toggle > .fa-plus-square,
+.cardLayout.cardCollapsible > tbody > tr.collapsed > td.collapsible_toggle_column > .collapsible_toggle > .fa-minus-square{
+    display: none;
+}
+.cardLayout.cardCollapsible > tbody > tr.collapsed > td.collapsible_toggle_column > .collapsible_toggle > .fa-plus-square{
+    display: block;
+}
+.card-actions a{
+    margin-right: 5px;
+}
+.dataList .collapsibleBtns {
+    text-align: right;
+}
+.dataList .collapsibleBtns a {
+    font-size: 90%;
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px;
 }
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.rowaction_body,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.rowaction_body{
@@ -374,6 +445,7 @@ body .filter-cell .form-button {
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox input,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio input{
     display: none !important;
+    margin-right: 5px;
 }
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i,
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i ,
@@ -392,17 +464,17 @@ body .filter-cell .form-button {
     overflow: hidden;
     cursor: pointer;
 }
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after,
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after{
-    display: none !important;
-}
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > :checked + i,
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > :checked + i,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > :checked + i,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > :checked + i {
     box-shadow: 0px 0px 8px 0 rgb(0 67 255 / 70%) !important;
+}
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after ,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after {
+    display:none;
 }
 
 .filter_form .mobile_search_trigger,
@@ -586,6 +658,51 @@ body .filter-cell .form-button {
 }
 .dataList .show_hide_control:hover ul {
     display: block;
+}
+.dataList .rowActionsDropdown .dropdown-menu.dropdown-menu-left{
+    left:0;
+    right: auto;
+}
+.dataList .rowActionsDropdown .dropdown-menu{
+    top: 26px;
+    padding: 5px;
+}
+.dataList .rowActionsDropdown .dropdown-menu .row_action{
+    padding: 5px;
+    display: block;
+}
+.dataList .rowActionsDropdown .dropdown-menu .row_action a {
+    background: transparent;
+    border:0;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+}
+.dataList .card .card-text.has-inline-label:after{
+    clear: both;
+    content:"";
+    display: block;
+}
+.dataList .card .card-text > .label{
+    display: inline-block;
+    width: 40%;
+    float: left;
+    font-weight: bold;
+    color: unset;
+    text-align: left;
+    font-size: inherit;
+    padding-left: 0px;
+    padding-right: 15px;
+    background: unset;
+    box-sizing: border-box;
+    white-space: unset !important;
+}
+.dataList .card .card-text > .column-value{
+    display: inline-block;
+    box-sizing: border-box;
+    width: 60%;
+    white-space: unset !important;
 }
 .body .dataList th.row_action:empty,
 .body .dataList td.row_action:empty{

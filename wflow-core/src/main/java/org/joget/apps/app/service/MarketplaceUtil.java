@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -73,7 +74,7 @@ public class MarketplaceUtil {
                         continue;
                     }
                     
-                    if (isNew != null && isNew && !obj.getString("isNew").equals("New")) {
+                    if (isNew != null && isNew && !"New".equals(obj.get("isNew").toString())) {
                         continue;
                     }
                     
@@ -280,8 +281,14 @@ public class MarketplaceUtil {
 
             try {
                 // get URL InputStream
-                HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
+                HttpClientBuilder builder = HttpClients.custom()
+                        .setRedirectStrategy(new LaxRedirectStrategy())
+                        .setDefaultRequestConfig(RequestConfig.custom()
+                                .setConnectTimeout(3000) // 3 seconds
+                                .setSocketTimeout(30000) // 30 seconds
+                                .build());
                 CloseableHttpClient client = builder.build();
+                
                 try {
                     String lastUpdate = "";
                     if (cache != null) {
@@ -299,7 +306,6 @@ public class MarketplaceUtil {
                             cache = data;
                         }
                     }
-                    lastRetrieve = now;
                 } finally {
                     try {
                         client.close();
@@ -309,6 +315,7 @@ public class MarketplaceUtil {
             } catch (Exception e) {
                 LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to retrieve data from marketplace.");
             }
+            lastRetrieve = now;
         }
     }
     
@@ -425,5 +432,5 @@ public class MarketplaceUtil {
                 LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to retrieve template from marketplace.");
             }
         }
-    }    
+    }  
 }

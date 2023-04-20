@@ -2,6 +2,10 @@
 html, body {
     overscroll-behavior: none;
 }
+b,
+strong {
+  font-weight: 700;
+}
 
 /* tinymce */
 .tox.tox-tinymce{
@@ -6120,5 +6124,13 @@ a.btn.disabled,fieldset:disabled a.btn {
     body:not(.horizontal_menu) #page,
     body:not(.horizontal_menu) header.navbar .navbar-inner{
         max-width: 1920px;
+    }
+}
+
+@media (max-width: 767px) {
+    #loginForm table tbody tr:last-child a[href],
+    #loginForm table tbody tr:last-child a.btn{
+        margin-left: auto;
+        margin-right: auto;
     }
 }

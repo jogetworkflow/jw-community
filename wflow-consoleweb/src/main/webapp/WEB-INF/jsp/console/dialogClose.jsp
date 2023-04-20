@@ -13,6 +13,9 @@
             }
         }
     </c:when>
+    <c:when test="${!empty script}">
+        ${script}
+    </c:when>   
     <c:otherwise>
         if (parent && parent.PopupDialog.closeDialog) {
             parent.PopupDialog.closeDialog();

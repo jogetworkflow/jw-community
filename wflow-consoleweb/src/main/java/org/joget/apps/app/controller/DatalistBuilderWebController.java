@@ -27,6 +27,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListBinder;
+import org.joget.apps.datalist.model.DataListDisplayColumnDefault;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
@@ -48,6 +49,7 @@ import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.ui.ModelMap;
@@ -57,6 +59,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.joget.apps.datalist.model.DataListDisplayColumn;
+import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 
 @Controller
 public class DatalistBuilderWebController {
@@ -215,6 +219,30 @@ public class DatalistBuilderWebController {
             collection.add(hm);
         }
         jsonObject.accumulate("actions", collection);
+        
+        //get available display columns
+        DataListDisplayColumn[] columns = dataListService.getAvailableDisplayColumns();
+        JSONArray disArr = new JSONArray();
+        for (DataListDisplayColumn column : columns) {
+            Plugin p = (Plugin) column;
+            HashMap hm = new HashMap();
+            hm.put("name", p.getName());
+            hm.put("label", p.getI18nLabel());
+            hm.put("className", column.getClassName());
+            if (column instanceof PropertyEditable) {
+                String propertyOptions = ((PropertyEditable) column).getPropertyOptions();
+                if (propertyOptions == null || propertyOptions.isEmpty()) {
+                    propertyOptions = "[{\"title\":\""+p.getI18nLabel()+"\", \"properties\" :[]}]";
+                }
+                hm.put("propertyOptions", PropertyUtil.injectHelpLink(p.getHelpLink(), propertyOptions));
+                hm.put("defaultPropertyValues", (column instanceof DataListDisplayColumnDefault)?(((DataListDisplayColumnDefault) column).getDefaultPropertyValues()):PropertyUtil.getDefaultPropertyValues(propertyOptions));
+            }
+            hm.put("icon", column.getIcon());
+            hm.put("jscomponent", column.getBuilderJavaScriptComponent());
+            disArr.put(hm);
+        }
+        jsonObject.put("displayColumns", disArr);
+        
         jsonObject.write(writer);
     }
 
@@ -294,7 +322,7 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping(value = "/dbuilder/getRenderingTemplate", method = RequestMethod.POST)
-    public void getRenderingTemplate(ModelMap model, Writer writer, @RequestParam("json") String json) throws Exception {
+    public void getRenderingTemplate(ModelMap model, Writer writer, @RequestParam("json") String json, @RequestParam("listId") String listId) throws Exception {
         try {
             json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
             JSONObject obj = new JSONObject(json);
@@ -304,11 +332,38 @@ public class DatalistBuilderWebController {
                 String className = obj.getString("className");
                 DataListTemplate template = (DataListTemplate) pluginManager.getPlugin(className);
                 if (template != null) {
+                    DataList datalist = new DataList();
+                    datalist.setId(listId);
+                    template.setDatalist(datalist);
+                    
                     if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
                         JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
                         template.setProperties(PropertyUtil.getProperties(objProperty));
                     }
-                    writer.write(template.getTemplate());
+                    
+                    
+                    //Handle template styling
+                    Map<String, String> styles = new HashMap<String, String>();
+                    styles.put("MOBILE_STYLE", "");
+                    styles.put("TABLET_STYLE", "");
+                    styles.put("STYLE", "");
+                    
+                    Map<String, String> templateStyles = template.getStyles();
+                    for (String key : templateStyles.keySet()) {
+                        styles.put(key, styles.get(key) + " " + templateStyles.get(key));
+                    }
+                    String css = styles.get("STYLE");
+                    if (!styles.get("TABLET_STYLE").isEmpty()) {
+                        css +=  "@media (max-width: 991px) {" + styles.get("TABLET_STYLE") + "}";
+                    }
+                    if (!styles.get("MOBILE_STYLE").isEmpty()) {
+                        css +=  "@media (max-width: 767px) {" + styles.get("MOBILE_STYLE") + "}";
+                    }
+                    if (!css.isEmpty()) {
+                        css = "<style>"+ css + "</style>";
+                    }
+                    
+                    writer.write(css + template.getTemplate());
                 }
             }
         } catch (Exception e) {
@@ -331,14 +386,22 @@ public class DatalistBuilderWebController {
             if (binder != null) {
                 dataList.setBinder(binder);
             }
-        
-            DataListColumn c = JsonUtil.parseColumnFromJsonObject(new JSONObject(column), Permission.DEFAULT);
+            
+            DataListColumn c;
             Map rowData = PropertyUtil.getPropertiesValueFromJson(row);
-            
-            JSONObject jsonObject = new JSONObject();
             DataListDecorator deco = new DataListDecorator(dataList);
-            String formatted = deco.formatColumn(c, rowData, value);
+            JSONObject jsonObject = new JSONObject();
+            JSONObject colObj = new JSONObject(column);
             
+            if (colObj.has(JsonUtil.PROPERTY_CLASS_NAME)) {
+                c = JsonUtil.parseDisplayColumnFromJsonObject(colObj, Permission.DEFAULT);
+                ((DataListDisplayColumnProxy) c).setDatalist(dataList);
+                value = ((DataListDisplayColumnProxy) c).getRowValue(rowData, 0);
+            } else {
+                c = JsonUtil.parseColumnFromJsonObject(colObj, Permission.DEFAULT);
+            }
+            String formatted = deco.formatColumn(c, rowData, value);
+
             jsonObject.accumulate("formatted", formatted);
             jsonObject.write(writer);
         } catch (Exception e) {

@@ -1,5 +1,7 @@
 .dataList .table-wrapper {
     overflow-x: auto;
+    min-height: 300px;
+    padding-bottom: 50px;
 }
 
 .dataList .table-wrapper::-webkit-scrollbar {
@@ -242,4 +244,23 @@ body .dataList .select_checkbox label{
 }
 body .dataList .select_checkbox label i {
     margin: 0;
+}
+
+.dataList .rowActionsDropdown, .dropdown{
+    position: relative;
+}
+.dataList .rowActionsDropdown .dropdown-menu, .dropdown .dropdown-menu{
+    display:none;
+}
+.dataList .rowActionsDropdown .focus + .dropdown-menu,
+.dropdown .focus + .dropdown-menu{
+    display: block;
+    position: absolute;
+    background: #fff;
+    z-index: 3;
+    width: 150px;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 0.25rem;
+    margin-top: 4px;
 }

@@ -1,7 +1,9 @@
 JPopup = {
     tokenName : "",
     tokenValue : "",
-    dialogboxes : new Array(),
+    dialogboxes : new Object(),
+    isChanges : new Object(),
+    msg : "Changes that you made may not be saved. Please click 'Cancel' button to stay or click 'OK' button to leave.",
     
     create: function (id, title, width, height) {
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
@@ -16,7 +18,7 @@ JPopup = {
                 if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                     isIphone = true;
                 }
-                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
+                JPopup.dialogboxes[id] = new Boxy('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
                 
                 JPopup.dialogboxes[id].options.afterHide = function() {
                     try {
@@ -48,13 +50,14 @@ JPopup = {
         height = UI.getPopUpHeight(height);
         
         $("#"+id).remove();
-        JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
+        JPopup.dialogboxes[id].setContent('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
         $(".boxy-modal-blackout").off("click");
         $(".boxy-modal-blackout").on("click", function(){
-            JPopup.dialogboxes[id].hide();
-            $(".boxy-modal-blackout").off("click");
+            if (JPopup.hide(id)) {
+                $(".boxy-modal-blackout").off("click");
+            }
         });
         
         JPopup.fixIOS(id);
@@ -89,7 +92,27 @@ JPopup = {
     },
     
     hide : function (id) {
-        JPopup.dialogboxes[id].hide();
+        if (JPopup.checkChangesAndConfirmHide(id)) {
+            JPopup.dialogboxes[id].hide();
+            JPopup.isChanges[id] = '';
+            return true;
+        }
+        return false;
+    },
+    
+    checkChangesAndConfirmHide : function(id) {
+        if (JPopup.isChanges[id] !== $('form:not(.filter_form)', $('iframe#'+id).contents()).serialize()) {
+            return confirm('There is changes detected. Are you sure to close?');
+        }
+        return true;
+    },
+    
+    trackChanges : function(id) {
+        JPopup.isChanges[id] = $('form:not(.filter_form)', $('iframe#'+id).contents()).serialize();
+        
+        UI.loadMsg(['ubuilder.saveBeforeClose'], function(msgs){
+            JPopup.msg = msgs['ubuilder.saveBeforeClose'];
+        });
     },
     
     fixIOS : function(id) {

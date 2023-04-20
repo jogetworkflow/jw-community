@@ -15,11 +15,15 @@
                     {{column_title data-cbuilder-droparea-msg="@@datalist.simpleCardTemplate.title@@"}}
                         <h5 class="card-title">{{body||@@datalist.simpleCardTemplate.title@@}}</h5>
                     {{column_title}}
-                    {{columns<#if element.properties.inlineLabel! == 'true'> data-cbuilder-style="[{}, {'prefix' : 'header', 'class' : '.card-text > .label', 'label' : '@@datalist.simpleCardTemplate.label@@'}]"</#if>}}
+                    {{columns<#if element.properties.inlineLabel! == 'true'> data-cbuilder-style="[{}, {'prefix' : 'header', 'class' : '.card-text > .label', 'label' : '@@datalist.simpleCardTemplate.label@@'}, {'prefix' : 'column-value', 'class' : '.card-text > .column-value', 'label' : '@@form.grid.value@@'}]"</#if>}}
                          {{column}}
-                            <div class="card-text mb-1">
-                                <#if element.properties.inlineLabel! == 'true'><strong class="label">{{label||@@datalist.simpleCardTemplate.label@@}}:</strong><br/></#if>
-                                {{body||@@datalist.simpleCardTemplate.textContent@@}}
+                            <div class="card-text mb-2 <#if element.properties.inlineLabel! == 'true'>has-inline-label</#if>">
+                                <#if element.properties.inlineLabel! == 'true'>
+                                    <div class="label">{{label||@@datalist.simpleCardTemplate.label@@}}</div>
+                                    <div class="column-value">{{body||@@datalist.simpleCardTemplate.textContent@@}}</div>
+                                <#else>
+                                    {{body||@@datalist.simpleCardTemplate.textContent@@}}
+                                </#if>
                             </div>
                          {{column}}
                     {{columns}}

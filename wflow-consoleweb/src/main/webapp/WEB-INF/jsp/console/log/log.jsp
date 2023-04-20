@@ -8,6 +8,7 @@
     #logviewer .line.warn {color:yellow;}
     #logviewer .line.debug {color:lightskyblue;}
     .followbuttondiv {position: fixed; right: 80px; margin-top: 10px;}
+    .rtl .followbuttondiv {left: 80px; right: unset;}
     .linenumber {display: inline-block; width: 45px; text-align: left; color: lightslategrey; font-size: 10px; vertical-align: top; padding-top: 2px;}
     .text {display: inline-block; width: calc(100% - 55px);}
 </style>    

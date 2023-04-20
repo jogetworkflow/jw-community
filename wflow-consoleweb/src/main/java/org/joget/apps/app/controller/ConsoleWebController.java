@@ -1553,11 +1553,19 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/versioning")
     public String consoleAppVersioning(ModelMap map, @RequestParam(value = "appId") String appId) throws JSONException {
+        appId = SecurityUtil.validateStringInput(appId);
         AppDefinition appDef = appService.getAppDefinition(appId, null);
         if (appDef == null) {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/desktop/apps";
-            map.addAttribute("url", url);
+            
+            //make it redirect to app version 0 and show the overlay with all apps.
+            String script = "if (parent && parent.PopupDialog !== undefined){parent.PopupDialog.closeDialog();}\n";
+            script += "if (parent && parent.AdminBar !== undefined){parent.AdminBar.showQuickOverlay('"+StringUtil.escapeString(url, StringUtil.TYPE_JAVASCIPT)+"');}\n";
+            script += "if (parent && parent.CustomBuilder !== undefined){parent.CustomBuilder.renderAppNotExist('"+StringUtil.escapeString(appId, StringUtil.TYPE_JAVASCIPT)+"');}\n";
+            
+            map.addAttribute("script", script);
+            
             return "console/dialogClose";
         }
         map.addAttribute("appId", appDef.getId());
@@ -6202,9 +6210,6 @@ public class ConsoleWebController {
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);
 
-            appDef.setName(jsonObject.getString("name"));
-            appDefinitionDao.merge(appDef);
-
             if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
                 appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
             }
@@ -6218,11 +6223,14 @@ public class ConsoleWebController {
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
                 appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
-                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT).toString());
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_PULL).toString());
+                appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC).toString());
             }
             AppDevUtil.setAppDevProperties(appDef, appProps);
+            
+            appDef.setName(jsonObject.getString("name"));
+            appDefinitionDao.merge(appDef);
 
             JSONObject result = new JSONObject();
             result.accumulate("success", true);

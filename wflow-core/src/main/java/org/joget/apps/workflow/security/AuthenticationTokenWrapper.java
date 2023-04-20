@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.security.auth.Subject;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import static org.joget.workflow.model.service.WorkflowUserManager.ROLE_ADMIN;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -44,6 +45,9 @@ public class AuthenticationTokenWrapper implements Authentication {
         }
         if (EnhancedWorkflowUserManager.isAppAdminRole()) {
             tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APPADMIN));
+        }
+        if (tempAuthorities.isEmpty()) {
+            tempAuthorities.add(new SimpleGrantedAuthority(WorkflowUserManager.ROLE_USER));
         }
 
         return tempAuthorities;

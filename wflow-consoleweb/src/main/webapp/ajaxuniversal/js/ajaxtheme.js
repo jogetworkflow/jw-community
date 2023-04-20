@@ -13,6 +13,8 @@ AjaxUniversalTheme = {
                 }
             }
         };
+        
+        $("body").append('<div id="ajaxtheme_dynamic_elements_after_this" style="display:none;"></div>');
     },
     
     scrollBar : function(selector, mousewheelaxis) {
@@ -49,6 +51,8 @@ AjaxUniversalTheme = {
     },
     
     callback : function(data) {
+        AjaxUniversalTheme.clearDynamicElement();
+        
         if (data.indexOf("ajaxtheme_loading_container") !== -1) {
             var html = $(data);
             var title = $(html).find("#ajaxtheme_loading_title");
@@ -142,6 +146,11 @@ AjaxUniversalTheme = {
             
         });
     },
+    
+    /* remove all dynamic added elemetns of the page */
+    clearDynamicElement : function() {
+        $("#ajaxtheme_dynamic_elements_after_this").nextAll().remove();
+    }
 };
 
 $(function(){

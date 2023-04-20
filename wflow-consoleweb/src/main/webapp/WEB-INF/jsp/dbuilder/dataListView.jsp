@@ -32,13 +32,13 @@
                         <c:when test="${actionResult.type == 'REDIRECT' && actionResult.url == 'REFERER'}">
                             <c:set var="redirected" value="true" />
                             <script>
-                                location.href = "<c:out value="${header['Referer']}"/>";
+                                location.href = "<ui:escape value="${header['Referer']}" format="javascript"/>";
                             </script>
                         </c:when>
                         <c:when test="${actionResult.type == 'REDIRECT'  && !empty actionResult.url}">
                             <c:set var="redirected" value="true" />
                             <script>
-                                location.href = "<c:out value="${actionResult.url}"/>";
+                                location.href = "<ui:escape value="${actionResult.url}" format="javascript"/>";
                             </script>
                         </c:when>
                         <c:otherwise>   
@@ -144,6 +144,12 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
+                                <c:if test="${!empty dataList.properties.cardCollapsible && dataList.properties.cardCollapsible eq 'true'}">
+                                    <div class="collapsibleBtns" style="display:none">
+                                        <a class="expandAll"><i class="fas fa-plus-square"></i> <fmt:message key="dbuilder.expandAll"/></a>
+                                        <a class="collapseAll"><i class="fas fa-minus-square"></i> <fmt:message key="dbuilder.collapseAll"/></a>
+                                    </div>    
+                                </c:if>
                                 <div class="table-wrapper" data-disableresponsive="${dataList.disableResponsive}">
                                     <c:set var="tableStyle" value=""/>
                                     <c:if test="${!empty dataList.properties.draggabletable && dataList.properties.draggabletable eq 'true'}">
@@ -151,6 +157,13 @@
                                     </c:if>
                                     <c:if test="${!empty dataList.properties.showhidecolumns && dataList.properties.showhidecolumns eq 'true'}">
                                         <c:set var="tableStyle" value="${tableStyle} showhidecolumns"/>
+                                    </c:if>
+                                    <c:if test="${!empty dataList.properties.cardCollapsible && dataList.properties.cardCollapsible eq 'true'}">
+                                        <c:set var="tableStyle" value="${tableStyle} cardCollapsible"/>
+                                        
+                                        <c:if test="${!empty dataList.properties.cardCollapseByDefault && dataList.properties.cardCollapseByDefault eq 'true'}">
+                                            <c:set var="tableStyle" value="${tableStyle} cardCollapseByDefault"/>
+                                        </c:if>
                                     </c:if>
                                    <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed responsivetable ${tableStyle}" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                                        <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
@@ -212,7 +225,7 @@
                                                    </c:otherwise>
                                                 </c:choose>
                                            </c:forEach>
-                                           <c:if test="${!empty dataList.properties.rowActionsMode && dataList.properties.rowActionsMode eq 'true'}">
+                                           <c:if test="${!empty dataList.properties.rowActionsMode && (dataList.properties.rowActionsMode eq 'true' || dataList.properties.rowActionsMode eq 'dropdown')}">
                                                <c:set var="actionTitle" value=""/>
                                                <c:set var="firstHeaderCssClass" value="rowaction_header"/>
                                                <c:set var="firstBodyCssClass" value="rowaction_body"/>

@@ -232,6 +232,28 @@
             setFontSize("20");
             setCookie("20");
         });
+        
+        $(document).off("click.dropdown", "[data-toggle=\"dropdown\"]");
+        $(document).on("click.dropdown", "[data-toggle=\"dropdown\"]", function(){
+            var dropdown = $(this);
+            $(document).off("click.dropdownclose");
+            $(dropdown).toggleClass("focus");
+            
+            $(document).find("[data-toggle=\"dropdown\"]").each(function(){
+               if (!$(this).is(dropdown)) {
+                   $(this).removeClass("focus");
+               }
+            });
+            
+            if ($(this).hasClass("focus")) {
+                $(document).on("click.dropdownclose", function(e){
+                    if (!$(dropdown).is(e.target) && $(dropdown).has(e.target).length === 0) {
+                        $(dropdown).removeClass("focus");
+                        $(document).off("click.dropdownclose");
+                    }
+                });
+            }
+        });
     });
     
     function setCookie(cvalue) {

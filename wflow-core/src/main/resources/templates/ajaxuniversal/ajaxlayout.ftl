@@ -12,6 +12,6 @@
         ${content_inner_after!}
     </div>
     <#if analyzer??>
-        <textarea id="ajaxAnalyzerJson" rows="1" cols="1" style="display:none;">${analyzer!}</textarea>
+        <textarea id="ajaxAnalyzerJson" rows="1" cols="1" style="display:none;">${analyzer!?html}</textarea>
     </#if>
 </div>

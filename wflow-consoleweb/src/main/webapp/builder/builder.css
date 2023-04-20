@@ -431,7 +431,7 @@ body.right-panel-resizing #right-panel-resize-block{
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
 }
 #cbuilder #builder_canvas.mobile{
-    width: 320px !important;
+    width: 375px !important;
     background: #eee;
     max-width: calc(100vw - 10px - 13.5vw);
     max-width: calc(100vw - 10px - var(--builder-left-panel-width));
@@ -2160,6 +2160,31 @@ body.quick-nav-shown #builder-quick-nav {
     color: #004085;
     background-color: #cce5ff;
     border-color: #b8daff;
+}
+
+/* app ot exist*/
+#appNotExist {
+    background:#0000006e; 
+    position:fixed; 
+    top:0; 
+    left:0; 
+    right:0; 
+    bottom:0; 
+    z-index: 2100;
+}
+
+#appNotExist .error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 20px;
+    min-width: 300px;
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
 }
 
 /* Popup dialog */

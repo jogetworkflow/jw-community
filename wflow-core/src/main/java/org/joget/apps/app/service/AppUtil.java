@@ -1086,7 +1086,7 @@ public class AppUtil implements ApplicationContextAware {
 
                             return html;
                         } else if (theme.getCss() != null) {
-                            return "<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
+                            return "<link href=\""+request.getContextPath()+"/wro/userview.min.css?build="+ResourceBundleUtil.getMessage("build.number")+"\" rel=\"stylesheet\" type=\"text/css\" />\n<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
                         }
                     }
                 }
