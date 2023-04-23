@@ -403,9 +403,6 @@ body.right-panel-resizing #right-panel-resize-block{
 #cbuilder[data-browser="ie"] #builder_canvas{
     left:30px;
 }
-#cbuilder.default-builder #builder_canvas {
-    max-width: 1200px;
-}
 #cbuilder.quick-nav-shown #builder_canvas {
     width: calc( 100vw - 35px - 13.5vw);
     width: calc( 100vw - 35px - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));

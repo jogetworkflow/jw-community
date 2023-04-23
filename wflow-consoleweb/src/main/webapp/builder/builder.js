@@ -2677,7 +2677,7 @@
         }
         $(".responsive-buttons button").removeClass("active");
         $(".responsive-buttons button#"+view+"-view").addClass("active");
-	$("body, #builder_canvas, #previewView").removeClass("mobile tablet desktop").addClass(view);
+	$("body, #builder_canvas, #previewView").removeClass("mobile tablet desktop noviewport").addClass(view);
         
         //for builder
         $("#element-highlight-box, #element-select-box").hide();

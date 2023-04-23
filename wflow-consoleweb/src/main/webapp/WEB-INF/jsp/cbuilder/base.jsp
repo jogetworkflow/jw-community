@@ -183,6 +183,10 @@
                                 <button id="desktop-view"  data-view="desktop" class="btn btn-light active"  title="<fmt:message key="cbuilder.desktopView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-laptop"></i>
                                 </button>
+                                    
+                                <button id="noviewport-view"  data-view="noviewport" class="btn btn-light"  title="<fmt:message key="cbuilder.noViewport"/>" data-cbuilder-action="viewport">
+                                    <i class="las la-arrows-alt-h"></i>
+                                </button>    
                             </div>
                         </div>
                     </div>  
