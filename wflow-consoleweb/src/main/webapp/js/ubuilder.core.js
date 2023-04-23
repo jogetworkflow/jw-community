@@ -676,6 +676,10 @@ UserviewBuilder = {
                 
             UserviewBuilder.loadContentPage();
         } else {
+            //hide viewport buttons & set to desktop size
+            $("#top-panel .responsive-buttons").hide();
+            CustomBuilder.viewport("desktop");
+            
             $(".components-list > li").show();
             $("[data-section].page_components_palette").hide();
             
@@ -724,6 +728,9 @@ UserviewBuilder = {
      * Load and render content page, called from UserviewBuilder.load
      */
     loadContentPage : function() {
+        //show viewport buttons
+        $("#top-panel .responsive-buttons").show();
+            
         $("body").addClass("page-component-editor");
         $("#save-content-btn").removeClass("hasChange");
         

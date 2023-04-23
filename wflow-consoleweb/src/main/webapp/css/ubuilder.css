@@ -1,6 +1,9 @@
 body {
     padding: 0px !important;
 }
+body #page.page-content-wrapper {
+    padding-left: 0px !important;
+}
 .userview-body-content {
     min-height: 70vh;
     position: relative;
