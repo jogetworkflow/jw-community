@@ -42,6 +42,16 @@
             };
 
             $(document).ready(function() {
+                let lockSocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "${pageContext.request.contextPath}/web/socket/plugin/org.kecak.apps.app.lib.UrlLockSocket");
+                lockSocket.onmessage = function(event) {
+                    let text = event.data;
+                    if(text) {
+                        alert(text);
+                    }
+                }
+
+                lockSocket.onopen = () => lockSocket.send("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/${datalist.id}");
+
                 DatalistBuilder.appId = '<c:out value="${appId}"/>';
                 DatalistBuilder.appVersion = '<c:out value="${appVersion}"/>';
                 DatalistBuilder.saveUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderSave/"/>';

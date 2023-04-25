@@ -42,6 +42,16 @@
             
         <script type="text/javascript">
             $(document).ready(function () {
+                let lockSocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "${pageContext.request.contextPath}/web/socket/plugin/org.kecak.apps.app.lib.UrlLockSocket");
+                lockSocket.onmessage = function(event) {
+                    let text = event.data;
+                    if(text) {
+                        alert(text);
+                    }
+                }
+
+                lockSocket.onopen = () => lockSocket.send('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/<c:out value="${userviewId}"/>');
+
                 UserviewBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderSave/';
                 UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderPreview/';
                 UserviewBuilder.contextPath = '${pageContext.request.contextPath}';
