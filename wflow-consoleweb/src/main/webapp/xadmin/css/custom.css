@@ -5843,3 +5843,26 @@ footer {
     display: block;
     width: 100%;
 }
+.subform_wrapper .subform-container.no-frame {
+    border: 0;
+    padding: 0;
+    margin-top: 0px;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+    margin-bottom: 0px;
+}
+
+.subform_repeater .repeater-action a {
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50% !important;
+}
+
+.subform_repeater .subform_repeater_action button{
+    color: #ffffff;
+    background-color: #1a237e;
+    outline: 0;
+    border-radius: 2px;
+    border: 1px solid #1a237e;
+    padding: 5px;
+}

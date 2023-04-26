@@ -1302,3 +1302,33 @@ body.rtl .form-edit-btn{
     width: 100% !important;
     margin-top: 20px !important;
 }
+
+.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+
+.subform_wrapper .subform-container.no-frame {
+    border: 0;
+    padding: 0;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+.subform_repeater .repeater-action a {
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50%;
+}
+
+.subform_repeater .subform_repeater_action button{
+    color: #fff;
+    background-color: var(--theme-button-bg, #0d6efd);
+    outline: 0;
+    border-radius: .25rem;
+    border: 1px solid var(--theme-button-bg, #0d6efd);
+    padding: 5px;
+}
