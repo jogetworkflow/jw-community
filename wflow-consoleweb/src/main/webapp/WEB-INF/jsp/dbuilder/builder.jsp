@@ -48,7 +48,7 @@
                     if(text) {
                         alert(text);
                     }
-                }
+                };
 
                 lockSocket.onopen = () => lockSocket.send("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/${datalist.id}");
 

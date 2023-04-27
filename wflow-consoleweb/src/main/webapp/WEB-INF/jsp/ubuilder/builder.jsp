@@ -48,7 +48,7 @@
                     if(text) {
                         alert(text);
                     }
-                }
+                };
 
                 lockSocket.onopen = () => lockSocket.send('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/<c:out value="${userviewId}"/>');
 
