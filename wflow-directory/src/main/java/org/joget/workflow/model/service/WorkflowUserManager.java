@@ -23,6 +23,7 @@ public class WorkflowUserManager {
     
     public static final String ROLE_ANONYMOUS = "roleAnonymous";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
 
     private ThreadLocal currentThreadUser = new ThreadLocal();
     private ThreadLocal currentThreadUserRoles = new ThreadLocal();
