@@ -1528,7 +1528,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/console/app/list")
+    @RequestMapping({"/json/console/app/list", "/json/console/monitor/app/list"})
     public void consoleAppListJson(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, name, sort, desc, start, rows);

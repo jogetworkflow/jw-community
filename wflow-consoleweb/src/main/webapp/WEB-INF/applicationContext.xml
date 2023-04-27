@@ -98,11 +98,11 @@
         <security:anonymous username="roleAnonymous"/>
 
         <!-- App admin paths -->
-        <security:intercept-url pattern="/web/json/console/monitor/apm/**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
+        <security:intercept-url pattern="/web/json/console/monitor/apm/**" access="ROLE_ADMIN, ROLE_SYSADMIN, ROLE_APPADMIN"/>
         <security:intercept-url pattern="/web/json/console/app/**" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/web/console/app/**" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/web/desktop/apps" access="ROLE_ADMIN"/>
-                
+        
         <!-- Web Console system admin paths -->
         <security:intercept-url pattern="/web/console/monitor/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/console/setting/**" access="ROLE_SYSADMIN"/>
@@ -110,6 +110,13 @@
         <security:intercept-url pattern="/web/json/console/directory/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/monitor/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/setting/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/directory/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/workflow/audittrail/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/applog/**" access="ROLE_SYSADMIN"/>
+        
+        <!-- i18n -->
+        <security:intercept-url pattern="/web/console/i18n/**" access="ROLE_ADMIN, ROLE_SYSADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
                 
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN, ROLE_APPADMIN" />
