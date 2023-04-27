@@ -3,10 +3,8 @@
 }
 
 html {
-    overflow-x: hidden;
     -ms-overflow-style: none;
     overflow-y: auto;
-    height: 100%;
 }
 
 html.ismobile * {
@@ -21,21 +19,15 @@ body {
 
 body:not(.embeded) {
     width: 100%;
-    overflow: hidden;
-    height: calc(100% - 65px);
     margin-top: 65px;
 }
 
 body:not(.embeded) #page {
     width: 100%;
-    overflow-y: auto;
-    height: 100%;
 }
 
 body.popupBody:not(.embeded) {
-    height: 100%;
     margin-top: 0px;
-    overflow: auto;
 }
 
 @supports (-webkit-overflow-scrolling: touch) {
@@ -64,7 +56,7 @@ header.navbar {
     -moz-user-select: none;
     -ms-user-select: none;
     position: fixed;
-    z-index: 200;
+    z-index: 1400;
     width: 100%;
     left: 0;
     top: 0;
