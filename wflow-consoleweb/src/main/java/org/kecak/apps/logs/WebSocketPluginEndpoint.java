@@ -35,7 +35,7 @@ public class WebSocketPluginEndpoint {
         }
         sessions.put(session.getId(), (PluginWebSocket) plugin);
 
-        session.getBasicRemote().sendText(((PluginWebSocket) plugin).onOpen());
+        session.getBasicRemote().sendText(((PluginWebSocket) plugin).onOpen(session.getId()));
     }
 
     @OnMessage
@@ -43,7 +43,7 @@ public class WebSocketPluginEndpoint {
         final String sessionId = session.getId();
         final PluginWebSocket plugin = sessions.get(sessionId);
         try {
-            session.getBasicRemote().sendText(plugin.onMessage(message));
+            session.getBasicRemote().sendText(plugin.onMessage(sessionId, message));
         } catch (IOException e) {
             LogUtil.error(getClass().getName(), e, e.getMessage());
         }
@@ -56,9 +56,9 @@ public class WebSocketPluginEndpoint {
         final PluginWebSocket plugin = sessions.get(sessionId);
 
         {
-            plugin.onClose();
+            plugin.onClose(sessionId);
         }
-        sessions.remove(session.getId());
+        sessions.remove(sessionId);
     }
 
     @OnError

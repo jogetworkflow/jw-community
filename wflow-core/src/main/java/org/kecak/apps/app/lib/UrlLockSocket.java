@@ -1,5 +1,6 @@
 package org.kecak.apps.app.lib;
 
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.util.WorkflowUtil;
 import org.kecak.apps.app.model.LockEntry;
@@ -18,20 +19,22 @@ public class UrlLockSocket extends ExtDefaultPlugin implements PluginWebSocket {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Override
-    public String onMessage(String url) {
+    public String onMessage(String sessionId, String url) {
         final String currentUsername = WorkflowUtil.getCurrentUsername();
         final LockEntry newEntry = new LockEntry(url, currentUsername);
         final Optional<LockEntry> optEntry = locks.stream().filter(newEntry::equals).findFirst();
         if(optEntry.isPresent()) {
             return "URL is being locked by [" + optEntry.get().getUsername() + "] at [" + dateFormat.format(optEntry.get().getDate())+ "]";
         } else {
+            LogUtil.info(getClass().getName(), "Acquiring lock for session [" + sessionId + "] url [" + entry.getUrl() + "]");
             locks.add(entry = newEntry);
             return "";
         }
     }
 
     @Override
-    public void onClose() {
+    public void onClose(String sessionId) {
+        LogUtil.info(getClass().getName(), "Releasing lock for session [" + sessionId + "]");
         locks.remove(entry);
     }
 
