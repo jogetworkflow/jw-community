@@ -137,6 +137,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kecak.apps.app.model.EmailProcessorPlugin;
 import org.kecak.apps.app.model.SchedulerPlugin;
 import org.kecak.apps.incomingEmail.dao.IncomingEmailDao;
 import org.kecak.apps.incomingEmail.model.IncomingEmail;
@@ -5418,7 +5419,8 @@ public class ConsoleWebController {
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", ResourceBundleUtil.getMessage("setting.plugin.processParticipant"));
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", ResourceBundleUtil.getMessage("setting.plugin.processTool"));
         pluginTypeMap.put("org.joget.apps.app.model.ProcessFormModifier", ResourceBundleUtil.getMessage("setting.plugin.processFormModifier"));
-        pluginTypeMap.put(SchedulerPlugin.class.getName(), ResourceBundleUtil.getMessage("setting.plugin.scheduler"));
+        pluginTypeMap.put(EmailProcessorPlugin.class.getName(), ResourceBundleUtil.getMessage("setting.plugin.EmailProcessorPlugin"));
+        pluginTypeMap.put(SchedulerPlugin.class.getName(), ResourceBundleUtil.getMessage("setting.plugin.SchedulerPlugin"));
 
         return PagingUtils.sortMapByValue(pluginTypeMap, false);
     }

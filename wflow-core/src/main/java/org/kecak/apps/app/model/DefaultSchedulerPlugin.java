@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author aristo
  *
- * Default Implementation of Scheduler Plugin
+ * Default Implementation template for {@link SchedulerPlugin}
  */
 public abstract class DefaultSchedulerPlugin extends ExtDefaultPlugin implements SchedulerPlugin {
     /**
@@ -21,7 +21,7 @@ public abstract class DefaultSchedulerPlugin extends ExtDefaultPlugin implements
      * @param context
      * @return
      */
-    final public boolean everyHalfAnHour(@Nonnull JobExecutionContext context) {
+    final protected boolean everyHalfAnHour(@Nonnull JobExecutionContext context) {
 
         Calendar c = Calendar.getInstance();
         c.setTime(context.getScheduledFireTime());
@@ -36,7 +36,7 @@ public abstract class DefaultSchedulerPlugin extends ExtDefaultPlugin implements
      * @param context
      * @return
      */
-    final public boolean everyHour(@Nonnull JobExecutionContext context) {
+    final protected boolean everyHour(@Nonnull JobExecutionContext context) {
         Calendar c = Calendar.getInstance();
         c.setTime(context.getScheduledFireTime());
 
@@ -50,7 +50,7 @@ public abstract class DefaultSchedulerPlugin extends ExtDefaultPlugin implements
      * @param context
      * @return
      */
-    final public boolean everyDay(@Nonnull JobExecutionContext context) {
+    final protected boolean everyDay(@Nonnull JobExecutionContext context) {
 
         Calendar c = Calendar.getInstance();
         c.setTime(context.getScheduledFireTime());
