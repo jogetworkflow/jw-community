@@ -3,16 +3,18 @@ package org.kecak.apps.app.model;
 import java.util.Date;
 
 public class LockEntry {
+    private String sessionId;
     private String url;
     private String username;
 
     private Date date;
 
-    public LockEntry(String url, String username) {
-        this(url, username, new Date());
+    public LockEntry(String sessionId, String url, String username) {
+        this(sessionId, url, username, new Date());
     }
 
-    public LockEntry(String url, String username, Date date) {
+    public LockEntry(String sessionId, String url, String username, Date date) {
+        this.sessionId = sessionId;
         this.url = url;
         this.username = username;
         this.date = date;

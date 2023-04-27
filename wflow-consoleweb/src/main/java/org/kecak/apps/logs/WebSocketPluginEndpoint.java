@@ -18,7 +18,7 @@ import java.util.Map;
  * Testing web socket according to
  * https://www.baeldung.com/java-websockets
  */
-@ServerEndpoint(value = "/web/socket/plugin/{className}")
+@ServerEndpoint(value = "/web/websocket/plugin/{className}")
 public class WebSocketPluginEndpoint {
     private Map<String, PluginWebSocket> sessions = new HashMap<>();
 

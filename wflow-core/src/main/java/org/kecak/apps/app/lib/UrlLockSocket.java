@@ -21,12 +21,12 @@ public class UrlLockSocket extends ExtDefaultPlugin implements PluginWebSocket {
     @Override
     public String onMessage(String sessionId, String url) {
         final String currentUsername = WorkflowUtil.getCurrentUsername();
-        final LockEntry newEntry = new LockEntry(url, currentUsername);
+        final LockEntry newEntry = new LockEntry(sessionId, url, currentUsername);
         final Optional<LockEntry> optEntry = locks.stream().filter(newEntry::equals).findFirst();
         if(optEntry.isPresent()) {
             return "URL is being locked by [" + optEntry.get().getUsername() + "] at [" + dateFormat.format(optEntry.get().getDate())+ "]";
         } else {
-            LogUtil.info(getClass().getName(), "Acquiring lock for session [" + sessionId + "] url [" + entry.getUrl() + "]");
+            LogUtil.info(getClass().getName(), "Acquiring lock for session [" + sessionId + "]");
             locks.add(entry = newEntry);
             return "";
         }
