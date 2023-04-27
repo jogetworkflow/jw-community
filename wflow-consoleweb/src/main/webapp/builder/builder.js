@@ -3135,6 +3135,8 @@
      * Render additional menus to adding bar
      */
     intBuilderMenu : function() {
+        UI.userview_app_id = CustomBuilder.appId;
+        
         if ($("#quick-nav-bar").find("#builder-quick-nav").length === 0) {
             $("#quick-nav-bar").append('<div id="closeQuickNav"></div>');
             $("#quick-nav-bar").append('<div id="builder-quick-nav">\
