@@ -47,7 +47,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String jscss = "";
         jscss += super.getInternalJsCssLib(data);
         if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
-            jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" async></script>";
+            jscss += "\n<script src=\"" + data.get("context_path") + "/ajaxuniversal/js/ajaxtheme.js\" defer></script>";
             jscss += "\n<script>" + getContentPlaceholderRules() + "</script>";
         }
         return jscss;
@@ -169,7 +169,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
 
             jsCssLink += "<style>" + generateLessCss() + "</style>";
 
-            jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/ajaxuniversal.min.js\" async></script>\n";
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/ajaxuniversal.min.js\" defer></script>\n";
 
             if (enableResponsiveSwitch()) {
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/universal/lib/responsive-switch.min.js\" defer></script>\n";
