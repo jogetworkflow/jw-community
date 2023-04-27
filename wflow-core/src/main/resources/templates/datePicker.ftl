@@ -51,6 +51,12 @@
                         <#if isRTL!>
                             ,isRTL: true
                         </#if>
+                        ,timeOnlyTitle : "@@form.datepicker.chooseTime@@"
+                        ,timeText : "@@form.datepicker.time@@"
+                        ,hourText : "@@form.datepicker.hour@@"
+                        ,minuteText : "@@form.datepicker.minute@@"
+                        ,currentText : "@@form.datepicker.now@@"
+                        ,closeText : "@@form.datepicker.done@@"
         });
     });
 </script>
