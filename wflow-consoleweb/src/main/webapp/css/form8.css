@@ -128,7 +128,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     float: right;
 }
 .form-cell > label.label + div.form-clear,
-.subform-cell > label.label + div.subform-clear{
+.subform-cell > label.label + div.form-clear{
     clear: both;
     float: unset !important;
     width: unset !important;
@@ -162,10 +162,6 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     color: #dc3545;
 }
 .form-cell-full {
-    flex: 0 0 100%;
-}
-.subform-clear + *,
-.form-clear + * {
     flex: 0 0 100%;
 }
 .form-column-horizontal,
