@@ -65,7 +65,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 if (redirectUrl.startsWith("/web/")) {
                     redirectUrl = data.get("context_path") + redirectUrl;
                 }
-                data.put("content", "<script>top.location.href = \""+redirectUrl+"\";</script>");
+                data.put("content", "<script>window.location.href = \""+redirectUrl+"\";</script>");
                 processor.setRedirectUrl(null);
             }
             
