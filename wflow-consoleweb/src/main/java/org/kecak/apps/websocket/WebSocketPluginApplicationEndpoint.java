@@ -11,8 +11,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
 /**
- * Testing web socket according to
- * https://www.baeldung.com/java-websockets
+ * Endpoint for websocket plugin with specific application definition
  */
 @ServerEndpoint(value = "/web/websocket/app/{appId}/{appVersion}/plugin/{className}", configurator = WebSocketHttpSessionConfigurator.class)
 public class WebSocketPluginApplicationEndpoint extends AbstractWebSocketPluginEndpoint {

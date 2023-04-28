@@ -9,9 +9,13 @@ import org.kecak.plugin.base.PluginWebSocket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Lock object based on URL
+ */
 public class UrlLockSocket extends ExtDefaultPlugin implements PluginWebSocket {
     final private static Set<LockEntry> locks = new HashSet<>();
 
@@ -19,22 +23,22 @@ public class UrlLockSocket extends ExtDefaultPlugin implements PluginWebSocket {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Override
-    public String onMessage(String sessionId, String url) {
+    public String onMessage(String url, Map<String, Object> properties) {
         final String currentUsername = WorkflowUtil.getCurrentUsername();
-        final LockEntry newEntry = new LockEntry(sessionId, url, currentUsername);
+        final LockEntry newEntry = new LockEntry(url, currentUsername);
         final Optional<LockEntry> optEntry = locks.stream().filter(newEntry::equals).findFirst();
         if(optEntry.isPresent()) {
             return "URL is being locked by [" + optEntry.get().getUsername() + "] at [" + dateFormat.format(optEntry.get().getDate())+ "]";
         } else {
-            LogUtil.info(getClass().getName(), "Acquiring lock for session [" + sessionId + "]");
+            LogUtil.info(getClass().getName(), "Acquiring lock for url [" + url + "]");
             locks.add(entry = newEntry);
             return "";
         }
     }
 
     @Override
-    public void onClose(String sessionId) {
-        LogUtil.info(getClass().getName(), "Releasing lock for session [" + sessionId + "]");
+    public void onClose(Map<String, Object> properties) {
+        LogUtil.info(getClass().getName(), "Releasing lock for url [" + entry.getUrl() + "]");
         locks.remove(entry);
     }
 

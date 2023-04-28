@@ -1,5 +1,6 @@
 package org.kecak.apps.websocket;
 
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
@@ -16,11 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Testing web socket according to
- * https://www.baeldung.com/java-websockets
+ * Abstract implementation of web socket endpoint
  */
 public abstract class AbstractWebSocketPluginEndpoint {
-    protected final Map<String, PluginWebSocket> sessions = new HashMap<>();
+    protected final Map<String, Map<String, Object>> sessions = new HashMap<>();
 
     public void onOpen(Session session, EndpointConfig config, String className) throws IOException {
 
@@ -30,20 +30,35 @@ public abstract class AbstractWebSocketPluginEndpoint {
         final Plugin plugin = pluginManager.getPlugin(className);
         final WebSocketHttpSessionConfigurator configurator = (WebSocketHttpSessionConfigurator) ((ServerEndpointConfig)config).getConfigurator();
 
+        final Map<String, Object> properties = new HashMap<>();
+        properties.put(PluginWebSocket.PROPERTIES_SESSION, session);
+
         workflowUserManager.setCurrentThreadUser(configurator.getCurrentUsername());
         if (!(plugin instanceof PluginWebSocket)) {
             throw new IOException("Error loading plugin");
         }
-        sessions.put(session.getId(), (PluginWebSocket) plugin);
 
-        session.getBasicRemote().sendText(((PluginWebSocket) plugin).onOpen(session.getId()));
+        properties.put(PluginWebSocket.PROPERTIES_PLUGIN, plugin);
+
+        final AppDefinition appDefinition = AppUtil.getCurrentAppDefinition();
+        if(appDefinition != null) {
+            properties.put(PluginWebSocket.PROPERTIES_APP_DEF, appDefinition);
+        }
+
+        properties.put(PluginWebSocket.PROPERTIES_PLUGIN_MANAGER, pluginManager);
+
+
+        sessions.put(session.getId(), properties);
+
+        session.getBasicRemote().sendText(((PluginWebSocket) plugin).onOpen(properties));
     }
 
     public void onMessage(String message, Session session) {
         final String sessionId = session.getId();
-        final PluginWebSocket plugin = sessions.get(sessionId);
+        final Map<String, Object> properties = sessions.get(sessionId);
+        final PluginWebSocket plugin = (PluginWebSocket) properties.get(PluginWebSocket.PROPERTIES_PLUGIN);
         try {
-            session.getBasicRemote().sendText(plugin.onMessage(sessionId, message));
+            session.getBasicRemote().sendText(plugin.onMessage(message, properties));
         } catch (IOException e) {
             LogUtil.error(getClass().getName(), e, e.getMessage());
         }
@@ -52,16 +67,14 @@ public abstract class AbstractWebSocketPluginEndpoint {
     public void onClose(Session session) throws IOException {
         // WebSocket connection closes
         final String sessionId = session.getId();
-        final PluginWebSocket plugin = sessions.get(sessionId);
+        final Map<String, Object> properties = sessions.get(sessionId);
+        final PluginWebSocket plugin = (PluginWebSocket) properties.get(PluginWebSocket.PROPERTIES_PLUGIN);
 
-        {
-            plugin.onClose(sessionId);
-        }
+        plugin.onClose(properties);
         sessions.remove(sessionId);
     }
 
     public void onError(Session session, Throwable throwable) {
-        // Do error handling here
         LogUtil.error(getClass().getName(), throwable, "onError : session [" + session.getId() + "]");
     }
 }

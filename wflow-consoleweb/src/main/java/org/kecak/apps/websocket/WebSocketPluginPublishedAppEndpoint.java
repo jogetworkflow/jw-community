@@ -10,6 +10,9 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
+/**
+ *  Endpoint for websocket plugin with published application definition
+ */
 @ServerEndpoint(value = "/web/websocket/app/{appId}/plugin/{className}", configurator = WebSocketHttpSessionConfigurator.class)
 public class WebSocketPluginPublishedAppEndpoint extends AbstractWebSocketPluginEndpoint {
     @OnOpen
