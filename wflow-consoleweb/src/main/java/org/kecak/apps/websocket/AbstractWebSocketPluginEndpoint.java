@@ -1,15 +1,16 @@
-package org.kecak.apps.logs;
+package org.kecak.apps.websocket;
 
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.kecak.plugin.base.PluginWebSocket;
 import org.springframework.context.ApplicationContext;
 
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,18 +19,18 @@ import java.util.Map;
  * Testing web socket according to
  * https://www.baeldung.com/java-websockets
  */
-@ServerEndpoint(value = "/web/websocket/plugin/{className}")
-public class WebSocketPluginEndpoint {
-    private Map<String, PluginWebSocket> sessions = new HashMap<>();
+public abstract class AbstractWebSocketPluginEndpoint {
+    protected final Map<String, PluginWebSocket> sessions = new HashMap<>();
 
-    @OnOpen
-    public void onOpen(Session session,
-                       @PathParam("className") String className) throws IOException {
+    public void onOpen(Session session, EndpointConfig config, String className) throws IOException {
 
         final ApplicationContext applicationContext = AppUtil.getApplicationContext();
         final PluginManager pluginManager = (PluginManager) applicationContext.getBean("pluginManager");
+        final WorkflowUserManager workflowUserManager = (WorkflowUserManager) applicationContext.getBean("workflowUserManager");
         final Plugin plugin = pluginManager.getPlugin(className);
+        final WebSocketHttpSessionConfigurator configurator = (WebSocketHttpSessionConfigurator) ((ServerEndpointConfig)config).getConfigurator();
 
+        workflowUserManager.setCurrentThreadUser(configurator.getCurrentUsername());
         if (!(plugin instanceof PluginWebSocket)) {
             throw new IOException("Error loading plugin");
         }
@@ -38,7 +39,6 @@ public class WebSocketPluginEndpoint {
         session.getBasicRemote().sendText(((PluginWebSocket) plugin).onOpen(session.getId()));
     }
 
-    @OnMessage
     public void onMessage(String message, Session session) {
         final String sessionId = session.getId();
         final PluginWebSocket plugin = sessions.get(sessionId);
@@ -49,7 +49,6 @@ public class WebSocketPluginEndpoint {
         }
     }
 
-    @OnClose
     public void onClose(Session session) throws IOException {
         // WebSocket connection closes
         final String sessionId = session.getId();
@@ -61,7 +60,6 @@ public class WebSocketPluginEndpoint {
         sessions.remove(sessionId);
     }
 
-    @OnError
     public void onError(Session session, Throwable throwable) {
         // Do error handling here
         LogUtil.error(getClass().getName(), throwable, "onError : session [" + session.getId() + "]");

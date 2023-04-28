@@ -127,6 +127,14 @@
         <url-pattern>/web/json/*</url-pattern>
     </filter-mapping>
     <filter>
+        <filter-name>WebSocketFilter</filter-name>
+        <filter-class>org.kecak.apps.app.web.WebSocketFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>WebSocketFilter</filter-name>
+        <url-pattern>/web/websocket/*</url-pattern>
+    </filter-mapping>
+    <filter>
         <filter-name>ExpireFilter</filter-name>
         <filter-class>org.joget.apps.app.web.ExpireFilter</filter-class>
         <async-supported>true</async-supported>
