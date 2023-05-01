@@ -35,7 +35,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public final class PluginThread extends Thread {
     
     private final String profile;
-    private final HttpServletRequest request;
+    private HttpServletRequest request;
     
     public PluginThread(Runnable r) {
         super(r);
@@ -68,6 +68,7 @@ public final class PluginThread extends Thread {
         
         if (request != null) {
             RequestContextHolder.resetRequestAttributes();
+            request = null;
         }
     }
     
