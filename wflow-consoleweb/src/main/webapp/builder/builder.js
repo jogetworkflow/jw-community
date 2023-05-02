@@ -5164,6 +5164,8 @@ _CustomBuilder.Builder = {
             } else {
                 $(box).find(".up-btn, .down-btn").show();
             }
+        }
+        if (!isSubSelect && component.builderTemplate.isDraggable(data, component)) {
             $(box).find(".element-name").addClass("moveable");
         }
 
@@ -5274,14 +5276,7 @@ _CustomBuilder.Builder = {
                             self.elementPosY = y;
 
                             if (self.component.builderTemplate.dragStart)
-                                self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component);
-
-                            if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
-                                var elementOffset = self.dragElement.offset();
-                                var xDiff = x - elementOffset.left;
-                                var yDiff = y - elementOffset.top;
-                                self.dragElement.data("cursorPosition", {"x" : xDiff, "y" : yDiff});
-                            }    
+                                self.dragElement = self.component.builderTemplate.dragStart(self.dragElement, self.component); 
 
                             self.frameBody.find("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(self.data, self.component)+"]").attr("data-cbuilder-droparea", "");
                         }
