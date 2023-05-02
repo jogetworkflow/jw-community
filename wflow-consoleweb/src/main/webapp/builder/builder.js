@@ -5229,8 +5229,8 @@ _CustomBuilder.Builder = {
     _initBox: function () {
         var self = this;
         
-        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").off("mousedown.builder touchstart.builder");
-        $("#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable").on("mousedown.builder touchstart.builder", function (event) {
+        $("body").off("mousedown.buildermove touchstart.buildermove", "#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable");
+        $("body").on("mousedown.buildermove touchstart.buildermove", "#element-highlight-name .element-name.moveable, #element-select-name .element-name.moveable", function (event) {
             self.mousedown = true;
             try {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(hasChange) {
