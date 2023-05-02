@@ -455,6 +455,9 @@ public class AppWebController {
                                                 || value.endsWith(";" + compareValue)))
                                         || (value.contains(formDefId+"/"+primaryKeyValue+"/"+compareValue))
                                         || (value.contains(FileUtil.PATH_VARIABLE+compareValue))) {
+                                    if (fieldId.toString().startsWith("t__")) {
+                                        fieldId = fieldId.toString().substring(3);
+                                    }
                                     Element field = FormUtil.findElement(fieldId.toString(), form, formData);
                                     if (field instanceof FileDownloadSecurity) {
                                         FileDownloadSecurity security = (FileDownloadSecurity) field;

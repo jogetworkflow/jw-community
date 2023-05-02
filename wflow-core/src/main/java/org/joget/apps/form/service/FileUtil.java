@@ -95,7 +95,15 @@ public class FileUtil implements ApplicationContextAware {
 
                                     if (row.containsKey(fieldId)) {
                                         String value = row.getProperty(fieldId);
-                                        value = value.replace(fileName, newFileName);
+                                        // First occurrence
+                                        int index = value.indexOf(fileName);
+                                        if (index != -1) {
+                                            // Second occurrence
+                                            index = value.indexOf(fileName, index + 1);
+                                            if (index != -1) {
+                                                value = value.substring(0, index) + newFileName + value.substring(index + fileName.length());
+                                            }
+                                        }
                                         row.put(fieldId, value);
                                     }
 
