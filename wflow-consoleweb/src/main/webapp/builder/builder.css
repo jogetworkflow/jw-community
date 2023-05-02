@@ -1882,6 +1882,10 @@ body #quick-nav-bar {
     transition: 0.35s all ease-in-out;
     background: #ddd;
     overflow: hidden;
+    overflow-y: auto;
+}
+body #quick-nav-bar::-webkit-scrollbar {
+    width: 3px;
 }
 body.quick-nav-shown #quick-nav-bar {
     width:30px;
