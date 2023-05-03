@@ -339,7 +339,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
 
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" async></script>\n";
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" defer></script>\n";
         
         if (enableResponsiveSwitch()) {
             jsCssLink += "<script src=\"" + data.get("context_path") + "/" + getPathName() +"/lib/responsive-switch.min.js\" defer></script>\n";
