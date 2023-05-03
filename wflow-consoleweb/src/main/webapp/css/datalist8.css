@@ -101,7 +101,7 @@
     padding: 15px !important;
 }
 .filter-cell{
-    vertical-align: bottom;
+    vertical-align: top;
     position: relative;
     margin-bottom: 10px;
 }

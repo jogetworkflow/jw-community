@@ -160,7 +160,7 @@
     margin-bottom: 2px;
 }
 .dataList .filter-cell{
-    vertical-align: bottom;
+    vertical-align: top;
     position: relative;
 }
 .dataList .filter-cell .close-icon:after{ 
