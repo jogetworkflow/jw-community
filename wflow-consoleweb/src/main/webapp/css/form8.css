@@ -1161,10 +1161,19 @@ body.rtl .handsontable .htCore tr td:last-child {
     }
 }
 
+.form-cell table:not([class]) td, .form-cell table:not([class]) th, .subform-cell table:not([class]) td, .subform-cell table:not([class]) th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+
 /* advanced grid */
 .grid.adgrid {
     width: 100%;
     position: relative;
+}
+.grid.adgrid .pq-header-outer {
+    height: 25px !important;
 }
 .grid.adgrid .pq-grid-title{
     display:none;
@@ -1288,21 +1297,10 @@ body.rtl .form-edit-btn{
     bottom:20px;
 }
 
-/* advanced grid */
-.grid.adgrid .pq-header-outer {
-    height: 25px !important;
-}
-
 /* process enhancement comments*/
 .comments_thread .comment {
     width: 100% !important;
     margin-top: 20px !important;
-}
-
-.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {
-    border: solid 1px silver;
-    margin: 0px;
-    padding: 3px;
 }
 
 .subform_wrapper .subform-container.no-frame {

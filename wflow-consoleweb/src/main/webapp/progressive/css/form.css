@@ -925,7 +925,7 @@ body #form-canvas .form-error-message {
 }
 
 body .form-cell .tablesaw thead tr:first-child th, body .subform-cell .tablesaw thead tr:first-child th,
-body .form-cell .grid td, body .form-cell .grid th, body .subform-cell .grid td, body .subform-cell .grid th {
+body .form-cell .grid:not(.adgrid) td, body .form-cell .grid:not(.adgrid) th, body .subform-cell .grid:not(.adgrid) td, body .subform-cell .grid:not(.adgrid) th {
     border:0;
     padding:8px;
 }

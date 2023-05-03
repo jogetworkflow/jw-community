@@ -140,7 +140,7 @@
 .form-cell table, .subform-cell table {
     width: 100%;
 }
-.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {
+.form-cell table:not([class]) td, .form-cell table:not([class]) th, .subform-cell table:not([class]) td, .subform-cell table:not([class]) th {
     border: solid 1px silver;
     margin: 0px;
     padding: 3px;
