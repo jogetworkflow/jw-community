@@ -1056,14 +1056,14 @@ public class TestFormPermission {
     
     protected boolean isTextFieldEditable(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\" size=\"\" value=\"value\" maxlength=\"\"   />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\"  value=\"value\"    />\\s+</div>\\s*");
         
         return !FormUtil.isReadonly(e, formData) && !FormUtil.isHidden(e, formData) && templateCorrect;
     }
     
     protected boolean isTextFieldReadonly(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\" size=\"\" value=\"value\" maxlength=\"\"  readonly />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\"  value=\"value\"   readonly />\\s+</div>\\s*");
         
         return FormUtil.isReadonly(e, formData) && templateCorrect;
     }
