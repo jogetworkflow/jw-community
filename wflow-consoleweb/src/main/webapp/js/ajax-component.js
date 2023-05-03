@@ -150,7 +150,7 @@ AjaxComponent = {
                 var form = $(this);
                 //datalist filter form
                 if ($(form).hasClass("filter_form") && $(form).closest(".dataList").length > 0) {
-                     var params = $(form).serialize();
+                     var params = UrlUtil.serializeForm($(form));
                      var queryStr = window.location.search;
                      params = params.replace(/\+/g, " ");
                      var newUrl = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(queryStr, params);

@@ -176,6 +176,26 @@ AssignmentManager = {
 };
 
 UrlUtil = {
+    //Similar to $.serialize but including empty value selectbox, checkbox & radio button
+    serializeForm : function(form) {
+        var params = $(form).serialize();
+        
+        //check for selectbox, checboxes & radio
+        $(form).find('select, input[type="checkbox"], input[type="radio"]').each(function(){
+            if ($(this).is("[name]") && !$(this).prop('disabled')) {
+                var name = $(this).attr("name");
+                if (params.indexOf(name) === -1) {
+                    //the field is not exist in params, add an empty value for it
+                    if (params !== "") {
+                        params += "&";
+                    }
+                    params += name + "=";
+                }
+            }
+        });
+        return params;
+    },
+    
     updateUrlParam : function(url, param, paramValue) {
         var qs1 = "";
         var qs2 = param + "=" + paramValue;
