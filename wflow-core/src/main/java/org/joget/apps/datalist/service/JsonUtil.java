@@ -609,7 +609,9 @@ public class JsonUtil {
                 
                 if (column.has(PROPERTY_CLASS_NAME)) {
                     DataListDisplayColumnProxy dataListColumn = parseDisplayColumnFromJsonObject(column, permissionKey);
-                    property.add(dataListColumn);
+                    if (dataListColumn != null) {
+                        property.add(dataListColumn);
+                    }
                 } else {
                     DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
                     property.add(dataListColumn);
@@ -636,7 +638,9 @@ public class JsonUtil {
             
             if (column.has(PROPERTY_CLASS_NAME)) {
                 DataListDisplayColumnProxy dataListColumn = parseDisplayColumnFromJsonObject(column, permissionKey);
-                property.add(dataListColumn);
+                if (dataListColumn != null) {
+                    property.add(dataListColumn);
+                }
             } else {
                 DataListColumn dataListColumn = parseColumnFromJsonObject(column, permissionKey);
                 property.add(dataListColumn);
@@ -747,42 +751,42 @@ public class JsonUtil {
             displayColumn.setProperties(PropertyUtil.getProperties(column.getJSONObject(PROPERTY_PROPERTIES)));
 
             JsonUtil.generateBuilderProperties(displayColumn.getProperties(), new String[]{"", "header-"});
-        }
-                
-        DataListDisplayColumnProxy proxy = new DataListDisplayColumnProxy(displayColumn);
+            
+            DataListDisplayColumnProxy proxy = new DataListDisplayColumnProxy(displayColumn);
         
-        if (!Permission.DEFAULT.equals(permissionKey)) {
-            if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
-                JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
-                    proxy.setHidden(true);
-                    if (rule.has("include_export") && "true".equals(rule.get("include_export").toString())) {
-                        proxy.setProperty("include_export", "true");
-                        proxy.setProperty("exclude_export", "");
+            if (!Permission.DEFAULT.equals(permissionKey)) {
+                if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
+                    JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                    if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
+                        proxy.setHidden(true);
+                        if (rule.has("include_export") && "true".equals(rule.get("include_export").toString())) {
+                            proxy.setProperty("include_export", "true");
+                            proxy.setProperty("exclude_export", "");
+                        } else {
+                            proxy.setProperty("include_export", "");
+                            proxy.setProperty("exclude_export", "");
+                        }
                     } else {
-                        proxy.setProperty("include_export", "");
-                        proxy.setProperty("exclude_export", "");
+                        proxy.setHidden(false);
+                        if (rule.has("exclude_export") && "true".equals(rule.get("exclude_export").toString())) {
+                            proxy.setProperty("include_export", "");
+                            proxy.setProperty("exclude_export", "true");
+                        } else {
+                            proxy.setProperty("include_export", "");
+                            proxy.setProperty("exclude_export", "");
+                        }
                     }
                 } else {
                     proxy.setHidden(false);
-                    if (rule.has("exclude_export") && "true".equals(rule.get("exclude_export").toString())) {
-                        proxy.setProperty("include_export", "");
-                        proxy.setProperty("exclude_export", "true");
-                    } else {
-                        proxy.setProperty("include_export", "");
-                        proxy.setProperty("exclude_export", "");
-                    }
+                    proxy.setProperty("include_export", "");
+                    proxy.setProperty("exclude_export", "");
                 }
             } else {
-                proxy.setHidden(false);
-                proxy.setProperty("include_export", "");
-                proxy.setProperty("exclude_export", "");
+                proxy.setHidden("true".equalsIgnoreCase(displayColumn.getPropertyString(PROPERTY_HIDDEN)));
             }
-        } else {
-            proxy.setHidden("true".equalsIgnoreCase(displayColumn.getPropertyString(PROPERTY_HIDDEN)));
+            return proxy;
         }
-        
-        return proxy;
+        return null;
     }
     
     /**
