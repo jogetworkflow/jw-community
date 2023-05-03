@@ -162,7 +162,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     color: #dc3545;
 }
 .form-cell-full {
-    flex: 0 0 100%;
+    width: 100% !important;
 }
 .form-column-horizontal,
 .subform-column-horizontal{
@@ -190,11 +190,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     box-shadow: none;
 }
 .form-section, .subform-section {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
+    display: block;
 }
 
 body #form-canvas {
@@ -825,7 +821,7 @@ body.rtl .hasDatepicker + a + a{
 
 /* spreadsheet */
 .spreadsheet_container {
-    flex: 0 0 100%;
+    width: 100% !important;
     height: 100%;
 }
 .htMobileEditorContainer {
