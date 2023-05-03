@@ -147,10 +147,18 @@ public class DeadlineChecker extends Thread {
             }
         }
     }
+    
+    /*
+     * Move it to a private method so that security manager can whitelist this method without 
+     * affecting other processing.
+     */
+    private void setProfile() {
+        HostManager.setCurrentProfile(profile);
+    }
 
     protected void runMe() {
         try {
-            HostManager.setCurrentProfile(profile);
+            setProfile();
 
             // verify datasource
             if (DynamicDataSourceManager.getProperties().isEmpty()) {
