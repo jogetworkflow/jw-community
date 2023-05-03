@@ -65,7 +65,10 @@
         type : 'textfield',
         description : '@@datalist.hyperlinkdatalistaction.label.desc@@',
         value : 'Hyperlink',
-        required : 'true'
+        required : 'true',
+        control_field: 'datalist_type',
+        control_value: 'action|row_action',
+        control_use_regex: 'true'
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.confirmationMessage@@',
