@@ -92,22 +92,30 @@ public class FileUtil implements ApplicationContextAware {
 
                                     String newFileName = validateFileName(fileName, uploadPath, existedFileName, replaceFile);
                                     existedFileName.add(newFileName);
-
-                                    if (row.containsKey(fieldId)) {
-                                        String value = row.getProperty(fieldId);
-                                        // First occurrence
-                                        int index = value.indexOf(fileName);
-                                        if (index != -1) {
-                                            // Second occurrence
-                                            index = value.indexOf(fileName, index + 1);
-                                            if (index != -1) {
-                                                value = value.substring(0, index) + newFileName + value.substring(index + fileName.length());
-                                            }
-                                        }
-                                        row.put(fieldId, value);
-                                    }
-
+                                    
                                     if (!newFileName.equals(file.getName())) {
+                                        if (row.containsKey(fieldId)) {
+                                            String value = row.getProperty(fieldId);
+                                            if (fileName.contains(";")) {
+                                                // When the file name has a ";", replace the first occurrence
+                                                value = value.replaceFirst(StringUtil.escapeRegex(fileName), StringUtil.escapeRegex(newFileName));
+                                            } else {
+                                                // First occurrence
+                                                int index = value.indexOf(fileName);
+                                                if (index != -1) {
+                                                    // Second occurrence
+                                                    index = value.indexOf(fileName, index + 1);
+                                                    if (index != -1) {
+                                                        value = value.substring(0, index) + newFileName + value.substring(index + fileName.length());
+                                                    } else {
+                                                        // When removeFile is false and the same file is added after it's deleted
+                                                        value = value.replaceFirst(StringUtil.escapeRegex(fileName), StringUtil.escapeRegex(newFileName));
+                                                    }
+                                                }
+                                            }
+                                            row.put(fieldId, value);
+                                        }
+                                        
                                         String newPath = path.replace(file.getName(), newFileName);
 
                                         file.renameTo(new File(file.getParentFile(), newFileName));
@@ -167,7 +175,6 @@ public class FileUtil implements ApplicationContextAware {
      * @return the new file name with number appended when duplicate file is found.
      */
     public static String validateFileName(String fileName, String path, Set<String> existedFileName, boolean replaceFile) {
-        String tempPath = path + fileName;
         boolean fileExist = true;
         int count = 1;
         
@@ -181,6 +188,7 @@ public class FileUtil implements ApplicationContextAware {
             name = name.replaceAll(StringUtil.escapeRegex(";"), "");
         }
         fileName = name + ext;
+        String tempPath = path + fileName;
         
         if (!replaceFile) {
             do {
