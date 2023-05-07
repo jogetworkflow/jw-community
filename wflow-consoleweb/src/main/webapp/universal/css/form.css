@@ -468,11 +468,14 @@ body .editor-cell select:not([class^="ui-"]):focus{
 }
 
 body .close-icon:after {
-    right: 35px;
+    right: 28px;
+    top: 11px;
 }
-
+body .editor-celll .close-icon:after {
+    top:16px;
+}
 body.rtl .close-icon:after {
-    left: 35px;
+    left: 28px;
     right: unset;
 }
 
