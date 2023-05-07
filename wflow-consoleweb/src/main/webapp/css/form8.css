@@ -192,7 +192,9 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .form-section, .subform-section {
     display: block;
 }
-
+.form-column, .subform-column {
+    float:left;
+}
 body #form-canvas {
     margin: 0;
 }
@@ -1208,7 +1210,11 @@ body.rtl .handsontable .htCore tr td:last-child {
 }
 .grid.adgrid .editor-cell .hasDatepicker + a{
     right: 8px;
-    bottom: 35px;
+    top: 14px;
+}
+.grid.adgrid .editor-cell .hasDatepicker + a + a{
+    right: 30px;
+    top: 14px;
 }
 .grid.adgrid .editor-cell .actions-buttons{
     text-align: right;
