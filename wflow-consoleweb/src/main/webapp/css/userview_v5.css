@@ -12,7 +12,8 @@ strong {
     margin-bottom: 15px;
 }
 
-.row {
+.container .row,
+.container-fluid .row {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-wrap: wrap;
@@ -39,7 +40,8 @@ strong {
     box-sizing: border-box    
 }
 
-.col {
+.container .col,
+.container-fluid .col {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
     -ms-flex-positive: 1;
@@ -5497,7 +5499,8 @@ a {
         max-width: 95%;
     }
 }
-.row {
+.container .row,
+.container-fluid .row {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-wrap: wrap;
@@ -5508,7 +5511,8 @@ a {
 .ContainerComponent {
     padding: 10px;
 }
-.col {
+.container .col,
+.container-fluid .col {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
     -ms-flex-positive: 1;

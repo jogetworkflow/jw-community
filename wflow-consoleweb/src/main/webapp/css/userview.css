@@ -384,7 +384,8 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 #jqueryDialogDiv {overflow: hidden;}
 
 /* columns */
-.row {
+.container .row,
+.container-fluid .row {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-wrap: wrap;
@@ -395,7 +396,8 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 .ContainerComponent {
     padding: 10px;
 }
-.col {
+.container .col,
+.container-fluid .col {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
     -ms-flex-positive: 1;
