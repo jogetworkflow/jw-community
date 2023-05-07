@@ -86,7 +86,7 @@
     </servlet-mapping>
     <filter>
         <filter-name>charsetFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <filter-class>org.joget.apps.app.web.CustomCharacterEncodingFilter</filter-class>
         <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
