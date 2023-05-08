@@ -14,7 +14,7 @@ public class CustomCharacterEncodingFilter extends CharacterEncodingFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String url = request.getRequestURL().toString();
+        String url = (request.getRequestURL() != null)?request.getRequestURL().toString():"";
         
         //to support old url ends with .
         if (url.endsWith(".")) {
@@ -25,7 +25,8 @@ public class CustomCharacterEncodingFilter extends CharacterEncodingFilter {
         if (url.contains("/")) {
             url = url.substring(url.lastIndexOf("/"));
         }
-        if (url.contains(".") && !(url.endsWith(".js") || url.endsWith(".css") ||
+        if (request.getSession() != null && request.getSession().getServletContext() != null &&
+                url.contains(".") && !(url.endsWith(".js") || url.endsWith(".css") ||
                 url.endsWith(".html") || url.endsWith(".txt") || url.endsWith(".xml") ||
                 url.endsWith(".json"))) { 
             //possible an application file
