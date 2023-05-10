@@ -2,6 +2,102 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.1
+=====
+9543f6483 Fixed: wflow-consoleweb - Universal/Progressive Theme - Date picker does not display correctly in advanced grid. @8.0-SNAPSHOT
+ef5f9bde4 Fixed: wflow-consoleweb - DX 8 Theme - Form columns does not display correctly. @8.0-SNAPSHOT
+afebe88da Fixed: wflow-consoleweb - Non DX 8 Theme - Limit the row & col styling for backward compatible. @8.0-SNAPSHOT
+e52dae051 Fixed: wflow-consoleweb - Plugin Resources - "charset=UTF-8" should not add to content-type of binary file. @8.0-SNAPSHOT
+6225e79b6 Fixed: wflow-core - Hyperlink list action - Label should not make mandatory when used as column action. @8.0-SNAPSHOT
+8cbeb78d1 Fixed: wflow-consoleweb - Form - Advanced Grid can't display correctly. @8.0-SNAPSHOT
+03272c6d6 Fixed: wflow-core - List - Options Filter type - Can't remove filter value for multi select. @8.0-SNAPSHOT
+6cecb2aef Fixed: wflow-core - Themes - Multi select list filter does not align properly. @8.0-SNAPSHOT
+9302c868f Fixed: wflow-core - Progressive/Universal Theme - Javascript libraries are not loaded correctly sometime. @8.0-SNAPSHOT
+462c0048f Modified: wflow-wfengine - Deadline Checker - Refactored profile setting. @8.0-SNAPSHOT
+331182487 Fixed: wflow-core - List - Prevent NPE. @8.0-SNAPSHOT
+7cfeb8735 Modified: jw-community - Upgraded to Apache Tomcat 9.0.74. @8.0-SNAPSHOT
+021287c66 Modified: wflow-commons - Update Apache Tomcat JDBC to 9.0.74. @8.0-SNAPSHOT
+4efeac656 Fixed: wflow-consoleweb - Process Builder - Not able to move node with hightlight name. @8.0-SNAPSHOT
+a8674bf44 Fixed: wflow-commons - Security - Spring Security update to 5.7.8 for CVE-2023-20862. @8.0-SNAPSHOT
+f8ea57cff Fixed: wflow-core - Image Upload - Delete Actual File During Overwrite or Removal overwrites any file name uploaded with the same name. @7.0-SNAPSHOT
+b50a0da43 Fixed: wflow-core - Image Upload - 2x same image filename uploaded only display one image after save. @7.0-SNAPSHOT
+3a1ff2beb Modified: wflow-core - Web Push Notification - Update Jose4j to 0.9.3. @8.0-SNAPSHOT
+fff19badd Fixed: wflow-consoleweb - Quick Navigation bar - Fixed quick navigation bar cannot be scroll in mobile landscape mode. @8.0-SNAPSHOT
+106202444 Fixed: wflow-consoleweb - Builders - Can't move element by dragging highlight name. @8.0-SNAPSHOT
+13ab543fa Fixed: wflow-commons - Performance - Memory leak from PluginThreadHttpRequest caused by 7ff1ead94 @8.0-SNAPSHOT
+072cfccb4 Fixed: wflow-consoleweb - FileUpload/Image Upload Field - Fixed when number as first character in field id, will affect the download/viewing of file attachment. @7.0-SNAPSHOT
+45f3d2931 Fixed: wflow-consoleweb - Universal/Progressive Theme - Dropdown of date picker & TinyMCE editor does not stay in place when page scroll. @8.0-SNAPSHOT
+468853b74 Fixed: wflow-core - DX 8 Theme - Javascript libraries are not loaded correctly sometime. @8.0-SNAPSHOT
+225fc86ea Fixed: wflow-core - Date Picker - Time labels are not translate correctly. @8.0-SNAPSHOT
+911dd331c Fixed: wflow-consoleweb - Fixed Spreadsheet not display correctly in subform. @8.0-SNAPSHOT
+d5840cffe Fixed: wflow-core - DX8 themes - Fixed when a form within an iframe is submitted, it redirects window to the embedded list. @8.0-SNAPSHOT #T2264.
+f45ee46c6 Fixed: wflow-consoleweb - System admin role is not handled correctly. @7.0-SNAPSHOT
+dda1958dd Fixed: wflow-consoleweb - DX8 themes/xadmin theme - Fixed subform repeater collapse arrows and add row button not displayed correctly. @8.0-SNAPSHOT
+4fb5ac5e9 Modified: wflow-plugin-archetype - Default to not exporting package. @8.0-SNAPSHOT
+b9e0fbb75 Modified: wflow-consoleweb - UI Builder - Hide viewport buttons when editing menus. @8.0-SNAPSHOT
+d6e447392 Modified: wflow-consoleweb - Builders - Allow canceling viewport to show canvas in full width. @8.0-SNAPSHOT
+5780a8b04 Fixed: wflow-core - CRUD - Can't delete record when form using JSON API to load but storing is default. @8.0-SNAPSHOT
+8f23ff191 Modified: wflow-consoleweb - Process Builder - Standardize id & label properties and rename split & join label. @8.0-SNAPSHOT (#99)
+9374b8b05 Fixed: wflow-core - Directory User Form Store - Not able to add user in thread. @8.0-SNAPSHOT
+bb8681e2f Fixed: wflow-consoleweb - List - Classic Table - Dropdown action button label is not saving. @8.0-SNAPSHOT
+082abb1a9 Fixed: wflow-consoleweb - Deprecated Themes - List - Filter button not inline with input fields. @8.0-SNAPSHOT
+cf83c1e5f Fixed: wflow-consoleweb - List - Classic Table - Mobile Card label does not wrap. @8.0-SNAPSHOT
+b724b0404 Modified: wflow-consoleweb - Popup Dialog - Ask for confirmation before close the popup dialog which detected changes. @8.0-SNAPSHOT
+554298128 Modified: jw-community - Update Spring Framework to 5.3.27 for CVE-2023-20861. @8.0-SNAPSHOT
+7430b2f00 Fixed: jw-community - Update org.json:json library to 20230227 for CVE-2022-45688. @8.0-SNAPSHOT
+7fb1360d7 Modified: jw-community - Update JUnit to 4.13.2. @8.0-SNAPSHOT
+349baaaed Fixed: wflow-consoleweb - Form Builder - Missing styling configuration for label & input. @8.0-SNAPSHOT
+3634fcef9 Fixed: wflow-consoleweb - Deprecated Theme - Style is missing in popup dialog. @8.0-SNAPSHOT
+2ce5aecc1 Fixed: wflow-consoleweb - Ajax Theme - Dynamic added DOM is not remove after switch page. @8.0-SNAPSHOT
+c6642c9e5 Fixed: wflow-consoleweb - DX 8 theme - Printing having extra empty page. @8.0-SNAPSHOT
+e8d207563 Fixed: wflow-consoleweb - DX 8 theme - Popup Select label not visible. @8.0-SNAPSHOT
+3395dc42b Fixed: wflow-core - Log Viewer - Buttons are not visible in RTL mode. @8.0-SNAPSHOT
+88aff0114 Fixed: wflow-directory - Permission - User got no permission access when role is deleted in database. @8.0-SNAPSHOT
+7644321d7 Fixed: wflow-consoleweb - UI Theme - Bold text is not showing in bold for some Window font. @8.0-SNAPSHOT
+b5a6be3d1 Fixed: wflow-consoleweb - UI Theme - Additional login button added by directory manager plugin is not display correctly in mobile. @8.0-SNAPSHOT
+e331121ee Fixed: wflow-consoleweb - DX 8 Theme - There is no space in between menu label & count badge when the label is too long. @8.0-SNAPSHOT
+007ad14a8 Fixed: wflow-consoleweb - Properties Editor - Properties assistant icon & selectbox shortcut button is not in correct position when the editing area is wider. @8.0-SNAPSHOT
+c92e7cb04 Fixed: wflow-core - App Composer - Set timeout and interval for retrieving plugin list from Marketplace. @8.0-SNAPSHOT
+c4ddef1bc Modified: wflow-consoleweb - Process Builder - Standardize id & label properties and rename split & join label. @8.0-SNAPSHOT (#94)
+9313b1157 Modified: wflow-consoleweb - UI - Update logo and fav icon. @8.0-SNAPSHOT
+c83873351 Fixed: wflow-core - List - Simple Card - Inline label is not rendered in same line. @8.0-SNAPSHOT
+0c1cb724e Fixed: wflow-consoleweb - List Builder - Formatter is still executed for missing column. @8.0-SNAPSHOT
+dd2dd49f9 Added: wflow-core - List Builder - Added BeanShell display column. @8.0-SNAPSHOT
+4c603feb0 Added: wflow-core - List Builder - Added Row Number display column. @8.0-SNAPSHOT
+48e6bdef1 Modified: wflow-core - List - Adding Display Column plugin type to render calculated column value. @8.0-SNAPSHOT
+bc63134f6 Modified: wflow-consoleweb - List - Classic Table - Support showing row actions as dropdown list. @8.0-SNAPSHOT
+dabaf73c8 Fixed: wflow-consoleweb - Properties Assistant - Wrongly traveling to hidden optional field. @8.0-SNAPSHOT
+47aef2785 Fixed: wflow-consoleweb - DX 8 Theme - Text field & password field are not following size setting. @8.0-SNAPSHOT
+3114cbfb1 Fixed: wflow-core - App - Date Modified of form, list, UI & addon builder definitions are not saved. T2152 @7.0-SNAPSHOT
+943ebf80b Fixed: wflow-consoleweb - Universal/Progressive/X-admin Theme - Text field & password field are not following size setting. T2184 @7.0-SNAPSHOT
+4193d4b6c Fixed: wflow-consoleweb - List - Showing error page when enable session to store list state and open in popup dialog. @7.0-SNAPSHOT
+82a4655f4 Fixed: wflow-consoleweb - UI Theme - Added margin below the rich text field. @8.0-SNAPSHOT (#93)
+609abb941 Fixed: wflow-consoleweb - List - Classic Table - Collapsible feature is missing. @8.0-SNAPSHOT
+d36919c47 Fixed: wflow-core - Analyzer - JS error throw when URL contains `&quot` word. @8.0-SNAPSHOT
+dede141a5 Fixed: wflow-consoleweb - App Composer - Delete the app and reimport it does not reload correctly. @8.0-SNAPSHOT
+4b61f7453 Fixed: wflow-consoleweb - App Composer - Wrong git config causing app and builders can't save anymore. @8.0-SNAPSHOT
+1f97dd9a0 Fixed: wflow-consoleweb - UI Print - Removed black border for form label. @8.0-SNAPSHOT
+3e8ef9207 Fixed: wflow-consoleweb - Builders - Properties Editor - Close the properties window after apply changes. @8.0-SNAPSHOT
+e10887311 Fixed: wflow-consoleweb - Builders - Element with dropdown or mouse event are triggered in builder when clicked. @8.0-SNAPSHOT
+451bf18c3 Fixed: wflow-consoleweb - Builders - Element action buttons need extra step to click the element first before can click it. @8.0-SNAPSHOT
+b933cddc9 Fixed: wflow-consoleweb - Form - label - Fixed when the label is too long, the textbox will move to the next line @8.0-SNAPSHOT
+8b0eb758f Fixed: wflow-core/wflow-consoleweb - JSON API Form Options Binder - Fixed JSON API is triggered when dependency value is empty. @8.0-SNAPSHOT
+5832d9eaa Fixed: wflow-core - Form/Run Process Menu - Field value passover redirection URL after submission is not handled correctly when field not exist. @7.0-SNAPSHOT
+15c8b12bd Fixed: wflow-consoleweb - List - Custom script to make actions as dropdown no longer working. @8.0-SNAPSHOT
+f1a210b47 Fixed: wflow-consoleweb - DX8 Theme - Long menu label and counter are not inline when display as horizontal menu. @8.0-SNAPSHOT
+8e4a3d2c8 Fixed: wflow-consoleweb - Help Guide - Should not display in small screen. @8.0-SNAPSHOT
+726bf9c73 Modified: wflow-jdbc - Update postgresql to 42.6.0. @8.0-SNAPSHOT
+50aaba56f Modified: wflow-consoleweb - Update mysql-connector-java to 8.0.32 for CVE-2022-21363, CVE-2021-2471. @8.0-SNAPSHOT
+24fdfb580 Modified: jw-community - Update Spring Framework to 5.3.26 for CVE-2023-20861. @8.0-SNAPSHOT
+88c8adf12 Fixed: wflow-consoleweb - List - Classic table - Custom styles working fine in DX 7 but not in DX 8. @8.0-SNAPSHOT
+876e6a2f9 Modified: wflow-consoleweb - Builders - Change label of properties panel button. @8.0-SNAPSHOT
+b4f5b5c71 Modified: wflow-consoleweb - App Variables - Display the hash variable when edit it. @8.0-SNAPSHOT
+f7d866f6a Fixed: wflow-consoleweb - Progressive/Universal Theme - Regression causing header missing in IOS. @8.0-SNAPSHOT
+70eccaa58 Fixed: wflow-core - File Upload - Click on label show the file selector but no file is uploaded. @8.0-SNAPSHOT
+d5f1e3aea Fixed: wflow-consoleweb - Builders - Tree Viewer - Label with HTML and CSS messed up the tree rendering. @8.0-SNAPSHOT
+799242030 Fixed: wflow-consoleweb - Process Mapper - Missing close button on popup dialog. @7.0-SNAPSHOT
+554bd2ba1 Fixed: wflow-core - Date Picker - Start/End Date validation not working in subform repeater plugin. @8.0-SNAPSHOT
+
 8.0.0
 =====
 b71983121 Fixed: wflow-consoleweb - Assignment - Legacy assignment link redirected to deprecated mobile view. @8.0-SNAPSHOT
