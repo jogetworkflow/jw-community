@@ -210,9 +210,6 @@ public class UserviewService {
         }
 
         try {
-            //fix for wrong json in userview settings created during DX 8 beta
-            json = json.replaceAll(StringUtil.escapeRegex("\"__\": \"\","), "");
-            
             //set userview properties
             JSONObject userviewObj = new JSONObject(json);
             userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));

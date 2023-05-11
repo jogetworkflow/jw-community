@@ -45,9 +45,6 @@ public class UserviewDefinition extends AbstractAppVersionedObject {
     }
 
     public String getJson() {
-        //fix for wrong json in userview settings created during DX 8 beta
-        json = json.replaceAll(StringUtil.escapeRegex("\"__\": \"\","), "");
-        
         return json;
     }
 
