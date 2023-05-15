@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 8.0.1
 =====
+58f664629 Fixed: wflow-core - Regression caused by JSON library upgrade on 7430b2f0. @8.0-SNAPSHOT
 9543f6483 Fixed: wflow-consoleweb - Universal/Progressive Theme - Date picker does not display correctly in advanced grid. @8.0-SNAPSHOT
 ef5f9bde4 Fixed: wflow-consoleweb - DX 8 Theme - Form columns does not display correctly. @8.0-SNAPSHOT
 afebe88da Fixed: wflow-consoleweb - Non DX 8 Theme - Limit the row & col styling for backward compatible. @8.0-SNAPSHOT
