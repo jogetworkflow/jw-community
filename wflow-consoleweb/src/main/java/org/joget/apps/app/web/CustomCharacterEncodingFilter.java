@@ -34,7 +34,12 @@ public class CustomCharacterEncodingFilter extends CharacterEncodingFilter {
             if (ct != null && ct.startsWith("application/") && 
                     !(ct.contains("xml") || ct.contains("json") || 
                     ct.contains("javascript") || ct.contains("yaml"))) {
-                //do not set the Character Encoding
+                String encoding = getEncoding();
+		if (encoding != null && (isForceRequestEncoding() || request.getCharacterEncoding() == null)) {
+                    request.setCharacterEncoding(encoding);
+		}
+                
+                //do not set the Character Encoding for response
                 filterChain.doFilter(request, response);
             } else {
                 super.doFilterInternal(request, response, filterChain);
