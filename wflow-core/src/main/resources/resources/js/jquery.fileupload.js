@@ -68,7 +68,53 @@
                 }
                 
                 options.timeout = 0;
-                
+
+                if (Boolean(o.enableImageEditor)) {
+                    var container = $(target).find(".image-editor-modal")
+                      , modal = container.get(0)
+                      , saveBtn = container.find(".save-photo").get(0)
+                      , closeBtn = container.find(".close-modal").get(0)
+                      , uiHeight = window.innerHeight * 0.75
+                      , isEdit = false
+                      , croppingFailedErrMsg = o.messages["form.imageupload.invalidImg"];
+                    
+                    var whiteTheme = {
+                        'common.backgroundColor': '#282828',
+                        'header.display': 'none'
+                    };
+
+                    var imageEditor = new tui.ImageEditor(container.find(".image-editor").get(0), {
+                        includeUI: {
+                            theme: whiteTheme,
+                            // 'crop', 'flip', 'rotate', 'draw', 'shape', 'icon', 'text', 'mask', 'filter'
+                            menu: ['crop', 'flip', 'rotate'],
+                            initMenu: "crop",
+                            // Size of the image editor
+                            uiSize: {
+                                width: "100%",
+                                height: uiHeight + "px"
+                            },
+                            menuBarPosition: "bottom",
+                            // Load a blank image
+                            loadImage: {
+                                path: 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+                                name: 'Blank'
+                            }
+                        },
+                        // Max size of the modal, in px 
+                        cssMaxWidth: 700,
+                        cssMaxHeight: 370,
+                        selectionStyle: {
+                            cornerSize: 20,
+                            rotatingPointOffset: 70
+                        },
+                        usageStatistics: false
+                    });
+                    
+                    // Remove the help menu that contains zoom, undo etc. controls
+                    container.find(".tui-image-editor-help-menu").remove();
+                }
+
                 var myDropzone = new Dropzone("#"+$(target).attr("id"), options);
                 myDropzone.on("success", function(file, resp) {
                     if (resp.error === undefined) {
@@ -81,7 +127,7 @@
                         }
                         if (o.removeFile === "true") {
                             // Go through the list of all <ul> elements created
-                            $(target).find("li").each(function() {
+                            $(target).find(".form-fileupload-value").find("li").each(function() {
                                 // Check each <ul> element's input value with current file name
                                 if (!$(this).is($(file.previewElement)) && ($(this).find("input[name$='_path']").val().split("\\").pop() === resp.filename || $(this).find("input[name$='_path']").val().split("\\").pop() === resp.newFilename)) {
                                     // If the same, remove the previous instance
@@ -94,6 +140,55 @@
                         $(file.previewElement).find(".remove").show();
                         $(file.previewElement).find("input").val(resp.path);
                         $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + encodeURIComponent(resp.path));
+
+                        if (modal != null) {
+                            var editBtn = file.previewElement.querySelector(".edit")
+                              , imageURL = $(file.previewElement).find("img").attr("src")
+                              , fileName = file.name;
+                                
+                            editBtn.onclick = function() {
+                                // Show the popup modal
+                                modal.style.display = "block";
+                                // Load the image to the image editor
+                                imageEditor.loadImageFromURL(imageURL, fileName);
+                                // Hide the popup modal on clicking the x button
+                                closeBtn.onclick = function() {
+                                    modal.style.display = "none";
+                                }
+                                // Hide the popup modal on clicking anywhere outside the popup modal
+                                window.onclick = function(event) {
+                                    if (event.target == modal) {
+                                        modal.style.display = "none";
+                                    }
+                                }
+                                // Replace the original image
+                                saveBtn.onclick = function() {
+                                    // Convert data URL into a file
+                                    var newFile = dataURLtoFile(imageEditor.toDataURL(), fileName);
+                                    
+                                    myDropzone.removeFile(file);
+                                    myDropzone.addFile(newFile);
+                                    
+                                    modal.style.display = "none";
+                                    
+                                    return false;
+                                }
+                            }
+                            // Edit onclick function from below
+                            if (isEdit) {
+                                editBtn.click();
+                                isEdit = false;
+                            }
+                            // Handle "Uncaught (in promise) Invalid image loaded."
+                            window.addEventListener("unhandledrejection", function(event) {
+                                event.preventDefault();
+                                if (event.reason === "Invalid image loaded.") {
+                                    alert(croppingFailedErrMsg);
+                                    modal.style.display = "none";
+                                    myDropzone.removeFile(file);
+                                }
+                            });
+                        }
                     } else {
                         $(file.previewElement).find(".progress").remove();
                         $(file.previewElement).find(".remove").show();
@@ -115,6 +210,21 @@
                 $(target).on("click", ".remove", function(){
                     $(this).closest("li").remove();
                 });
+                // Edit onclick function when viewing existing records
+                $(target).on("click", ".edit", function() {
+                    // Check if the edit button already has an onclick function
+                    if (typeof this.onclick !== "function") {
+                        var imageURL = $(this).parent().find("a").attr("href");
+                        var fileName = $(this).parent().find("input").val();
+                        // Convert URL to File (with promise)
+                        var newFile = URLtoFile(imageURL, fileName);
+                        newFile.then(file => {
+                            myDropzone.addFile(file);
+                            isEdit = true;
+                        });
+                        $(this).parent().remove();
+                    } 
+                });
                 $(target).on('keyup', function(e){
                     var keyCode = e.keyCode || e.which;
                     if (keyCode === 13) { 
@@ -131,4 +241,28 @@
         }
     });
     
+    function dataURLtoFile(dataURL, fileName) {
+        var arr = dataURL.split(',')
+          , mime = arr[0].match(/:(.*?);/)[1]
+          , bstr = atob(arr[1])
+          , n = bstr.length
+          , u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], fileName, {type:mime});
+    }
+    
+    function URLtoFile(URL, fileName) {
+        var ext = fileName.split(".").pop();
+        var extToMime = {
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+        };
+        return fetch(URL)
+            .then(res => res.blob())
+            .then(blob => new File([blob], fileName, { type: extToMime[ext] }));
+    }
 })(jQuery);
