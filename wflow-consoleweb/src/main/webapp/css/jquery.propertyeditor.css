@@ -746,9 +746,26 @@ body.rtl .builder-link a.openbuilder{
     left: 50px;
     right: unset;
 }
+body.rtl .builder-view .builder-link a.openbuilder{
+    left: 37.5vw;
+}
+body.rtl .pluginConfig .builder-link a.openbuilder{
+    left: 38.5vw;
+    top: 10px;
+}
 body.rtl .property-type-selectbox a.builderAddNew{
     left: 4px;
     right:  unset;
+}
+body.rtl .builder-view .property-type-selectbox a.builderAddNew{
+    top: 7px;
+    left: 33vw;
+    margin-left: 15px;
+}
+body.rtl .pluginConfig .property-type-selectbox a.builderAddNew{
+    top: 9px;
+    left: 33vw;
+    margin-left: 15px;
 }
 body.rtl .property-editor-container input:not([type]),
 body.rtl .property-editor-container input[type=text],
@@ -1332,6 +1349,13 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     right: 50px;
     top: 7px;
 }
+.builder-view .builder-link a.openbuilder{
+    right: 37.5vw;
+}
+.pluginConfig .builder-link a.openbuilder{
+    right: 38.5vw;
+    top: 10px;
+}
 .property-editor-container.narrow.wider .builder-link a.openbuilder{
     right: auto;
     left: calc(54% - 65px);
@@ -1340,6 +1364,14 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     position: absolute;
     top: -20px;
     margin-left: -15px;
+}
+.builder-view .property-type-selectbox a.builderAddNew{
+    top: 6px;
+    margin-left: 8px;
+}
+.pluginConfig .property-type-selectbox a.builderAddNew{
+    top: 8px;
+    margin-left: 8px;
 }
 /* field */
 .property-editor-container select {
@@ -1729,7 +1761,7 @@ body .ui-dialog .button_form.ui-dialog-content{
     border-radius: 5px 5px 0 0;
 }
 .editor-panel-mode .element-pages a.openbuilder{
-    color:#fff;
+    color:#6c757d;
 }
 .editor-panel-mode .element-pages .element-pages,
 .editor-panel-mode .element-pages .property-editor-property-container{
