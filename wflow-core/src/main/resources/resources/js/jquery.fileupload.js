@@ -69,7 +69,7 @@
                 
                 options.timeout = 0;
 
-                if (Boolean(o.enableImageEditor)) {
+                if (o.enableImageEditor === "true") {
                     var container = $(target).find(".image-editor-modal")
                       , modal = container.get(0)
                       , saveBtn = container.find(".save-photo").get(0)
