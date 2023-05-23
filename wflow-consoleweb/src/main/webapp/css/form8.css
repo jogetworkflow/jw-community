@@ -90,6 +90,11 @@ input[type=hidden] + .form-cell,
 .subform-cell + .form-cell.customHtml.no_label{
     margin-top: 0px;
 }
+.form-container .customHtml.no_label .form-cell-value, 
+.form-container .customHtml.no_label .subform-cell-value {
+    min-height: 0px;
+    margin-bottom: 0px;
+}
 body .subform-cell > .subform-container.has-frame, .form-cell > .subform-container.has-frame{
     width: 100%;
 }
