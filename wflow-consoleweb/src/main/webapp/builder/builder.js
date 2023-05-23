@@ -6332,7 +6332,9 @@ _CustomBuilder.Builder = {
         if (!$(node).is('[data-cbuilder-uneditable]') && !$(node).is('[data-cbuilder-visible]')) { //use "data-cbuilder-visible" to skip visiblity check
             var temp = $('<div>'+$(node).html()+'</div>');
             $(temp).find('style, script').remove();
-            if ($(node).is('div, p') && $(temp).text().trim() === "" && $(node).find("[data-cbuilder-invisible]").length === 0) {
+            if ($(node).is('div, p') && $(temp).text().trim() === "" 
+                    && $(node).find("[data-cbuilder-invisible]").length === 0
+                    && $(node).find("a, img, svg, video, iframe, picture, canvas").length === 0) { //handle non-text elements
                 $(node).attr("data-cbuilder-invisible", "");
             } else {
                 if ($(node).find("> .clear-float").length === 0) { //add clear float to check hight in case the childs are all floated
