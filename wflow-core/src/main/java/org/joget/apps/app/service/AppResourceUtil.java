@@ -31,7 +31,7 @@ public class AppResourceUtil {
     
     public static AppResource storeFile(AppDefinition appDef, MultipartFile file, Boolean isPublic) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
-            String filename = file.getOriginalFilename().replaceAll("[<>:\\\"\\\\/|?*!@#$%^&{};\\[\\]=+,~`\\s]", "_");
+            String filename = sanitizeFileName(file.getOriginalFilename());
             
             AppResourceDao appResourceDao = (AppResourceDao) AppUtil.getApplicationContext().getBean("appResourceDao");
             
@@ -73,7 +73,7 @@ public class AppResourceUtil {
      */
     public static String storeFile(String appId, String appVersion, MultipartFile file) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
-            String fileOrgName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            String fileOrgName = sanitizeFileName(file.getOriginalFilename());
             
             //delete existing before store
             deleteFile(appId, appVersion, fileOrgName);
@@ -110,6 +110,15 @@ public class AppResourceUtil {
             return filename;
         }
         return null;
+    }
+    
+    /**
+     * Sanitize the file name to replace special characters with _
+     * @param filename
+     * @return the sanitize file name.
+     */
+    public static String sanitizeFileName(String filename) {
+        return (filename != null)?(filename.replaceAll("[<>:\\\"\\\\/|?*!@#$%^&{};\\[\\]=+,~`\\s]", "_")):"";
     }
     
     /**
