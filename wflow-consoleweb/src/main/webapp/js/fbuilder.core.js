@@ -661,7 +661,11 @@ FormBuilder = {
         FormBuilder.recalculateColumnWidth(parent);
         
         var temp = $('<div></div>');
-        self.selectedEl.append(temp);
+        if (self.selectedEl.find(".clear-float").length > 0) {
+            self.selectedEl.find(".clear-float").before(temp);
+        } else {
+            self.selectedEl.append(temp);
+        }
         
         self.renderElement(elementObj, temp, self.component, true);
         
