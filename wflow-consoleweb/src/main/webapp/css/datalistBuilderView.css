@@ -308,12 +308,32 @@ body .filter-cell .form-button {
 .dataList .dropdown-menu a {
     display: block;
 }
+.dataList .dropdown-menu a.dropdown-item{
+    display: block;
+    width: 100%;
+    padding: 0.25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529 !important;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    border: 0;
+    box-shadow: none !important;
+    width: auto;
+}
+.dataList .dropdown-menu.dropdown-menu-right {
+    right: 14px;
+    left: auto;
+    top: 34px;
+}
 .dataList .column_body strong.label{
     color: inherit;
     text-align: unset;
     padding: 0;
+    background-color: transparent;
 }
-
 .dataList .responsivetable .cell-label {
     display:none;
 }

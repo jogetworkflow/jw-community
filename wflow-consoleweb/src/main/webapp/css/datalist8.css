@@ -338,6 +338,21 @@ body.rtl .dataList span.pagelinks{
 .dataList .dropdown-menu a {
     display: block;
 }
+.dataList .dropdown-menu a.dropdown-item{
+    display: block;
+    width: 100%;
+    padding: 0.25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529 !important;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    border: 0;
+    box-shadow: none !important;
+    width: auto;
+}
 .dataList .column_body strong.label{
     color: inherit;
     text-align: unset;
