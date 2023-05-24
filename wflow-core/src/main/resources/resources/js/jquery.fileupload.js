@@ -119,7 +119,7 @@
                 myDropzone.on("success", function(file, resp) {
                     if (resp.error === undefined) {
                         if (o.multiple !== "true") {
-                            $(target).find("li").each(function() {
+                            $(target).find(".form-fileupload-value").find("li").each(function() {
                                 if (!$(this).is($(file.previewElement))) {
                                     $(this).remove();
                                 }
