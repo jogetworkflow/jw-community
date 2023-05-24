@@ -2989,7 +2989,7 @@ PropertyEditor.Type.Readonly.prototype = {
         } else {
             size = ' size="50"';
         }
-        return '<input type="text" id="' + this.id + '" name="' + this.id + '"' + size + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '" disabled />';
+        return '<input type="text" id="' + this.id + '" name="' + this.id + '"' + size + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '" readonly />';
     },
     renderDefault: function() {
         return "";
