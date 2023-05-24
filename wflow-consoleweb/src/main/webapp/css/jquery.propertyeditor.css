@@ -2306,6 +2306,9 @@ body .ui-dialog .button_form.ui-dialog-content{
     right: auto;
     left: 54%;
 }
+.property-editor-container.narrow.wider .property-grid .assist_icon{
+    left: 92%;
+}
 .property-type-colorscheme .selector {
     position: relative;
 }
