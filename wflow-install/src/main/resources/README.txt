@@ -9,7 +9,7 @@ For details on upgrading from previous releases, please refer to https://www.jog
 
 Prerequisites:
 ==============
-- Java 8 and above
+- Java 11 and above
 - MySQL 5.6 and above
 
 
