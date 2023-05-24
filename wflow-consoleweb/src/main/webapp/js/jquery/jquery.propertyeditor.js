@@ -6231,15 +6231,22 @@ PropertyEditor.Type.IconTextField.prototype = {
                     } else if ($(e.target).is("i")) {
                         if ($(i).find("input.text_value").is(":visible")) {
                             if ($(i).find("span.value > i").length > 0) {
-                                $(i).find("span.value > i").attr("class", $(i).find("input.text_value").val());
+                                if ($(i).find("input.text_value").val() === "") {
+                                    $(i).find("span.value > i").remove();
+                                } else {
+                                    $(i).find("span.value > i").attr("class", $(i).find("input.text_value").val());
+                                }
                             } else {
-                                $(i).find("span.value").prepend('<i class="'+$(i).find("input.text_value").val()+'"></i>');
+                                if ($(i).find("input.text_value").val() !== "") {
+                                    $(i).find("span.value").prepend('<i class="' + $(i).find("input.text_value").val() + '"></i>');
+                                }
                             }
+
                             var color = $(i).find("input.color_value").val();
                             if (color !== "") {
                                 $(i).find("span.value > i").attr("style", "color:"+color);
                             }
-                            
+
                             $(i).removeClass("open");
                             $("body").off("click.icon-picker");
                             $("#" + this.id).trigger("change");
