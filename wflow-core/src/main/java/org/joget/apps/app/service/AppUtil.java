@@ -1151,6 +1151,8 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void clearRequest() {
         AppUtil.clearAppMessages();
+        currentAppDefinition.remove();
+        resetAppDefinition.remove();
         processAppDefinition.remove();
         currentAssignment.remove();
         currentAssignmentRequiredReset.remove();
