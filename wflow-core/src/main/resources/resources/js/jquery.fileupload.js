@@ -104,10 +104,6 @@
                         // Max size of the modal, in px 
                         cssMaxWidth: 700,
                         cssMaxHeight: 370,
-                        selectionStyle: {
-                            cornerSize: 20,
-                            rotatingPointOffset: 70
-                        },
                         usageStatistics: false
                     });
                     
