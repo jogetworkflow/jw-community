@@ -2397,6 +2397,9 @@ body.rtl div#builderModeOption:before {
     #cbuilder #top-panel .btn-group .btn span{
         display: none;
     }
+    #cbuilder .components-list{
+        overflow-y: auto;
+    }
 } 
 
 /* tinymce fix */
