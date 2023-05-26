@@ -83,6 +83,20 @@
                         'header.display': 'none'
                     };
 
+                    var localization = {
+                        "Crop": o.messages["form.imageupload.crop"],
+                        "Custom": o.messages["form.imageupload.crop.custom"],
+                        "Square": o.messages["form.imageupload.crop.square"],
+                        "Apply": o.messages["form.imageupload.crop.apply"],
+                        "Cancel": o.messages["form.imageupload.crop.cancel"],
+                        "Flip": o.messages["form.imageupload.flip"],
+                        "Flip X": o.messages["form.imageupload.flip.flipx"],
+                        "Flip Y": o.messages["form.imageupload.flip.flipy"],
+                        "Reset": o.messages["form.imageupload.flip.reset"],
+                        "Rotate": o.messages["form.imageupload.rotate"],
+                        "Range": o.messages["form.imageupload.rotate.range"]
+                    };
+
                     var imageEditor = new tui.ImageEditor(container.find(".image-editor").get(0), {
                         includeUI: {
                             theme: whiteTheme,
@@ -99,7 +113,8 @@
                             loadImage: {
                                 path: 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
                                 name: 'Blank'
-                            }
+                            },
+                            locale: localization
                         },
                         // Max size of the modal, in px 
                         cssMaxWidth: 700,
