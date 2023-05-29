@@ -42,7 +42,6 @@ import org.eclipse.jgit.api.RemoteRemoveCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
@@ -58,6 +57,7 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.SystemReader;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -210,6 +210,12 @@ public class AppDevUtil {
         FS fs = null;
         if (HostManager.isVirtualHostEnabled()) {
             fs = FS.DETECTED;
+            fs.setUserHome(new File(getAppDevBaseDirectory()));
+            
+            //to support multitenant read config 
+            if (!(SystemReader.getInstance() instanceof MultiTenantGitSystemReader)) {
+                SystemReader.setInstance(new MultiTenantGitSystemReader());
+            }
         }
 
         Git git = Git.init()
