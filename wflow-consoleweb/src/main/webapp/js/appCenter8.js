@@ -19,6 +19,17 @@ $(document).ready(function() {
                 }
             } 
         }
+        if ($('body#design_app #tutorial_section').length === 1) {
+            UI.loadMsg(['appcenter.video1','appcenter.video2','appcenter.video3','appcenter.video4','appcenter.video5'], function(msgs){
+                $('body#design_app #tutorial_section iframe').each(function(){
+                    var id = $(this).attr("id");
+                    var url = msgs['appcenter.'+id];
+                    if (url !== undefined && url !== "") {
+                        $(this).attr("src", url);
+                    }
+                });
+            });
+        }
     });
     if (window["ajaxContentPlaceholder"] !== undefined) {
         window["ajaxContentPlaceholder"][UI.base + '/web/userview/appcenter/home/_/home'] = "dashboard";
