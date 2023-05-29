@@ -43,6 +43,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -1013,4 +1014,20 @@ public class StringUtil {
         return newCondition;
     }
     
+    /**
+     * To fix the unclosed tags in the custom html
+     * @param content
+     * @return 
+     */
+    public static String fixUnclosedTags(String content) {
+        if (content != null && !content.isEmpty()) {
+            try {
+                Document doc = Jsoup.parseBodyFragment(content);
+                return doc.html();
+            } catch (Exception e) {
+                LogUtil.error(StringUtil.class.getName(), e, "Not able to fix unclosed tags");
+            }
+        }
+        return content;
+    }
 }

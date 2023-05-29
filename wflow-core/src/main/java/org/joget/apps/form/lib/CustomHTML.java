@@ -156,7 +156,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
         String template = "customHTML.ftl";
 
         //get the list of names inside tag input and textarea
-        String customHTML = (String) getProperty("value");
+        String customHTML = StringUtil.fixUnclosedTags((String) getProperty("value"));
         if (customHTML != null && !customHTML.isEmpty()) {
             if (getPropertyString("autoPopulate") != null && getPropertyString("autoPopulate").equalsIgnoreCase("true")) {
                 //input field

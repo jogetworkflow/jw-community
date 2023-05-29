@@ -3,6 +3,7 @@ package org.joget.plugin.enterprise;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.SimplePageComponent;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
+import org.joget.commons.util.StringUtil;
 
 public class HtmlCodeComponent extends SimplePageComponent {
 
@@ -48,7 +49,7 @@ public class HtmlCodeComponent extends SimplePageComponent {
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        return "<div "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + getPropertyString("textContent") + "</div>";
+        return "<div "+attr+" id=\""+id+"\" class=\""+cssClass+"\">" + StringUtil.fixUnclosedTags(getPropertyString("textContent")) + "</div>";
     }
 
     @Override
