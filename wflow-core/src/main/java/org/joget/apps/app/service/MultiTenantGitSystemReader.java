@@ -150,7 +150,7 @@ public class MultiTenantGitSystemReader extends SystemReader {
         }
         // on the very first call this will check a second time if the system
         // config is outdated
-        updateAll(c);
+        updateAllConfig(c);
         return c;
     }
     
@@ -179,7 +179,7 @@ public class MultiTenantGitSystemReader extends SystemReader {
             jgitConfigs.get(profile).compareAndSet(null, openJGitConfig(null, FS.DETECTED));
             c = jgitConfigs.get(profile).get();
         }
-        updateAll(c);
+        updateAllConfig(c);
         return c;
     }
 
@@ -208,7 +208,7 @@ public class MultiTenantGitSystemReader extends SystemReader {
             systemConfigs.get(profile).compareAndSet(null, openSystemConfig(getJGitConfig(), FS.DETECTED));
             c = systemConfigs.get(profile).get();
         }
-        updateAll(c);
+        updateAllConfig(c);
         return c;
     }
     
@@ -222,12 +222,12 @@ public class MultiTenantGitSystemReader extends SystemReader {
      * @throws IOException
      *             if something went wrong when reading files
      */
-    private void updateAll(Config config)
+    private void updateAllConfig(Config config)
                     throws ConfigInvalidException, IOException {
         if (config == null) {
                 return;
         }
-        updateAll(config.getBaseConfig());
+        updateAllConfig(config.getBaseConfig());
         if (config instanceof FileBasedConfig) {
                 FileBasedConfig cfg = (FileBasedConfig) config;
                 if (cfg.isOutdated()) {
