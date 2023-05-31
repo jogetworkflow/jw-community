@@ -2,6 +2,28 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.2
+=====
+900575b37 Modified: wflow-consoleweb - App Center - Change video tutorial links to retrieve from message bundle. @8.0-SNAPSHOT
+dba7e6ade Fixed: wflow-core - Custom HTML/ HTML UI Component - Unclosed HTML tags causing builders not usable. @8.0-SNAPSHOT
+aaf83f164 Fixed: wflow-core - Git - Having SecurityException intermittently when virtual host enabled. @8.0-SNAPSHOT
+37df27c87 Fixed: wflow-consoleweb - Audit Trail - Events unrelated to app logged wrong app info. @8.0-SNAPSHOT
+f1f9a5c00 Fixed: wflow-consoleweb - Fixed login page not displaying correctly in mobile landscape view and difficulty in scrolling builder elements in mobile view. @8.0-SNAPSHOT
+4c37b7590 Fixed: jw-community - Readme - Update prerequisites to Java 11. @8.0-SNAPSHOT
+1ad0af0dd Fixed: wflow-consoleweb - List - Dropdown actions does not display correctly for Simple & Column Data list template. @8.0-SNAPSHOT
+554696163 Fixed: wflow-consoleweb - Builders - Copy text not working for readonly property value. @8.0-SNAPSHOT
+2101a7924 Fixed: wflow-consoleweb - Builders - Fixed Hash Assistant icon UI bug on property grid. @8.0-SNAPSHOT
+10c44940a Fixed: wflow-consoleweb - Icon Picker - Fixed menu label icon once removed and edit again will show <i class="xx"></i>. @8.0-SNAPSHOT
+7c76080cf Fixed: wflow-consoleweb - List - Classic table dropdown action not display correctly for DX 8 Color Admin theme. @8.0-SNAPSHOT
+8339d359e Fixed: wflow-core - App Resources - File name with brackets show 404. @8.0-SNAPSHOT
+bc03c9c21 Fixed: wflow-consoleweb - DX 8 Theme - Custom HTML  -Custom HTML without visible content has unnecessary height. @8.0-SNAPSHOT
+c743e1126 Fixed: wflow-consoleweb - Builders - Check element visibility is not working correctly for non-text elements. @8.0-SNAPSHOT
+894facdcb Fixed: wflow-consoleweb - Form Builder - New added column is not aligned correctly. @8.0-SNAPSHOT
+369f6cdb9 Fixed: wflow-consoleweb - Fixed misaligned open builder link and add new builder link in the builder view and plugin permission. @8.0-SNAPSHOT
+6ad9f5b57 Modified: wflow-core - Update JGit to 6.5.0.202303070854-r. @8.0-SNAPSHOT
+bc38533b8 Added: wflow-core/wflow-consoleweb - Image Upload Field - Added a feature to enable the image editor for each image uploaded in the image upload field. @8.0-SNAPSHOT
+5c9b27d5e Fixed: wflow-consoleweb - Filter - Regression of d727fe0. Unicode PDF file name can't download. T2387 @8.0-SNAPSHOT
+
 8.0.1
 =====
 58f664629 Fixed: wflow-core - Regression caused by JSON library upgrade on 7430b2f0. @8.0-SNAPSHOT
