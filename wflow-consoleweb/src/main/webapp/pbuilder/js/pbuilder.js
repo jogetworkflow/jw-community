@@ -4262,7 +4262,7 @@ ProcessBuilder.Mapper = {
         var wlId= "processStartWhiteList";
         var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
         
-        $("#subheader_list_container").append('<span class="processWhiteList"><a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a></span>');
+        $("#subheader_list_container").append('<span class="processWhiteList"><a class="edit_mapping type_whitelist '+ ((mapping !== null && mapping !== undefined)?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a></span>');
         $("#subheader_list_container").find(".edit_mapping").data("mapping", wlmapping);
         
         $(".node").each(function(){
@@ -4274,7 +4274,7 @@ ProcessBuilder.Mapper = {
                 if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId] !== undefined) {
                     mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
                 }
-                if (mapping !== null && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
+                if (mapping !== null && mapping !== undefined && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
                     mapping['modifier'] = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
                 }
             } else if ($(this).hasClass("tool")) {
@@ -4317,7 +4317,7 @@ ProcessBuilder.Mapper = {
         var actId= "runProcess";
         var type = "start";
         var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
-        if (mapping !== null && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId + "::" + actId] !== undefined) {
+        if (mapping !== null && mapping !== undefined && ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId + "::" + actId] !== undefined) {
             mapping['modifier'] = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId + "::" + actId];
         }
         
