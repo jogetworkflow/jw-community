@@ -226,7 +226,7 @@ public class FileManager {
             JpegDirectory jpegDirectory = (JpegDirectory) metadata.getFirstDirectoryOfType(JpegDirectory.class);
 
             int orientation = 1;
-            if (exifIFD0Directory != null && jpegDirectory != null) {
+            if (exifIFD0Directory != null && exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION) && jpegDirectory != null) {
                 orientation = exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
                 int width = jpegDirectory.getImageWidth();
                 int height = jpegDirectory.getImageHeight();
