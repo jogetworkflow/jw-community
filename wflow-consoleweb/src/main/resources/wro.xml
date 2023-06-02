@@ -10,6 +10,7 @@
     </group>
     <group name="common">
         <css>/js/jquery/themes/ui-lightness/jquery-ui.min.css</css>
+        <css>/js/jquery/themes/ui-lightness/jquery-ui-override.css</css>
         <css>/js/fontawesome5/css/all.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>

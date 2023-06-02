@@ -1,0 +1,153 @@
+#ui-datepicker-div {
+    border: 0px !important;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    color: #495057;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+.ui-datepicker .ui-widget-header{
+    border: 0 !important;
+    border-bottom: 1px solid rgba(5, 5, 5, 0.06) !important;
+    width: 288px;
+    background: transparent;
+}
+.ui-datepicker-title select{
+    display: inline-block;
+    border: 0;
+    outline: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+.ui-datepicker td{
+    padding: 2px 4px;
+}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button{
+    font-size: 0.9em !important;
+}
+.ui-datepicker td span, .ui-datepicker td a{
+    border: 0 !important;
+    text-align: center;
+    background: none !important;
+    color: #495057 !important;
+    padding: .5em .3em;
+    margin: 0 1px;
+    line-height: 1.5;
+}
+.ui-datepicker td a:hover{
+    color: #0075ff !important;
+}
+.ui-datepicker td.ui-datepicker-today a {
+    background: #ced4da !important;
+    border-radius: 50%;
+}
+.ui-datepicker td.ui-datepicker-current-day a{
+    background: #0075ff !important;
+    color: #fff !important;
+    border-radius: 50%;
+}
+.ui-datepicker .ui-datepicker-title select{
+    padding: 0px 3px;
+    width: 35%;
+    text-align: center;
+    height: calc(1.5em + 0.75rem + 2px);
+    margin: 3px 0;
+}
+.ui-datepicker th{
+    font-weight: normal;
+    padding: .3em .3em;
+    padding-bottom: .5em;
+}
+.ui-datepicker table {
+    margin: 8px 0;
+}
+.ui-datepicker .ui-datepicker-buttonpane button {
+    padding: .4em .6em .5em .6em;
+    opacity: 1;
+}
+.ui-timepicker-div dl {
+    margin: 5px 60px;
+}
+.ui-timepicker-div dl dd {
+    margin: 0 -15px 5px 51% !important;
+    width: 75px;
+}
+.ui-datepicker .ui-datepicker-buttonpane {
+    margin: .3em 0 0 0;
+}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
+    top:9px;
+}
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: 900;
+    color: #ced4da;
+    text-align: center;
+}
+.ui-datepicker .ui-datepicker-prev:hover, .ui-datepicker .ui-datepicker-next:hover{
+    color: #0075ff !important;
+    border: 0 !important;
+    background: none !important;
+}
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span{
+    display: none;
+}
+.ui-datepicker .ui-datepicker-prev:after {
+    content: '\f0d9';
+}
+.ui-datepicker .ui-datepicker-next:after {
+    content: '\f0da';
+}
+.ui-datepicker-buttonpane,
+.ui-datepicker-calendar:not([style]) + .ui-timepicker-div {
+    border-top: 1px solid rgba(5, 5, 5, 0.06) !important;
+    margin-top: 5px;
+    padding: 5px 5px 0px;
+}
+.ui-timepicker-div select, .ui-timepicker-div input {
+    display: inline-block !important;
+    border: 0 !important;
+    border-bottom:  0 !important;
+    background: none !important;
+    outline: 0 !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    width: 100%;
+    padding: 6px 12px;
+}
+.ui-timepicker-div .ui-widget-header .ui-datepicker-title {
+    padding: .5em 0;
+    font-weight: 600;
+}
+#ui-datepicker-div .ui-timepicker-div dl dt {
+    padding: 7px 0 0 5px;
+    font-weight: normal;
+}
+.ui_tpicker_time_input{
+    padding-left: 16px !important;
+}
+.ui-datepicker-buttonpane button, .ui-datepicker-buttonpane button:hover{
+    border: 0  !important;
+    background: none !important;
+    color: #0075ff !important;
+    font-weight: normal !important;
+    opacity: 1;
+}
+.ui-datepicker-buttonpane button:hover {
+    opacity: 0.7;
+}
+.ui-timepicker-div .ui_tpicker_time .ui_tpicker_time_input{
+    width: 110% !important;
+    margin-bottom: 0px;
+    padding-right: 0px;
+}
