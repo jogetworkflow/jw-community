@@ -4161,7 +4161,11 @@ _CustomBuilder.Builder = {
         }
         
         self.component = copiedComponent;
-        self.renderElement(copiedObj, temp, copiedComponent, true);
+        self.renderElement(copiedObj, temp, copiedComponent, true, null, function(element){
+            if ($(element).find("[data-cbuilder-classname]").length > 0) {
+                self.recursiveCheckVisible(element);
+            }
+        });
     },
     
     /*
