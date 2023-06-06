@@ -34,6 +34,7 @@
             .mce-tinymce-inline {margin-left: 230px !important;}
         </style>
         <script>
+            UI.base = "${pageContext.request.contextPath}";
             ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";

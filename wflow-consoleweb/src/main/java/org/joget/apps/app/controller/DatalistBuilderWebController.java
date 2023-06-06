@@ -182,6 +182,7 @@ public class DatalistBuilderWebController {
 
         // set map into model to be used in the JSP template
         map.addAttribute("properties", new HashMap(map));
+        map.addAttribute("appId", appDef.getAppId());
         
         response.addHeader("X-XSS-Protection", "0");
         
