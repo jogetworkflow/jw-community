@@ -637,9 +637,11 @@ public class AppServiceImpl implements AppService {
                     submitButton.setProperty(FormUtil.PROPERTY_ID, AssignmentCompleteButton.DEFAULT_ID);
                     submitButton.setProperty("label",  ResourceBundleUtil.getMessage("form.button.submit"));
                     startForm.addAction((FormAction) submitButton);
-                    startForm = decorateFormActions(startForm);
-
+                    
+                    //Start Process Form Modifier should execute before decorateFormActions in order for the custom actions add to form
                     executeStartProcessFormModifier(startForm, formData, appDef, processDefId);
+                    
+                    startForm = decorateFormActions(startForm);
                     
                     // set to definition
                     startFormDef.setForm(startForm);

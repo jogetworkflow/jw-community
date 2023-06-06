@@ -59,7 +59,7 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
             } catch (Exception e) {
                 LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), e, "");
             }
-        } else if (request != null && uri != null && uri.startsWith(request.getContextPath())) {
+        } else if (request != null && uri != null && !uri.startsWith(request.getScheme())) {
             uri = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uri;
 
             if (uri.contains("/web/client/app/") && uri.contains("/form/download/")) {
