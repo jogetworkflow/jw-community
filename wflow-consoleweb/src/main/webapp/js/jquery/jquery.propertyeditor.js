@@ -9994,7 +9994,8 @@ PropertyEditor.Type.CssStyle.prototype = {
                 "font-family" : {"field" : "font-family", "label" : get_peditor_msg("style.fontFamily"), "class" : "input2"},
                 "font-weight" : {"field" : "font-weight", "label" : get_peditor_msg("style.fontWeight"), "class" : "input1"},
                 "line-height" : {"field" : "unit", "label" : get_peditor_msg("style.lineHeight"), "class" : "input1"},
-                "text-align" : {"field" : "text-align", "label" : get_peditor_msg("style.textAlign"), "class" : "input2"},
+                "text-align" : {"field" : "text-align", "label" : get_peditor_msg("style.textAlign"), "class" : "input1"},
+                "font-style" : {"field" : "font-style", "label" : get_peditor_msg("style.fontStyle"), "class" : "input1"},
                 "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing"), "class" : "input1"},
                 "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor"), "class" : "input1"},
                 "text-decoration" : {"field" : "text-decoration", "label" : get_peditor_msg("style.textDecoration"), "class" : "input2"},
@@ -10175,6 +10176,15 @@ PropertyEditor.Type.CssStyle.prototype = {
                 {value : 'dotted', label : '&lt;span style="text-decoration:underline;text-decoration-style:dotted;"&gt;' + get_peditor_msg("style.dotted") + '&lt;/span&gt;'},
                 {value : 'dashed', label : '&lt;span style="text-decoration:underline;text-decoration-style:dashed;"&gt;' + get_peditor_msg("style.dashed") + '&lt;/span&gt;'},
                 {value : 'double', label : '&lt;span style="text-decoration:underline;text-decoration-style:double;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
+            ],
+            html : 'true'
+        },
+        'font-style' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'italic', label : '&lt;span style="font-style: italic;"&gt;' + get_peditor_msg("style.italic") + '&lt;/span&gt;'},
+                {value : 'oblique', label : '&lt;span style="font-style: oblique;"&gt;' + get_peditor_msg("style.oblique") + '&lt;/span&gt;'}
             ],
             html : 'true'
         },
