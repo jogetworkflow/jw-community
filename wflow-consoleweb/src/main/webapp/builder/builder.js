@@ -1684,7 +1684,7 @@
         
         var deferreds = [];
                         
-        $(".element-properties .property-editor-container").each(function() {
+        $(".element-properties .tab-pane > .property-editor-container").each(function() {
             var d = $.Deferred();
             deferreds.push(d);
             $(this).data("deferred", d);
