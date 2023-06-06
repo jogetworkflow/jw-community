@@ -1063,14 +1063,14 @@ public class TestFormPermission {
     
     protected boolean isTextFieldReadonly(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\"  value=\"value\"   readonly />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\"></span></label>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"text\" placeholder=\"\"  value=\"value\"   readonly />\\s+</div>\\s*");
         
         return FormUtil.isReadonly(e, formData) && templateCorrect;
     }
     
     protected boolean isTextFieldReadonlyLabel(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\">\\*</span></label>\\s+<div class=\"form-cell-value\"><span>value</span></div>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"hidden\" value=\"value\" />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label field-tooltip=\"[^\"]+\" class=\"label\" for=\"[^\"]+\">TextField <span class=\"form-cell-validator\"></span></label>\\s+<div class=\"form-cell-value\"><span>value</span></div>\\s+<input id=\"[^\"]+\" name=\"[^\"]+\" class=\"[^\"]+\" type=\"hidden\" value=\"value\" />\\s+</div>\\s*");
                 
         return FormUtil.isReadonly(e, formData) && "true".equalsIgnoreCase(e.getPropertyString("readonlyLabel")) && templateCorrect;
     }
@@ -1091,14 +1091,14 @@ public class TestFormPermission {
     
     protected boolean isSelectFieldReadonly(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label class=\"label\" for=\"[^\"]+\" field-tooltip=\"[^\"]+\">SelectBox <span class=\"form-cell-validator\">\\*</span></label>\\s+<select  name=\"[^\"]+\"     disabled >\\s+<option value=\"value\" grouping=\"\" selected disabled>label</option>\\s+<option value=\"value1\" grouping=\"\"  disabled>label1</option>\\s+</select>\\s+<input type=\"hidden\" id=\"[^\"]+\" name=\"[^\"]+\" value=\"value\" />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label class=\"label\" for=\"[^\"]+\" field-tooltip=\"[^\"]+\">SelectBox <span class=\"form-cell-validator\"></span></label>\\s+<select  name=\"[^\"]+\"     disabled >\\s+<option value=\"value\" grouping=\"\" selected disabled>label</option>\\s+<option value=\"value1\" grouping=\"\"  disabled>label1</option>\\s+</select>\\s+<input type=\"hidden\" id=\"[^\"]+\" name=\"[^\"]+\" value=\"value\" />\\s+</div>\\s*");
         
         return FormUtil.isReadonly(e, formData) && templateCorrect;
     }
     
     protected boolean isSelectFieldReadonlyLabel(Element e, FormData formData) {
         String template = e.render(formData, false);
-        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label class=\"label\" for=\"[^\"]+\" field-tooltip=\"[^\"]+\">SelectBox <span class=\"form-cell-validator\">\\*</span></label>\\s+<div class=\"form-cell-value\">\\s+<label class=\"readonly_label\">\\s+<span>label</span>\\s+</label>\\s+</div>\\s+<div style=\"clear:both;\"></div>\\s+<input type=\"hidden\" id=\"[^\"]+\" name=\"[^\"]+\" value=\"value\" />\\s+</div>\\s*");
+        boolean templateCorrect = template.matches("\\s*<div class=\"form-cell\" >\\s+<label class=\"label\" for=\"[^\"]+\" field-tooltip=\"[^\"]+\">SelectBox <span class=\"form-cell-validator\"></span></label>\\s+<div class=\"form-cell-value\">\\s+<label class=\"readonly_label\">\\s+<span>label</span>\\s+</label>\\s+</div>\\s+<div style=\"clear:both;\"></div>\\s+<input type=\"hidden\" id=\"[^\"]+\" name=\"[^\"]+\" value=\"value\" />\\s+</div>\\s*");
         
         return FormUtil.isReadonly(e, formData) && "true".equalsIgnoreCase(e.getPropertyString("readonlyLabel")) && templateCorrect;
     }
