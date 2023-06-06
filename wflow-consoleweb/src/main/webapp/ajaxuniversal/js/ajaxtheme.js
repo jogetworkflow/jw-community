@@ -83,6 +83,8 @@ AjaxUniversalTheme = {
                 Analyzer.initAnalyzer(analyzer);
             }
         }
+        
+        themePageInit();
     },
     
     errorCallback : function(error) {
