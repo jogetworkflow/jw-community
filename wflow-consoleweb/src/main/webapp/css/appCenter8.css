@@ -639,3 +639,6 @@ body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover
     color: #72777a;
     font-weight: 400;
 }
+body#design_app #tutorial_section{
+    display: none;
+}

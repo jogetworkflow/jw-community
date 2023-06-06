@@ -24,10 +24,11 @@ $(document).ready(function() {
                 $('body#design_app #tutorial_section iframe').each(function(){
                     var id = $(this).attr("id");
                     var url = msgs['appcenter.'+id];
-                    if (url !== undefined && url !== "") {
+                    if (url !== undefined && url !== "" && $(this).attr("src") !== url) {
                         $(this).attr("src", url);
                     }
                 });
+                $('body#design_app #tutorial_section').show();
             });
         }
     });
