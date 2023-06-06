@@ -182,6 +182,11 @@ function responsiveTable(datalist) {
                             $(td).attr("xclass", $(this).attr('class'));
                             $(td).attr("class", "");
                             
+                            //for the user hided column
+                            if ($(td).attr("xclass").indexOf("control_hide") !== -1) {
+                                $(td).addClass("control_hide");
+                            }
+                            
                             //is list builder
                             if ($(th).is('[data-cbuilder-id]')) { 
                                 $(td).attr("data-cbuilder-select", $(th).attr("data-cbuilder-id"));
@@ -391,13 +396,29 @@ function showHideColumns(datalist) {
     var hide = function(key) {
         var header = "."+key;
         var body = header.replace(".header_", ".body_");
-        $(table).find(header + ', ' + body).addClass("control_hide");
+        if ($(table).find(body).first().parent().is("[xclass]")) {
+            $(table).find(body).each(function(){
+                $(this).parent().addClass("control_hide");
+                $(this).parent().attr("xclass", $(this).parent().attr("xclass") + " control_hide");
+            });
+            $(table).find('th'+header).addClass("control_hide");
+        } else {
+            $(table).find(header + ', ' + body).addClass("control_hide");
+        }
     };
     
     var show = function(key) {
         var header = "."+key;
         var body = header.replace(".header_", ".body_");
-        $(table).find(header + ', ' + body).removeClass("control_hide");
+        if ($(table).find(body).first().parent().is("[xclass]")) {
+            $(table).find(body).each(function(){
+                $(this).parent().removeClass("control_hide");
+                $(this).parent().attr("xclass", $(this).parent().attr("xclass").replace(' control_hide', ''));
+            });
+            $(table).find('th'+header).removeClass("control_hide");
+        } else {
+            $(table).find(header + ', ' + body).removeClass("control_hide");
+        }
     };
     
     //rearrange columns

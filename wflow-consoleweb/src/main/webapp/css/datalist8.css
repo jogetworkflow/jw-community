@@ -382,8 +382,8 @@ body.rtl .dataList span.pagelinks{
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody,
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr,
-.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]),
-.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]){
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]):not(.control_hide),
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]):not(.control_hide){
     display: block !important;
     border:0;
     width: auto !important;
