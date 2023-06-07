@@ -35,6 +35,7 @@
         </style>    
         <script type="text/javascript">
             UI.base = "${pageContext.request.contextPath}";
+            UI.userview_app_id = '<c:out value="${appId}"/>';
             
             var reloadForm = function() {
                 $('#form-preview').submit();

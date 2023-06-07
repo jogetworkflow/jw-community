@@ -1513,8 +1513,12 @@ public class FormUtil implements ApplicationContextAware {
         dataModel.put("elementParamName", paramName);
 
         // set validator decoration
-        String decoration = FormUtil.getElementValidatorDecoration(element, formData);
-        dataModel.put("decoration", decoration);
+        if (!FormUtil.isReadonly(element, formData)) {
+            String decoration = FormUtil.getElementValidatorDecoration(element, formData);
+            dataModel.put("decoration", decoration);
+        } else {
+            dataModel.put("decoration", "");
+        }
 
         // set error, if any
         String error = FormUtil.getElementError(element, formData);

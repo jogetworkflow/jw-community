@@ -570,7 +570,9 @@ JsonTable.prototype = {
         var gridColumns = this.columns;
         {
             var idx;
-            for (idx=0; idx<gridColumns.length; idx++) {
+            var total = 0;
+            var selectionWidth = 0;
+            for (idx = 0; idx < gridColumns.length; idx++) {
                 var col = gridColumns[idx];
                 if (col.key) {
                     col.name = col.key;
@@ -579,27 +581,44 @@ JsonTable.prototype = {
                     col.display = col.label;
                 }
                 if (!col.width) {
-                    //alert(thisObject.width + "," + thisObject.width.charAt(thisObject.width.length-1));
-                    if (typeof thisObject.width == "string" && thisObject.width.charAt(thisObject.width.length-1) == "%") {
+                    if (typeof thisObject.width == "string" && thisObject.width.charAt(thisObject.width.length - 1) == "%") {
                         col.width = 150;
-                    }
-                    else if (typeof thisObject.width == "string" && thisObject.width.substring(thisObject.width.length-2) == "px") {
+                    } else if (typeof thisObject.width == "string" && thisObject.width.substring(thisObject.width.length - 2) == "px") {
                         col.width = 150;
-                    }
-                    else {
-                        col.width = Math.round(thisObject.width/gridColumns.length) - 20;
+                    } else {
+                        col.width = Math.round(thisObject.width / gridColumns.length) - 20;
                     }
                 } else {
-                    if (typeof col.width == "string" && col.width.charAt(col.width.length-1) == "%") {
-                        try {
-                            col.width = ($("body").width() - 50) / 100 * parseInt(col.width.substring(0, col.width.length-1));
-                        } catch(err){
-                            col.width = 200;
+                    if (typeof col.width == "string") {
+                        if (col.width.charAt(col.width.length - 1) == "%") {
+                            try {
+                                col.width = ($("body").width() - 50) / 100 * parseInt(col.width.substring(0, col.width.length - 1));
+                            } catch (err) {
+                                col.width = 200;
+                            }
+                        } else if (col.width.substring(col.width.length - 2) == "px") {
+                            col.width = parseInt(col.width.substring(0, col.width.length - 2));
+                        } else {
+                            col.width = parseInt(col.width);
                         }
                     }
                 }
+                if (col.name === "checkbox" || col.name === "radio") {
+                    selectionWidth += col.width;
+                } else {
+                    total += col.width;
+                }
                 col.process = handleRowSelection;
                 gridColumns[idx] = col;
+            }
+            var tableWidth = $("#" + thisObject.divToUpdate).parent().width() - 40 - selectionWidth;
+            if (total < tableWidth) {
+                for (idx = 0; idx < gridColumns.length; idx++) {
+                    if (gridColumns[idx].name === "checkbox" || gridColumns[idx].name === "radio") {
+                        continue;
+                    }
+                    gridColumns[idx].width = gridColumns[idx].width / total * tableWidth;
+                }
             }
         }
 

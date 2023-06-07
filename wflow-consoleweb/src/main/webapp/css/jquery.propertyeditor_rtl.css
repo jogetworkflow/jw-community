@@ -44,3 +44,8 @@
     left: 5px;
     right: auto;
 }
+
+body.rtl .boxy-wrapper .title-bar a.close{
+    right: auto !important;
+    left: 15px !important;
+}

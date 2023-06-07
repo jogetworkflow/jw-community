@@ -226,8 +226,17 @@
     display:block !important;
 }
 
+.property-editor-page-buttons,
 .property-editor-page-button-panel{
     padding:5px 10px;
+}
+
+.property-editor-page-buttons {
+    text-align: right;
+}
+
+.property-editor-page-buttons .btn {
+    margin: 5px;
 }
 
 .page-button-navigation{
@@ -1599,6 +1608,22 @@ body .boxy-wrapper .autosave input {
 }
 body .ui-dialog .button_form.ui-dialog-content{
     padding:10px !important;
+}
+body .ui-dialog .button_form.ui-dialog-content.editor-panel-mode {
+    padding-top: 70px !important;
+}
+body .ui-dialog .button_form.editor-panel-mode #main-body-header {
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 10px 15px;
+    background: #007bff;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
 }
 /* mobile styles */
 @media screen and (max-width:680px) {

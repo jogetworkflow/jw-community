@@ -31,6 +31,8 @@
             }
         </style>
         <script>
+            UI.base = "${pageContext.request.contextPath}";
+            UI.userview_app_id = '${appId}';
             var _enableResponsiveTable = true;
         </script>    
     </head>

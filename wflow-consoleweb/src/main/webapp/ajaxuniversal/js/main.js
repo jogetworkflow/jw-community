@@ -38,6 +38,53 @@ function setFontSize(size) {
     $('body').addClass(fontClass);
 }
 
+/*
+ * Call when page loaded or page switched in AJAX theme
+ */
+function themePageInit() {
+    checkCookie();
+    $('#smallFont').click(function () {
+        setCookie("13");
+        setFontSize("13");
+    });
+
+    $('#mediumFont').click(function () {
+        setFontSize("17");
+        setCookie("17");
+    });
+
+    $('#bigFont').click(function () {
+        setFontSize("20");
+        setCookie("20");
+    });
+
+    $(".rowCount").each(function() {
+        var count = $(this).text().replace("(", "").replace(")", "");
+        $(this).text(count);
+        $(this).addClass("pull-right badge");
+    });
+    
+    //remove pagination if only 1 page
+    if ($(".dataList .pagelinks a").length === 0) {
+        $(".dataList .pagelinks").css("visibility", "hidden");
+    }
+
+    $(".filter-cell select").on("change", function() {
+        if ($(this).val() === "") {
+            $(this).addClass("emptyValue");
+        } else {
+            $(this).removeClass("emptyValue");
+        }
+    });
+    $(".filter-cell select").each(function() {
+        if ($(this).val() === "") {
+            $(this).addClass("emptyValue");
+        } else {
+            $(this).removeClass("emptyValue");
+        }
+    });
+}
+
 ! function($) {
     var bsButton = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
     $.fn.bsButton = bsButton;
@@ -51,27 +98,7 @@ function setFontSize(size) {
     })
 
     $(document).ready(function() {
-        checkCookie();
-        $('#smallFont').click(function () {
-            setCookie("13");
-            setFontSize("13");
-        });
-
-        $('#mediumFont').click(function () {
-            setFontSize("17");
-            setCookie("17");
-        });
-
-        $('#bigFont').click(function () {
-            setFontSize("20");
-            setCookie("20");
-        });
-        
-        $(".rowCount").each(function() {
-            var count = $(this).text().replace("(", "").replace(")", "");
-            $(this).text(count);
-            $(this).addClass("pull-right badge");
-        });
+        themePageInit();
 
         $("body").swipe({
             swipeRight: function(event, direction, distance, duration, fingerCount, fingerData) {
@@ -217,26 +244,6 @@ function setFontSize(size) {
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             $("html").addClass("ismobile");
         }
-
-        //remove pagination if only 1 page
-        if ($(".dataList .pagelinks a").length === 0) {
-            $(".dataList .pagelinks").css("visibility", "hidden");
-        }
-
-        $(".filter-cell select").on("change", function() {
-            if ($(this).val() === "") {
-                $(this).addClass("emptyValue");
-            } else {
-                $(this).removeClass("emptyValue");
-            }
-        });
-        $(".filter-cell select").each(function() {
-            if ($(this).val() === "") {
-                $(this).addClass("emptyValue");
-            } else {
-                $(this).removeClass("emptyValue");
-            }
-        });
 
         // hide responsive switch if within IFRAME
         if (window.self !== window.top) {

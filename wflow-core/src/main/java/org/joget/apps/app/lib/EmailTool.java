@@ -218,19 +218,23 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                 String to = AppUtil.processHashVariable(request.getParameter("toSpecific"), null, null, null, appDef);
 
                 final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from);
-                email.setSubject(ResourceBundleUtil.getMessage("app.emailtool.testSubject"));
-                email.setCharset("UTF-8");
-                email.setHtmlMsg(ResourceBundleUtil.getMessage("app.emailtool.testMessage"));
-                
-                if (to != null && to.length() != 0) {
-                    Collection<String> tos = AppUtil.getEmailList(null, to, null, null);
-                    for (String address : tos) {
-                        email.addTo(address);
+                if (email != null) {
+                    email.setSubject(ResourceBundleUtil.getMessage("app.emailtool.testSubject"));
+                    email.setCharset("UTF-8");
+                    email.setHtmlMsg(ResourceBundleUtil.getMessage("app.emailtool.testMessage"));
+
+                    if (to != null && to.length() != 0) {
+                        Collection<String> tos = AppUtil.getEmailList(null, to, null, null);
+                        for (String address : tos) {
+                            email.addTo(address);
+                        }
                     }
+
+                    email.send();
+                    message = ResourceBundleUtil.getMessage("app.emailtool.testEmailSent");
+                } else {
+                    message = ResourceBundleUtil.getMessage("app.emailtool.testEmailFail") + "\n" + ResourceBundleUtil.getMessage("app.emailtool.error.smtp");
                 }
-                
-                email.send();
-                message = ResourceBundleUtil.getMessage("app.emailtool.testEmailSent");
             } catch (Exception e) {
                 LogUtil.error(this.getClassName(), e, "Test Email error");
                 message = ResourceBundleUtil.getMessage("app.emailtool.testEmailFail") + "\n" + StringEscapeUtils.escapeJavaScript(e.getMessage());

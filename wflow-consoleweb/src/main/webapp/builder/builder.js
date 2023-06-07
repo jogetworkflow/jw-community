@@ -1684,7 +1684,7 @@
         
         var deferreds = [];
                         
-        $(".element-properties .property-editor-container").each(function() {
+        $(".element-properties .tab-pane > .property-editor-container").each(function() {
             var d = $.Deferred();
             deferreds.push(d);
             $(this).data("deferred", d);
@@ -2215,6 +2215,9 @@
         iframe.onload = function() {
             $(view).find('.dt-loading').remove();
             $(iframe).css('opacity', "1");
+            
+            iframe.contentWindow["UI"].base = CustomBuilder.contextPath;
+            iframe.contentWindow["UI"].userview_app_id = CustomBuilder.appId;
         }; 
         
         var viewport = $(".responsive-buttons button.active").data("view");
@@ -3764,6 +3767,8 @@ _CustomBuilder.Builder = {
             $(window.FrameWindow).on("scroll resize", function (event) {
                 self._updateBoxes();
             });
+            
+            window.FrameWindow["UI"].userview_app_id = CustomBuilder.appId;
 
             return self._frameLoaded(callback);
         });

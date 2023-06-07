@@ -20,3 +20,7 @@
     display:none;
 }
 
+body.rtl .boxy-wrapper .title-bar a.close{
+    right: auto !important;
+    left: 10px !important;
+}

@@ -1057,7 +1057,10 @@ PropertyEditor.Util = {
     },
     handleAjaxOptions : function(data, ajaxUrl, extra) {
         if (data !== undefined && data !== null) {
-            var options = $.parseJSON(data);
+            var options = [];
+            if (data !== "") {
+                options = $.parseJSON(data);
+            }
             var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
             for (var i in calls) {
                 var tempOptions = options;
@@ -2321,12 +2324,43 @@ PropertyEditor.Model.ButtonPanel = function(page) {
 };
 PropertyEditor.Model.ButtonPanel.prototype = {
     render: function() {
-        var page = this.page;
-        var html = '<div class="property-editor-page-button-panel">';
+        var html = "";
+        var customButtons = this.renderPageButtons('btn btn-secondary btn-sm');
+        if ($(this.editor).hasClass("editor-panel-mode") || this.options.editorPanelMode) { //for builder properties panel
+            if (customButtons !== "") {
+                customButtons = '<div class="property-editor-page-buttons">' + customButtons +'<div style="clear:both"></div></div>';
+                html += customButtons;
+            }
+        } 
+        
+        html += '<div class="property-editor-page-button-panel">';
         html += '<div class="page-button-navigation">';
         html += '<input type="button" class="page-button-prev" value="' + this.options.previousPageButtonLabel + '"/>';
         html += '<input type="button" class="page-button-next" value="' + this.options.nextPageButtonLabel + '"/>';
         html += '</div><div class="page-button-action">';
+        
+        if (!($(this.editor).hasClass("editor-panel-mode") || this.options.editorPanelMode)) {
+            html += customButtons;
+        }
+
+        if (!this.options.autoSave) {
+            html += '<input type="button" class="page-button-save" value="' + this.options.saveButtonLabel + '"/>';
+        }
+        if (this.options.showCancelButton) {
+            html += '<input type="button" class="page-button-cancel" value="' + this.options.cancelButtonLabel + '"/>';
+        }
+        html += '</div><div style="clear:both"></div></div>';
+        
+        return html;
+    },
+    //render the additional buttons & popup form for buttons
+    renderPageButtons: function(css) {
+        var page = this.page;
+        var thisObj = this;
+        var html = "";
+        if (css === undefined || css === null) {
+            css = "";
+        }
         if (page.properties.buttons !== undefined && page.properties.buttons !== null) {
             $.each(page.properties.buttons, function(i, button) {
                 var showHide = "";
@@ -2351,10 +2385,10 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 } else if (button.callback !== undefined) {
                     buttonAttrs = 'data-callback="' + button.callback + '"';
                 }
-                
-                html += '<input id="' + page.id + '_' + button.name + '" type="button" class="page-button-custom" value="' + button.label + '" ' + buttonAttrs +' data-action="' + button.name + '" ' + showHide + ' />';
+
+                html += '<input id="' + page.id + '_' + button.name + '" type="button" class="page-button-custom '+css+'" value="' + button.label + '" ' + buttonAttrs +' data-action="' + button.name + '" ' + showHide + ' />';
                 if (button.addition_fields !== undefined && button.addition_fields !== null) {
-                    html += '<div id="' + page.id + '_' + button.name + '_form" class="button_form" style="display:none;">';
+                    html += '<div id="' + page.id + '_' + button.name + '_form" class="button_form '+(($(thisObj.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode)?'single-page property-editor-container editor-panel-mode':'')+'" style="display:none;">';
                     html += '<div id="main-body-header" style="margin-bottom:15px;">' + button.label + '</div>';
                     $.each(button.addition_fields, function(i, property) {
                         html += page.renderProperty(i, button.name, property);
@@ -2363,13 +2397,6 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 }
             });
         }
-        if (!this.options.autoSave) {
-            html += '<input type="button" class="page-button-save" value="' + this.options.saveButtonLabel + '"/>';
-        }
-        if (this.options.showCancelButton) {
-            html += '<input type="button" class="page-button-cancel" value="' + this.options.cancelButtonLabel + '"/>';
-        }
-        html += '</div><div style="clear:both"></div></div>';
         return html;
     },
     initScripting: function() {
@@ -2451,8 +2478,9 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                                 width: "70%",
                                 closeText: '',
                                 buttons: [{
-                                    text: $(button).val(),
-                                    click: function() {
+                                    "text" : $(button).val(),
+                                    "class" : "btn btn-primary",
+                                    "click" : function() {
                                         page.validation(function(addition_data) {
                                             data = $.extend(data, addition_data);
                                             panel.executeButtonEvent(data, $(button));
@@ -2490,8 +2518,9 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                             width: "70%",
                             closeText: '',
                             buttons: [{
-                                text: $(button).val(),
-                                click: function() {
+                                "text" : $(button).val(),
+                                "class" : "btn btn-primary",
+                                "click" : function() {
                                     page.validation(function(addition_data) {
                                         data = $.extend(data, addition_data);
                                         panel.executeButtonEvent(data, $(button));

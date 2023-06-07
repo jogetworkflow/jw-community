@@ -367,34 +367,7 @@ public class JsonUtil {
         
         if (!obj.isNull(PROPERTY_ROW_ACTIONS)) {
             JSONArray actions = obj.getJSONArray(PROPERTY_ROW_ACTIONS);
-            
-            for (int i = 0; i < actions.length(); i++) {
-                JSONObject action = actions.getJSONObject(i);
-                boolean isHidden = false;
-                if (!Permission.DEFAULT.equals(permissionKey)) {
-                    if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
-                        JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
-                            isHidden = true;
-                        }
-                    }
-                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
-                    isHidden = true;
-                }
-                
-                if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {
-                    String className = action.getString(PROPERTY_CLASS_NAME);
-                    DataListAction dataListAction = (DataListAction) loadPlugin(className);
-                    if (dataListAction != null) {
-                        dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
-                        dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
-                        
-                        JsonUtil.generateBuilderProperties(dataListAction.getProperties(), new String[]{"", "header-", "link-"});
-                        
-                        property.add(dataListAction);
-                    }
-                }
-            }
+            property = parseRowActionsFromJsonArray(actions, permissionKey);
         }
         return property;
     }
@@ -413,15 +386,18 @@ public class JsonUtil {
         for (int i = 0; i < actions.length(); i++) {
             JSONObject action = actions.getJSONObject(i);
             boolean isHidden = false;
-            if (!Permission.DEFAULT.equals(permissionKey)) {
-                if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
-                    JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                    if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
-                        isHidden = true;
+            if (action.has(PROPERTY_PROPERTIES)) {
+                JSONObject actionProps = action.getJSONObject(PROPERTY_PROPERTIES);
+                if (!Permission.DEFAULT.equals(permissionKey)) {
+                    if (actionProps.has("permission_rules") && actionProps.getJSONObject("permission_rules").has(permissionKey)) {
+                        JSONObject rule = actionProps.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
+                            isHidden = true;
+                        }
                     }
+                } else if (actionProps.has(PROPERTY_HIDDEN) && "true".equals(actionProps.get(PROPERTY_HIDDEN).toString())) {
+                    isHidden = true;
                 }
-            } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
-                isHidden = true;
             }
 
             if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {
@@ -472,15 +448,18 @@ public class JsonUtil {
                 JSONObject action = actions.getJSONObject(i);
                 
                 boolean isHidden = false;
-                if (!Permission.DEFAULT.equals(permissionKey)) {
-                    if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
-                        JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
-                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
-                            isHidden = true;
+                if (action.has(PROPERTY_PROPERTIES)) {
+                    JSONObject actionProps = action.getJSONObject(PROPERTY_PROPERTIES);
+                    if (!Permission.DEFAULT.equals(permissionKey)) {
+                        if (actionProps.has("permission_rules") && actionProps.getJSONObject("permission_rules").has(permissionKey)) {
+                            JSONObject rule = actionProps.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                            if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.get(PROPERTY_HIDDEN).toString())) {
+                                isHidden = true;
+                            }
                         }
+                    } else if (actionProps.has(PROPERTY_HIDDEN) && "true".equals(actionProps.get(PROPERTY_HIDDEN).toString())) {
+                        isHidden = true;
                     }
-                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.get(PROPERTY_HIDDEN).toString())) {
-                    isHidden = true;
                 }
                 
                 if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {

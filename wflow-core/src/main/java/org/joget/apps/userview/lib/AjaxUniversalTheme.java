@@ -118,7 +118,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getContentContainer(Map<String, Object> data) {
         if (isAjaxContent(data)) {
-            data.put("content_inner_before", getBreadcrumb(data));
+            String contentInnerBefore = getBreadcrumb(data);
+            if (getPropertyString("fontControl").equalsIgnoreCase("true")) {
+                contentInnerBefore += getFontSizeController(data);
+            }
+            data.put("content_inner_before", contentInnerBefore);
             return null;
         } else {
             return super.getContentContainer(data);
