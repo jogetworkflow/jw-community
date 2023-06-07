@@ -33,6 +33,8 @@
         <script>
             UI.base = "${pageContext.request.contextPath}";
             UI.userview_app_id = '${appId}';
+            UI.userview_id = 'BUILDER_PREVIEW';
+            
             var _enableResponsiveTable = true;
         </script>    
     </head>

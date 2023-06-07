@@ -21,6 +21,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
+import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
@@ -481,38 +482,50 @@ public class UserviewService {
         UserviewTheme theme = null;
         
         AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        if (appDef == null) { // when the app is not published yet
+            appDef = appService.getAppDefinition(appId, null);
+        }
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (appDef != null && request != null) {
-            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            if (userviewDef != null) {
-                String json = userviewDef.getJson();
-                //process json with hash variable
-                json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
+            Map requestParameters = convertRequestParamMap(request.getParameterMap());
+            requestParameters.put("contextPath", request.getContextPath());
+            requestParameters.put("appId", appDef.getAppId());
+            requestParameters.put("appVersion", appDef.getVersion().toString());
+                    
+            if ("BUILDER_PREVIEW".equals(userviewId)) { //used by builder preview
+                Userview userview = new Userview();
                 
-                Map requestParameters = convertRequestParamMap(request.getParameterMap());
-                requestParameters.put("contextPath", request.getContextPath());
-                requestParameters.put("appId", appDef.getAppId());
-                requestParameters.put("appVersion", appDef.getVersion().toString());
+                theme = new AjaxUniversalTheme();
+                theme.setRequestParameters(requestParameters);
+                theme.setProperties(new HashMap());
+                theme.setUserview(userview);
+            } else {
+                UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+                if (userviewDef != null) {
+                    String json = userviewDef.getJson();
+                    //process json with hash variable
+                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
-                try {
-                    Userview userview = new Userview();
+                    try {
+                        Userview userview = new Userview();
 
-                    //set userview properties
-                    JSONObject userviewObj = new JSONObject(json);
-                    userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
+                        //set userview properties
+                        JSONObject userviewObj = new JSONObject(json);
+                        userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
 
-                    JSONObject settingObj = userviewObj.getJSONObject("setting");
-                    JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+                        JSONObject settingObj = userviewObj.getJSONObject("setting");
+                        JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
 
-                    theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
-                    if (theme != null) {
-                        theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
-                        theme.setRequestParameters(requestParameters);
-                        theme.setUserview(userview);
+                        theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                        if (theme != null) {
+                            theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
+                            theme.setRequestParameters(requestParameters);
+                            theme.setUserview(userview);
+                        }
+
+                    } catch (Exception e) {
+                        LogUtil.debug(getClass().getName(), "get userview theme error.");
                     }
-
-                } catch (Exception e) {
-                    LogUtil.debug(getClass().getName(), "get userview theme error.");
                 }
             }
         }
