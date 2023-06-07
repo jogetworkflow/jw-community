@@ -572,7 +572,10 @@ public class GeneratorUtil {
     public static void addElementJsonToForm(FormDefinition formDef, String json, boolean addToFirst, boolean addToColumn) {
         try {
             JSONObject formObject = new JSONObject(formDef.getJson());
-            JSONArray elements = formObject.getJSONArray("elements");
+            JSONArray elements = formObject.getJSONArray("elements"); //form childs > sections
+            if (elements.length() > 0) { //get last section's child
+                elements = elements.getJSONObject(elements.length() - 1).getJSONArray("elements");
+            }
             if (addToColumn) {
                 int index = 0;
                 if (!addToFirst) {
