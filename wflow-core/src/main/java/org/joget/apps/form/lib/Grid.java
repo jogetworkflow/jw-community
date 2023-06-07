@@ -230,7 +230,9 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
         FormRowSet rows = getRows(formData);
         dataModel.put("rows", rows);
         
-        dataModel.put("customDecorator", getDecorator());
+        if (!FormUtil.isReadonly(this, formData)) {
+            dataModel.put("customDecorator", getDecorator());
+        }
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
