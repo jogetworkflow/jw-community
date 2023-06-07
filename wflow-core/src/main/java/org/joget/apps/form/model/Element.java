@@ -613,7 +613,8 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                     isParentHidden = getParent().isHidden(formData);
                     isParentReadonly = getParent().isReadonly(formData);
                 }
-                if (!isParentHidden && isParentReadonly) {
+                if (!isParentHidden && isParentReadonly && !(this instanceof Section)) { 
+                    //section in subform should check for permission plugin, so should not just follow parent permission.
                     //based on permission setting, if parent is readonly, all childs are readonly as well
                     isHidden = false;
                 } else if (!isParentHidden) {
