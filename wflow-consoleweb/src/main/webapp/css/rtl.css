@@ -71,12 +71,13 @@ body.rtl select:not([class^="ui-"]){
 /* popup */
 body.rtl .ui-dialog-titlebar{
     right: auto;
-    left: 40px;
+    left: 0px;
 }
 body.rtl .boxy-wrapper .title-bar a.close,
 body.rtl .ui-dialog-titlebar-close{
     right: auto !important;
     left: 10px !important;
+    top: 20px !important;
 }
 body.rtl.popupBody #main-body-header #main-action-help{
     right: auto;
