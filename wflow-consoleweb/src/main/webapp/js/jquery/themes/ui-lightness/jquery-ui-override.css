@@ -72,7 +72,7 @@
 }
 .ui-timepicker-div dl dd {
     margin: 0 -15px 5px 51% !important;
-    width: 75px;
+    width: 80px;
 }
 .ui-datepicker .ui-datepicker-buttonpane {
     margin: .3em 0 0 0;
@@ -148,6 +148,7 @@
 }
 .ui-timepicker-div .ui_tpicker_time .ui_tpicker_time_input{
     width: 110% !important;
+    max-width: 110%;
     margin-bottom: 0px;
     padding-right: 0px;
 }
