@@ -1117,6 +1117,10 @@
                     $('#cbuilder-json-original').val(d.data);
                     CustomBuilder.updateSaveStatus("0");
                     CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
+                    
+                    if (d.properties !== undefined && d.properties !== null) {
+                        CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
+                    }
 
                     CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
                 }else{

@@ -91,6 +91,7 @@ public class ProcessBuilderWebController {
         model.addAttribute("appId", appDef.getId());
         model.addAttribute("version", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
+        model.addAttribute("packageVersion", appDef.getPackageDefinition().getVersion());
         
         model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
         
@@ -278,6 +279,11 @@ public class ProcessBuilderWebController {
         if (success) {
             jsonObject.put("success", success);
             jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
+            
+            JSONObject props = new JSONObject();
+            props.put("packageVersion", appDef.getPackageDefinition().getVersion());
+            
+            jsonObject.put("properties", props);
         } else {
             jsonObject.put("error", error);
         }

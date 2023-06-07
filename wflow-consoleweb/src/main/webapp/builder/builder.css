@@ -2527,3 +2527,28 @@ body.right-panel-mode-window #right-panel-window-resize  {
   width: 34%;
   margin-left: 64%;
 }
+#advancedView dl dt{
+    font-weight: bold;
+    float: left;
+    width: 200px;
+}
+#advancedView dl dd{
+    margin-left: 150px;
+}
+#advancedView dl {
+    font-size: 14px;
+    line-height: 25px;
+}
+#advancedView{
+    padding: 15px 15px 10px;
+    background: rgb(255, 255, 255);
+    margin: 15px 45px 10px 0px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+.copybtn{
+    cursor: default;
+    background-color: #F9F9F9;
+    padding: 5px 13px;
+    border-radius: 15px;
+}

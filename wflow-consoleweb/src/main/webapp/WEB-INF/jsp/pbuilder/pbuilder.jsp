@@ -76,6 +76,10 @@
                 "listViewerViewInit" : "ProcessBuilder.listViewerViewInit",
                 "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
+                "builderSaved" : "ProcessBuilder.builderSaved",
+            },
+            "properties" : {
+                "packageVersion" : "${packageVersion}"
             }
         },
         "advanced_tools" : {

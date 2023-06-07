@@ -173,10 +173,9 @@ ProcessBuilder = {
             
             $('#process-selector .process_action').append(' <a id="process-edit-btn" href="" title="'+get_cbuilder_msg("ubuilder.edit")+'" style=""><i class="la la-pen"></i></a>');
             $('#process-selector .process_action').append(' <a id="process-delete-btn" title="'+get_cbuilder_msg("cbuilder.remove")+'" style=""><i class="la la-trash"></i></a>');
+            $('#process-selector .process_action').append(' &nbsp;<a class="graybtn" id="process-additional-btn" title="'+get_cbuilder_msg("pbuilder.additionalInformation")+'" style="" onclick="ProcessBuilder.showAdvancedInfo();return false"><i class="zmdi zmdi-info-outline"></i></a>');
             $('#process-selector .process_action').append('&nbsp;&nbsp;&nbsp;<a class="graybtn" id="process-clone-btn" title="'+get_cbuilder_msg("cbuilder.clone")+'" style=""><i class="la la-copy"></i></a>');
             $('#process-selector .process_action').append(' <a class="graybtn" id="process-add-btn" title="'+get_cbuilder_msg("cbuilder.addnew")+'" style=""><i class="la la-plus"></i></a>');
-            $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-def-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessDef")+'" style=""><i class="las la-notes-medical"></i></a>');
-            $('#process-selector .process_action').append(' <a class="graybtn" id="process-copy-link-btn" title="'+get_cbuilder_msg("pbuilder.copyProcessStartLink")+'" style=""><i class="las la-link"></i></a>');
             
             $("#process-edit-btn").on("click", function(event){
                 ProcessBuilder.editProcess();
@@ -195,25 +194,6 @@ ProcessBuilder = {
             });
             $("#process-add-btn").on("click", function(event){
                 ProcessBuilder.addProcess();
-                event.preventDefault();
-                return false;
-            });
-            $("#process-copy-def-btn").on("click", function(event){
-                var processDefId = CustomBuilder.appId + ":latest:" + ProcessBuilder.currentProcessData.properties.id;
-                CustomBuilder.copyTextToClipboard(processDefId, true);
-                
-                CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
-                
-                event.preventDefault();
-                return false;
-            });
-            $("#process-copy-link-btn").on("click", function(event){
-                var url = document.URL.substring(0, document.URL.indexOf("/web/console"));
-                url += "/web/client/app" + CustomBuilder.appPath + "/process/" + ProcessBuilder.currentProcessData.properties.id + "?start=true";
-                CustomBuilder.copyTextToClipboard(url, true);
-                
-                CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessStartLink.copied'), "info", true);
-                
                 event.preventDefault();
                 return false;
             });
@@ -326,11 +306,64 @@ ProcessBuilder = {
                     }, 1000);
                 });
             }
+            ProcessBuilder.updateAdvancedView();
         } else { //only redirect to `process1` when there is totally no process in package
             window.location.hash = "process1";
         }
     },
     
+    /*
+     * Update advanced view
+     */
+    updateAdvancedView: function () {
+        if ($('#advancedView').length > 0) {
+            $('#advancedView').remove();
+        }
+
+        var packageId = CustomBuilder.data.xpdl['Package']['-Id'];
+        var processDefId = CustomBuilder.appId + ":" + CustomBuilder.config.builder.properties["packageVersion"] + ":" + ProcessBuilder.currentProcessData.properties.id;
+        var runProcessLink = document.URL.substring(0, document.URL.indexOf("/web/console"));
+        runProcessLink += "/web/client/app" + CustomBuilder.appPath + "/process/" + ProcessBuilder.currentProcessData.properties.id + "?start=true";
+
+        $('#process-selector').append('<div id="advancedView" style="display:none;"><dl>'
+            + '<dt>' + get_cbuilder_msg("pbuilder.packageID") + '</dt>'
+            + '<dd><a class="copybtn" id="process-package-id-btn" title="' + get_cbuilder_msg("pbuilder.copyPackageId") + '" style="">' + packageId + '&nbsp;<i class="far fa-copy"></i></a></dd>'
+            + '<dt>' + get_cbuilder_msg("pbuilder.processDefID") + '</dt>'
+            + '<dd><a class="copybtn" id="process-copy-def-btn" title="' + get_cbuilder_msg("pbuilder.copyProcessDef") + '" style="">' + processDefId + '&nbsp;<i class="far fa-copy"></i></a></dd>'
+            + '<dt>' + get_cbuilder_msg("pbuilder.linkToRunProcess") + '</dt>'
+            + '<dd><a class="copybtn" id="process-copy-link-btn" title="' + get_cbuilder_msg("pbuilder.copyProcessStartLink") + '" style="">' + runProcessLink + '&nbsp;<i class="far fa-copy"></i></a></dd></dl>'
+            + '<div id="advacendButton" class="form-buttons" style="display: block">'
+            + '<a href="#" style="display: none" id="hideAdvancedInfo" onclick="ProcessBuilder.hideAdvancedInfo();return false">' + get_cbuilder_msg("pbuilder.hideAdditionalInfo") + '</a>'
+            + '</div></div>');
+        
+        $('#process-package-id-btn').off('click');
+        $("#process-package-id-btn").on("click", function (event) {
+            CustomBuilder.copyTextToClipboard(packageId, true);
+            CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyPackageId.copied'), "info", true);
+
+            event.preventDefault();
+            return false;
+        });
+        
+        $('#process-copy-link-btn').off('click');
+        $("#process-copy-link-btn").on("click", function (event) {
+            CustomBuilder.copyTextToClipboard(runProcessLink, true);
+            CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessStartLink.copied'), "info", true);
+
+            event.preventDefault();
+            return false;
+        });
+        
+        $('#process-copy-def-btn').off('click');
+        $("#process-copy-def-btn").on("click", function (event) {
+            CustomBuilder.copyTextToClipboard(processDefId, true);
+            CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.copyProcessDef.copied', [processDefId]), "info", true);
+
+            event.preventDefault();
+            return false;
+        });
+    },
+
     /*
      * Generate process model from XPDL
      */
@@ -4941,5 +4974,19 @@ ProcessBuilder = {
             }
 
         }
-    }    
+    },
+            
+    builderSaved : function() {
+        ProcessBuilder.updateAdvancedView();
+    },
+    
+    showAdvancedInfo : function() {
+        $('#advancedView').slideToggle('slow');
+        $('#hideAdvancedInfo').show();
+    },
+    
+    hideAdvancedInfo : function() {
+        $('#advancedView').slideToggle('slow');
+        $('#hideAdvancedInfo').hide();
+    }
 };
