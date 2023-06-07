@@ -1057,7 +1057,10 @@ PropertyEditor.Util = {
     },
     handleAjaxOptions : function(data, ajaxUrl, extra) {
         if (data !== undefined && data !== null) {
-            var options = $.parseJSON(data);
+            var options = [];
+            if (data !== "") {
+                options = $.parseJSON(data);
+            }
             var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
             for (var i in calls) {
                 var tempOptions = options;
