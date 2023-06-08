@@ -12,7 +12,7 @@
     </script>
 </#if>
 
-    <label field-tooltip="${elementParamName!}" class="label">${element.properties.label!} <span class="form-cell-validator">${decoration}${customDecorator}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
+    <label field-tooltip="${elementParamName!}" class="label">${element.properties.label!} <span class="form-cell-validator">${decoration}${customDecorator!}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <div class="form-clear"></div>
     <div class="grid cgrid grid_${element.properties.elementUniqueKey!} form-element" id="${elementParamName!}" name="${elementParamName!}">
         <table cellspacing="0" class="tablesaw tablesaw-stack" data-tablesaw-mode="stack">
