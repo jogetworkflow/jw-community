@@ -2,6 +2,35 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.3
+=====
+c24f1c064 Fixed: wflow-core - Generator - Field is wrongly added outside of column. @8.0-SNAPSHOT
+89f8c4f5f Fixed: wflow-consoleweb - Form Builder - Popup in preview does not having default styling. @8.0-SNAPSHOT
+b5c8b5cb5 Added: wflow-consoleweb - Process Builder - Added to display additional process information. @8.0-SNAPSHOT
+35df16ae2 Modified: wflow-core - Update com.google.guava to 32.0.0-jre for CVE-2020-8908 & CVE-2023-2976. @8.0-SNAPSHOT
+f2848c48e Fixed: wflow-consoleweb - Date and time field - Fixed time picker input widths not enough to display the whole input. @8.0-SNAPSHOT
+0c4a9002f Fixed: wflow-consoleweb - Properties Editor - Ajax call with empty respond causing the page blocking with loading icon infinitely. @8.0-SNAPSHOT
+7116e42b0 Fixed: wflow-consoleweb - List - Permission setting for row actions & actions are not working. @8.0-SNAPSHOT
+35d4049b1 Fixed: wflow-consoleweb - Section - Section in Subform does not following permission setting. @8.0-SNAPSHOT
+942b0710b Fixed: wflow-consoleweb - Form - Readonly field should not showing validator decoration. @8.0-SNAPSHOT
+bce96ed35 Fixed: wflow-consoleweb - Console - Columns leaving too much white space when screen is wide. @8.0-SNAPSHOT
+6731738f3 Fixed: wflow-consoleweb - Properties Panel - Custom property page button is not showing. @8.0-SNAPSHOT
+8e337c8e5 Fixed: wflow-core - Email Tool - Incorrect error message when SMTP is not configured and send test email. @8.0-SNAPSHOT
+c8132a199 Modified: wflow-consoleweb - App Center - Update tutorial links. @8.0-SNAPSHOT
+711e082d3 Fixed: wflow-consoleweb - DX 8 Theme - Font size controller disappear after navigation away. @8.0-SNAPSHOT
+1556e916e Added: wflow-core/wflow-consoleweb - BeanShell Column - Added a description to the BeanShell Column. @8.0-SNAPSHOT
+41e90f9c6 Fixed: wflow-consoleweb - Form/List Builder - UI properties are not set correctly in preview. @8.0-SNAPSHOT
+9d03123da Fixed: wflow-consoleweb - List - Classic table template - User hided columns are still visible in mobile. @8.0-SNAPSHOT
+6168c0fe9 Fixed: wflow-consoleweb - List Grid - List Grid's popup's close button in wrong position when Right to Left is enabled. @8.0-SNAPSHOT
+72d3fe213 Fixed: wflow-consoleweb - App Composer - The close button for new form,list, process and uv not correct position. @8.0-SNAPSHOT
+a89ae9c5c Added: wflow-consoleweb - Builder Styling - Added new property 'Font Style'. @8.0-SNAPSHOT
+35f0dd17f Fixed: wflow-consoleweb - Builders - Invisible elements in a pasted element does not show correctly. @8.0-SNAPSHOT
+f78dc8fdf Fixed: wflow-core - Process - Start process form modifier does not execute correctly. @8.0-SNAPSHOT
+2ef29d986 Added: wflow-consoleweb - Date and time field - Beautify date picker UI. @8.0-SNAPSHOT
+dbc437beb Fixed: wflow-commons - ImageUpload - Fixed Image Upload error "Tag 'Orientation' has not been set". @7.0-SNAPSHOT #T2207
+b4d77eca1 Fixed: wflow-core - Process Mapper - Can't edit due to mapping is missing.  @7.0-SNAPSHOT
+822b932e3 Fixed: wflow-core - Form PDF - Image not included in PDF when context path is root. T2286 @7.0-SNAPSHOT
+
 8.0.2
 =====
 900575b37 Modified: wflow-consoleweb - App Center - Change video tutorial links to retrieve from message bundle. @8.0-SNAPSHOT
