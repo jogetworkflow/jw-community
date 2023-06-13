@@ -304,9 +304,10 @@ ProcessBuilder = {
                             $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
                         }
                     }, 1000);
+                    
+                    ProcessBuilder.updateAdvancedView();
                 });
             }
-            ProcessBuilder.updateAdvancedView();
         } else { //only redirect to `process1` when there is totally no process in package
             window.location.hash = "process1";
         }
@@ -2545,6 +2546,9 @@ ProcessBuilder = {
                 setTimeout(function(){
                     $(window).on('hashchange', ProcessBuilder.viewProcess);
                 }, 10);
+                
+                //update info when process id changed.
+                ProcessBuilder.updateAdvancedView();
             } 
             $('#process-selector select').trigger("chosen:updated");
             callback(element);
