@@ -107,7 +107,7 @@ JPopup = {
     
     checkChangesAndConfirmHide : function(id) {
         if (JPopup.isChanges[id] !== $('form:not(.filter_form)', $('iframe#'+id).contents()).serialize()) {
-            return confirm('There is changes detected. Are you sure to close?');
+            return confirm('There are changes detected. Are you sure you want to close?');
         }
         return true;
     },
