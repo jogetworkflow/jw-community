@@ -91,7 +91,7 @@ public class ProcessBuilderWebController {
         model.addAttribute("appId", appDef.getId());
         model.addAttribute("version", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
-        model.addAttribute("packageVersion", appDef.getPackageDefinition().getVersion());
+        model.addAttribute("packageVersion", (appDef.getPackageDefinition() != null)?(appDef.getPackageDefinition().getVersion()):1);
         
         model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
         
