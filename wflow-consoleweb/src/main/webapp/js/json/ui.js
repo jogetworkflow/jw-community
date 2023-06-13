@@ -120,7 +120,7 @@ UI = {
         $.unblockUI();
     },
     maxIframe : function(id) {
-        if (id !== "" && $("iframe#" + id).length > 0) {
+        if (id !== "" && $("iframe#" + id).length > 0 && !(/iPhone|iPod|iPad|Safari/.test(navigator.userAgent))) {
             var iframe = $("iframe#" + id);
             $(iframe).trigger("iframe-ui-maxsize");
             if ($(iframe)[0].hasAttribute("frameBorder")) {
@@ -133,7 +133,7 @@ UI = {
         }
     },
     restoreIframe : function(id) {
-        if (id !== "" && $("iframe#" + id).length > 0) {
+        if (id !== "" && $("iframe#" + id).length > 0 && !(/iPhone|iPod|iPad|Safari/.test(navigator.userAgent))) {
             var iframe = $("iframe#" + id);
             var style = $(iframe).data("style");
             if (style === null || style === undefined) {
