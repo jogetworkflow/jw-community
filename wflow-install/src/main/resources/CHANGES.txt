@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 8.0.3
 =====
+06acdd626 Fixed: wflow-consoleweb - UI - Auto maximize popup within another popup can't work in Safari. @8.0-SNAPSHOT
 c24f1c064 Fixed: wflow-core - Generator - Field is wrongly added outside of column. @8.0-SNAPSHOT
 89f8c4f5f Fixed: wflow-consoleweb - Form Builder - Popup in preview does not having default styling. @8.0-SNAPSHOT
 b5c8b5cb5 Added: wflow-consoleweb - Process Builder - Added to display additional process information. @8.0-SNAPSHOT
