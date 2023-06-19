@@ -153,3 +153,9 @@
     margin-bottom: 0px;
     padding-right: 0px;
 }
+.ui-icon{
+    vertical-align: middle !important;
+}
+.ui-button{
+    padding: .4em 1em !important;
+}
