@@ -69,7 +69,7 @@
 ----------------------------------*/
 .ui-icon {
 	display: inline-block;
-	vertical-align: middle !important;
+	vertical-align: middle;
 	margin-top: -.25em;
 	position: relative;
 	text-indent: -99999px;
@@ -251,7 +251,7 @@
 	right: 0;
 }
 .ui-button {
-	padding: .4em 1em !important;
+	padding: .4em 1em;
 	display: inline-block;
 	position: relative;
 	line-height: normal;
