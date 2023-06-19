@@ -5513,7 +5513,7 @@ body.popupBody > #form-canvas{
     font-size: 12px;
     line-height: 12px;
 }
-.form-button:hover, .btn:hover, .button:hover {
+.form-button:hover, .btn:hover, .button:hover, body #form-canvas .selector_element .selector_button:hover {
     opacity: 0.8;
 }
 .form-button + .form-button, .btn + .btn, .button + .button {

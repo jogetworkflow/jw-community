@@ -691,6 +691,7 @@ body #form-canvas .selector_element .selector_button {
     color: #fff;
     padding: 3px 10px;
     border-radius: 2px;
+    cursor: pointer;
 }
 body #form-canvas .selector_element .selector_item{
     border-radius: 2px;

@@ -488,7 +488,7 @@ body.rtl .hasDatepicker + a + a{
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
     height: 30px;
-    padding: 2px 10px;
+    padding: 2px 12px !important;
     line-height: 1.5;
     color: #495057;
     background-color: #e9ecef;
