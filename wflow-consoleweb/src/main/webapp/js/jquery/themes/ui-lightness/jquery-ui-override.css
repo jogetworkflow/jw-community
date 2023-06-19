@@ -79,6 +79,7 @@
 }
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
     top:9px;
+    cursor: pointer;
 }
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next{
     font-family: "Font Awesome 5 Free";
