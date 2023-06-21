@@ -58,6 +58,10 @@
                         ,currentText : "@@form.datepicker.now@@"
                         ,closeText : "@@form.datepicker.done@@"
         });
+
+        $(window).on("resize orientationchange", function(){
+            $("#${elementParamName!}_${element.properties.elementUniqueKey!}").datepicker("hide");
+        });
     });
 </script>
 </#if>
