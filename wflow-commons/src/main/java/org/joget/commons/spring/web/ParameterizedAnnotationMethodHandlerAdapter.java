@@ -1,13 +1,9 @@
 package org.joget.commons.spring.web;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -15,38 +11,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.util.UriUtils;
 
-public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter {
+public class ParameterizedAnnotationMethodHandlerAdapter extends RequestMappingHandlerAdapter {
 
     public ParameterizedAnnotationMethodHandlerAdapter() {
-        setPathMatcher(new ParameterizedPathMatcher());
+        super();
     }
 
     @Override
-    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    protected ModelAndView handleInternal(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler) throws Exception {
         if (request.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS) != null) {
             request = new ParameterizedPathServletRequest(request);
         }
-        return super.handle(request, response, handler);
+        return super.handleInternal(request, response, handler);
     }
 
-    @Override
-    protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object target, String objectName) throws Exception {
-        // CUSTOM: Workaround fix for CVE-2022-22965 https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement#suggested-workarounds
-        ServletRequestDataBinder binder = super.createBinder(request, target, objectName);
-        String[] fields = binder.getDisallowedFields();
-        List<String> fieldList = new ArrayList(fields != null ? Arrays.asList(fields) : Collections.emptyList());
-        fieldList.addAll(Arrays.asList("class.*", "Class.*", "*.class.*", "*.Class.*"));
-        binder.setDisallowedFields(fieldList.toArray(new String[] {}));
-        return binder;
-    }    
-    
     private class ParameterizedPathServletRequest extends HttpServletRequestWrapper {
 
         private Map<String, String[]> parameters = null;
@@ -122,12 +107,7 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
         public String getQueryString() {
             String queryString = super.getQueryString();
             if (queryString != null) {
-                String escapedQueryString = null;
-                try {
-                    escapedQueryString = UriUtils.encodeQuery(queryString, "UTF-8");
-                } catch (UnsupportedEncodingException ex) {
-                    // ignore
-                }
+                String escapedQueryString = UriUtils.encodeQuery(queryString, "UTF-8");
                 return escapedQueryString;
             } else {
                 return queryString;

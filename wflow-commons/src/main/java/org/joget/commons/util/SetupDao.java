@@ -4,6 +4,8 @@ import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.spring.model.Setting;
 import java.io.Serializable;
 import java.util.Collection;
+import javax.persistence.OptimisticLockException;
+import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.StaleStateException;
 
@@ -43,15 +45,19 @@ public class SetupDao extends AbstractSpringDao {
         }
     }
 
+    @Transactional(dontRollbackOn={OptimisticLockException.class, StaleStateException.class})
     public void saveOrUpdate(Object obj) {
         try {
             super.saveOrUpdate(ENTITY_NAME, obj);
             
             super.findSession().evict(obj);
-        } catch (StaleStateException e) {
+        } catch (OptimisticLockException | StaleStateException e) {
             //ignore exception when trying to update a setting which deleted by another cluster node 
-            if (!e.getMessage().equals("Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1")) {
+            if (!(e.getMessage().contains("Batch update returned unexpected row count from update [0]; actual row count: 0; expected: 1")
+                    || e.getMessage().contains("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect"))) {
                 throw e;
+            } else {
+                
             }
         }
     }

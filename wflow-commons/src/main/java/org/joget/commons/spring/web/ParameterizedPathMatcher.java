@@ -62,6 +62,10 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
      * @return A map with the specified parameter as key and the matched path segement as a value.
      */
     public Map<String, String> namedParameters(String pattern, String path) {
+        if (path.endsWith(".")) {
+            // strip last dot
+            path = path.substring(0, path.length()-1);
+        }
         String key = pattern + "_" + path;
         Map<String, String> namedParameters = namedParametersCache.get(key);
         if (namedParameters == null) {

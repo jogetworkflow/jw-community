@@ -8,7 +8,7 @@
     <div id="main-body-content">
 
         <c:url var="url" value="" />
-        <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" commandName="appDefinition" cssClass="form blockui">
+        <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" modelAttribute="appDefinition" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

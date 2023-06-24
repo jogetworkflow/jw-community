@@ -6,13 +6,14 @@ import java.util.Collection;
 import java.util.List;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -42,13 +43,14 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
         List<Object> paramsList = generateQueryParams(appDefinition);
         paramsList.add(id);
         
-        String query = "SELECT e FROM " + getEntityName() + " e " + conds;
+        String newCondition = StringUtil.replaceOrdinalParameters(conds, paramsList.toArray());
+        String query = "SELECT e FROM " + getEntityName() + " e " + newCondition;
 
         Query q = session.createQuery(query);
         q.setLockOptions(new LockOptions(LockMode.PESSIMISTIC_WRITE));
         q.setFirstResult(0);
         q.setMaxResults(1);
-        int i = 0;
+        int i = 1;
         for (Object param : paramsList) {
             q.setParameter(i, param);
             i++;

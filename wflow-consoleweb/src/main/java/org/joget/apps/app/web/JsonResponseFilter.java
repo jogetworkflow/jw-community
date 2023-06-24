@@ -23,6 +23,7 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.json.JSONObject;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 public class JsonResponseFilter implements Filter {
@@ -89,7 +90,8 @@ public class JsonResponseFilter implements Filter {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        if ((request instanceof HttpServletRequest) && (response instanceof HttpServletResponse)) {
+        ApplicationContext appContext = AppUtil.getApplicationContext();
+        if (appContext != null && (request instanceof HttpServletRequest) && (response instanceof HttpServletResponse)) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             
@@ -100,7 +102,7 @@ public class JsonResponseFilter implements Filter {
             
             String callback = httpRequest.getParameter("callback");
             
-            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            SetupManager setupManager = (SetupManager)appContext.getBean("setupManager");
             String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
             String jsonpIPWhitelist = setupManager.getSettingValue("jsonpIPWhitelist");
             if (!("*".equals(jsonpWhitelist) || "*".equals(jsonpIPWhitelist))) {
@@ -141,7 +143,7 @@ public class JsonResponseFilter implements Filter {
             Integer status = null;
             
             try {
-		filterChain.doFilter(httpRequest, wrappedResponse);	
+                filterChain.doFilter(httpRequest, wrappedResponse);	
             } catch (MissingServletRequestParameterException e) {
                 throwable = e;
                 status = HttpServletResponse.SC_BAD_REQUEST;

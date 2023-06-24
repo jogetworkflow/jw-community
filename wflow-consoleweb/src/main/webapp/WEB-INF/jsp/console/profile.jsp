@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <form:form id="profile" action="${pageContext.request.contextPath}/web/console/profile/submit" method="POST" commandName="user" cssClass="form blockui">
+        <form:form id="profile" action="${pageContext.request.contextPath}/web/console/profile/submit" method="POST" modelAttribute="user" cssClass="form blockui">
             <form:hidden path="id"/>
             <form:hidden path="username"/>
 

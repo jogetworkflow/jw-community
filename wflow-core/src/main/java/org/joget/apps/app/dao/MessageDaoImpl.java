@@ -7,13 +7,15 @@ import java.util.Date;
 import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
-import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> implements MessageDao {
@@ -43,7 +45,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     private String getCacheKey(String messageKey, String locale, String appId, String version){
         return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_MSG_"+messageKey+":"+locale;
     }
-
+    
     public Message loadByMessageKey(String messageKey, String locale, AppDefinition appDefinition) {
         String key = getCacheKey(messageKey, locale, appDefinition.getId(), appDefinition.getVersion().toString());
         Element element = cache.get(key);
@@ -62,6 +64,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     }
 
     public Collection<Message> getMessageList(String filterString, String locale, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
+        Session s = findSession();
+        
         String conditions = "";
         List params = new ArrayList();
 
@@ -77,7 +81,11 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             params.add(locale);
         }
 
-        return this.find(conditions, params.toArray(), appDefinition, sort, desc, start, rows);
+        Collection<Message> messages = this.find(conditions, params.toArray(), appDefinition, sort, desc, start, rows);
+        for (Message m : messages) {
+            s.evict(m);
+        }
+        return messages;
     }
 
     public Long getMessageListCount(String filterString, String locale, AppDefinition appDefinition) {
@@ -104,13 +112,14 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         final Object[] params = generateQueryParams(appDefinition).toArray();
 
         // execute query and return result
-        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + condition + " ORDER BY e.locale";
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + newCondition + " ORDER BY e.locale";
 
         Query q = findSession().createQuery(query);
         q.setFirstResult(0);
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -119,7 +128,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
         return q.list();
     }
-
+    
     @Override
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
@@ -192,7 +201,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
         }
-
+        
         return result;
     }    
     

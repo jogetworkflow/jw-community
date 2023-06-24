@@ -4,7 +4,7 @@ import java.util.Collection;
 import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -32,7 +32,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
-                session.setFlushMode(FlushMode.MANUAL);
+                session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the last next oid
@@ -51,9 +51,9 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     temp.setMaxoid(nextOid.getNextoid() + CACHE_SIZE);
                     
                     //update the next oid
-                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=? where nextoid=?");
-                    query.setLong(0, temp.getMaxoid());
-                    query.setLong(1, temp.getNextoid());
+                    Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=?1 where nextoid=?2");
+                    query.setParameter(1, temp.getMaxoid());
+                    query.setParameter(2, temp.getNextoid());
                     query.executeUpdate();
                     
                     session.evict(nextOid);

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
@@ -380,21 +380,21 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     
     public Collection<Long> getPackageVersions(String packageId) {
         Session session = findSession();
-        String query = "SELECT e.version FROM " + ENTITY_NAME + " e WHERE e.id = ?";
+        String query = "SELECT e.version FROM " + ENTITY_NAME + " e WHERE e.id = ?1";
 
         Query q = session.createQuery(query);
-        q.setParameter(0, packageId);
+        q.setParameter(1, packageId);
 
         return (Collection<Long>) q.list();
     }
     
     public AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion) {
         Session session = findSession();
-        String query = "SELECT e.appDefinition FROM " + getEntityName() + " e  WHERE e.id=? AND e.version=?";
+        String query = "SELECT e.appDefinition FROM " + getEntityName() + " e  WHERE e.id=?1 AND e.version=?2";
 
         Query q = session.createQuery(query);
-        q.setParameter(0, packageId);
-        q.setParameter(1, packageVersion);
+        q.setParameter(1, packageId);
+        q.setParameter(2, packageVersion);
 
         Collection list = q.list();
         if (list != null && !list.isEmpty()) {

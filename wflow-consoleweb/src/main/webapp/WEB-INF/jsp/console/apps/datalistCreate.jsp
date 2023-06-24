@@ -8,7 +8,7 @@
 
     <div id="main-body-content">
         <c:set var="builderMode" value="${param.builderMode == 'true'}"/>
-        <form:form id="createDatalist" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/submit/create?builderMode=${builderMode}" method="POST" commandName="datalistDefinition" cssClass="form blockui">
+        <form:form id="createDatalist" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/submit/create?builderMode=${builderMode}" method="POST" modelAttribute="datalistDefinition" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

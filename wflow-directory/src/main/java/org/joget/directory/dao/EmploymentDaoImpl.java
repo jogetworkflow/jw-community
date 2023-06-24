@@ -7,10 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.EmploymentReportTo;
@@ -822,10 +823,11 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
     protected Collection<Employment> findDistinct(final String entityName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         Session session = findSession();
         
-        String query = "SELECT e.userId, e.id FROM " + entityName + " e " + condition;
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        String query = "SELECT e.userId, e.id FROM " + entityName + " e " + newCondition;
         Query q = session.createQuery(query);
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;
@@ -873,10 +875,11 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
 
     protected Long countDistinct(final String entityName, final String condition, final Object[] params) {
         Session session = findSession();
-        Query q = session.createQuery("SELECT COUNT(e.userId) FROM " + entityName + " e " + condition + " group by e.userId");
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        Query q = session.createQuery("SELECT COUNT(e.userId) FROM " + entityName + " e " + newCondition + " group by e.userId");
 
         if (params != null) {
-            int i = 0;
+            int i = 1;
             for (Object param : params) {
                 q.setParameter(i, param);
                 i++;

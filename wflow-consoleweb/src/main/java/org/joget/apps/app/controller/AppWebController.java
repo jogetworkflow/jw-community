@@ -425,6 +425,11 @@ public class AppWebController {
                 appDef = appService.getAppDefinition(appId, version);
                 FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
                 
+                // remove last dot in filename for Spring 5
+                if (fileName.endsWith(".")) {
+                    fileName = fileName.substring(0, fileName.length()-1);
+                }
+                
                 if (formDef != null) {
                     String json = formDef.getJson();
                     form = (Form) formService.createElementFromJson(json);
@@ -649,7 +654,10 @@ public class AppWebController {
             try {
                 url = URLDecoder.decode(url, "UTF-8");
             } catch (UnsupportedEncodingException ex) {}
-            filename = url.substring(url.lastIndexOf(filename+"."));
+            int index = url.lastIndexOf(filename+".");
+            if (index > 0) {
+                filename = url.substring(url.lastIndexOf(filename+"."));
+            }
         }
         
         return filename;

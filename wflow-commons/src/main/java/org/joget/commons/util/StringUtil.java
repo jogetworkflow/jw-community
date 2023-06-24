@@ -399,7 +399,7 @@ public class StringUtil {
 
         return builder.toString();
     }
-
+    
     /**
      * Escape a string based on format and replaced string based on the replace keyword map
      * @param inStr input String
@@ -967,5 +967,29 @@ public class StringUtil {
             numberStr = numberStr.replaceAll(StringUtil.escapeRegex(postfix), "");
         }
         return numberStr;
+    }
+    
+    /**
+     * Replace old hibernate 4.x (?) parameters with 5.x ordinal (?1) style parameters.
+     * @param condition
+     * @param params
+     * @return
+     */
+    public static String replaceOrdinalParameters(final String condition, final Object[] params) {
+        String newCondition = condition;
+        if (condition != null && condition.contains("?") && params != null && params.length > 0) {
+            int ordinalParameter = 1;
+            newCondition = "";
+            for (int i = 0; i < condition.length(); i++) {
+                char c = condition.charAt(i);
+                if (c == '?' && (i == condition.length() - 1 || !Character.isDigit(condition.charAt(i + 1)))) {
+                    // found a ? without a number after it
+                    newCondition += "?" + ordinalParameter++;
+                } else {
+                    newCondition += c;
+                }
+            }
+        }
+        return newCondition;
     }
 }

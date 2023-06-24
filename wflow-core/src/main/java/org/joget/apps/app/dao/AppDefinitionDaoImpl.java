@@ -16,7 +16,7 @@ import net.sf.ehcache.Cache;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.lang.ArrayUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
@@ -122,10 +122,10 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public Long getPublishedVersion(final String appId) {
         // execute query and return result
-        String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?";
+        String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?1";
         Query q = findSession().createQuery(query);
 
-        q.setParameter(0, appId);
+        q.setParameter(1, appId);
 
         Iterator it = q.iterate();
         return (it.hasNext()) ? ((Long)it.next()).longValue() : null;

@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <form:form id="createGroup" action="${pageContext.request.contextPath}/web/console/directory/group/submit/create" method="POST" commandName="group" cssClass="form blockui">
+        <form:form id="createGroup" action="${pageContext.request.contextPath}/web/console/directory/group/submit/create" method="POST" modelAttribute="group" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

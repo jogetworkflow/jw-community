@@ -5,10 +5,11 @@ import java.util.Collection;
 import org.hibernate.FlushMode;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.shark.model.SharkCounter;
@@ -33,12 +34,12 @@ public class SharkCounterDao extends AbstractSpringDao {
             Transaction transaction = null;
             try {
                 session = sf.openSession();
-                session.setFlushMode(FlushMode.MANUAL);
+                session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
                 
                 //find the counter by object name
-                Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e where name = ?");
-                find.setString(0, objectName);
+                Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e where name = ?1");
+                find.setParameter(1, objectName);
                 Collection<SharkCounter> result = (Collection<SharkCounter>) find.list();
                 
                 if (!result.isEmpty()) {
@@ -96,7 +97,7 @@ public class SharkCounterDao extends AbstractSpringDao {
             } finally {
                 if (session != null) {
                     session.flush();
-                    if (transaction != null && !transaction.wasCommitted()) {
+                    if (transaction != null && !transaction.getStatus().equals(TransactionStatus.COMMITTED) && transaction.getStatus().equals(TransactionStatus.ACTIVE)) {
                         transaction.commit();
                     }
                     session.clear();

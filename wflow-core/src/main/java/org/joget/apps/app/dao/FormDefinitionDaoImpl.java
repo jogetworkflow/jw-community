@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -102,6 +102,10 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         FormDefinition formDef = super.loadById(id, appDefinition);
         return formDef;
     }
+    
+    protected boolean shouldEvict(AppDefinition appDefinition) {
+        return true;
+    }
 
     @Override
     public FormDefinition loadById(String id, AppDefinition appDefinition) {
@@ -112,6 +116,9 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             FormDefinition formDef = load(id, appDefinition);
 
             if (formDef != null) {
+                if (shouldEvict(appDefinition)) {
+                    findSession().evict(formDef);
+                }
                 element = new Element(cacheKey, (Serializable) formDef);
                 cache.put(element);
             }
@@ -218,11 +225,11 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public Collection<String> getTableNameList(AppDefinition appDefinition) {
         final AppDefinition appDef = appDefinition;
         
-        String query = "SELECT DISTINCT e.tableName FROM " + getEntityName() + " e where e.appId = ? and e.appVersion = ?";
+        String query = "SELECT DISTINCT e.tableName FROM " + getEntityName() + " e where e.appId = ?1 and e.appVersion = ?2";
 
         Query q = findSession().createQuery(query);
-        q.setParameter(0, appDef.getAppId());
-        q.setParameter(1, appDef.getVersion());
+        q.setParameter(1, appDef.getAppId());
+        q.setParameter(2, appDef.getVersion());
 
         return q.list();
     }

@@ -9,7 +9,7 @@
 
         <c:url var="url" value="" />
         <c:set var="builderMode" value="${param.builderMode == 'true'}"/>
-        <form:form id="create${builder.objectName}" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/cbuilder/${builder.objectName}/submit?builderMode=${builderMode}" method="POST" commandName="builderDefinition" cssClass="form blockui">
+        <form:form id="create${builder.objectName}" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/cbuilder/${builder.objectName}/submit?builderMode=${builderMode}" method="POST" modelAttribute="builderDefinition" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

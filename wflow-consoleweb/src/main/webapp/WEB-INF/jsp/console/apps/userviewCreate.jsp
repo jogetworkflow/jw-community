@@ -8,7 +8,7 @@
 
     <div id="main-body-content">
         <c:set var="builderMode" value="${param.builderMode == 'true'}"/>
-        <form:form id="createUserview" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/submit/create?builderMode=${builderMode}" method="POST" commandName="userviewDefinition" cssClass="form blockui">
+        <form:form id="createUserview" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/submit/create?builderMode=${builderMode}" method="POST" modelAttribute="userviewDefinition" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">
