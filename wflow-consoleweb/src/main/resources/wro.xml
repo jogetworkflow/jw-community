@@ -2,14 +2,14 @@
     <group name="common.preload">
         <js>/js/jquery/jquery-3.5.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
-        <js>/js/jquery/ui/jquery-ui.custom.min.js</js>
+        <js>/js/jquery/ui/jquery-ui.min.js</js>
         <js>/js/json/ui.js</js>
         <js>/js/json/ui_ext.js</js>
         <js>/js/json/util.js</js>
         <js>/js/loadCSS/loadCSS.js</js>
     </group>
     <group name="common">
-        <css>/js/jquery/themes/ui-lightness/jquery-ui.custom.css</css>
+        <css>/js/jquery/themes/ui-lightness/jquery-ui.min.css</css>
         <css>/js/fontawesome5/css/all.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
@@ -52,14 +52,14 @@
         <js>classpath:resources/js/section.js</js>
     </group>  
     <group name="mobile_common">
-        <css>/js/jquery/themes/ui-lightness/jquery-ui.custom.css</css>
+        <css>/js/jquery/themes/ui-lightness/jquery-ui.min.css</css>
         <css>/mobile/jqm/jquery.mobile-1.4.5.min.css</css>
         <css>/mobile/mobile.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
         <js>/js/jquery/jquery-3.5.1.min.js</js>
         <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
-        <js>/js/jquery/ui/jquery-ui.custom.min.js</js>
+        <js>/js/jquery/ui/jquery-ui.min.js</js>
         <js>/mobile/jqm/jquery.cookie.js</js>
         <js>/mobile/jqm/jquery.mobile-1.4.5.js</js>
         <js>/js/json/ui.js</js>

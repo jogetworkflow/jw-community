@@ -6,10 +6,10 @@
 <head>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-3.0.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui.custom.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/loadCSS/loadCSS.js"></script>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui.custom.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui.min.css">
     
     <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
     <style>
