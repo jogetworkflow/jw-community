@@ -136,6 +136,7 @@ public class JsonResponseFilter implements Filter {
                     }
                     wrappedResponse.setHeader("Access-Control-Allow-Origin", origin);
                     wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
+                    wrappedResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, authorization, owasp_csrftoken");
                 }
             }
             
@@ -143,7 +144,9 @@ public class JsonResponseFilter implements Filter {
             Integer status = null;
             
             try {
-                filterChain.doFilter(httpRequest, wrappedResponse);	
+                if (!httpRequest.getMethod().equalsIgnoreCase("options")){
+                    filterChain.doFilter(httpRequest, wrappedResponse);	
+                }
             } catch (MissingServletRequestParameterException e) {
                 throwable = e;
                 status = HttpServletResponse.SC_BAD_REQUEST;

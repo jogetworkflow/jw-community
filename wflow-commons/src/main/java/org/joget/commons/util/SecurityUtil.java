@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.owasp.csrfguard.CsrfGuard;
+import org.owasp.csrfguard.session.LogicalSession;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -287,7 +288,8 @@ public class SecurityUtil implements ApplicationContextAware {
      */
     public static String getCsrfTokenValue(HttpServletRequest request) {
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
-        return csrfGuard.getTokenValue(request);
+        LogicalSession logicalSession = csrfGuard.getLogicalSessionExtractor().extractOrCreate(request);
+        return csrfGuard.getTokenService().getTokenValue(logicalSession.getKey(), request.getRequestURI());
     }
 
     /**
