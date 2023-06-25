@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-app</artifactId>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
