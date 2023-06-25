@@ -280,7 +280,7 @@ public class UserviewService {
                         hasPermis = true;
                     } else {
                         if (ruleObj != null) {
-                            if (ruleObj.has("permissionDeny") && "true".equals(ruleObj.getString("permissionDeny"))) {
+                            if (ruleObj.has("permissionDeny") && "true".equals(ruleObj.get("permissionDeny").toString())) {
                                 hasPermis = false;
                             } else if (ruleObj.has("permission")){
                                 try {
@@ -294,7 +294,7 @@ public class UserviewService {
                             }
                             
                             //handle for permission rule to override the default setting
-                            if (ruleObj.has("hide") && "yes".equals(ruleObj.getString("hide"))) {
+                            if (ruleObj.has("hide") && "yes".equals(ruleObj.get("hide").toString())) {
                                 category.setProperty("hide", "yes");
                             } else { 
                                 category.setProperty("hide", "");
@@ -332,7 +332,7 @@ public class UserviewService {
                                         menuRuleObj = permissionRules.getJSONObject(permissionKey);
                                     }
                                 }
-                                if (menuRuleObj != null && menuRuleObj.has("permissionDeny") && "true".equals(menuRuleObj.getString("permissionDeny"))) {
+                                if (menuRuleObj != null && menuRuleObj.has("permissionDeny") && "true".equals(menuRuleObj.get("permissionDeny").toString())) {
                                     continue;
                                 }
 
@@ -366,8 +366,8 @@ public class UserviewService {
                                 if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
                                     userview.setProperty("homeMenuId", mId);
                                 }
-                                
-                                if (menuRuleObj == null || !menuRuleObj.has("permissionHidden") || !"true".equals(menuRuleObj.getString("permissionHidden"))) {
+
+                                if (menuRuleObj == null || !menuRuleObj.has("permissionHidden") || !"true".equals(menuRuleObj.get("permissionHidden").toString())) {
                                     menu = new CachedUserviewMenu(menu);
                                     menus.add(menu);
                                 }

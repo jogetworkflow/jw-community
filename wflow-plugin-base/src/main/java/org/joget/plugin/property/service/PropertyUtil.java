@@ -90,7 +90,7 @@ public class PropertyUtil implements ApplicationContextAware {
                             if (options.length() > 0) {
                                 JSONObject o = options.getJSONObject(0);
                                 if (o.has("value")) {
-                                    values.put(property.getString("name"), o.getString("value"));
+                                    values.put(property.getString("name"), o.get("value").toString());
                                 }
                             }
                         }
@@ -110,13 +110,13 @@ public class PropertyUtil implements ApplicationContextAware {
         boolean useRegex = false;
         
         String control_field = obj.getString("control_field");
-        String control_value = obj.getString("control_value");
-        if (obj.has("control_use_regex") && "true".equalsIgnoreCase(obj.getString("control_use_regex"))) {
+        String control_value = obj.get("control_value").toString();
+        if (obj.has("control_use_regex") && "true".equalsIgnoreCase(obj.get("control_use_regex").toString())) {
             useRegex = true;
         }
         
         if (values != null && values.has(control_field)) {
-            String value = values.getString(control_field);
+            String value = values.get(control_field).toString();
             if (useRegex) {
                 isVisible = value.matches(control_value);
             } else {
@@ -167,7 +167,7 @@ public class PropertyUtil implements ApplicationContextAware {
                         } else if (value instanceof JSONObject) {
                             properties.put(key, getProperties((JSONObject) value));
                         } else {
-                            String stringValue = obj.getString(key);
+                            String stringValue = obj.get(key).toString();
                             if ("{}".equals(stringValue)) {
                                 properties.put(key, new HashMap<String, Object>());
                             } else {

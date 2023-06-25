@@ -3167,9 +3167,9 @@ public class ConsoleWebController {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                String id = obj.getString("id");
-                String key = obj.getString("key");
-                String value = obj.getString("value");
+                String id = obj.get("id").toString();
+                String key = obj.get("key").toString();
+                String value = obj.get("value").toString();
 
                 // check exist
                 Message m = messageDao.loadById(id, appDef);
@@ -3999,7 +3999,7 @@ public class ConsoleWebController {
                     
                     for (int i = 0; i < columns.length(); i++) {
                         JSONObject column = columns.getJSONObject(i);
-                        String name = column.getString(JsonUtil.PROPERTY_NAME);
+                        String name = column.get(JsonUtil.PROPERTY_NAME).toString();
                         
                         Map op = new HashMap();
                         op.put("value", name);
@@ -5784,27 +5784,27 @@ public class ConsoleWebController {
         Properties appProps = new Properties();
         JSONObject jsonObject = new JSONObject(properties);
         if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
-            appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
+            appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.get(WorkflowUserManager.ROLE_ADMIN).toString());
         }
         if (!jsonObject.isNull(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP)) {
-            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, jsonObject.getString(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, jsonObject.get(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP).toString());
         }
         if (!jsonObject.isNull("orgId")) {
-            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.getString("orgId"));
+            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.get("orgId").toString());
         }
         if (!jsonObject.isNull(AppDevUtil.PROPERTY_GIT_URI)) {
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
-            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.get(AppDevUtil.PROPERTY_GIT_URI).toString());
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.get(AppDevUtil.PROPERTY_GIT_USERNAME).toString());
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.get(AppDevUtil.PROPERTY_GIT_PASSWORD).toString());
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT).toString());
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_PULL).toString());
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.get(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC).toString());
         }
         AppDevUtil.setAppDevProperties(appDef, appProps);
         
         return "console/dialogClose";
-    }    
-
+    }
+            
     @RequestMapping(value = "/console/profile/subscription", method = RequestMethod.POST)
     public void profileSubscription(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "subscription") String subscription, @RequestParam(value = "deviceId") String deviceId, @RequestParam(value = "appId") String appId, @RequestParam(value = "userviewId") String userviewId) throws IOException {
         // get current user

@@ -2180,7 +2180,7 @@ public class FormUtil implements ApplicationContextAware {
                             JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
                             if (objProperty.has(FormUtil.PROPERTY_POST_PROCESSOR)) {
                                 JSONObject objProcessor = objProperty.getJSONObject(FormUtil.PROPERTY_POST_PROCESSOR);
-                                json = objProcessor.getString(FormUtil.PROPERTY_PROPERTIES);
+                                json = objProcessor.get(FormUtil.PROPERTY_PROPERTIES).toString();
                                 propertiesMap = AppPluginUtil.getDefaultProperties(p, json, appDef, ass);
                             }
                         }
@@ -2438,7 +2438,7 @@ public class FormUtil implements ApplicationContextAware {
                                     }
                                 }
                             } else if (!storeJson && (FormUtil.PROPERTY_DATE_CREATED.equals(fieldName) || FormUtil.PROPERTY_DATE_MODIFIED.equals(fieldName))) {
-                                String value = jsonRow.getString(fieldName);
+                                String value = jsonRow.get(fieldName).toString();
                                 Date date = null;
                                 try {
                                     date = sdf.parse(value);
@@ -2447,7 +2447,7 @@ public class FormUtil implements ApplicationContextAware {
                                 }
                                 row.put(fieldName, date);
                             } else {
-                                String value = jsonRow.getString(fieldName);
+                                String value = jsonRow.get(fieldName).toString();
                                 row.setProperty(fieldName, value);
                             }
                         }
