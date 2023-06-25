@@ -11,7 +11,7 @@ https://dev.joget.org/community/display/DX7/Upgrade+Guide
 
 Prerequisites:
 ==============
-- Java 8 and above
+- Java 11 and above
 - MySQL 5.5 and above
 
 

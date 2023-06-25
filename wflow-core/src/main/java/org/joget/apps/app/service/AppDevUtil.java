@@ -42,7 +42,6 @@ import org.eclipse.jgit.api.RemoteRemoveCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
@@ -58,6 +57,7 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.SystemReader;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -141,7 +141,7 @@ public class AppDevUtil {
         // load from FILE_APP_PROPERTIES
         Properties props = new Properties();
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = appDef.getAppId();
+        String projectDirName = SecurityUtil.normalizedFileName(appDef.getAppId());
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         File file = new File(projectDir, FILE_APP_PROPERTIES);
         FileInputStream fis = null;
@@ -169,7 +169,7 @@ public class AppDevUtil {
     
     public static void setAppDevProperties(AppDefinition appDef, Properties props) throws IOException {
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
-        String projectDirName = appDef.getAppId();
+        String projectDirName = SecurityUtil.normalizedFileName(appDef.getAppId());
         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
         File file = new File(projectDir, FILE_APP_PROPERTIES);
         Properties currentProps = new Properties();
@@ -186,6 +186,7 @@ public class AppDevUtil {
 
     public static File dirSetup(String baseDir, String projectDirName) {
         // create project directory
+        projectDirName = SecurityUtil.normalizedFileName(projectDirName);
         File projectDir = new File(baseDir, projectDirName);
         if (!projectDir.exists()) {
             projectDir.mkdirs();
@@ -209,6 +210,12 @@ public class AppDevUtil {
         FS fs = null;
         if (HostManager.isVirtualHostEnabled()) {
             fs = FS.DETECTED;
+            fs.setUserHome(new File(getAppDevBaseDirectory()));
+            
+            //to support multitenant read config 
+            if (!(SystemReader.getInstance() instanceof MultiTenantGitSystemReader)) {
+                SystemReader.setInstance(new MultiTenantGitSystemReader());
+            }
         }
 
         Git git = Git.init()
@@ -713,17 +720,17 @@ public class AppDevUtil {
     }
 
     public static String getGitBranchName(AppDefinition appDef) {
-        String branchName = appDef.getAppId() + "_" + appDef.getVersion();
+        String branchName = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion());
         return branchName;
     }
     
     public static String getAppGitDirectory(AppDefinition appDef) {
-        String dir = appDef.getAppId() + System.getProperty("file.separator") + getGitBranchName(appDef);
+        String dir = SecurityUtil.normalizedFileName(appDef.getAppId() + System.getProperty("file.separator") + getGitBranchName(appDef));
         return dir;
     }
     
     public static String getWorkingGitDirectory(AppDefinition appDef) {
-        String dir = appDef.getAppId() + System.getProperty("file.separator") + appDef.getAppId() + System.nanoTime();
+        String dir = SecurityUtil.normalizedFileName(appDef.getAppId() + System.getProperty("file.separator") + appDef.getAppId() + System.nanoTime());
         return dir;
     }
     
@@ -799,8 +806,11 @@ public class AppDevUtil {
                                     String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
                                     String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
                                     String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                                    AppDevUtil.gitAddRemote(localGit, gitUri);
-                                    AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                    
+                                    if (gitUri != null && !gitUri.trim().isEmpty()) {
+                                        AppDevUtil.gitAddRemote(localGit, gitUri);
+                                        AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                    }
                                 } finally {
                                     clearConcurrentPull(projectDirName);
                                 }
@@ -813,7 +823,7 @@ public class AppDevUtil {
                         }
                     }
                 }
-            } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException ne) {
+            } catch(Exception ne) {
                 LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + ne.getMessage());
             }
             
@@ -1084,7 +1094,7 @@ public class AppDevUtil {
                     }
                 }
             }
-        } catch(RefNotFoundException | RefNotAdvertisedException | JGitInternalException | URISyntaxException re) {
+        } catch(Exception re) {
             LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDefinition.getAppId() + ". Reason :" + re.getMessage());
         }
         File file = new File(projectDir, path);
@@ -1840,42 +1850,7 @@ public class AppDevUtil {
             Set<String> jars = new HashSet<String>();
             
             // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            if (packageDef != null) {
-                if (packageDef.getPackageActivityPluginMap() != null) {
-                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                        concatAppDef += o.getPluginName() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-                if (packageDef.getPackageParticipantMap() != null) {
-                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                        concatAppDef += o.getValue() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-            }
+            String concatAppDef = getConcatAppDef(appDef);
             
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
@@ -1955,42 +1930,7 @@ public class AppDevUtil {
             }
         } else {
             // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            if (packageDef != null) {
-                if (packageDef.getPackageActivityPluginMap() != null) {
-                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                        concatAppDef += o.getPluginName() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-                if (packageDef.getPackageParticipantMap() != null) {
-                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                        concatAppDef += o.getValue() + "~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-            }
+            String concatAppDef = getConcatAppDef(appDef);
             
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
@@ -2054,5 +1994,47 @@ public class AppDevUtil {
 
     public static Map<String, GitCommitHelper> getBackgroundSync() throws BeansException {
         return (Map<String, GitCommitHelper>) backgroundSync.get();
+    }
+    
+    public static String getConcatAppDef(AppDefinition appDef) {
+        // combine all definitions into a string for matching
+        String concatAppDef = "";
+        if (appDef.getFormDefinitionList() != null) {
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getDatalistDefinitionList() != null) {
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getUserviewDefinitionList() != null) {
+            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                concatAppDef += o.getJson() + "~~~";
+            }
+        }
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            if (packageDef.getPackageActivityPluginMap() != null) {
+                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                    concatAppDef += o.getPluginName() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+            if (packageDef.getPackageParticipantMap() != null) {
+                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                    concatAppDef += o.getValue() + "~~~";
+                    concatAppDef += o.getPluginProperties() + "~~~";
+                }
+            }
+        }
+        
+        return concatAppDef;
     }
 }
