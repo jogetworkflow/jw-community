@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,11 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.nio.Buffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,12 +42,33 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
-import org.tensorflow.DataType;
+import org.tensorflow.proto.framework.DataType;
 import org.tensorflow.Graph;
-import org.tensorflow.Output;
+import org.tensorflow.Operand;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
+import org.tensorflow.ndarray.Shape;
+import org.tensorflow.ndarray.StdArrays;
+import org.tensorflow.ndarray.buffer.DataBuffer;
+import org.tensorflow.ndarray.buffer.DataBuffers;
+import org.tensorflow.ndarray.buffer.DoubleDataBuffer;
+import org.tensorflow.ndarray.buffer.FloatDataBuffer;
+import org.tensorflow.ndarray.buffer.IntDataBuffer;
+import org.tensorflow.ndarray.buffer.LongDataBuffer;
+import org.tensorflow.op.Ops;
+import org.tensorflow.op.core.Constant;
+import org.tensorflow.op.core.Reshape;
+import org.tensorflow.op.image.DecodeJpeg;
+import org.tensorflow.op.io.ReadFile;
+import org.tensorflow.proto.framework.GraphDef;
+import org.tensorflow.types.TBool;
+import org.tensorflow.types.TFloat32;
+import org.tensorflow.types.TFloat64;
+import org.tensorflow.types.TInt32;
+import org.tensorflow.types.TInt64;
+import org.tensorflow.types.TString;
+import org.tensorflow.types.TUint8;
+import org.tensorflow.types.family.TType;
 
 /**
  * Utility for the TensorFlow Java API using pre-trained models.
@@ -71,6 +86,30 @@ public class TensorFlowUtil {
         } catch (Exception exception) {
             return false;
         }
+    }
+    
+    public static String getFilePath(String filename, String formId, String recordId) {
+        try {
+            if (formId != null && !formId.isEmpty()) {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                File file = FileUtil.getFile(filename, appService.getFormTableName(appDef, formId), recordId);
+                if (file != null) {
+                    return file.getAbsolutePath();
+                }
+            } else if (isValidURL(filename)) {
+                return filename;
+            } else {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                File file = AppResourceUtil.getFile(appDef.getAppId(), appDef.getVersion().toString(), filename);
+                if (file != null) {
+                    return file.getAbsolutePath();
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.debug(TensorFlowUtil.class.getName(), "Fail to open " + filename);
+        }
+        return null;
     }
     
     public static InputStream getInputStream(String filename, String formId, String recordId) {
@@ -94,19 +133,36 @@ public class TensorFlowUtil {
     
     public static DataType getDataType(String name) {
         if ("Integer".equals(name)) {
-            return DataType.INT32;
+            return DataType.DT_INT32;
         } else if ("Long".equalsIgnoreCase(name)) {
-            return DataType.INT64;
+            return DataType.DT_INT64;
         } else if ("Double".equalsIgnoreCase(name)) {
-            return DataType.DOUBLE;
+            return DataType.DT_DOUBLE;
         } else if ("UInt8".equalsIgnoreCase(name)) {
-            return DataType.UINT8;
+            return DataType.DT_UINT8;
         } else if ("Boolean".equalsIgnoreCase(name)) {
-            return DataType.BOOL;
+            return DataType.DT_BOOL;
         } else if ("String".equalsIgnoreCase(name)) {
-            return DataType.STRING;
+            return DataType.DT_STRING;
         }
-        return DataType.FLOAT; 
+        return DataType.DT_FLOAT; 
+    }
+    
+    public static Class getTypeClass(String name) {
+        if ("Integer".equals(name)) {
+            return TInt32.class;
+        } else if ("Long".equalsIgnoreCase(name)) {
+            return TInt64.class;
+        } else if ("Double".equalsIgnoreCase(name)) {
+            return TFloat64.class;
+        } else if ("UInt8".equalsIgnoreCase(name)) {
+            return TUint8.class;
+        } else if ("Boolean".equalsIgnoreCase(name)) {
+            return TBool.class;
+        } else if ("String".equalsIgnoreCase(name)) {
+            return TString.class;
+        }
+        return TFloat32.class; 
     }
     
     public static Map<String, Integer> getDictionaryJson(InputStream inputStream) throws IOException {
@@ -175,52 +231,32 @@ public class TensorFlowUtil {
         return dictionaryMap.get(theDelimter);
     }
     
-    public static Tensor imageInput(InputStream inputStream, String imageType, Integer height, Integer width, Float mean, Float scale, String type) throws IOException {
-        DataType dataType = getDataType(type);
-        try (Graph g = new Graph()) {
-            byte[] imageBytes = IOUtils.toByteArray(inputStream);
-            GraphBuilder b = new GraphBuilder(g);
-            final Output input = b.constant("input", imageBytes);
-            Output imageOutput = b.decodeJpeg(input, 3);
-            LogUtil.debug(TensorFlowUtil.class.getName(), "Decoded image " + imageType);
-            Output output = null;
+    public static Tensor imageInput(String filePath, String imageType, Integer height, Integer width, Float mean, Float scale, String type) throws IOException {
+        try (Graph g = new Graph(); Session s = new Session(g)) {
+            Ops tf = Ops.create(g);
+            Constant<TString> fileName = tf.constant(filePath);
+            ReadFile readFile = tf.io.readFile(fileName);
+            DecodeJpeg.Options options = DecodeJpeg.channels(3L);
+            DecodeJpeg decodeImage = tf.image.decodeJpeg(readFile.contents(), options);
+            
+            Operand output = tf.expandDims(decodeImage, tf.constant(0));
             
             if (height != null && width != null) {
                 LogUtil.debug(TensorFlowUtil.class.getName(), "Normalizing image " + imageType);
-                if (mean == null) {
-                    mean = 1f;
+                output = tf.image.resizeBilinear(output, tf.constant(new int[]{height, width}));
+                if (mean != null) {
+                    output = tf.math.sub(output, tf.constant(mean));
                 }
-                if (scale == null) {
-                    scale = 1f;
+                if (scale != null) {
+                    output = tf.math.div(output, tf.constant(scale));
                 }
-                output = b.cast(
-                            b.div(
-                                b.sub(
-                                    b.resizeBilinear(
-                                        b.expandDims(
-                                            imageOutput,
-                                            b.constant("make_batch", 0)),
-                                        b.constant("size", new int[]{height, width})),
-                                    b.constant("mean", mean)),
-                                b.constant("scale", scale)),
-                            dataType);
-            } else {
-                output = b.cast(
-                            b.expandDims(
-                                imageOutput, 
-                                b.constant("make_batch", 0)), 
-                            dataType);
+                
             }
+            output = tf.dtypes.cast(output, getTypeClass(type));
             
-            try (Session s = new Session(g)) {
-                Tensor result = s.runner().fetch(output.op().name()).run().get(0);
-                LogUtil.debug(TensorFlowUtil.class.getName(), "image " + imageType);
-                return result;
-            }
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+            Tensor result = s.runner().fetch(output.op().name()).run().get(0);
+            LogUtil.debug(TensorFlowUtil.class.getName(), "image " + imageType);
+            return result;
         }
     }
     
@@ -235,15 +271,15 @@ public class TensorFlowUtil {
             dictionary = getDictionaryCsv(dictInputStream);
         }
         
-        Buffer buffer = null;
+        DataBuffer buffer = null;
         if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
-            buffer = IntBuffer.allocate(maxLength);
+            buffer = DataBuffers.ofInts(maxLength);
         } else if ("Long".equalsIgnoreCase(type)) {
-            buffer = LongBuffer.allocate(maxLength);
+            buffer = DataBuffers.ofLongs(maxLength);
         } else if ("Double".equalsIgnoreCase(type)) {
-            buffer = DoubleBuffer.allocate(maxLength);
+            buffer = DataBuffers.ofDoubles(maxLength);
         } else {
-            buffer = FloatBuffer.allocate(maxLength);
+            buffer = DataBuffers.ofFloats(maxLength);
         }
         
         int index = 0;
@@ -260,13 +296,13 @@ public class TensorFlowUtil {
             }
             
             if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
-                ((IntBuffer) buffer).put(start + index, idx);
+                ((IntDataBuffer) buffer).setInt(idx, start + index);
             } else if ("Long".equalsIgnoreCase(type)) {
-                ((LongBuffer) buffer).put(start + index, idx);
+                ((LongDataBuffer) buffer).setLong(idx, start + index);
             } else if ("Double".equalsIgnoreCase(type)) {
-                ((DoubleBuffer) buffer).put(start + index, idx);
+                ((DoubleDataBuffer) buffer).setDouble(idx, start + index);
             } else {
-                ((FloatBuffer) buffer).put(start + index, idx);
+                ((FloatDataBuffer) buffer).setFloat(idx, start + index);
             }
             
             if (start + index == maxLength - 1) {
@@ -275,15 +311,17 @@ public class TensorFlowUtil {
             
             index += 1;
         }
+        
+        Shape s = Shape.of(new long[] {1, maxLength});
 
         if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
-            return Tensor.create(new long[] {1, maxLength}, (IntBuffer) buffer);
+            return TInt32.tensorOf(s, (IntDataBuffer) buffer);
         } else if ("Long".equalsIgnoreCase(type)) {
-            return Tensor.create(new long[] {1, maxLength}, (LongBuffer) buffer);
+            return TInt64.tensorOf(s, (LongDataBuffer) buffer);
         } else if ("Double".equalsIgnoreCase(type)) {
-            return Tensor.create(new long[] {1, maxLength}, (DoubleBuffer) buffer);
+            return TFloat64.tensorOf(s, (DoubleDataBuffer) buffer);
         } else {
-            return Tensor.create(new long[] {1, maxLength}, (FloatBuffer) buffer);
+            return TFloat32.tensorOf(s, (FloatDataBuffer) buffer);
         }
     }
     
@@ -292,13 +330,13 @@ public class TensorFlowUtil {
             String[] values = text.split(";");
             if (values.length == 1) {
                 if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
-                    return Tensors.create(Integer.parseInt(values[0]));  
+                    return TInt32.scalarOf(Integer.parseInt(values[0]));
                 } else if ("Long".equalsIgnoreCase(type)) {
-                    return Tensors.create(Long.parseLong(values[0]));  
+                    return TInt64.scalarOf(Long.parseLong(values[0])); 
                 } else if ("Double".equalsIgnoreCase(type)) {
-                    return Tensors.create(Double.parseDouble(values[0]));  
+                    return TFloat64.scalarOf(Double.parseDouble(values[0]));
                 } else if ("Float".equalsIgnoreCase(type)) {
-                    return Tensors.create(Float.parseFloat(values[0])); 
+                    return TFloat32.scalarOf(Float.parseFloat(values[0]));
                 }
             } else {
                 if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
@@ -306,25 +344,25 @@ public class TensorFlowUtil {
                     for (int i=0; i<values.length; i++) {
                         numbers[0][i] = Integer.parseInt(values[i]);
                     }
-                    return Tensors.create(numbers);  
+                    return TInt32.tensorOf(StdArrays.shapeOf(numbers), t -> StdArrays.copyTo(numbers, t));  
                 } else if ("Long".equalsIgnoreCase(type)) {
                     long[][] numbers = new long[1][values.length];
                     for (int i=0; i<values.length; i++) {
                         numbers[0][i] = Long.parseLong(values[i]);
                     }
-                    return Tensors.create(numbers);  
+                    return TInt64.tensorOf(StdArrays.shapeOf(numbers), t -> StdArrays.copyTo(numbers, t));  
                 } else if ("Double".equalsIgnoreCase(type)) {
                     double[][] numbers = new double[1][values.length];
                     for (int i=0; i<values.length; i++) {
                         numbers[0][i] = Double.parseDouble(values[i]);
                     }
-                    return Tensors.create(numbers);   
+                    return TFloat64.tensorOf(StdArrays.shapeOf(numbers), t -> StdArrays.copyTo(numbers, t));  
                 } else if ("Float".equalsIgnoreCase(type)) {
                     float[][] numbers = new float[1][values.length];
                     for (int i=0; i<values.length; i++) {
                         numbers[0][i] = Float.parseFloat(values[i]);
                     }
-                    return Tensors.create(numbers);  
+                    return TFloat32.tensorOf(StdArrays.shapeOf(numbers), t -> StdArrays.copyTo(numbers, t));  
                 }
             }
         } catch (Exception e) {}
@@ -332,7 +370,7 @@ public class TensorFlowUtil {
     }
     
     public static Tensor booleanInput(String value) throws IOException {
-        Tensor inputTensor = Tensors.create(Boolean.parseBoolean(value));    
+        Tensor inputTensor = TBool.scalarOf(Boolean.parseBoolean(value));
         return inputTensor;
     }
     
@@ -346,26 +384,43 @@ public class TensorFlowUtil {
     public static Map<String, float[]> executeSimpleTensorFlowModel(InputStream graphInputStream, Map<String, Tensor> inputTensorMap, String[] outputNames) throws IOException {
         Map<String, float[]> resultMap = new LinkedHashMap<>();
         Map<String, Tensor> tensorMap = executeTensorFlowModel(graphInputStream, inputTensorMap, outputNames);
-        for (String operationName: tensorMap.keySet()) {
-            try (Tensor tensor = tensorMap.get(operationName)) {
-                long[] rshape = tensor.shape();
-                int size = 1;
-                for (int i = 0; i < rshape.length; i++) {
-                    size *= rshape[i];
-                }
-                float[] result = new float[size];
-                if (tensor.dataType().equals(DataType.INT32) || tensor.dataType().equals(DataType.INT64) || tensor.dataType().equals(DataType.UINT8)) {
-                    int[] tempResult = new int[size];
-                    IntBuffer intBuffer = IntBuffer.wrap(tempResult);
-                    tensor.writeTo(intBuffer);
-                    for (int i = 0; i < size; i++) {
-                        result[i] = tempResult[i];
+        
+        try (Graph g = new Graph(); Session s = new Session(g)) {
+            Ops tf = Ops.create(g);
+            
+            for (String operationName: tensorMap.keySet()) {
+                try (Tensor tensor = tensorMap.get(operationName)) {
+                    TType t = (TType) tensor;
+                    Reshape reshape = tf.reshape(tf.constant(t.type(), t.shape(), t.asRawTensor().data()), tf.constant(new int[]{-1}));
+                    
+                    try (Tensor reshaped = s.runner().fetch(reshape).run().get(0)) {
+                        float[] result = new float[(int) reshaped.size()];
+                        switch (tensor.dataType()) {
+                            case DT_INT32:
+                                int[] intResult = StdArrays.array1dCopyOf((TInt32) reshaped);
+                                for (int i = 0; i < intResult.length; i++) {
+                                    result[i] = intResult[i];
+                                }   
+                                break;
+                            case DT_INT64:
+                                long[] longResult = StdArrays.array1dCopyOf((TInt64) reshaped);
+                                for (int i = 0; i < longResult.length; i++) {
+                                    result[i] = longResult[i];
+                                }
+                                break;
+                            case DT_UINT8:
+                                byte[] byteResult = StdArrays.array1dCopyOf((TUint8) reshaped);
+                                for (int i = 0; i < byteResult.length; i++) {
+                                    result[i] = byteResult[i];
+                                }
+                                break;
+                            default:
+                                result = StdArrays.array1dCopyOf((TFloat32) reshaped);
+                                break;
+                        }
+                        resultMap.put(operationName, result);
                     }
-                } else {
-                    FloatBuffer floatBuffer = FloatBuffer.wrap(result);
-                    tensor.writeTo(floatBuffer);
                 }
-                resultMap.put(operationName, result);
             }
         }
         return resultMap;
@@ -379,8 +434,7 @@ public class TensorFlowUtil {
      * @return Map of output operation name -> Tensor. Close each tensor after use to avoid memory leaks.
      */
     public static Map<String, Tensor> executeTensorFlowModel(InputStream graphInputStream, Map<String, Tensor> inputTensorMap, String[] outputNames) throws IOException {
-        byte[] graphDef = IOUtils.toByteArray(graphInputStream);
-        
+        GraphDef graphDef = GraphDef.parseFrom(graphInputStream);
         try {
             Map<String, Tensor> resultMap = new LinkedHashMap<>();
             try (Graph g = new Graph()) {
@@ -395,7 +449,8 @@ public class TensorFlowUtil {
                     for (String key: outputNames) {
                         runner.fetch(key);
                     }
-                    List<Tensor<?>> outputTensors = runner.run();
+                    List<Tensor> outputTensors = runner.run();
+                    
                     int i=0;
                     for (Tensor tensor: outputTensors) {
                         String operationName = outputNames[i];
@@ -410,6 +465,10 @@ public class TensorFlowUtil {
                 try {
                     graphInputStream.close();
                 } catch (Exception e) {}
+            }
+            
+            for (Tensor tensor: inputTensorMap.values()) {
+                tensor.close();
             }
         }
     }  
@@ -480,57 +539,6 @@ public class TensorFlowUtil {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(output);
         return json;
-    }
-    
-    public static class GraphBuilder {
-
-        GraphBuilder(Graph g) {
-            this.g = g;
-        }
-
-        Output div(Output x, Output y) {
-            return binaryOp("Div", x, y);
-        }
-
-        Output sub(Output x, Output y) {
-            return binaryOp("Sub", x, y);
-        }
-
-        Output resizeBilinear(Output images, Output size) {
-            return binaryOp("ResizeBilinear", images, size);
-        }
-
-        Output expandDims(Output input, Output dim) {
-            return binaryOp("ExpandDims", input, dim);
-        }
-
-        Output cast(Output value, DataType dtype) {
-            return g.opBuilder("Cast", "Cast").addInput(value).setAttr("DstT", dtype).build().output(0);
-        }
-
-        Output decodeJpeg(Output contents, long channels) {
-            return g.opBuilder("DecodeJpeg", "DecodeJpeg")
-                    .addInput(contents)
-                    .setAttr("channels", channels)
-                    .build()
-                    .output(0);
-        }
-
-        Output constant(String name, Object value) {
-            try (Tensor t = Tensor.create(value)) {
-                return g.opBuilder("Const", name)
-                        .setAttr("dtype", t.dataType())
-                        .setAttr("value", t)
-                        .build()
-                        .output(0);
-            }
-        }
-
-        private Output binaryOp(String type, Output in1, Output in2) {
-            return g.opBuilder(type, type).addInput(in1).addInput(in2).build().output(0);
-        }
-
-        private final Graph g;
     }
     
     public static String getEditorScript(HttpServletRequest request, HttpServletResponse response) {

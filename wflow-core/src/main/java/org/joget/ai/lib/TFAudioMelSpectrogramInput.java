@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
@@ -24,6 +23,10 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
 import org.tensorflow.Tensor;
+import org.tensorflow.ndarray.Shape;
+import org.tensorflow.ndarray.buffer.DataBuffers;
+import org.tensorflow.ndarray.buffer.FloatDataBuffer;
+import org.tensorflow.types.TFloat32;
 
 public class TFAudioMelSpectrogramInput implements TensorFlowInput {
     
@@ -55,18 +58,20 @@ public class TFAudioMelSpectrogramInput implements TensorFlowInput {
     protected Tensor getTensor() {
         final int channels = 1;
         int index = 0;
-        FloatBuffer fb = FloatBuffer.allocate(outputFrameWidth * outputFrameHeight * channels);
+        FloatDataBuffer fb = DataBuffers.ofFloats(outputFrameWidth * outputFrameHeight * channels);
 
         for (int row = 0; row < outputFrameHeight; row++) {
             for (int column = 0; column < outputFrameWidth; column++) {
                 int pixel = bufferedImage.getRGB(column, row);
 
                 float red = (pixel >> 16) & 0xff;
-                fb.put(index++, red);
+                fb.setFloat(red, index++);
             }
         }
+        
+        Shape s = Shape.of(new long[] {1, outputFrameHeight, outputFrameWidth, channels});
 
-        return Tensor.create(new long[]{1, outputFrameHeight, outputFrameWidth, channels}, fb);
+        return TFloat32.tensorOf(s, fb);
     }
 
     @Override

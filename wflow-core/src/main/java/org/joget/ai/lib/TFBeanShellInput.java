@@ -7,7 +7,7 @@ import org.joget.ai.TensorFlowInput;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.tensorflow.Tensor;
-import org.tensorflow.Tensors;
+import org.tensorflow.types.TBool;
 
 public class TFBeanShellInput implements TensorFlowInput {
 
@@ -24,7 +24,7 @@ public class TFBeanShellInput implements TensorFlowInput {
 
             return (Tensor) AppPluginUtil.executeScript(script, properties);
         }
-        return Tensors.create(false);
+        return TBool.scalarOf(false);
     }
 
     @Override
