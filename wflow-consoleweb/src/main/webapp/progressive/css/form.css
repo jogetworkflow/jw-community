@@ -477,6 +477,7 @@ body .editor-cell .close-icon:after {
 body.rtl .close-icon:after {
     left: 28px;
     right: unset;
+    margin-left: unset;
 }
 
 body .hasDatepicker + a, body .hasDatepicker + img {

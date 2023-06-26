@@ -5395,16 +5395,12 @@ body.rtl .layui-tab-title li .layui-tab-close{
     margin-right: 8px;
     margin-left: unset !important;
 }
-body.rtl .hasDatepicker + a, body .hasDatepicker + img{
-    left: 0;
-}
 body.rtl div.x-nav > a{
     float: left !important;
 }
 
 body.rtl .hasDatepicker + a + .close-icon, body.rtl .hasDatepicker + img + .close-icon{
-    position: absolute;
-    left: 50px !important;
+    right: 25px;
 }
 body.rtl select:not([class^="ui-"]), body.rtl .editor-cell select:not([class^="ui-"]){
     float: right;
