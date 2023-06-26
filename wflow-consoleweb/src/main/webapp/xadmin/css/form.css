@@ -651,7 +651,7 @@ body.rtl .filter-cell input.hasDatepicker {
 }
 body .hasDatepicker + a + .close-icon, body .hasDatepicker + img + .close-icon{
     position: relative;
-    top: -3px;
+    top: 5px;
     left: 15px;
 }
 body .dataList .filter-cell .close-icon:after{

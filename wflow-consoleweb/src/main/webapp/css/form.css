@@ -341,9 +341,9 @@ span.tablesaw-cell-content {
     height: 14px;
     position: absolute;
     text-align: center;
-    line-height: 14px;
+    line-height: 13px;
     margin-left: 10px;
-    top: 10px;
+    top: 14px;
     background-color: #FA9595;
     border-radius: 50%;
     color: white;
