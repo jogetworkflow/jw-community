@@ -631,6 +631,7 @@ body .hasDatepicker + a, body .hasDatepicker + img {
     position: absolute;
     padding: 2px 5px;
     display: inline-block;
+    cursor: pointer;
 }
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;

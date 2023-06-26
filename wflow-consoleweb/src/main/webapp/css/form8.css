@@ -368,6 +368,7 @@ textarea{
     line-height: 1;
     font-size: 16px;
     color: #ced4da;
+    cursor: pointer;
 }
 body.rtl .hasDatepicker + a,
 body.rtl .hasDatepicker + a + a{
@@ -382,6 +383,10 @@ body.rtl .hasDatepicker + a + a{
     right: 42px;
     top: 10px;
     z-index: 4;
+}
+.hasDatepicker + a + a:hover {
+    color: #e46772;
+    text-decoration: none;
 }
 body.rtl .hasDatepicker + a + a{
     left: 42px;
