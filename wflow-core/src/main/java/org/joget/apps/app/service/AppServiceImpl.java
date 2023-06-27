@@ -1245,6 +1245,9 @@ public class AppServiceImpl implements AppService {
                     //replace id and name
                     replacement.put("<id>"+copy.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
                     replacement.put("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
+                    appDefinitionXml = StringUtil.searchAndReplaceFirstByteContent(appDefinitionXml, replacement);
+                    
+                    replacement = new LinkedHashMap<String, String>();
                     replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                     replacement.put("/app/"+copy.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                     replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
@@ -1413,8 +1416,12 @@ public class AppServiceImpl implements AppService {
                 AppDefinition zipApp = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
 
                 //replace id and name
+                replacement = new LinkedHashMap<String, String>();
                 replacement.put("<id>"+zipApp.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
                 replacement.put("<name>"+zipApp.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
+                appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
+                
+                replacement = new LinkedHashMap<String, String>();
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");

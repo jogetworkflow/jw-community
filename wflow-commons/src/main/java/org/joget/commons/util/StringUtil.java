@@ -829,6 +829,28 @@ public class StringUtil {
     }
     
     /**
+     * Search keywords and replace the first occurrence with corresponding new keyword in byte content
+     * @param bytes
+     * @param replacements
+     * @return 
+     */
+    public static byte[] searchAndReplaceFirstByteContent(byte[] bytes, Map<String, String> replacements) {
+        if (replacements != null && !replacements.isEmpty()) {
+            try {
+                String content = new String(bytes, "UTF-8");
+                
+                for (String search : replacements.keySet()) {
+                    content = content.replaceFirst(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacements.get(search)));
+                }
+                bytes = content.getBytes("UTF-8");
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+        return bytes;
+    }
+    
+    /**
      * Method used for validate an email. Options to validate multiple email separated
      * by semicolon (;)
      * @param email
