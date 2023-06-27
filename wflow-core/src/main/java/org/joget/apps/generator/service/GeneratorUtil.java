@@ -138,6 +138,14 @@ public class GeneratorUtil {
                     objProperty.put("name", userviewName);
                     objProperty.put("description", userviewDescription);
                 }
+                //UI name is keep separately in setting
+                if (!obj.isNull("setting")) {
+                    JSONObject setting = obj.getJSONObject("setting");
+                    if (!setting.isNull("properties")) {
+                        JSONObject settingProp = setting.getJSONObject("properties");
+                        settingProp.put("userviewName", userviewName);
+                    }
+                }
                 return obj.toString();
             } catch (Exception e) {
             }
