@@ -1422,13 +1422,9 @@ FormBuilder = {
      */
     afterUpdate: function() {
         if ($("#generator-btn").length > 0) {
-            if (FormBuilder.isEmpty() || !FormBuilder.isSaved()) {
+            if (!FormBuilder.isSaved()) {
                 $("#generator-btn").addClass("disabled");
-                if (FormBuilder.isEmpty()) {
-                    $("#generator-btn").attr("title",  $("#generator-btn").attr("title-empty"));
-                } else {
-                    $("#generator-btn").attr("title",  $("#generator-btn").attr("title-unsave"));
-                }
+                $("#generator-btn").attr("title",  $("#generator-btn").attr("title-unsave"));
             } else {
                 $("#generator-btn").removeClass("disabled");
                 $("#generator-btn").attr("title",  $("#generator-btn").attr("title-default"));

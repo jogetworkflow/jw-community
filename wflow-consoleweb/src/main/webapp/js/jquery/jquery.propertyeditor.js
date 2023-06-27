@@ -6275,7 +6275,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                             if (color !== "") {
                                 $(i).find("span.value > i").attr("style", "color:"+color);
                             }
-
+                            
                             $(i).removeClass("open");
                             $("body").off("click.icon-picker");
                             $("#" + this.id).trigger("change");
@@ -6642,26 +6642,86 @@ PropertyEditor.Type.ImageRadio.prototype = {
     renderField: function() {
         var thisObj = this;
         var html = '';
-
+       
         if (this.value === null) {
             this.value = "";
         }
-
+        
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+        
+        var modeClass = "";
+        var size = "";
+        if (this.properties.size !== undefined && this.properties.size !== null && this.properties.size !== "") {
+            size = this.properties.size;
+        }
 
-        if (this.properties.options !== undefined && this.properties.options !== null) {
+        if (this.properties.mode === "inline") { //display the image options in columns
+            modeClass = "inline-option";
+            if(this.properties.cols !== undefined){
+                modeClass += " inline-cols-"+this.properties.cols;
+            }
+        } else if (this.properties.mode ==="picker"){ //display the images options in a dropdown picker
+            modeClass = "imagepicker";
+            var imagevalue = "";
+            html += '<div id="' + this.id + '_scheme_selector" class="selector"><div class="image_values">';
+            $.each(this.properties.options, function(i, option){                
+                if (thisObj.value === option.value){
+                    imagevalue = PropertyEditor.Util.escapeHtmlTag(PropertyEditor.Util.replaceContextPath(option.image, thisObj.options.contextPath));
+                    return false;                    
+                }
+            });
+            html += '<div class="imageoption" style="background:url(\' '+ imagevalue +' \');background-size: 100% 100%;'+size+'">';
+            html += '</div>';
+            html += '<span class="trigger"><i class="fas fa-chevron-down"></i></span></div><div class="image-input" style="display:none;"><input type="text"/></div><ul style="display:none;">';
             $.each(this.properties.options, function(i, option) {
                 var checked = "";
                 if (thisObj.value === option.value) {
-                    checked = " checked";
+                    checked = "checked";
                 }
-                html += '<span class="multiple_option"><label><input type="radio" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/><img style="max-width:100%;" title="' + PropertyEditor.Util.escapeHtmlTag(option.label) + '" src="' + PropertyEditor.Util.escapeHtmlTag(PropertyEditor.Util.replaceContextPath(option.image, thisObj.options.contextPath)) + '"/></label></span>';
+                html += '<span class="multiple_option '+modeClass+'"><label><input type="radio" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"'  + checked + '/>\n\
+<li data-value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '" class="' + checked + '" name="' + thisObj.id + ' " '+ checked +'><div class="imageoption"  style="background:url(\''+ PropertyEditor.Util.escapeHtmlTag(PropertyEditor.Util.replaceContextPath(option.image, thisObj.options.contextPath)) +'\'); background-size: 100% 100%;'+size+'"></div></li></label></span>';
+            });
+            html += '</div>';
+        }
+        
+        if (this.properties.options !== undefined && this.properties.options !== null && this.properties.mode !=="picker" ) {
+            $.each(this.properties.options, function(i, option) {
+                var checked = "";
+                if (thisObj.value === option.value) {
+                    checked = "checked";
+                }
+                html += '<span class="multiple_option '+modeClass+'"><label><input type="radio" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/><img style="max-width:100%;'+size+'" title="' + PropertyEditor.Util.escapeHtmlTag(option.label) + '" src="' + PropertyEditor.Util.escapeHtmlTag(PropertyEditor.Util.replaceContextPath(option.image, thisObj.options.contextPath)) + '"/></label></span>';
             });
         }
         return html;
     },
     initScripting: function() {
         PropertyEditor.Util.supportHashField(this);
+        
+        if (this.properties.mode ==="picker"){
+            var thisObj = this;
+            var selector = $("#" + this.id + "_scheme_selector");
+
+            $(selector).find(".image_values span.trigger").off("click");
+            $(selector).find(".image_values span.trigger").on("click", function(){
+                $(selector).toggleClass("showPicker");
+            });
+            $(selector).find("li").off("click");
+            $(selector).find("li").on("click", function(){
+                $(selector).find("li").removeClass("checked");
+                $(this).addClass("checked");
+                thisObj.renderValue();
+                $(selector).removeClass("showPicker");
+            });
+        }
+        this.isDataReady = true;
+    },
+    renderValue : function() {
+        var selector = $("#" + this.id + "_scheme_selector");
+        if ($(selector).find("li.checked").length > 0) {
+            $(selector).find(".image_values div.imageoption").remove();
+            $(selector).find(".image_values").prepend($(selector).find("li.checked").html());
+        }
     },
     renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault
 };
