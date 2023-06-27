@@ -648,7 +648,7 @@ body.rtl .dataList span.pagelinks{
     right: 30px;
     display: block;
     margin-top: 8px;
-    z-index: 1000;
+    z-index: 500;
 }
 .dataList .show_hide_control .toggle{
     position: absolute;
@@ -695,7 +695,8 @@ body.rtl .dataList span.pagelinks{
     display: inline-block !important;
     margin-right: 5px;
 }
-.dataList .show_hide_control:hover ul {
+html.ismobile .dataList .show_hide_control.show_dropdown ul,
+html:not(.ismobile) .dataList .show_hide_control:hover ul {
     display: block;
 }
 .dataList .rowActionsDropdown .dropdown-menu{

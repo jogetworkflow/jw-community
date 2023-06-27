@@ -440,7 +440,13 @@ function showHideColumns(datalist) {
                 $(dropdown).find('ul').append('<li><label><input type="checkbox" value="'+(getKey($(this)))+ '" ' + (!$(this).hasClass('control_hide')?'checked':'') +'/> '+$(this).text()+'</label></li>');
             }
         });
+        
+        $(dropdown).find('span.toggle').off('click');
+        $(dropdown).find('span.toggle').on('click', function(){
+            $(dropdown).toggleClass("show_dropdown");
+        });
 
+        $(dropdown).find('input').off('click');
         $(dropdown).find('input').on('click', function(){
             if ($(this).is(':checked')) {
                 show($(this).attr('value'));
