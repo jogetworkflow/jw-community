@@ -126,13 +126,14 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
 
             //get value from the formData
             String[] values = FormUtil.getElementPropertyValues(element, formData);
+            
+            // check for empty submission via parameter
+            String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
+            if (paramValues == null || paramValues.length == 0) {
+                values = new String[]{""};
+            }
+            
             if (values != null && values.length > 0) {
-                // check for empty submission via parameter
-                String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
-                if (paramValues == null || paramValues.length == 0) {
-                    values = new String[]{""};
-                }
-
                 // formulate values
                 String delimitedValue = FormUtil.generateElementPropertyValues(values);
 
