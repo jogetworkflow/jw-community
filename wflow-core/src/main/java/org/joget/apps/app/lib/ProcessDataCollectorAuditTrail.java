@@ -262,7 +262,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                         }
                     }
                 } else {
-                    if (users == null) {
+                    if (users == null && !wfActivity.getState().startsWith("closed")) { // userList is not used when state is closed, also it caused exception when archive feature is used
                         userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
                     } else {
                         userList = users;
