@@ -6066,7 +6066,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
             
             if (!subflowId.isEmpty()) {
-                aHistory.setPerformer(subflowId);
+                aHistory.setPerformer(activity.getPerformerId(sessionHandle));
             }
             aHistory.setType(type);
             aHistory.setParticipantId(participantId);
