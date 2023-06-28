@@ -3,6 +3,7 @@
     properties : [{
         name : 'script',
         label : '@@app.beanshelltool.script@@',
+        description : '@@app.beanshelltool.script.desc@@',
         type : 'codeeditor',
         required : 'True',
         mode : 'java'
