@@ -568,6 +568,15 @@ public class FormServiceImpl implements FormService {
                     }
                 }
                 
+                //check id is set for single row data, it may not set when there is no id field in the form
+                if (!rowSet.isMultiRow() && !rowSet.isEmpty() && 
+                        (rowSet.get(0).getId() == null || rowSet.get(0).getId().isEmpty())) {
+                    String primaryKey = element.getPrimaryKeyValue(formData);
+                    if (primaryKey != null && !primaryKey.isEmpty()) {
+                        rowSet.get(0).setId(primaryKey);
+                    }
+                }
+                
                 // execute binder
                 FormRowSet binderResult = binder.store(element, rowSet, formData);
                 formData.setStoreBinderData(binder, binderResult);
