@@ -1717,6 +1717,14 @@ body #ui-datepicker-div {
 .accordion .card-body {
     padding: 10px;
 }
+.accordion>.card>.card-header {
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid rgba(0,0,0,.125) !important;
+}
+.accordion .card-header:focus, .accordion .card-body:focus{
+    outline: 0px;
+}
 .card {
     background-size: cover;
 }

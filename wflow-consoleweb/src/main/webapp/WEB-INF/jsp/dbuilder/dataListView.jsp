@@ -172,7 +172,8 @@
                                                    <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                                                </c:when>
                                                <c:otherwise>
-                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                                   <fmt:message key="dbuilder.selectAll" var="selectAllLabel" />
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
                                                </c:otherwise>
                                            </c:choose>
                                        </c:if>
@@ -238,7 +239,8 @@
                                                    <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                                                </c:when>
                                                <c:otherwise>
-                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                                   <fmt:message key="dbuilder.selectAll" var="selectAllLabel" />
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
                                                </c:otherwise>
                                            </c:choose>
                                        </c:if>
@@ -406,6 +408,18 @@
                 }
             }
         });
+        
+        if('${checkboxPosition}' !== 'no'){
+            if('${selectionType}' === 'single'){
+                $("form[name='form_${dataListId}'] tbody .select_radio input[type='radio']").each(function() {
+                    $(this).attr('title', $(this).val());
+                });
+            }else{
+                $("form[name='form_${dataListId}'] tbody .select_checkbox input[type='checkbox']").each(function() {
+                    $(this).attr('title', $(this).val());
+                });
+            }
+        }
     });
     function toggleAll(element) {
         var table = $(element).closest("form");

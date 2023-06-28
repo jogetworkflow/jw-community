@@ -919,7 +919,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String getFooter(Map<String, Object> data) {
         if (enableResponsiveSwitch()) {
-            data.put("footer_inner_after", "<div id=\"responsiveSwitch\"><p><a href=\"#\" class=\"rs-link\" data-link-desktop=\""+ ResourceBundleUtil.getMessage("theme.universal.switchDesktop") +"\" data-link-responsive=\""+ ResourceBundleUtil.getMessage("theme.universal.switchMobile") +"\"></a></p></div>" + getPropertyString("subfooter"));
+            data.put("footer_inner_after", "<div id=\"responsiveSwitch\"><p><a href=\"#\" class=\"rs-link\" title=\""+ ResourceBundleUtil.getMessage("theme.universal.switchDesktop") +"\" data-link-desktop=\""+ ResourceBundleUtil.getMessage("theme.universal.switchDesktop") +"\" data-link-responsive=\""+ ResourceBundleUtil.getMessage("theme.universal.switchMobile") +"\"></a></p></div>" + getPropertyString("subfooter"));
         } else {
             data.put("footer_inner_after", getPropertyString("subfooter"));
         }

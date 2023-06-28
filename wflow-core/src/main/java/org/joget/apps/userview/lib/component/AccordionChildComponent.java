@@ -67,8 +67,8 @@ public class AccordionChildComponent extends SimplePageComponent implements Hidd
         }
         
         String html = "<div id=\""+id+"\" class=\"card\" "+attr+">";
-        html += "<a class=\"card-header\" id=\"heading-"+id+"\" data-toggle=\"collapse\" data-target=\"#body-"+id+"\" aria-expanded=\""+("show".equals(show))+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</a>";
-        html += "<div id=\"body-"+id+"\" class=\"card-body collapse "+show+"\" aria-labelledby=\"heading-"+id+"\" data-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
+        html += "<button class=\"card-header\" id=\"heading-"+id+"\" tabindex=\"0\" data-toggle=\"collapse\" data-target=\"#body-"+id+"\" role=\"button\" aria-expanded=\""+("show".equals(show))+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</button>";
+        html += "<div id=\"body-"+id+"\" tabindex=\"0\" class=\"card-body collapse "+show+"\" data-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
         
         return html;
     }

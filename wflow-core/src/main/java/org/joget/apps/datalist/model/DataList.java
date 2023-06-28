@@ -969,7 +969,7 @@ public class DataList {
     }
 
     private String getPageSizeSelectorTemplate() {
-        String template = "<select id='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "' name='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "'>";
+        String template = "<select id='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "' title='" + ResourceBundleUtil.getMessage("dbuilder.pageSizeSelectorOptions") +"' name='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "'>";
         String value = getPageSize().toString();
             
         String[] list = getPageSizeList().split(",");
