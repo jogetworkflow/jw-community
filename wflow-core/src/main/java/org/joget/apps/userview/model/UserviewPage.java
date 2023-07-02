@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.service.UserviewCache;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -23,6 +24,15 @@ public class UserviewPage {
     }
     
     public String render() {
+        //try to cache the page content of all components (including info tiles) if it is not builder request
+        boolean isBuilder = "true".equalsIgnoreCase(menu.getRequestParameterString("isBuilder"));
+        if (!isBuilder) {
+            String content = UserviewCache.getCachedContent(menu, UserviewCache.CACHE_TYPE_PAGE);
+            if (content != null) {
+                return content;
+            }
+        }
+        
         String html = "";
         Collection<PageComponent> components = getPageComponents();
         
@@ -47,6 +57,10 @@ public class UserviewPage {
             }
         } else {
             html = menu.render();
+        }
+        
+        if (!isBuilder) {
+            UserviewCache.setCachedContent(menu, UserviewCache.CACHE_TYPE_PAGE, html);
         }
         
         return html;
@@ -161,10 +175,11 @@ public class UserviewPage {
     }
     
     public PageComponent getPageComponent(JSONObject jsonObj) throws JSONException {
+        PageComponent component;
         if ("menu-component".equalsIgnoreCase(jsonObj.getString("className"))) {
-            return (PageComponent) menu;
+            component = menu;
         } else {
-            PageComponent component = (PageComponent) getPluginManager().getPlugin(jsonObj.getString("className"));
+            component = (PageComponent) getPluginManager().getPlugin(jsonObj.getString("className"));
             if (component != null) {
                 if (component instanceof ExtElement) {
                     ((ExtElement) component).setRequestParameters(menu.getRequestParameters());
@@ -177,8 +192,11 @@ public class UserviewPage {
                 component.setChildren(getPageComponents(component, jsonObj));
                 component.setUserview(menu.getUserview());
             }
-            return component;
         }
+        
+        //check is userview menu and make sure it a CachedUserviewMenu
+        component = PageComponent.makeCacheable(component, menu);
+        return component;
     }
     
     private PluginManager getPluginManager() {

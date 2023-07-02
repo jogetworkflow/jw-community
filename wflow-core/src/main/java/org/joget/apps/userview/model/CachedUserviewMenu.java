@@ -1,5 +1,6 @@
 package org.joget.apps.userview.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -402,10 +403,10 @@ public class CachedUserviewMenu extends UserviewMenu {
      * @return
      */
     public String getMenu() {
-        String content = UserviewCache.getCachedContent(this, UserviewCache.CACHE_TYPE_MENU);
+        String content = UserviewCache.getCachedContent(delegate, UserviewCache.CACHE_TYPE_MENU);
         if (content == null) {
             content = delegate.getMenu();
-            UserviewCache.setCachedContent(this, UserviewCache.CACHE_TYPE_MENU, content);
+            UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_MENU, content);
         }
         return content;
     }
@@ -469,7 +470,17 @@ public class CachedUserviewMenu extends UserviewMenu {
     
     @Override
     public String render() {
-        return delegate.render();
+        boolean isBuilder = "true".equalsIgnoreCase(getRequestParameterString("isBuilder"));
+        if (isBuilder) {
+            return delegate.render();
+        } else {
+            String content = UserviewCache.getCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE);
+            if (content == null) {
+                content = delegate.render();
+                UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, content);
+            }
+            return content;
+        }
     }
     
     @Override
@@ -485,5 +496,75 @@ public class CachedUserviewMenu extends UserviewMenu {
     @Override
     public String getDeveloperMode() {
         return delegate.getDeveloperMode();
+    }
+
+    @Override
+    public Set<String> getOfflineStaticResources() {
+        return delegate.getOfflineStaticResources();
+    }
+
+    @Override
+    public void setRedirectUrlToWindow(String redirectUrl, String windowType) {
+        delegate.setRedirectUrlToWindow(redirectUrl, windowType);
+    }
+
+    @Override
+    public String getPluginIcon() {
+        return delegate.getPluginIcon();
+    }
+
+    @Override
+    public boolean isUiMenu() {
+        return delegate.isUiMenu();
+    }
+
+    @Override
+    public String renderChildren() {
+        return delegate.renderChildren();
+    }
+
+    @Override
+    public String getAdditionalStyle(String styleClass, String selector, String prefix) {
+        return delegate.getAdditionalStyle(styleClass, selector, prefix);
+    }
+
+    @Override
+    public String getAdditionalStyle(String styleClass) {
+        return delegate.getAdditionalStyle(styleClass);
+    }
+
+    @Override
+    public boolean isPermissionHidden() {
+        return delegate.isPermissionHidden();
+    }
+
+    @Override
+    public void setChildren(Collection<PageComponent> children) {
+        delegate.setChildren(children);
+    }
+
+    @Override
+    public Collection<PageComponent> getChildren() {
+        return delegate.getChildren();
+    }
+
+    @Override
+    public void setParent(PageComponent parent) {
+        delegate.setParent(parent);
+    }
+
+    @Override
+    public PageComponent getParent() {
+        return delegate.getParent();
+    }
+
+    @Override
+    public boolean isHiddenPlugin() {
+        return delegate.isHiddenPlugin();
+    }
+
+    @Override
+    public String getHelpLink() {
+        return delegate.getHelpLink();
     }
 }

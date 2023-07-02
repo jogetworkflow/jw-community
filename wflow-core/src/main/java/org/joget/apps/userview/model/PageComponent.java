@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.service.AppPluginUtil;
+import org.joget.apps.userview.service.UserviewCache;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -27,7 +28,30 @@ public abstract class PageComponent extends ExtElement {
     }
 
     public void setChildren(Collection<PageComponent> children) {
+        if (children != null && !children.isEmpty()) {
+            Collection<PageComponent> newChildren = new ArrayList<>();
+            //check is userview menu and make sure it is a CachedUserviewMenu, mainly for Dashboard Menu
+            for (PageComponent component : children) {
+                newChildren.add(makeCacheable(component, this));
+            }
+            children = newChildren;
+        }
+        
         this.children = children;
+    }
+    
+    public static PageComponent makeCacheable(PageComponent component, PageComponent thisObj) {
+        if (component instanceof UserviewMenu && !(component instanceof CachedUserviewMenu)) {
+            UserviewMenu menuComponent = (UserviewMenu)component;
+
+            //only set the scope and duration when it is not set, this allow each component can having different cache duration in ajax refresh
+            if (component.getPropertyString(UserviewCache.PROPERTY_SCOPE).isEmpty() && !thisObj.getPropertyString(UserviewCache.PROPERTY_SCOPE).isEmpty()) {
+                component.setProperty(UserviewCache.PROPERTY_SCOPE, thisObj.getPropertyString(UserviewCache.PROPERTY_SCOPE));
+                component.setProperty(UserviewCache.PROPERTY_DURATION, thisObj.getPropertyString(UserviewCache.PROPERTY_DURATION));
+            }
+            component = new CachedUserviewMenu(menuComponent);
+        }
+        return component;
     }
 
     public Userview getUserview() {

@@ -57,6 +57,16 @@ public class UserviewCache {
                 Userview userview = userviewMenu.getUserview();
                 String userviewId = userview.getPropertyString(FormUtil.PROPERTY_ID);
                 String menuId = userviewService.getMenuId(userviewMenu);
+                
+                //clear cache for the ajax component
+                if (CACHE_TYPE_PAGE.equals(type)) {
+                    String currentPageMenuId = userviewService.getMenuId(userview.getCurrent());
+                    String componentId = getComponentId(userviewMenu, menuId, currentPageMenuId);
+                    if (componentId != null) {
+                        menuId = currentPageMenuId; // to make sure all components in current page are clear together in post request
+                    }
+                }
+                
                 clearCachedContent(userviewId, menuId, scope);
                 return;
             }
@@ -124,7 +134,35 @@ public class UserviewCache {
                 params = (String)request.getAttribute("javax.servlet.forward.query_string");
             }
         }
+        
+        //cache for the ajax component
+        if (CACHE_TYPE_PAGE.equals(type)) {
+            String currentPageMenuId = userviewService.getMenuId(userview.getCurrent());
+            String componentId = getComponentId(userviewMenu, menuId, currentPageMenuId);
+            if (componentId != null) {
+                params += ":" + componentId;
+                menuId = currentPageMenuId; // to make sure it is clear together in clearCachedContent 
+            }
+        }
+        
         return CACHE_KEY_PREFIX + ":" + profile + ":" + appDef.getAppId() + ":" + userviewId + ":" + menuId + ":" + scope + ":" + userviewKey + ":" + type + ":" + params;
     }
     
+    /**
+     * Retrieve componentId from header or compare it with the menuId of current page menu.
+     * @param userviewMenu
+     * @param menuId
+     * @param currentPageMenuId
+     * @return 
+     */
+    public static String getComponentId(UserviewMenu userviewMenu, String menuId, String currentPageMenuId) {
+        String componentId = WorkflowUtil.getHttpServletRequest().getHeader("__ajax_component");
+        if (componentId == null && !menuId.equals(currentPageMenuId)) {
+            componentId = "pc-" + userviewMenu.getPropertyString("id");
+            if (!userviewMenu.getPropertyString("customId").isEmpty()) {
+                componentId = userviewMenu.getPropertyString("customId");
+            }
+        }
+        return componentId;
+    }
 }

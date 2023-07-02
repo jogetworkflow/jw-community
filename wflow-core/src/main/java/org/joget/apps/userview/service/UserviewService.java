@@ -434,9 +434,12 @@ public class UserviewService {
      * @return 
      */
     public String getMenuId(UserviewMenu menu) {
-        String menuId = menu.getPropertyString("id");
-        if (menu.getPropertyString("customId") != null && menu.getPropertyString("customId").trim().length() > 0) {
-            menuId = menu.getPropertyString("customId");
+        String menuId = null;
+        if (menu != null) {
+            menuId = menu.getPropertyString("id");
+            if (menu.getPropertyString("customId") != null && menu.getPropertyString("customId").trim().length() > 0) {
+                menuId = menu.getPropertyString("customId");
+            }
         }
         return menuId;
     }
