@@ -35,6 +35,7 @@ import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.api.internal.working.WfResourceInternal;
 import org.enhydra.shark.instancepersistence.data.ActivityDO;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
+import org.enhydra.shark.xpdl.XPDLConstants;
 import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
@@ -450,6 +451,21 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             persistDeadlines(shandle);
         } catch (Exception e) {
             LogUtil.error(CustomWfActivityImpl.class.getName(), e, "");
+        }
+    }
+    
+    /**
+     * Check and restart the tool activity
+     * @param shandle
+     * @throws Exception 
+     */
+    public void restartToolActivity(WMSessionHandle shandle) throws Exception {
+        Activity act = getActivityDefinition(shandle);
+        if (act != null) {
+            int type = act.getActivityType();
+            if (type == XPDLConstants.ACTIVITY_TYPE_TOOL) {
+                startActivity(shandle);
+            }
         }
     }
     

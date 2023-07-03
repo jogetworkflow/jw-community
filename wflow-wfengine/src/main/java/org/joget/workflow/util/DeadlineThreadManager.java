@@ -34,12 +34,14 @@ public class DeadlineThreadManager {
                     continue;
                 }
                 HostManager.setCurrentProfile(profile);
+                workflowManager.internalRecoverStuckToolActivities();
                 workflowManager.internalUpdateDeadlineChecker();
             }
             HostManager.setCurrentProfile(null);
         }
         else {
             // start current profile
+            workflowManager.internalRecoverStuckToolActivities();
             workflowManager.internalUpdateDeadlineChecker();
         }
     }

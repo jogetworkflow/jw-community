@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
@@ -21,6 +22,7 @@ import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateAssignment;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
 import org.joget.workflow.shark.migrate.model.MigrateProcessDefinition;
+import org.joget.workflow.shark.model.SharkActivity;
 import org.joget.workflow.shark.model.SharkAssignment;
 import org.joget.workflow.shark.model.SharkProcess;
 import org.joget.workflow.util.WorkflowUtil;
@@ -549,6 +551,19 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             return total.intValue();
         }
         return 0;
+    }
+    
+    /**
+     * Only stuck tools having "open.running" status during startup
+     * @return 
+     */
+    public Collection<Object[]> getStuckTools() {
+        Session session = findSession();
+        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e WHERE e.state.name = ?";
+        Query q = session.createQuery(query);
+
+        q.setParameter(0, "open.running");
+        return q.list();
     }
     
     public Collection<String> getPackageDefIds(String packageId) {
