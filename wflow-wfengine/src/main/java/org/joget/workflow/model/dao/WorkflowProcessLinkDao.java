@@ -51,7 +51,7 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
             saveOrUpdate(HISTORY_ENTITY_NAME, history);
 
             try {
-                wfProcessLink = getWorkflowProcessLink(wfProcessLink.getProcessId());
+                wfProcessLink = internalGetWorkflowProcessLink(wfProcessLink.getProcessId());
                 if (wfProcessLink != null) {
                     delete(wfProcessLink);
                 }
@@ -62,6 +62,15 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     }
 
     public WorkflowProcessLink getWorkflowProcessLink(String processId){
+        WorkflowProcessLink processLink = internalGetWorkflowProcessLink(processId);
+        
+        if (processLink == null) {
+            processLink = getWorkflowProcessLinkHistory(processId);
+        }
+        return processLink;
+    }
+    
+    public WorkflowProcessLink internalGetWorkflowProcessLink(String processId){
         return (WorkflowProcessLink) find(ENTITY_NAME, processId);
     }
 
@@ -142,9 +151,6 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     public Collection<WorkflowProcessLink> getLinks(String processId) {
         Collection<WorkflowProcessLink> links = new ArrayList<WorkflowProcessLink>();
         WorkflowProcessLink processLink = getWorkflowProcessLink(processId);
-        if (processLink == null) {
-            processLink = getWorkflowProcessLinkHistory(processId);
-        }
         String conditions = "where e.originProcessId = ?";
         if (processLink != null) {
             processId = processLink.getOriginProcessId();
