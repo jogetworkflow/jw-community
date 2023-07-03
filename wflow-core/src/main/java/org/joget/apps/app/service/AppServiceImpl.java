@@ -2584,7 +2584,10 @@ public class AppServiceImpl implements AppService {
                 if (concatAppDef.contains("\"" + g.getId() + "\"") || 
                         concatAppDef.contains(";" + g.getId() + ";") ||
                         concatAppDef.contains("\"" + g.getId() + ";") ||
-                        concatAppDef.contains(";" + g.getId() + "\"")) {
+                        concatAppDef.contains(";" + g.getId() + "\"") || 
+                        concatAppDef.contains("~~~" + g.getId() + "~~~") || 
+                        concatAppDef.contains("~~~" + g.getId() + ";") ||
+                        concatAppDef.contains(";" + g.getId() + "~~~")) {
                     groups.add(g);
                 }
             }
