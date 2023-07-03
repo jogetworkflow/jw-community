@@ -151,6 +151,17 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
+body input[disabled],
+body input[readonly] {
+  cursor: not-allowed;
+  background-color: #eeeeee;
+}
+
+body input.no-manual-input{
+    cursor: text;
+    background-color: #fff;
+}
+
 body input[size],
 body .editor-cell input[size]{
     width: auto;

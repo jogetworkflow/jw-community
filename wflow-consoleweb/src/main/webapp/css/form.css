@@ -359,6 +359,10 @@ span.tablesaw-cell-content {
     left: 15px;
     bottom: 0px;
 }
+body input.no-manual-input{
+    cursor: text;
+    background-color: #fff;
+}
 @media (max-width: 768px) {
     .datapicker-native.ui-screen-hidden.ios {
         right: 15px;
