@@ -552,6 +552,19 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return 0;
     }
     
+    /**
+     * Only stuck tools having "open.running" status during startup
+     * @return 
+     */
+    public Collection<Object[]> getStuckTools() {
+        Session session = findSession();
+        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e WHERE e.state.name = ?1";
+        Query q = session.createQuery(query);
+
+        q.setParameter(1, "open.running");
+        return q.list();
+    }
+    
     public Collection<String> getPackageDefIds(String packageId) {
         Session session = findSession();
         String query = "SELECT distinct e.processDefId FROM SharkProcess e WHERE e.processDefId like ?1";

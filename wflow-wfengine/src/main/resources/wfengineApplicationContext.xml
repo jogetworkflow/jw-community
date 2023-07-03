@@ -20,9 +20,9 @@
         <constructor-arg><ref bean="setupDataSource" /></constructor-arg>
         <constructor-arg><ref bean="transactionManager" /></constructor-arg>
         <property name="workflowUserManager" ref="workflowUserManager"/>
+        <property name="workflowAssignmentDao" ref="workflowAssignmentDao"/>
         <property name="setupManager" ref="setupManager"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
-        <property name="workflowAssignmentDao" ref="workflowAssignmentDao"/>
     </bean>
 
     <aop:config>
