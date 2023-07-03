@@ -18,7 +18,7 @@ public class LocalSessionFactoryBean extends org.springframework.orm.hibernate5.
             hibernateProperties.setProperty("hibernate.allow_update_outside_transaction", "true");
         }
         if (!hibernateProperties.containsKey("hibernate.transaction.coordinator_class")) {
-            hibernateProperties.setProperty("hibernate.transaction.coordinator_class", "jta");
+            hibernateProperties.setProperty("hibernate.transaction.coordinator_class", "jdbc");
         }
         
         super.setHibernateProperties(hibernateProperties);

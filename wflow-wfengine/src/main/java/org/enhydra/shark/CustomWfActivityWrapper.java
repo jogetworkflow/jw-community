@@ -64,8 +64,12 @@ public class CustomWfActivityWrapper extends WfActivityWrapper {
     }
     
     public boolean isSubflow() throws Exception {
-        int type = getActivityDefinition().getActivityType();
-        return 3 == type;
+        Activity act = getActivityDefinition();
+        if (act != null) {
+            int type = act.getActivityType();
+            return 3 == type;
+        }
+        return false;
     }
     
     public static List<String> getAssignmentResourceIds(WMSessionHandle shandle,

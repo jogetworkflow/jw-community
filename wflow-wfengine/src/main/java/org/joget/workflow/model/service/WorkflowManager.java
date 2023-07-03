@@ -931,6 +931,11 @@ public interface WorkflowManager {
     void internalUpdateDeadlineChecker();
     
     /**
+     * Internal method used to recover stuck tool activities due to improper shutdown
+     */
+    void internalRecoverStuckToolActivities();
+    
+    /**
      * Internal method used to updates workflow variable and deadline of migrated process instance
      * @param process
      * @param acts

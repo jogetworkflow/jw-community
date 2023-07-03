@@ -73,6 +73,7 @@ import org.enhydra.shark.xpdl.XMLUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
@@ -5076,6 +5077,56 @@ public class WorkflowManagerImpl implements WorkflowManager {
             DeadlineThreadManager.startThread(intervalInMillis);
         } catch(Exception e) {
             // ignore initial error
+        }
+    }
+    
+    /**
+     * Internal method used to recover stuck tool activities due to improper shutdown
+     */
+    @Override
+    public void internalRecoverStuckToolActivities() {
+        final Collection<Object[]> stuckTools = workflowAssignmentDao.getStuckTools();
+        if (stuckTools != null && !stuckTools.isEmpty()) {
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Found " + stuckTools.size() + " stuck tool. Trying recover it...");
+            
+            Thread stuckToolsRecover = new PluginThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                        protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                            SharkConnection sc = null;
+
+                            try {
+                                sc = connect();
+                                WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+                                for (Object[] sa : stuckTools) {
+                                    try {
+                                        CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, sa[0].toString(), sa[1].toString(), sa[2].toString());
+                                        wrapper.getProcessImpl().setReadOnly(false);
+                                        CustomWfActivityImpl activity = (CustomWfActivityImpl) wrapper.getActivityImpl();
+                                        activity.restartToolActivity(sessionHandle);
+                                    } catch (Exception e) {
+                                        LogUtil.error(getClass().getName(), e, "Fail to restart tool " + sa[2].toString());
+                                    }
+                                }
+                            } catch (Exception ex) {
+                                LogUtil.error(getClass().getName(), ex, "");
+                            } finally {
+                                try {
+                                    disconnect(sc);
+                                } catch (Exception e) {
+                                    LogUtil.error(getClass().getName(), e, "");
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            stuckToolsRecover.setDaemon(true);
+            stuckToolsRecover.start();
         }
     }
 

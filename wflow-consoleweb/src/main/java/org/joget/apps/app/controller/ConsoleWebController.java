@@ -3077,9 +3077,9 @@ public class ConsoleWebController {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                String id = obj.getString("id");
-                String key = obj.getString("key");
-                String value = obj.getString("value");
+                String id = obj.get("id").toString();
+                String key = obj.get("key").toString();
+                String value = obj.get("value").toString();
 
                 // check exist
                 Message m = messageDao.loadById(id, appDef);
@@ -4026,7 +4026,7 @@ public class ConsoleWebController {
                     
                     for (int i = 0; i < columns.length(); i++) {
                         JSONObject column = columns.getJSONObject(i);
-                        String name = column.getString(JsonUtil.PROPERTY_NAME);
+                        String name = column.get(JsonUtil.PROPERTY_NAME).toString();
                         
                         Map op = new HashMap();
                         op.put("value", name);

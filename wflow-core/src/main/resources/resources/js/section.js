@@ -217,8 +217,14 @@ VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
 };
 VisibilityMonitor.prototype.handleRadio = function(targetEl, names) {
     $.each(names, function(i) {
-        $("[name=" + names[i] + "][checked].section-visibility-disabled").removeProp("checked").prop("data-checked", "checked");
-        $("[name=" + names[i] + "][checked]:not(.section-visibility-disabled)").prop("checked", "checked");
-        $("[name=" + names[i] + "][data-checked]:not(.section-visibility-disabled)").removeProp("data-checked").prop("checked", "checked");
+        $("[name=" + names[i] + "][checked]").removeProp("checked").removeAttr("checked").attr("data-checked", "checked");
+        $("[name=" + names[i] + "][data-checked]").each(function(){
+            //check if not in visibility disabled section
+            if ($(this).closest(".form-section.section-visibility-hidden, .subform-section.section-visibility-hidden").length === 0) {
+                if ($(this).is("[data-checked]")) {
+                    $(this).removeProp("data-checked").prop("checked", "checked");
+                }
+            }
+        });
     });
 };
