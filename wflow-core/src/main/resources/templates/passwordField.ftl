@@ -19,11 +19,11 @@
             <div class="password-container">
                 <div class="password-wrapper">
                     <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" <#if element.properties.size?has_content>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
-                    <div class="password-meter" id="password-meter_${elementParamName!}">
-                        <div class="password-meter-bar" id="password-meter-bar_${elementParamName!}"></div>
+                    <div class="password-meter" id="password-meter_${elementParamName!}_${element.properties.elementUniqueKey!}">
+                        <div class="password-meter-bar" id="password-meter-bar_${elementParamName!}_${element.properties.elementUniqueKey!}"></div>
                     </div>
                 </div>
-                <div class="password-strength-text" id="strength-text_${elementParamName!}"></div>
+                <div class="password-strength-text" id="strength-text_${elementParamName!}_${element.properties.elementUniqueKey!}"></div>
             </div>
             <script>
                 $(document).ready(function(){

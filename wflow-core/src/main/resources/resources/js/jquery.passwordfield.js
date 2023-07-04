@@ -2,9 +2,9 @@
     $.fn.extend({
         passwordField : function(o){
             var input = $("#" + o.paramName + "_" + o.elementUniqueKey)
-              , meterContainer = $("#password-meter_" + o.paramName).get(0)
-              , meterBar = $("#password-meter-bar_" + o.paramName).get(0)
-              , strengthText = $("#strength-text_" + o.paramName).get(0)
+              , meterContainer = $("#password-meter_" + o.paramName + "_" + o.elementUniqueKey).get(0)
+              , meterBar = $("#password-meter-bar_" + o.paramName + "_" + o.elementUniqueKey).get(0)
+              , strengthText = $("#strength-text_" + o.paramName + "_" + o.elementUniqueKey).get(0)
               , meterBorderRadius = ["0", "0", input.css("border-radius"), input.css("border-radius")];
 
             var strengthMessages = {
