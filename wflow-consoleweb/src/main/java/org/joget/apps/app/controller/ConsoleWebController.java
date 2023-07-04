@@ -1631,7 +1631,7 @@ public class ConsoleWebController {
                 data.put("published", (appDef.isPublished()) ? "<span class=\"tick\"></span>" : "");
                 data.put("dateCreated", TimeZoneUtil.convertToTimeZone(appDef.getDateCreated(), null, AppUtil.getAppDateFormat()));
                 data.put("dateModified", TimeZoneUtil.convertToTimeZone(appDef.getDateModified(), null, AppUtil.getAppDateFormat()));
-                data.put("description", appDef.getDescription());
+                data.put("description", StringUtil.escapeString(appDef.getDescription(), StringUtil.TYPE_NL2BR));
                 jsonObject.accumulate("data", data);
             }
         }

@@ -34,7 +34,7 @@
                       fields="['version','published','description','dateCreated','dateModified']"
                       column1="{key: 'version', label: 'console.app.common.label.version', sortable: true}"
                       column2="{key: 'published', label: 'console.app.common.label.published', sortable: true, relaxed: true}"
-                      column3="{key: 'description', label: 'console.app.common.label.description', sortable: false}"                   
+                      column3="{key: 'description', label: 'console.app.common.label.description', sortable: false, relaxed: true}"                   
                       column4="{key: 'dateCreated', label: 'console.app.common.label.dateCreated', sortable: true}"
                       column5="{key: 'dateModified', label: 'console.app.common.label.dateModified', sortable: true}"
                       />
