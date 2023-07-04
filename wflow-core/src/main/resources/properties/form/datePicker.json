@@ -169,6 +169,16 @@
         control_use_regex: 'true'
     },
     {
+        name : 'disableWeekends',
+        label : '@@form.datepicker.disableWeekends@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'readonly',
         label : '@@form.datepicker.readonly@@',
         type : 'checkbox',

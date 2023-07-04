@@ -285,6 +285,19 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             if (!valid) {
                 formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.invalidFormat"));
             }
+
+            if (getPropertyString("disableWeekends").equals("true")) {
+                try {
+                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    Date date = display.parse(value);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+    
+                    if ((calendar.get(Calendar.DAY_OF_WEEK) == 1) || (calendar.get(Calendar.DAY_OF_WEEK) == 7)) {
+                        formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.weekend"));
+                    }
+                } catch (Exception e) { }
+            }
             
             Form form = null;
             if (!getPropertyString("startDateFieldId").isEmpty() ||

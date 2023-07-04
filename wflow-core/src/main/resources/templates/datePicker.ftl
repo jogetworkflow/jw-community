@@ -51,6 +51,9 @@
                         <#if isRTL!>
                             ,isRTL: true
                         </#if>
+                        <#if (element.properties.disableWeekends! == 'true')>
+                        ,beforeShowDay: $.datepicker.noWeekends
+                        </#if>
                         ,timeOnlyTitle : "@@form.datepicker.chooseTime@@"
                         ,timeText : "@@form.datepicker.time@@"
                         ,hourText : "@@form.datepicker.hour@@"
