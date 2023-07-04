@@ -5,7 +5,7 @@ AjaxComponent = {
      * Intialize the content to found ajax supported component and event listening component
      */
     initAjax : function(element) {
-        AjaxComponent.currentUrlEventListening = [];
+        AjaxComponent.unbindEvents();
         $(element).find("[data-ajax-component], [data-ajax-component][data-events-triggering], [data-ajax-component][data-events-listening]").each(function() {
             AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
@@ -727,6 +727,7 @@ AjaxComponent = {
         for (var i in AjaxComponent.currentUrlEventListening) {
             $("body").off(AjaxComponent.currentUrlEventListening[i]);
         }
+        AjaxComponent.currentUrlEventListening = [];
     },
     
     /*

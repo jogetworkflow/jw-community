@@ -51,6 +51,7 @@ AjaxUniversalTheme = {
     },
     
     callback : function(data) {
+        AjaxComponent.unbindEvents(); //remove all binded evernts
         AjaxUniversalTheme.clearDynamicElement();
         
         if (data.indexOf("ajaxtheme_loading_container") !== -1) {
