@@ -383,6 +383,17 @@ public class FormServiceImpl implements FormService {
             }
         }
         
+        //used to handle form menu stay after add new record submission, there is no id in query string to load the record.
+        if (formData.getPrimaryKeyValue() == null || formData.getPrimaryKeyValue().isEmpty()) {
+            if (formData.getRequestParameter(FormUtil.PROPERTY_ID) != null &&
+                        !formData.getRequestParameter(FormUtil.PROPERTY_ID).isEmpty()) {
+                formData.setPrimaryKeyValue(formData.getRequestParameter(FormUtil.PROPERTY_ID));
+            } else if (formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null &&
+                        !formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                formData.setPrimaryKeyValue(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID));
+            }
+        }
+        
         handleFiles(formData);
         handleErrors(formData);
         

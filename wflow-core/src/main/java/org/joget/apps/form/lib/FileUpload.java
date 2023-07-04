@@ -68,23 +68,24 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         // set value
         String[] values = FormUtil.getElementPropertyValues(this, formData);
         
-        //check is there a stored value
-        String storedValue = formData.getStoreBinderDataProperty(this);
-        if (storedValue != null) {
-            values = storedValue.split(";");
-        }
-        
-        
         Map<String, String> tempFilePaths = new LinkedHashMap<String, String>();
         Map<String, String> filePaths = new LinkedHashMap<String, String>();
         
         String primaryKeyValue = getPrimaryKeyValue(formData);
         String filePathPostfix = "_path";
         String id = FormUtil.getElementParameterName(this);
-        String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
-            
-        if (tempExisting != null && tempExisting.length > 0) {
-            values = tempExisting;
+        
+        //check is there a stored value
+        String storedValue = formData.getStoreBinderDataProperty(this);
+        if (storedValue != null) {
+            values = storedValue.split(";");
+        } else {
+            //if there is no stored value, get the temp files
+            String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
+
+            if (tempExisting != null && tempExisting.length > 0) {
+                values = tempExisting;
+            }
         }
         
         String formDefId = "";
