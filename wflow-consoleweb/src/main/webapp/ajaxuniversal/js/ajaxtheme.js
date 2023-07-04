@@ -53,6 +53,7 @@ AjaxUniversalTheme = {
     callback : function(data) {
         AjaxComponent.unbindEvents(); //remove all binded evernts
         AjaxUniversalTheme.clearDynamicElement();
+        AjaxUniversalTheme.updateLoginUrl();
         
         if (data.indexOf("ajaxtheme_loading_container") !== -1) {
             var html = $(data);
@@ -153,6 +154,37 @@ AjaxUniversalTheme = {
     /* remove all dynamic added elemetns of the page */
     clearDynamicElement : function() {
         $("#ajaxtheme_dynamic_elements_after_this").nextAll().remove();
+    },
+    
+    /* login url should follow current page url */
+    updateLoginUrl : function() {
+        if ($("a[href*='/web/ulogin/'], a[href*='/web/embed/ulogin/']").length > 0) {
+            $("a[href*='/web/ulogin/'], a[href*='/web/embed/ulogin/']").each(function(){
+                var href = $(this).attr("href");
+                var currentUrl = window.location.href;
+                
+                //if not same url, no need update the url if it is same menu
+                if (currentUrl.indexOf(href) === -1) {
+                    //remove menu id
+                    href = href.substring(0, href.lastIndexOf('/') + 1);
+                    
+                    var compareUrl = href.replace("/ulogin/", "/userview/");
+
+                    //if same UI view
+                    var index = currentUrl.indexOf(compareUrl);
+                    if (index !== -1) {
+                        href = href + currentUrl.substring(index + compareUrl.length);
+                        
+                        //remove query string
+                        if (href.indexOf("?") !== -1) {
+                            href = href.substring(0, href.indexOf("?")-1);
+                        }
+                        
+                        $(this).attr("href", href);
+                    }
+                }
+            });
+        }
     }
 };
 
