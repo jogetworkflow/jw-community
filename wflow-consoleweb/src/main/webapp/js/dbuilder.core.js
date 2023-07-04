@@ -772,9 +772,12 @@ DatalistBuilder = {
             ).error(
                 function () {
                     if (CustomBuilder.data.binder.className !== undefined && CustomBuilder.data.binder.className !== "") {
-                        alert(get_cbuilder_msg('dbuilder.errorRetrieveColumns'));
+                        CustomBuilder.showMessage(get_cbuilder_msg('dbuilder.errorRetrieveColumns'), "danger", true);
                     }
-                    wait.resolve();
+                    DatalistBuilder.retrieveColumnsCallback({
+                        sample : DatalistBuilder.sampleData,
+                        columns : []
+                    }, wait);
                 }
             );
         } else {
