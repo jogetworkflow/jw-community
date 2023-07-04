@@ -159,7 +159,7 @@
                 var column = list.columns[i];
                 columns.push(column);
             }
-
+            
             // get selected rows
             // formulate result
             var data = new Array();
@@ -181,7 +181,12 @@
                             var prop = columns[i].name;
                             var val = $('<div>'+$(col).html().replace(/<br class="nl2br"\s*[\/]*>/gi, "\n")+'</div>');
                             $(val).find(".label").remove();
-                            result[prop] = htmlDecode($(val).text());
+                            
+                            if ($(val).find("*").length > 0) { //check if html
+                                result[prop] = $(val).html();
+                            } else {
+                                result[prop] = htmlDecode($(val).text());
+                            }
                         }
                     }
             
