@@ -18,7 +18,7 @@
         <#if (element.properties.strengthChecker! == 'true') >
             <div class="password-container">
                 <div class="password-wrapper">
-                    <input id="${elementParamName!}" name="${elementParamName!}" type="password" <#if element.properties.size?has_content>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+                    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" <#if element.properties.size?has_content>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
                     <div class="password-meter" id="password-meter_${elementParamName!}">
                         <div class="password-meter-bar" id="password-meter-bar_${elementParamName!}"></div>
                     </div>
@@ -35,8 +35,9 @@
                         "form.passwordfield.strengthChecker.veryStrong": "@@form.passwordfield.strengthChecker.veryStrong@@"
                     }
                     
-                    $('${elementParamName!}').passwordField({
+                    $('${elementParamName!}_${element.properties.elementUniqueKey!}').passwordField({
                         paramName : "${elementParamName!}",
+                        elementUniqueKey : "${element.properties.elementUniqueKey!}",
                         messages : messages
                     });
                 });

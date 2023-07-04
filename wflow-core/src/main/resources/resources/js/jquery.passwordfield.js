@@ -1,7 +1,7 @@
 (function($){
     $.fn.extend({
         passwordField : function(o){
-            var input = $("#" + o.paramName)
+            var input = $("#" + o.paramName + "_" + o.elementUniqueKey)
               , meterContainer = $("#password-meter_" + o.paramName).get(0)
               , meterBar = $("#password-meter-bar_" + o.paramName).get(0)
               , strengthText = $("#strength-text_" + o.paramName).get(0)
