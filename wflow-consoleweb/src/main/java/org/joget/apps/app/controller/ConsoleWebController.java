@@ -1678,6 +1678,7 @@ public class ConsoleWebController {
         
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appDefinition", appDef);
+        map.addAttribute("saved", "");
         
         return "console/apps/note";
     }
@@ -1695,6 +1696,7 @@ public class ConsoleWebController {
             appDefinitionDao.merge(appDef);
         }
         map.addAttribute("appDefinition", appDef);
+        map.addAttribute("saved", "true");
 
         return "console/apps/note";
     }

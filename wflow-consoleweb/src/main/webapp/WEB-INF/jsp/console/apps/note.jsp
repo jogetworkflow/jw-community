@@ -60,6 +60,17 @@
             editor.getSession().on('change', function(){
                 textarea.val(editor.getSession().getValue());
             });
+            
+            if ("${saved}" === "true") {
+                if (window.top.CustomBuilder !== undefined) {
+                    window.top.CustomBuilder.showMessage("<ui:msgEscJS key="adv.tool.updated"/>" ,"success", true);
+                    if ($("#versionsView", window.top.document).length > 0) {
+                        $("#versionsView", window.top.document).remove();
+                    }
+                } else {
+                    alert("<ui:msgEscJS key="adv.tool.updated"/>");
+                }
+            }
         });
     </script>
 </div>  
