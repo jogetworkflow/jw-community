@@ -3,10 +3,8 @@
 }
 
 html {
-    overflow-x: hidden;
     -ms-overflow-style: none;
     overflow-y: auto;
-    height: 100%;
 }
 
 html.ismobile * {
@@ -21,13 +19,14 @@ body {
 
 body:not(.embeded) {
     width: 100%;
-    overflow-y: auto;
-    height: calc(100% - 65px);
     margin-top: 65px;
 }
 
+body:not(.embeded) #page {
+    width: 100%;
+}
+
 body.popupBody:not(.embeded) {
-    height: 100%;
     margin-top: 0px;
 }
 
@@ -36,8 +35,10 @@ body.popupBody:not(.embeded) {
         margin-top: 0px;
         height: 100%;
         box-sizing: border-box;
-        padding-top:65px;
         -webkit-overflow-scrolling: touch;
+    }
+    body:not(.embeded) #page {
+        padding-top:65px;
     }
     body.popupBody:not(.embeded) {
         padding-top:0px;
@@ -55,7 +56,7 @@ header.navbar {
     -moz-user-select: none;
     -ms-user-select: none;
     position: fixed;
-    z-index: 200;
+    z-index: 1400;
     width: 100%;
     left: 0;
     top: 0;
@@ -221,7 +222,7 @@ div#header-name img {
 
 header.navbar .header-nav{
     display: inline-block;
-    padding: 13px 0 9px;
+    padding: 13px 0 4px;
     float: right;
 }
 .rtl header.navbar .header-nav {
@@ -876,7 +877,11 @@ body#login #page > footer {
     body.horizontal_menu {
         height: auto;
         margin-top: 0px;
-        overflow-y: visible;
+        overflow: unset;
+    }
+    body.horizontal_menu #page {
+        overflow-y: unset;
+        height: unset;
     }
     body.horizontal_menu #main {
         margin-top: 0;
