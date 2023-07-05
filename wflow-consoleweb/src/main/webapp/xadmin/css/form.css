@@ -658,10 +658,13 @@ body.rtl .filter-cell input.hasDatepicker {
     padding-left: 40px;
     padding-right: auto;
 }
-body .hasDatepicker + a + .close-icon, body .hasDatepicker + img + .close-icon{
-    position: relative;
-    top: 5px;
-    left: 15px;
+body .hasDatepicker + a + .close-icon:after {
+    top: 0px;
+    margin-left: 25px;
+    margin-top: 8px;
+}
+body.rtl .hasDatepicker + a + .close-icon:after {
+    margin-right: 25px;
 }
 body .dataList .filter-cell .close-icon:after{
     right: 34px !important;
