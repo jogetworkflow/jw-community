@@ -307,8 +307,8 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.74</version>
-        </dependency>        
+            <version>9.0.76</version>
+        </dependency>      
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-jdbc</artifactId>
