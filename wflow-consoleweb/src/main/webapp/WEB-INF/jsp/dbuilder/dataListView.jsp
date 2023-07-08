@@ -279,6 +279,8 @@
             e.preventDefault();
             DataListUtil.submitForm(this);
         });
+        $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
+        $("form[name='form_${dataListId}'] button:not(.footable-button)").off("click");
         $("form[name='form_${dataListId}'] button:not(.footable-button)").on("click", function(){
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
