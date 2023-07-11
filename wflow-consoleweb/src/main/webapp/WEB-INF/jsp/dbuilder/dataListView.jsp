@@ -325,6 +325,7 @@
         $('.mobile_search_trigger').off("click").on("click", function(){
             $("#filters_${dataListId}").toggleClass("show");
         });
+        $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
         $("form[name='form_${dataListId}'] button").off("click");
         $("form[name='form_${dataListId}'] button").on("click", function(){
             var target = $(this).data("target");

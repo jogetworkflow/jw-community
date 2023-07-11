@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.displaytag.Messages;
 import org.displaytag.exception.BaseNestableJspTagException;
 import org.displaytag.exception.SeverityEnum;
@@ -119,11 +118,9 @@ public class CustomExcelHssfView implements BinaryExportView {
     }
 
     public void doExport(OutputStream out) throws JspException {
-        XSSFWorkbook wb_template = null;
         SXSSFWorkbook wb = null;
         try {
-            wb_template = new XSSFWorkbook();
-            wb = new SXSSFWorkbook(wb_template, 100, true); 
+            wb = new SXSSFWorkbook(100); 
             SXSSFSheet sheet = (SXSSFSheet) wb.createSheet("-");
             writer = new DataListExcelWriter(wb, sheet);
             
@@ -206,13 +203,9 @@ public class CustomExcelHssfView implements BinaryExportView {
             LogUtil.error(CustomExcelHssfView.class.getName(), e, "");
             throw new RuntimeException(e.getLocalizedMessage());
         } finally {
-            if (wb_template != null) {
-                try {
-                    wb_template.close();
-                } catch (Exception e) {}
-            }
             if (wb != null) {
                 try {
+                    wb.dispose(); //should call this to remove all temp file
                     wb.close();
                 } catch (Exception e) {}
             }
