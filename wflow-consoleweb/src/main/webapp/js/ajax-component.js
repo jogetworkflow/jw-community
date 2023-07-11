@@ -374,17 +374,35 @@ AjaxComponent = {
                 if (data.indexOf("<html>") !== -1 && data.indexOf("</html>") !== -1) {
                     //handle userview redirection with alert
                     if (data.indexOf("<div") === -1) {
-                        var part = AjaxComponent.getMsgAndRedirectUrl(data.substring(data.indexOf("alert")));
+                        var part = AjaxComponent.getMsgAndRedirectUrl(data);
                         if (part[0] !== "") {
                             alert(part[0]);
                         }
-
-                        //if redirect url is not same with current userview page
-                        if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                            AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
-                        } else {
-                            AjaxComponent.triggerEvents(contentConatiner, url, method);
-                            AjaxComponent.call(contentConatiner, part[1], "GET", null);
+                        if (part[2] === null) { //if no target winder, use current window
+                            //if redirect url is not same with current userview page
+                            if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
+                                AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
+                            } else {
+                                AjaxComponent.triggerEvents(contentConatiner, url, method);
+                                AjaxComponent.call(contentConatiner, part[1], "GET", null);
+                            }
+                        } else { //if target is top or parent window
+                            var win = part[2];
+                            if (part[1] === "") { // it is a reload when url is empty
+                                part[1] = win.location.href;
+                            }
+                            if(win["AjaxComponent"]){ //use ajax component to reload/redirect if exist
+                                if (part[1].indexOf("embed=false") !== -1) { //remove embed false url
+                                    part[1] = part[1].replace("embed=false", "");
+                                }
+                                win["AjaxComponent"].call($("#content.page_content", win["document"]), part[1], "GET", null);
+                            } else {
+                                win.location.href = part[1];
+                            }
+                            part[3] = true; //if the target is parent or top, always close popup if exist
+                        }
+                        if (part[3] === true && parent.PopupDialog) { 
+                            parent.PopupDialog.closeDialog();
                         }
                         return;
                     }
@@ -867,19 +885,45 @@ AjaxComponent = {
     },
     
     /*
-     * Extract out the alert message and redirect URL from HTML
+     * Extract out the alert message, redirect URL, target window & close popup flag from HTML
      */
-    getMsgAndRedirectUrl : function(content) {
-        var part = content.indexOf(".location") > 0?content.split(".location"):content.split("location.");
-        var msg = "";
-        if (content.indexOf("alert") !== -1) {
-            msg = part[0].match(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g)[0];
-            msg = msg.substring(1, msg.length - 1);
+    getMsgAndRedirectUrl: function(content) {
+        //get script
+        var index = content.indexOf("<script");
+        if (index !== -1) {
+            content = content.substring(content.indexOf(">", index) + 1, content.indexOf("</script>", index));
         }
-        var url = part[1].match(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g)[0];
-        url = url.substring(1, url.length - 1);
         
-        return [msg, url];
+        //split the content to get alert message and redirect url
+        var part = content.indexOf(".location") > 0 ? content.split(".location") : content.split("location.");
+        var regex = new RegExp(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g); //regex to extract string between " or ' char
+        var msg = "";
+        var url = "";
+        var target = null;
+        var closePopup = false;
+        if (content.indexOf("alert") !== -1) {
+            if (regex.test(part[0])) {
+                msg = part[0].match(regex)[0];
+                msg = msg.substring(1, msg.length - 1);
+            }
+        }
+        if (regex.test(part[1])) {
+            url = part[1].match(regex)[0];
+            url = url.substring(1, url.length - 1);
+        }
+        
+        //check redirection target
+        if (content.indexOf("top.window.location") !== -1 || content.indexOf("top.location") !== -1) {
+            target = top;
+        } else if (content.indexOf("parent.window.location") !== -1 || content.indexOf("parent.location") !== -1) {
+            target = parent;
+        }
+        
+        //check is there a script to close popup dialog
+        if (content.indexOf("parent.PopupDialog.closeDialog();") !== -1) {
+            closePopup = true;
+        }
+        return [msg, url, target, closePopup];
     },
     
     /*
