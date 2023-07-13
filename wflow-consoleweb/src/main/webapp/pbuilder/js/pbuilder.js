@@ -3675,6 +3675,14 @@ ProcessBuilder = {
         def[0].title = get_cbuilder_msg("pbuilder.label.processStartWhiteList");
         def[0].properties[0].options[0].label = get_cbuilder_msg("pbuilder.label.type.role");
         
+        //remove variable and performer from options
+        var i = def[0].properties[0].options.length;
+        while (i--) {
+            if (def[0].properties[0].options[i].value === "performer" || def[0].properties[0].options[i].value === "workflowVariable") { 
+                def[0].properties[0].options.splice(i, 1);
+            } 
+        }
+        
         def[0].properties.push({
             name: 'mapping_par_role',
             label: get_cbuilder_msg("pbuilder.label.type.role"),
