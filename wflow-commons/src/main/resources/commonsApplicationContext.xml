@@ -119,7 +119,7 @@
     <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="cache">
-            <ref local="longTermCache" />
+            <ref bean="longTermCache" />
         </property>
     </bean>
 
@@ -165,7 +165,7 @@
     <bean id="longTermCache" class="org.joget.commons.util.LongTermCache" depends-on="setupManager">
         <property name="setupManager" ref="setupManager"/>
         <property name="cacheObject">
-            <ref local="longTermCacheObject" />
+            <ref bean="longTermCacheObject" />
         </property>
     </bean>
     
