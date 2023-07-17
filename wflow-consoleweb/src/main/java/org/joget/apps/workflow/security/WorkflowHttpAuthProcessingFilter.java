@@ -69,14 +69,16 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 // reset profile and set hostname
                 HostManager.initHost();
             }
+            
+            // clear current user
+            workflowUserManager.clearCurrentThreadUser();
+            
+            //this should be after clearCurrentThreadUser, else the user object set when resolveLocale will be cleared.
             if (localeResolver != null) {
                 LocaleContext localeContext = localeResolver.resolveLocaleContext(request);
                 localeResolver.resolveLocale(request);
                 LocaleContextHolder.setLocaleContext(localeContext, true);
             }
-            
-            // clear current user
-            workflowUserManager.clearCurrentThreadUser();
             
             // init request
             AppUtil.initRequest();

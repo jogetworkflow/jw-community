@@ -4,6 +4,8 @@ import java.util.Collection;
 import org.joget.apps.app.model.AppDefinition;
 
 public interface AppDefinitionDao extends VersionedObjectDao<AppDefinition> {
+    
+    public AppDefCache getCache();
 
     public Long getPublishedVersion(String appId);
     

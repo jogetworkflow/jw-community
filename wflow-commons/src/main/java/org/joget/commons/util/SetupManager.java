@@ -61,7 +61,7 @@ public class SetupManager {
     }
 
     private SetupDao setupDao;
-
+    private SetupManagerHelper setupManagerHelper;
     private Cache cache;
 
     /**
@@ -86,6 +86,14 @@ public class SetupManager {
             }
         }
     }
+
+    public SetupManagerHelper getSetupManagerHelper() {
+        return setupManagerHelper;
+    }
+
+    public void setSetupManagerHelper(SetupManagerHelper setupManagerHelper) {
+        this.setupManagerHelper = setupManagerHelper;
+    }
     
     /**
      * Method used by system to refresh cache 
@@ -101,10 +109,27 @@ public class SetupManager {
                 for (Setting setting: settings) {
                     settingMap.put(setting.getProperty(), setting);
                 }
+                
+                getSetupManagerHelper().checkSettingChanges(settingMap);
+                
                 Element element = new Element(profile, settingMap);
                 cache.put(element);
             }
         }
+    }
+    
+    /**
+     * Create or update a system setting
+     * @param setting 
+     */
+    public void updateSetting(String property, String value) {
+        Setting setting = getSettingByProperty(property);
+        if (setting == null) {
+            setting = new Setting();
+            setting.setProperty(property);
+        }
+        setting.setValue(value);
+        saveSetting(setting);
     }
     
     /**

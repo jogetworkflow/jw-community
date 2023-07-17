@@ -40,6 +40,7 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.UidGenerator;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -189,7 +190,10 @@ public class AppUtil implements ApplicationContextAware {
             try {
                 versionLong = Long.parseLong(version);
             } catch (NumberFormatException e) {
-                // TODO: handle exception
+                // if version is not empty and not number, get published version, 
+                // issue is EnhancedWorkflowUserManager parsing the UI URL may not have version number, 
+                // the version is UI id
+                versionLong = -1l;
             } catch (NullPointerException e) {
                 // TODO: handle exception
             }
@@ -940,7 +944,7 @@ public class AppUtil implements ApplicationContextAware {
             try {
                 String appId = request.getParameterValues("__a_")[0];
                 String uId = request.getParameterValues("__u_")[0];
-
+                
                 if (!appId.isEmpty() && !uId.isEmpty()) {
                     UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
                     UserviewTheme theme = userviewService.getUserviewTheme(appId, uId);
@@ -971,7 +975,7 @@ public class AppUtil implements ApplicationContextAware {
                             if (css != null && !css.isEmpty()) {
                                 html += "<style type=\"text/css\">\n" + css + "\n</style>";
                             }
-
+                            
                             return html;
                         } else if (theme.getCss() != null) {
                             return "<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
@@ -1054,8 +1058,8 @@ public class AppUtil implements ApplicationContextAware {
         }
         if (appDef != null) {
             MessageDao messageDao = (MessageDao) getApplicationContext().getBean("messageDao");
-            Collection<Message> messageList = messageDao.getMessageList(null, currentLocale, appDef, null, null, null, null);
-            for (Message message : messageList) {
+            Map<String, Message> messageList = messageDao.getCachedMessageList(currentLocale, appDef);
+            for (Message message : messageList.values()) {
                 String key = message.getMessageKey();
                 String label = message.getMessage();
                 messageMap.put(key, label);
@@ -1084,7 +1088,13 @@ public class AppUtil implements ApplicationContextAware {
         return result;
     }
     
-/**
+    // static pattern so that cpu intensive compile is only done once
+    static Pattern appMessagePattern = Pattern.compile("((((['\"])label\\4\\s*:\\s*\\4)((?:\\\\\\4|(?:(?!\\4).))+)\\4)|(#i18n\\.([^#]+)#))");    
+    
+    // least recently used (LRU) cache to hold final content containing replaced messages
+    static Map<String, String> appMessageCache = Collections.synchronizedMap(new LRUMap<String, String>(200));
+    
+    /**
      * Replace all app-specific message in content
      *
      * @param label
@@ -1093,8 +1103,15 @@ public class AppUtil implements ApplicationContextAware {
     public static String replaceAppMessages(String content, String escapeType) {
         Map<String, String> appMessages = getAppMessageFromStore();
         if (appMessages != null) {
-            Pattern pattern = Pattern.compile("((((['\"])label\\4\\s*:\\s*\\4)((?:\\\\\\4|(?:(?!\\4).))+)\\4)|(#i18n\\.([^#]+)#))");
-            Matcher matcher = pattern.matcher(content);
+            // lookup from LRU cache
+            String appMessageContent = appMessages.toString() + "::" + content + "::" + escapeType;
+            String cacheKey = StringUtil.md5Base16Utf8(appMessageContent); // hash to minimize memory usage
+            String cachedContent = appMessageCache.get(cacheKey);
+            if (cachedContent != null) {
+                return cachedContent;
+            }
+            
+            Matcher matcher = appMessagePattern.matcher(content);
             String key = "", match = "";
             while (matcher.find()) {
                 match = matcher.group();
@@ -1117,6 +1134,8 @@ public class AppUtil implements ApplicationContextAware {
                     }
                 }
             }
+            // save into cache
+            appMessageCache.put(cacheKey, content);
         }
         return content;
     }

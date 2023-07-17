@@ -1,14 +1,16 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,10 +23,44 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     
     @Autowired
     AppDefinitionDao appDefinitionDao;
-        
+    
+    private AppDefCache cache;
+
+    public AppDefCache getCache() {
+        return cache;
+    }
+
+    public void setCache(AppDefCache cache) {
+        this.cache = cache;
+    }
+    
+    public String getCacheKey(String id, String appId, Long version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_PDP_"+id;
+    } 
+    
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
+    }
+    
+    @Override
+    public PluginDefaultProperties loadById(String id, AppDefinition appDefinition) {
+        String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
+        Element element = cache.get(cacheKey, appDefinition);
+
+        if (element == null) {
+            PluginDefaultProperties props = super.loadById(id, appDefinition);
+            
+            if (props != null) {
+                findSession().evict(props);
+            }
+            
+            element = new Element(cacheKey, (Serializable) props); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable
+            cache.put(element, appDefinition);
+            return props;
+        }else{
+            return (PluginDefaultProperties) element.getValue();
+        }
     }
 
     public Collection<PluginDefaultProperties> getPluginDefaultPropertiesList(String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
@@ -104,6 +140,9 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
             AppDevUtil.dirSyncAppPlugins(appDef);
         }
         
+        // remove from cache
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
+        
         return result;
     }
     
@@ -128,6 +167,8 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
                 super.delete(getEntityName(), obj);
                 appDefinitionDao.updateDateModified(appDef);
                 result = true;
+                
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
                 
                 if (!AppDevUtil.isGitDisabled()) {
                     appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());

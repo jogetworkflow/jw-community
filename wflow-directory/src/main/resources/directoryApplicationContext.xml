@@ -39,12 +39,17 @@
             </props>
         </property>
     </bean>
+
+    <bean id="userMetaDataDao" class="org.joget.directory.dao.UserMetaDataDaoImpl">
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
     
     <bean id="userDao" class="org.joget.directory.dao.UserDaoImpl">
         <property name="groupDao" ref="groupDao" />
         <property name="employmentDao" ref="employmentDao" />
         <property name="roleDao" ref="roleDao" />
         <property name="departmentDao" ref="departmentDao" />
+        <property name="userMetaDataDao" ref="userMetaDataDao" />
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
 
@@ -86,10 +91,6 @@
     </bean>
     
     <bean id="roleDao" class="org.joget.directory.dao.RoleDaoImpl">
-        <property name="sessionFactory" ref="directorySessionFactory" />
-    </bean>
-
-    <bean id="userMetaDataDao" class="org.joget.directory.dao.UserMetaDataDaoImpl">
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     

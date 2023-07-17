@@ -15,4 +15,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.joget"/>
 
+    <bean id="workflowHelper" class="org.joget.workflow.model.MockWorkflowHelperImpl">
+    </bean>
+    
 </beans>

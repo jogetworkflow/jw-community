@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -18,16 +17,16 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
 
     public static final String ENTITY_NAME = "UserviewDefinition";
 
-    private Cache cache;
+    private AppDefCache cache;
     
     @Autowired
     AppDefinitionDao appDefinitionDao;
 
-    public Cache getCache() {
+    public AppDefCache getCache() {
         return cache;
     }
 
-    public void setCache(Cache cache) {
+    public void setCache(AppDefCache cache) {
         this.cache = cache;
     }
     
@@ -73,14 +72,15 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
     @Override
     public UserviewDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey);
+        Element element = cache.get(cacheKey, appDefinition);
 
         if (element == null) {
             UserviewDefinition uvDef = super.loadById(id, appDefinition);
             
             if (uvDef != null) {
+                findSession().evict(uvDef);
                 element = new Element(cacheKey, (Serializable) uvDef);
-                cache.put(element);
+                cache.put(element, appDefinition);
             }
             return uvDef;
         }else{
@@ -128,7 +128,8 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
         }
         
         // remove from cache and save in db
-        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
+        
         return result;
     }
 
@@ -154,7 +155,7 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
                 appDefinitionDao.updateDateModified(appDef);
                 result = true;
                 
-                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
                 
                 if (!AppDevUtil.isGitDisabled()) {
                     // delete json

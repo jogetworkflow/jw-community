@@ -42,10 +42,12 @@ public class GroupDaoImpl extends AbstractSpringDao implements GroupDao {
     public Boolean deleteGroup(String id) {
         try {
             Group group = getGroup(id);
-            if (group != null && group.getUsers() != null) {
-                group.getUsers().clear();
+            if (group != null) {
+                if (group.getUsers() != null) {
+                    group.getUsers().clear();
+                }
+                delete("Group", group);
             }
-            delete("Group", group);
             return true;
         } catch (Exception e) {
             LogUtil.error(GroupDaoImpl.class.getName(), e, "Delete Group Error!");
