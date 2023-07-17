@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 public class TestAppService {
 
     protected final String TEST_APP_ID = "workflow_patterns";
-    protected final Long TEST_APP_VERSION = new Long(1);
+    protected final Long TEST_APP_VERSION = Long.valueOf(1);
     protected final String TEST_PACKAGE_ID = "workflow_patterns";
     protected final String TEST_PROCESS_DEF_ID = "WfBCP1_Sequence";
     protected final String TEST_ACTIVITY_DEF_ID = "A";
