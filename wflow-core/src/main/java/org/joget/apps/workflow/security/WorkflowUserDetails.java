@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.joget.directory.model.service.ExtUserDetails;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-public class WorkflowUserDetails implements UserDetails {
+public class WorkflowUserDetails implements ExtUserDetails {
 
     private User user;
     private Collection<GrantedAuthority> authorities = null;
