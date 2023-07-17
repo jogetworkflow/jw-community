@@ -21,6 +21,7 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
     private RoleDao roleDao;
     private EmploymentDao employmentDao;
     private DepartmentDao departmentDao;
+    private UserMetaDataDao userMetaDataDao;
 
     public DepartmentDao getDepartmentDao() {
         return departmentDao;
@@ -52,6 +53,14 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
+    }
+
+    public UserMetaDataDao getUserMetaDataDao() {
+        return userMetaDataDao;
+    }
+
+    public void setUserMetaDataDao(UserMetaDataDao userMetaDataDao) {
+        this.userMetaDataDao = userMetaDataDao;
     }
 
     public Boolean addUser(User user) {
@@ -122,8 +131,7 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
                 }
                 delete("User", user);
                 
-                UserMetaDataDao umdDao = (UserMetaDataDao) DirectoryUtil.getApplicationContext().getBean("userMetaDataDao");
-                umdDao.deleteUserMetaDatas(username);
+                userMetaDataDao.deleteUserMetaDatas(username);
             }
             return true;
         } catch (Exception e) {
