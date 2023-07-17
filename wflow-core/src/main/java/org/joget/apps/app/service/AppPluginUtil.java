@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
@@ -52,14 +53,9 @@ public class AppPluginUtil implements ApplicationContextAware {
     
     public static PluginDefaultProperties getPluginDefaultProperties(String id, AppDefinition appDef) {
         if (appDef != null) {
-            Collection<PluginDefaultProperties> list = appDef.getPluginDefaultPropertiesList();
-            if (list != null && !list.isEmpty()) {
-                for (PluginDefaultProperties p : list) {
-                    if (p.getId().equals(id)) {
-                        return p;
-                    }
-                }
-            }
+            //use dao to retrieve as there is cache implementation for it
+            PluginDefaultPropertiesDao dao = (PluginDefaultPropertiesDao) appContext.getBean("pluginDefaultPropertiesDao");
+            return dao.loadById(id, appDef);
         }
         return null;
     }

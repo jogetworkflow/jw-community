@@ -19,6 +19,12 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
     </bean>
+    
+    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
+        <property name="cacheObject">
+            <ref bean="fluCache" />
+        </property>
+    </bean>
 
     <bean id="userviewMenuCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
@@ -34,13 +40,9 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.CSS_CACHE"/>
     </bean>
-
-    <bean id="formColumnCacheBean" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-    </bean>
     
     <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache">
-        <property name="cache" ref="formColumnCacheBean"/>
+        <property name="cache" ref="longTermCache"/>
     </bean>
     
     <bean id="formSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
@@ -99,28 +101,28 @@
 
     <bean id="appDefinitionDao" class="org.joget.apps.app.dao.AppDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="formColumnCache" ref="formColumnCache" />
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="datalistDefinitionDao" class="org.joget.apps.app.dao.DatalistDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
     
     <bean id="builderDefinitionDao" class="org.joget.apps.app.dao.BuilderDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
@@ -130,7 +132,7 @@
 
     <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="cache" ref="fluCache" />
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl">
@@ -139,10 +141,12 @@
 
     <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="appFluCache" />
     </bean>
     
     <bean id="appResourceDao" class="org.joget.apps.app.dao.AppResourceDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">
@@ -253,7 +257,7 @@
 
     <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
     </bean>
-
+    
     <bean id="appPluginUtil" class="org.joget.apps.app.service.AppPluginUtil">
     </bean>
 
@@ -274,13 +278,16 @@
     <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
     </bean>
-    
+
     <bean
         class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass"
             value="org.springframework.security.core.context.SecurityContextHolder" />
         <property name="targetMethod" value="setStrategyName" />
         <property name="arguments" value="org.joget.apps.util.ThreadLocalSecurityContextHolderStrategy" />
+    </bean>
+            
+    <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl">
     </bean>
    
     <aop:config>

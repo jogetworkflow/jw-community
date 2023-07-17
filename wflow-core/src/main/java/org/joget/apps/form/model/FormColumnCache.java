@@ -1,8 +1,9 @@
 package org.joget.apps.form.model;
 
 import java.util.Collection;
-import net.sf.ehcache.Cache;
+import static org.joget.apps.form.dao.FormDataDaoImpl.FORM_PREFIX_TABLE_NAME;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LongTermCache;
 
 /**
  * Cache to store list of form column definitions for each table name i.e. tableName -> collection of columns
@@ -11,9 +12,9 @@ import org.joget.commons.util.DynamicDataSourceManager;
 public class FormColumnCache {
  
         
-    private Cache cache;
+    private LongTermCache cache;
     
-    public void setCache(Cache cache) {
+    public void setCache(LongTermCache cache) {
         this.cache = cache;
     }
     
@@ -43,11 +44,15 @@ public class FormColumnCache {
     }
     
     protected String getCacheKey(String tableName) {
-        String cacheKey = DynamicDataSourceManager.getCurrentProfile() + "_" + tableName;
+        // strip table prefix
+        if (tableName != null && tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
+            tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
+        }
+        String cacheKey = DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_COLUMNS_" + tableName;
         return cacheKey;
     }
-   
+    
     public void clear() {
-        cache.removeAll();
+        cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_COLUMNS_");
     }
 }

@@ -1,14 +1,16 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,9 +24,42 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     @Autowired
     AppService appService;
     
+    private AppDefCache cache;
+
+    public AppDefCache getCache() {
+        return cache;
+    }
+
+    public void setCache(AppDefCache cache) {
+        this.cache = cache;
+    }
+    
+    private String getCacheKey(String id, String appId, Long version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_RESOURCE_"+id;
+    } 
+    
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
+    }
+    
+    @Override
+    public AppResource loadById(String id, AppDefinition appDefinition) {
+        String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
+        Element element = cache.get(cacheKey, appDefinition);
+
+        if (element == null) {
+            AppResource r = super.loadById(id, appDefinition);
+            
+            if (r != null) {
+                findSession().evict(r);
+                element = new Element(cacheKey, (Serializable) r);
+                cache.put(element, appDefinition);
+            }
+            return r;
+        }else{
+            return (AppResource) element.getValue();
+        }
     }
     
     public Collection<AppResource> getResources(String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows) {
@@ -75,6 +110,8 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
                 super.delete(getEntityName(), obj);
                 appDefinitionDao.updateDateModified(appDef);
                 
+                cache.remove(getCacheKey(filename, appDef.getId(), appDef.getVersion()), appDef);
+                
                 // update app def
                 appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), false);
                 
@@ -99,8 +136,10 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean update(AppResource object) {
-        object.getAppDefinition().setDateModified(new Date());
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         boolean result = super.update(object);
+        
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         
         if (!AppDevUtil.isGitDisabled()) {
             // save and commit app definition
@@ -118,7 +157,7 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean add(AppResource object) {
-        object.getAppDefinition().setDateModified(new Date());
+        appDefinitionDao.updateDateModified(object.getAppDefinition());
         boolean result = super.add(object);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {

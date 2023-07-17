@@ -50,7 +50,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
-import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -60,6 +59,7 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.aspectj.lang.NoAspectBoundException;
+import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -370,7 +370,7 @@ public class PluginManager implements ApplicationContextAware {
                 newBundle = null;
             } else {
                 newBundle.update();
-            }
+            }  
             // clear cache
             clearCache();
             return newBundle;
@@ -584,7 +584,7 @@ public class PluginManager implements ApplicationContextAware {
     protected String getUploadDir() {
         return getBaseDirectory();
     }
-
+    
     /**
      * Install a new plugin
      * @return
@@ -1101,14 +1101,21 @@ public class PluginManager implements ApplicationContextAware {
 
             for (String key : keyList) {
                 String tempKey = key.replaceAll("@@", "");
-                String label = null;
+                String label = ResourceBundleUtil.getMessage(tempKey);
 
                 if (bundle != null && bundle.containsKey(tempKey)) {
-                    label = bundle.getString(tempKey);
-                } else if (ResourceBundleUtil.getMessage(tempKey) != null) {
-                    label = ResourceBundleUtil.getMessage(tempKey);
+                    if (label == null) {
+                        label = bundle.getString(tempKey);
+                    } else {
+                        //check if it is a custom message from platform translation, if not, using message from bundle
+                        ResourceBundleMessageDao resourceBundleMessageDao = (ResourceBundleMessageDao) applicationContext.getBean("resourceBundleMessageDao");
+                        Locale locale = LocaleContextHolder.getLocale();
+                        if (resourceBundleMessageDao.getMessage(tempKey, locale.toString()) == null) {
+                            label = bundle.getString(tempKey);
+                        }
+                    }
                 }
-
+                
                 if (label != null) {
                     if (ESCAPE_JAVASCRIPT.equals(escapeType)) {
                         label = StringEscapeUtils.escapeJavaScript(label);

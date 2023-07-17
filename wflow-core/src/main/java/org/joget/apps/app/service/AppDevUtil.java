@@ -1481,7 +1481,6 @@ public class AppDevUtil {
     }    
     
     public static AppDefinition dirSyncApp(String appId, Long appVersion) throws IOException, GitAPIException, URISyntaxException {
-        AppDefinition updatedAppDef = null;
         if (appVersion == null) {
             return null;
         }
@@ -1494,6 +1493,17 @@ public class AppDevUtil {
             appDef = AppDevUtil.createDummyAppDefinition(appId, appVersion);
             isAppDefExist = false;
         }
+        
+        return dirSyncApp(appDef, isAppDefExist);
+    }
+    
+    public static AppDefinition dirSyncApp(AppDefinition appDef) throws IOException, GitAPIException, URISyntaxException {
+        return dirSyncApp(appDef, false);
+    }
+    
+    public static AppDefinition dirSyncApp(AppDefinition appDef, boolean isAppDefExist) throws IOException, GitAPIException, URISyntaxException {
+        AppDefinition updatedAppDef = null;
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
         
         File projectDir = null;
         if (appDef.getVersion() != null) {
@@ -1509,7 +1519,7 @@ public class AppDevUtil {
             //if not new app or during setup & not current userview app id, run it in background
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (isAppDefExist && !(request != null && 
-                    (request.getRequestURI().contains("/userview/"+appId+"/") || 
+                    (request.getRequestURI().contains("/userview/"+appDef.getAppId()+"/") || 
                      request.getRequestURI().contains("/setup/init") || 
                      request.getRequestURI().contains("/web/desktop")))) {
                 // first time init project files in background

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -24,13 +23,13 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Autowired
     AppDefinitionDao appDefinitionDao;
     
-    private Cache cache;
+    private AppDefCache cache;
 
-    public Cache getCache() {
+    public AppDefCache getCache() {
         return cache;
     }
 
-    public void setCache(Cache cache) {
+    public void setCache(AppDefCache cache) {
         this.cache = cache;
     }
     
@@ -88,14 +87,15 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public BuilderDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey);
+        Element element = cache.get(cacheKey, appDefinition);
 
         if (element == null) {
             BuilderDefinition def = super.loadById(id, appDefinition);
             
             if (def != null) {
+                findSession().evict(def);
                 element = new Element(cacheKey, (Serializable) def);
-                cache.put(element);
+                cache.put(element, appDefinition);
             }
             return def;
         }else{
@@ -142,19 +142,21 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             ((CustomBuilderCallback) builder).updateDefinition(object);
         }
         
-        // save json
-        String type = SecurityUtil.validateStringInput(object.getType());
-        String id = SecurityUtil.validateStringInput(object.getId());
-        String filename = "builder/" + type + "/" + id + ".json";
-        String json = AppDevUtil.formatJson(object.getJson());
-        String commitMessage = "Update " + type + " " + id;
-        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String type = SecurityUtil.validateStringInput(object.getType());
+            String id = SecurityUtil.validateStringInput(object.getId());
+            String filename = "builder/" + type + "/" + id + ".json";
+            String json = AppDevUtil.formatJson(object.getJson());
+            String commitMessage = "Update " + type + " " + id;
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
-        // sync app plugins
-        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        }
         
         // remove from cache
-        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         return result;
     }
 
@@ -185,15 +187,17 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
                     ((CustomBuilderCallback) builder).deleteDefinition(obj);
                 }
                 
-                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
                 
-                // remove json
-                String filename = "builder/" + obj.getType() + "/" + id + ".json";
-                String commitMessage = "Delete " + obj.getType() + " " + id;
-                AppDevUtil.fileDelete(appDef, filename, commitMessage);
+                if (!AppDevUtil.isGitDisabled()) {
+                    // remove json
+                    String filename = "builder/" + obj.getType() + "/" + id + ".json";
+                    String commitMessage = "Delete " + obj.getType() + " " + id;
+                    AppDevUtil.fileDelete(appDef, filename, commitMessage);
 
-                // sync app plugins
-                AppDevUtil.dirSyncAppPlugins(appDef);
+                    // sync app plugins
+                    AppDevUtil.dirSyncAppPlugins(appDef);
+                }
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

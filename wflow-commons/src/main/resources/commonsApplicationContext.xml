@@ -116,7 +116,7 @@
     <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="cache">
-            <ref local="resourceBundleMessageCache" />
+            <ref local="longTermCache" />
         </property>
     </bean>
 
@@ -126,9 +126,13 @@
     <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
     </bean>
+    
+    <bean id="setupManagerHelper" class="org.joget.commons.util.SetupManagerHelperImpl">
+    </bean>
 
     <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="setupDao" ref="setupDao"/>
+        <property name="setupManagerHelper" ref="setupManagerHelper"/>
         <property name="cache">
             <ref local="setupManagerCache" />
         </property>
@@ -148,6 +152,18 @@
     <bean id="setupManagerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
+    </bean>
+    
+    <bean id="longTermCacheObject" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.RBM_CACHE"/>
+    </bean>
+    
+    <bean id="longTermCache" class="org.joget.commons.util.LongTermCache" depends-on="setupManager">
+        <property name="setupManager" ref="setupManager"/>
+        <property name="cacheObject">
+            <ref local="longTermCacheObject" />
+        </property>
     </bean>
     
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
