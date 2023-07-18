@@ -2,6 +2,50 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.4
+=====
+007c9d97c Fixed: wflow-consoleweb - Universal/Progressive Theme - Correction for 45f3d29. @8.0-SNAPSHOT
+8246c190f Modified: wflow-consoleweb - Process Builder - Start process whitelist having wrong type options. 8.0-SNAPSHOT
+820998042 Fixed: wflow-commons - CSRF - Disable CSRF throw exception. @8.0-SNAPSHOT
+82e1cdba4 Fixed: wflow-consoleweb - Ajax Theme - Redirection & close popup dialog not working correctly. T2676  @8.0-SNAPSHOT
+1ccefabaa Fixed: wflow-core - List - Improve excel export performance. T2669 @7.0-SNAPSHOT
+4b8969d7a Modified: jw-community - Update Apache Tomcat & Apache Tomcat JDBC to 9.0.76. @8.0-SNAPSHOT
+6580ad476 Modified: jw-community - Update to bcmail-jdk18on 1.75, bcprov-jdk18on 1.75 & bcpkix-jdk18on 1.75. @8.0-SNAPSHOT
+c33f3cb9a Fixed: wflow-consoleweb - Update tinymce to 6.5.1. @8.0-SNAPSHOT
+2e1dc0820 Fixed: wflow-consoleweb - App Composer - Notes in app versions is not refresh after update. @8.0-SNAPSHOT
+197c3f4e5 Fixed: wflow-consoleweb - App Version - Notes can't display multi lines text correctly. @8.0-SNAPSHOT
+195e03a2f Fixed: wflow-consoleweb - List - Regression of f9cbcd9f causing HTML value can't render correctly. @8.0-SNAPSHOT
+10d5475e0 Fixed: wflow-consoleweb - AJAX Theme - Login redirection to same page is not working. @8.0-SNAPSHOT
+af739e70a Fixed: wflow-consoleweb - AJAX Theme - AJAX event is not unbind when change page. @8.0-SNAPSHOT
+988e138ab Fixed: wflow-consoleweb - List Builder - Incomplete/incorrect SQL query in Database SQL Query data source causing all columns get removed.  @8.0-SNAPSHOT
+9756e9d8e Fixed: wflow-core - Form Menu/File Upload - Does not populate form correctly after add record submission and stay without redirection. @8.0-SNAPSHOT
+20bfd9d29 Added: wflow-consoleweb/wflow-core - Date Picker - Added an option to disable weekends in the datepicker. @8.0-SNAPSHOT
+59b437953 Fixed: wflow-wfengine - Subflow - Show next assignment form broken. T2624 @8.0-SNAPSHOT
+547f8aaa1 Fixed: wflow-core - Export App - Can't export group used in participant mapping. T2644 @8.0-SNAPSHOT
+6761f3079 Fixed: wflow-wfengine - Workflow Manager - Auto recover stuck tools during server startup. @7.0-SNAPSHOT
+c236ebea8 Fixed: wflow-consoleweb/wflow-core - Date Picker - Input box will look like it's disabled only when it's readonly. @8.0-SNAPSHOT
+e5d9a2863 Fixed: wflow-core - UI - Cache does not work for page component and dashboard. @8.0-SNAPSHOT
+caccd7a0a Fixed: wflow-core - Section Visibility Control - Readonly radio button is not populating value correctly. @7.0-SNAPSHOT
+d9b1f1fcb Fixed: wflow-wfengine - Process Archive - Wrong subflow id is stored. @8.0-SNAPSHOT
+eb56064fb Fixed: wflow-core - Process Data Collector - Thrown exception when process completed and archive feature is used. @8.0-SNAPSHOT
+bb7b343ad Added: wflow-consolweb - Added Description for Beanshell Process tool - Script. @8.0-SNAPSHOT
+7f51d6620 Fixed: wflow-consoleweb/wflow-core - Fixed accessibility issues. @8.0-SNAPSHOT
+6a803f01a Fixed: wflow-core - Form - Primary key is not passed in the single row rows object for form store plugin storing. @7.0-SNAPSHOT
+86bcaa523 Modified: wflow-consoleweb - Properties Editor - Support inline & picker mode for image radio field type. @8.0-SNAPSHOT
+2a95faa8e Fixed: wflow-consoleweb - List - Classic Table - Show/Hide columns control does not work correctly in mobile. @8.0-SNAPSHOT
+5e1a2fd49 Fixed: wflow-core - Custom HTML - Auto save input field value can't handle empty checkbox value correctly. @8.0-SNAPSHOT
+2a272f84d Fixed: wflow-consoleweb - Popup Dialog - Close dialog confirmation message is not i18n supported. @8.0-SNAPSHOT
+2c4c8c8e0 Fixed: wflow-core - Duplicate UI - UI name is not replace correctly. @8.0-SNAPSHOT
+1497ce301 Fixed: wflow-core - Clone App - UI id is wrongly replaced with app id. @8.0-SNAPSHOT
+9f9f295f5 Fixed: wflow-consoleweb - Date Picker - Readjusted positioning of the buttons in RTL mode. @8.0-SNAPSHOT
+ee0a4582a Fixed: wflow-consoleweb - Date Picker - Centering the reset button in Xadmin theme. @8.0-SNAPSHOT
+38150951f Fixed: wflow-consoleweb - Date Picker - On hover CSS for reset button and pointer cursor for calendar button. @8.0-SNAPSHOT
+2407cc98c Fixed: wflow-core - Date Picker - Date Picker will be hidden when zooming or resizing browser window. @8.0-SNAPSHOT
+079cb513a Fixed: wflow-consoleweb - Advanced Grid - Add and Delete buttons have no padding. @8.0-SNAPSHOT
+058aa7db9 Fixed: wflow-consoleweb/wflow-core - Popup Select Box - Select button's label isn't centered & Button has no hover CSS in X-admin. @8.0-SNAPSHOT
+34c1bd3f4 Fixed: wflow-consoleweb - Date Picker - Next and Prev buttons' cursor not pointer when hovering. @8.0-SNAPSHOT
+dfaa1ee12 Added: wflow-core/wflow-consoleweb - Password Field - Added a password strength checker. @8.0-SNAPSHOT
+
 8.0.3
 =====
 06acdd626 Fixed: wflow-consoleweb - UI - Auto maximize popup within another popup can't work in Safari. @8.0-SNAPSHOT
