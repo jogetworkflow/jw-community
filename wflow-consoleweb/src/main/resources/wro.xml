@@ -182,4 +182,8 @@
         <js>/js/quill/image-resize.min.js</js>
         <js>/js/quill/quill.switch.js</js>
     </group>  
+    <group name="darkTheme">
+        <css>/css/darkTheme.css</css>
+        <js>/js/darkTheme.js</js>
+    </group> 
 </groups> 

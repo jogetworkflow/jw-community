@@ -416,3 +416,19 @@ body#login #loginForm table td input[type='submit']{
 .fc-theme-bootstrap > .fc-view-harness{
     background-color: var(--theme-content-background, #ffffff);
 }
+
+body.dark-mode .dataList th, body.dark-mode .dataList td {
+    border: 1px solid var(--theme-border-color);
+}
+body.dark-mode .dataList div.exportlinks {
+    background: var(--theme-secondary-button-bg);
+}
+body.dark-mode .breadcrumb li a {
+    color: var(--theme-link);
+}
+body.dark-mode .userProfile-body-content .userProfile-body-header {
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+body.dark-mode .userProfile-body-content {
+    border: 1px solid var(--theme-border-color) !important;
+}

@@ -642,3 +642,48 @@ body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover
 body#design_app #tutorial_section{
     display: none;
 }
+
+body.dark-mode#home{
+    background-color: var(--theme-background) !important;
+}
+body.dark-mode#home #pc- {
+    background-color: var(--theme-content-background) !important;
+    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%), url(/jw/images/appCenterBanner.png);
+}
+body.dark-mode .dataList#dataList_applist .appIcon{
+    background-color: var(--theme-background) !important;
+}
+body.dark-mode .dataList#dataList_applist .appIcon:hover{
+    border: 1px solid var(--theme-border-color) !important;
+    transition: background-color 0.2s ease-out !important;
+}
+body.dark-mode .dataList#dataList_applist .column_1{
+    color: var(--theme-sidebar-badge-text) !important;
+}
+body.dark-mode#templates #content .card-body{
+    background-color: var(--theme-content-background);
+}
+body.dark-mode .dataList#dataList_list_appList .column_0{
+    color: var(--theme-sidebar-badge-text) !important;
+}
+body.dark-mode #dataList_list_appList .column_desc:after {
+    background-image: linear-gradient(to top, #1e1e2d, #ffffff00);
+}
+body.dark-mode #dataList_list_appList > form:nth-child(6) > div > div.cards.row > div > div > div > div.card-actions > a.ph_rowActions.rowAction_1.rowaction_body.body_rowAction_1.btn.btn-sm.btn-light.link_rowAction_1{
+    background-color: var(--theme-secondary-button-bg) !important;
+}
+body.dark-mode#design_app .card .column_name{
+    color: var(--theme-font-color, #fff);
+}
+body.dark-mode #home_column .ContainerComponent{
+    background-color: transparent !important;
+}
+body.dark-mode#design_app .ContainerComponent{
+    background-color: var(--theme-content-background) !important;
+}
+body.dark-mode main-body-submessage{
+    color: var(--theme-font-color, #fff);
+}
+body.dark-mode #pc-AED245A047CB49A6405198CF2B1AFCE7{
+     border-color: var(--theme-border-color) !important;
+}

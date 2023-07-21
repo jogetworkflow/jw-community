@@ -180,6 +180,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             } 
             jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
             jsCssLink += getInternalJsCssLib(data);
+            if ("true".equals(getPropertyString("darkMode"))) {
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/darkTheme.js\" defer></script>\n";
+                jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/wro/darkTheme.css\"></link>\n";
+            }
             
             if (MobileUtil.isIE()) {
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/js/ie/fetch.js\"></script>\n";
@@ -510,5 +514,34 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             }
         }
         return html;
+    }
+    @Override
+   protected String getNavbar(Map<String, Object> data) {
+        String html = "<div class=\"nav-no-collapse header-nav\"><ul class=\"nav pull-right\">\n";
+        html += getHomeLink(data);
+        if ((Boolean) data.get("is_logged_in")) {
+            html += getInbox(data);
+        }
+        html += getShortcut(data);
+        if ("true".equals(getPropertyString("darkMode"))) {
+            html += getThemeSwitch(data);
+        }
+        html += getUserMenu(data);
+        html += "</ul></div>\n";
+        return html;
+    }
+    
+    protected String getThemeSwitch(Map<String, Object> data) {
+        return "<li class=\"theme-selection dropdown\">\n"
+                + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                + "	 <i class=\"zmdi zmdi-brightness-6\"></i>\n"
+                + "    </a>\n"
+                + "    <ul id=\"theme-selector\" class=\"dropdown-menu themes\">\n"
+                + "        <div id=\"dropdown-title\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.darkTheme.appearance") + "</span></div>\n"
+                + "        <li data-value=\"light\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.darkTheme.lightTheme") + "</span></li>\n"
+                + "        <li data-value=\"dark\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.darkTheme.darkTheme") + "</span></li>\n"
+                + "        <li data-value=\"auto\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.darkTheme.deviceTheme") + "</span></li>\n"
+                + "    </ul>\n"
+                + "<li>";
     }
 }
