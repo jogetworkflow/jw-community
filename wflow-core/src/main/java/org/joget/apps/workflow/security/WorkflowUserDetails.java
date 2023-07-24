@@ -51,6 +51,13 @@ public class WorkflowUserDetails implements ExtUserDetails {
     public User getUser() {
         return user;
     }
+    
+    public void updateUser(User updatedUser) {
+        //make sure it is same username before update
+        if (updatedUser != null && this.user.getUsername().equals(updatedUser.getUsername())) {
+            this.user = updatedUser;
+        }
+    }
 
     public String getPassword() {
         return user.getPassword();
