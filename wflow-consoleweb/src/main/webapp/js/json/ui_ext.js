@@ -47,6 +47,10 @@ JPopup = {
             }
         } catch (err) {}
         
+        if ($('iframe#' + id).length === 0 && JPopup.dialogboxes[id] !== undefined && JPopup.dialogboxes[id] !== null) {
+            delete JPopup.dialogboxes[id];
+        }
+        
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
             JPopup.create(id, title, width, height);
         }
