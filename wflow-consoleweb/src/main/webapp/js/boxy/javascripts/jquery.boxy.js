@@ -435,10 +435,11 @@ Boxy.prototype = {
             }
             this.modalBlackout = jQuery('<div class="boxy-modal-blackout"></div>')
                 .css({zIndex: Boxy._nextZ(),
-                      opacity: 0.7,
+                      opacity: 0, // Start with opacity 0 for animation
                       width: jQuery(document).width(),
                       height: jQuery(document).height()})
-                .appendTo(document.body);
+                .appendTo(document.body)
+                .animate({opacity: 0.7}, 300); // Animate the opacity to 0.7 in 300 milliseconds
             this.toTop();
             if (this.options.closeable) {
                 jQuery(document.body).bind('keypress.boxy', function(evt) {
@@ -450,7 +451,12 @@ Boxy.prototype = {
                 });
             }
         }
-        this.boxy.stop().css({opacity: 1}).show();
+         this.boxy.stop().css({
+            opacity: 0,
+            top: '-100%' // Place the modal above the viewport
+        }).show().animate({
+            opacity: 1
+        }, 300);
         this.visible = true;
         this._fire('afterShow');
         return this;

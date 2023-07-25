@@ -417,6 +417,11 @@ body#login #loginForm table td input[type='submit']{
     background-color: var(--theme-content-background, #ffffff);
 }
 
+body.popupBody .form-section-title, body.popupBody .subform-section-title {
+    color: var(--theme-font-color, #72777a) !important;
+    background: transparent;
+}
+
 body.dark-mode .dataList th, body.dark-mode .dataList td {
     border: 1px solid var(--theme-border-color);
 }

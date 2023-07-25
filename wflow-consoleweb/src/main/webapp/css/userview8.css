@@ -1107,10 +1107,10 @@ body.horizontal_menu #header-info{
 /* Popup dialog */
 .boxy-wrapper {
     display: block;
-    border-radius: 2px;
+    border-radius: .3rem;
     background: #fff;
     background-clip: padding-box;
-    box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+    border: 1px solid rgba(0,0,0,.2);
     overflow: hidden;
 }
 .boxy-wrapper tbody tr:nth-child(1),
@@ -1120,15 +1120,16 @@ body.horizontal_menu #header-info{
     display:none;
 }
 .boxy-wrapper .title-bar {
-    background-color: #efefef;
-    padding: 8px;
+    background-color: #fff !important;
+    padding: 1.2rem !important; 
+    border-bottom: 1px solid #e9ecef !important;
 }
 .boxy-wrapper .title-bar .close {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 15px !important;
+    right: 15px !important;
     color: rgba(0,0,0,.45);
-    font-size: 20px;
+    font-size: 20px !important;
 }
 .boxy-wrapper iframe {
     border: 0;
@@ -1842,4 +1843,18 @@ body #ui-datepicker-div {
     font-family: 'Font Awesome 5 Free';
     font-size: 20px;
     font-weight: 800;
+}
+body.popupBody #section-actions .form-cell, body.popupBody .dataList .actions{
+    box-shadow: none;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: #fff;
+    padding: 15px 15px;
+    border-top: 1px solid #e9ecef;
+    text-align: right;
+}
+body.popupBody #section-actions .form-cell input, body.popupBody .dataList .actions input{
+    float: right;
 }

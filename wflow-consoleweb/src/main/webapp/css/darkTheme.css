@@ -271,7 +271,8 @@ body.dark-mode footer {
 }
 
 body.dark-mode .boxy-wrapper .title-bar {
-    background-color: var(--theme-background)
+    background-color: var(--theme-content-background) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
 }
 
 body.dark-mode .boxy-wrapper .title-bar .close {
@@ -821,4 +822,8 @@ body.dark-mode .table {
 body.dark-mode .table-hover tbody tr:hover {
     color: var(--theme-font-color);
     background-color: var(--theme-background);
+}
+body.popupBody.dark-mode #section-actions .form-cell, body.popupBody.dark-mode .dataList .actions{
+    background-color: var(--theme-content-background);
+    border-top: 1px solid var(--theme-border-color);
 }
