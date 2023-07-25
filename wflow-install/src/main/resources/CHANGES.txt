@@ -3,6 +3,27 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.39
+=================
+9eaa54dbe Modified: jw-community - App - Modified cache implementation. @7.0-SNAPSHOT
+30aec1ef4 Fixed: wflow-directory - Reduce unnecessary calls to retrieve user & role data. 7.0-SNAPSHOT
+1ccefabaa Fixed: wflow-core - List - Improve excel export performance. T2669 @7.0-SNAPSHOT
+1a174ad97 Fixed: wflow-consoleweb - Universal/Progressive Theme - Spreadsheet dropdown position is wrong when scroll page. T2643 @7.0-SNAPSHOT
+6761f3079 Fixed: wflow-wfengine - Workflow Manager - Auto recover stuck tools during server startup. @7.0-SNAPSHOT
+caccd7a0a Fixed: wflow-core - Section Visibility Control - Readonly radio button is not populating value correctly. @7.0-SNAPSHOT
+6a803f01a Fixed: wflow-core - Form - Primary key is not passed in the single row rows object for form store plugin storing. @7.0-SNAPSHOT
+3079c3dbc Fixed: wflow-consoleweb - Text Field/Password/Date Picker - Correction for 943ebf80. @7.0-SNAPSHOT
+dbc437beb Fixed: wflow-commons - ImageUpload - Fixed Image Upload error "Tag 'Orientation' has not been set". @7.0-SNAPSHOT #T2207
+b4d77eca1 Fixed: wflow-core - Process Mapper - Can't edit due to mapping is missing.  @7.0-SNAPSHOT
+822b932e3 Fixed: wflow-core - Form PDF - Image not included in PDF when context path is root. T2286 @7.0-SNAPSHOT
+f8ea57cff Fixed: wflow-core - Image Upload - Delete Actual File During Overwrite or Removal overwrites any file name uploaded with the same name. @7.0-SNAPSHOT
+b50a0da43 Fixed: wflow-core - Image Upload - 2x same image filename uploaded only display one image after save. @7.0-SNAPSHOT
+072cfccb4 Fixed: wflow-consoleweb - FileUpload/Image Upload Field - Fixed when number as first character in field id, will affect the download/viewing of file attachment. @7.0-SNAPSHOT
+f45ee46c6 Fixed: wflow-consoleweb - System admin role is not handled correctly. @7.0-SNAPSHOT
+3114cbfb1 Fixed: wflow-core - App - Date Modified of form, list, UI & addon builder definitions are not saved. T2152 @7.0-SNAPSHOT
+943ebf80b Fixed: wflow-consoleweb - Universal/Progressive/X-admin Theme - Text field & password field are not following size setting. T2184 @7.0-SNAPSHOT
+4193d4b6c Fixed: wflow-consoleweb - List - Showing error page when enable session to store list state and open in popup dialog. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.38
 =================
 799242030 Fixed: wflow-consoleweb - Process Mapper - Missing close button on popup dialog. @7.0-SNAPSHOT
