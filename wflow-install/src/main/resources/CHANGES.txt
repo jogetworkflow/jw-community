@@ -3,6 +3,43 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.39
+=================
+11a5a4c1f Modified: jw-community - App - Modified cache implementation. @7.0-SNAPSHOT
+30aec1ef4 Fixed: wflow-directory - Reduce unnecessary calls to retrieve user & role data. 7.0-SNAPSHOT
+a85c7a417 Modified: jw-community - Update Apache Tomcat & Apache Tomcat JDBC to 9.0.76. @7.1-SNAPSHOT
+1ccefabaa Fixed: wflow-core - List - Improve excel export performance. T2669 @7.0-SNAPSHOT
+1a174ad97 Fixed: wflow-consoleweb - Universal/Progressive Theme - Spreadsheet dropdown position is wrong when scroll page. T2643 @7.0-SNAPSHOT
+6761f3079 Fixed: wflow-wfengine - Workflow Manager - Auto recover stuck tools during server startup. @7.0-SNAPSHOT
+caccd7a0a Fixed: wflow-core - Section Visibility Control - Readonly radio button is not populating value correctly. @7.0-SNAPSHOT
+6a803f01a Fixed: wflow-core - Form - Primary key is not passed in the single row rows object for form store plugin storing. @7.0-SNAPSHOT
+e8b86f6ea Modified: jw-community - Update org.json:json to 20230618. @7.1-SNAPSHOT
+36d1ef478 Modified: jw-community - Update to bcmail-jdk18on 1.75, bcprov-jdk18on 1.75 & bcpkix-jdk18on 1.75. @7.1-SNAPSHOT
+3079c3dbc Fixed: wflow-consoleweb - Text Field/Password/Date Picker - Correction for 943ebf80. @7.0-SNAPSHOT
+f609ef3a5 Modified: jw-community - Update jQuery UI to 1.13.2. @7.1-SNAPSHOT
+15cb5a418 Modified: jw-community - Update mysql-connector-java to 9.0.74. @7.1-SNAPSHOT
+27af70d38 Modified: jw-community - Update JGit to 6.5.0.202303070854-r. @7.1-SNAPSHOT
+55cf3729c Modified: jw-community - Update tensorflow-core-platform to 0.4.1 & protobuf-java to 3.21.9. @7.1-SNAPSHOT
+22a94ae8e Modified: jw-community - Update Jose4j to 0.9.3. @7.1-SNAPSHOT
+dd2e5d891 Modified: jw-community - Update Guava to 32.0.0-jre. @7.1-SNAPSHOT
+956c95e8e Modified: jw-community - Update JUnit to 4.13.2. @7.1-SNAPSHOT
+7ab129ea5 Modified: jw-community - Update org.json:json to 20230227. @7.1-SNAPSHOT
+075d7199b Modified: jw-community - Update poi to 5.2.3. @7.1-SNAPSHOT
+2c9c58b26 Modified: jw-community - Update AspectJ to 1.9.7. @7.1-SNAPSHOT
+446db1cf3 Modified: jw-community - Update csrfguard 4.2.0 & commons-lang3 3.12.0 @7.1-SNAPSHOT
+7a934680e Modified: jw-community - Update Spring Framework 5.3.27, Spring Security 5.7.8, Spring LDAP 2.4.1, Hibernate 5.6.7.Final, bcmail-jdk15on 1.70, bcprov-jdk15on 1.70 & bcpkix-jdk15on 1.70 @7.1-SNAPSHOT
+dbc437beb Fixed: wflow-commons - ImageUpload - Fixed Image Upload error "Tag 'Orientation' has not been set". @7.0-SNAPSHOT #T2207
+b4d77eca1 Fixed: wflow-core - Process Mapper - Can't edit due to mapping is missing.  @7.0-SNAPSHOT
+822b932e3 Fixed: wflow-core - Form PDF - Image not included in PDF when context path is root. T2286 @7.0-SNAPSHOT
+f8ea57cff Fixed: wflow-core - Image Upload - Delete Actual File During Overwrite or Removal overwrites any file name uploaded with the same name. @7.0-SNAPSHOT
+b50a0da43 Fixed: wflow-core - Image Upload - 2x same image filename uploaded only display one image after save. @7.0-SNAPSHOT
+072cfccb4 Fixed: wflow-consoleweb - FileUpload/Image Upload Field - Fixed when number as first character in field id, will affect the download/viewing of file attachment. @7.0-SNAPSHOT
+f45ee46c6 Fixed: wflow-consoleweb - System admin role is not handled correctly. @7.0-SNAPSHOT
+3114cbfb1 Fixed: wflow-core - App - Date Modified of form, list, UI & addon builder definitions are not saved. T2152 @7.0-SNAPSHOT
+943ebf80b Fixed: wflow-consoleweb - Universal/Progressive/X-admin Theme - Text field & password field are not following size setting. T2184 @7.0-SNAPSHOT
+4193d4b6c Fixed: wflow-consoleweb - List - Showing error page when enable session to store list state and open in popup dialog. @7.0-SNAPSHOT
+5832d9eaa Fixed: wflow-core - Form/Run Process Menu - Field value passover redirection URL after submission is not handled correctly when field not exist. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.38
 =================
 799242030 Fixed: wflow-consoleweb - Process Mapper - Missing close button on popup dialog. @7.0-SNAPSHOT
