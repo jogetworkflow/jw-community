@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-core</artifactId>
     <packaging>jar</packaging>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.0.39</version>
     <name>wflow-core</name>
     <url>http://www.joget.org</url>
     <build>
