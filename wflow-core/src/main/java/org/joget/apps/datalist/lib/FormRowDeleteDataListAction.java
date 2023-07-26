@@ -75,8 +75,8 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     
     @Override
     public void setProperties(Map<String, Object> properties) {
-        super.setProperties(properties);
         properties.put("cssClasses", "btn-danger");
+        super.setProperties(properties);
     }
 
     @Transactional
