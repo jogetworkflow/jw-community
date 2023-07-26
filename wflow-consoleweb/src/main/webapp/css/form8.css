@@ -53,6 +53,7 @@
 .form-section + .form-section.no_label:not(#section-actions),
 .subform-section + .subform-section.no_label:not(#section-actions) {
     margin-top: -20px;
+    border-top: 0px;
 }
 .form-row > .form-column,
 .form-row > .subform-column {
@@ -860,7 +861,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     position: relative;
     min-width: 0;
     word-wrap: break-word;
-    background-color: transparent;
+    background-color: #fff;
     background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
