@@ -1858,3 +1858,8 @@ body.popupBody #section-actions .form-cell, body.popupBody .dataList .actions{
 body.popupBody #section-actions .form-cell input, body.popupBody .dataList .actions input{
     float: right;
 }
+#content .page-button-panel .page-button-prev.btn.button{
+    background: transparent;
+    color: var(--theme-button-bg, #0d6efd);
+    border: 1px solid var(--theme-button-bg, #0d6efd) !important;
+}
