@@ -728,6 +728,12 @@ ul.breadcrumb i.fa-angle-right{
     padding: 20px;
     color: var(--theme-content-color, var(--theme-font-color, #72777a));
 }
+#content .main-body-content.Form_Menu,
+#content .main-body-content.Run_Process_Menu{
+    background-color:transparent;
+    border: 0px;
+    padding: 0px;
+}
 #content .main-body-content + .main-body-content {
     margin-top: 20px;
 }
