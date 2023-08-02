@@ -46,6 +46,7 @@ body.dark-mode {
     --theme-sidebar-icon: #9D9DA6;
     --theme-sidebar-active-link: #009ef7;
     --theme-sidebar-active-icon: #009ef7;
+    --theme-sidebar-active-link-bg: #151521;
     --theme-sidebar-badge: #2A2A3C;
     --theme-button-bg: #009ef7;
     --theme-heading-bg: #1e1e2d;
@@ -132,8 +133,8 @@ body.dark-mode input[type=checkbox]:before,
 body.dark-mode input[type=radio]:before {
     content: "";
     display: block;
-    width: 13px;
-    height: 13px;
+    width: 15px;
+    height: 15px;
     top: 0;
     left: 0;
     border: 1px solid var(--theme-border-color);
@@ -158,8 +159,8 @@ body.dark-mode input[type=radio]:checked::after {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
     position: relative;
-    top: -12px;
-    left: 4px;
+    top: -13px;
+    left: 5px;
 }
 
 body.dark-mode input[type=radio]:before {
@@ -170,8 +171,8 @@ body.dark-mode input[type=radio]:checked::after {
     width: 3px;
     height: 3px;
     border: 3px solid var(--theme-font-color);
-    top: -9px;
-    left: 3.5px;
+    top: -10px;
+    left: 5px;
     border-radius: 55%;
 }
 
@@ -826,4 +827,7 @@ body.dark-mode .table-hover tbody tr:hover {
 body.popupBody.dark-mode #section-actions .form-cell, body.popupBody.dark-mode .dataList .actions{
     background-color: var(--theme-content-background);
     border-top: 1px solid var(--theme-border-color);
+}
+body.dark-mode #sidebar .nav > li > ul {
+    background: var(--theme-background);
 }

@@ -40,6 +40,7 @@ body#login #loginForm{
 }
 #sidebar .nav > li > a {
     padding: 15px 15px !important;
+    font-weight: 500;
 }
 #sidebar .nav-tabs.user-menu {
     margin-top: 20px;
@@ -408,6 +409,9 @@ html.adminBarShown {
 }
 body:not(.horizontal_menu) #navigation {
     width: 140px;
+}
+#navigation{
+    border-top: 0;
 }
 a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
     text-align: center;

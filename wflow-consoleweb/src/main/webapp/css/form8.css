@@ -1,5 +1,5 @@
 .form-container  {
-    font-size: 13px;
+    font-size: 14px;
     padding: 0 5px;
 }
 .form-section {
@@ -9,9 +9,9 @@
     background-color: #fff;
     background-clip: border-box;
     border: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     padding-bottom: 20px;
-    box-shadow: 0 2px 6px -1px rgba(0,0,0,.07), 0 6px 18px -1px rgba(0,0,0,.04);
+    border: 1px solid rgba(5, 5, 5, 0.06);
 }
 .subform-section {
     position: relative;
@@ -20,6 +20,7 @@
     background-color: #fff;
     background-clip: border-box;
     padding-bottom: 20px;
+    border-radius: 2px;
 }
 .form-column > .form-cell > .subform-container > .subform-section,
 .form-column > .subform-cell > .subform-container > .subform-section {
@@ -27,13 +28,16 @@
 }
 .form-section-title,
 .subform-section-title{
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 0.7rem;
     margin-bottom: 0;
     background-color: var(--theme-heading-bg, var(--theme-color5, #90a6b9));
-    border-radius: 3px 3px 0 0; 
+    border-radius: 2px 2px 0 0; 
     flex: 0 0 100%;
     margin-bottom: 20px;
     color: var(--theme-heading-color, var(--theme-color2, #ffffff));
+}
+.form-section-title{
+    border-bottom: 1px solid rgba(0,0,0,.06);
 }
 .form-section-empty{
     display: none !important;
@@ -105,7 +109,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     position: relative;
     margin-bottom: 0px;
     padding: 8px 10px 0 0;
-    font-weight: bold;
+    font-weight: 400;
     width: 30%;
     float: left;
 }
@@ -249,8 +253,8 @@ legend, body #form-canvas .form-section-title span, body #form-canvas .subform-s
     text-shadow: none;
     -moz-border-radius: 0px;
     -webkit-border-radius: 0px;
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 15px;
     display: block;
 }
 
@@ -337,6 +341,12 @@ body input[readonly] {
     position: relative;
     top: 2px;
     margin-right: 3px;
+    height: 15px;
+    width: 15px;
+}
+
+div.pq-grid * {
+    font-size: 13px !important;
 }
 
 /* form button */
@@ -429,7 +439,7 @@ body input.no-manual-input{
 }
 .form-section.no_label > .form-column:nth-child(2):last-child > .form-cell:first-child:last-child > .subform-container.no-frame > .subform-section,
 .form-section.no_label > .form-column:nth-child(2):nth-last-child(2) > .subform-cell:first-child:last-child > .subform-container.no-frame > .subform-section{
-    box-shadow: 0 10px 10px rgb(0 0 0 / 15%);
+    border-radius: 2px;
 }
 .form-section + .form-section.no_label > .form-column:nth-child(2) > .form-cell:first-child:last-child > .subform-container.no-frame:first-child,
 .form-section.no_label > .form-column:nth-child(2):last-child > .form-cell:first-child:last-child > .subform-container.no-frame > .subform-section + .subform-section:not(.no_label),
@@ -447,19 +457,18 @@ body input.no-manual-input{
     position: absolute;
     height: 25px;
     top: -25px;
-    left: -10px;
-    right: -10px;
+    left: 0px;
+    right: 0px;
     background-color: var(--theme-background, var(--theme-color1, #f9fafb));
     z-index: 0;
 }
 .form-section + .form-section.no_label > .form-column:nth-child(2) > .form-cell:first-child:last-child > .subform-container.no-frame:first-child:after,
 .form-section + .form-section.no_label > .form-column:nth-child(2) > .subform-cell:first-child:last-child > .subform-container.no-frame:first-child:after{
     background-color:#fff;
-    box-shadow: 0 10px 10px rgb(0 0 0 / 15%);
     left: 0px;
     right: 0px;
     top: -20px;
-    height: 20px;
+    height: 25px;
 }
 .form-section + .form-section.no_label > .form-column:nth-child(2) > .form-cell:first-child:last-child > .subform-container.no-frame:first-child:before,
 .form-section + .form-section.no_label > .form-column:nth-child(2) > .subform-cell:first-child:last-child > .subform-container.no-frame:first-child:before{
@@ -470,7 +479,7 @@ body input.no-manual-input{
     background-color: var(--theme-content-background, #ffffff);
 }
 .subform-container.has-frame{
-    border: 1px solid rgba(0, 0, 0, 0.125);
+    border: 1px solid rgba(0,0,0,.06);
     border-radius: 0.25rem;
 }
 .subform-container.no-frame {
@@ -863,7 +872,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
-    border: 1px solid #CFD8DC;
+    border: 1px solid rgba(0,0,0,.06);
     border-radius: 0.25rem;
     padding-bottom: 20px;
 }
