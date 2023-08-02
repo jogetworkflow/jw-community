@@ -1352,7 +1352,11 @@ DatalistBuilder = {
             elementObj.properties.label = component.label;
             
             if (type === "rowAction") {
-                elementObj.properties['link-css-display-type'] = 'btn btn-sm btn-primary';
+                if (component.className === 'org.joget.apps.datalist.lib.FormRowDeleteDataListAction') {
+                    elementObj.properties['link-css-display-type'] = 'btn btn-sm btn-danger';
+                } else {
+                    elementObj.properties['link-css-display-type'] = 'btn btn-sm btn-primary';
+                }
             }
         }
 
