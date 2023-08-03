@@ -3,6 +3,7 @@ package org.joget.apps.datalist.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import org.joget.plugin.base.ExtDefaultPlugin;
 
 /**
@@ -12,6 +13,7 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
 
     public static final String USERVIEW_KEY_SYNTAX = "#userviewKey#";
     private DataList datalist;
+    protected DataListInboxSetting inboxSetting;
 
     public DataList getDatalist() {
         return datalist;
@@ -57,5 +59,13 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
             obj.setValues((String[]) values.toArray(new String[0]));
         }
         return obj;
+    }
+    
+    public void setDataListInboxSetting(DataListInboxSetting inboxSetting) {
+        this.inboxSetting = inboxSetting;
+    }
+
+    public boolean isInbox() {
+        return inboxSetting != null;
     }
 }

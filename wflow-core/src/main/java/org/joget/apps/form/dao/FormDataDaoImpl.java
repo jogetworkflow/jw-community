@@ -84,6 +84,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final String FORM_PREFIX_ENTITY = "FormRow_";
     public static final String FORM_PREFIX_TABLE_NAME = "app_fd_";
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
+    public static final String WORKFLOW_ASSIGNMENT = "WORKFLOW_ASSIGNMENT";
     public static final String FORM_PREFIX_COLUMN = "c_";
     public static final int ACTION_TYPE_LOAD = 0;
     public static final int ACTION_TYPE_STORE = 1;
@@ -825,7 +826,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (joinsTables != null) {
             int i = 1;
             for (String e : joinsTables) {
-                if (!e.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                if (!e.startsWith(FORM_PREFIX_TABLE_NAME) && !WORKFLOW_ASSIGNMENT.equals(e)) {
                     e = FORM_PREFIX_TABLE_NAME + e;
                 }
                 entities[i] = e;
@@ -996,7 +997,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         } else {
             //check and refreash each mapping file for each entity
             for (String e : entities) {
-                findSessionFactory(e, e, null, ACTION_TYPE_LOAD);
+                if (!WORKFLOW_ASSIGNMENT.equals(e)) {
+                    findSessionFactory(e, e, null, ACTION_TYPE_LOAD);
+                }
             }
 
             // lookup cache
@@ -1142,9 +1145,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         String path = getFormMappingPath();
         for (String e : entities) {
-            String filename = e + ".hbm.xml";
-            File mappingFile = new File(path, filename);
-            metadataSources.addFile(mappingFile);
+            if (WORKFLOW_ASSIGNMENT.equals(e)){ // include the assignment related hibernate mapping file 
+                metadataSources.addResource("/org/joget/workflow/model/WorkflowProcessLink.hbm.xml");
+                metadataSources.addResource("/org/joget/apps/form/model/FormDataAssignment.hbm.xml");
+            } else {
+                String filename = e + ".hbm.xml";
+                File mappingFile = new File(path, filename);
+                metadataSources.addFile(mappingFile);
+            }
         }
         
         String cacheKey = getJoinSessionFactoryCacheKey(entities);
@@ -1574,11 +1582,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String joinQuery = "";
             if (joinTableNames != null && joinTableNames.length > 0) {
                 for (String t : joinTableNames) {
-                    joinQuery += ", ";
-                    if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
-                        t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                    if (!t.equals(WORKFLOW_ASSIGNMENT)) { //no need to join for WORKFLOW_ASSIGNMENT, it is just use to include the assignment related hibernate mapping file
+                        joinQuery += ", ";
+                        if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                            t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                        }
+                        joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
                     }
-                    joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
                 }
                 joinQuery += " ";
             }
@@ -1631,28 +1641,33 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
             List<Map<String, Object>> rowSet = new ArrayList<Map<String, Object>>();
             for (Object o : result) {
-                Object[] arr = (!o.getClass().isArray()) ? new Object[] { o } : (Object[]) o;
                 Map<String, Object> r = new HashMap<String, Object>();
-                for (int j = 0; j < alias.length; j++) {
-                    Object tempValue = arr[j];
-                    if (tempValue == null) {
-                        tempValue = "";
-                    } else if (!(tempValue instanceof Date)) {
-                        tempValue = tempValue.toString();
-                    }
+                if (o instanceof FormRow) { //if there is no join tables, it return as FormRow
+                    r = (Map<String, Object>) ((FormRow) o).getCustomProperties();
+                } else {
+                    Object[] arr = (!o.getClass().isArray()) ? new Object[] { o } : (Object[]) o;
                     
-                    if (alias[j].contains(".")) {
-                        String prefix = alias[j].substring(0, alias[j].indexOf("."));
-                        String name = alias[j].substring(alias[j].indexOf(".") + 1);
-                        
-                        Map<String, Object> sub = (Map<String, Object>) r.get(prefix);
-                        if (sub == null) {
-                            sub = new HashMap<String, Object>();
+                    for (int j = 0; j < alias.length; j++) {
+                        Object tempValue = arr[j];
+                        if (tempValue == null) {
+                            tempValue = "";
+                        } else if (!(tempValue instanceof Date)) {
+                            tempValue = tempValue.toString();
                         }
-                        sub.put(name, tempValue);
-                        r.put(prefix, sub);
+
+                        if (alias[j].contains(".")) {
+                            String prefix = alias[j].substring(0, alias[j].indexOf("."));
+                            String name = alias[j].substring(alias[j].indexOf(".") + 1);
+
+                            Map<String, Object> sub = (Map<String, Object>) r.get(prefix);
+                            if (sub == null) {
+                                sub = new HashMap<String, Object>();
+                            }
+                            sub.put(name, tempValue);
+                            r.put(prefix, sub);
+                        }
+                        r.put(alias[j], tempValue);
                     }
-                    r.put(alias[j], tempValue);
                 }
                 rowSet.add(r);
             }
@@ -1705,11 +1720,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String joinQuery = "";
             if (joinTableNames != null && joinTableNames.length > 0) {
                 for (String t : joinTableNames) {
-                    joinQuery += ", ";
-                    if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
-                        t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                    if (!t.equals(WORKFLOW_ASSIGNMENT)) { //no need to join for WORKFLOW_ASSIGNMENT, it is just use to include the assignment related hibernate mapping file
+                        joinQuery += ", ";
+                        if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                            t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                        }
+                        joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
                     }
-                    joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
                 }
                 joinQuery += " ";
             }
