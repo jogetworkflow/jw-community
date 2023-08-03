@@ -96,9 +96,22 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
     }
     
     public static boolean isSysAdminRoleAvailable() {
-        RoleDao roleDao = (RoleDao)AppUtil.getApplicationContext().getBean("roleDao");
-        Role role = roleDao.getRole(ROLE_SYSADMIN);
-        return (role != null);
+        boolean isSysAdminRoleAvailable = false;
+        
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            isSysAdminRoleAvailable = Boolean.valueOf((String)request.getSession().getAttribute(ROLE_SYSADMIN + "_AVAILABLE"));
+        } else {
+            RoleDao roleDao = (RoleDao)AppUtil.getApplicationContext().getBean("roleDao");
+            Role role = roleDao.getRole(ROLE_SYSADMIN);
+            isSysAdminRoleAvailable = (role != null);
+            
+            if (isSysAdminRoleAvailable && request != null && request.getSession() != null) {
+                request.getSession().setAttribute(ROLE_SYSADMIN + "_AVAILABLE", true);
+            }
+        }
+        
+        return isSysAdminRoleAvailable;
     }
     
     @Override
@@ -117,8 +130,8 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
             roles.add(ROLE_SYSADMIN);
         }
         
-        // add app admin role configured for specific users
-        if (!roles.contains(ROLE_ADMIN) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+        // add app admin role configured for specific users, should not check for admin & anonymous user
+        if (!roles.contains(ROLE_ADMIN) && !isCurrentUserAnonymous() && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
             roles.add(ROLE_ADMIN);
         }
         if (EnhancedWorkflowUserManager.isAppAdminRole()) {

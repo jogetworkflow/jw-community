@@ -122,7 +122,7 @@ public interface VersionedObjectDao<T extends AbstractVersionedObject> {
      * @return
      */
     T loadVersion(String id, Long version);
-
+    
     /**
      * Save/update an object
      * @param object

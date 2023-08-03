@@ -89,6 +89,7 @@ public class DataList {
     private boolean isAuthorized = true;
     private String unauthorizedMsg = null;
     private DataListTemplate template = null;
+    private Boolean isUsingInboxBinder = null;
     
     private Map<String, Object> properties;
     
@@ -116,7 +117,7 @@ public class DataList {
         }
         properties.put(property, value);
     }
-
+    
     //Required when using session
     public void init() {
         try {
@@ -604,6 +605,16 @@ public class DataList {
 
         return param;
     }
+    
+    public boolean isUsingInboxBinder() {
+        if (isUsingInboxBinder == null) {
+            isUsingInboxBinder = false;
+            if (getBinder() instanceof DataListInboxBinder) {
+                isUsingInboxBinder = ((DataListInboxBinder) getBinder()).isInbox();
+            }
+        }
+        return isUsingInboxBinder;
+    }
 
     public DataListCollection getRows() {
         if (isReturnNoDataWhenFilterNotSet()) {
@@ -622,7 +633,12 @@ public class DataList {
                 //force get total before get rows to bypass additional filter
                 getTotal();
                 DataListQueryParam param = getQueryParam(customSize, customStart);
-                return getBinder().getData(this, getBinder().getProperties(), getFilterQueryObjects(), param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+                
+                if (isUsingInboxBinder()) {
+                    return ((DataListInboxBinder) getBinder()).getInboxData(this, getBinder().getProperties(), getFilterQueryObjects(), param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+                } else {
+                    return getBinder().getData(this, getBinder().getProperties(), getFilterQueryObjects(), param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+                }
             }
         } catch (Exception e) {
             LogUtil.error(DataList.class.getName(), e, "Error retrieving binder rows");
@@ -643,7 +659,11 @@ public class DataList {
                     if (!isConsiderFilterWhenGetTotal()) {
                         getTotal();
                     }
-                    size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    if (isUsingInboxBinder()) {
+                        size = ((DataListInboxBinder) getBinder()).getInboxDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    } else {
+                        size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    }
                 } else {
                     size = 0;
                 }
@@ -668,7 +688,11 @@ public class DataList {
             try {
                 if (getBinder() != null) {
                     filterQueryBuild = true;
-                    total = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    if (isUsingInboxBinder()) {
+                        total = ((DataListInboxBinder) getBinder()).getInboxDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    } else {
+                        total = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    }
                     filterQueryBuild = false;
                 } else {
                     total = 0;

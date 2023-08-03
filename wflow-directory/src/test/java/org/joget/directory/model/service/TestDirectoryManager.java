@@ -59,6 +59,8 @@ public class TestDirectoryManager {
     
     @Before
     public void setUp() {
+        clean(); //make sure it is clean before start testing
+        
         addOrganization(TEST_ORGANIZATION);
         addDepartment(TEST_DEPARTMENT_PARENT);
         addDepartment(TEST_DEPARTMENT_CHILD);
@@ -71,14 +73,7 @@ public class TestDirectoryManager {
 
     @After
     public void tearDown() {
-        deleteUser(TEST_USER);
-        deleteUser(TEST_DEPARTMENT_PARENT_HOD);
-        deleteUser(TEST_DEPARTMENT_CHILD_HOD);
-        deleteUser(TEST_USER_HOD);
-        deleteGroup(TEST_GROUP);
-        deleteDepartment(TEST_DEPARTMENT_CHILD);
-        deleteDepartment(TEST_DEPARTMENT_PARENT);
-        deleteOrganization(TEST_ORGANIZATION);
+        clean();
     }
 
     @Test
@@ -262,4 +257,14 @@ public class TestDirectoryManager {
         userDao.deleteUser(username);
     }
     
+    protected void clean() {
+        deleteUser(TEST_USER);
+        deleteUser(TEST_DEPARTMENT_PARENT_HOD);
+        deleteUser(TEST_DEPARTMENT_CHILD_HOD);
+        deleteUser(TEST_USER_HOD);
+        deleteGroup(TEST_GROUP);
+        deleteDepartment(TEST_DEPARTMENT_CHILD);
+        deleteDepartment(TEST_DEPARTMENT_PARENT);
+        deleteOrganization(TEST_ORGANIZATION);
+    }
 }

@@ -79,7 +79,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         }
         return result;
     }
-
+    
     /**
      * Find the latest versions of matching objects
      * @param id Optional ID to filter

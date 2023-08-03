@@ -264,7 +264,10 @@ public class AppUtil implements ApplicationContextAware {
             try {
                 versionLong = Long.parseLong(version);
             } catch (NumberFormatException e) {
-                // TODO: handle exception
+                // if version is not empty and not number, get published version, 
+                // issue is EnhancedWorkflowUserManager parsing the UI URL may not have version number, 
+                // the version is UI id
+                versionLong = -1l;
             } catch (NullPointerException e) {
                 // TODO: handle exception
             }

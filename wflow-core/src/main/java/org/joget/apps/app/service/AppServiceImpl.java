@@ -1127,7 +1127,11 @@ public class AppServiceImpl implements AppService {
         boolean isAppDefReset = AppUtil.isAppDefinitionReset();
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         Long versionLong = AppUtil.convertVersionToLong(version);
-        if (isAppDefReset || appDef == null || !appDef.getId().equals(appId) || (versionLong != null && !appDef.getVersion().equals(versionLong))) {
+        if (isAppDefReset || //required reset appDef in thread 
+                appDef == null || //there is no appDef in thread
+                !appDef.getId().equals(appId) || //different appDef in thread
+                (versionLong != null && versionLong == -1l && !appDef.isPublished()) || //required published version but appDef in thread is not
+                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match 
             // no matching app in thread, load from DAO
             appDef = loadAppDefinition(appId, version);
         }
@@ -1145,17 +1149,30 @@ public class AppServiceImpl implements AppService {
         // get app from thread
         AppDefinition appDef = null;
         Long versionLong = AppUtil.convertVersionToLong(version);
-        if (versionLong == null) {
-            // load latest
-            appDef = appDefinitionDao.loadById(appId);
-        } else {
-            // load specific version
-            try {
-                appDef = appDefinitionDao.loadVersion(appId, versionLong);
-            } catch (NumberFormatException e) {
-                // TODO: handle exception
-            } catch (NullPointerException e) {
-                // TODO: handle exception
+        
+        //get published version
+        if (versionLong != null && versionLong == -1l) {   
+            appDef = appDefinitionDao.getPublishedAppDefinition(appId);
+            if (appDef != null) {
+                versionLong = appDef.getVersion();
+            } else {
+                versionLong = null; //set null to get latest
+            }
+        } 
+        
+        if (appDef == null) {
+            if (versionLong == null) {
+                // load latest
+                appDef = appDefinitionDao.loadById(appId);
+            } else {
+                // load specific version
+                try {
+                    appDef = appDefinitionDao.loadVersion(appId, versionLong);
+                } catch (NumberFormatException e) {
+                    // TODO: handle exception
+                } catch (NullPointerException e) {
+                    // TODO: handle exception
+                }
             }
         }
         if (!AppDevUtil.isGitDisabled() && appDef != null) {
@@ -1163,7 +1180,12 @@ public class AppServiceImpl implements AppService {
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
                 if (request != null && !gitSyncAppDone) {
-                    AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
+                    AppDefinition newAppDef = null;
+                    if (appDef != null) {
+                        newAppDef = AppDevUtil.dirSyncApp(appDef);
+                    } else {
+                        newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
+                    }
                     if (newAppDef != null) {
                         appDef = newAppDef;
                     }
@@ -2156,7 +2178,7 @@ public class AppServiceImpl implements AppService {
                     HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                     boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
                     if (request != null && !gitSyncAppDone) {
-                        AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, appDef.getVersion());
+                        AppDefinition newAppDef = AppDevUtil.dirSyncApp(appDef);
                         if (newAppDef != null) {
                             appDef = newAppDef;
                         }

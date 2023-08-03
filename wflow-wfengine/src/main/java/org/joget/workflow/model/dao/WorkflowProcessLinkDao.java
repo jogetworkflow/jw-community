@@ -80,6 +80,68 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     
     // least recently used (LRU) cache to hold original IDs
     static Map<String, Map<String, Collection<String>>> originalIdCache = Collections.synchronizedMap(new LRUMap(200));
+
+    /**
+     * From record ids, return the process ids for each record ids
+     * @param ids
+     * @return 
+     */
+    public Map<String, Collection<String>> getProcessIdsFromRecordIds(Collection<String> ids) {
+        Map<String, Collection<String>> processIds = new HashMap<String, Collection<String>>();
+        Collection<String> existIds = new ArrayList<String>();
+        
+        if (!ids.isEmpty()) {
+            String conditions = "";
+            Collection<WorkflowProcessLink> links = null;
+            Collection<String> values = null;
+            
+            int i = 0;
+            for (String id : ids) {
+                if (i % 1000 == 0) {
+                    values = new ArrayList<String>();
+                    conditions = "where e.originProcessId in (";
+                }
+                
+                conditions += "?,";
+                values.add(id);
+                
+                if (i % 1000 == 999 || i == ids.size() -1) {
+                    conditions = conditions.substring(0, conditions.length() - 1) + ")";
+                    links = super.find(ENTITY_NAME, conditions, values.toArray(new String[0]), null, null, null, null);
+                    
+                    for (WorkflowProcessLink link : links) {
+                        String orgId = link.getOriginProcessId();
+                        String pid = link.getProcessId();
+
+                        Collection<String> pIds = processIds.get(orgId);
+                        if (pIds == null) {
+                            pIds = new ArrayList<String>();
+                        }
+                        pIds.add(pid);
+                        existIds.add(pid);
+
+                        processIds.put(orgId, pIds);
+                    }
+                }
+                i++;
+            }
+            
+            // for those does not has link
+            for (String id : ids) {
+                if (!existIds.contains(id)) {
+                    Collection<String> pIds = processIds.get(id);
+                    if (pIds == null) {
+                        pIds = new ArrayList<String>();
+                    }
+                    pIds.add(id);
+                    existIds.add(id);
+                    processIds.put(id, pIds);
+                }
+            }
+        }
+        
+        return processIds;
+    }
     
     public Map<String, Collection<String>> getOriginalIds(Collection<String> ids) {
         Map<String, Collection<String>> originalIds = new HashMap<String, Collection<String>>();

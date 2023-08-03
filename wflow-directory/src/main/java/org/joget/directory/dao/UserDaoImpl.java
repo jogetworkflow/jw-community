@@ -12,8 +12,11 @@ import org.joget.directory.model.Group;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryUtil;
+import org.joget.directory.model.service.ExtUserDetails;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
@@ -21,6 +24,7 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
     private RoleDao roleDao;
     private EmploymentDao employmentDao;
     private DepartmentDao departmentDao;
+    private UserMetaDataDao userMetaDataDao;
 
     public DepartmentDao getDepartmentDao() {
         return departmentDao;
@@ -54,6 +58,14 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
         this.roleDao = roleDao;
     }
 
+    public UserMetaDataDao getUserMetaDataDao() {
+        return userMetaDataDao;
+    }
+
+    public void setUserMetaDataDao(UserMetaDataDao userMetaDataDao) {
+        this.userMetaDataDao = userMetaDataDao;
+    }
+
     public Boolean addUser(User user) {
         try {
             
@@ -72,6 +84,24 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
             adminRoleFilter(user);
             
             merge("User", user);
+            
+            //update the user object cached in thread 
+            WorkflowUserManager userManager = (WorkflowUserManager) DirectoryUtil.getApplicationContext().getBean("workflowUserManager");
+            if (userManager != null) {
+                if (user.getUsername().equals(userManager.getCurrentUsername())) {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    Object userObj = auth.getDetails();
+                    if (userObj == null) {
+                        userObj = auth.getPrincipal();
+                    }
+                    if (userObj instanceof ExtUserDetails) {
+                        ((ExtUserDetails) userObj).updateUser(user);
+                    }
+                    
+                    userManager.setCurrentThreadUser(user);
+                }
+            }
+            
             return true;
         } catch (Exception e) {
             LogUtil.error(UserDaoImpl.class.getName(), e, "Update User Error!");
@@ -122,8 +152,7 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
                 }
                 delete("User", user);
                 
-                UserMetaDataDao umdDao = (UserMetaDataDao) DirectoryUtil.getApplicationContext().getBean("userMetaDataDao");
-                umdDao.deleteUserMetaDatas(username);
+                userMetaDataDao.deleteUserMetaDatas(username);
             }
             return true;
         } catch (Exception e) {

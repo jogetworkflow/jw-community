@@ -1043,8 +1043,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
 
         } catch (Exception ex) {
-
-            LogUtil.error(getClass().getName(), ex, "");
+            if (!ex.getMessage().contains("does not exist")) { //ignore package not exist
+                LogUtil.error(getClass().getName(), ex, "");
+            }
         } finally {
             try {
                 disconnect(sc);
@@ -1094,8 +1095,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
 
         } catch (Exception ex) {
-
-            LogUtil.error(getClass().getName(), ex, "");
+            if (!ex.getMessage().contains("does not exist")) { //ignore package not exist
+                LogUtil.error(getClass().getName(), ex, "");
+            }
         } finally {
             try {
                 disconnect(sc);

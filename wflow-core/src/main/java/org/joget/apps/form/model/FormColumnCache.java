@@ -82,7 +82,7 @@ public class FormColumnCache {
         String cacheKey = DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_INDEXES_" + tableName;
         return cacheKey;
     }
-   
+    
     public void clear() {
         cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_COLUMNS_");
         cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_INDEXES_");
