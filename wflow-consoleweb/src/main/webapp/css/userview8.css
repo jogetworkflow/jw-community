@@ -1872,3 +1872,12 @@ body.popupBody #section-actions .form-cell input, body.popupBody .dataList .acti
 .mCSB_outside+.mCS-minimal-dark.mCSB_scrollTools_vertical,.mCSB_outside+.mCS-minimal.mCSB_scrollTools_vertical {
     margin: 0 !important;
 }
+form.form fieldset {
+    background: #fff;
+}
+.userProfile-body-content .userProfile-body-header {
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    padding: 0.75rem 0.7rem !important;
+    font-weight: 500 !important;
+    background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
+}

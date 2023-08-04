@@ -2,7 +2,6 @@
     .userProfile-body-content .userProfile-body-header {
         clear:both;
         color:#000000;
-        font-family:Georgia,"Times New Roman",Times,serif;
         font-size:1.4em;
         font-style:normal;
         font-variant:normal;

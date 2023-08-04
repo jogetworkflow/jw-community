@@ -442,6 +442,9 @@ input:focus, select:focus, textarea:focus {
 .form-cell > label.label, .subform-cell > label.label {
     font-weight: 500;
 }
+.userProfile-body-header{
+    border-radius: 3px 3px 0 0;
+}
 
 body.dark-mode .dataList th, body.dark-mode .dataList td {
     border: 1px solid var(--theme-border-color);

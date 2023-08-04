@@ -126,6 +126,9 @@ public class UserProfileMenu extends UserviewMenu {
                 viewForm(null);
             }
         }
+        if ("true".equals(getRequestParameterString("submitted"))) {
+            setProperty("saved", "true");
+        }
         Map model = new HashMap();
         model.put("request", getRequestParameters());
         model.put("element", this);
@@ -366,8 +369,7 @@ public class UserProfileMenu extends UserviewMenu {
                     boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
                     setRedirectUrl(getPropertyString("redirectURL"), redirectToParent);
                 } else {
-                    setProperty("saved", "true");
-                    viewForm(null);
+                    setRedirectUrl(getUrl()+"?submitted=true", false);
                 }
             }
         } else {
