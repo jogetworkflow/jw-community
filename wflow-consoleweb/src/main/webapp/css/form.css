@@ -363,6 +363,11 @@ body input.no-manual-input{
     cursor: text;
     background-color: #fff;
 }
+
+.trigger:hover, .close-icon:hover{
+    opacity: 0.8;
+}
+
 @media (max-width: 768px) {
     .datapicker-native.ui-screen-hidden.ios {
         right: 15px;

@@ -19,7 +19,8 @@
                         buttonImageOnly: true,
                         changeMonth: true,
                         changeYear: true,
-                        timeInput: true
+                        timeInput: true,
+                        buttonText : ''
                         <#if element.properties.format24hr! == ''>
                         ,timeFormat: "hh:mm tt"
                         </#if>
