@@ -359,7 +359,7 @@ public class UserProfileMenu extends UserviewMenu {
                     LocaleContextResolver localeResolver = (LocaleContextResolver) WorkflowUtil.getApplicationContext().getBean("localeResolver");
                     ((LocalLocaleResolver) localeResolver).reset(WorkflowUtil.getHttpServletRequest());
                     setProperty("view", "redirect");
-                    setRedirectUrl(getUrl()+"?_lang=", false);
+                    setRedirectUrl(getUrl()+"?_lang=&submitted=true", false);
                 }
 
                 setAlertMessage(getPropertyString("message"));
@@ -369,7 +369,8 @@ public class UserProfileMenu extends UserviewMenu {
                     boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
                     setRedirectUrl(getPropertyString("redirectURL"), redirectToParent);
                 } else {
-                    setRedirectUrl(getUrl()+"?submitted=true", false);
+                    setProperty("view", "reloadAfterSaved");
+                    setProperty("redirectURL", getUrl()+"?submitted=true");
                 }
             }
         } else {
@@ -384,25 +385,27 @@ public class UserProfileMenu extends UserviewMenu {
         }
         Date t = new Date();
         try {
-            String[] temp = locale.split("_");
-            Locale localeObj = null;
-            switch (temp.length) {
-                case 1:
-                    localeObj = new Locale(temp[0]);
-                    break;
-                case 2:
-                    localeObj = new Locale(temp[0], temp[1]);
-                    break;
-                case 3:
-                    localeObj = new Locale(temp[0], temp[1], temp[2]);
-                    break;
-                default:
-                    localeObj = LocaleContextHolder.getLocale();
-                    break;
+            if (locale != null) {
+                String[] temp = locale.split("_");
+                Locale localeObj = null;
+                switch (temp.length) {
+                    case 1:
+                        localeObj = new Locale(temp[0]);
+                        break;
+                    case 2:
+                        localeObj = new Locale(temp[0], temp[1]);
+                        break;
+                    case 3:
+                        localeObj = new Locale(temp[0], temp[1], temp[2]);
+                        break;
+                    default:
+                        localeObj = LocaleContextHolder.getLocale();
+                        break;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("HH", localeObj);
+
+                return !EN.format(t).equals(sdf.format(t));
             }
-            SimpleDateFormat sdf = new SimpleDateFormat("HH", localeObj);
-            
-            return !EN.format(t).equals(sdf.format(t));
         } catch (Exception e) {
             LogUtil.warn(getClassName(), e.getMessage());
         }

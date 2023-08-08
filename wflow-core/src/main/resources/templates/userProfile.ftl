@@ -55,7 +55,11 @@
     <div class="userProfile-body-header">
         ${element.properties.headerTitle!}
     </div>
-    <#if element.properties.view! == 'redirect'>
+    <#if element.properties.view! == 'reloadAfterSaved'>
+        <script>
+            top.location.href = "${element.properties.redirectURL!}";
+        </script>
+    <#elseif element.properties.view! == 'redirect'>
         <script>
             <#if element.properties.message?? >
                 alert('${element.properties.message!}');
