@@ -105,11 +105,13 @@
                     
                     for (var i in tags) {
                         var tinfo = Nav.definition["labels"][tags[i]];
-                        var label = "<span style=\"display:none\">"+tinfo.color + " " + Nav.options.message[tinfo.color]+"</span>";
-                        if (tinfo.label !== undefined && tinfo.label !== "") {
-                            label = tinfo.label;
+                        if (tinfo !== undefined) {
+                            var label = "<span style=\"display:none\">" + tinfo.color + " " + Nav.options.message[tinfo.color] + "</span>";
+                            if (tinfo.label !== undefined && tinfo.label !== "") {
+                                label = tinfo.label;
+                            }
+                            $(liobj).find(".nv-tag-plus").before('<span data-id="' + tags[i] + '" class="nv-tag tag-' + tinfo.color + '">' + label + '</span>');
                         }
-                        $(liobj).find(".nv-tag-plus").before('<span data-id="'+tags[i]+'" class="nv-tag tag-'+tinfo.color+'">'+label+'</span>');
                     }
                     
                 });

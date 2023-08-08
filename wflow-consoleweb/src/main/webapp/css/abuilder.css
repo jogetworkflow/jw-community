@@ -12,13 +12,12 @@ body {--builder-left-panel-width: 0px !important;}
 .builder-type .ul-wrapper {min-height: 50px;}
 .builder-type ul { list-style: none; margin: 0; padding: 15px; min-height: 50px; font-size: 13px;}
 .builder-type ul li {position: relative; border:1px solid #fff; border-radius: 3px; background: #fff; min-height: 50px; box-sizing: border-box;}
-.builder-type ul li > a {padding: 12px 10px 5px; text-decoration: none; color: #000; display: block; }
+.builder-type ul li > a {padding: 5px 10px; text-decoration: none; color: #000; display: block; }
 .builder-type ul li + li {margin-top: 5px;}
-.builder-type ul li > a .item-id {display:none; color: #0069d9; font-size:12px; }
+.builder-type ul li > a .item-id {display:block; color: #0069d9; font-size:13px; visibility:hidden;}
 .builder-type ul li > a .item-sublabel {display: block; color: #aaa; font-size: 90%; font-style: italic; line-height: 10px; text-align: right; position: absolute; right: 10px; top: 50%; width: 30%; word-break: break-all; transform: translateY(-50%); padding-right: 15px;}
 .builder-type ul li.item:hover{border-color: #0069d9;}
-.builder-type ul li.item:hover > a {padding: 5px 10px;}
-.builder-type ul li.item:hover > a .item-id {display: block;}
+.builder-type ul li.item:hover > a .item-id {visibility: visible;}
 .builder-type ul li.has-sublabel > a {position: relative;}
 .builder-type ul li.has-sublabel > a .item-label {max-width: 70%; padding-right: 10px; display: inline-block;}
 .builder-type ul li.message{color: #888; font-style: italic;}
