@@ -3,6 +3,8 @@
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apm.APMUtil"%>
 
+<jsp:include page="../cbuilder/custom.jsp" flush="true" />
+
 <c:set var="isAjaxRender" scope="request" value="${pageContext.request.getHeader('_ajax-rendering')}"/>
 <c:set var="isIE" scope="request" value="${MobileUtil.isIE()}"/>
 <c:set var="isGlowrootAvailable" value="<%= APMUtil.isGlowrootAvailable() %>"/>
