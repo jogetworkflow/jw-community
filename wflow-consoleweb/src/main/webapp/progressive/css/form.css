@@ -560,7 +560,6 @@ body .form-container .pq-td-div label.label + span:not(.form-cell-value):not(.su
 
 body .form-column, body .subform-column {
     max-width: 99%;
-    margin: 0 0.5%;
     color: inherit;
     min-width: inherit;
 }
@@ -568,6 +567,7 @@ body .form-column, body .subform-column {
 body .form-cell, body .subform-cell {
     color: inherit;
     padding: 0;
+    margin: 0 15px;
 }
 
 body .subform-cell-validator, body .form-cell-validator {
