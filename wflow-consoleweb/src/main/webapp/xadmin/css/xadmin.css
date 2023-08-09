@@ -163,7 +163,7 @@ body{
     cursor: pointer;
 }
 .left-nav{
-    position: absolute;
+    position: fixed;
     top: 45px;
     bottom: 0px;
     /*bottom: 42px;*/
