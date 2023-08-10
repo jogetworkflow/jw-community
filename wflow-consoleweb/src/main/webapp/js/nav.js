@@ -84,7 +84,7 @@
                 return;
             }
             
-            $(".nv-tag").remove();
+            $(".nv-tags .nv-tag").remove();
             $(Nav.target).find("div.builder-type").each(function(){
                 var type = $(this).data("builder-type");
                 if (type === "datalist") {
