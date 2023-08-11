@@ -798,6 +798,7 @@ public class AppUtil implements ApplicationContextAware {
                     || format.equals(StringUtil.TYPE_XML)
                     || format.startsWith(StringUtil.TYPE_SEPARATOR)
                     || format.equals(StringUtil.TYPE_EXP)
+                    || format.startsWith(StringUtil.TYPE_DECIMAL)
                     || format.equals(HASH_NO_ESCAPE))) {
                 isValid = false;
             }

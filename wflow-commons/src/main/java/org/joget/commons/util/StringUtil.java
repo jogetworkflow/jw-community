@@ -66,6 +66,7 @@ public class StringUtil {
     public static final String TYPE_SEPARATOR = "separator";
     public static final String TYPE_IMG2BASE64 = "img2base64";
     public static final String TYPE_EXP = "expression";
+    public static final String TYPE_DECIMAL = "decimal";
 
     static final Safelist whitelistRelaxed;
     static {
@@ -350,7 +351,9 @@ public class StringUtil {
                 String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
                 String [] temps = inStr.split(newSeparator);
                 inStr = StringUtils.join(temps, ";");
-            }
+            } else if (f != null && f.startsWith(TYPE_DECIMAL)) {
+                inStr = inStr;
+            } 
         }
         
         return inStr;
@@ -414,7 +417,7 @@ public class StringUtil {
     /**
      * Escape a string based on format
      * @param inStr input String
-     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_DECIMAL, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
      * @return 
      */
     public static String escapeString(String inStr, String format) {
@@ -424,7 +427,7 @@ public class StringUtil {
     /**
      * Escape a string based on format and replaced string based on the replace keyword map
      * @param inStr input String
-     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_DECIMAL, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
      * @param replaceMap A map of keyword and new keyword pair to be replaced before escaping
      * @return 
      */
@@ -471,7 +474,10 @@ public class StringUtil {
                 String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
                 String [] temps = inStr.split(";");
                 inStr = StringUtils.join(temps, newSeparator);
-            }
+            } else if (f != null && f.startsWith(TYPE_DECIMAL) ) {
+                String newDecimal = f.substring(TYPE_DECIMAL.length() + 1, f.length() -1);
+                inStr = StringUtil.numberFormat(inStr, "", "", "", false, newDecimal);
+            }           
         }
         
         return inStr;
