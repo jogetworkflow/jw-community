@@ -226,6 +226,10 @@ function setFontSize(size) {
         $(".dataList table").on("footable_row_detail_updated", function(event) {
             attachButtonEffect();
         });
+        $("body").off("dynamicContentLoaded");
+        $("body").on("dynamicContentLoaded", function(){
+            attachButtonEffect();
+        });
 
         //remove pagination if only 1 page
         if ($(".dataList .pagelinks a").length === 0) {

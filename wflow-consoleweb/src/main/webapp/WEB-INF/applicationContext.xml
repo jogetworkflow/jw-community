@@ -117,10 +117,10 @@
         <security:intercept-url pattern="/web/json/console/directory/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/monitor/**" access="ROLE_SYSADMIN"/>
         <security:intercept-url pattern="/web/json/console/setting/**" access="ROLE_SYSADMIN"/>
-        <security:intercept-url pattern="/web/json/directory/**" access="ROLE_SYSADMIN"/>
-        <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/directory/**" access="ROLE_SYSADMIN, ROLE_APPADMIN"/>
+        <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_SYSADMIN, ROLE_APPADMIN"/>
         <security:intercept-url pattern="/web/json/workflow/audittrail/**" access="ROLE_SYSADMIN"/>
-        <security:intercept-url pattern="/web/applog/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/applog/**" access="ROLE_SYSADMIN, ROLE_APPADMIN"/>
         
         <!-- i18n -->
         <security:intercept-url pattern="/web/console/i18n/**" access="ROLE_ADMIN, ROLE_SYSADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>

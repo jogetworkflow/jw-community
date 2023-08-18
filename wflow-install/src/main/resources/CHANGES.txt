@@ -3,7 +3,7 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
-CHANGES IN 7.0.39
+CHANGES IN 7.1.39
 =================
 11a5a4c1f Modified: jw-community - App - Modified cache implementation. @7.0-SNAPSHOT
 30aec1ef4 Fixed: wflow-directory - Reduce unnecessary calls to retrieve user & role data. 7.0-SNAPSHOT
