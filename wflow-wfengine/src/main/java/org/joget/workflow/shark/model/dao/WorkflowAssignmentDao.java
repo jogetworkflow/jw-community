@@ -1292,6 +1292,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         workflowActivity.setPerformer(shAct.getParticipantId());
         if (shAct.getAssignmentUsers() != null) {
             workflowActivity.setAssignmentUsers(shAct.getAssignmentUsers().split(";"));
+        } else {
+            workflowActivity.setAssignmentUsers(new String[0]);
         }
         
         Calendar startedCal = Calendar.getInstance();
