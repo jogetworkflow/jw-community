@@ -333,7 +333,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                          && !FormUtil.PROPERTY_MODIFIED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(sortProperty)) {
                     sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sort;
                 }
-                query += " ORDER BY cast(e." + sortProperty + " as string)";
+                query += " ORDER BY e." + sortProperty;
 
                 if (desc) {
                     query += " DESC";

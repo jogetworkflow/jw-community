@@ -156,10 +156,10 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
 
             if (isInbox()) {
                 //only formDataDao.findCustomQuery support assignment entities when passing it as join table
-                List<Map<String, Object>> rowSet = formDataDao.findCustomQuery(formDefId, tableName, null, null, new String[]{FormDataDaoImpl.WORKFLOW_ASSIGNMENT}, criteria.getQuery(), criteria.getValues(), null, null, null, getColumnName(sort), desc, start, rows);
+                List<Map<String, Object>> rowSet = formDataDao.findCustomQuery(formDefId, tableName, null, null, new String[]{FormDataDaoImpl.WORKFLOW_ASSIGNMENT}, criteria.getQuery(), criteria.getValues(), null, null, null, getSortColumnName(sort), desc, start, rows);
                 resultList.addAll(rowSet);
             } else {
-                FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, desc, start, rows);
+                FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), getSortColumnName(sort), desc, start, rows);
                 resultList.addAll(rowSet);
             }
         }
@@ -278,6 +278,14 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             }
         }
         return name;
+    }
+    
+    public String getSortColumnName(String name) {
+        if (FormUtil.PROPERTY_DATE_CREATED.equals(name) || FormUtil.PROPERTY_DATE_MODIFIED.equals(name)) {
+            return name;
+        } else {
+            return getColumnName(name);
+        }
     }
 
     protected DataListFilterQueryObject getCriteria(Map properties, DataListFilterQueryObject[] filterQueryObjects) {

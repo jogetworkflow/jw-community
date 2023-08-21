@@ -3,9 +3,9 @@
 <hibernate-mapping>
     <class entity-name="FormRow" lazy="false" name="org.joget.apps.form.model.FormRow" table="app_fd">
         <id name="id" type="string"/>
-        <property name="dateCreated" type="timestamp"/>
+        <property name="dateCreated" type="timestamp" index="idx_datecreated" />
         <property name="dateModified" type="timestamp"/>
-        <property name="createdBy" type="string"/>
+        <property name="createdBy" type="string" index="idx_createdby" />
         <property name="createdByName" type="string"/>
         <property name="modifiedBy" type="string"/>
         <property name="modifiedByName" type="string"/>
