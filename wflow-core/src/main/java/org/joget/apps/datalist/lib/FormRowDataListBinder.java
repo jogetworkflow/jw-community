@@ -159,7 +159,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
                 List<Map<String, Object>> rowSet = formDataDao.findCustomQuery(formDefId, tableName, null, null, new String[]{FormDataDaoImpl.WORKFLOW_ASSIGNMENT}, criteria.getQuery(), criteria.getValues(), null, null, null, getSortColumnName(sort), desc, start, rows);
                 resultList.addAll(rowSet);
             } else {
-                FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), getSortColumnName(sort), desc, start, rows);
+                FormRowSet rowSet = formDataDao.find(formDefId, tableName, criteria.getQuery(), criteria.getValues(), sort, desc, start, rows);
                 resultList.addAll(rowSet);
             }
         }
