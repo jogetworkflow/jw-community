@@ -295,7 +295,7 @@
                     nativeField.showPicker(); 
                 } catch (e) {
                     $(element).datepicker("show");
-                        $(element).removeClass("use-native");
+                    $(element).removeClass("use-native");
                 }    
             }
         } else {
@@ -304,7 +304,7 @@
     };
 
     //update input field when native field changed
-    function setDate(element, date, o) {
+    function setDate(element, date, o, focus) {
         if (o.datePickerType === "dateTime") {
             $(element).datetimepicker("setDate", new Date(date) );
         } else if (o.datePickerType === "timeOnly") {
@@ -312,7 +312,13 @@
         } else {
             $(element).datepicker("setDate", new Date(date) );
         }
-        $(element).focus().trigger("change");
+        
+        //should not focus when native field is used.
+        if (!$(element).hasClass("use-native")) {
+            $(element).focus().trigger("change");
+        } else {
+            $(element).trigger("change");
+        }
     };
     
     //update native field when input field changed
@@ -378,6 +384,7 @@
                 $(target).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");
             }
         },1);
+
         
         if ($(element).hasClass("use-native")) {
             var date = $(element).datepicker("getDate");

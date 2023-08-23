@@ -108,6 +108,7 @@
 .dataList .filter-cell .close-icon:after{ 
     right: 20px !important;
     top: 21px !important;
+    bottom: unset !important;
 }
 body .filter-cell input.hasDatepicker {
     padding-right: 40px;

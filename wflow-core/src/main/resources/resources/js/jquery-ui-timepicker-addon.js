@@ -1455,7 +1455,9 @@
 		var input = inst.input[0];
 		if ($.datepicker._curInst && $.datepicker._curInst !== inst && $.datepicker._datepickerShowing && $.datepicker._lastInput !== input) {
 			return;
-		}
+		} else if ($(input).hasClass("use-native")) { // CUSTOM: to handle native date field
+                    return;
+                }
 
 		if (typeof(inst.stay_open) !== 'boolean' || inst.stay_open === false) {
 

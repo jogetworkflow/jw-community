@@ -414,6 +414,9 @@ body.rtl .hasDatepicker + a + a{
 .hasDatepicker + a > img{
     display: none;
 }
+img.ui-datepicker-trigger {
+    pointer-events: none;
+}
 .datapicker-native.ui-screen-hidden{
     display: block;
     visibility: hidden;

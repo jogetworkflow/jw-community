@@ -343,13 +343,16 @@ span.tablesaw-cell-content {
     text-align: center;
     line-height: 13px;
     margin-left: 10px;
-    top: 14px;
+    bottom: 20px;
     background-color: #FA9595;
     border-radius: 50%;
     color: white;
     font-size: 12px;
     box-shadow: 0 0 2px #E50F0F;
     cursor: pointer;
+}
+img.ui-datepicker-trigger {
+    pointer-events: none;
 }
 .datapicker-native.ui-screen-hidden{
     display: block;

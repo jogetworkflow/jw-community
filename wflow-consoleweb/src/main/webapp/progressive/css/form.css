@@ -480,10 +480,11 @@ body .editor-cell select:not([class^="ui-"]):focus{
 
 body .close-icon:after {
     right: 28px;
-    top: 11px;
+    bottom: 20px;
 }
 body .editor-cell .close-icon:after {
     top:16px;
+    bottom: unset;
 }
 body.rtl .close-icon:after {
     left: 28px;
