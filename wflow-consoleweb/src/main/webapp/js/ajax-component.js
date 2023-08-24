@@ -157,7 +157,12 @@ AjaxComponent = {
                      AjaxComponent.call($(form), newUrl, "GET", null);
                 } else {
                      var formData = new FormData($(form)[0]);
-                     var btn = $(this).find(document.activeElement);
+                     var btn;
+                     if (e.originalEvent !== undefined && e.originalEvent.submitter !== undefined) {
+                        btn = $(e.originalEvent.submitter);
+                     } else {
+                        btn = $(this).find(document.activeElement);
+                     }
                      if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button, a')) && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
                          btn = $(this).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
                      }
