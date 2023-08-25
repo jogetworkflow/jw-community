@@ -21,6 +21,7 @@ import static org.joget.apps.datalist.model.DataListBinderDefault.USERVIEW_KEY_S
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
+import org.joget.apps.datalist.model.DataListRow;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.PwaOfflineReadonly;
@@ -137,6 +138,10 @@ public class DataListService {
     }
     
     public static Object evaluateColumnValueFromRow(Object row, String propertyName) {
+        if (row instanceof DataListRow) {
+            return ((DataListRow) row).get(propertyName);
+        }
+        
         if (propertyName != null && !propertyName.isEmpty()) {
             try {
                 Object value = LookupUtil.getBeanProperty(row, propertyName);
