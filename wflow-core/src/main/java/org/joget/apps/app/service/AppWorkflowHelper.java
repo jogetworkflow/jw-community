@@ -830,12 +830,21 @@ public class AppWorkflowHelper implements WorkflowHelper {
         deadlineAppDefinitionCache.remove(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
     }
 
+    /**
+     * If app did not modified, using the cached app definition, so that the plugin configuration does not need to retrieve again.
+     * 
+     * @param processId
+     * @param packageId
+     * @param packageVersion 
+     */
     public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
-        AppDefinition appDef = deadlineAppDefinitionCache.get(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
-        if (appDef == null) {
-            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
-            appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, Long.parseLong(packageVersion));
+        PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
+        AppDefinition appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, Long.parseLong(packageVersion));
+        AppDefinition cachedAppDef = deadlineAppDefinitionCache.get(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
+        if (cachedAppDef == null || !cachedAppDef.getDateModified().equals(appDef.getDateModified())) {
             deadlineAppDefinitionCache.put(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion, appDef);
+        } else {
+            appDef = cachedAppDef;
         }
         AppUtil.setCurrentAppDefinition(appDef);
     }
