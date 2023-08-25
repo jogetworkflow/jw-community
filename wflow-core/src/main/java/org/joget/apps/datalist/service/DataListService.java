@@ -1,9 +1,14 @@
 package org.joget.apps.datalist.service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.apache.commons.beanutils.BeanUtils;
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -12,13 +17,16 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
+import static org.joget.apps.datalist.model.DataListBinderDefault.USERVIEW_KEY_SYNTAX;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.PwaOfflineReadonly;
 import org.joget.apps.userview.model.PwaOfflineValidation;
 import org.joget.apps.userview.model.PwaOfflineValidation.WARNING_TYPE;
+import org.joget.apps.userview.model.Userview;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -171,6 +179,112 @@ public class DataListService {
             }
         }
         return null;
+    }
+    
+    /**
+     * Used to modify oracle datetime format
+     */
+    public static void alterOracleSession() {
+        try {
+            DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
+            String driver = BeanUtils.getProperty(ds, "driverClassName");
+            
+            if (driver.equals("oracle.jdbc.driver.OracleDriver")) {
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                try {
+                    con = ds.getConnection();
+                    pstmt = con.prepareStatement("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'");
+                    pstmt.executeUpdate();
+                } catch (Exception e) {
+                } finally {
+                    try {
+                        if (pstmt != null) {
+                            pstmt.close();
+                        }
+                    } catch(Exception e){}
+                    try {
+                        if (con != null) {
+                            con.close();
+                        }
+                    } catch(Exception e){}
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(DataListService.class.getName(), e, "");
+        }
+    }
+    
+    /**
+     * Used to generate the where clause query object
+     * 
+     * @param binder
+     * @param properties
+     * @param filterQueryObjects
+     * @return 
+     */
+    public static DataListFilterQueryObject processFilterQueryObjects(DataListBinder binder, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
+        DataListFilterQueryObject obj = new DataListFilterQueryObject();
+        String condition = "";
+        Collection<String> values = new ArrayList<String>();
+        if (filterQueryObjects != null && filterQueryObjects.length > 0) {
+            for (int i = 0; i < filterQueryObjects.length; i++) {
+                if (condition.isEmpty()) {
+                    obj.setOperator(filterQueryObjects[i].getOperator());
+                } else {
+                    condition += " " + filterQueryObjects[i].getOperator() + " ";
+                }
+                condition += filterQueryObjects[i].getQuery();
+                if (filterQueryObjects[i].getValues() != null && filterQueryObjects[i].getValues().length > 0) {
+                    values.addAll(Arrays.asList(filterQueryObjects[i].getValues()));
+                }
+            }
+        }
+        
+        if (!condition.isEmpty()) {
+            condition = " WHERE " + condition;
+        }
+        
+        String extraCondition = (properties.get("extraCondition") != null) ? properties.get("extraCondition").toString() : null;
+        String keyName = null;
+        if (properties.get(Userview.USERVIEW_KEY_NAME) != null) {
+            keyName = properties.get(Userview.USERVIEW_KEY_NAME).toString();
+        }
+        String keyValue = null;
+        if (properties.get(Userview.USERVIEW_KEY_VALUE) != null) {
+            keyValue = properties.get(Userview.USERVIEW_KEY_VALUE).toString();
+        }
+
+        if (extraCondition != null && extraCondition.contains(USERVIEW_KEY_SYNTAX)) {
+            if (keyValue == null) {
+                keyValue = "";
+            }
+            extraCondition = extraCondition.replaceAll(USERVIEW_KEY_SYNTAX, StringUtil.escapeRegex(keyValue));
+        } else if (keyName != null && !keyName.isEmpty() && keyValue != null && !keyValue.isEmpty()) {
+            if (condition.trim().length() > 0) {
+                condition += " AND ";
+            } else {
+                condition += " WHERE ";
+            }
+            condition += binder.getColumnName(keyName) + " = ?";
+            values.add(keyValue);
+        }
+
+        if (extraCondition != null && !extraCondition.isEmpty()) {
+            if (condition.trim().length() > 0) {
+                condition += " AND ";
+            } else {
+                condition += " WHERE ";
+            }
+            condition += extraCondition;
+        }
+        
+        obj.setQuery(condition);
+        if (values.size() > 0){
+            obj.setValues((String[]) values.toArray(new String[0]));
+        }
+        
+        return obj;
     }
     
     public static boolean pwaOfflineValidation(AppDefinition appDef, String listId, boolean checkAction) {

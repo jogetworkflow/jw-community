@@ -1,14 +1,10 @@
 package org.joget.apps.datalist.lib;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
-import org.apache.commons.beanutils.BeanUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -21,6 +17,7 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListInboxBinder;
 import org.joget.apps.datalist.model.DataListInboxSetting;
+import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.PasswordField;
@@ -32,7 +29,6 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
-import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 
@@ -144,7 +140,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
 
     @Override
     public DataListCollection getData(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String sort, Boolean desc, Integer start, Integer rows) {
-        alterOracleSession();
+        DataListService.alterOracleSession();
         DataListCollection resultList = new DataListCollection();
 
         String formDefId = getPropertyString("formDefId");
@@ -169,7 +165,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
 
     @Override
     public int getDataTotalRowCount(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
-        alterOracleSession();
+        DataListService.alterOracleSession();
         int count = 0;
         
         String formDefId = getPropertyString("formDefId");
@@ -188,37 +184,6 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             count = rowCount.intValue();
         }
         return count;
-    }
-    
-    protected void alterOracleSession() {
-        try {
-            DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
-            String driver = BeanUtils.getProperty(ds, "driverClassName");
-            
-            if (driver.equals("oracle.jdbc.driver.OracleDriver")) {
-                Connection con = null;
-                PreparedStatement pstmt = null;
-                try {
-                    con = ds.getConnection();
-                    pstmt = con.prepareStatement("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'");
-                    pstmt.executeUpdate();
-                } catch (Exception e) {
-                } finally {
-                    try {
-                        if (pstmt != null) {
-                            pstmt.close();
-                        }
-                    } catch(Exception e){}
-                    try {
-                        if (con != null) {
-                            con.close();
-                        }
-                    } catch(Exception e){}
-                }
-            }
-        } catch (Exception e) {
-            LogUtil.error(FormRowDataListBinder.class.getName(), e, "");
-        }
     }
 
     protected Form getSelectedForm() {
