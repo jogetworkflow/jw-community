@@ -66,6 +66,11 @@ public class FileManager {
                 customFileName = file.getOriginalFilename();
             }
             
+            //not allow semicolon in the filename
+            if (customFileName.contains(";")) {
+                customFileName = customFileName.replaceAll(StringUtil.escapeRegex(";"), "");
+            }
+            
             String id = UuidGenerator.getInstance().getUuid();
             String path =  id + File.separator;
             String filename = path;
