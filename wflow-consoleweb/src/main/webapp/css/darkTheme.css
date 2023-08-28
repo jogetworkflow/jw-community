@@ -665,7 +665,7 @@ body.dark-mode .dataList .dropdown-menu a.dropdown-item {
 }
 
 body.dark-mode .ui-timepicker-div select,
-.ui-timepicker-div input {
+body.dark-mode .ui-timepicker-div input {
     color: var(--theme-sidebar-badge-text) !important;
     background-color: var(--theme-background) !important;
 }
