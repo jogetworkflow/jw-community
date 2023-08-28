@@ -3,6 +3,12 @@ const currentTheme = localStorage.getItem("theme");
 
 function toggleTheme(theme) {
     $('body').toggleClass("dark-mode", theme === "dark");
+    
+    var iframes = $('iframe');
+    if (iframes.length > 0) {
+        var iframeBody = iframes.contents().find('body');
+        iframeBody.toggleClass("dark-mode", theme === "dark");
+    }
 }
 
 function updateSelectedIconAndSave(theme) {
