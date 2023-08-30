@@ -274,6 +274,9 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             dataList.setPageSize(DataList.MAXIMUM_PAGE_SIZE);
             recordSize = DataList.MAXIMUM_PAGE_SIZE;
         }
+        if (recordSize == -1) {
+            recordSize = null;
+        }
         if (page != null && page.trim().length() > 0 && recordSize != null) {
             start = (Integer.parseInt(page) - 1) * recordSize;
         }
@@ -304,8 +307,8 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
 
         param.put("sort", sortColumn);
         param.put("desc", Boolean.toString(desc));
-        param.put("size", Integer.toString(recordSize));
-        param.put("rows", Integer.toString(recordSize));
+        param.put("size", (recordSize == null)?"":Integer.toString(recordSize));
+        param.put("rows", (recordSize == null)?"":Integer.toString(recordSize));
         param.put("start", Integer.toString(start));
         
         //filter param

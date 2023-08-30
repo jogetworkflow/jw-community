@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +26,7 @@ import org.joget.workflow.util.WorkflowUtil;
 public class DataList {
 
     public static final Integer DEFAULT_PAGE_SIZE = 10;
-    public static final Integer MAXIMUM_PAGE_SIZE = 100000;
+    public static final Integer MAXIMUM_PAGE_SIZE = -1;
     public static final String ACTION_POSITION_TOP_LEFT = "topLeft";
     public static final String ACTION_POSITION_TOP_RIGHT = "topRight";
     public static final String ACTION_POSITION_BOTTOM_LEFT = "bottomLeft";
@@ -359,6 +360,9 @@ public class DataList {
                 pageSize = getDefaultPageSize();
             }
         }
+        if (Objects.equals(pageSize, MAXIMUM_PAGE_SIZE)) { //if show max, return the record size
+            pageSize = getSize();
+        }
         return pageSize;
     }
 
@@ -568,6 +572,12 @@ public class DataList {
         } else if (customSize != null) {
             recordSize = customSize;
         }
+        
+        //allow MAXIMUM_PAGE_SIZE to return every record instead of 100000 previously
+        if (recordSize == -1) {
+            recordSize = null;
+        }
+        
         if (customStart != null) {
             start = customStart;
         } else if (page != null && page.trim().length() > 0 && recordSize != null) {
