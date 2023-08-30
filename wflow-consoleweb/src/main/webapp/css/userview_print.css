@@ -54,4 +54,7 @@ body .section-actions{
     img[src]:after { content: none !important; }
     legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {border: 1px solid #000;}
     #adminControl, footer {display:none !important;}
+    #adminBar #environmentName{
+        display: none;
+    }
 }

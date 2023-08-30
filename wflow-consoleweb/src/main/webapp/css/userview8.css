@@ -1739,6 +1739,9 @@ body #ui-datepicker-div {
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
     #adminControl {display:none !important;}
+    #adminBar #environmentName{
+        display: none;
+    }
 }
 
 @media screen and (max-width:680px) {

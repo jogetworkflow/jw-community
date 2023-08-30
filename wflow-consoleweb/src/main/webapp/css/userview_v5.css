@@ -5499,6 +5499,9 @@ a {
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
     #adminControl {display:none !important;}
+    #adminBar #environmentName{
+        display: none;
+    }
 }
 #jqueryDialogDiv {overflow: hidden;}
 
