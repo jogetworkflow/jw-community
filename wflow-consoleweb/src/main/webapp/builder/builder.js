@@ -1044,10 +1044,29 @@
      * Load and render the JSON data to canvas
      */
     loadJson : function(json, addToUndo) {
-        CustomBuilder.json = json;
         try {
             CustomBuilder.data = JSON.decode(json);
         } catch (e) {}
+        
+        //when addToUndo is set to true, the new json need to update and keep a record in undo
+        if (addToUndo === true) {
+            //make sure the builder id is not change
+            var props = CustomBuilder.getBuilderProperties();
+            if (props !== undefined && props !== null) {
+                //if props not having id and it can be found in CustomBuilder.data.properties. Note: this is to handle UI builder
+                if (props.id === undefined && CustomBuilder.data.properties !== undefined && CustomBuilder.data.properties.id !== undefined) {
+                    props = CustomBuilder.data.properties;
+                }
+                //check if id is changed
+                if (props.id !== CustomBuilder.id) {
+                    props.id = CustomBuilder.id; //reset it
+                }
+            }
+        
+            CustomBuilder.update(addToUndo);
+        } else {
+            CustomBuilder.json = json;
+        }
         
         //callback to render json
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["load"], [CustomBuilder.data]);
@@ -1169,7 +1188,7 @@
     updateFromJson: function() {
         var json = $('#cbuilder-json').val();
         if (CustomBuilder.getJson() !== json) {
-            CustomBuilder.loadJson(json);
+            CustomBuilder.loadJson(json, true); //need to save a copy in undo
         }
         return false;
     },

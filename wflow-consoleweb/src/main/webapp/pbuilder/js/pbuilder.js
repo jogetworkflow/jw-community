@@ -750,6 +750,10 @@ ProcessBuilder = {
      * Convert the process data back to xpdl in JSON definition
      */
     updateXpdl : function() {
+        
+        //make sure package id is still same
+        CustomBuilder.data.xpdl['Package']['-Id'] = CustomBuilder.appId;
+        
         var data = ProcessBuilder.currentProcessData;
         var xpdl = CustomBuilder.data.xpdl['Package'];
         
@@ -4796,8 +4800,7 @@ ProcessBuilder = {
                         var data = eval(response);
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
-                            CustomBuilder.update(true);
-                            CustomBuilder.loadJson(CustomBuilder.getJson());
+                            CustomBuilder.loadJson(CustomBuilder.getJson(), true); //update through loadJson addToUndo to make sure package id does not change.
                         }
                     } catch (err) {}
                 }  
