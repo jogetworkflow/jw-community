@@ -51,6 +51,7 @@ import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.lib.EmailTool;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.CreateAppOption;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
@@ -80,6 +81,7 @@ import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
@@ -94,6 +96,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -1854,5 +1857,52 @@ public class AppUtil implements ApplicationContextAware {
         SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
         String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
         return "archive".equalsIgnoreCase(mode);
+    }
+    
+    /**
+     * Return a map of create app option plugins
+     * 
+     * @return 
+     */
+    public static Map<String, Plugin> getCreateAppOptions() {
+        Map<String, Plugin> options = new HashMap<String, Plugin>();
+        
+        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> plugins = pluginManager.list(CreateAppOption.class);
+        
+        for (Plugin p : plugins) {
+            if (((CreateAppOption) p).isAvailable()) {
+                options.put(ClassUtils.getUserClass(p).getName(), p);
+            }
+        }
+        
+        return options;
+    }
+    
+    /**
+     * Execute create app option plugin, return errors if there is.
+     * @param plugin
+     * @param propertiesJson
+     * @param appName
+     * @param appId
+     * 
+     * @return 
+     */
+    @Transactional
+    public static Collection<String> executeCreateAppOptionPlugin(CreateAppOption plugin, String propertiesJson, String appId, String appName, HttpServletRequest request) {
+        Collection<String> errors = null;
+        
+        if (plugin != null) {
+            try {
+                if (plugin instanceof PropertyEditable) {
+                    ((PropertyEditable) plugin).setProperties(PropertyUtil.getPropertiesValueFromJson(propertiesJson));
+                }
+                errors = plugin.createAppDefinition(appId, appName, request);
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, "Error create app using " + plugin.getClassName());
+            }
+        }
+        
+        return errors;
     }
 }

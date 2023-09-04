@@ -43,6 +43,7 @@ import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.CreateAppOption;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -124,6 +125,7 @@ import org.joget.directory.model.service.DirectoryManagerPlugin;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.logs.LogViewerAppender;
+import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
@@ -1443,6 +1445,8 @@ public class ConsoleWebController {
         Map<String, String> templateAppList = MarketplaceUtil.getTemplateOptions();
         model.addAttribute("templateAppList", templateAppList);
         
+        model.addAttribute("pluginOptions", AppUtil.getCreateAppOptions());
+        
         if (templateAppId != null && !templateAppId.isEmpty()) {
             model.addAttribute("type", "template");
             model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
@@ -1456,14 +1460,32 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/submit", method = RequestMethod.POST)
     public String consoleAppSubmit(ModelMap model, HttpServletRequest request, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result, 
             @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "templateAppId", required = false) String templateAppId, 
-            @RequestParam(value = "tablePrefix", required = false) String tablePrefix) {
+            @RequestParam(value = "tablePrefix", required = false) String tablePrefix, 
+            @RequestParam(value = "type", required = false) String type, 
+            @RequestParam(value = "pluginProperties", required = false) String properties) {
         // validate ID
         validator.validate(appDefinition, result);
+        
+        Map<String, Plugin> pluginOptions = AppUtil.getCreateAppOptions();
 
         boolean invalid = result.hasErrors();
         if (!invalid) {
-            Collection<String> errors = null;
-            if (templateAppId != null && !templateAppId.isEmpty()) {
+            Collection<String> errors = new ArrayList<String>();
+            
+            if (pluginOptions.containsKey(type)) {
+                // check for duplicate, so that the plugin no need to check this again
+                AppDefinition appDef = appDefinitionDao.loadById(appDefinition.getAppId());
+                if (appDef != null) {
+                    errors.add("console.app.error.label.idExists");
+                    invalid = true;
+                } else {    
+                    errors = AppUtil.executeCreateAppOptionPlugin((CreateAppOption) pluginOptions.get(type), properties, appDefinition.getAppId(), appDefinition.getName(), request);
+                    if (errors != null && !errors.isEmpty()) {
+                        model.addAttribute("pluginErrors", errors);
+                        invalid = true;
+                    }
+                }
+            } else if (templateAppId != null && !templateAppId.isEmpty()) {
                 errors = appService.createAppDefinitionFromTemplate(appDefinition, templateAppId, tablePrefix);
                 if (!errors.isEmpty()) {
                     model.addAttribute("errors", errors);
@@ -1507,7 +1529,17 @@ public class ConsoleWebController {
                 }
             }
             
-            if (templateAppId != null && !templateAppId.isEmpty()) {
+            if (pluginOptions.containsKey(type)) {
+                model.addAttribute("type", StringUtil.stripAllHtmlTag(type));
+                
+                //verify the properties is a proper json format
+                try {
+                    JSONObject obj = new JSONObject(properties);
+                    model.addAttribute("properties", properties);
+                } catch (Exception e) {
+                    //ignore it
+                }
+            } else if (templateAppId != null && !templateAppId.isEmpty()) {
                 model.addAttribute("type", "template");
                 model.addAttribute("templateAppId", StringUtil.stripAllHtmlTag(templateAppId));
                 model.addAttribute("tablePrefix", StringUtil.stripAllHtmlTag(tablePrefix));
@@ -1518,7 +1550,8 @@ public class ConsoleWebController {
             } else {
                 model.addAttribute("type", "");
             }
-        
+            model.addAttribute("pluginOptions", pluginOptions);
+            
             return "console/apps/appCreate";
         } else {
             String appId = StringEscapeUtils.escapeHtml(appDefinition.getId());

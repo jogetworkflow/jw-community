@@ -1,7 +1,11 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader />
-
+    <c:if test="${pluginOptions.size() > 0}">
+        <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
+    </c:if>    
     <div id="main-body-header">
         <fmt:message key="console.app.create.label.title"/>
     </div>
@@ -67,17 +71,51 @@
             .form-input input::-ms-input-placeholder{
                 color:#cfcfcf;
             }
+            .pluginConfigEditor .property-editor-property-container {
+                padding: 0px !important;
+                font-size: 14px;
+            }
+            .pluginConfigEditor .property-editor-property-container .property-label-container {
+                width: 200px;
+                float: left;
+            }
+            .pluginConfigEditor .property-editor-property-container .property-input {
+                width: auto;
+                float: none;
+                position: relative;
+                margin-left: 215px;
+                display: block;
+            }
+            .property-editor-container input:not([type]), .property-editor-container input[type=text], 
+            .property-editor-container input[type=password], .property-editor-container input[type=email], 
+            .property-editor-container input[type=url], .property-editor-container input[type=time], 
+            .property-editor-container input[type=date], .property-editor-container input[type=datetime], 
+            .property-editor-container input[type=datetime-local], .property-editor-container input[type=tel], 
+            .property-editor-container input[type=number], .property-editor-container input[type=search], 
+            .property-editor-container input[type=file], .property-editor-container textarea, 
+            .property-editor-container select:not([class^=ui]){
+                min-width: 50%;
+            }
         </style>    
         <c:url var="url" value="" />
         <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" modelAttribute="appDefinition" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
-            <c:if test="${!empty errors}">
-                <span class="form-errors" style="display:block">
-                    <c:forEach items="${errors}" var="error">
-                        <fmt:message key="${error}"/>
-                    </c:forEach>
-                </span>
-            </c:if>
+            <c:choose>
+                <c:when test="${!empty pluginErrors}">
+                    <span class="form-errors" style="display:block">
+                        <c:forEach items="${pluginErrors}" var="error">
+                            <c:out value="${error}"/>
+                        </c:forEach>
+                    </span>
+                </c:when> 
+                <c:when test="${!empty errors}">
+                    <span class="form-errors" style="display:block">
+                        <c:forEach items="${errors}" var="error">
+                            <fmt:message key="${error}"/>
+                        </c:forEach>
+                    </span>
+                </c:when> 
+            </c:choose>
             <fieldset>
                 <div class="form-row">
                     <label for=""></label>
@@ -88,6 +126,11 @@
                                 <li><label><input name="type" type="radio" value="template" <c:if test="${type eq 'template'}">checked</c:if>><div><i class="far fa-file-archive"></i><span><fmt:message key="console.app.create.templateApp"/></span></div></label></li>
                             </c:if>
                             <li><label><input name="type" type="radio" value="duplicate" <c:if test="${type eq 'duplicate'}">checked</c:if>><div><i class="far fa-copy"></i><span><fmt:message key="console.app.create.cloneExisting"/></span></div></label></li>
+                            <c:if test="${pluginOptions.size() > 0}">
+                                <c:forEach var="plugin" items="${pluginOptions}">
+                                    <li data-propertyoptions="<ui:escape format="html" value="${plugin.value.propertyOptions}" />" <c:if test="${type eq plugin.key}">data-properties="<ui:escape format="html" value="${properties}"/>"</c:if>><label><input name="type" type="radio" value="${plugin.key}" <c:if test="${type eq plugin.key}">checked</c:if>><div>${plugin.value.pluginIcon}<span>${plugin.value.i18nLabel}</span></div></label></li>
+                                </c:forEach>
+                            </c:if>
                         </ul>
                     </span>
                 </div>
@@ -127,6 +170,12 @@
                     <div id="templateConfigRows" style="display:none;margin-top: 20px;">
                         
                     </div>
+                </div>  
+                <div id="pluginConfig" style="display:none;">
+                    <textarea id="pluginProperties" name="pluginProperties" style="display:none;"></textarea>
+                    <div class="pluginConfigEditor">
+                        
+                    </div>    
                 </div>    
             </fieldset>
             <div class="form-buttons">
@@ -170,6 +219,37 @@
             }else{
                 $("#createApp").submit();
             }
+        }
+        function populatePluginProperties(className, element) {
+            
+            $("#pluginConfig > #pluginProperties").val("");
+            $("#pluginConfig > .pluginConfigEditor").data("classname", className);
+            
+            //retrieve properties
+            var elementProperty = $(element).data("properties");
+            if (elementProperty === undefined || elementProperty === "") {
+                elementProperty = {};
+            }
+            $("#pluginConfig > #pluginProperties").val(JSON.stringify(elementProperty));
+            
+            var propertiesDefinition = $(element).data("propertyoptions");
+
+            // render properties
+            var options = {
+                contextPath: "${pageContext.request.contextPath}",
+                propertiesDefinition : propertiesDefinition,
+                propertyValues : elementProperty,
+                changeCheckIgnoreUndefined: true,
+                saveCallback: function(container, properties) {
+                    elementProperty = $.extend(elementProperty, properties);
+                    
+                    //update properties
+                    $(element).data("properties", elementProperty);
+                    $("#pluginConfig > #pluginProperties").val(JSON.stringify(elementProperty));
+                }
+            };
+
+            PropertyEditor.SimpleMode.render($("#pluginConfig > .pluginConfigEditor"), options);
         }
 
         function closeDialog() {
@@ -258,15 +338,18 @@
 
             $("[name='type']").on("change", function(){
                 var value = $("[name='type']:checked").val();
-                hideDiv($("#duplicateView, #templateView, #templateConfig"));
+                hideDiv($("#duplicateView, #templateView, #templateConfig, #pluginConfig"));
                 
                 if (value === "template") {
                     showDiv($("#templateView"));
                 } else if (value === "duplicate") {
                     showDiv($("#duplicateView"));
+                } else if (value !== "") {
+                    populatePluginProperties(value, $(this).closest("li"));
+                    showDiv($("#pluginConfig"));
                 }
-            })
-            $("[name='type']:first").trigger("change");
+            });
+            $("[name='type']:checked").trigger("change");
         });
     </script>
 

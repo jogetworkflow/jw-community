@@ -42,6 +42,7 @@ import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.enterprise.CorporatiTheme;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -372,6 +373,21 @@ public class GeneratorUtil {
      * @return 
      */
     public static String processResourceFile(GeneratorPlugin plugin, String resourceUrl, Object[] resourceArgs, String translationFileName, Map<String, String> variables,  String escapeFormat) {
+        return processResourceFile((PropertyEditable) plugin, resourceUrl, resourceArgs, translationFileName, variables, escapeFormat);
+    }
+    
+    /**
+     * processing the generator resource file with plugin properties and variables
+     * 
+     * @param plugin
+     * @param resourceUrl
+     * @param resourceArgs
+     * @param translationFileName
+     * @param variables
+     * @param escapeFormat
+     * @return 
+     */
+    public static String processResourceFile(PropertyEditable plugin, String resourceUrl, Object[] resourceArgs, String translationFileName, Map<String, String> variables,  String escapeFormat) {
         String content = AppUtil.readPluginResource(plugin.getClassName(), resourceUrl, resourceArgs, true, translationFileName);
         
         while (content.contains("${{uuid}}")) {
