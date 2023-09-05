@@ -37,7 +37,6 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
     private Form cachedForm = null;
     private String cachedTableName = null;
     private String cachedFormDefId = null;
-    private DataListInboxSetting inboxSetting;
     
     @Override
     public String getClassName() {
