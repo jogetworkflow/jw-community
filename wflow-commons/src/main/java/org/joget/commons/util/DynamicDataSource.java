@@ -44,6 +44,11 @@ public class DynamicDataSource extends XADataSource {
             setPassword(tempPassword);
             setProperties(properties);
             LogUtil.info(getClass().getName(), "profileName=" + HostManager.getCurrentProfile() + ", url=" + getUrl() + ", user=" + getUsername());
+            
+            if (tempDriver.contains("mysql")) {
+                //run collation check after connection established for mysql
+                DatabaseUtil.checkAndFixMySqlDbCollation(super.getConnection());
+            } 
         }
         return super.getConnection();
     }
