@@ -823,8 +823,7 @@ body.rtl .handsontable .htCore tr td:last-child {
 
 /* other */
 .calculationField_value {
-    padding: 10px 12px;
-    color: #495057;
+    padding: 6px 10px 0 1px;
 }
 
 /* Multipaged form */
