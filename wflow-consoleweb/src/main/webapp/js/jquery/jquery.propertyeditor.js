@@ -10712,6 +10712,11 @@ PropertyAssistant = {
     init : function(element, options) {
         PropertyAssistant.options = options;
         
+        //not able to retrieve the option if there is no app apth
+        if (PropertyAssistant.options.appPath === undefined || PropertyAssistant.options.appPath === "") {
+            return;
+        }
+        
         if (!PropertyAssistant.initialized) {
             PropertyAssistant.initialized = true;
             PropertyAssistant.getDialog();

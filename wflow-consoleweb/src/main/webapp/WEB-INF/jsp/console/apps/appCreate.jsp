@@ -71,6 +71,13 @@
             .form-input input::-ms-input-placeholder{
                 color:#cfcfcf;
             }
+            .pluginConfigEditor {
+                border: 1px solid #ced4da;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 15px 0;
+                width: 100%;
+            }
             .pluginConfigEditor .property-editor-property-container {
                 padding: 0px !important;
                 font-size: 14px;
@@ -96,9 +103,12 @@
             .property-editor-container select:not([class^=ui]){
                 min-width: 50%;
             }
+            .pluginConfigEditor .property-editor-container a.btn:not([class^=chosen]) {
+                background-color: #d8d8d8;
+            }
         </style>    
         <c:url var="url" value="" />
-        <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" modelAttribute="appDefinition" cssClass="form blockui">
+        <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" modelAttribute="appDefinition" cssClass="form cblockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:choose>
                 <c:when test="${!empty pluginErrors}">
@@ -171,7 +181,7 @@
                         
                     </div>
                 </div>  
-                <div id="pluginConfig" style="display:none;">
+                <div id="pluginConfig" class="form-row" style="display:none;">
                     <textarea id="pluginProperties" name="pluginProperties" style="display:none;"></textarea>
                     <div class="pluginConfigEditor">
                         
@@ -221,6 +231,10 @@
             }
         }
         function populatePluginProperties(className, element) {
+            if ($("#pluginConfig > .pluginConfigEditor").data("classname") === className) {
+                return;
+            }
+            $("#pluginConfig > .pluginConfigEditor").html("");
             
             $("#pluginConfig > #pluginProperties").val("");
             $("#pluginConfig > .pluginConfigEditor").data("classname", className);
@@ -288,6 +302,20 @@
         }       
         
         $(function() {
+            $("body").on("submit", "form.cblockui", function(){
+                $.blockUI({ css: { 
+                    border: 'none', 
+                    padding: '15px', 
+                    backgroundColor: 'transparent', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: 0.8, 
+                    color: '#fff',
+                    'text-align': 'center'
+                }, message : '<i class="fas fa-spin fa-spinner fa-3x"></i><br/><h3><ui:msgEscJS key="console.app.create.loadingMessage"/></h3>' }); 
+                return true;
+            });
+            
             $("input#id").focus();
             
             $("[name='templateAppId'], [name='copyAppId']").on("change", function(){
