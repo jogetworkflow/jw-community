@@ -69,7 +69,7 @@ public class DefaultValidator extends FormValidator {
         if ("true".equals(mandatory)) {
             result = validateMandatory(data, id, label, values, message);
         }
-        if (type != null) {
+        if (type != null && result) {
             type = ";" + type;
             if (type.indexOf(";mandatory") >= 0) {
                 result = validateMandatory(data, id, label, values, message);
