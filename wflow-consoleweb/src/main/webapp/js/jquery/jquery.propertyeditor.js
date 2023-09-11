@@ -2397,7 +2397,7 @@ PropertyEditor.Model.Type.prototype = {
             var toolTip = '';
             var toolTipId = '';
             if (description !== "" && this.properties.type !== "header") {
-                toolTipId = this.properties.name + (new Date()).getTime();
+                toolTipId = this.properties.name + (new Date()).getTime() + (Math.floor(Math.random() * 10000));;
                 toolTip = ' <i class="property-label-description fas fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
             }
 
@@ -4449,7 +4449,7 @@ PropertyEditor.Type.Repeater.prototype = {
         var fieldsHolder = {};
         
         var html = "";
-        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        var cId = thisObj.id + "-" + ((new Date()).getTime()) + (Math.floor(Math.random() * 10000));
         if (fields !== null && fields !== undefined) {
             $.each(fields, function(i, property) {
                 html += thisObj.renderProperty(i, cId, property, value, fieldsHolder);
@@ -5168,7 +5168,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         var row = $('<div class="repeater-row property-editor-property" style="margin-bottom:0px;"><div class="actions expand-compress property-label-container"><div class="property-label" style="display:none"></div><div class="num"></div></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
         
-        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        var cId = thisObj.id + "-" + ((new Date()).getTime()) + (Math.floor(Math.random() * 10000));
         
         var valueString = "";
         if (value !== null && ((typeof value) === "string")) {
