@@ -55,6 +55,7 @@ public class DatabaseUtil {
                         while (resultSet.next()) {
                            String table = resultSet.getString("TABLE_NAME");
                            alterQuery = "ALTER TABLE "+table+" CONVERT TO CHARACTER SET "+tableCharSet+" COLLATE "+tableCollation+";";
+                           LogUtil.info(DatabaseUtil.class.getName(), "Alter table "+table+" charset to "+tableCharSet+" and collation to " + tableCollation);
                            statement.executeQuery(alterQuery);
                         }
                     }
