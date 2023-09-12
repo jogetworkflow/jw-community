@@ -1479,7 +1479,7 @@ public class ConsoleWebController {
                     errors.add("console.app.error.label.idExists");
                     invalid = true;
                 } else {    
-                    errors = AppUtil.executeCreateAppOptionPlugin((CreateAppOption) pluginOptions.get(type), properties, appDefinition.getAppId(), appDefinition.getName(), request);
+                    errors = AppUtil.executeCreateAppOptionPlugin((CreateAppOption) pluginManager.getPlugin(type), properties, appDefinition.getAppId(), appDefinition.getName(), request);
                     if (errors != null && !errors.isEmpty()) {
                         model.addAttribute("pluginErrors", errors);
                         invalid = true;
