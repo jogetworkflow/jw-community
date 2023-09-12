@@ -24,7 +24,9 @@ import static org.joget.apps.app.service.AppDevUtil.getGitBranchName;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import static org.joget.apps.app.service.AppDevUtil.getAppDevProperties;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.PluginThread;
+import org.joget.workflow.model.service.WorkflowUserManager;
 
 @WebFilter(urlPatterns="/web/*", asyncSupported=true)
 public class GitRequestFilter implements Filter {
@@ -41,81 +43,86 @@ public class GitRequestFilter implements Filter {
         
         if (!AppDevUtil.isGitDisabled()) {
             // commit
-            Collection<AppDefinition> pushAppDefs = new LinkedHashSet<>();
-            Map<String, GitCommitHelper> gitCommitMap = (Map<String, GitCommitHelper>)WorkflowUtil.getHttpServletRequest().getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+            final Map<String, GitCommitHelper> gitCommitMap = (Map<String, GitCommitHelper>)WorkflowUtil.getHttpServletRequest().getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+            WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+            final String currentUser = wum.getCurrentUsername();
             if (gitCommitMap != null && !gitCommitMap.isEmpty()) {
+                Thread gitThread = new PluginThread(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+                        wum.setCurrentThreadUser(currentUser);
+                        
+                        Collection<AppDefinition> pushAppDefs = new LinkedHashSet<>();
 
-                for (String appId: gitCommitMap.keySet()) {
-                    GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
+                        for (String appId: gitCommitMap.keySet()) {
+                            GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
 
-                    if (gitCommitHelper != null) {
-                        try {
-                            Git git = gitCommitHelper.getGit();
-                            AppDefinition appDef = gitCommitHelper.getAppDefinition();
+                            if (gitCommitHelper != null) {
+                                try {
+                                    Git git = gitCommitHelper.getGit();
+                                    AppDefinition appDef = gitCommitHelper.getAppDefinition();
 
-                            // perform commit
-                            String commitMessage = gitCommitHelper.getCommitMessage();
-                            if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
-                                // sync plugins
-                                if (gitCommitHelper.isSyncPlugins()) {
-                                    AppDevUtil.syncAppPlugins(appDef);
+                                    // perform commit
+                                    String commitMessage = gitCommitHelper.getCommitMessage();
+                                    if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
+                                        // sync plugins
+                                        if (gitCommitHelper.isSyncPlugins()) {
+                                            AppDevUtil.syncAppPlugins(appDef);
+                                        }
+
+                                        // sync resources
+                                        if (gitCommitHelper.isSyncResources()) {
+                                            AppDevUtil.syncAppResources(appDef);
+                                        }
+
+                                        AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
+                                        pushAppDefs.add(appDef);
+                                    }
+                                } catch (Exception ex) {
+                                    LogUtil.error(getClass().getName(), ex, ex.getMessage());
+                                } finally {  
+                                    try {
+                                        gitCommitHelper.clean();
+                                    } catch (Exception e) {
+                                        LogUtil.debug(GitRequestFilter.class.getName(), appId + " - " + e.getMessage());
+                                    }
                                 }
-
-                                // sync resources
-                                if (gitCommitHelper.isSyncResources()) {
-                                    AppDevUtil.syncAppResources(appDef);
-                                }
-
-                                AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
-                                pushAppDefs.add(appDef);
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(getClass().getName(), ex, ex.getMessage());
-                        } finally {  
-                            try {
-                                gitCommitHelper.clean();
-                            } catch (Exception e) {
-                                LogUtil.debug(GitRequestFilter.class.getName(), appId + " - " + e.getMessage());
                             }
                         }
-                    }
-                }
-            }
 
-            // push
-            if (pushAppDefs != null && !pushAppDefs.isEmpty()) {
-                final Collection<AppDefinition> threadPushAppDefs = pushAppDefs;
-                Thread pushToRemote = new PluginThread(new Runnable() {
+                        // push
+                        if (pushAppDefs != null && !pushAppDefs.isEmpty()) {
+                            for (AppDefinition appDef: pushAppDefs) {
+                                String baseDir = AppDevUtil.getAppDevBaseDirectory();
+                                String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
+                                File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                                String gitBranch = getGitBranchName(appDef);
+                                Properties gitProperties = getAppDevProperties(appDef);
+                                String gitUri = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_URI);
+                                String gitUsername = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME);
+                                String gitPassword = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD);
+                                try {
+                                    Git git = AppDevUtil.gitInit(projectDir);
+                                    if (gitUri != null && !gitUri.trim().isEmpty()) {
 
-                    public void run() {
-                        for (AppDefinition appDef: threadPushAppDefs) {
-                            String baseDir = AppDevUtil.getAppDevBaseDirectory();
-                            String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
-                            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-                            String gitBranch = getGitBranchName(appDef);
-                            Properties gitProperties = getAppDevProperties(appDef);
-                            String gitUri = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_URI);
-                            String gitUsername = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME);
-                            String gitPassword = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD);
-                            try {
-                                Git git = AppDevUtil.gitInit(projectDir);
-                                if (gitUri != null && !gitUri.trim().isEmpty()) {
-
-                                    try {
-                                        AppDevUtil.gitAddRemote(git, gitUri);
-                                    } catch(RefNotAdvertisedException re) {
-                                        // ignore
+                                        try {
+                                            AppDevUtil.gitAddRemote(git, gitUri);
+                                        } catch(RefNotAdvertisedException re) {
+                                            // ignore
+                                        }
+                                        AppDevUtil.gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
                                     }
-                                    AppDevUtil.gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                                } catch (Exception ex) {
+                                    LogUtil.error(getClass().getName(), ex, ex.getMessage());
                                 }
-                            } catch (Exception ex) {
-                                LogUtil.error(getClass().getName(), ex, ex.getMessage());
                             }
                         }
                     }
                 });
-                pushToRemote.setDaemon(false);
-                pushToRemote.start();
+                gitThread.setDaemon(false);
+                gitThread.start();    
             }
         }
     }
