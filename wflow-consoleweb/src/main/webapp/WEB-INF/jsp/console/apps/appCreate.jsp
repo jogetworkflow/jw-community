@@ -77,6 +77,7 @@
                 border-radius: 5px;
                 margin: 15px 0;
                 width: 100%;
+                box-sizing: border-box;
             }
             .pluginConfigEditor .property-editor-property-container {
                 padding: 0px !important;
