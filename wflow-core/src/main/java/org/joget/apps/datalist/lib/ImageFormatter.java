@@ -52,18 +52,24 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         String width = getPropertyString("width");
         String style = "";
         
-        if(!height.isEmpty() && !width.isEmpty()){
-            if (StringUtils.isNumeric(height)){
-                height = height + "px";
-            }
+        if(!height.isEmpty() && !width.isEmpty()) {
             if (StringUtils.isNumeric(width)){
                 width = width + "px";
             }
-            style = "height:"+height+";width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";
+            
+            if (height.endsWith("%")) {               
+                style = "padding-top:"+height+";height:0px;width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";          
+            } else {
+                if (StringUtils.isNumeric(height)) {
+                    height = height + "px";
+                }             
+                style = "height:"+height+";width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";
+            }
         }
         
+        String fullsize = getPropertyString("imagefullsize");
+        
         if (value != null && !((String) value).isEmpty()) {
-            String fullsize = getPropertyString("imagefullsize");
             String imageSrc = getPropertyString("imageSrc");
             
             if ("form".equalsIgnoreCase(imageSrc)) {
@@ -94,17 +100,17 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                         }
                         
                         if(!fullsize.isEmpty()){
-                            result += "<a href=\""+imgPath+"\" target=\"_blank\" \"> ";                            
+                            result += "<a href=\""+imgPath+"\" target=\"_blank\" \"> "; 
                         }
                         
                         if(!height.isEmpty() && !width.isEmpty()){
-                            result += "<div style=\"background-image:url('"+imgPath+"');"+style+"\" /></div>";                            
+                            result += "<div style=\"background-image:url('"+imgPath+"');"+style+"\" /></div>";  
                         }else{
                             result += "<img src=\""+imgPath+"thumb.jpg.\" />";
                         }
                         
                         if(!fullsize.isEmpty()){
-                            result += "</a> ";                            
+                            result += "</a> ";   
                         }
                          
                     }
@@ -136,13 +142,22 @@ public class ImageFormatter extends DataListColumnFormatDefault{
         }
         
         if (result.isEmpty() && !getPropertyString("defaultImage").isEmpty()) {
+            
+            if(!fullsize.isEmpty()){
+                result += "<a href=\""+getPropertyString("defaultImage")+"\" target=\"_blank\" \"> "; 
+            }
+            
             if(!height.isEmpty() && !width.isEmpty()){
                 result += "<div style=\"background-image:url('"+getPropertyString("defaultImage")+"');"+style+"\" /></div>";   
             } else {
                 result += "<img src=\""+getPropertyString("defaultImage")+"\" "+style+">";  
             }
+            
+            if(!fullsize.isEmpty()){
+                result += "</a> ";                            
+            }
         }
-        
+
         return result;
     }
 }
