@@ -34,6 +34,7 @@ var AdminBar = {
         }
         $quickOverlayFrame.attr("src", "about:blank");
         $quickOverlayFrame.attr("src", url);
+        $quickOverlayFrame.addClass("iframeloading");
         $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
             AdminBar.currentPageTitle = document.title;

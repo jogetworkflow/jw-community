@@ -351,6 +351,7 @@ PopupDialog.prototype = {
                 setTimeout(function() { 
                     newFrame.contentWindow.focus();
                 }, 100);
+                $(newFrame).addClass("iframeloading");
             }
             
             var temWidth = $(window).width();
@@ -1304,4 +1305,14 @@ HelpGuide = {
         }        
     }
 
+};
+
+/* adding content placeholder to iframe while it is loading*/
+if (window.self !== window.parent && window.frameElement) {
+    window.addEventListener('load', function(event) {
+        $(window.frameElement).removeClass("iframeloading");
+    });
+    window.addEventListener('unload', function(event) {
+        $(window.frameElement).addClass("iframeloading");
+    });
 }
