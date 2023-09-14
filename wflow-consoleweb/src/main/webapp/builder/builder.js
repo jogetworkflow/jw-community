@@ -200,6 +200,8 @@
     },
     
     ajaxRenderBuilder: function(url) {
+        $("#builder-quick-nav #builder-menu ul #appNotExist").hide();
+        
         var rtl;
         if($('body').hasClass('rtl')){
            rtl=true;
