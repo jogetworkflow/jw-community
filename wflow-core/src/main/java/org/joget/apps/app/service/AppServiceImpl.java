@@ -40,6 +40,7 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.hibernate.proxy.HibernateProxy;
@@ -1274,24 +1275,26 @@ public class AppServiceImpl implements AppService {
                     replacement.put("/app/"+copy.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                     replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                     
+                    String prefix = "";
+                    //find table prefix in environment
+                    if (copy.getEnvironmentVariableList() != null) {
+                        for (EnvironmentVariable env : copy.getEnvironmentVariableList()) {
+                            if (env.getId().equals("table_prefix")) {
+                                prefix = env.getValue();
+                                break;
+                            }
+                        }
+                    }
+                        
                     Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                     JSONObject templateConfig = AppUtil.getAppTemplateConfig(copy);
                     if (templateConfig != null) {
-                        retrieveTemplateReplaceMap(replacement, templateReplace, templateConfig);
+                        retrieveTemplateReplaceMap(replacement, templateReplace, prefix, tablePrefix, templateConfig);
                     }
                     
                     //replace table prefix
                     if (tablePrefix != null && !tablePrefix.isEmpty()) {
-                        String prefix = "";
-                        //find table prefix in environment
-                        if (copy.getEnvironmentVariableList() != null) {
-                            for (EnvironmentVariable env : copy.getEnvironmentVariableList()) {
-                                if (env.getId().equals("table_prefix")) {
-                                    prefix = env.getValue();
-                                    break;
-                                }
-                            }
-                        }
+                        
                         replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
                         replacement.put("<tableName>" + prefix, "<tableName>" + tablePrefix);
                         replacement.put("&quot;tableName&quot;:&quot;" + prefix, "&quot;tableName&quot;:&quot;" + tablePrefix);
@@ -1309,7 +1312,7 @@ public class AppServiceImpl implements AppService {
                         replace.put("Name=\""+copy.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
                         replace.put("name=\""+copy.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
                         
-                        xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
+                        xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
                         
                         if (!templateReplace.isEmpty()) {
                             xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
@@ -1321,6 +1324,9 @@ public class AppServiceImpl implements AppService {
                     AppDefinition newAppDef = importAppDefinition(appDef, 1L, xpdl);
                     
                     AppResourceUtil.copyAppResources(copy.getAppId(), copy.getVersion().toString(), newAppDef.getAppId(), newAppDef.getVersion().toString());
+                    if (templateConfig != null) {
+                        updateTemplateFile(newAppDef, templateConfig);
+                    }
                 } catch (Exception ex) {
                     LogUtil.error(getClass().getName(), ex, "");
                     appDefinitionDao.saveOrUpdate(appDefinition);
@@ -1440,45 +1446,55 @@ public class AppServiceImpl implements AppService {
                 //replace id and name
                 replacement = new LinkedHashMap<String, String>();
                 replacement.put("<id>"+zipApp.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
-                replacement.put("<name>"+zipApp.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
-                appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
+                replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
+                replacement.put("<name>"+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"</name>", "<name>"+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"</name>");
+                if (xpdl != null && xpdl.length > 0) {
+                    appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 0, 14); //need to change for packageDefinition too
+                } else {
+                    appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
+                }
                 
                 replacement = new LinkedHashMap<String, String>();
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 
+                String prefix = "";
+                //find table prefix in environment
+                if (zipApp.getEnvironmentVariableList() != null) {
+                    for (EnvironmentVariable env : zipApp.getEnvironmentVariableList()) {
+                        if (env.getId().equals("table_prefix")) {
+                            prefix = env.getValue();
+                            break;
+                        }
+                    }
+                }
+                
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
-                    retrieveTemplateReplaceMap(replacement, templateReplace, new JSONObject(new String(templateConfig, "UTF-8")));
+                    retrieveTemplateReplaceMap(replacement, templateReplace, prefix, tablePrefix, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
                 
                 //replace table prefix
                 if (tablePrefix != null && !tablePrefix.isEmpty()) {
-                    String prefix = "";
-                    //find table prefix in environment
-                    if (zipApp.getEnvironmentVariableList() != null) {
-                        for (EnvironmentVariable env : zipApp.getEnvironmentVariableList()) {
-                            if (env.getId().equals("table_prefix")) {
-                                prefix = env.getValue();
-                                break;
-                            }
-                        }
-                    }
                     replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
                     replacement.put("<tableName>" + prefix, "<tableName>" + tablePrefix);
                     replacement.put("&quot;tableName&quot;:&quot;" + prefix, "&quot;tableName&quot;:&quot;" + tablePrefix);
                     replacement.put("&quot;processTable&quot;:&quot;", "&quot;processTable&quot;:&quot;" + tablePrefix);
                 }
 
-                appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
+                if (xpdl != null && xpdl.length > 0) {
+                    appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 14, null); // start after name tag of packageDefinition
+                } else {
+                    appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 5, null); // start after name tag of appDefinition
+                }
                 
                 Map<String, String> replace = new HashMap<String, String>();
                 replace.put("Id=\""+zipApp.getAppId()+"\"", "Id=\""+appDefinition.getAppId()+"\"");
                 replace.put("id=\""+zipApp.getAppId()+"\"", "id=\""+appDefinition.getAppId()+"\"");
-                replace.put("Name=\""+zipApp.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
-                replace.put("name=\""+zipApp.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
-                xpdl = StringUtil.searchAndReplaceByteContent(xpdl, replace);
+                replace.put("Name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "Name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
+                replace.put("name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
+                xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
                 
                 if (!templateReplace.isEmpty()) {
                     xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
@@ -1507,10 +1523,17 @@ public class AppServiceImpl implements AppService {
         return errors;
     }
     
-    protected void retrieveTemplateReplaceMap(Map<String, String> replacement, Map<String, String> templateReplace, JSONObject templateConfig) {
-        if (templateConfig != null) {
+    protected void retrieveTemplateReplaceMap(Map<String, String> replacement, Map<String, String> templateReplace, String prefix, String tablePrefix, JSONObject templateConfig) {
+        if (templateConfig != null && !templateConfig.keySet().isEmpty()) {
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request != null) {
+                if (prefix == null) {
+                    prefix = "";
+                }
+                if (tablePrefix == null) {
+                    tablePrefix = "";
+                }
+                
                 try {
                     Iterator<String> keys = templateConfig.keys();
                     while(keys.hasNext()) {
@@ -1541,9 +1564,9 @@ public class AppServiceImpl implements AppService {
                                         }
                                         
                                         if (key.equals("tables")) {
-                                            replacement.put("app_fd_" + s, "app_fd_" + value);
-                                            replacement.put("<tableName>" + s, "<tableName>" + value);
-                                            replacement.put("&quot;tableName&quot;:&quot;" + s, "&quot;tableName&quot;:&quot;" + value);
+                                            replacement.put("app_fd_" + prefix + s, "app_fd_" + tablePrefix + value);
+                                            replacement.put("<tableName>" + prefix+ s, "<tableName>" + tablePrefix + value);
+                                            replacement.put("&quot;tableName&quot;:&quot;" + prefix+ s, "&quot;tableName&quot;:&quot;" + tablePrefix + value);
                                         } else {
                                             //to prevent accidentally replace xml tag
                                             templateReplace.put(">" + s, ">" + value);
@@ -1553,8 +1576,12 @@ public class AppServiceImpl implements AppService {
                                             templateReplace.put("\"" + s, "\"" + value);
                                             templateReplace.put(s+"\"", value + "\"");
                                             templateReplace.put(" " + s + " ", " " + value + " ");
-                                            templateReplace.put(s + "_", value + "_");
-                                            templateReplace.put("=" + s, "=" + value); // for participant mapping start & end node
+                                            
+                                            if (!key.equals("labels")) {
+                                                templateReplace.put("_" + s, "_" + value);
+                                                templateReplace.put(s + "_", value + "_");
+                                                templateReplace.put("=" + s, "=" + value); // for participant mapping start & end node
+                                            }
                                         }
                                     }
                                 }
@@ -1566,6 +1593,55 @@ public class AppServiceImpl implements AppService {
                 }
 
                 replacement.putAll(templateReplace);
+            }
+        }
+    }
+    
+    /**
+     * Update the template.json of new cloned app
+     * @param appDef
+     * @param templateConfig 
+     */
+    protected void updateTemplateFile(AppDefinition appDef, JSONObject templateConfig){
+        if (templateConfig != null && !templateConfig.keySet().isEmpty()) {
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null) {
+                JSONObject newTemplateConfig = new JSONObject();
+                try {
+                    Iterator<String> keys = templateConfig.keys();
+                    while(keys.hasNext()) {
+                        String key = keys.next();
+                        if (templateConfig.get(key) instanceof JSONArray) {
+                            JSONArray jsonArray = templateConfig.getJSONArray(key);
+                            
+                            JSONArray newJsonArray = new JSONArray();
+                            newTemplateConfig.put(key, newJsonArray);
+                            
+                            for (int i=0; i<jsonArray.length(); i++) {
+                                String replace = jsonArray.get(i).toString();
+                                String value = request.getParameter("rp_" + key+"_"+replace.replaceAll("[^a-zA-Z0-9_]", "_"));
+                                
+                                if (value != null && !value.isEmpty()) {
+                                    value = StringUtil.stripAllHtmlTag(value);
+                                    
+                                    if (key.equals("tables") || key.equals("ids")) {
+                                        //should not allow space or symbol
+                                        value = value.replaceAll("\\s", "_");
+                                        value = value.replaceAll("[^a-zA-Z0-9_]", "");
+                                    }
+                                }
+                                if (value == null || value.isEmpty()) {
+                                    value = replace;
+                                }
+                                newJsonArray.put(value);
+                            }
+                        }
+                    }
+                    
+                    FileUtils.writeStringToFile(AppResourceUtil.getFile(appDef.getAppId(), appDef.getVersion().toString(), "template.json"), newTemplateConfig.toString(4), "UTF-8");
+                } catch (Exception ex) {
+                    LogUtil.error(AppServiceImpl.class.getName(), ex, "");
+                }
             }
         }
     }
@@ -1727,7 +1803,7 @@ public class AppServiceImpl implements AppService {
             
             //to fix package id letter case issue
             if (appDef != null && !packageId.equals(appDef.getAppId())) {
-                packageXpdl = StringUtil.searchAndReplaceByteContent(packageXpdl, packageId, appDef.getAppId());
+                packageXpdl = StringUtil.searchAndReplaceFirstByteContent(packageXpdl, packageId, appDef.getAppId());
                 packageId = appDef.getAppId();
             }
 

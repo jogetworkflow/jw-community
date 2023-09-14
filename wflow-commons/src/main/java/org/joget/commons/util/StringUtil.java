@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -800,14 +801,10 @@ public class StringUtil {
      */
     public static byte[] searchAndReplaceByteContent(byte[] bytes, String search, String replacement) {
         if (search != null && replacement != null) {
-            try {
-                String content = new String(bytes, "UTF-8");
-
-                content = content.replaceAll(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacement));
-                bytes = content.getBytes("UTF-8");
-            } catch (Exception e) {
-                //ignore
-            }
+            Map<String, String> replacements = new HashMap<String, String>();
+            replacements.put(search, replacement);
+            
+            bytes = searchAndReplaceByteContent(bytes, replacements);
         }
         return bytes;
     }
@@ -819,13 +816,24 @@ public class StringUtil {
      * @return 
      */
     public static byte[] searchAndReplaceByteContent(byte[] bytes, Map<String, String> replacements) {
+        return searchAndReplaceByteContent(bytes, replacements, null, null);
+    }
+    
+    /**
+     * Search keywords and replace it with corresponding new keyword in byte content
+     * @param bytes
+     * @param replacements
+     * @param startFromLine
+     * @param endAtLine
+     * @return 
+     */
+    public static byte[] searchAndReplaceByteContent(byte[] bytes, Map<String, String> replacements, Integer startFromLine, Integer endAtLine) {
         if (replacements != null && !replacements.isEmpty()) {
             try {
                 String content = new String(bytes, "UTF-8");
                 
-                for (String search : replacements.keySet()) {
-                    content = content.replaceAll(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacements.get(search)));
-                }
+                content = searchAndReplaceContent(content, replacements, false, startFromLine, endAtLine);
+                
                 bytes = content.getBytes("UTF-8");
             } catch (Exception e) {
                 //ignore
@@ -837,23 +845,150 @@ public class StringUtil {
     /**
      * Search keywords and replace the first occurrence with corresponding new keyword in byte content
      * @param bytes
+     * @param search
+     * @param replacement
+     * @return 
+     */
+    public static byte[] searchAndReplaceFirstByteContent(byte[] bytes, String search, String replacement) {
+        if (search != null && replacement != null) {
+            Map<String, String> replacements = new HashMap<String, String>();
+            replacements.put(search, replacement);
+            
+            bytes = searchAndReplaceFirstByteContent(bytes, replacements);
+        }
+        return bytes;
+    }
+    
+    /**
+     * Search keywords and replace the first occurrence with corresponding new keyword in byte content
+     * @param bytes
      * @param replacements
      * @return 
      */
     public static byte[] searchAndReplaceFirstByteContent(byte[] bytes, Map<String, String> replacements) {
+        return searchAndReplaceFirstByteContent(bytes, replacements, null, null);
+    }
+    
+    /**
+     * Search keywords and replace the first occurrence with corresponding new keyword in byte content
+     * @param bytes
+     * @param replacements
+     * @param startFromLine
+     * @param endAtLine
+     * @return 
+     */
+    public static byte[] searchAndReplaceFirstByteContent(byte[] bytes, Map<String, String> replacements, Integer startFromLine, Integer endAtLine) {
         if (replacements != null && !replacements.isEmpty()) {
             try {
                 String content = new String(bytes, "UTF-8");
                 
-                for (String search : replacements.keySet()) {
-                    content = content.replaceFirst(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacements.get(search)));
-                }
+                content = searchAndReplaceContent(content, replacements, true, startFromLine, endAtLine);
+                
                 bytes = content.getBytes("UTF-8");
             } catch (Exception e) {
                 //ignore
             }
         }
         return bytes;
+    }
+    
+    /**
+     * Search keywords and replace it with corresponding new keyword in content
+     * @param content
+     * @param replacements
+     * @param replaceFirst
+     * @param startFromLine
+     * @param endAtLine
+     * @return 
+     */
+    public static String searchAndReplaceContent(String content, Map<String, String> replacements, boolean replaceFirst, Integer startFromLine, Integer endAtLine) {
+        if (replacements != null && !replacements.isEmpty()) {
+            try {
+                int length = content.length();
+                int startIndex = 0;
+                String remaining = "";
+                Map<String, String> founds = new LinkedHashMap<String, String>();
+                String newLineChar = "\n";
+                if ((startFromLine != null && startFromLine > 0) || (endAtLine != null && endAtLine > 0)) {
+                    if (content.contains("\r\n")) {
+                        newLineChar = "\r\n";
+                    } else if (content.contains("\r")) {
+                        newLineChar = "\r";
+                    }
+                }
+                if (startFromLine != null && startFromLine > 0) {
+                    //find the newline char
+                    while (startFromLine-- > 0) {
+                        startIndex = content.indexOf(newLineChar, startIndex+1);
+                    }
+                    if (startIndex < 0) {
+                        return content; // the start line is reach the end, nothing to replace
+                    }
+                }
+                if (endAtLine != null && endAtLine > 0) {
+                    length = 0;
+                    //find the newline char
+                    while (endAtLine-- >= 0) {
+                        length = content.indexOf(newLineChar, length+1);
+                    }
+                    if (length < 0) {
+                        length = content.length();
+                    }
+                }
+                if (length != content.length()) {
+                    remaining = content.substring(length + 1);
+                    content = content.substring(0, length);
+                }
+                
+                //keep the search to always search from the orginal content
+                for (String search : replacements.keySet()) {
+                    int index = startIndex;
+                    index = content.indexOf(search, index);
+                    String current = "";
+                    int start = 0;
+                    int end = 0;
+                    int slength = search.length();
+                    while (index != -1) {
+                        start = index - 10;
+                        if (start < 0) {
+                            start = 0;
+                        }
+                        end = index + slength + 10;
+                        if (end >= length) {
+                            end = length - 1;
+                        }
+                        current = content.substring(start, end);
+                        if (!founds.containsKey(current)) {
+                            founds.put(current, current.replaceAll(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacements.get(search))));
+                        }
+                        
+                        if (replaceFirst) {
+                            break;
+                        }
+                        
+                        index = content.indexOf(search, index + 1);
+                    }
+                }
+                
+                //actual replacement done after found all contents to be replaced
+                if (!founds.isEmpty()) {
+                    for (String found : founds.keySet()) {
+                        if (replaceFirst) {
+                            content = content.replaceFirst(StringUtil.escapeRegex(found), StringUtil.escapeRegex(founds.get(found)));
+                        } else {
+                            content = content.replaceAll(StringUtil.escapeRegex(found), StringUtil.escapeRegex(founds.get(found)));
+                        }
+                    }
+                }
+                
+                if (!remaining.isEmpty()) {
+                    content += remaining;
+                }
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+        return content;
     }
     
     /**
