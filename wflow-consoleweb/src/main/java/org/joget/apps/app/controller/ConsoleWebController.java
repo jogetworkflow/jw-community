@@ -3112,8 +3112,8 @@ public class ConsoleWebController {
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                String id = obj.get("id").toString();
                 String key = obj.get("key").toString();
+                String id = key + "_" + locale;
                 String value = obj.get("value").toString();
 
                 // check exist
