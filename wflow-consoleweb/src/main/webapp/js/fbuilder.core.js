@@ -910,7 +910,19 @@ FormBuilder = {
                                     }
                                 }
                             }
-                            return findEmptyCell(x+1, y+1);
+                            if (x+1 >= limit && y+1 >= limit) {
+                                //start from first cell again
+                                x = 0;
+                                y = 0;
+                            } else if (x+1 >= limit) {
+                                y += 1; //find from next row
+                            } else if (y+1 >= limit) {
+                                x += 1; //find from next col
+                            } else {
+                                x += 1;
+                                y += 1;
+                            }
+                            return findEmptyCell(x, y);
                         }
                     }
 
