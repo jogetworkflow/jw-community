@@ -1315,7 +1315,7 @@ public class AppServiceImpl implements AppService {
                         xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
                         
                         if (!templateReplace.isEmpty()) {
-                            xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
+                            xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace, 3, null); //should not replace package id & name
                         }
                     }
                     
@@ -1497,7 +1497,7 @@ public class AppServiceImpl implements AppService {
                 xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
                 
                 if (!templateReplace.isEmpty()) {
-                    xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace);
+                    xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace, 3, null); //should not replace package id & name
                 }
                 
                 AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);

@@ -906,7 +906,8 @@ public class StringUtil {
             try {
                 int length = content.length();
                 int startIndex = 0;
-                String remaining = "";
+                String before = "";
+                String after = "";
                 Map<String, String> founds = new LinkedHashMap<String, String>();
                 String newLineChar = "\n";
                 if ((startFromLine != null && startFromLine > 0) || (endAtLine != null && endAtLine > 0)) {
@@ -935,9 +936,16 @@ public class StringUtil {
                         length = content.length();
                     }
                 }
+                //prevent the replacement is done on the excluded line
+                if (startIndex > 0) {
+                    before = content.substring(0, startIndex);
+                }
                 if (length != content.length()) {
-                    remaining = content.substring(length + 1);
-                    content = content.substring(0, length);
+                    after = content.substring(length);
+                }
+                if (!before.isEmpty() || !after.isEmpty()) {
+                    content = content.substring(startIndex, length);
+                    length = content.length();
                 }
                 
                 //keep the search to always search from the orginal content
@@ -949,11 +957,18 @@ public class StringUtil {
                     int end = 0;
                     int slength = search.length();
                     while (index != -1) {
-                        start = index - 10;
+                        start = index;
+                        end = index + slength;
+                        //adding a few more chars in front or behind to locate the correct string when it is not break by space
+                        if (!search.startsWith(" ")) { 
+                            start = start - 5;
+                        }
+                        if (!search.endsWith(" ")){
+                            end = end + 5;
+                        }
                         if (start < 0) {
                             start = 0;
                         }
-                        end = index + slength + 10;
                         if (end >= length) {
                             end = length - 1;
                         }
@@ -981,8 +996,8 @@ public class StringUtil {
                     }
                 }
                 
-                if (!remaining.isEmpty()) {
-                    content += remaining;
+                if (!before.isEmpty() || !after.isEmpty()) {
+                    content = before + content + after;
                 }
             } catch (Exception e) {
                 //ignore
