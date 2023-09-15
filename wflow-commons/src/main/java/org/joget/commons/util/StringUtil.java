@@ -950,21 +950,32 @@ public class StringUtil {
                 
                 //keep the search to always search from the orginal content
                 for (String search : replacements.keySet()) {
-                    int index = startIndex;
+                    int index = 0; //since the content before start from line is moved to before variable, it should start from 0. 
                     index = content.indexOf(search, index);
                     String current = "";
                     int start = 0;
                     int end = 0;
+                    int space = 0;
                     int slength = search.length();
                     while (index != -1) {
                         start = index;
                         end = index + slength;
                         //adding a few more chars in front or behind to locate the correct string when it is not break by space
                         if (!search.startsWith(" ")) { 
-                            start = start - 5;
+                            space = content.indexOf(" ", start - 5);
+                            if (space > start - 5 && space < start && space != -1) {  //if there is a space, start from space
+                                start = space;
+                            } else {
+                                start = start - 5;
+                            }
                         }
                         if (!search.endsWith(" ")){
-                            end = end + 5;
+                            space = content.indexOf(" ", end);
+                            if (space < end + 5 && space != -1) {  //if there is a space within next 5 char, end at space
+                                end = space;
+                            } else {
+                                end = end + 5;
+                            }
                         }
                         if (start < 0) {
                             start = 0;

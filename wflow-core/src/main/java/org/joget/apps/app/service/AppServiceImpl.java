@@ -1274,6 +1274,7 @@ public class AppServiceImpl implements AppService {
                     replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                     replacement.put("/app/"+copy.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                     replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
+                    replacement.put("app_fd_" + copy.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
                     
                     String prefix = "";
                     //find table prefix in environment
@@ -1458,6 +1459,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
+                replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
                 
                 String prefix = "";
                 //find table prefix in environment
