@@ -3,6 +3,22 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.40
+=================
+7007c5f5a Fixed: wflow-consoleweb - Property Editor - Steps indicator does not work correctly for multi element select field. T1800 @7.0-SNAPSHOT
+8e5635874 Fixed: wflow-core - Default Validator - Validate method return wrong boolean result even UI show correct validation result. @7.0-SNAPSHOT
+10094dfa9 Fixed: wflow-commons - Database - Prevent MySQL database illegal mix of collations issue. @7.0-SNAPSHOT
+03826ea9f Fixed: wflow-commons - File Manager - Disallowed semicolon in file name. @7.0-SNAPSHOT
+1b365b327 Fixed: wflow-core - Deadline - Changes in one cluster node is not updated to other nodes. @7.0-SNAPSHOT
+c142a329f Fixed: wflow-core - List Inbox - Platform Entity is not working. @7.0-SNAPSHOT
+a2709724c Fixed: wflow-core - Form Data - Fix performance bottleneck when retrieve data with sort by dateCreated. @7.0-SNAPSHOT
+bcac0dcb4 Fixed: wflow-wfengine - Inbox - Process link data is not indexed in database. @7.0-SNAPSHOT
+99e4604c6 Fixed: wflow-core - Email Tool - ICS all day event can't work correctly in MS Outlook. #T2699 @7.0-SNAPSHOT
+d1d6c5a79 Fixed: wflow-core - Universal/Progressive Theme - Button style of dynamic loaded content is not standardize with other buttons. #T2742 @7.0-SNAPSHOT
+7f44d5363 Fixed: wflow-consoleweb - App Admin - Can't configure participant and tool mapping due to regression of f45ee46c. @7.0-SNAPSHOT
+3926ec34c Fixed: wflow-consoleweb - V5 Janux Theme - Sidebar not visible in RTL mode. @7.0-SNAPSHOT
+ec194fa14 Modified: wflow-core - List Binder - Support inbox optimization. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.39
 =================
 9eaa54dbe Modified: jw-community - App - Modified cache implementation. @7.0-SNAPSHOT
