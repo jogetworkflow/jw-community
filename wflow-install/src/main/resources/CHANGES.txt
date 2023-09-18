@@ -2,6 +2,67 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.5
+=====
+8a8a7cb81 Fixed: wflow-consoleweb - Form Builder - ERD throw maximum call stack error. @8.0-SNAPSHOT
+54954be5d Fixed: wflow-consoleweb - App Composer - App Messages not able to save in Oracle DB due to case sensitive issue. @8.0-SNAPSHOT
+d60275955 Fixed: wflow-consoleweb - Create App - Variable replacement does not work correctly when the replacement string having string to be replaced as sub string. @8.0-SNAPSHOT
+003ed9485 Fixed: wflow-consoleweb - App Composer - App not exist message still appear during loading when switch to other app. @8.0-SNAPSHOT
+a06127243 Modified: wflow-consoleweb - Iframe - Adding content placeholder while it is loading. @8.0-SNAPSHOT
+297097b1d Fixed: wflow-core - Image Formatter - Image not showing in list when size is set to "%" and image is unclickable. @8.0-SNAPSHOT
+982175dee Fixed: wflow-consoleweb - Create App - Concurrent create app from plugin having messed up app definition created. @8.0-SNAPSHOT
+ac847aab0 Fixed: wflow-consoleweb - Git - Change git processing to background thread to improve page response speed. @8.0-SNAPSHOT
+a2912322f Fixed: wflow-consoleweb - Create App - Having additional horizontal scroll bar when using plugin options. @8.0-SNAPSHOT
+7007c5f5a Fixed: wflow-consoleweb - Property Editor - Steps indicator does not work correctly for multi element select field. T1800 @7.0-SNAPSHOT
+8e5635874 Fixed: wflow-core - Default Validator - Validate method return wrong boolean result even UI show correct validation result. @7.0-SNAPSHOT
+0a9a6d3a1 Fixed: wflow-consoleweb - Calculation Field - Calculation field having wrong padding when display as readonly. @8.0-SNAPSHOT
+8b8808977 Fixed: wflow-core - Calculation Field - Calculation field having wrong padding when display as readonly. @8.0-SNAPSHOT
+10094dfa9 Fixed: wflow-commons - Database - Prevent MySQL database illegal mix of collations issue. @7.0-SNAPSHOT
+3dc7a3d3d Fixed: wflow-consoleweb - Builders - Copy & paste to update in JSON Definition changed the id. @8.0-SNAPSHOT
+eeb79ede4 Modified: wflow-core - Create App - Support plugin implementation to add additional create app option. @8.0-SNAPSHOT
+ade3b69f5 Modified: wflow-core - App Composer - Prevent empty definition name causing list not able to load. T2891 @8.0-SNAPSHOT
+758d5037c Fixed: wflow-core - List Hash Variable - Throw exception when session enabled and used in a thread. @8.0-SNAPSHOT
+8b4cd574d Fixed: wflow-core - List - Not able to export more than 100000 rows data. @8.0-SNAPSHOT
+899ac84d0 Fixed: wflow-consoleweb - UI - Environment name is appeared in printing. @8.0-SNAPSHOT
+52e9b4477 Fixed: wflow-consoleweb - DX8 Themes - Fixed timepicker background color is wrong due to wrong CSS selector in dark theme CSS file. @8.0-SNAPSHOT
+1117fe129 Fixed: wflow-consoleweb - DX8 Themes - Fixed iframe doesn't switch between light and dark mode. @8.0-SNAPSHOT
+03826ea9f Fixed: wflow-commons - File Manager - Disallowed semicolon in file name. @7.0-SNAPSHOT
+1b365b327 Fixed: wflow-core - Deadline - Changes in one cluster node is not updated to other nodes. @7.0-SNAPSHOT
+c142a329f Fixed: wflow-core - List Inbox - Platform Entity is not working. @7.0-SNAPSHOT
+2a85fe1f1 Fixed: wflow-consoleweb - DX8 Theme - Form submission is not handled correction when custom button is clicked in Safari. T2839 @8.0-SNAPSHOT
+0af7e6423 Fixed: wflow-core - Date Picker - Native datetime picker does not work correctly in IOS. @8.0-SNAPSHOT
+a2709724c Fixed: wflow-core - Form Data - Fix performance bottleneck when retrieve data with sort by dateCreated. @7.0-SNAPSHOT
+bcac0dcb4 Fixed: wflow-wfengine - Inbox - Process link data is not indexed in database. @7.0-SNAPSHOT
+5005b6138 Fixed: wflow-wfengine - Process Histories - Completed activities return null in stead of empty array for assignment users in Oracle db. @8.0-SNAPSHOT
+99e4604c6 Fixed: wflow-core - Email Tool - ICS all day event can't work correctly in MS Outlook. #T2699 @7.0-SNAPSHOT
+d1d6c5a79 Fixed: wflow-core - Universal/Progressive Theme - Button style of dynamic loaded content is not standardize with other buttons. #T2742 @7.0-SNAPSHOT
+7f44d5363 Fixed: wflow-consoleweb - App Admin - Can't configure participant and tool mapping due to regression of f45ee46c. @7.0-SNAPSHOT
+f5df178ab Modified: wflow-commons/wflow-core - Hash Variable - Support decimal escape format. @8.0-SNAPSHOT
+33914ea18 Added: wflow-plugin-base - Support WebSocket implementation in plugin. @8.0-SNAPSHOT
+2b2f4269f Fixed: wflow-consoleweb - Tag - Prevent unintended removal of option tag by refining tag removal selector. @8.0-SNAPSHOT
+532399279 Fixed: wflow-consoleweb - Xadmin Theme - Fixed browser scrollbar becomes extended when sidemenu is too long. @8.0-SNAPSHOT #T2840
+b14804170 Fixed: wflow-consoleweb - Progressive/Universal Themes - Fixed column not displaying correctly for progressive/universal theme. @8.0-SNAPSHOT
+d235adfa8 Fixed: wflow-core - User Profile Menu - Fixed null exception when opening the user profile menu and fixed redirection not reload the sidebar user details. @8.0-SNAPSHOT
+99bda8894 Fixed: wflow-consoleweb - Tags - Fixed when deleting a tag from the app composer it hides all the tags after it and added css to make the hover effect static. @8.0-SNAPSHOT
+4a9c6a8fc Fixed: wflow-core/wflow-consoleweb - Datepicker - Fixed datepicker icon missing hover CSS and hidden the title. @8.0-SNAPSHOT
+83da1f6fd Fixed: wflow-core/wflow-consoleweb - User Profile Menu - Fixed timezone and profile update message not showing and fix header is missing css. @8.0-SNAPSHOT
+2567478c3 Modified: wflow-consolweb - Previous Arabic message is not accurate. Change it to the correct one. @8.0-SNAPSHOT
+0a2fd02f1 Added: wflow-consoleweb - Added Arabic message for language switching. @8.0-SNAPSHOT
+9d1e760e1 Modified: jw-community - Update Spring Framework 5.3.27, Spring Security 5.7.8 for CVE-2023-34034. @7.1-SNAPSHOT
+1c941ebd4 Fixed: wflow-consoleweb - Fixed the issue where the row delete button was not in red color. @8.0-SNAPSHOT
+5a0dc7a6a Added : wflow-core, wflow-consoleweb - DX8 themes - Modified and added font size, font color, font-weight, border, box-shadow and preset color. @8.0-SNAPSHOT
+3926ec34c Fixed: wflow-consoleweb - V5 Janux Theme - Sidebar not visible in RTL mode. @7.0-SNAPSHOT
+2fa1aa082 Fixed: wflow-core - Form menu - Removed unnecessary box-shadow and added missing bottom border radius. @8.0-SNAPSHOT
+ec194fa14 Modified: wflow-core - List Binder - Support inbox optimization. @7.0-SNAPSHOT
+968aeddca Fixed: wflow-consoleweb - Dashboard Menu - Remove unnecessary white border and add missing bottom border radius. @8.0-SNAPSHOT
+0c87c97e1 Added: wflow-consoleweb - Multi paged form - Different design for the next and prev buttons. @8.0-SNAPSHOT
+4609ee8be Modified: JBoss EAP - Patched Spring Framework 5.3 to fix HttpServletMapping ClassCastException in JBoss EAP 7.4.11 @8.0-SNAPSHOT
+899a3210e Fixed: wflow-core - Form Row Delete Datalist Action - Fixed delete button not in red color. @8.0-SNAPSHOT
+d68ddc21e Fixed: wflow-consoleweb  - Fixed Horizontal line drawn between fields if 2nd section has no labels. @8.0-SNAPSHOT
+9ac41164e Modified: wflow-consoleweb - List grid, form grid, manage permission and popup-select box - Popup dialog adhere to the appropriate modal box layout. @8.0-SNAPSHOT
+7d57cdd5e Fixed: wflow-consoleweb - Fixed DX8 Ajax Theme cause JPopup to open in new window. 8.0-SNAPSHOT
+71d40d71c Added: wflow-core/wflow-consoleweb - Added dark theme option for dx8 themes. @8.0-SNAPSHOT
+
 8.0.4
 =====
 007c9d97c Fixed: wflow-consoleweb - Universal/Progressive Theme - Correction for 45f3d29. @8.0-SNAPSHOT
