@@ -2,9 +2,14 @@ package org.joget.directory.model;
 
 import org.joget.commons.spring.model.Auditable;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.Hibernate;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.dao.EmploymentDao;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.NotBlank;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.RegExp;
 
@@ -127,6 +132,17 @@ public class User implements Serializable, Auditable {
     }
 
     public Set getEmployments() {
+        //to handled no hibernate session issue in session replication of WorkflowUserDetails
+        try {
+            Hibernate.initialize(employments);
+        } catch (Exception e){
+            EmploymentDao dao = (EmploymentDao) DirectoryUtil.getApplicationContext().getBean("employmentDao");
+            employments = new HashSet();
+            Collection<Employment> temp = dao.findEmployments("where e.user.username = ?", new String[]{username}, null, null, null, null);
+            if (temp != null && !temp.isEmpty()) {
+                employments.addAll(temp);
+            }
+        }
         return employments;
     }
 
