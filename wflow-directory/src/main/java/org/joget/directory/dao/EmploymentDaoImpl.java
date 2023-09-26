@@ -17,6 +17,11 @@ import org.joget.directory.model.EmploymentReportTo;
 import org.joget.directory.model.Grade;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
+import org.joget.directory.model.service.ExtUserDetails;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDao {
 
@@ -74,6 +79,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 Set<Employment> employments = new HashSet<Employment>();
                 employments.add(employment);
                 user.setEmployments(employments);
+                
+                updateCachedUserEmployments(user.getUsername());
             }
             save("Employment", employment);
             return true;
@@ -100,6 +107,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         merge("Employment", e);
                     }
                 }
+                
+                updateCachedUserEmployments(user.getUsername());
             }
             
             return true;
@@ -114,6 +123,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             Employment employment = getEmployment(id);
 
             if (employment != null) {
+                String username = employment.getUser().getUsername();
+                        
                 // clear department HOD
                 Department dept = employment.getDepartment();
                 if (dept != null) {
@@ -144,6 +155,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 }
 
                 delete("Employment", employment);
+                
+                updateCachedUserEmployments(username);
             }
             return true;
         } catch (Exception e) {
@@ -264,6 +277,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         departmentDao.updateDepartment(department);
                     }
                 }
+                
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -286,6 +301,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         departmentDao.updateDepartment(department);
                     }
                 }
+                updateCachedUserEmployments(user.getUsername());
             }
         } catch (Exception e) {
             LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Unassign User As Department Hod Error!");
@@ -322,7 +338,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 employmentReportTo.setSubordinate(ue);
                 employmentReportTo.setReportTo(rte);
                 employmentReportToDao.addEmploymentReportTo(employmentReportTo);
-
+                
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -342,6 +359,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         employmentReportToDao.deleteEmploymentReportTo(employment.getEmploymentReportTo().getId());
                     }
                 }
+                
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -389,6 +408,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     isNull.getHods().clear();
                     saveOrUpdate("Employment", isNull);
                 }
+                
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -419,7 +440,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         }
                     }
                 }
-                
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -466,6 +487,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     isNull.setDepartmentId(department.getId());
                     saveOrUpdate("Employment", isNull);
                 }
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -506,6 +528,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                         saveOrUpdate("Employment", found);
                     }
                 }
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -556,6 +579,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 isNull.setGradeId(grade.getId());
                 saveOrUpdate("Employment", isNull);
                 
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -591,6 +615,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     }
                 }
                 
+                updateCachedUserEmployments(user.getUsername());
                 return true;
             }
         } catch (Exception e) {
@@ -885,5 +910,35 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         
         List result = q.list();
         return new Long(result.size());
+    }
+    
+    /**
+     * update the user object cached in thread 
+     * @param username 
+     */
+    protected void updateCachedUserEmployments(String username) {
+        WorkflowUserManager userManager = (WorkflowUserManager) DirectoryUtil.getApplicationContext().getBean("workflowUserManager");
+        if (username != null && userManager != null) {
+            if (username.equals(userManager.getCurrentUsername())) {
+                User user = userManager.getCurrentUser();
+                Set employments = new HashSet();
+                Collection<Employment> temp = findEmployments("where e.user.username = ?", new String[]{username}, null, null, null, null);
+                if (temp != null && !temp.isEmpty()) {
+                    employments.addAll(temp);
+                }
+                user.setEmployments(employments);
+                    
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                Object userObj = auth.getDetails();
+                if (userObj == null) {
+                    userObj = auth.getPrincipal();
+                }
+                if (userObj instanceof ExtUserDetails) {
+                    ((ExtUserDetails) userObj).updateUser(user);
+                }
+
+                userManager.setCurrentThreadUser(user);
+            }
+        }
     }
 }
