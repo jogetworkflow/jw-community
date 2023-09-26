@@ -7,7 +7,6 @@ AjaxComponent = {
     initAjax : function(element) {
         AjaxComponent.unbindEvents();
         $(element).find("[data-ajax-component], [data-ajax-component][data-events-triggering], [data-ajax-component][data-events-listening]").each(function() {
-            AjaxComponent.overrideLinkEvent($(this));
             AjaxComponent.initContent($(this));
         });
         
@@ -25,6 +24,7 @@ AjaxComponent = {
      * Override the behaviour of an AJAX supported component
      */
     initContent : function(element) {
+        AjaxComponent.overrideLinkEvent(element);
         setTimeout(function(){
             AjaxComponent.overrideButtonEvent(element);
             AjaxComponent.overrideDatalistButtonEvent(element);
