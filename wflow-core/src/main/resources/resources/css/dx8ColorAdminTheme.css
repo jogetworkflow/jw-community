@@ -232,15 +232,6 @@ div.exportlinks > a span {
     color:#000;
     font-weight: bold;
 }
-.dataList th.sortable a {
-    background-image:url("../images/v3/arrow_off.png");
-}
-.dataList th.order1 a {
-    background-image:url("../images/v3/arrow_down.png");
-}
-.dataList th.order2 a {
-    background-image:url("../images/v3/arrow_up.png");
-}
 .dataList tr.odd,
 .dataList tr.odd + tr.footable-row-detail{
     background-color: #ededed;
