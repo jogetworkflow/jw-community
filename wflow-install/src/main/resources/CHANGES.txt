@@ -2,6 +2,15 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.6
+=====
+d7eeb4f8d Fixed: wflow-directory - Current User Hash Variable - Employment info is not updated after edit user employment. @7.0-SNAPSHOT
+36e990768 Fixed: wflow-consoleweb - AJAX Component - Link event are not handled correctly after reload. T3068 @8.0-SNAPSHOT
+49fd48898 Fixed: wflow-core - dx8ColorAdminTheme - Fixed datalist missing sort icon when set to sortable. @8.0-SNAPSHOT
+e7bb92bff Fixed: wflow-consoleweb - DX8 Themes - Added margin on the left/right to resolve the issue where the focus effect is obstructed by the year select box. @8.0-SNAPSHOT
+f1d398b4e Fixed: wflow-core - Git - Update jGit to 6.7.0.202309050840-r for CVE-2023-4759. @8.0-SNAPSHOT
+a473f2a4d Fixed: wflow-directory - Regression of 30aec1ef4. Current User Hash Variable fail to retrieve employment info due to session replication.  @7.0-SNAPSHOT
+
 8.0.5
 =====
 8a8a7cb81 Fixed: wflow-consoleweb - Form Builder - ERD throw maximum call stack error. @8.0-SNAPSHOT
