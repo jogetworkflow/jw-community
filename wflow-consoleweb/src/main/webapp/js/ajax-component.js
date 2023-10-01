@@ -42,7 +42,7 @@ AjaxComponent = {
      */
     overrideLinkEvent : function(element) {
         setTimeout(function(){
-            $(element).on("click", "a[href]", function(e){
+            $(element).on("click", "a[href]:not(.off_ajax)", function(e){
                 var a = $(this);
                 var href = $(a).attr("href");
                 var target = $(a).attr("target");
@@ -64,7 +64,7 @@ AjaxComponent = {
      * Override the datalist button behaviour
      */
     overrideDatalistButtonEvent : function(element) {
-        $(element).find(".dataList button[data-href]").each(function(){
+        $(element).find(".dataList button[data-href]:not(.off_ajax)").each(function(){
             var btn = $(this);
             var url = $(btn).data("href");
             var target = $(btn).data("target");
@@ -101,7 +101,7 @@ AjaxComponent = {
      * Override the button behaviour
      */
     overrideButtonEvent : function(element) {
-        $(element).find("button[onclick], input[type=button][onclick]").each(function(){
+        $(element).find("button[onclick]:not(.off_ajax), input[type=button][onclick]:not(.off_ajax)").each(function(){
             if (PwaUtil.isOnline !== false) {
                 var btn = $(this);
                 var onclick = $(btn).attr("onclick");
@@ -140,8 +140,8 @@ AjaxComponent = {
      * Override the form submission behaviour
      */
     overrideFormEvent : function(element) {
-        $(element).find("form").off("submit");
-        $(element).find("form").on("submit", function(e){
+        $(element).find("form:not(.off_ajax)").off("submit");
+        $(element).find("form:not(.off_ajax)").on("submit", function(e){
             if (PwaUtil.isOnline !== false) {
                 e.preventDefault();
                 e.stopPropagation();
