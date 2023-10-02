@@ -16,7 +16,6 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListInboxBinder;
-import org.joget.apps.datalist.model.DataListInboxSetting;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
@@ -334,53 +333,12 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             } else {
                 temp = new ArrayList<DataListFilterQueryObject>();
             }
-
-            DataListFilterQueryObject queryObj = new DataListFilterQueryObject();
-            Collection<String> values = new ArrayList<String>();
-            String conds = "";
-            if (inboxSetting.getActvityDefIds() != null && inboxSetting.getActvityDefIds().length > 0) {
-                String prefix = "_";
-                String actIdConds = "";
-                if (inboxSetting.getAppId() != null && !inboxSetting.getAppId().isEmpty()) {
-                    prefix += inboxSetting.getAppId() + "_";
-                }
-                if (inboxSetting.getProcessDefId() != null && !inboxSetting.getProcessDefId().isEmpty()) {
-                    prefix += inboxSetting.getProcessDefId() + "_";
-                }
-                for (String actId : inboxSetting.getActvityDefIds()) {
-                    if (!actIdConds.isEmpty()) {
-                        actIdConds += " OR ";
-                    }
-                    actIdConds += "ass.activityId LIKE ?";
-                    values.add("%"+prefix+actId);
-                }
-                conds += " AND ("+actIdConds+") ";
-            } else {
-                String value = "";
-                if (inboxSetting.getAppId() != null && !inboxSetting.getAppId().isEmpty()) {
-                    value = inboxSetting.getAppId() + "#%";
-                }
-                if (inboxSetting.getProcessDefId() != null && !inboxSetting.getProcessDefId().isEmpty()) {
-                    if (value.isEmpty()) {
-                        value = "%";
-                    }
-                    value += "#" + inboxSetting.getProcessDefId();
-                }
-                if (!value.isEmpty()) {
-                    conds += " AND ass.activityProcessDefName LIKE ?";
-                    values.add(value);
-                }
-            }
             
-            if (inboxSetting.getUsername() != null && !inboxSetting.getUsername().isEmpty()) {
-                conds += " AND ass.resourceId = ?";
-                values.add(inboxSetting.getUsername());
+            DataListFilterQueryObject queryObj = buildInboxCondition();
+            if (queryObj != null && queryObj.getQuery() != null && !queryObj.getQuery().isEmpty()) {
+                queryObj.setQuery(getColumnName(getPrimaryKeyColumnName()) + " IN (SELECT ass.link.originProcessId FROM FormDataAssignment ass WHERE 1=1 " + queryObj.getQuery() + ")");
+                temp.add(queryObj);
             }
-            
-            queryObj.setOperator("AND");
-            queryObj.setQuery(getColumnName(getPrimaryKeyColumnName()) + " IN (SELECT ass.link.originProcessId FROM FormDataAssignment ass WHERE 1=1 " + conds + ")");
-            queryObj.setValues(values.toArray(new String[0]));
-            temp.add(queryObj);
             
             return temp.toArray(new DataListFilterQueryObject[0]);
         } else {
