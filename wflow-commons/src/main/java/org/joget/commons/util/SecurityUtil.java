@@ -237,6 +237,15 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return false;
     }
+    
+    /**
+     * Clear generated nonces of a request hash when the request hash is submitted 
+     * Generator implementation is exist
+     * @param requestHash 
+     */
+    public static void clearNonces(int requestHash) {
+        getNonceGenerator().clearNonces(requestHash);
+    }
 
     /**
      * Gets the domain name from a given URL

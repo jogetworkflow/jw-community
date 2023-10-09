@@ -17,4 +17,10 @@ public interface NonceGenerator {
      * @return true or false.
      */
     public boolean verifyNonce(String nonce, String[] attributes);
+    
+    /**
+     * Clear generated nonce when a request hash is submitted.
+     * @param requestHash
+     */
+    public void clearNonces(int requestHash);
 }
