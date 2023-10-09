@@ -103,6 +103,12 @@ public interface WorkflowHelper {
     Map<String, Collection<String>> getReplacementUsers(String username);
     
     /**
+     * Remove the task delegation cache after it is edited
+     * @param username 
+     */
+    void removeReplacementUsers(String username);
+    
+    /**
      * Get all package id and version 
      * @return
      */
