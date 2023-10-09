@@ -107,7 +107,7 @@
                                 <fmt:message key="dbuilder.pleaseSubmitFilter"/>
                             </p>    
                         </c:if>    
-                        <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="POST">
+                        <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="GET">
                             <div class="filters">
                                 <c:forEach items="${dataList.filterTemplates}" var="template">
                                     ${template}
