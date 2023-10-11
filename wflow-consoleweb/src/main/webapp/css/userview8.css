@@ -1884,3 +1884,6 @@ form.form fieldset {
     font-weight: 500 !important;
     background-color: var(--theme-heading-bg, var(--theme-color5,#fff));
 }
+#captcha_img{
+    margin-bottom: 10px;
+}
