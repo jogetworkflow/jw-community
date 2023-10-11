@@ -338,10 +338,11 @@ PermissionManager = {
         $(PermissionManager.container).find(".permission-table tbody tr").each(function() {
             var self = CustomBuilder.Builder;
             var data = $(this).data("element");
-            
-            var props = self.parseElementProps(data);
-        
-            delete props["permission_rules"][key];
+            if (data !== null && data !== undefined) {
+                var props = self.parseElementProps(data);
+
+                delete props["permission_rules"][key];
+            }
         });
     },
     setActiveRule: function(rule) {
