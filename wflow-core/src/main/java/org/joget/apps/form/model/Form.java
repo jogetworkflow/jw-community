@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
+import org.joget.commons.util.SecurityUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 
 public class Form extends Element implements FormBuilderEditable, FormContainer {
@@ -103,6 +106,20 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{primaryKey});
                 } else {
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{""});
+                }
+            }
+            
+            //to remove unuse nonces after submission
+            if (getParent() == null) {
+                if (FormUtil.isFormSubmitted(this, formData) && formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH") != null) {
+                    try {
+                        int requestHash = Integer.parseInt(formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH"));
+                        SecurityUtil.clearNonces(requestHash);
+                    } catch (Exception e) {}
+                }
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                if (request != null) {
+                    setFormMeta("_NONCE_TOKEN_REQUEST_HASH", new String[]{Integer.toString(request.hashCode())});
                 }
             }
 

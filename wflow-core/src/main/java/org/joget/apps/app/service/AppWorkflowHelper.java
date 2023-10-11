@@ -807,6 +807,21 @@ public class AppWorkflowHelper implements WorkflowHelper {
         return replacements;
     }
     
+    /**
+     * Remove the task delegation cache after it is edited
+     * @param username 
+     */
+    public void removeReplacementUsers(String username) {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+        String cacheKey = profile + ":USER_REPLACEMENT_" + username + "_" + sf.format(new Date());
+        
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("setupManagerCache");
+        if (cache != null) {
+            cache.remove(cacheKey);
+        }
+    }
+    
     @Override
     public Map<String, String> getPublishedPackageVersions() {
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao) WorkflowUtil.getApplicationContext().getBean("appDefinitionDao");

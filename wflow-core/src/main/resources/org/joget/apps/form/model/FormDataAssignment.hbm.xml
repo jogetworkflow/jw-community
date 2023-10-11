@@ -3,9 +3,9 @@
 <hibernate-mapping>
     <class entity-name="FormDataAssignment" lazy="false" name="org.joget.apps.form.model.FormDataAssignment" table="SHKAssignmentsTable">
         <id column="oid" name="id" type="long"/>
-        <property column="ResourceId" name="resourceId" type="string"/>
-        <property column="ActivityId" name="activityId" type="string"/>
-        <property column="ActivityProcessDefName" name="activityProcessDefName" type="string"/>
+        <property column="ResourceId" name="ResourceId" type="string"/>
+        <property column="ActivityId" name="ActivityId" type="string"/>
+        <property column="ActivityProcessDefName" name="ActivityProcessDefName" type="string"/>
         
         <many-to-one entity-name="WorkflowProcessLink" not-found="ignore" insert="false" fetch="join" lazy="no-proxy" update="false" name="link" column="ActivityProcessId"/>
     </class>

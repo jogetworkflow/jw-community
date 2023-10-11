@@ -46,6 +46,10 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
         return null;
     }
     
+    public void removeReplacementUsers(String username) {
+        
+    }
+    
     public Map<String, String> getPublishedPackageVersions() {
         return new HashMap<String, String>();
     }
