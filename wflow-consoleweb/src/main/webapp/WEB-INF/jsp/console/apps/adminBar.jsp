@@ -7,7 +7,6 @@
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
     <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
-        <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
@@ -16,7 +15,7 @@
             <div id="adminBarButtons">
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <c:set var="key" value="1" />
-                <c:if test="${!empty param.appId && !isDefaultUserview}">
+                <c:if test="${!empty param.appId}">
                     <c:set var="key" value="3" />
                     <div class="separator">
                         <h5><fmt:message key='adminBar.label.app'/></h5>
@@ -37,7 +36,7 @@
                     </c:if>
                 </c:if>
                 <c:if test="${!isCustomAppAdmin}">
-                <c:if test="${!empty param.appControls || isDefaultUserview}">
+                <c:if test="${!empty param.appControls}">
                     <div>
                         <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-wrench"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
                     </div>
@@ -74,9 +73,6 @@
             </c:if>
             <c:if test="${param.builderMode == 'true'}">
             AdminBar.builderMode = true;
-            </c:if>
-            <c:if test="${isDefaultUserview}">
-            AdminBar.isDefaultUserview = true;
             </c:if>
         </script>
         
