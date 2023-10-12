@@ -18,10 +18,8 @@ function updateSelectedIconAndSave(theme) {
 }
 
 if (currentTheme === "dark") {
-    toggleTheme("dark");
     updateSelectedIconAndSave("dark");
 } else if (currentTheme === "auto") {
-    toggleTheme(prefersDarkScheme.matches ? "dark" : "light");
     updateSelectedIconAndSave(currentTheme);
 } else{
     updateSelectedIconAndSave("light");
