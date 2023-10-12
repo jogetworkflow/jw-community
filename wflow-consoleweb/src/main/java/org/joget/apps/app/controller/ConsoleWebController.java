@@ -30,6 +30,7 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
@@ -5856,7 +5857,7 @@ public class ConsoleWebController {
     @RequestMapping({"/desktop","/desktop/home"})
     public String desktopHome() {
         UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
-        if (defaultUserview != null) {
+        if (defaultUserview != null && !isBackendLicense()) {
             // redirect to app center userview
             String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" + defaultUserview.getId();
             return path;

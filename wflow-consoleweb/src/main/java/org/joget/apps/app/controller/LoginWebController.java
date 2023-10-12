@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
+import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -37,6 +38,10 @@ public class LoginWebController {
 
     @RequestMapping("/login")
     public String login(ModelMap map, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (isBackendLicense()) {
+            return "login";
+        }
+        
         SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
         String savedUrl = "";
         if (savedRequest != null) {

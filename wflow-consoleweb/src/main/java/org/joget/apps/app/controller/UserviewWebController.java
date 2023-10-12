@@ -10,6 +10,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
@@ -18,6 +19,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.PluginManager;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,6 +47,12 @@ public class UserviewWebController {
     
     @RequestMapping({"/embed/userview/(*:appId)/(*:userviewId)/(~:key)","/embed/userview/(*:appId)/(*:userviewId)","/embed/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed, @RequestParam(value = "embed", required = false) Boolean embedParam) throws Exception {
+        
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         if (APMUtil.isGlowrootAvailable()) {
             //remove key & embed keyword from the url for better tracking
             String url = request.getRequestURL().toString();
@@ -122,6 +130,11 @@ public class UserviewWebController {
 
     @RequestMapping({"/embed/ulogin/(*:appId)/(*:userviewId)/(~:key)","/embed/ulogin/(*:appId)/(*:userviewId)","/embed/ulogin/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String embedLogin(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed) throws Exception {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         if (embed == null) {
             embed = true;
         }
@@ -171,6 +184,10 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/manifest"})
     public void manifest(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        
         String manifest = UserviewUtil.getManifest(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId));
         response.setContentType("application/manifest+json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
@@ -179,6 +196,10 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/serviceworker"})
     public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        
         String serviceWorker = UserviewUtil.getServiceWorker(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId), SecurityUtil.validateStringInput(userviewKey));
         response.setContentType("application/javascript;charset=UTF-8");
         response.setHeader("Service-Worker-Allowed", (request.getContextPath().isEmpty())?"/":request.getContextPath());
@@ -188,6 +209,10 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(*:key)/cacheUrls"})
     public void cacheUrls(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam("key") String userviewKey) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        
         String cacheUrlsJSON = UserviewUtil.getCacheUrls(SecurityUtil.validateStringInput(appId), SecurityUtil.validateStringInput(userviewId), SecurityUtil.validateStringInput(userviewKey), request.getContextPath());
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
@@ -196,6 +221,10 @@ public class UserviewWebController {
     
     @RequestMapping({"/userview/(*:appId)/appI18nMessages"})
     public void i18n(HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("keys[]") String[] keys) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        
         appId = SecurityUtil.validateStringInput(appId); 
         appService.getPublishedAppDefinition(appId);
         
@@ -220,5 +249,15 @@ public class UserviewWebController {
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.println(messages.toString());
+    }
+    
+    /**
+     * Convenient method to check backend license
+     * @return 
+     */
+    public static boolean isBackendLicense() {
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        return consoleWebPlugin.isBackendLicense();
     }
 }

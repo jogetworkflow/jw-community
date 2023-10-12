@@ -178,6 +178,14 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
     }
     
     /**
+     * Does not support backend license in community
+     * @return 
+     */
+    public boolean isBackendLicense() {
+        return false;
+    }
+    
+    /**
      * System info in the System Settings
      * @param request
      * @param response

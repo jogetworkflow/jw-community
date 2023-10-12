@@ -15,6 +15,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
+import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -97,8 +98,12 @@ public class AppWebController {
     protected static String ORIGIN_FROM_RUNPROCESS = "runProcess";
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
-    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
-
+    public String clientProcessView(HttpServletRequest request, HttpServletResponse response, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         // clean process def
         appId = SecurityUtil.validateStringInput(appId);        
         processDefId = SecurityUtil.validateStringInput(processDefId);        
@@ -176,8 +181,12 @@ public class AppWebController {
     }
 
     @RequestMapping(value = "/client/app/(*:appId)/(~:version)/process/(*:processDefId)/start", method = RequestMethod.POST)
-    public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String recordId, @RequestParam String processDefId) {
-
+    public String clientProcessStart(HttpServletRequest request, HttpServletResponse response, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String recordId, @RequestParam String processDefId) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         // clean process def
         appId = SecurityUtil.validateStringInput(appId);        
         recordId = SecurityUtil.validateStringInput(recordId);        
@@ -252,7 +261,12 @@ public class AppWebController {
     }
 
     @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)")
-    public String clientAssignmentView(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) throws UnsupportedEncodingException {
+    public String clientAssignmentView(HttpServletRequest request, HttpServletResponse response, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) throws UnsupportedEncodingException, IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         // check assignment
         appId = SecurityUtil.validateStringInput(appId);
         activityId = SecurityUtil.validateStringInput(activityId);
@@ -315,7 +329,12 @@ public class AppWebController {
     }
 
     @RequestMapping(value = "/client/app/(~:appId)/(~:version)/assignment/(*:activityId)/submit", method = RequestMethod.POST)
-    public String clientAssignmentSubmit(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
+    public String clientAssignmentSubmit(HttpServletRequest request, HttpServletResponse response, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         // check assignment
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
@@ -410,6 +429,11 @@ public class AppWebController {
      */
     @RequestMapping("/client/app/(*:appId)/(~:version)/form/download/(*:formDefId)/(*:primaryKeyValue)/(*:fileName)")
     public void downloadUploadedFile(HttpServletRequest request, HttpServletResponse response, @RequestParam("formDefId") String formDefId, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("primaryKeyValue") String primaryKeyValue, @RequestParam("fileName") String fileName, @RequestParam(required = false) String attachment) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
         boolean isAuthorize = false;
         
         Form form = null;
@@ -563,6 +587,11 @@ public class AppWebController {
      */
     @RequestMapping("/app/(*:appId)/(~:version)/resources/(*:fileName)")
     public void downloadAppResource(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("fileName") String fileName, @RequestParam(required = false) String attachment) throws IOException {
+        if (isBackendLicense()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+                
         boolean isAuthorize = false;
         
         fileName = getFilename(fileName, request.getRequestURL().toString());
