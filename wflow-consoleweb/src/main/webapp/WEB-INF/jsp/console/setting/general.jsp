@@ -56,14 +56,14 @@
                         <span class="form-input">
                             <select id="defaultUserview" name="defaultUserview">
                                 <c:set var="prevAppName" value="" />
-                                <optgroup label="<ui:stripTag html="${prevAppName}"/>">
-                                <option value=""></option>
                                 <c:forEach var="userviewDef" items="${userviewDefinitionList}">
                                     <c:set var="userviewPath" value="${userviewDef.appId}/${userviewDef.id}" />
                                     <c:set var="appName" value="${userviewDef.appDefinition.name}" />
                                     <c:if test="${appName != prevAppName}">
-                                        <c:set var="prevAppName" value="${appName}" />
+                                        <c:if test="${prevAppName ne ''}">
                                         </optgroup>
+                                        </c:if>
+                                        <c:set var="prevAppName" value="${appName}" />
                                         <optgroup label="<ui:stripTag html="${prevAppName}"/>">
                                     </c:if>
                                     <c:set var="selected"><c:if test="${userviewPath == settingMap['defaultUserview']}"> selected</c:if></c:set>
