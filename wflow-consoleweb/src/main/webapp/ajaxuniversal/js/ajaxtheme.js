@@ -60,8 +60,9 @@ AjaxUniversalTheme = {
             var title = $(html).find("#ajaxtheme_loading_title");
             var menus = $(html).find("#ajaxtheme_loading_menus");
             var content = $(html).find("#ajaxtheme_loading_content");
+            var homeBanner = $(html).find("#ajaxtheme_homebanner_content");
 
-            AjaxUniversalTheme.renderAjaxContent(menus, content, title);
+            AjaxUniversalTheme.renderAjaxContent(menus, content, title, homeBanner);
             
             if (window['Analyzer'] !== undefined && $(html).find("#ajaxAnalyzerJson").length > 0) {
                 Analyzer.clearAnalyzer();
@@ -93,7 +94,7 @@ AjaxUniversalTheme = {
         alert(error.message);
     },
     
-    renderAjaxContent : function(menus, content, title) {
+    renderAjaxContent : function(menus, content, title, homeBanner) {
         //update body id according to url
         var currentPath = window.location.pathname;
         var menuId = currentPath.substring(currentPath.lastIndexOf("/") + 1);
@@ -104,7 +105,14 @@ AjaxUniversalTheme = {
         AjaxUniversalTheme.updateMenus(menus);
         $("#content main").html($(content).html());
         $("#content main").attr("aria-live", "polite");
-
+        
+        $(".home_banner").remove();
+        $("body").removeClass("has_home_banner");
+        if ($(homeBanner).find(".home_banner").length > 0) {
+            $("#page #main").before($(homeBanner).find(".home_banner"));
+            $("body").addClass("has_home_banner");
+        }
+        
         AjaxComponent.overrideFormEvent($("#category-container"));
         AjaxComponent.initContent($("#content main"));
         AjaxMenusCount.init();

@@ -5,6 +5,9 @@
     <div id="ajaxtheme_loading_menus">
         ${menus!}
     </div>
+    <div id="ajaxtheme_homebanner_content">
+        ${main_container_before!}
+    </div>
     <div id="ajaxtheme_loading_content">
         ${userview_menu_alert!}
         ${content_inner_before!}

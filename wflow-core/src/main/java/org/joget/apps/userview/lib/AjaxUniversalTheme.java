@@ -74,6 +74,10 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 data.put("analyzer", analyzerData);
             }
             
+            if (showHomeBanner()) {
+                data.put("main_container_before", "<div class=\"home_banner\"><div class=\"home_banner_inner\">"+getPropertyString("homeAttractBanner")+"</div></div>");
+            }
+            
             return UserviewUtil.getTemplate(this, data, "/templates/ajaxuniversal/ajaxlayout.ftl");
         } else {
             if ("true".equals(getPropertyString("horizontal_menu"))) {
