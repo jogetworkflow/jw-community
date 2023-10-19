@@ -1,6 +1,8 @@
 package org.joget.apps.app.service;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -86,8 +88,23 @@ public class DependenciesUtil {
             appVersion = Long.parseLong(version);
         }
         byte[] defXml = appService.getAppDefinitionXml(appId, appVersion);
+
+        Map<String, String> replacement = new HashMap<String, String>();
+        replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
+        replacement.put("</disableSaveAsDraft-->", "</disableSaveAsDraft>");
+        replacement.put("<!--description>", "<description>");
+        replacement.put("</description-->", "</description>");
+        replacement.put("<!--meta>", "<meta>");
+        replacement.put("</meta-->", "</meta>");
+        replacement.put("<!--resourceList>", "<resourceList>");
+        replacement.put("</resourceList-->", "</resourceList>");
+        replacement.put("<!--resourceList/-->", "<resourceList/>");
+        replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
+        replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
+        defXml = StringUtil.searchAndReplaceByteContent(defXml, replacement);
+
         JSONArray usages = new JSONArray();
-        
+
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
