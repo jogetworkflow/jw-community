@@ -1,4 +1,4 @@
-<div class="form-cell" ${elementMetaData!}>
+<div class="form-cell full_width_field" ${elementMetaData!}>
 
 <#if !(request.getAttribute("org.joget.apps.form.lib.Grid")??) >
     <script type="text/javascript" src="${request.contextPath}/js/jquery/jquery.jeditable.js"></script>

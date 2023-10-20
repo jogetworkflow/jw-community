@@ -23,8 +23,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.StringMap;
 import org.joget.commons.util.HostManager;
@@ -37,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
-import freemarker.cache.URLTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -1088,15 +1085,25 @@ public class PluginManager implements ApplicationContextAware {
         if (!(content != null && content.indexOf("@@") >= 0)) {
             return content;
         }
-
-        Pattern pattern = Pattern.compile("\\@@([^@@^\"^ ])*\\.([^@@^\"])*\\@@");
-        Matcher matcher = pattern.matcher(content);
-
+        
         List<String> keyList = new ArrayList<String>();
-        while (matcher.find()) {
-            keyList.add(matcher.group());
+        String tempContext = content;
+        int index = tempContext.indexOf("@@");
+        while (index != -1) {
+            int nindex = tempContext.indexOf("@@", index + 2);
+            if (nindex != -1) {
+                String temp = tempContext.substring(index, nindex+2);
+                if (temp.contains("\"") || temp.contains(" ") || !temp.contains(".")) {
+                    index = nindex;
+                } else {
+                    keyList.add(temp);
+                    index = tempContext.indexOf("@@", nindex + 2);
+                }
+            } else {
+                break;
+            }
         }
-
+        
         if (!keyList.isEmpty()) {
 
             for (String key : keyList) {
@@ -1165,7 +1172,7 @@ public class PluginManager implements ApplicationContextAware {
         
         String result = "";
         try {
-            String cacheKey = pluginName + "_" + templatePath;
+            String cacheKey = pluginName + "_" + templatePath + "_" + LocaleContextHolder.getLocale().toString();
             Template temp = getCache().getTemplateCache().get(cacheKey);
             if (temp == null) {
 
@@ -1185,21 +1192,10 @@ public class PluginManager implements ApplicationContextAware {
                     }
                 });
 
-                // set template loader
-                configuration.setTemplateLoader(new URLTemplateLoader() {
-
-                    @Override
-                    protected URL getURL(String string) {
-                        URL url = getPluginResourceURL(pluginName, templatePath);
-                        return url;
-                    }
-
-                    @Override
-                    public long getLastModified(Object templateSource) {
-                        return 0;
-                    }
-
-                });
+                // set template loader with custom String loader which using a translation processed template
+                String template = readPluginResourceAsString(pluginName, templatePath, null, false, translationPath);
+                PluginTemplateLoader templateLoader = new PluginTemplateLoader(template);
+                configuration.setTemplateLoader(templateLoader);
 
                 // Get or create a template
                 temp = configuration.getTemplate(templatePath);
@@ -1211,8 +1207,6 @@ public class PluginManager implements ApplicationContextAware {
             temp.process(data, out);
             out.flush();
             result = out.toString();
-
-            result = processPluginTranslation(result, pluginName, translationPath);
 
         } catch (Exception ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");

@@ -1567,22 +1567,25 @@ public class AppDevUtil {
             LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
             // sync app
             updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
-            String sourcePath = SetupManager.getBaseDirectory() + File.separator + "app_src" + File.separator + appDef.getAppId() + File.separator + appDef.getAppId() + "_" + appDef.getVersion() + File.separator + "resources" + File.separator;
-            String targetDirName = AppResourceUtil.getBaseDirectory() + appDef.getAppId() + File.separator + appDef.getVersion();
-
-            File sourceDir = new File(sourcePath);
-            if (sourceDir.exists()) {
-                File targetDir = new File(targetDirName);
-                // remove existing directory
-                FileUtils.deleteDirectory(targetDir);
-                // copy directory
-                targetDir.mkdirs();
-                FileUtils.copyDirectory(sourceDir, targetDir, true);
-            }
-           
+            copyDirectory(appDef);
             LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
         }
         return updatedAppDef;
+    }
+    
+    public static synchronized void copyDirectory(AppDefinition appDef) throws IOException {
+        String sourcePath = SetupManager.getBaseDirectory() + File.separator + "app_src" + File.separator + appDef.getAppId() + File.separator + appDef.getAppId() + "_" + appDef.getVersion() + File.separator + "resources" + File.separator;
+        String targetDirName = AppResourceUtil.getBaseDirectory() + appDef.getAppId() + File.separator + appDef.getVersion();
+
+        File sourceDir = new File(sourcePath);
+        if (sourceDir.exists()) {
+            File targetDir = new File(targetDirName);
+            // remove existing directory
+            FileUtils.deleteDirectory(targetDir);
+            // copy directory
+            targetDir.mkdirs();
+            FileUtils.copyDirectory(sourceDir, targetDir, true);
+        }
     }
     
     public static void dirSyncAppInBackground(AppDefinition appDef) {

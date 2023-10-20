@@ -109,6 +109,9 @@
                             var label = "<span style=\"display:none\">" + tinfo.color + " " + Nav.options.message[tinfo.color] + "</span>";
                             if (tinfo.label !== undefined && tinfo.label !== "") {
                                 label = tinfo.label;
+                                if (label.indexOf('<') !== -1) { //the label may contains html, need escape it
+                                    label = UI.escapeHTML(label);
+                                }
                             }
                             $(liobj).find(".nv-tag-plus").before('<span data-id="' + tags[i] + '" class="nv-tag tag-' + tinfo.color + '">' + label + '</span>');
                         }
@@ -253,6 +256,9 @@
                 var label = "&nbsp;";
                 if (labels[i].label !== undefined && labels[i].label !== "") {
                     label = labels[i].label;
+                    if (label.indexOf('<') !== -1) { //the label may contains html, need escape it
+                        label = UI.escapeHTML(label);
+                    }
                 }
                 html += '<div><div data-id="'+i+'" class="'+checked+' nv-tag tag-'+labels[i].color+'"><span>'+label+'</span><i class="check fas fa-check"></i></div><a data-id="'+i+'"><i class="fas fa-pencil-alt"></i></a></div>';
             }
@@ -285,6 +291,9 @@
             var label = "<span style=\"visibility:hidden\">"+tag.color+" "+Nav.options.message[tag.color]+"</span>";
             if (tag.label !== undefined && tag.label !== "") {
                 label = tag.label;
+                if (label.indexOf('<') !== -1) { //the label may contains html, need escape it
+                    label = UI.escapeHTML(label);
+                }
             }
             $(li).find(".nv-tag-plus").before('<span data-id="'+tagId+'" class="nv-tag tag-'+tag.color+'">'+label+'</span>');
         },
@@ -325,6 +334,9 @@
             var label = "";
             if (tag.label !== undefined && tag.label !== "") {
                 label = tag.label;
+                if (label.indexOf('<') !== -1) { //the label may contains html, need escape it
+                    label = UI.escapeHTML(label);
+                }
             }
             
             var html = '<div class="editLabel" data-id="'+tagId+'"><h4><a class="back"><i class="fas fa-chevron-left"></i></a>&nbsp;&nbsp;&nbsp;'+Nav.options.message.edit+' <a class="close"><i class="fas fa-times"></i></a></h4>';
@@ -355,8 +367,8 @@
             var tagId = "t" + jQuery.now();
                     
             var tag = {
-                label : $("#tooltip-tags .addLabel input[name=label]").val(),
-                color : $("#tooltip-tags .addLabel .nv-tag.checked").data("value")
+                label : UI.escapeHTML($("#tooltip-tags .addLabel input[name=label]").val()),
+                color : UI.escapeHTML($("#tooltip-tags .addLabel .nv-tag.checked").data("value"))
             };
             
             Nav.definition["labels"][tagId] = tag;
@@ -372,8 +384,8 @@
         saveEditLabel: function() {
             var tagId = $("#tooltip-tags .editLabel").data("id");
             var tag = {
-                label : $("#tooltip-tags .editLabel input[name=label]").val(),
-                color : $("#tooltip-tags .editLabel .nv-tag.checked").data("value")
+                label : UI.escapeHTML($("#tooltip-tags .editLabel input[name=label]").val()),
+                color : UI.escapeHTML($("#tooltip-tags .editLabel .nv-tag.checked").data("value"))
             };
             
             Nav.definition["labels"][tagId] = tag;

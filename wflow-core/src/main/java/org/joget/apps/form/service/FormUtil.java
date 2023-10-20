@@ -546,6 +546,17 @@ public class FormUtil implements ApplicationContextAware {
                     if (!elementResult.isMultiRow()) {
                         // get single row
                         FormRow elementRow = elementResult.get(0);
+                        
+                        //check if sanitization is enabled
+                        boolean requiredSanitize = "true".equalsIgnoreCase(element.getPropertyString("requiredSanitize"));
+                        if (requiredSanitize) {
+                            for (Object k : elementRow.keySet()) {
+                                Object v = elementRow.get(k);
+                                if (v instanceof String && !v.toString().isEmpty()) {
+                                    elementRow.setProperty(k.toString(), StringUtil.escapeString(StringUtil.unescapeString(v.toString(), StringUtil.TYPE_HTML, null), StringUtil.TYPE_HTML, null));
+                                }
+                            }
+                        }
 
                         // append to consolidated row set
                         if (rowSet.isEmpty()) {
@@ -1082,6 +1093,13 @@ public class FormUtil implements ApplicationContextAware {
                 String binderValue = formData.getLoadBinderDataProperty(element, id);
                 if (binderValue != null) {
                     value = binderValue;
+                    
+                    //check if sanitization is enabled, unescape it for field input, as it will be escaped again in template
+                    boolean requiredSanitize = "true".equalsIgnoreCase(element.getPropertyString("requiredSanitize")); 
+                    if (requiredSanitize) {
+                        value = StringUtil.unescapeString(value, StringUtil.TYPE_HTML, null);
+                    }
+                    
                 } else if (paramName.equals(FormUtil.PROPERTY_ID) && formData.getPrimaryKeyValue() != null && !formData.getPrimaryKeyValue().isEmpty()) {
                     value = formData.getPrimaryKeyValue();
                 }
@@ -1156,6 +1174,12 @@ public class FormUtil implements ApplicationContextAware {
                 if (formData != null) {
                     String binderValue = formData.getLoadBinderDataProperty(element, id);
                     if (binderValue != null) {
+                        //check if sanitization is enabled, unescape it for field input, as it will be escaped again in template
+                        boolean requiredSanitize = "true".equalsIgnoreCase(element.getPropertyString("requiredSanitize")); 
+                        if (requiredSanitize) {
+                            binderValue = StringUtil.unescapeString(binderValue, StringUtil.TYPE_HTML, null);
+                        }
+                        
                         values = new ArrayList<String>();
                         StringTokenizer st = new StringTokenizer(binderValue, FormUtil.PROPERTY_OPTIONS_DELIMITER);
                         while (st.hasMoreTokens()) {

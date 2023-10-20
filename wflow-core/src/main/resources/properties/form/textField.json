@@ -41,6 +41,16 @@
         url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
     }%s,
     {
+        name : 'requiredSanitize',
+        label : '@@form.textfield.sanitizeInput@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         label : '@@form.textfield.ui@@',
         type : 'header'
     },

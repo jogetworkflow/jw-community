@@ -32,5 +32,15 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'requiredSanitize',
+        label : '@@form.textfield.sanitizeInput@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]

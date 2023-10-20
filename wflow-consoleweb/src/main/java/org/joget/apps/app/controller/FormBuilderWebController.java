@@ -335,10 +335,10 @@ public class FormBuilderWebController {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
+            if (formData.getStay() && (errors == null || errors.isEmpty())) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
-                
+            } else if (!formData.getStay() && (errors == null || errors.isEmpty())) {
                 //convert submitted 
                 JSONObject jsonResult = new JSONObject();
                 
@@ -376,7 +376,7 @@ public class FormBuilderWebController {
                 }
                 
                 model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
-            } else {
+            } else if (!errors.isEmpty()) {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();

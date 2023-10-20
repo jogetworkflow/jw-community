@@ -1,6 +1,8 @@
 package org.joget.apps.app.service;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -88,7 +90,7 @@ public class DependenciesUtil {
         }
         byte[] defXml = appService.getAppDefinitionXml(appId, appVersion, false);
         JSONArray usages = new JSONArray();
-        
+
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setExpandEntityReferences(false);

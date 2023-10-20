@@ -132,6 +132,10 @@
     color: red;
     font-size: smaller;
 }
+.full_width_field > label.label > .subform-cell-validator,
+.full_width_field > label.label > .form-cell-validator {
+    position:unset;
+}
 .form-message {
     margin-bottom: 5px;
     font-weight: bold;
