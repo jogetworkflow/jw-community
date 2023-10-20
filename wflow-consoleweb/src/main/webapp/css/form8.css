@@ -171,6 +171,10 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .subform-cell-validator {
     color: #dc3545;
 }
+.full_width_field > label.label > .subform-cell-validator,
+.full_width_field > label.label > .form-cell-validator {
+    position:unset;
+}
 .form-cell-full {
     width: 100% !important;
 }
