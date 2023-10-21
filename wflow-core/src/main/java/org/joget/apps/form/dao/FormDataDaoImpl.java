@@ -14,6 +14,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -1171,7 +1172,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory created");
 
         // update schema
-        internalUpdateSchema(sf, sr, configuration, entities.toString());
+        internalUpdateSchema(sf, sr, configuration, Arrays.toString(entities));
         
         // save into cache
         joinFormSessionFactoryCache.remove(cacheKey);
