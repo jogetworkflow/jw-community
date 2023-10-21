@@ -7,6 +7,7 @@ public class FormDataAssignment {
     private String ResourceId;
     private String ActivityId;
     private String ActivityProcessDefName;
+    private String ActivityProcessId;
     private WorkflowProcessLink link;
 
     public long getId() {
@@ -39,6 +40,14 @@ public class FormDataAssignment {
 
     public void setActivityProcessDefName(String ActivityProcessDefName) {
         this.ActivityProcessDefName = ActivityProcessDefName;
+    }
+
+    public String getActivityProcessId() {
+        return ActivityProcessId;
+    }
+
+    public void setActivityProcessId(String ActivityProcessId) {
+        this.ActivityProcessId = ActivityProcessId;
     }
 
     public WorkflowProcessLink getLink() {
