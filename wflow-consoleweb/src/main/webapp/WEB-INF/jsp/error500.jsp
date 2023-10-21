@@ -2,9 +2,12 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ page import="org.joget.commons.util.ResourceBundleUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="java.util.Locale,org.springframework.web.servlet.support.RequestContextUtils,org.joget.commons.util.ResourceBundleUtil" %>
 <% Locale locale = RequestContextUtils.getLocale(request); %>
+
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
 <%
 try {
@@ -15,7 +18,7 @@ try {
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="${lang}">
     <head>
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title", locale) %></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
