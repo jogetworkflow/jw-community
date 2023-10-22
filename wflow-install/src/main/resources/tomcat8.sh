@@ -5,6 +5,6 @@ export JAVA_OPTS="-XX:MaxPermSize=128m -Xmx768M -Dwflow.home=./wflow/ -javaagent
 #For Java 9
 #export JAVA_OPTS="-XX:MaxPermSize=128m -Xmx768M -Dwflow.home=./wflow/ -javaagent:./wflow/aspectjweaver-1.9.7.jar --add-modules java.se.ee"
 
-apache-tomcat-9.0.76/bin/catalina.sh $*
+apache-tomcat-9.0.82/bin/catalina.sh $*
  
 

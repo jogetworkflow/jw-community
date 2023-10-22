@@ -23,7 +23,7 @@ public class SqlFilterAspect implements MethodInterceptor {
         
         if (length > 0) {
             for (int i = 0; i < length; i++) {
-                if (args[i] != null && args[i] instanceof String) {
+                if (args != null && args[i] != null && args[i] instanceof String) {
                     if (isInjection((String) args[i])) {
                         HttpServletRequest request= WorkflowUtil.getHttpServletRequest();
                         Exception e = new SQLException("Possible SQLi from IP:" + AppUtil.getClientIp(request) + ". Query string is " + request.getQueryString());

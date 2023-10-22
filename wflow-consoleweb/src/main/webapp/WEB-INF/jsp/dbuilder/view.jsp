@@ -1,8 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="${lang}">
 <head>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-3.0.1.min.js"></script>

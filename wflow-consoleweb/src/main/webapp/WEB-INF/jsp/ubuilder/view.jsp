@@ -29,6 +29,8 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 %>
 <% response.setHeader("P3P", "CP=\"This is not a P3P policy\""); %>
 
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -198,7 +200,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 </c:choose>
 </c:catch>
 
-<html>
+<html lang="${lang}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
