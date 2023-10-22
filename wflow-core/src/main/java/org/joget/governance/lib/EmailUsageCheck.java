@@ -219,7 +219,7 @@ public class EmailUsageCheck extends GovHealthCheckAbstract implements GovAppHea
     }
     
     protected void checkDefinition(String data, Set<String> emails, Collection<Detail> details, String appName, String objectTypeName, String objectName, String link, String appId) {
-        if (data.contains("@")) {
+        if (data != null && data.contains("@")) {
             try {
                 boolean addTodetail = false;
                 if (emails == null) {
