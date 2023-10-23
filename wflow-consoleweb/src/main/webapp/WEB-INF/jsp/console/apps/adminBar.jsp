@@ -14,7 +14,7 @@
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
             <c:if test="${!empty param.appId || !empty param.webConsole}">
-                <c:set var="key" value="1" />
+                <c:set var="key" value="0" />
                 <c:if test="${!empty param.appId}">
                     <c:set var="key" value="3" />
                     <div class="separator">
@@ -36,9 +36,9 @@
                     </c:if>
                 </c:if>
                 <c:if test="${!isCustomAppAdmin}">
-                <c:if test="${!empty param.appControls}">
+                <c:if test="${!empty param.appControls || !empty param.appId}">
                     <div>
-                        <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-wrench"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
+                        <a class="adminBarButton" title="CTRL-<c:out value="${key + 1}"/>: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-wrench"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
                     </div>
                 </c:if>
                 <div>

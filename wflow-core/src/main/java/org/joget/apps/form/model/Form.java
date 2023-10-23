@@ -108,12 +108,6 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             
             //to remove unuse nonces after submission
             if (getParent() == null) {
-                if (FormUtil.isFormSubmitted(this, formData) && formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH") != null) {
-                    try {
-                        int requestHash = Integer.parseInt(formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH"));
-                        SecurityUtil.clearNonces(requestHash);
-                    } catch (Exception e) {}
-                }
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 if (request != null) {
                     setFormMeta("_NONCE_TOKEN_REQUEST_HASH", new String[]{Integer.toString(request.hashCode())});
@@ -163,6 +157,12 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     
     @Override
     public FormRowSet formatData(FormData formData) {
+        if (FormUtil.isFormSubmitted(this, formData) && formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH") != null) {
+            try {
+                int requestHash = Integer.parseInt(formData.getRequestParameter("_NONCE_TOKEN_REQUEST_HASH"));
+                SecurityUtil.clearNonces(requestHash);
+            } catch (Exception e) {}
+        }
         return null;
     }
 
