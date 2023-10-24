@@ -1,7 +1,10 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.apm.APMUtil"%>
+
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
 <jsp:include page="../cbuilder/custom.jsp" flush="true" />
 
@@ -52,7 +55,7 @@
         <c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
         
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-        <html>
+        <html lang="${lang}">
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>

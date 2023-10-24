@@ -1716,10 +1716,12 @@ public class AppDevUtil {
                             latestDate = dateModified;
                         }
                     }
-                    Element element = new Element(cacheKey, latestDate);
-                    cache.put(element);
+                    if (cache != null) {
+                        Element element = new Element(cacheKey, latestDate);
+                        cache.put(element);
+                    }
                 }
-            } else {
+            } else if (cache != null) {
                 Element element = new Element(cacheKey, appDef.getDateModified());
                 cache.put(element);
             }

@@ -171,7 +171,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>5.7.10</version>
+            <version>5.7.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -182,7 +182,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.7.10</version>
+            <version>5.7.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.7.10</version>
+            <version>5.7.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -307,7 +307,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.76</version>
+            <version>9.0.82</version>
         </dependency>      
         <dependency>
             <groupId>org.joget</groupId>

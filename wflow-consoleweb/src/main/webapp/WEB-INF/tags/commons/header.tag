@@ -3,6 +3,7 @@
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ tag import="org.joget.commons.util.LogUtil"%>
 <%@ tag import="org.joget.commons.util.HostManager"%>
+<%@ tag import="org.joget.apps.app.service.AppUtil"%>
 
 <%@attribute name="id" required="false"%>
 <%@attribute name="title" required="false"%>
@@ -14,12 +15,13 @@
 <c:set var="isAnonymous" scope="request" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="title" value="<%= title != null ? title : \"\" %>"/>
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 <c:if test="${empty title}">
     <c:set var="title"><fmt:message key="console.header.browser.title"/></c:set>
 </c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="${lang}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>

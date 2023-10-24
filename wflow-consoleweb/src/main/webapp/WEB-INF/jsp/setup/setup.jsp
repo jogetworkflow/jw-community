@@ -17,8 +17,11 @@
         return;
     }
 %>    
+
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="${lang}">
     <head>
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title")%></title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>

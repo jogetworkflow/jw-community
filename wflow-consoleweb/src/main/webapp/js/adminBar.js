@@ -244,6 +244,11 @@ var AdminBar = {
                 $("#adminBarButtons a.adminBarButton:eq(5)").trigger("click");
 		return false;
             }
+            if(e.which === 55 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+7
+                AdminBar.showAdminBar();
+                $("#adminBarButtons a.adminBarButton:eq(6)").trigger("click");
+		return false;
+            }
         });        
         $("#adminControl").on('click', function() {
             if (AdminBar.isAdminBarOpen()) {

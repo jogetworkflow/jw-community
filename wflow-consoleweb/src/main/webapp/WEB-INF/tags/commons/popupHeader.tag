@@ -4,11 +4,11 @@
 <%@ attribute name="bodyCssClass" required="false"%>
 
 <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
-
+<c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html lang="${lang}">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
