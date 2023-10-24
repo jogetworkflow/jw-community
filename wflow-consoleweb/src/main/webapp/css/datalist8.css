@@ -1,8 +1,11 @@
 #preview .dataList {
     pointer-events: none;
 }
-.dataList {
+.dataList:not(.unauthorized) {
     display: none;
+}
+.dataList.unauthorized h3 {
+    font-size: 16px;
 }
 .dataList .table-wrapper{
     overflow-x: auto;

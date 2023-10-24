@@ -5,7 +5,7 @@
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
 
-<div id="dataList_${dataList.id}" data-responsivemode="${dataList.responsiveMode}" class="dataList <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
+<div id="dataList_${dataList.id}" data-responsivemode="${dataList.responsiveMode}" class="dataList <c:if test="${!dataList.isAuthorized}">unauthorized</c:if> <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>" defer></script>
