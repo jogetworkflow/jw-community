@@ -260,6 +260,11 @@ function themePageInit() {
             });
         }, 0);
     });
+    $("body").on("page_loaded.inbox", function(){
+        setTimeout(function() {
+            loadInbox();
+        }, 1);
+    });
 
     /* ---------- Inbox ------------------------- */
     function loadInbox() {
