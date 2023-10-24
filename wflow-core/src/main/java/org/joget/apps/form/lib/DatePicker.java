@@ -511,6 +511,6 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
     
     public static boolean isBE() {
         String locale = AppUtil.getAppLocale();
-        return (locale != null && locale.equals("th_TH"));
+        return (locale != null && locale.startsWith("th"));
     }
 }

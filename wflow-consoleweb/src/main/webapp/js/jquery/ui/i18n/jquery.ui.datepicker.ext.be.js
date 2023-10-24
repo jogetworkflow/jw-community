@@ -59,7 +59,9 @@
             try {
                 date = this.parseDate(dateFormat, dates, settings) || defaultDate;
             } catch (event) {
-                this.log(event);
+                if (console.log) {
+                    console.log(event);
+                }
                 dates = (noDefault ? '' : dates);
             }
 
