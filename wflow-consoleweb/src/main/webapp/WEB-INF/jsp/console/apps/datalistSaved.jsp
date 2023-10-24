@@ -9,7 +9,7 @@
             var field = $(iframe).data('field');
             if (field) {
                 field.addNewOption('<c:out value="${datalistDefinition.id}"/>', '<c:out value="${datalistDefinition.name}"/>');
-                parent.JPopup.dialogboxes['navCreateNewDialog'].hide();
+                parent.JPopup.hide('navCreateNewDialog', false);
                 handled = true;
             }
         }

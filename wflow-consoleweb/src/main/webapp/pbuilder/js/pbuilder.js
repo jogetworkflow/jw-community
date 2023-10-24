@@ -3853,6 +3853,9 @@ ProcessBuilder = {
                         }
                         return options;
                     },
+                    options_callback_addoption : function() {
+                        ProcessBuilder.getForms([]);
+                    },
                     control_field: 'mapping_act_type',
                     control_value: 'SINGLE',
                     control_use_regex: 'false'
@@ -3975,6 +3978,9 @@ ProcessBuilder = {
                             options.push({label : UI.escapeHTML(plugins[e]), value : e});
                         }
                         return options;
+                    },
+                    options_callback_addoption : function() {
+                        ProcessBuilder.getForms([]);
                     },
                     control_field: 'mapping_act_type',
                     control_value: 'SINGLE',

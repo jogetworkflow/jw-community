@@ -9,7 +9,7 @@
             var field = $(iframe).data('field');
             if (field) {
                 field.addNewOption('<c:out value="${builderDefinition.id}"/>', '<c:out value="${builderDefinition.name}"/>');
-                parent.JPopup.dialogboxes['navCreateNewDialog'].hide();
+                parent.JPopup.hide('navCreateNewDialog', false);
                 handled = true;
             }
         }

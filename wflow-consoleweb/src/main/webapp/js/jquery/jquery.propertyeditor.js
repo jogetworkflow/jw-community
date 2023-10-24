@@ -891,106 +891,8 @@ PropertyEditor.Util = {
         }
     },
     callLoadOptionsAjax: function(field, reference, ajax_url, on_change, mapping, method, extra) {
-        var ajaxUrl = PropertyEditor.Util.replaceContextPath(ajax_url, field.options.contextPath);
-        if (on_change !== undefined && on_change !== null) {
-            var onChanges = on_change.split(";");
-            var fields = field.editorObject.fields;
-            if (field.parentId !== "" && field.parentId !== undefined) {
-                var parentId = field.parentId.substring(1);
-                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
-                    fields = fields[parentId].fields;
-                }
-            }
-            
-            if (field.repeaterFields) {
-                fields = $.extend({}, fields, field.repeaterFields);
-            }
-            for (var i in onChanges) {
-                var fieldId = onChanges[i];
-                var param = fieldId;
-                var childField = "";
-                if (fieldId.indexOf(":") !== -1) {
-                    param = fieldId.substring(0, fieldId.indexOf(":"));
-                    fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
-                }
-                if (fieldId.indexOf(".") !== -1) {
-                    childField = fieldId.substring(fieldId.indexOf(".") + 1);
-                    fieldId = fieldId.substring(0, fieldId.indexOf("."));
-                }
-
-                if (ajaxUrl.indexOf('?') !== -1) {
-                    ajaxUrl += "&";
-                } else {
-                    ajaxUrl += "?";
-                }
-
-                var targetField = fields[fieldId];
-                var data = targetField.getData(true);
-                var targetValue = data[fieldId];
-                
-                if (targetField.properties.type === "password") {
-                    var wrapper = $('#' + targetField.id + '_input');
-                    if (targetValue.indexOf("%%%%****SECURE_VALUE****-") === 0 && $(wrapper).find(".property-input-error.encrypted").length === 0) {
-                        $(wrapper).append('<div class="property-input-error encrypted">'+get_peditor_msg("peditor.password")+'</div>');
-                    } else {
-                        $(wrapper).find(".property-input-error.encrypted").remove();
-                    }
-                }
-
-                if (childField !== "") {
-                    if ($.isArray(targetValue)) { //is grid
-                        var values = [];
-                        for (var j in targetValue) {
-                            values.push(targetValue[j][childField]);
-                        }
-                        targetValue = values.join(";");
-                    } else {
-                        if (!targetField.isHidden()) {
-                            //it is element select, simply validate the properties fields before make ajax call to prevent unnecessary call
-                            if (childField === "className" && (targetValue === undefined || targetValue === null || targetValue[childField] === undefined || targetValue[childField] === null || targetValue[childField] === "")) {
-                                return;
-                            } else if (childField === "properties") {
-                                try {
-                                    if (targetField.pageOptions.propertiesDefinition !== undefined && targetField.pageOptions.propertiesDefinition !== null) {
-                                        if (!$(targetField.editor).find(".anchor[anchorField=\"" + targetField.id + "\"]").hasClass("partialLoad")) {
-                                            var errors = [];
-                                            $.each(targetField.pageOptions.propertiesDefinition, function(i, page) {
-                                                var p = page.propertyEditorObject;
-                                                p.validate(targetValue[childField], errors, true);
-                                            });
-                                            if (errors.length > 0) {
-                                                //there is required field leave empty, don't make the call until all field are filled.
-                                                return;
-                                            }
-                                        }
-                                    } else {
-                                        //the element select field not ready yet, this call will trigger again later when it is ready.
-                                        return;
-                                    }
-                                } catch (err) {
-                                    //if error then don't make the ajax call
-                                    return;
-                                }
-                            }
-
-                            if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
-                                targetValue = "";
-                            } else if ($.type(targetValue[childField]) === "string") {
-                                targetValue = targetValue[childField];
-                            } else {
-                                targetValue = JSON.encode(targetValue[childField]);
-                            }
-                        } else {
-                            targetValue = "";
-                        }
-                    }
-                } else if (targetValue === null || targetValue === undefined) {
-                    targetValue = "";
-                }
-
-                ajaxUrl += param + "=" + encodeURIComponent(targetValue);
-            }
-        }
+        var ajaxUrl = PropertyEditor.Util.getAjaxOptionsUrl(field, ajax_url, on_change);
+        
         var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference];
         if (prevAjaxUrl !== null && prevAjaxUrl !== undefined && prevAjaxUrl === ajaxUrl) {
             return;
@@ -1110,6 +1012,120 @@ PropertyEditor.Util = {
             }
             delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
         }
+    },
+    //clear the cached ajax call results for ajax options field
+    clearAjaxOptionsCache: function(field) {
+        var ajax_url = field.properties.options_ajax;
+        var on_change = field.properties.options_ajax_on_change;
+        
+        var ajaxUrl = PropertyEditor.Util.getAjaxOptionsUrl(field, ajax_url, on_change);
+        
+        delete PropertyEditor.Util.cachedAjaxCalls[ajaxUrl];
+        delete PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl];
+    },
+    //construct the ajax call url based on the on change dependencies fields
+    getAjaxOptionsUrl: function(field, ajax_url, on_change) {
+        var ajaxUrl = PropertyEditor.Util.replaceContextPath(ajax_url, field.options.contextPath);
+        if (on_change !== undefined && on_change !== null) {
+            var onChanges = on_change.split(";");
+            var fields = field.editorObject.fields;
+            if (field.parentId !== "" && field.parentId !== undefined) {
+                var parentId = field.parentId.substring(1);
+                if (fields[parentId] !== undefined && fields[parentId].fields !== undefined) {
+                    fields = fields[parentId].fields;
+                }
+            }
+            
+            if (field.repeaterFields) {
+                fields = $.extend({}, fields, field.repeaterFields);
+            }
+            for (var i in onChanges) {
+                var fieldId = onChanges[i];
+                var param = fieldId;
+                var childField = "";
+                if (fieldId.indexOf(":") !== -1) {
+                    param = fieldId.substring(0, fieldId.indexOf(":"));
+                    fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
+                }
+                if (fieldId.indexOf(".") !== -1) {
+                    childField = fieldId.substring(fieldId.indexOf(".") + 1);
+                    fieldId = fieldId.substring(0, fieldId.indexOf("."));
+                }
+
+                if (ajaxUrl.indexOf('?') !== -1) {
+                    ajaxUrl += "&";
+                } else {
+                    ajaxUrl += "?";
+                }
+
+                var targetField = fields[fieldId];
+                var data = targetField.getData(true);
+                var targetValue = data[fieldId];
+                
+                if (targetField.properties.type === "password") {
+                    var wrapper = $('#' + targetField.id + '_input');
+                    if (targetValue.indexOf("%%%%****SECURE_VALUE****-") === 0 && $(wrapper).find(".property-input-error.encrypted").length === 0) {
+                        $(wrapper).append('<div class="property-input-error encrypted">'+get_peditor_msg("peditor.password")+'</div>');
+                    } else {
+                        $(wrapper).find(".property-input-error.encrypted").remove();
+                    }
+                }
+
+                if (childField !== "") {
+                    if ($.isArray(targetValue)) { //is grid
+                        var values = [];
+                        for (var j in targetValue) {
+                            values.push(targetValue[j][childField]);
+                        }
+                        targetValue = values.join(";");
+                    } else {
+                        if (!targetField.isHidden()) {
+                            //it is element select, simply validate the properties fields before make ajax call to prevent unnecessary call
+                            if (childField === "className" && (targetValue === undefined || targetValue === null || targetValue[childField] === undefined || targetValue[childField] === null || targetValue[childField] === "")) {
+                                return;
+                            } else if (childField === "properties") {
+                                try {
+                                    if (targetField.pageOptions.propertiesDefinition !== undefined && targetField.pageOptions.propertiesDefinition !== null) {
+                                        if (!$(targetField.editor).find(".anchor[anchorField=\"" + targetField.id + "\"]").hasClass("partialLoad")) {
+                                            var errors = [];
+                                            $.each(targetField.pageOptions.propertiesDefinition, function(i, page) {
+                                                var p = page.propertyEditorObject;
+                                                p.validate(targetValue[childField], errors, true);
+                                            });
+                                            if (errors.length > 0) {
+                                                //there is required field leave empty, don't make the call until all field are filled.
+                                                return;
+                                            }
+                                        }
+                                    } else {
+                                        //the element select field not ready yet, this call will trigger again later when it is ready.
+                                        return;
+                                    }
+                                } catch (err) {
+                                    //if error then don't make the ajax call
+                                    return;
+                                }
+                            }
+
+                            if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
+                                targetValue = "";
+                            } else if ($.type(targetValue[childField]) === "string") {
+                                targetValue = targetValue[childField];
+                            } else {
+                                targetValue = JSON.encode(targetValue[childField]);
+                            }
+                        } else {
+                            targetValue = "";
+                        }
+                    }
+                } else if (targetValue === null || targetValue === undefined) {
+                    targetValue = "";
+                }
+
+                ajaxUrl += param + "=" + encodeURIComponent(targetValue);
+            }
+        }
+        return ajaxUrl;
     },
     fieldOnChange: function(field, reference, ajax_url, on_change, mapping, method, extra) {
         var onChanges = on_change.split(";");
@@ -6975,6 +6991,16 @@ PropertyEditor.Type.SelectBox.prototype = {
         
         $("#" + field.id).trigger("change");
         $("#" + field.id).trigger("chosen:updated");
+        
+        if (field.properties.options_ajax !== null && field.properties.options_ajax !== undefined && field.properties.options_ajax !== "") {
+            //clear cache
+            PropertyEditor.Util.clearAjaxOptionsCache(this);
+        } else if (field.properties.options_callback_addoption !== undefined && field.properties.options_callback_addoption !== null && field.properties.options_callback_addoption !== "") {
+            var func = PropertyEditor.Util.getFunction(field.properties.options_callback_addoption);
+            if ($.isFunction(func)) {
+                func(field.properties, {"value" : id, "label" : label});
+            }
+        }
     },
     pageShown: function() {
         $("#" + this.id).trigger("chosen:updated");

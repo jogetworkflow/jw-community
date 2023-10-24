@@ -9,7 +9,7 @@
             var field = $(iframe).data('field');
             if (field) {
                 field.addNewOption('<c:out value="${userviewDefinition.id}"/>', '<c:out value="${userviewDefinition.name}"/>');
-                parent.JPopup.dialogboxes['navCreateNewDialog'].hide();
+                parent.JPopup.hide('navCreateNewDialog', false);
                 handled = true;
             }
         }
