@@ -245,6 +245,8 @@ DatalistBuilder = {
      * Load and render data, called from CustomBuilder.loadJson
      */
     load: function (data) {
+        $("body").addClass("frame_loading");
+        
         if (data.binder === undefined || data.binder.className === undefined || data.binder.className === "") {
             setTimeout(function(){
                 $("#binder-btn").trigger("click");
@@ -386,6 +388,8 @@ DatalistBuilder = {
                 $("#iframe-wrapper").show();
                 
                 DatalistBuilder.afterUpdate(CustomBuilder.data);
+                
+                $("body").removeClass("frame_loading");
             });
         });
     },
@@ -3186,82 +3190,102 @@ DatalistBuilder = {
     },
     
     /*
-     * Check and remove orphaned columns 
+     * Check and remove orphaned columns before save
      */ 
-    beforeMerge : function() {
-        var self = CustomBuilder.Builder;
+    beforeMerge : function(deferreds) {
+        var wait = $.Deferred();
+        deferreds.push(wait);
         
-        var change = false;
+        DatalistBuilder.removeOrphanedColumns(wait);
+    },
+    
+    /*
+     * Check and remove orphaned columns 
+     */
+    removeOrphanedColumns : function(deferred) {
+        if ($("body").hasClass("frame_loading")) {
+            //wait for the template ready
+            setTimeout(function(){
+                DatalistBuilder.removeOrphanedColumns(deferred);
+            }, 10);
+        } else {
+            var self = CustomBuilder.Builder;
         
-        var ids = [];
-        for(var ee in DatalistBuilder.availableColumns){
-            ids.push(DatalistBuilder.availableColumns[ee].id);
-        }
+            var change = false;
         
-        
-        //find all placeholder key
-        var placeholder = [];
-        self.frameBody.find(".dataList [data-placeholder-key]").each(function(){
-            if ($.inArray($(this).data("placeholder-key"), placeholder) === -1) {
-                placeholder.push($(this).data("placeholder-key"));
+            var ids = [];
+            for(var ee in DatalistBuilder.availableColumns){
+                ids.push(DatalistBuilder.availableColumns[ee].id);
             }
-        });
-        
-        //remove unused placeholder in data
-        for (var prop in CustomBuilder.data) {
-            if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) && (prop.indexOf("column") === 0 || prop.indexOf("rowAction") === 0 || prop === "filters")) {
-                if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
-                    if (prop === "columns"  || prop === "rowActions") {
-                        CustomBuilder.data[prop] = [];
-                    } else if (prop.indexOf("-style-") === -1 && prop !== "rowActionsMode" && prop !== "rowActionsDropdownLabel") {
-                        delete CustomBuilder.data[prop];
-                    }
-                    change = true;
-                } else if (prop.indexOf("column") === 0 || prop === "filters") {
-                    var nonExistIndex = [];
-                    
-                    for (var i in CustomBuilder.data[prop]) {
-                        var name = CustomBuilder.data[prop][i].name;
-                        if (name !== undefined && $.inArray(name, ids) === -1) {
-                            nonExistIndex.push(i);
-                            
-                            //find and remove from canvas
-                            var id = CustomBuilder.data[prop][i].id;
-                            var element;
-                            
-                            if (prop === "filters") {
-                                element = self.frameBody.find(".dataList [data-cbuilder-filters] [data-cbuilder-id='"+id+"']");
-                            } else {
-                                element = self.frameBody.find(".dataList [data-placeholder-key='"+prop+"'] [data-cbuilder-id='"+id+"']");
-                            }
-                            
-                            var syncElements = $(element).data("syncElements");
-                            if (syncElements !== null && syncElements !== undefined) {
-                                for (var i in syncElements) {
-                                    $(syncElements[i]).remove();
-                                }
-                            }
-                            
-                            $(element).remove();
+
+            //find all placeholder key
+            var placeholder = [];
+            self.frameBody.find(".dataList [data-placeholder-key]").each(function(){
+                if ($.inArray($(this).data("placeholder-key"), placeholder) === -1) {
+                    placeholder.push($(this).data("placeholder-key"));
+                }
+            });
+
+            //remove unused placeholder in data
+            for (var prop in CustomBuilder.data) {
+                if (Object.prototype.hasOwnProperty.call(CustomBuilder.data, prop) && (prop.indexOf("column") === 0 || prop.indexOf("rowAction") === 0 || prop === "filters")) {
+                    if ($.inArray(prop, placeholder) === -1 && prop !== "filters") {
+                        if (prop === "columns"  || prop === "rowActions") {
+                            CustomBuilder.data[prop] = [];
+                        } else if (prop.indexOf("-style-") === -1 && prop !== "rowActionsMode" && prop !== "rowActionsDropdownLabel") {
+                            delete CustomBuilder.data[prop];
                         }
-                    }
-                    
-                    //remove non exist column 
-                    if (nonExistIndex.length > 0) {
-                        nonExistIndex.reverse();
-                        for (var i in nonExistIndex) {
-                            CustomBuilder.data[prop].splice(nonExistIndex[i], 1);
-                            change = true;
+                        change = true;
+                    } else if (prop.indexOf("column") === 0 || prop === "filters") {
+                        var nonExistIndex = [];
+
+                        for (var i in CustomBuilder.data[prop]) {
+                            var name = CustomBuilder.data[prop][i].name;
+                            if (name !== undefined && $.inArray(name, ids) === -1) {
+                                nonExistIndex.push(i);
+
+                                //find and remove from canvas
+                                var id = CustomBuilder.data[prop][i].id;
+                                var element;
+
+                                if (prop === "filters") {
+                                    element = self.frameBody.find(".dataList [data-cbuilder-filters] [data-cbuilder-id='"+id+"']");
+                                } else {
+                                    element = self.frameBody.find(".dataList [data-placeholder-key='"+prop+"'] [data-cbuilder-id='"+id+"']");
+                                }
+
+                                var syncElements = $(element).data("syncElements");
+                                if (syncElements !== null && syncElements !== undefined) {
+                                    for (var i in syncElements) {
+                                        $(syncElements[i]).remove();
+                                    }
+                                }
+
+                                $(element).remove();
+                            }
+                        }
+
+                        //remove non exist column 
+                        if (nonExistIndex.length > 0) {
+                            nonExistIndex.reverse();
+                            for (var i in nonExistIndex) {
+                                CustomBuilder.data[prop].splice(nonExistIndex[i], 1);
+                                change = true;
+                            }
                         }
                     }
                 }
             }
-        }
-        
-        if (change) {
-            $("#element-parent-box, #element-highlight-box").hide();
-            CustomBuilder.Builder.selectNode(false);
-            CustomBuilder.update(false);
+
+            if (change) {
+                $("#element-parent-box, #element-highlight-box").hide();
+                CustomBuilder.Builder.selectNode(false);
+                CustomBuilder.update(false);
+            }
+            
+            if (deferred) {
+                deferred.resolve();
+            }
         }
     },
     

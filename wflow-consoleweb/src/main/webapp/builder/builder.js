@@ -1465,27 +1465,35 @@
      * Merge the diff between local and remote
      */
     merge: function (callback) {
+        var deferreds = [];
+        var wait = $.Deferred();
+        deferreds.push(wait);
+        
         if (CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== undefined &&
                 CustomBuilder.config.builder.callbacks["builderBeforeMerge"] !== "") {
-            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderBeforeMerge"]);
+            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderBeforeMerge"], [deferreds]);
         }
         
-        // get current remote definition
-        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.merging'));
-        var thisObject = CustomBuilder;
+        wait.resolve();
         
-        CustomBuilder.showDiff(function (currentSaved, merged) {
-            if (currentSaved !== undefined && currentSaved !== "") {
-                $('#cbuilder-json-original').val(currentSaved);
-            }
-            if (merged !== undefined && merged !== "") {
-                $('#cbuilder-json').val(merged);
-            }
-            CustomBuilder.updateFromJson();
-            
-            if (callback) {
-                callback.call(thisObject, merged);
-            }
+        $.when.apply($, deferreds).then(function() {
+            // get current remote definition
+            CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.merging'));
+            var thisObject = CustomBuilder;
+
+            CustomBuilder.showDiff(function (currentSaved, merged) {
+                if (currentSaved !== undefined && currentSaved !== "") {
+                    $('#cbuilder-json-original').val(currentSaved);
+                }
+                if (merged !== undefined && merged !== "") {
+                    $('#cbuilder-json').val(merged);
+                }
+                CustomBuilder.updateFromJson();
+
+                if (callback) {
+                    callback.call(thisObject, merged);
+                }
+            });
         });
     },
     
