@@ -2,6 +2,8 @@
 
 <commons:header />
 
+<c:set var="userId"><ui:escape value="${user.id}" format="url"/></c:set>    
+
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-users"></i> <fmt:message key='console.header.menu.label.users'/></p>
@@ -12,7 +14,7 @@
         </ul>
     </div>
 </div>
-
+        
 <div id="main">
     <div id="main-title"></div>
     <div id="main-action">
@@ -180,7 +182,7 @@
              
         <div class="view">
             <div class="main-body-content-subheader"><span><fmt:message key="console.directory.user.common.label.groupList"/><span></div>
-            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/user/group/list?userId=${user.id}&${pageContext.request.queryString}"
+            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/user/group/list?userId=${userId}&${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="groupList"
                        jsonData="data"
@@ -223,9 +225,9 @@
         </c:if>
     });
     
-    <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/directory/user/edit/${user.id}."/>
-    <ui:popupdialog var="popupDialog2" src="${pageContext.request.contextPath}/web/console/directory/user/${user.id}/group/assign/view"/>
-    <ui:popupdialog var="popupDialog3" src="${pageContext.request.contextPath}/web/console/directory/user/${user.id}/reportTo/assign/view"/>
+    <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/directory/user/edit/${userId}."/>
+    <ui:popupdialog var="popupDialog2" src="${pageContext.request.contextPath}/web/console/directory/user/${userId}/group/assign/view"/>
+    <ui:popupdialog var="popupDialog3" src="${pageContext.request.contextPath}/web/console/directory/user/${userId}/reportTo/assign/view"/>
 
     function onEdit(){
         popupDialog.init();
@@ -245,7 +247,7 @@
                     document.location = '${pageContext.request.contextPath}/web/console/directory/users';
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids=${user.id}');
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids=${userId}');
         }
     }
 
@@ -262,10 +264,10 @@
             UI.blockUI(); 
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}.';
+                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${user.id}/reportTo/unassign', callback, '');
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/reportTo/unassign', callback, '');
         }
     }
 
@@ -274,10 +276,10 @@
             UI.blockUI(); 
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}.';
+                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${user.id}/group/unassign', callback, 'ids='+ selectedIds);
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/group/unassign', callback, 'ids='+ selectedIds);
         }
     }
 </script>

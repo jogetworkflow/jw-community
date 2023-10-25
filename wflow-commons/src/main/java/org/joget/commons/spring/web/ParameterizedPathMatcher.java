@@ -141,14 +141,10 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
 
             Map<String, String> groups = new HashMap<String, String>();
 
-            try {
-                for (int i = 0; i < names.size(); i++) {
-                    if ((matcher.group(i + 1) != null) && (names.get(i) != null)) {
-                        groups.put(names.get(i), URLDecoder.decode(matcher.group(i + 1), "UTF-8"));
-                    }
+            for (int i = 0; i < names.size(); i++) {
+                if ((matcher.group(i + 1) != null) && (names.get(i) != null)) {
+                    groups.put(names.get(i), matcher.group(i + 1));
                 }
-            } catch (UnsupportedEncodingException uee) {
-                return null;
             }
 
             return groups;

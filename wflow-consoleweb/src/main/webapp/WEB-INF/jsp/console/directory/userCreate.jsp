@@ -251,7 +251,7 @@
         function validateField(){
             var valid = true;
             var alertString = "";
-            var idMatch = /^[\.@0-9a-zA-Z_-]+$/.test($("#username").val());
+            var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
             if(!idMatch){
                 if(!idMatch){
                     alertString += '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>';
