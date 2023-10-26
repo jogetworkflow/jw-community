@@ -455,6 +455,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             userview.getParams().put("isTemplate", "true");
 
             Map<String, Object> data = new HashMap<String, Object>();
+            data.put("offlineTemplate", true);
             data.put("processor", processer);
             data.put("params", userview.getParams());
             data.put("userview", userview);
@@ -531,8 +532,24 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         }
         return html;
     }
+    
+    /**
+     * To remove Breadcrumb from offline template
+     * 
+     * @param data
+     * @return 
+     */
     @Override
-   protected String getNavbar(Map<String, Object> data) {
+    protected String getBreadcrumb(Map<String, Object> data) {
+        if (data.containsKey("offlineTemplate")) {
+            return "";
+        } else {
+            return super.getBreadcrumb(data);
+        }
+    }
+    
+    @Override
+    protected String getNavbar(Map<String, Object> data) {
         String html = "<div class=\"nav-no-collapse header-nav\"><ul class=\"nav pull-right\">\n";
         html += getHomeLink(data);
         if ((Boolean) data.get("is_logged_in")) {
