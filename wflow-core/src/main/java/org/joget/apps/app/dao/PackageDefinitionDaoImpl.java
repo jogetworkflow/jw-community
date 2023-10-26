@@ -2,7 +2,6 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -269,18 +268,6 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 //        appDefinitionDao.merge(appDef);
         saveOrUpdate(packageDef);
         
-        if (newProcessIds.size() > 0) {
-            for (String processID : newProcessIds) {
-                PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
-                String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processID);
-                PackageParticipant participant = new PackageParticipant();
-                participant.setProcessDefId(processIdWithoutVersion);
-                participant.setParticipantId(WorkflowUtil.PROCESS_START_WHITE_LIST);
-                participant.setType(PackageParticipant.TYPE_ROLE);
-                participant.setValue(PackageParticipant.VALUE_ROLE_ADMIN);
-                packageDefinitionDao.addAppParticipant(packageDef.getAppDefinition().getAppId(), packageDef.getAppDefinition().getVersion(), participant);
-            }
-        }
         return packageDef;
     }
 
