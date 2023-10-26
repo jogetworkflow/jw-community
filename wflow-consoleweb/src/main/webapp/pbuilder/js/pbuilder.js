@@ -1729,7 +1729,7 @@ ProcessBuilder = {
                 if (key === oriId + "::processStartWhiteList") {
                     newpid = "processStartWhiteList";
                 }
-                newParticipantMapping[id + "::" + newpid] = CustomBuilder.data.participants[key];
+                newParticipantMapping[id + "::" + newpid] = $.extend({}, CustomBuilder.data.participants[key]);
             }
         }
         
@@ -1747,7 +1747,7 @@ ProcessBuilder = {
         var newFormMapping = {};
         for (var key in CustomBuilder.data.activityForms) {
             if (key.indexOf(oriId + "::") === 0) {
-                newFormMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.activityForms[key];
+                newFormMapping[key.replace(oriId + "::", id + "::")] = $.extend({}, CustomBuilder.data.activityForms[key]);
             }
         }
         $.extend(CustomBuilder.data.activityForms, newFormMapping);
@@ -1755,7 +1755,7 @@ ProcessBuilder = {
         var newPluginsMapping = {};
         for (var key in CustomBuilder.data.activityPlugins) {
             if (key.indexOf(oriId + "::") === 0) {
-                newPluginsMapping[key.replace(oriId + "::", id + "::")] = CustomBuilder.data.activityPlugins[key];
+                newPluginsMapping[key.replace(oriId + "::", id + "::")] = $.extend({}, CustomBuilder.data.activityPlugins[key]);
             }
         }
         $.extend(CustomBuilder.data.activityPlugins, newPluginsMapping);
