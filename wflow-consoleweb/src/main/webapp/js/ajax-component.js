@@ -83,7 +83,15 @@ AjaxComponent = {
                         if (PwaUtil.isOnline !== false) {
                             AjaxComponent.call($(btn), url, "GET", null);
                         } else {
-                            return true;
+                            if (target === "" || target.toLowerCase() === "_self" || target.toLowerCase() === "_top") {
+                                window.top.location = url;
+                            } else if (target.toLowerCase() === "_parent") {
+                                if (window.parent) {
+                                    window.parent.location = url;
+                                } else {
+                                    document.location = url;
+                                }
+                            }
                         }
                     }
                     return false;
