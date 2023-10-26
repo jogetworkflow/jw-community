@@ -3002,6 +3002,10 @@
                             } else {
                                 var caret = PropertyAssistant.doGetCaretPosition(event.target);
                                 var text = $(event.target).val();
+                                var selectedText = (window.getSelection())?window.getSelection().toString():"";
+                                if (selectedText.length > 0) { //remove the selected text
+                                    text = [text.slice(0, caret), text.slice(selectedText.length)].join('');
+                                }
                                 var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
                                 $(event.target).val(output);
                             }
