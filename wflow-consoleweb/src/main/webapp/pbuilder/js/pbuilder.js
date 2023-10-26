@@ -1593,6 +1593,16 @@ ProcessBuilder = {
         
         ProcessBuilder.setArray(xpdl, 'WorkflowProcesses', 'WorkflowProcess', xpdlProcesses);
         
+        //add process start whitelist to admin
+        if (CustomBuilder.data.participants === undefined || CustomBuilder.data.participants === null) {
+            CustomBuilder.data.participants = {};
+        }
+        CustomBuilder.data.participants[id + "::processStartWhiteList"] = {
+            "type": "role",
+            "value": "adminUser",
+            "properties": {}
+        };
+        
         return emptyProcess;
     },
     
@@ -1722,6 +1732,16 @@ ProcessBuilder = {
                 newParticipantMapping[id + "::" + newpid] = CustomBuilder.data.participants[key];
             }
         }
+        
+        //force new clone process start whitelist to admin if it is unset
+        if (newParticipantMapping[id + "::processStartWhiteList"] === undefined) {
+            newParticipantMapping[id + "::processStartWhiteList"] = {
+                "type": "role",
+                "value": "adminUser",
+                "properties": {}
+            };
+        }
+        
         $.extend(CustomBuilder.data.participants, newParticipantMapping);
         
         var newFormMapping = {};
