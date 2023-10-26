@@ -108,7 +108,7 @@ public class NamingConventionCheck extends GovHealthCheckAbstract implements Gov
                 
                 // get JSON
                 String json = formDef.getJson();
-                if (json != null && !json.isEmpty()) {
+                if (json != null && !json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
                     try {
                         Form form = (Form) formService.createElementFromJson(json, false);
                         Collection<String> tempColumnList = new HashSet<String>();
