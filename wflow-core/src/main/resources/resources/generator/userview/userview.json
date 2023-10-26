@@ -35,7 +35,7 @@
         "menus": [{
             "className": "org.joget.apps.userview.lib.HtmlPage", 
             "properties": {
-                "id": "3B6F25A638EF40FFAD3C5DAAC41BA98F", 
+                "id": "%s", 
                 "customId": "@@generator.userview.welcome.id@@", 
                 "label": "@@generator.userview.welcome.label@@", 
                 "content": "@@generator.userview.welcome.content@@"

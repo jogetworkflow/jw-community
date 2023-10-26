@@ -172,7 +172,8 @@ public class GeneratorUtil {
             userviewName = StringUtil.escapeString(userviewName, StringUtil.TYPE_JSON, null);
             userviewDescription = StringUtil.escapeString(userviewDescription, StringUtil.TYPE_JSON, null);
             theme = StringUtil.escapeString(theme, StringUtil.TYPE_JSON, null);
-            String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewName, userviewDescription, theme, themeProperties}, true, null);
+            String menuId = StringUtil.escapeString(UuidGenerator.getInstance().getUuid(), StringUtil.TYPE_JSON, null);
+            String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewName, userviewDescription, theme, themeProperties, menuId}, true, null);
 
             if (json != null && !json.isEmpty()) {
                 return json;
