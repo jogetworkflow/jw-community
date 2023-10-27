@@ -273,7 +273,7 @@ public class FormPdfUtil {
         
         //append style
         String style = "<style type='text/css'>";
-        style += "*{font-size:12px;font-family:"+englishFont+DEFAULT_FONTS+";}";
+        style += "body{font-size:12px;} *{font-family:"+englishFont+DEFAULT_FONTS+";}";
         style += formPdfCss();
         style += ".quickEdit{display:none;}";
         style += ".pdf_visible{display:block !important; height: auto !important; width: 100% !important;}";
