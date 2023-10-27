@@ -355,7 +355,7 @@ function setFontSize(size) {
 
     function attachButtonEffect() {
         setTimeout(function() {
-            Waves.attach('.btn:not(.waves-button), .form-button:not(.waves-button), button:not(.waves-button), input[type=button]:not(.waves-button), input[type=reset]:not(.waves-button), input[type=submit]:not(.waves-button)', ['btn', 'waves-button', 'waves-float']);
+            Waves.attach('.btn:not(.waves-button):not(.stretched-link), .form-button:not(.waves-button), button:not(.waves-button), input[type=button]:not(.waves-button), input[type=reset]:not(.waves-button), input[type=submit]:not(.waves-button)', ['btn', 'waves-button', 'waves-float']);
         }, 0);
     }
 

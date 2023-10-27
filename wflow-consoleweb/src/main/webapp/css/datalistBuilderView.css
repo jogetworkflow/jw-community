@@ -603,6 +603,9 @@ body .filter-cell .form-button {
     z-index: 2;
     position: relative;
 }
+.dataList .stretched-link:focus, 
+.dataList .stretched-link:hover, 
+.dataList .stretched-link:active,
 .dataList .stretched-link {
     height: 0px !important;
     padding: 0 !important;
@@ -610,6 +613,11 @@ body .filter-cell .form-button {
     margin-bottom: 0 !important;
     font-size: 0px !important;
     display: inherit !important;
+    outline: 0 !important;
+    position: unset !important;
+    box-shadow: unset !important;
+    transform: unset !important;
+    opacity: unset !important;
 }
 .dataList .dropdown-menu a {
     display: block;
@@ -1032,6 +1040,12 @@ html:not(.ismobile) .dataList .show_hide_control:hover ul {
     box-sizing: border-box;
     width: 60%;
     white-space: unset !important;
+}
+.dataList .card .card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem
 }
 .body .dataList th.row_action:empty,
 .body .dataList td.row_action:empty{

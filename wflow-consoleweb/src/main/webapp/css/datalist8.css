@@ -331,6 +331,9 @@ body.rtl .dataList span.pagelinks{
     z-index: 2;
     position: relative;
 }
+.dataList .stretched-link:focus, 
+.dataList .stretched-link:hover, 
+.dataList .stretched-link:active,
 .dataList .stretched-link {
     height: 0px !important;
     padding: 0 !important;
@@ -338,6 +341,11 @@ body.rtl .dataList span.pagelinks{
     margin-bottom: 0 !important;
     font-size: 0px !important;
     display: inherit !important;
+    outline: 0 !important;
+    position: unset !important;
+    box-shadow: unset !important;
+    transform: unset !important;
+    opacity: unset !important;
 }
 .dataList .dropdown-menu a {
     display: block;
