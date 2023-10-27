@@ -328,6 +328,16 @@
         }]
     },
     {
+        name : 'usingLocalFonts',
+        label : '@@theme.ajaxUniversalTheme.usingLocalFonts@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'fontControl',
         label : '@@theme.universal.fontControl@@',
         type : 'checkbox',

@@ -186,4 +186,11 @@
         <css>/css/darkTheme.css</css>
         <js>/js/darkTheme.js</js>
     </group> 
+    <group name="dx8ColorAdmin.min">
+        <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
+    </group> 
+    <group name="dx8ColorAdminWithFont.min">
+        <css>/fonts/Roboto/css/font.css</css>
+        <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
+    </group>    
 </groups> 
