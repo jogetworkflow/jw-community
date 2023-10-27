@@ -936,8 +936,10 @@ public class DataList {
     public void addDataListAction(String className, String type, Map properties) {
         try {
             Collection<DataListAction> actionList = new ArrayList<DataListAction>();
-            if (DATALIST_ROW_ACTION.equals(type) && getRowActions().length > 0) {
-                actionList.addAll(Arrays.asList(getRowActions()));
+            if (DATALIST_ROW_ACTION.equals(type) && 
+                    getRowActionPlaceholder("rowActions") != null && 
+                    getRowActionPlaceholder("rowActions").length > 0) {
+                actionList.addAll(Arrays.asList(getRowActionPlaceholder("rowActions")));
             } else if (DATALIST_ACTION.equals(type) && getActions().length > 0) {
                 actionList.addAll(Arrays.asList(getActions()));
             }
