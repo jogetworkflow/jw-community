@@ -1188,7 +1188,7 @@ DatalistBuilder = {
                                 } else if (self.selectedEl) {
                                     parent = self.selectedEl.parent();
                                 }
-                                if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('column_') === 0) {
+                                if (parent !== null && $(parent).is("[data-placeholder-key]") && $(parent).attr('data-placeholder-key').indexOf('rowAction_') === 0) {
                                     return $(parent).attr('data-placeholder-key');
                                 } else {
                                     if (elementObj.id.indexOf(DatalistBuilder.rowActionPrefix) !== -1) {
