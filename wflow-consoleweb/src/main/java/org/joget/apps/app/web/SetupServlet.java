@@ -32,6 +32,7 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -215,6 +216,10 @@ public class SetupServlet extends HttpServlet {
                     ApplicationContext context = AppUtil.getApplicationContext();
                     InputStream setupInput = getClass().getResourceAsStream("/setup/setup.properties");
                     Properties setupProps = new Properties();
+                    
+                    WorkflowUserManager wum = (WorkflowUserManager) context.getBean("workflowUserManager");
+                    wum.setSystemThreadUser(true);
+                    
                     try {
                         setupProps.load(setupInput);
                         String sampleDelimitedApps = setupProps.getProperty("sample.apps");
@@ -227,6 +232,8 @@ public class SetupServlet extends HttpServlet {
                         if (setupInput != null) {
                             setupInput.close();
                         }
+                        
+                        wum.setSystemThreadUser(false);
                     }
                 }                
                 

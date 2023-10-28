@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class WorkflowUserManager {
     
     public static final String ROLE_ANONYMOUS = "roleAnonymous";
+    public static final String ROLE_SYSTEM = "roleSystem";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
 
@@ -191,7 +192,9 @@ public class WorkflowUserManager {
      */
     public String getCurrentUsername() {
         User user = getCurrentUser();
-        if (user != null) {
+        if (isSystemUser()) {
+            return ROLE_SYSTEM;
+        } else if (user != null) {
             return user.getUsername();
         } else {
             return ROLE_ANONYMOUS;

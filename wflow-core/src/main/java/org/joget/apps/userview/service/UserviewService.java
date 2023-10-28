@@ -40,6 +40,7 @@ import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import static org.joget.workflow.model.service.WorkflowUserManager.ROLE_ANONYMOUS;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -697,6 +698,8 @@ public class UserviewService {
                 }
             }            
         } else {
+            workflowUserManager.setSystemThreadUser(true);
+            
             // import default app center app
             String path = "/setup/apps/APP_appcenter7-1.zip";
             LogUtil.info(getClass().getName(), "Import default app center " + path);
@@ -736,6 +739,8 @@ public class UserviewService {
                     }
                 } catch (IOException e) {
                 }
+                
+                workflowUserManager.setSystemThreadUser(false);
             }
         }
         return defaultUserview;
