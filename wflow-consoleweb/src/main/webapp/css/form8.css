@@ -1258,3 +1258,10 @@ body.popupBody .form-section, body.popupBody .form-section + .form-section{
 body.popupBody .form-section:first-of-type {
     padding-top: 0px;
 }
+
+@media print {  
+    .form-section + .form-section.no_label:not(#section-actions), .subform-section + .subform-section.no_label:not(#section-actions) {
+        margin-top: 20px !important;
+        padding-top: 0px !important;
+    }
+}
