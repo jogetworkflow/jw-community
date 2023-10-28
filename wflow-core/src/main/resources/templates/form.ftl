@@ -1,5 +1,5 @@
 <#if isAuthorize>
-    <#if quickEditEnabled>
+    <#if quickEditEnabled && appId??>
     <div class="quickEdit">
          <a href="${request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/${element.properties.id!}" target="_blank"><i class="fas fa-pencil-alt"></i> @@adminBar.label.form@@: ${element.properties.name!?html}</a>
     </div>

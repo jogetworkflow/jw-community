@@ -335,8 +335,11 @@ public class AppServiceImpl implements AppService {
         String processId = assignment.getProcessId();
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
-        PackageActivityForm activityForm = retrieveMappedForm(appDef.getAppId(), appDef.getVersion().toString(), processDefId, activityDefId);
-
+        
+        Form form = null;
+        PackageActivityForm activityForm = null;
+        Collection<FormAction> formActions = new ArrayList<FormAction>();
+        
         // get origin process id
         String originProcessId = getOriginProcessId(processId);
 
@@ -349,14 +352,19 @@ public class AppServiceImpl implements AppService {
         formData.setProcessId(processId);
         formData.setPrimaryKeyValue(originProcessId);
         
-        Collection<FormAction> formActions = new ArrayList<FormAction>();
-        // decorate form with actions
-        if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty() && !activityForm.getDisableSaveAsDraft()) {
-            Element saveButton = (Element) pluginManager.getPlugin(SaveAsDraftButton.class.getName());
-            saveButton.setProperty(FormUtil.PROPERTY_ID, "saveAsDraft");
-            saveButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.saveAsDraft"));
-            formActions.add((FormAction) saveButton);
+        if (appDef != null) {
+            activityForm = retrieveMappedForm(appDef.getAppId(), appDef.getVersion().toString(), processDefId, activityDefId);
+
+            // decorate form with actions
+            if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty() && !activityForm.getDisableSaveAsDraft()) {
+                Element saveButton = (Element) pluginManager.getPlugin(SaveAsDraftButton.class.getName());
+                saveButton.setProperty(FormUtil.PROPERTY_ID, "saveAsDraft");
+                saveButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.saveAsDraft"));
+                formActions.add((FormAction) saveButton);
+            }
         }
+        
+        //add complete button & cancel button
         Element completeButton = (Element) pluginManager.getPlugin(AssignmentCompleteButton.class.getName());
         completeButton.setProperty(FormUtil.PROPERTY_ID, AssignmentCompleteButton.DEFAULT_ID);
         completeButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.complete"));
@@ -370,7 +378,12 @@ public class AppServiceImpl implements AppService {
             formActions.add((FormAction) cancelButton);
         }
         
-        Form form = retrieveForm(appDef, activityForm, formData, assignment, formActions);
+        //retrieve form mapped to activity
+        if (appDef != null && activityForm != null) {
+            form = retrieveForm(appDef, activityForm, formData, assignment, formActions);
+        }
+        
+        //create a default form if the activity form not exist
         if (form == null) {
             form = createDefaultForm(processId, formData);
             form.getActions().addAll(formActions);
