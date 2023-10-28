@@ -572,8 +572,8 @@ CREATE TABLE dir_user_replacement (
     id character varying(255) NOT NULL,
     username character varying(255),
     replacementuser character varying(255),
-    appid character varying(255),
-    processids character varying(255),
+    appid text,
+    processids text,
     startdate timestamp without time zone,
     enddate timestamp without time zone
 );

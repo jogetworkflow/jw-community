@@ -2882,8 +2882,8 @@ CREATE TABLE `dir_user_replacement` (
   `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `replacementUser` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `appId` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `processIds` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `appId` varchar(4000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `processIds` varchar(4000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)

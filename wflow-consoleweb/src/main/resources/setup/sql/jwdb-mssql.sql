@@ -38,8 +38,8 @@ CREATE TABLE [app_app](
 	[published] [tinyint] NULL,
 	[dateCreated] [datetime] NULL,
 	[dateModified] [datetime] NULL,
-	[description] [nvarchar](max) NULL,
-	[meta] [nvarchar](max) NULL,
+	[description] [ntext] NULL,
+	[meta] [ntext] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[appId] ASC,
@@ -663,7 +663,7 @@ SET QUOTED_IDENTIFIER ON
 CREATE TABLE [dir_user_meta](
 	[username] [varchar](255) NOT NULL,
 	[meta_key] [varchar](255) NOT NULL,
-	[meta_value] [nvarchar](max) NULL,
+	[meta_value] [ntext] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[username] ASC,
@@ -697,8 +697,8 @@ CREATE TABLE [dir_user_replacement](
 	[id] [varchar](255) NOT NULL,
 	[username] [varchar](255) NULL,
 	[replacementUser] [varchar](255) NULL,
-	[appId] [varchar](255) NULL,
-	[processIds] [varchar](255) NULL,
+	[appId] [varchar](max) NULL,
+	[processIds] [varchar](max) NULL,
 	[startDate] [datetime] NULL,
 	[endDate] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
