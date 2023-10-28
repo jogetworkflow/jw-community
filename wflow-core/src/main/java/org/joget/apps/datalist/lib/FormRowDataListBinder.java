@@ -299,7 +299,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             } else {
                 condition += " WHERE ";
             }
-            condition += extraCondition;
+            condition += "(" + extraCondition + ") ";
         }
 
         DataListFilterQueryObject queryObject = new DataListFilterQueryObject();
