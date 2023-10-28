@@ -1158,8 +1158,8 @@ public class PluginManager implements ApplicationContextAware {
         // add request into data model
         if (!data.containsKey("request")) {
             try {
-                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-                if (request != null) {
+                if (RequestContextHolder.currentRequestAttributes() != null) {
+                    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
                     data.put("request", request);
                 } else {
                     data.put("request", new MockRequest());
