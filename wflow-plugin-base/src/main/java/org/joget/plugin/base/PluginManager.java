@@ -499,11 +499,24 @@ public class PluginManager implements ApplicationContextAware {
         List<BeanDefinition> componentList = new ArrayList(components);
         Collections.sort(componentList, new Comparator() {
             public int compare(Object o1, Object o2) {
-                return ((BeanDefinition)o1).getBeanClassName().compareTo(((BeanDefinition)o2).getBeanClassName());
+                String o1Name = ((BeanDefinition)o1).getBeanClassName();
+                String o2Name = ((BeanDefinition)o2).getBeanClassName();
+                
+                if (o1Name == null) {
+                    o1Name = o1.getClass().getName();
+                }
+                if (o2Name == null) {
+                    o2Name = o2.getClass().getName();
+                }
+                
+                return o1Name.compareTo(o2Name);
             }
         });
         for (BeanDefinition component : componentList) {
             String beanClassName = component.getBeanClassName();
+            if (beanClassName == null) {
+                beanClassName = component.getClass().getName();
+            }
             if (blackList == null || !blackList.contains(beanClassName)) {
                 try {
                     Class<? extends Plugin> beanClass = Class.forName(beanClassName).asSubclass(Plugin.class);
