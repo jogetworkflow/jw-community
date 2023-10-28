@@ -9,4 +9,9 @@ public class SetupManagerHelperImpl implements SetupManagerHelper {
     public void checkSettingChanges(Map<String, Setting> settingMaps) {
         //do nothing
     }
+    
+    @Override
+    public void auditSettingChange(Setting setting) {
+        //do nothing
+    }
 }

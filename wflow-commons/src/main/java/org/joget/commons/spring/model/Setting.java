@@ -8,6 +8,7 @@ public class Setting implements Serializable {
     private String property;
     private String value;
     private Integer ordering;
+    private String originalValue = null; //used to keep track value changes
 
     public String getId() {
         return id;
@@ -38,6 +39,15 @@ public class Setting implements Serializable {
     }
 
     public void setValue(String value) {
+        //keep track original value
+        if (id != null && originalValue == null) {
+            originalValue = value;
+        }
+        
         this.value = value;
+    }
+
+    public String getOriginalValue() {
+        return originalValue;
     }
 }

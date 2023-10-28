@@ -5,9 +5,11 @@ import java.util.Map;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.SetupManagerHelper;
 import org.joget.governance.service.GovHealthCheckManager;
 import org.joget.plugin.base.ProfilePluginCache;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowManager;
 
 public class AppSetupManagerHelperImpl implements SetupManagerHelper {
@@ -57,6 +59,27 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
         } catch (Exception e) {
             LogUtil.error(AppSetupManagerHelperImpl.class.getName(), e, "");
         }
+    }
+    
+    /**
+     * Check and add audit trail record if setting changed
+     * 
+     * @param setting 
+     */
+    @Override
+    public void auditSettingChange(Setting setting) {
+        if (setting != null && !setting.getProperty().startsWith("CACHE_LAST_CLEAR_")) { //do not track cache setting
+            if (setting.getValue() == null || setting.getOriginalValue() == null || !setting.getOriginalValue().equals(setting.getValue())) {
+                
+                String method = "saveSetting";
+                if (setting.getValue() == null) {
+                    method = "deleteSetting";
+                }
+                
+                WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+                workflowHelper.addAuditTrail(SetupManager.class.getName(), method, setting.getProperty(), null, null, false);        
+            }
+        }            
     }
     
     private WorkflowManager getWorkflowManager() {

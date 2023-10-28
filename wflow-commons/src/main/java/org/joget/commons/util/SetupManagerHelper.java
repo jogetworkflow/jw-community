@@ -7,4 +7,5 @@ public interface SetupManagerHelper {
     
     public void checkSettingChanges(Map<String, Setting> settingMap);
     
+    public void auditSettingChange(Setting setting);
 }

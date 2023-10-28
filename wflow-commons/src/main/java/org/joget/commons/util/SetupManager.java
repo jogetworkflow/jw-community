@@ -139,6 +139,8 @@ public class SetupManager {
     public void saveSetting(Setting setting) {
         getSetupDao().saveOrUpdate(setting);
         clearCache();
+        
+        getSetupManagerHelper().auditSettingChange(setting);
     }
 
     /**
@@ -213,6 +215,9 @@ public class SetupManager {
         if (setting != null) {
             getSetupDao().delete(setting);
         }
+        
+        setting.setValue(null);
+        getSetupManagerHelper().auditSettingChange(setting);
     }
 
     /**
