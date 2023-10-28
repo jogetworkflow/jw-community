@@ -4608,6 +4608,10 @@ public class ConsoleWebController {
         while (e.hasMoreElements()) {
             String paramName = (String) e.nextElement();
             String paramValue = request.getParameter(paramName);
+            
+            if ("OWASP_CSRFTOKEN".equals(paramName)) {
+                continue;
+            }
 
             if (booleanSettingsList.contains(paramName)) {
                 settingsIsNotNull.add(paramName);
