@@ -391,28 +391,33 @@ AjaxComponent = {
                         if (part[0] !== "") {
                             alert(part[0]);
                         }
-                        if (part[2] === null) { //if no target winder, use current window
-                            //if redirect url is not same with current userview page
-                            if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                                AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
-                            } else {
-                                AjaxComponent.triggerEvents(contentConatiner, url, method);
-                                AjaxComponent.call(contentConatiner, part[1], "GET", null);
-                            }
-                        } else { //if target is top or parent window
-                            var win = part[2];
-                            if (part[1] === "") { // it is a reload when url is empty
-                                part[1] = win.location.href;
-                            }
-                            if(win["AjaxComponent"]){ //use ajax component to reload/redirect if exist
-                                if (part[1].indexOf("embed=false") !== -1) { //remove embed false url
-                                    part[1] = part[1].replace("embed=false", "");
+                        if (part[1] !== null && part[1] !== undefined) { //if there is URL
+                            if (part[2] === null) { //if no target window, use current window
+                                if (part[1] === "") { // it is a reload when url is empty
+                                    part[1] = document.location.href;
                                 }
-                                win["AjaxComponent"].call($("#content.page_content", win["document"]), part[1], "GET", null);
-                            } else {
-                                win.location.href = part[1];
+                                //if redirect url is not same with current userview page
+                                if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
+                                    AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
+                                } else {
+                                    AjaxComponent.triggerEvents(contentConatiner, url, method);
+                                    AjaxComponent.call(contentConatiner, part[1], "GET", null);
+                                }
+                            } else { //if target is top or parent window
+                                var win = part[2];
+                                if (part[1] === "") { // it is a reload when url is empty
+                                    part[1] = win.location.href;
+                                }
+                                if(win["AjaxComponent"]){ //use ajax component to reload/redirect if exist
+                                    if (part[1].indexOf("embed=false") !== -1) { //remove embed false url
+                                        part[1] = part[1].replace("embed=false", "");
+                                    }
+                                    win["AjaxComponent"].call($("#content.page_content", win["document"]), part[1], "GET", null);
+                                } else {
+                                    win.location.href = part[1];
+                                }
+                                part[3] = true; //if the target is parent or top, always close popup if exist
                             }
-                            part[3] = true; //if the target is parent or top, always close popup if exist
                         }
                         if (part[3] === true && parent.PopupDialog) { 
                             parent.PopupDialog.closeDialog();
@@ -919,6 +924,9 @@ AjaxComponent = {
                 msg = part[0].match(regex)[0];
                 msg = msg.substring(1, msg.length - 1);
             }
+        }
+        if (content.indexOf(".location") === -1) { //if there is no redirection
+            url = null;
         }
         if (regex.test(part[1])) {
             url = part[1].match(regex)[0];
