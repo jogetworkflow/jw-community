@@ -765,9 +765,21 @@ body input.no-manual-input{
 }
 .spreadsheet_container, 
 .spreadsheet {
-    width:100%; 
+    width:100%;  
     overflow:visible !important; 
     color:inherit;
+}
+.spreadsheet_container.resize {
+    overflow:hidden !important; 
+    max-width: 100% !important; 
+    opacity: 0.4;
+}
+.spreadsheet_container.resize .wtHolder {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.spreadsheet_container.resize .wtHolder::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {
     color: #dc3545;

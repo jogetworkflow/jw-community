@@ -785,6 +785,14 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 .htMobileEditorContainer .inputs textarea {height: 25px !important; width: auto; max-width:none;}
 .handsontable .htAutocompleteArrow, .handsontable .columnSorting::after {font-family: sans-serif;}
 .spreadsheet_container, .spreadsheet {width:100%; overflow:visible !important; color:#000;}
+.spreadsheet_container.resize {overflow:hidden !important; max-width: 100% !important; opacity: 0.4;}
+.spreadsheet_container.resize .wtHolder {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.spreadsheet_container.resize .wtHolder::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
 .handsontable .file_delete {color:red; display:inline-block; margin:0 10px; cursor:pointer;}
 .handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
