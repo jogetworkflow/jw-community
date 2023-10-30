@@ -303,6 +303,7 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > a{
 }
 body.rtl:not(.horizontal_menu) #sidebar .category > a > span:not(.badge){
     float: right;
+    text-align: right;
 }
 #sidebar .nav > li > a:hover {
     color: var(--theme-sidebar-active-link, var(--theme-color3 ,#313435));
@@ -321,10 +322,13 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > a > span:not(.badge) {
 }
 #sidebar .nav > li > a.menu-link > span:not(.badge) {
     display: inline-block;
+    max-width: 225px;
+    padding-right: 10px;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > a.menu-link > span:not(.badge) {
     padding: 6px 50px 6px 0px;
     float: right;
+    padding-left: 10px;
 }
 #sidebar .nav > li > a.menu-link > span.badge {
     margin-top: 8px;
@@ -422,6 +426,7 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
     float: right;
+    padding-right: 0px;
 }
 #sidebar li a.dropdown:after {
     position: absolute;
