@@ -188,6 +188,9 @@ UI = {
             if (UI.messages === undefined) {
                 UI.messages = {};
             }
+            if (UI.messagesCalls === undefined) {
+                UI.messagesCalls = {};
+            }
             var missingKeys = [];
             if (keys !== undefined && keys !== null && keys.length > 0) {
                 for (var i = 0; i < keys.length; i++) {
@@ -197,14 +200,28 @@ UI = {
                 }
             }
             if (missingKeys.length > 0) {
-                ConnectionManager.post(UI.base + '/web/userview/'+UI.userview_app_id+'/appI18nMessages', {
-                    success : function(data) {
-                        UI.messages = $.extend(UI.messages, eval('['+data+']')[0]);
-                        callback(UI.messages);
-                    }
-                }, {
-                   'keys' : missingKeys
-                });
+                //check if there is existing calls for the missing keys
+                var callKey = missingKeys.join();
+                if (UI.messagesCalls[callKey] === undefined) {
+                    UI.messagesCalls[callKey] = [callback];
+                    
+                    ConnectionManager.post(UI.base + '/web/userview/'+UI.userview_app_id+'/appI18nMessages', {
+                        success : function(data) {
+                            UI.messages = $.extend(UI.messages, eval('['+data+']')[0]);
+                            
+                            var callbacks = UI.messagesCalls[callKey];
+                            delete UI.messagesCalls[callKey];
+                            
+                            for (var c in callbacks) {
+                                callbacks[c](UI.messages);
+                            }
+                        }
+                    }, {
+                       'keys' : missingKeys
+                    });
+                } else {
+                    UI.messagesCalls[callKey].push(callback);
+                }
             } else {
                 callback(UI.messages);
             }
