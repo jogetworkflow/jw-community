@@ -893,6 +893,11 @@ PropertyEditor.Util = {
     callLoadOptionsAjax: function(field, reference, ajax_url, on_change, mapping, method, extra) {
         var ajaxUrl = PropertyEditor.Util.getAjaxOptionsUrl(field, ajax_url, on_change);
         
+        if (ajaxUrl === null || ajaxUrl === undefined) {
+            //there is dependent field does not initialise yet, or validation error or getting dependent field value error
+            return;
+        }
+        
         var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference];
         if (prevAjaxUrl !== null && prevAjaxUrl !== undefined && prevAjaxUrl === ajaxUrl) {
             return;
@@ -1019,6 +1024,11 @@ PropertyEditor.Util = {
         var on_change = field.properties.options_ajax_on_change;
         
         var ajaxUrl = PropertyEditor.Util.getAjaxOptionsUrl(field, ajax_url, on_change);
+        
+        if (ajaxUrl === null || ajaxUrl === undefined) {
+            //there is dependent field does not initialise yet, or validation error or getting dependent field value error
+            return;
+        }
         
         delete PropertyEditor.Util.cachedAjaxCalls[ajaxUrl];
         delete PropertyEditor.Util.timeCachedAjaxCalls[ajaxUrl];
