@@ -5197,9 +5197,17 @@ _CustomBuilder.Builder = {
         
         var isSubSelect = $(element).is('[data-cbuilder-select]');
         
-        $("#paste-element-btn").addClass("disabled");
-        if (component.builderTemplate.isPastable(data, component)) {
-            $("#paste-element-btn").removeClass("disabled");
+        //only enable/disable it for selected element, should not do it during hightlight/hover
+        if (box.is("#element-select-box")) {
+            $("#paste-element-btn").addClass("disabled");
+            if (component.builderTemplate.isPastable(data, component)) {
+                $("#paste-element-btn").removeClass("disabled");
+            }
+        
+            $("#copy-element-btn").addClass("disabled");
+            if (!isSubSelect && component.builderTemplate.isCopyable(data, component)) {
+                $("#copy-element-btn").removeClass("disabled");
+            }
         }
 
         $(box).find(".up-btn, .down-btn, .left-btn, .right-btn").hide();
@@ -5218,11 +5226,6 @@ _CustomBuilder.Builder = {
         $(box).find(".delete-btn").hide();
         if (!isSubSelect && component.builderTemplate.isDeletable(data, component)) {
             $(box).find(".delete-btn").show();
-        }
-
-        $("#copy-element-btn").addClass("disabled");
-        if (!isSubSelect && component.builderTemplate.isCopyable(data, component)) {
-            $("#copy-element-btn").removeClass("disabled");
         }
 
         $(box).find(".parent-btn").hide();
