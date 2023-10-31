@@ -162,6 +162,7 @@ AjaxUniversalTheme = {
     /* remove all dynamic added elemetns of the page */
     clearDynamicElement : function() {
         $("#ajaxtheme_dynamic_elements_after_this").nextAll().remove();
+        $("#ajaxtheme_dynamic_elements_after_this").nextAll().remove(); //the previous 1 only able to clear the wrapper of jquery ui dialog, need to run another time to remove it.
     },
     
     /* login url should follow current page url */
