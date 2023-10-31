@@ -181,7 +181,7 @@ public class ServerUtil {
         try {
             // get registered nodes
             SetupDao setupDao = (SetupDao) SecurityUtil.getApplicationContext().getBean("setupDao");
-            Collection<Setting> nodes = setupDao.find("WHERE property like '" + CLUSTER_PREFIX + "%'", null, "property", Boolean.FALSE, null, null);
+            Collection<Setting> nodes = setupDao.find("WHERE property like '%" + CLUSTER_PREFIX + "%'", null, "property", Boolean.FALSE, null, null);
             for (Setting n : nodes) {
                 String key = n.getProperty().substring(n.getProperty().lastIndexOf(":") + 1);
                 nodeList.add(key);
