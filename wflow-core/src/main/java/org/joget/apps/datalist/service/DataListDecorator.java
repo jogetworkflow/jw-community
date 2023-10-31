@@ -1,15 +1,19 @@
 package org.joget.apps.datalist.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -518,5 +522,50 @@ public class DataListDecorator extends CheckboxTableDecorator {
         } else {
             return listRenderHtml;
         }
+    }
+    
+    /**
+     * Override the display tag method to prevent XSS 
+     */
+    @Override
+    public void finish()
+    {
+
+        if (!checkedIds.isEmpty())
+        {
+            JspWriter writer = getPageContext().getOut();
+            for (Iterator it = checkedIds.iterator(); it.hasNext();)
+            {
+                String name = (String) it.next();
+                StringBuffer buffer = new StringBuffer();
+                buffer.append("<input type=\"hidden\" name=\"");
+                buffer.append(StringUtil.stripAllHtmlTag(fieldName));
+                buffer.append("\" value=\"");
+                buffer.append(StringUtil.stripAllHtmlTag(name));
+                buffer.append("\">");
+                try
+                {
+                    writer.write(buffer.toString());
+                }
+                catch (IOException e)
+                {
+                    // should never happen
+                }
+            }
+            
+            //remove the checkedIds in super class
+            try {
+                Field privateField = CheckboxTableDecorator.class.getDeclaredField("checkedIds");
+                privateField.setAccessible(true);
+                List superCheckedIds = (List) privateField.get(this);
+                if (superCheckedIds != null) {
+                    superCheckedIds.clear();
+                }
+            } catch (Exception e) {
+                //ignore it
+            }
+        }
+
+        super.finish();
     }
 }
