@@ -50,6 +50,7 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 
 @Plugin(name = "LogViewerAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
@@ -514,7 +515,13 @@ public class LogViewerAppender extends AbstractAppender {
                 currentIpAddress = ";" + currentIpAddress;
             }
             JsonIPWhitelist = JsonIPWhitelist + currentIpAddress;
-            setupManager.updateSetting("jsonpIPWhitelist", JsonIPWhitelist);
+            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            try {
+                wum.setSystemThreadUser(true); //to log it as system user
+                setupManager.updateSetting("jsonpIPWhitelist", JsonIPWhitelist);
+            } finally {
+                wum.setSystemThreadUser(false);
+            }
         }
     }
 }

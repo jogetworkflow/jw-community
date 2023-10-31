@@ -70,7 +70,8 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
     public void auditSettingChange(Setting setting) {
         if (setting != null && 
                 !setting.getProperty().startsWith("CACHE_LAST_CLEAR_") && 
-                !setting.getProperty().startsWith("node::")) { //do not track cache setting && cluster license changes
+                !setting.getProperty().contains("node::") && 
+                !setting.getProperty().contains("LogToken")) { //do not track cache setting && cluster license changes
             if (setting.getValue() == null || setting.getOriginalValue() == null || !setting.getOriginalValue().equals(setting.getValue())) {
                 
                 String method = "saveSetting";
