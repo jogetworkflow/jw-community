@@ -373,6 +373,10 @@ ProcessBuilder = {
         ProcessBuilder.currentProcessData = null;
         var xpdl = CustomBuilder.data.xpdl['Package'];
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
+        
+        //check if the data is new process and set the process start whitelist
+        ProcessBuilder.setNewProcessStartWhitelist(xpdlProcesses);
+        
         for (var p in xpdlProcesses) {
             if (xpdlProcesses[p]["-Id"] === id) {
                 xpdlProcess = xpdlProcesses[p];
@@ -743,6 +747,35 @@ ProcessBuilder = {
             }
 
             process['transitions'].push(transition);
+        }
+    },
+    
+    /*
+     * Check whether the process is a new process without any activities and set the process start whitelits to admin
+     */
+    setNewProcessStartWhitelist : function(xpdlProcesses) {
+        if (xpdlProcesses.length === 1) { //check the package only have 1 process
+            var xpdlActivities = ProcessBuilder.getArray(xpdlProcesses[0]['Activities'], 'Activity');
+            
+            if (xpdlActivities.length === 0) { //check the process only have 0 ativity
+                //get process id
+                var id = xpdlProcesses[0]["-Id"];
+                
+                if (CustomBuilder.data.participants === undefined || CustomBuilder.data.participants === null) {
+                    CustomBuilder.data.participants = {};
+                }
+                    
+                if (CustomBuilder.data.participants[id + "::processStartWhiteList"] === undefined) { //if there is no process start whitelist
+                    //add process start whitelist to admin
+                    CustomBuilder.data.participants[id + "::processStartWhiteList"] = {
+                        "type": "role",
+                        "value": "adminUser",
+                        "properties": {}
+                    };
+                    
+                    CustomBuilder.update(false);
+                }
+            }
         }
     },
     

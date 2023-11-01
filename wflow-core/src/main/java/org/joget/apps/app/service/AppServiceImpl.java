@@ -1845,20 +1845,6 @@ public class AppServiceImpl implements AppService {
             Long packageVersion = Long.parseLong(versionStr);
             if (packageDef == null) {
                 packageDef = packageDefinitionDao.createPackageDefinition(appDef, packageVersion);
-                
-                //if app version is the only version for the app and no package is found, set process start white list to admin user
-                if (!isGitSync && appDefinitionDao.countVersions(appId) == 1) {
-                    Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageVersion.toString());
-                    for (WorkflowProcess wp : processList) {
-                        String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
-                        PackageParticipant participant = new PackageParticipant();
-                        participant.setProcessDefId(processIdWithoutVersion);
-                        participant.setParticipantId(WorkflowUtil.PROCESS_START_WHITE_LIST);
-                        participant.setType(PackageParticipant.TYPE_ROLE);
-                        participant.setValue(PackageParticipant.VALUE_ROLE_ADMIN);
-                        packageDefinitionDao.addAppParticipant(appDef.getAppId(), appDef.getVersion(), participant);
-                    }
-                }
             } else {
                 originalVersion = packageDef.getVersion();
                 packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
