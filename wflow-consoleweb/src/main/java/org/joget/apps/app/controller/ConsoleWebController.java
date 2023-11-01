@@ -107,6 +107,7 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
 import org.joget.commons.util.PagingUtils;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
@@ -126,7 +127,6 @@ import org.joget.directory.model.service.DirectoryManagerPlugin;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.logs.LogViewerAppender;
-import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
@@ -4631,10 +4631,6 @@ public class ConsoleWebController {
                 }
             }
             
-            if ("deleteProcessOnCompletion".equals(paramName) && "archive".equals(paramValue) && !"archive".equals(setting.getValue())) {
-                workflowManager.internalMigrateProcessHistories();
-            }
-            
             if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName) || "smtpStorepass".equals(paramName)) {
                 if (!SetupManager.SECURE_VALUE.equals(paramValue)) {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
@@ -4648,6 +4644,20 @@ public class ConsoleWebController {
             }
             
             setupManager.saveSetting(setting);
+            
+            //only run it after saved the value, workflow manager do check the value before run the migration
+            if ("deleteProcessOnCompletion".equals(paramName) && "archive".equals(paramValue) && !"archive".equals(setting.getOriginalValue())) {
+                //run in new thread to prevent it keep the setting page waiting
+                Thread thread = new PluginThread(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        workflowManager.internalMigrateProcessHistories();
+                    }
+                });
+                thread.setDaemon(true);
+                thread.start();
+            }
         }
 
         for (String s : booleanSettingsList) {
