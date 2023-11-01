@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-app</artifactId>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.0.41</version>
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
@@ -10,7 +10,7 @@
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
         <url>ssh://git@repo.joget.org:2224/joget/jw-community.git</url>
-        <tag>HEAD</tag>
+        <tag>7.0.41</tag>
     </scm>
     <modules>
         <module>../wflow-jdbc</module>
