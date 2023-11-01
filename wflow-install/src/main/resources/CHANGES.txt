@@ -3,6 +3,32 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.41
+=================
+df1d2a1c7 Fixed: wflow-core - List - Fixed XSS. T3305 @7.0-SNAPSHOT
+6b82a5aa7 Fixed: wflow-core - Form Data List Binder - Inbox optimization not working when extra filter condition with `OR` operator are used. @7.0-SNAPSHOT
+1ba2fe284 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Records using process id as id fail to load. @7.0-SNAPSHOT
+a243e7c8e Fixed: wflow-core - Code Quality - "toString" should not be called on array instances. @7.0-SNAPSHOT
+ffad4335b Fixed: wflow-consoleweb - UI - Missing lang attribute for html tag. @7.0-SNAPSHOT
+decc2feeb Fixed: jw-community - Code Quality - Prevent possible NPE. @7.0-SNAPSHOT
+42d73d23b Fixed: wflow-core - ID Generator Field - Wrong regex used to validate app variable name. @7.0-SNAPSHOT
+4b906ee0f Fixed: jw-community - Update org.json:json library to 20231013 for CVE-2023-5072. @7.0-SNAPSHOT
+01559d1ab Modified: jw-community - Update Apache Tomcat & Apache Tomcat JDBC to 9.0.82. @7.0-SNAPSHOT
+f9c0ece7e Fixed: wflow-consoleweb - Form - Validator decorator does not render correctly for full width field. @7.0-SNAPSHOT
+3dbc1ba2d Fixed: wflow-core - Git - Fixed deleting form leads to error and error during sync app. @7.0-SNAPSHOT
+360be0e7f Fixed: wflow-consoleweb - App - Tagging - Prevent possible XSS. @7.0-SNAPSHOT
+ecfaa3fde Modified: wflow-core - Text Field/Text Area/Custom HTML - Added option to support input sanitization. @7.0-SNAPSHOT
+a84021760 Fixed: wflow-plugin-base - Plugin Manager - Performance issue on plugin translation handling when processing template with large data. @7.0-SNAPSHOT
+e20453b47 Fixed: wflow-consoleweb - General Setting - Not allow default UI to set to empty value. @7.0-SNAPSHOT
+f2d8bcaa8 Fixed: wflow-consoleweb - Admin Bar - Should not hide app menu when an app set as default UI. T3194 @7.0-SNAPSHOT
+a6306cd0e Fixed: wflow-commons - Nonce - There is no method to clear nonces for submitted page. @7.0-SNAPSHOT
+3872b1282 Modified: wflow-core - Task Delegation - Add indexes to table. @7.0-SNAPSHOT
+62e95ccfb Fixed: wflow-consoleweb - List - Filter form should be using GET method. @7.0-SNAPSHOT
+0d357346b Modified: wflow-core - Add method to remove task delegation cache. @7.0-SNAPSHOT
+53147d790 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Task delegation is broken. @7.0-SNAPSHOT
+d7eeb4f8d Fixed: wflow-directory - Current User Hash Variable - Employment info is not updated after edit user employment. @7.0-SNAPSHOT
+a473f2a4d Fixed: wflow-directory - Regression of 30aec1ef4. Current User Hash Variable fail to retrieve employment info due to session replication.  @7.0-SNAPSHOT
+
 CHANGES IN 7.0.40
 =================
 7007c5f5a Fixed: wflow-consoleweb - Property Editor - Steps indicator does not work correctly for multi element select field. T1800 @7.0-SNAPSHOT
