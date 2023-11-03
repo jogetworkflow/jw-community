@@ -31,7 +31,6 @@ import org.joget.apps.datalist.model.DataListBinder;
 import static org.joget.apps.datalist.service.JsonUtil.parseBinderFromJsonObject;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormService;
-import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.generator.model.GeneratorPlugin;
 import org.joget.apps.userview.lib.RunProcess;
 import org.joget.apps.userview.model.UserviewTheme;
@@ -43,7 +42,9 @@ import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.enterprise.CorporatiTheme;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.transaction.TransactionStatus;
@@ -359,7 +360,28 @@ public class GeneratorUtil {
         }
         xpdl = GeneratorUtil.addParticipantsAndProcessXmlToXpdl(participantsXml, processXml, xpdl);
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        return appService.deployWorkflowPackage(appDef.getId(), appDef.getVersion().toString(), xpdl.getBytes("UTF-8"), false);
+        packageDef = appService.deployWorkflowPackage(appDef.getId(), appDef.getVersion().toString(), xpdl.getBytes("UTF-8"), false);
+        
+        //set new generated process start whitelist to admin
+        if (packageDef != null) {
+            WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) AppUtil.getApplicationContext().getBean("packageDefinitionDao");
+            
+            Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageDef.getVersion().toString());
+            for (WorkflowProcess wp : processList) {
+                String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
+                if (processXml.contains("WorkflowProcess Id=\"" +processIdWithoutVersion + "\"")) { //if process id is in the processXml, it is new generated process id
+                    PackageParticipant participant = new PackageParticipant();
+                    participant.setProcessDefId(processIdWithoutVersion);
+                    participant.setParticipantId(WorkflowUtil.PROCESS_START_WHITE_LIST);
+                    participant.setType(PackageParticipant.TYPE_ROLE);
+                    participant.setValue(PackageParticipant.VALUE_ROLE_ADMIN);
+                    packageDefinitionDao.addAppParticipant(appDef.getAppId(), appDef.getVersion(), participant);
+                }
+            }
+        }
+
+        return packageDef;
     }
     
     /**
