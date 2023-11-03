@@ -304,7 +304,7 @@ UrlUtil = {
 };
 
 function filter(jsonTable, url, value){
-    var newUrl = url + value;
+    var newUrl = url + encodeURIComponent(value);
     jsonTable.load(jsonTable.url + newUrl);
 }
 
