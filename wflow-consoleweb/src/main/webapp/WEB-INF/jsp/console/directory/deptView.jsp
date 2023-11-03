@@ -233,8 +233,8 @@
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
         if(jsonTable == JsonUserDataTable){
-            url = "&gradeId=" + encodeURI($('#JsonUserDataTable_filterbyGrade').val());
-            url += "&name=" + encodeURI($('#JsonUserDataTable_searchCondition').val());
+            url = "&gradeId=" + encodeURIComponent($('#JsonUserDataTable_filterbyGrade').val());
+            url += "&name=" + encodeURIComponent($('#JsonUserDataTable_searchCondition').val());
             org_filter(jsonTable, url, '');
         }else{
             org_filter(jsonTable, url, value);

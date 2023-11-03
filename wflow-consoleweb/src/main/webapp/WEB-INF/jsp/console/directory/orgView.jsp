@@ -254,9 +254,9 @@
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
         if(jsonTable == JsonUserDataTable){
-            url = "&deptId=" + encodeURI($('#JsonUserDataTable_filterbyDept').val());
-            url += "&gradeId=" + encodeURI($('#JsonUserDataTable_filterbyGrade').val());
-            url += "&name=" + encodeURI($('#JsonUserDataTable_searchCondition').val());
+            url = "&deptId=" + encodeURIComponent($('#JsonUserDataTable_filterbyDept').val());
+            url += "&gradeId=" + encodeURIComponent($('#JsonUserDataTable_filterbyGrade').val());
+            url += "&name=" + encodeURIComponent($('#JsonUserDataTable_searchCondition').val());
             org_filter(jsonTable, url, '');
         }else{
             org_filter(jsonTable, url, value);

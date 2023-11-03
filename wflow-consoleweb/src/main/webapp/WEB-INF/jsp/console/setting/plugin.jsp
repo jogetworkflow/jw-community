@@ -164,11 +164,11 @@
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
         if(jsonTable == JsonDataTable){
-            url = "&className=" + encodeURI($('#JsonDataTable_filterbytype').val());
-            url += "&name=" + encodeURI($('#JsonDataTable_searchCondition').val());
+            url = "&className=" + encodeURIComponent($('#JsonDataTable_filterbytype').val());
+            url += "&name=" + encodeURIComponent($('#JsonDataTable_searchCondition').val());
         }else if(jsonTable == JsonDataTable1){
-            url = "&className=" + encodeURI($('#JsonDataTable1_filterbytype').val());
-            url += "&name=" + encodeURI($('#JsonDataTable1_searchCondition').val());
+            url = "&className=" + encodeURIComponent($('#JsonDataTable1_filterbytype').val());
+            url += "&name=" + encodeURIComponent($('#JsonDataTable1_searchCondition').val());
         }
         org_filter(jsonTable, url, '');
     };
