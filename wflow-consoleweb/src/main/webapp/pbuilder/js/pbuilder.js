@@ -518,6 +518,11 @@ ProcessBuilder = {
                 }
             }
             
+            //performer is not a required value for route, set it again when it is missing
+            if (xpdlActivities[a]["Performer"] === undefined) {
+                xpdlActivities[a]["Performer"] = participantId;
+            }
+            
             var obj = {
                 className : type,
                 properties : {
