@@ -28,7 +28,8 @@ body.initializing:after{
     display: block;
 }
 body.is-dragging [data-cbuilder-droparea] {
-    min-height: 50px; 
+    min-height: 50px;
+    min-width: 50px;
     position: relative;
 }
 body.is-dragging *{
