@@ -27,6 +27,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.spring.web.CustomContextLoaderListener;
 import org.joget.commons.spring.web.CustomDispatcherServlet;
+import org.joget.commons.util.DatabaseUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
@@ -186,6 +187,9 @@ public class SetupServlet extends HttpServlet {
                 
                 con.commit();
                 LogUtil.info(getClass().getName(), "Datasource init complete: " + success);
+                
+                //run collation check before servlet init for mysql, else imported apps form data tables are with previous collation.
+                DatabaseUtil.checkAndFixMySqlDbCollation(con);
                 
                 // save profile
                 String profileName = (dbName != null && !dbName.trim().isEmpty()) ? dbName : "custom";
