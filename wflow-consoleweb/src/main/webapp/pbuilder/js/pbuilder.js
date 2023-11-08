@@ -3491,66 +3491,70 @@ ProcessBuilder = {
                 }
             }
             
-            for (var a in xpdlActivities) {
-                var activityInvalid = false;
-                var deadlineInvalid = false;
-                var startInvalid = false;
-                
-                var act = xpdlActivities[a];
-                var aid = act['-Id'];
-                if ((fromTransition[aid] === undefined && $.inArray(aid, ends) === -1)
-                        || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
-                    activityInvalid = true;
-                }
-                
-                if ($.inArray(aid, starts) !== -1 && toTransition[aid] !== undefined && toTransition[aid].length > 0) {
-                    startInvalid = true;
-                }
-                
-                var xpdlDeadlines = ProcessBuilder.getArray(act['Deadline']);
-                if (xpdlDeadlines.length > 0) {
-                    if (fromTransition[aid] === undefined) {
-                        deadlineInvalid = true;
-                    } else {
-                        var exceptionNames = [];
-                        for (var t in fromTransition[aid]) {
-                            var transition = fromTransition[aid][t];
-                            if (transition['Condition'] !== undefined && transition['Condition']['-Type'] === "EXCEPTION") {
-                                exceptionNames.push(transition['Condition']['#text']);
+            if (xpdlActivities !== null && xpdlActivities !== undefined && xpdlActivities.length > 0) {
+                for (var a in xpdlActivities) {
+                    var activityInvalid = false;
+                    var deadlineInvalid = false;
+                    var startInvalid = false;
+
+                    var act = xpdlActivities[a];
+                    var aid = act['-Id'];
+                    if ((fromTransition[aid] === undefined && $.inArray(aid, ends) === -1)
+                            || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
+                        activityInvalid = true;
+                    }
+
+                    if ($.inArray(aid, starts) !== -1 && toTransition[aid] !== undefined && toTransition[aid].length > 0) {
+                        startInvalid = true;
+                    }
+
+                    var xpdlDeadlines = ProcessBuilder.getArray(act['Deadline']);
+                    if (xpdlDeadlines.length > 0) {
+                        if (fromTransition[aid] === undefined) {
+                            deadlineInvalid = true;
+                        } else {
+                            var exceptionNames = [];
+                            for (var t in fromTransition[aid]) {
+                                var transition = fromTransition[aid][t];
+                                if (transition['Condition'] !== undefined && transition['Condition']['-Type'] === "EXCEPTION") {
+                                    exceptionNames.push(transition['Condition']['#text']);
+                                }
                             }
-                        }
-                        for (var d in xpdlDeadlines) {
-                            if ($.inArray(xpdlDeadlines[d]['ExceptionName'], exceptionNames) === -1) {
-                                deadlineInvalid = true;
-                                break;
+                            for (var d in xpdlDeadlines) {
+                                if ($.inArray(xpdlDeadlines[d]['ExceptionName'], exceptionNames) === -1) {
+                                    deadlineInvalid = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                
-                if (activityInvalid || deadlineInvalid || startInvalid) {
-                    // only show in current process in canvas
-                    if (ProcessBuilder.currentProcessData.properties.id === xpdlProcess['-Id']) {
-                        var $node = self.frameBody.find("#"+ aid);
-                        $node.addClass("invalidNode");
-                        var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
-                        var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
-                        var messageStart = get_cbuilder_msg("pbuilder.label.invalidStart");
-                        var message = "";
-                        if (activityInvalid) {
-                            message += '<p>' + messageTransition +'</p>';
+
+                    if (activityInvalid || deadlineInvalid || startInvalid) {
+                        // only show in current process in canvas
+                        if (ProcessBuilder.currentProcessData.properties.id === xpdlProcess['-Id']) {
+                            var $node = self.frameBody.find("#"+ aid);
+                            $node.addClass("invalidNode");
+                            var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
+                            var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
+                            var messageStart = get_cbuilder_msg("pbuilder.label.invalidStart");
+                            var message = "";
+                            if (activityInvalid) {
+                                message += '<p>' + messageTransition +'</p>';
+                            }
+                            if (deadlineInvalid) {
+                                message += '<p>' + messageDeadline +'</p>';
+                            }
+                            if (startInvalid) {
+                                message += '<p>' + messageStart +'</p>';
+                            }
+                            var $nodeMessage = $('<div class="invalidNodeMessage">' + message +'</div>');
+                            $node.append($nodeMessage);
                         }
-                        if (deadlineInvalid) {
-                            message += '<p>' + messageDeadline +'</p>';
-                        }
-                        if (startInvalid) {
-                            message += '<p>' + messageStart +'</p>';
-                        }
-                        var $nodeMessage = $('<div class="invalidNodeMessage">' + message +'</div>');
-                        $node.append($nodeMessage);
+                        validProcess = false;
                     }
-                    validProcess = false;
                 }
+            } else {
+                validProcess = false;
             }
             
             if (starts.length === 0 || starts.length > 1) {

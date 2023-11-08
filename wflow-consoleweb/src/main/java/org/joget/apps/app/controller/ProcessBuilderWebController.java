@@ -358,11 +358,15 @@ public class ProcessBuilderWebController {
     protected String getXpdl(AppDefinition appDef) {
         try {
             PackageDefinition packageDef = appDef.getPackageDefinition();
+            String xpdl = null;
             if (packageDef != null) {
                 byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-                String xpdl = new String(content, "UTF-8");
-                return xpdl;
-            } else {
+                if (content != null) {
+                    xpdl = new String(content, "UTF-8");
+                }
+            }
+            
+            if (xpdl == null) {
                 // read default xpdl
                 InputStream input = null;
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -378,7 +382,7 @@ public class ProcessBuilderWebController {
                             out.write(bbuf, 0, length);
                         }
                         // form xpdl
-                        String xpdl = new String(out.toByteArray(), "UTF-8");
+                        xpdl = new String(out.toByteArray(), "UTF-8");
 
                         // replace package ID and name
                         xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
@@ -391,6 +395,7 @@ public class ProcessBuilderWebController {
                     }
                 }
             }
+            return xpdl;
         } catch (Exception e) {
             LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
         }
