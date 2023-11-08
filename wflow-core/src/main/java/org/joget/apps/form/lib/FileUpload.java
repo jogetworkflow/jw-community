@@ -206,16 +206,16 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 for (String value : values) {                 
                     // check if the file is in temp file
                     File file = FileManager.getFileByPath(value);
-                        if (file != null) {
-                            filePaths.add(value);
-                            resultedValue.add(file.getName()); 
-                         } else {
-                            if (remove != null && !value.isEmpty()) {
-                                remove.remove(value);
-                            }
-                            resultedValue.add(value);
-                        }                                              
-                    }      
+                    if (file != null) {
+                        filePaths.add(value);
+                        resultedValue.add(file.getName()); 
+                    } else {
+                        if (remove != null && !value.isEmpty()) {
+                            remove.remove(value);
+                        }
+                        resultedValue.add(value);
+                    }                                              
+                }      
                 
                 if (!filePaths.isEmpty()) {
                     result.putTempFilePath(id, filePaths.toArray(new String[]{}));
