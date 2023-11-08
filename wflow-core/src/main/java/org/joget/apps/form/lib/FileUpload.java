@@ -145,16 +145,26 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         String filePathPostfix = "_path";
         String id = FormUtil.getElementParameterName(this);
         if (id != null) {
-            String[] tempFilenames = formData.getRequestParameterValues(id);
-            String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
+            String[] tempFilenames = formData.getRequestParameterValues(id); //this is for fallback fileupload
+            String[] tempDropzone = formData.getRequestParameterValues(id + filePathPostfix); //this is for dropzone upload
             
             List<String> filenames = new ArrayList<String>();
             if (tempFilenames != null && tempFilenames.length > 0) {
                 filenames.addAll(Arrays.asList(tempFilenames));
             }
 
-            if (tempExisting != null && tempExisting.length > 0) {
-                filenames.addAll(Arrays.asList(tempExisting));
+            if (tempDropzone != null && tempDropzone.length > 0) {
+                for (String tempPath : tempDropzone) {
+                    //validate to check the temp file is exist before add it
+                    if (tempPath.contains(File.separator)) {
+                        File file = FileManager.getFileByPath(tempPath);
+                        if (file != null && file.exists()) {
+                            filenames.add(tempPath);
+                        }
+                    } else {
+                        filenames.add(tempPath);
+                    }
+                }
             }
 
             if (filenames.isEmpty()) {
@@ -192,20 +202,20 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 FormRow result = new FormRow();
                 List<String> resultedValue = new ArrayList<String>();
                 List<String> filePaths = new ArrayList<String>();
-                
-                for (String value : values) {
+                         
+                for (String value : values) {                 
                     // check if the file is in temp file
                     File file = FileManager.getFileByPath(value);
-                    if (file != null) {
-                        filePaths.add(value);
-                        resultedValue.add(file.getName());
-                    } else {
-                        if (remove != null && !value.isEmpty()) {
-                            remove.remove(value);
-                        }
-                        resultedValue.add(value);
-                    }
-                }
+                        if (file != null) {
+                            filePaths.add(value);
+                            resultedValue.add(file.getName()); 
+                         } else {
+                            if (remove != null && !value.isEmpty()) {
+                                remove.remove(value);
+                            }
+                            resultedValue.add(value);
+                        }                                              
+                    }      
                 
                 if (!filePaths.isEmpty()) {
                     result.putTempFilePath(id, filePaths.toArray(new String[]{}));
@@ -436,7 +446,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
             response.sendError(HttpServletResponse.SC_FORBIDDEN, ResourceBundleUtil.getMessage("general.error.error403"));
         }
     }
-    
+
     @Override
     public Set<String> getOfflineStaticResources() {
         Set<String> urls = new HashSet<String>();
