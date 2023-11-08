@@ -41,18 +41,33 @@
                 </div>
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button" type="submit" value="<ui:msgEscHTML key="general.method.label.save"/>"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>" onclick="validateField()"/>
                 <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
 
     <script type="text/javascript">
+        function validateField(){
+            var valid = true;
+            var alertString = "";
+            if($("[name=description]").val().length > 255){
+                alertString += '<ui:msgEscJS key="console.directory.group.error.label.descriptionLimit"/>';
+                valid = false;
+            }
+            
+            if(valid){
+                $("#creategroup").submit();
+            } else {
+                alert(alertString);
+            }         
+        }
+
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {
                 parent.PopupDialog.closeDialog();
             }
             return false;
-        }
+        }          
     </script>
 <commons:popupFooter />

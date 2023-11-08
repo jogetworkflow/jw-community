@@ -48,16 +48,19 @@
     </div>
 
     <script type="text/javascript">
-        function validateField(){
+        function validateField() {
             var idMatch = /^[0-9a-zA-Z_-]+$/.test($("#id").val());
-            if(!idMatch){
-                var alertString = '';
-                if(!idMatch){
-                    alertString = '<ui:msgEscJS key="console.directory.group.error.label.idInvalid"/>';
-                    $("#id").focus();
-                }
-                alert(alertString);
-            }else{
+            var oversize = $("[name=description]").val().length > 255;
+
+            if (!idMatch && oversize) {
+                alert('<ui:msgEscJS key="console.directory.group.error.label.idInvalid"/>\n' + '<ui:msgEscJS key="console.directory.group.error.label.descriptionLimit"/>');
+                $("#id").focus();
+            } else if (!idMatch) {
+                alert('<ui:msgEscJS key="console.directory.group.error.label.idInvalid"/>');
+                $("#id").focus();
+            } else if (oversize) {
+                alert('<ui:msgEscJS key="console.directory.group.error.label.descriptionLimit"/>');
+            } else {
                 $("#createGroup").submit();
             }
         }

@@ -32,23 +32,26 @@
                 </div>
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>" onclick="validateField()"/>
                 <input class="form-button" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>
 
     <script type="text/javascript">
-        function validateField(){
+        function validateField() {
             var idMatch = /^[0-9a-zA-Z_-]+$/.test($("#id").val());
-            if(!idMatch){
-                var alertString = '';
-                if(!idMatch){
-                    alertString = '<ui:msgEscJS key="console.directory.org.error.label.idInvalid"/>';
-                    $("#id").focus();
-                }
-                alert(alertString);
-            }else{
+            var oversize = $("[name=description]").val().length > 255;
+
+            if (!idMatch && oversize) {
+                alert('<ui:msgEscJS key="console.directory.org.error.label.idInvalid"/>\n' + '<ui:msgEscJS key="console.directory.org.error.label.descriptionLimit"/>');
+                $("#id").focus();
+            } else if (!idMatch) {
+                alert('<ui:msgEscJS key="console.directory.org.error.label.idInvalid"/>');
+                $("#id").focus();
+            } else if (oversize) {
+                alert('<ui:msgEscJS key="console.directory.org.error.label.descriptionLimit"/>');
+            } else {
                 $("#createOrg").submit();
             }
         }
