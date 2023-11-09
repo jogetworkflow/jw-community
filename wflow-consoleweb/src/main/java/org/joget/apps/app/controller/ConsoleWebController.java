@@ -6102,6 +6102,11 @@ public class ConsoleWebController {
         data.put("label", ResourceBundleUtil.getMessage("ubuilder.title"));
         data.put("icon", "fas fa-desktop");
         data.put("color", "#f3b328");
+        // update appPublished after app generation
+        data.put("appPublished", Boolean.toString(appDef.isPublished()));
+        if (appDef.isPublished()) {
+            data.put("published", "<small class=\"published\"> (" + ResourceBundleUtil.getMessage("console.app.common.label.published") + ")</small>");
+        }
         if (appDef.getUserviewDefinitionList() != null) {
             List<UserviewDefinition> list = new ArrayList<UserviewDefinition>();
             list.addAll(appDef.getUserviewDefinitionList());

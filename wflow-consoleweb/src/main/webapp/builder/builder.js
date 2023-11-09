@@ -3159,7 +3159,12 @@
                 dataType: 'json',
                 success: function (data) {
                     CustomBuilder.builderItems = data;
-                    
+                    // update appPublished after app generation
+                    CustomBuilder.appPublished = data[2].appPublished;
+                    if (CustomBuilder.appPublished === "true") {
+                        $("#builderElementName .title .published").remove();
+                        $("#builderElementName .title").append(data[2].published);
+                    }
                     var callbacks = $.extend([], CustomBuilder.builderItemsLoading);
                     CustomBuilder.builderItemsLoading = [];
                     
