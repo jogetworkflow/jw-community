@@ -2,6 +2,85 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.7
+=====
+798794baf Fixed: wflow-consoleweb - Form Builder - Launch icon button not immediately available after app generation. @8.0-SNAPSHOT
+f748f4869 Fixed: wflow-consoleweb - Fixed data too long for column 'description' @8.0-SNAPSHOT
+e4f974250 Fixed: wflow-consoleweb - Setup - Default apps form data tables are created with wrong collation in MariaDB if the collation is not `utf8mb4_unicode_ci`. @8.0-SNAPSHOT
+12f292a52 Fixed: wflow-core - File Upload -Fixed uploaded file will have uuid/ prepended to filename. @8.0-SNAPSHOT
+69f628f27 Fixed: wflow-consoleweb - Process Builder - Able to save without adding any activity and caused NPE. @8.0-SNAPSHOT
+be28fedaf Fixed: wflow-consoleweb - List Builder - Can't add row action to Simple List & Column Data template. @8.0-SNAPSHOT
+63c1d2f9d Fixed: wflow-consoleweb - Process Builder - Can't clone generated approval process. @8.0-SNAPSHOT
+b6930f8a2 Fixed: wflow-consoleweb - Console - "+" sign in search value is wrongly encoded. @8.0-SNAPSHOT
+3658a5a68 Fixed: wflow-consoleweb - Settings - Switch `Process Completion Data Handling` to `Archive Process On Completion` does not migrate the old process data. @8.0-SNAPSHOT
+269bc6373 Modified: jw-community - Updated default app, script and database for installer. @8.0-SNAPSHOT
+29d2c5a2b Fixed: wflow-consoleweb - UI Builder - Copy & paste not working. @8.0-SNAPSHOT
+df1d2a1c7 Fixed: wflow-core - List - Fixed XSS. T3305 @7.0-SNAPSHOT
+05cbac65c Fixed: wflow-consoleweb - DX8 Theme - Popup Dialog is not removed from page after reload. @8.0-SNAPSHOT
+20816fa44 Modified: wflow-commons - Update getActiveServerList method for license implementation changes. @8.0-SNAPSHOT
+5bc53624a Fixed: wflow-consoleweb - DX8 Themes - Error alerted when closing a popup dialog without provide an URL to redirect. @8.0-SNAPSHOT
+e9ebb9992 Fixed: wflow-consoleweb - App Center - Reduce unnecessary API call to retrieve messages. @8.0-SNAPSHOT
+765c20225 Fixed: wflow-consoleweb - DX8 Themes - Fixed when the category menu label is too long, the menu count badge flows to the second line. @8.0-SNAPSHOT
+cae722b8c Fixed: wflow-consoleweb - spreadsheet - Fixed scrollbar randomly appears when zooming in spreadsheet #3154 @8.0-SNAPSHOT
+2b1df1178 Fixed: wflow-consoleweb - Security - Update TinyMCE to 6.7.2 for CVE-2023-45818. @8.0-SNAPSHOT
+5519811fa Fixed: wflow-consoleweb - Setup - System imported apps are audited as anonymous. @8.0-SNAPSHOT
+73826d15c Modified: wflow-consoleweb - Settings - Add audit trail to track user modify setting value. @8.0-SNAPSHOT
+31985c628 Fixed: wflow-consoleweb - Settings - Should not save CSRF token as setting. @8.0-SNAPSHOT
+929c0eab7 Fixed: wflow-core - Inbox - Show default form for deleted app assignment. @8.0-SNAPSHOT
+8141cf3f0 Fixed: wflow-plugin-base - Code Quality - Prevent possible NPE. @8.0-SNAPSHOT
+a10152ffe Fixed: wflow-plugin-base - Code Quality - Remove condition always true. @8.0-SNAPSHOT
+9e09ab380 Fixed: wflow-consoleweb - DX8 Themes - Long table in a section without label can't break correctly when print. @8.0-SNAPSHOT
+556572696 Fixed: wflow-consoleweb - Setup - Fixed large column data type for all databases setup script. @8.0-SNAPSHOT
+6b82a5aa7 Fixed: wflow-core - Form Data List Binder - Inbox optimization not working when extra filter condition with `OR` operator are used. @7.0-SNAPSHOT
+11285915c Fixed: wflow-consoleweb - Progressive/Universal Theme - Card action is not working. @8.0-SNAPSHOT
+d40ffcae7 Fixed: wflow-consoleweb - List Builder - Not able to delete action from  template row action placeholder. @8.0-SNAPSHOT
+34a5da104 Fixed: wflow-core - List - Dynamically added row action is not handled correctly when using template. @8.0-SNAPSHOT
+6d823c8e5 Fixed: wflow-core - FormPdfUtil - Resolve styling inheritance issue for child elements. @8.0-SNAPHOT
+e3c4ec5be Fixed: wflow-consoleweb - DX8 Color Admin Theme - Minify stylesheet and add option to use local fonts to replace Google fonts. @8.0-SNAPSHOT
+05e6f48c4 Fixed: wflow-core - UI Builder - All new created UI in same app shared same page components. @8.0-SNAPSHOT
+051164e0b Fixed: wflow-core - Builders - Copy & paste text to properties panel input to replace original text resulted prepending the text. T3215 @8.0-SNAPSHOT
+5b7393ec9 Fixed: wflow-core - Process Builder - Changing mapping of new cloned process is reflected back to original process. @8.0-SNAPSHOT
+7822f293b Fixed: wflow-core - Process Builder - Default the process start whitelist to admin when create new process or clone a process with whitelist set to everyone. @8.0-SNAPSHOT
+1174b76f4 Fixed: wflow-core - Process Builder - After import app, process start whitelist did not follow the original mapping and forced to admin. @8.0-SNAPSHOT
+ff9848a04 Fixed: wflow-consoleweb - DX 8 Themes - Page having 2 breadcrumbs when in offline mode. T3263 @8.0-SNAPSHOT
+e5efabd7e Fixed: wflow-consoleweb - DX 8 Themes - Can't click on new record button in CRUD page when in offline mode. T3263 @8.0-SNAPSHOT
+35de6d070 Fixed: wflow-core - Naming Converntion Health Check - Prevent parsing of non-JSON strings into JSON objects. @8.0-SNAPSHOT
+0530a6a62 Fixed: wflow-consoleweb - List Builder - List sometime become empty after click save directly at list settings page.  @8.0-SNAPSHOT
+c28d40f5c Modified: wflow-consoleweb - User - Allowed plus char (+) in username. T3275 @8.0-SNAPSHOT
+effcf6e58 Fixed: wflow-consoleweb - Non DX 8 Themes - Missing style for App Icon & Column Data List Template. @8.0-SNAPSHOT
+81cbd5fc1 Fixed: wflow-core - Date Picker - Not working for Thai locale due to Jquery UI update. @8.0-SNAPSHOT
+2f66c2aee Fixed: wflow-consoleweb - DX 8 Themes - The count in theme inbox alert is not update after started process or completed assignment. @8.0-SNAPSHOT
+01d6b956e Fixed: wflow-consoleweb - DX 8 Themes - View unauthorized list only shown empty space without error message. @8.0-SNAPSHOT
+b0c52c7b9 Fixed: wflow-consoleweb - Process Builder - Activity map to new form not listed after create. T3233 8.0-SNAPSHOT
+6b8c4807d Fixed: wflow-commons - Update Spring Security to 5.7.11 for CVE-2023-34042. @7.1-SNAPSHOT
+98cdd4a06 Fixed: wflow-core - Naming Convention Health Check - Prevent parsing empty string to JSON object. @8.0-SNAPSHOT
+af571d5d1 Fixed: wflow-core - Email Usage Health Check - Prevent NPE. @8.0-SNAPSHOT
+1ba2fe284 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Records using process id as id fail to load. @7.0-SNAPSHOT
+a243e7c8e Fixed: wflow-core - Code Quality - "toString" should not be called on array instances. @7.0-SNAPSHOT
+ffad4335b Fixed: wflow-consoleweb - UI - Missing lang attribute for html tag. @7.0-SNAPSHOT
+decc2feeb Fixed: jw-community - Code Quality - Prevent possible NPE. @7.0-SNAPSHOT
+42d73d23b Fixed: wflow-core - ID Generator Field - Wrong regex used to validate app variable name. @7.0-SNAPSHOT
+4b906ee0f Fixed: jw-community - Update org.json:json library to 20231013 for CVE-2023-5072. @7.0-SNAPSHOT
+01559d1ab Modified: jw-community - Update Apache Tomcat & Apache Tomcat JDBC to 9.0.82. @7.0-SNAPSHOT
+f9c0ece7e Fixed: wflow-consoleweb - Form - Validator decorator does not render correctly for full width field. @7.0-SNAPSHOT
+3dbc1ba2d Fixed: wflow-core - Git - Fixed deleting form leads to error and error during sync app. @7.0-SNAPSHOT
+360be0e7f Fixed: wflow-consoleweb - App - Tagging - Prevent possible XSS. @7.0-SNAPSHOT
+ecfaa3fde Modified: wflow-core - Text Field/Text Area/Custom HTML - Added option to support input sanitization. @7.0-SNAPSHOT
+fab272bcd Fixed: wflow-consoleweb - DX8 Theme - Home banner not working. @8.0-SNAPSHOT
+a84021760 Fixed: wflow-plugin-base - Plugin Manager - Performance issue on plugin translation handling when processing template with large data. @7.0-SNAPSHOT
+5a2c85e08 Fixed: wflow-consoleweb - Builder - Fixed unable to delete horizontal line in column CRUD. @8.0-SNAPSHOT #T3160
+e20453b47 Fixed: wflow-consoleweb - General Setting - Not allow default UI to set to empty value. @7.0-SNAPSHOT
+fc09db390 Fixed: wflow-consoleweb/wflow-core - DX8 Themes - Fixed dark theme does not load immediately after refreshing page. @8.0-SNAPSHOT
+df12de194 Modified: wflow-consoleweb - License - Support for backend licensing. @8.0-SNAPSHOT
+d3fe0cc92 Fixed: wflow-consoleweb - List Builder - Permission - Not able to delete permission rule. @8.0-SNAPSHOT
+e8d640bb4 Added: wflow-consoleweb - Security Enhanced Directory Manager - Added captcha validation on forgot password page. #T1757 @8.0-SNAPSHOT
+a6306cd0e Fixed: wflow-commons - Nonce - There is no method to clear nonces for submitted page. @7.0-SNAPSHOT
+3872b1282 Modified: wflow-core - Task Delegation - Add indexes to table. @7.0-SNAPSHOT
+62e95ccfb Fixed: wflow-consoleweb - List - Filter form should be using GET method. @7.0-SNAPSHOT
+0d357346b Modified: wflow-core - Add method to remove task delegation cache. @7.0-SNAPSHOT
+53147d790 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Task delegation is broken. @7.0-SNAPSHOT
+8e9bddd2e Modified: wflow-consoleweb - Ajax Theme - Allow form, link and button not to override by theme event by adding "off_ajax" css class. @8.0-SNAPSHOT
+
 8.0.6
 =====
 d7eeb4f8d Fixed: wflow-directory - Current User Hash Variable - Employment info is not updated after edit user employment. @7.0-SNAPSHOT
