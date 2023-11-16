@@ -1,11 +1,6 @@
 package org.joget.apps.form.lib;
 
-import java.text.DecimalFormat;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.joget.apps.app.dao.EnvironmentVariableDao;
-import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPalette;
@@ -16,7 +11,6 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.StringUtil;
 
 public class IdGeneratorField extends Element implements FormBuilderPaletteElement {
 
@@ -65,23 +59,9 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
                 value = FormUtil.getElementPropertyValue(this, formData);
                 if (!(value != null && value.trim().length() > 0)) {
                     String envVariable = getPropertyString("envVariable");
-                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                    EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) AppUtil.getApplicationContext().getBean("environmentVariableDao");
-                    
-                    Integer count = environmentVariableDao.getIncreasedCounter(envVariable, "Used for plugin: " + getName(), appDef);
-
                     String format = getPropertyString("format");
-                    value = format;
-                    Matcher m = Pattern.compile("(\\?+)").matcher(format);
-                    if (m.find()) {
-                        String pattern = m.group(1);
-                        String formater = pattern.replaceAll("\\?", "0");
-                        pattern = pattern.replaceAll("\\?", "\\\\?");
-
-                        DecimalFormat myFormatter = new DecimalFormat(formater);
-                        String runningNumber = myFormatter.format(count);
-                        value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
-                    }
+                    boolean isDistributedGeneration = "true".equalsIgnoreCase(getPropertyString("isDistributedGeneration"));
+                    value = AppUtil.idGenerator(envVariable, format, isDistributedGeneration, getName());
                 }
             } catch (Exception e) {
                 LogUtil.error(IdGeneratorField.class.getName(), e, "");

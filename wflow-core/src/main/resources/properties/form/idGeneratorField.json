@@ -58,5 +58,20 @@
         label : '@@form.idgeneratorfield.workflowVariable@@',
         type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
+    },
+    {
+        label : '@@form.idgeneratorfield.idGeneration@@',
+        type : 'header'
+    },
+    {
+        name : 'isDistributedGeneration',
+        label : '@@form.idgeneratorfield.idGeneration.distributed@@',
+        description: '@@form.idgeneratorfield.idGeneration.distributed.desc@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]

@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.temporal.WeekFields;
@@ -46,6 +47,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.lib.EmailTool;
@@ -71,6 +73,7 @@ import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.commons.util.DistributedIdGenerator;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -1904,5 +1907,39 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         return errors;
+    }
+    
+    /**
+     * Generate ID for IdGeneratorField and IdGeneratorTool. To be used in a plugin only.
+     * @param envVariable getPropertyString("envVariable")
+     * @param format getPropertyString("format")
+     * @param isDistributedGeneration getPropertyString("isDistributedGeneration")
+     * @param pluginName getName()
+     * @return the generated ID
+     */
+    public static String idGenerator(String envVariable, String format, boolean isDistributedGeneration, String pluginName) {
+        AppDefinition appDef = getCurrentAppDefinition();
+        EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) getApplicationContext().getBean("environmentVariableDao");
+
+        // check which generation method setting used
+        long count;
+        if (isDistributedGeneration) {
+            count = DistributedIdGenerator.getInstance().nextId();
+        } else {
+            count = environmentVariableDao.getIncreasedCounter(envVariable, "Used for plugin: " + pluginName, appDef);
+        }
+
+        String value = format;
+        Matcher m = Pattern.compile("(\\?+)").matcher(format);
+        if (m.find()) {
+            String pattern = m.group(1);
+            String formatter = pattern.replaceAll("\\?", "0");
+            pattern = pattern.replaceAll("\\?", "\\\\?");
+
+            DecimalFormat myFormatter = new DecimalFormat(formatter);
+            String runningNumber = myFormatter.format(count);
+            value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
+        }
+        return value;
     }
 }
