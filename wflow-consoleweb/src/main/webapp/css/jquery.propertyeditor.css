@@ -2578,3 +2578,10 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
   width: 0;
   height: 0;
 }
+.ace_search.right {
+    border-radius: 0px 0px 0px 5px;
+    border-right: 0 none;
+    right: 0;
+    margin-top: 150px;
+    position: fixed;
+}

@@ -227,3 +227,10 @@ body {--builder-left-panel-width: 0px !important;}
 }
 #cbuilder.mode-basic #showTags, #cbuilder.mode-basic .nv-tags {display:none !important;}
 .backToApp a, .backToApp a:hover{opacity: 0.1; cursor: none; pointer-events: none;}
+.ace_search.right {
+    border-radius: 0px 0px 0px 5px;
+    border-right: 0 none;
+    right: 0;
+    margin-top: 50px;
+    position: fixed;
+}

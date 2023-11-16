@@ -2552,3 +2552,10 @@ body.right-panel-mode-window #right-panel-window-resize  {
     padding: 5px 13px;
     border-radius: 15px;
 }
+.ace_search.right {
+    border-radius: 0px 0px 0px 5px;
+    border-right: 0 none;
+    right: 0;
+    margin-top: 150px;
+    position: fixed;
+}
