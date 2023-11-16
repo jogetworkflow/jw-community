@@ -46,8 +46,8 @@ AjaxComponent = {
                 var a = $(this);
                 var href = $(a).attr("href");
                 var target = $(a).attr("target");
-                var onclick = $(a).attr("onclick");
-                if (PwaUtil.isOnline !== false && onclick === undefined && AjaxComponent.isCurrentUserviewUrl(href) && !AjaxComponent.isDatalistExportLink(a)
+                var onclick = $(a).attr("onclick");           
+                if ((typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) && onclick === undefined && AjaxComponent.isCurrentUserviewUrl(href) && !AjaxComponent.isDatalistExportLink(a)
                         && (target === null || target === undefined || target === "" || target === "_top" || target === "_parent" || target === "_self")) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -63,7 +63,7 @@ AjaxComponent = {
     /*
      * Override the datalist button behaviour
      */
-    overrideDatalistButtonEvent : function(element) {
+    overrideDatalistButtonEvent : function(element) {  
         $(element).find(".dataList button[data-href]:not(.off_ajax)").each(function(){
             var btn = $(this);
             var url = $(btn).data("href");
@@ -80,7 +80,7 @@ AjaxComponent = {
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
-                        if (PwaUtil.isOnline !== false) {
+                        if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                             AjaxComponent.call($(btn), url, "GET", null);
                         } else {
                             if (target === "" || target.toLowerCase() === "_self" || target.toLowerCase() === "_top") {
@@ -89,7 +89,7 @@ AjaxComponent = {
                                 if (window.parent) {
                                     window.parent.location = url;
                                 } else {
-                                    document.location = url;
+                                    document.location = url; 
                                 }
                             }
                         }
@@ -110,7 +110,7 @@ AjaxComponent = {
      */
     overrideButtonEvent : function(element) {
         $(element).find("button[onclick]:not(.off_ajax), input[type=button][onclick]:not(.off_ajax)").each(function(){
-            if (PwaUtil.isOnline !== false) {
+            if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                 var btn = $(this);
                 var onclick = $(btn).attr("onclick");
                 if (onclick.indexOf("window.location") !== -1 || onclick.indexOf("top.location") !== -1 || onclick.indexOf("parent.location") !== -1
@@ -150,7 +150,7 @@ AjaxComponent = {
     overrideFormEvent : function(element) {
         $(element).find("form:not(.off_ajax)").off("submit");
         $(element).find("form:not(.off_ajax)").on("submit", function(e){
-            if (PwaUtil.isOnline !== false) {
+            if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -164,33 +164,33 @@ AjaxComponent = {
                      var newUrl = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(queryStr, params);
                      AjaxComponent.call($(form), newUrl, "GET", null);
                 } else {
-                     var formData = new FormData($(form)[0]);
-                     var btn;
-                     if (e.originalEvent !== undefined && e.originalEvent.submitter !== undefined) {
-                        btn = $(e.originalEvent.submitter);
-                     } else {
-                        btn = $(this).find(document.activeElement);
-                     }
-                     if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button, a')) && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
-                         btn = $(this).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
-                     }
-                     if ($(btn).length > 0) {
-                         $(btn).each(function(){
-                             $(this).attr('clicked', 'true');
-                             formData.append($(this).attr("name"), $(this).val());
-                         });
-                     }
-                     if (PwaUtil) {
-                         PwaUtil.submitForm(form);
-                     }
-                     var url = $(form).attr("action");
-                     if (url === "") {
-                         url = window.location.href;
-                     }
-                     $.unblockUI();
-                     AjaxComponent.call($(form), url, "POST", formData);
+                    var formData = new FormData($(form)[0]);
+                    var btn;
+                    if (e.originalEvent !== undefined && e.originalEvent.submitter !== undefined) {
+                       btn = $(e.originalEvent.submitter);
+                    } else {
+                       btn = $(this).find(document.activeElement);
+                    }
+                    if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button, a')) && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
+                        btn = $(this).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
+                    }
+                    if ($(btn).length > 0) {
+                        $(btn).each(function(){
+                            $(this).attr('clicked', 'true');
+                            formData.append($(this).attr("name"), $(this).val());
+                        });
+                    }
+                    if (typeof PwaUtil !== 'undefined'){
+                        PwaUtil.submitForm(form);
+                    }
+                    var url = $(form).attr("action");
+                    if (url === "") {
+                        url = window.location.href;
+                    }
+                    $.unblockUI();
+                    AjaxComponent.call($(form), url, "POST", formData);
                 }
-
+                
                 return false;
             } else {
                 var btn = $(this).find("input[type=submit][name]:focus, input[type=button][name]:focus, button[name]:focus");
@@ -207,7 +207,7 @@ AjaxComponent = {
             }
         });
     },
-    
+ 
     /*
      * Ajax call to retrieve the component html
      */
@@ -227,8 +227,8 @@ AjaxComponent = {
             $(".ma-backdrop").trigger("click.sidebar-toggled");
         }
         
-        if (!AjaxComponent.isCurrentUserviewUrl(url) || PwaUtil.isOnline === false || AjaxComponent.isLanguageSwitching(url)) {
-            window.top.location.href = url;
+        if (!AjaxComponent.isCurrentUserviewUrl(url) || (typeof PwaUtil !== 'undefined' && PwaUtil.isOnline === false ) || AjaxComponent.isLanguageSwitching(url)) { 
+            window.top.location.href = url; 
             return;
         }
         
@@ -486,7 +486,7 @@ AjaxComponent = {
     },
     
     isLinkClickedEvent : function(element, url) {
-        return AjaxComponent.triggerEvents(element, url, "linkClicked");
+        return AjaxComponent.triggerEvents(element, url, "linkClicked"); 
     },
     
     /*
@@ -989,7 +989,7 @@ AjaxComponent = {
                 scrollTop: elementTop - 50
             }, 1000);
         }
-    }
+    }  
 };
 
 $(function(){
