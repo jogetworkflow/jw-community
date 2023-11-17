@@ -34,7 +34,22 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
                 LogUtil.error(getClass().getName(), e, "===== Error initializing WebApplicationContext =====");
             } else {
                 Exception exceptionToLog = (e instanceof BeanCreationException) ? null : e;
-                LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+                if (exceptionToLog != null) {
+                    LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+                    exceptionToLog.printStackTrace();
+                } else {
+                    Throwable cause = e;
+                    while (cause.getCause() != null) {
+                        cause = cause.getCause();
+                    }
+                    
+                    System.out.println("===== Error initializing WebApplicationContext =====");
+                    if (cause.getMessage().contains("hibernate.dialect")) {
+                        System.out.println("ERROR : Fail to connect database");
+                    } else {
+                        System.out.println("ERROR : " + cause.getMessage());
+                    }
+                }
             }
             contextDestroyed(event);
         }
