@@ -126,13 +126,14 @@ body.rtl .dataList span.pagelinks {
     text-align: right;
 }
 
-body .dataList span.pagelinks a, body .dataList span.pagelinks strong, body .dataList span.pagelinks > span {
+body .dataList .pagelinks a,
+body .dataList .pagelinks strong,
+body .dataList .pagelinks > span {
     border-radius: 2px;
     padding: 1px 4px;
     width: auto;
     min-width: 15px;
-    height: 20px;
-    line-height: 22px;
+    height: fit-content;
     text-align: center;
     font-size: 14px;
     z-index: 1;
@@ -185,9 +186,6 @@ body .dataList .pagelinks .pc.last:before{
     content: "\f101";
 }
 
-body .dataList .pagelinks a .pc{
-    padding: 3px 0;
-}
 body .dataList .pagelinks a:hover {
     color:#009688;
     border-color:#009688;
@@ -197,9 +195,13 @@ body .dataList .pagelinks .pc.prev-disabled,
 body .dataList .pagelinks .pc.next-disabled,
 body .dataList .pagelinks .pc.last-disabled{
     cursor: not-allowed;
-    line-height: 20px;
     color: #fff;
     background-color: #d2d2d2;
+}
+
+body .dataList .pagelinks * {
+    line-height: 20px !important;
+    text-decoration: none;
 }
 body .dataList div.exportlinks{
     background-color: transparent;

@@ -5862,3 +5862,18 @@ footer {
     border: 1px solid #1a237e;
     padding: 5px;
 }
+
+.left-nav a.dropdown, body .left-nav .menu-link {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+}
+
+.left-nav .left-nav-li {
+    width: 15px;
+}
+
+.left-nav #nav li .nav_right,
+.left-nav .menu-link span.pull-right.badge.rowCount {
+    margin-left: auto;
+}
