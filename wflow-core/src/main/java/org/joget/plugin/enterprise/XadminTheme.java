@@ -686,7 +686,11 @@ public class XadminTheme extends UniversalTheme {
             icon = icon.replace("class=\"", "class=\"left-nav-li ");
         }
         if (onclick == null) {
-            onclick = "onclick=\"xadmin.add_tab('"+StringUtil.escapeString(StringUtil.stripAllHtmlTag(label), StringUtil.TYPE_JAVASCIPT, null)+"','"+url+"',true)\"";
+            if ("script".equals(menu.getPropertyString("target"))) {
+                onclick = "onclick=\""+url+"\"";
+            } else {
+                onclick = "onclick=\"xadmin.add_tab('"+StringUtil.escapeString(StringUtil.stripAllHtmlTag(label), StringUtil.TYPE_JAVASCIPT, null)+"','"+url+"',true)\"";
+            }
         }
         return "<a class=\"menu-link default\" "+onclick+">" + icon + "<cite>" + label + "</cite>"+extra+"</a>";
     }
