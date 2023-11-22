@@ -336,7 +336,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             
             DataListFilterQueryObject queryObj = buildInboxCondition();
             if (queryObj != null && queryObj.getQuery() != null && !queryObj.getQuery().isEmpty()) {
-                queryObj.setQuery(getColumnName(getPrimaryKeyColumnName()) + " IN (SELECT COALESCE(ass.link.originProcessId, ass.ActivityProcessId) FROM FormDataAssignment ass WHERE 1=1 " + queryObj.getQuery() + ")");
+                queryObj.setQuery(getColumnName(getPrimaryKeyColumnName()) + " IN (SELECT COALESCE(ass.link.originProcessId, ass.ActivityProcessId) FROM FormDataAssignment ass LEFT JOIN ass.link WHERE 1=1 " + queryObj.getQuery() + ")");
                 temp.add(queryObj);
             }
             
