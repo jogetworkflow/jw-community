@@ -3,6 +3,10 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.42
+=================
+639b589bf Fixed: wflow-core - List Inbox - Regression of 1ba2fe28. Not working when using form binder. @7.0-SNAPSHOT
+
 CHANGES IN 7.0.41
 =================
 df1d2a1c7 Fixed: wflow-core - List - Fixed XSS. T3305 @7.0-SNAPSHOT
