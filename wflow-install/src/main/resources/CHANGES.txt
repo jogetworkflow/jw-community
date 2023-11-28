@@ -2,6 +2,16 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.8
+=====
+639b589bf Fixed: wflow-core - List Inbox - Regression of 1ba2fe28. Not working when using form binder. @7.0-SNAPSHOT
+f47278206 Fixed: wflow-core - Xadmin Theme - Properly handle nav menu link if target is set to script @8.0-SNAPSHOT
+962139105 Fixed: wflow-consoleweb - Xadmin Theme - Improved alignment in nav menu and page numbers @8.0-SNAPSHOT
+1156757c9 Modified: wflow-consoleweb - Startup - Log error when server fail to start. @8.0-SNAPSHOT
+7f9b472cf Fixed: wflow-consoleweb - property editor - fixed code editor search pop up jumpy issue. @8.0-SNAPSHOT
+50ad706ec Fixed: wflow-consoleweb - Ajax Component - Fixed ajax page component section loses the event emitter / listener behavior if refreshed / reloaded in Janus theme tab @8.0-SNAPSHOT
+56497218f Modified: wflow-core - ID Generator Field - Support distributed ID generation. @8.0-SNAPSHOT
+
 8.0.7
 =====
 798794baf Fixed: wflow-consoleweb - Form Builder - Launch icon button not immediately available after app generation. @8.0-SNAPSHOT
