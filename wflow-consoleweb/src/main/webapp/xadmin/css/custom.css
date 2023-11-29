@@ -1502,8 +1502,15 @@
 
 .accordion>.card>.card-header {
     border-radius: 0;
-    margin-bottom: -1px
+    margin-bottom: -1px;
+    border-width: 0;
+    color: black;
 }
+
+.accordion>.card>.card-header:focus {
+    outline: none;
+}
+
 .align-baseline {
     vertical-align: baseline!important
 }
@@ -5498,7 +5505,7 @@ body.popupBody > #form-canvas{
     background-color: #009688;
     color: #fff;
     display: inline-block;
-    padding: 7px 15px;
+    padding: 9px 9px;
     white-space: nowrap;
     text-align: center;
     border-radius: 2px;
@@ -5758,6 +5765,10 @@ footer {
 }
 .accordion {
     margin-bottom: 10px;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-radius: 2px !important;
+    border-color: #eee !important;
 }
 .accordion .card-header {
     cursor: pointer;
@@ -5861,6 +5872,45 @@ footer {
     border-radius: 2px;
     border: 1px solid #1a237e;
     padding: 5px;
+}
+
+.dropdown-menu {
+    padding: 0.25rem 0 !important;
+}
+
+.dropdown .dropdown-menu .dropdown-item {
+    margin: 0;
+}
+
+.dataList .dropdown-menu a.dropdown-item {
+    padding: 0.75rem 1.5rem !important;
+}
+
+.dropdown .focus + .dropdown-menu {
+    display: none;
+}
+
+.dropdown .dropdown-menu.show {
+    width: fit-content !important;
+}
+
+.dropdown .focus + .dropdown-menu.show {
+    display: block;
+}
+
+.dataList .dropdown-menu a.dropdown-item:hover {
+    color: black !important;
+    text-decoration: none !important;
+    background-color: #ddd !important;
+}
+
+span.multiselect-native-select button.custom-select {
+    height:30px;
+    min-height:30px;
+}
+
+.dropdown-menu .multiselect-filter .multiselect-search {
+    margin-bottom: 0;
 }
 
 .left-nav a.dropdown, body .left-nav .menu-link {

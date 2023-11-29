@@ -84,7 +84,7 @@ public class XadminTheme extends UniversalTheme {
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path").toString();
         String jsCssLink = "";
-        
+
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";
         jsCssLink += "<script type=\"text/javascript\" src=\""+path+"/xadmin/lib/layui/layui.js\"></script>\n";
@@ -93,7 +93,12 @@ public class XadminTheme extends UniversalTheme {
         jsCssLink += "<script src=\""+path+"/lib/html5.min.js\"></script>\n";
         jsCssLink += "<script src=\""+path+"/lib/respond.min.js\"></script>\n";
         jsCssLink += "<![endif]-->\n";
-        
+
+        // load bootstrap js and css only if in iframe OR embed window (#navigation not found)
+        if (!isIndex()) {
+            jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/js/bootstrap4/css/bootstrap.min.css\">\n";
+            jsCssLink += "<script>loadScript(\""+path+"/js/bootstrap4/js/popper.min.js\");loadScript(\""+path+"/js/bootstrap4/js/bootstrap.min.js\");</script>";
+        }
         if (data.containsKey("is_login_page") && ((Boolean) data.get("is_login_page"))) {
             jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/xadmin/css/login.css\">\n";
         }

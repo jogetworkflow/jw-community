@@ -134,10 +134,10 @@
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/xadmin/lib/layui/css/layui.css</css>
         <css>/xadmin/css/xadmin.css</css>
-        <css>/xadmin/css/custom.css</css>
         <css>/xadmin/css/form.css</css>
         <css>/xadmin/css/list.css</css>
         <css>/css/jquery.toast.min.css</css>
+        <css>/xadmin/css/custom.css</css>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
@@ -146,7 +146,7 @@
         <js>/pwa.js</js>
         <js>/xadmin/js/xadmin.js</js>
         <js>/xadmin/js/xadminExt.js</js>
-    </group> 
+    </group>
     <group name="ajaxuniversal.preload.min">
         <css>/js/bootstrap4/css/bootstrap.min.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
