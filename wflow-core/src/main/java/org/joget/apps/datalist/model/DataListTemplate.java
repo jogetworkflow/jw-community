@@ -456,7 +456,13 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             }
             html = html.replace(replace, result);
         }
-        
+
+        // make the styleKey unique to the currently styled element
+        // so that styling applies to all required elements instead of only the first one
+        if (!id.isEmpty()) {
+            key += "_" + id;
+        }
+
         if (properties != null && !styleKeys.contains(key)) {
             if (styleProps.isEmpty()) {
                 styleProps = "[{}]";
