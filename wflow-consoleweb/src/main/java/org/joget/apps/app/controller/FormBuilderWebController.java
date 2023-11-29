@@ -369,7 +369,10 @@ public class FormBuilderWebController {
                     }
                 }
                 
-                Map<String, String[]> requestParams = formData.getRequestParams();
+                //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request 
+                FormData newFormData = new FormData();
+                newFormData = formService.retrieveFormDataFromRequest(newFormData, request);
+                Map<String, String[]> requestParams = newFormData.getRequestParams();
                 if (requestParams != null && !requestParams.isEmpty()) {
                     requestParams.remove("_json");
                     jsonResult.put(FormUtil.PROPERTY_TEMP_REQUEST_PARAMS, requestParams);
