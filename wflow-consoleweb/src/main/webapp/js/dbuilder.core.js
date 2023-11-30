@@ -1056,10 +1056,14 @@ DatalistBuilder = {
                             key = $(selectedEl).parent().attr("data-placeholder-key");
                             prefix = key;
                         }
-                        if (component.builderTemplate[key+"StylePropertiesDefinition"] === undefined) {
-                            component.builderTemplate[key+"StylePropertiesDefinition"] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition(prefix, styleConfig));
+                        if (CustomBuilder.data.template && CustomBuilder.data.template.className) {
+                            currentTemplate = CustomBuilder.data.template.className;
                         }
-                        return component.builderTemplate[key+"StylePropertiesDefinition"];
+                        const builderTemplateKey = key + "StylePropertiesDefinition" + currentTemplate;
+                        if (component.builderTemplate[builderTemplateKey] === undefined) {
+                            component.builderTemplate[builderTemplateKey] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition(prefix, styleConfig));
+                        }
+                        return component.builderTemplate[builderTemplateKey];
                     }
                 },
                 'getLabel' : function(elementObj, component) {
@@ -3150,10 +3154,15 @@ DatalistBuilder = {
             } catch (err){}
         }
         var key = $(selectedEl).parent().attr("data-placeholder-key");
-        if (component.builderTemplate[key+"StylePropertiesDefinition"] === undefined) {
-            component.builderTemplate[key+"StylePropertiesDefinition"] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition("", styleConfig));
+        let currentTemplate = "";
+        if (CustomBuilder.data.template && CustomBuilder.data.template.className) {
+            currentTemplate = CustomBuilder.data.template.className;
         }
-        return component.builderTemplate[key+"StylePropertiesDefinition"];
+        const builderTemplateKey = key + "StylePropertiesDefinition" + currentTemplate;
+        if (component.builderTemplate[builderTemplateKey] === undefined) {
+            component.builderTemplate[builderTemplateKey] = $.extend(true, [], DatalistBuilder.generateStylePropertiesDefinition("", styleConfig));
+        }
+        return component.builderTemplate[builderTemplateKey];
     },
     
     /*
