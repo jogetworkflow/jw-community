@@ -18,7 +18,7 @@
                 <div class="form-row">
                     <label for="field1" class="upload"><fmt:message key="console.setting.plugin.upload.label.pluginFile"/></label>
                     <span class="form-input">
-                        <input type="file" name="pluginFile"/>
+                        <input type="file" name="pluginFile" accept=".jar" />
                     </span>
                 </div>
             </fieldset>    
