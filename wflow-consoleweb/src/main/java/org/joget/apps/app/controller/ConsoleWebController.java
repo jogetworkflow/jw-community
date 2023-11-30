@@ -3775,6 +3775,8 @@ public class ConsoleWebController {
         String appInfo = consoleWebPlugin.getAppInfo(appId, version);
         map.addAttribute("appInfo", appInfo);
 
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        map.addAttribute("systemTheme", systemTheme);
         return "console/apps/builders";
     }
     
@@ -6036,6 +6038,7 @@ public class ConsoleWebController {
         JSONArray elementsArr = null;
         Map obj = null;
         
+        String systemSettings = setupManager.getSettingValue("systemTheme");
         String baseUrl = request.getContextPath() + "/web/console/app/"+appDef.getAppId()+"/" + appDef.getVersion();
         
         Map data = new HashMap();
@@ -6043,6 +6046,7 @@ public class ConsoleWebController {
         data.put("label", ResourceBundleUtil.getMessage("fbuilder.title"));
         data.put("icon", "fas fa-file-alt");
         data.put("color", "#3f84f4");
+        data.put("theme", systemSettings);
         if (appDef.getFormDefinitionList() != null) {
             List<FormDefinition> list = new ArrayList<FormDefinition>();
             list.addAll(appDef.getFormDefinitionList());
@@ -6073,6 +6077,7 @@ public class ConsoleWebController {
         data.put("label", ResourceBundleUtil.getMessage("dbuilder.title"));
         data.put("icon", "fas fa-table");
         data.put("color", "#6638b6");
+        data.put("theme", systemSettings);
         if (appDef.getDatalistDefinitionList() != null) {
             List<DatalistDefinition> list = new ArrayList<DatalistDefinition>();
             list.addAll(appDef.getDatalistDefinitionList());
@@ -6107,6 +6112,7 @@ public class ConsoleWebController {
         if (appDef.isPublished()) {
             data.put("published", "<small class=\"published\"> (" + ResourceBundleUtil.getMessage("console.app.common.label.published") + ")</small>");
         }
+        data.put("theme", systemSettings);
         if (appDef.getUserviewDefinitionList() != null) {
             List<UserviewDefinition> list = new ArrayList<UserviewDefinition>();
             list.addAll(appDef.getUserviewDefinitionList());
@@ -6136,6 +6142,7 @@ public class ConsoleWebController {
         data.put("label", ResourceBundleUtil.getMessage("pbuilder.title"));
         data.put("icon", "fas fa-project-diagram");
         data.put("color", "#dc4438");
+        data.put("theme", systemSettings);
         PackageDefinition packageDefinition = appDef.getPackageDefinition();
         if (packageDefinition != null) {
             Long packageVersion = packageDefinition.getVersion();
@@ -6160,6 +6167,7 @@ public class ConsoleWebController {
                 elementsArr.put(obj);
             }
             data.put("elements", elementsArr);
+            data.put("theme", systemSettings);
         }
         jsonArr.put(data);
         
@@ -6181,6 +6189,7 @@ public class ConsoleWebController {
             cdata.put("label", cb.getLabel());
             cdata.put("icon", cb.getIcon());
             cdata.put("color", cb.getColor());
+            cdata.put("theme", systemSettings);
             if (!list.isEmpty()) {
                 elementsArr = new JSONArray();
                 for (BuilderDefinition e : list) {

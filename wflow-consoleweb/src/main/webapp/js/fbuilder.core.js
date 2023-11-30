@@ -25,6 +25,9 @@ FormBuilder = {
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-fbuilder-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
+            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false && $('body').attr("builder-theme") === 'dark') {
+                CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/darkTheme.css" rel="stylesheet" />');
+            }
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
             CustomBuilder.Builder.setHead('<script data-fbuilder-script type="text/javascript" src="' + CustomBuilder.contextPath + '/js/json/formUtil.js" ></script>');
             callback();

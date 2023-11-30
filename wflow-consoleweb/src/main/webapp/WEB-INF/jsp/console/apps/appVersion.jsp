@@ -1,6 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader bodyCssClass=" builder-popup no-header" />
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
+
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
 <div id="main-body-content">
     <div id="appVersionDiv">   
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/version/list?${pageContext.request.queryString}"
@@ -23,9 +33,9 @@
                       checkboxButton1="console.app.version.label.newVersion"
                       checkboxCallback1="newVersion"
                       checkboxOptional1="true"
-                      checkboxButton2="console.app.version.label.publish"
+                      checkboxButton2="console.app.version.label.publish.button"
                       checkboxCallback2="publishVersion"
-                      checkboxButton3="console.app.version.label.unpublish"
+                      checkboxButton3="console.app.version.label.unpublish.button"
                       checkboxCallback3="unpublishVersion"
                       checkboxButton4="console.app.version.label.view"
                       checkboxCallback4="viewVersion"

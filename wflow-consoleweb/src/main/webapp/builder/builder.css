@@ -1077,29 +1077,33 @@ div.section, .header > ol {
     width: var(--builder-logo-width);
     padding: 0 15px;
     height: 84px;
-    height: calc(var(--builder-header-top-height) - 1px);
+    height: calc(var(--builder-header-top-height));
     line-height: 95px;
     text-align: left;
     color: #fff; 
     text-decoration: none;
 }
 #builderTitle {
-    position: absolute;
+    position: relative;
     top: 0px;
-    left: 60px;
+    left: 0px;
     font-size: 20px;
-    display: table;
+    display: flex;
     height: 84px;
     height: calc(var(--builder-header-top-height) - 1px);
     width: calc(13.5vw - 80px); 
     width: calc(var(--builder-logo-width) - 80px);
     line-height: 22px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 #builderTitle span{
     display: table-cell;
     vertical-align: middle;
     white-space: break-spaces;
     word-wrap: break-word;
+    padding-left: 15px;
 }
 #top-panel-main{
     padding-left: calc(13.5vw + 10px);
@@ -2251,17 +2255,19 @@ body.popupBody {
     scrollbar-width: thin; 
 }
 *::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: rgba(255, 255, 255, 0.15);
     -webkit-box-shadow: none; 
 }
 *::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.05); 
+    border-radius: 15px;
 }
 *::-webkit-scrollbar-thumb {
     background-color: rgba(78, 100, 117, 0.5);
     outline: 1px solid rgba(78, 100, 117, 0.5); 
+    border-radius: 15px;
 }
 
 /* property editor builder style */

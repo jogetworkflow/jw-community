@@ -408,6 +408,11 @@ span.missing-plugin {
     display: block !important;
 }
 
+body[builder-theme] .cbuilder-node-details-list {
+    font-weight: 500;
+    font-size: 13px;
+}
+
 @keyframes alert-glowing {
   0% {
     color: #ffd6d6;

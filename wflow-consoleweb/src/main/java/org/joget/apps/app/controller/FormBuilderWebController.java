@@ -38,6 +38,7 @@ import org.joget.apps.form.service.FormERD;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
@@ -66,7 +67,9 @@ public class FormBuilderWebController {
     FormDefinitionDao formDefinitionDao;
     @Autowired
     FormDataDao formDataDao;
-
+    @Autowired
+    SetupManager setupManager;
+ 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
     public String formBuilder(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
         // verify app version
@@ -136,6 +139,9 @@ public class FormBuilderWebController {
         // add form def id
         model.addAttribute("formId", formId);
         model.addAttribute("formDef", formDef);
+        
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        model.addAttribute("systemTheme", systemTheme);
         
         response.addHeader("X-XSS-Protection", "0");
         

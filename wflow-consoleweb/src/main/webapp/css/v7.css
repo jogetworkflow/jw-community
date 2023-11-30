@@ -713,7 +713,7 @@ body.popupBody #main-body-header #main-action-help{
     top:15px;
 }
 body.popupBody #main-body-content {
-    padding: 20px 20px;
+    padding: 20px 30px;
     overflow: auto !important;
 }
 .ui-dialog-content .popupBody #main-body-content {

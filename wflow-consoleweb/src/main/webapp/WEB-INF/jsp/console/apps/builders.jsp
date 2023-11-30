@@ -48,6 +48,7 @@
 <c:set var="builderCode" scope="request" value="app"/>
 <c:set var="builderColor" scope="request" value="#6e9f4b"/>
 <c:set var="builderIcon" scope="request" value="far fa-edit"/>
+<c:set var="systemTheme" scope="request" value="${systemTheme}"/>
 <c:set var="builderDefJson" scope="request">
     ${properties}
 </c:set>

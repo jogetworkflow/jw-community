@@ -1892,3 +1892,24 @@ form.form fieldset {
 #captcha_img{
     margin-bottom: 10px;
 }
+body[builder-theme]{
+    background-color: var(--theme-background, var(--theme-color1, #fff));
+}
+body[builder-theme='dark']{
+    background-color: var(--theme-background, var(--theme-color1, #15171C));
+}
+body[builder-theme] #navigation {
+    overflow-y: visible;
+}
+body[builder-theme]::-webkit-scrollbar {
+    width: 8px;
+}
+body[builder-theme]::-webkit-scrollbar-thumb {
+    outline: 0px;
+}
+body[builder-theme] #navigation::-webkit-scrollbar-thumb {
+    outline: 0px;
+}
+body[builder-theme] #content main {
+    padding: 75px 20px 20px;
+}

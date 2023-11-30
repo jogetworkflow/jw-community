@@ -4725,7 +4725,11 @@ ProcessBuilder = {
         
         var editor = ace.edit("xpdl_definition");
         editor.$blockScrolling = Infinity;
-        editor.setTheme("ace/theme/textmate");
+        if ($('body').attr('builder-theme') === "dark") {
+            editor.setTheme("ace/theme/vibrant_ink");
+        } else {
+            editor.setTheme("ace/theme/textmate");
+        }
         editor.getSession().setTabSize(4);
         editor.getSession().setMode("ace/mode/xml");
         editor.setAutoScrollEditorIntoView(true);

@@ -1,7 +1,17 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader  bodyCssClass=" builder-popup"/>
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
+
+<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="${theme}"/>
 
 <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
 

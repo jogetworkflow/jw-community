@@ -2,6 +2,10 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
 <c:if test="${isQuickEditEnabled || param.webConsole =='true'}">
@@ -11,7 +15,7 @@
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
-        <div id="adminBar" class="adminBarInactive">
+        <div id="adminBar" class="adminBarInactive"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
             <div id="adminBarButtons">
             <c:set var="key" value="0" />    
@@ -46,7 +50,7 @@
             </c:if>
         </div>
             
-        <div id="adminControl">
+        <div id="adminControl"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
             <i class="fas fa-pencil-alt"></i>
         </div>    
             

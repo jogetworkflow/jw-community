@@ -99,6 +99,7 @@
 <c:set var="builderIcon" scope="request" value="fas fa-file-alt"/>
 <c:set var="builderDef" scope="request" value="${formDef}"/>
 <c:set var="builderDefJson" scope="request" value="${elementJson}"/>
+<c:set var="systemTheme" scope="request" value="${systemTheme}"/>
 <c:set var="builderCanvas" scope="request" value=""/>
 <c:set var="builderConfig" scope="request">
     {

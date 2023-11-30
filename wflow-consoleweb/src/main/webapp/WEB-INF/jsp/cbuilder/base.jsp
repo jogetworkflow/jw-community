@@ -43,6 +43,7 @@
             builderColor : "<c:out value="${builderColor}"/>",
             builderIcon : "<ui:escape value="${builderIcon}" format="json" />",
             saveUrl : "<c:out value="${saveUrl}"/>",
+            systemTheme : "<c:out value="${systemTheme}"/>",
             previewUrl : "<c:out value="${previewUrl}"/>",
             builderCSS : "<ui:escape value="${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}" format="json" />",
             builderJS : "<ui:escape value="${script}" format="json" />",
@@ -76,15 +77,15 @@
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
-            <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor">
-                <span id="builder_loader" class="fa-stack fa-3x" style="color:<c:out value="${builderColor}"/>; display:none; z-index:9999;">
+            <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor" <c:if test="${!empty systemTheme && (systemTheme == 'light' || systemTheme == 'dark')}">builder-theme="<c:out value="${systemTheme}"/>"</c:if>>
+                <span id="builder_loader" class="fa-stack fa-3x" style="color:<c:out value="${builderColor}"/>; display:none; z-index:9999999999;">
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
                     <i class="<c:out value="${builderIcon}"/> fa-stack-1x"></i>
+                    <div id="loadingMessage" class="loading-status"></div>
                 </span>
                 <div id="top-panel">
                     <a id="builderIcon" class="reload" style="background-color:<c:out value="${builderColor}"/>;">
-                        <i class="fa-2x <c:out value="${builderIcon}"/>"></i>
-                        <div id="builderTitle"><span><c:out value="${builderLabel}"/></span></div>
+                        <div id="builderTitle"><i class="fa-2x <c:out value="${builderIcon}"/>"></i><span><c:out value="${builderLabel}"/></span></div>
                     </a>
                     <div id="top-panel-main">
                         <div id="builderElementName" style="color:<c:out value="${builderColor}"/>;">
@@ -111,7 +112,7 @@
 
                             <div class="btn-group toolbar-group mr-3 advanced-tools-toogle" role="group">
                                 <button class="btn btn-light"  title="<fmt:message key="adv.tool.Advanced.Tools"/>" id="advanced-tools-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-action="enableEnhancedTools">
-                                     <i class="las la-toolbox"></i> <span><fmt:message key="adv.tool.Advanced.Tools"/></span>
+                                     <i class="zmdi zmdi-more-horiz"></i> <span><fmt:message key="adv.tool.Advanced.Tools"/></span>
                                 </button>
                             </div>
 

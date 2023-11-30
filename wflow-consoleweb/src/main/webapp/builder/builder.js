@@ -243,6 +243,9 @@
         });
         
         $("#quick-nav-bar").removeClass("active");
+        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false){
+            $("#loadingMessage").text("");
+        }
         $("body").addClass("initializing");
         
         var headers = new Headers();
@@ -312,6 +315,7 @@
                 CustomBuilder.undoStack = new Array();
                 CustomBuilder.redoStack = new Array();
                 CustomBuilder.saveChecker = 0;
+                CustomBuilder.systemTheme = data.systemTheme;
             
                 $("body").removeClass("initializing");
                 if ($("body").hasClass("default-builder")) {
@@ -350,6 +354,7 @@
                 CustomBuilder.builderLabel = data.builderLabel;
                 CustomBuilder.builderColor = data.builderColor;
                 CustomBuilder.builderIcon = data.builderIcon;
+                CustomBuilder.systemTheme = data.systemTheme;
                 
                 //reset builder 
                 $("#builderIcon").css("background-color", data.builderColor);
@@ -1100,6 +1105,11 @@
         
         //update save button
         $("#save-btn").removeClass("unsaved");
+        if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
+            $("#save-btn > i").removeClass("zmdi zmdi-check");
+            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+        }
         if (!CustomBuilder.isSaved()) {
             $("#save-btn").addClass("unsaved");
         }
@@ -1116,6 +1126,9 @@
      * Save JSON 
      */
     save : function(){
+        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+            $("body").addClass("initializing");
+        }
         var proceedSave = true;
         
         //the tooltip can't hide itself after click save, manually delete it
@@ -1165,11 +1178,22 @@
         
                 setTimeout(function(){
                     $("#save-btn").removeAttr("disabled");
+                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                        $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
+                        $("#save-btn > i").removeClass("las la-cloud-upload-alt");
+                        $("#save-btn > i").addClass("zmdi zmdi-check");
+                        $("body").removeClass("initializing");
+                        $("#loadingMessage").text("");
+                    }
                 }, 3000);
             }, "text");
         } else {
             setTimeout(function(){
                 $("#save-btn").removeAttr("disabled");
+                if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                    $("body").removeClass("initializing");
+                    $("#loadingMessage").text("");
+                }
             }, 1000);
         }
     },
@@ -1304,6 +1328,9 @@
      */
     showMessage: function(message, type, center) {
         if (message && message !== "") {
+            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                $("#loadingMessage").text(message);
+            }
             var id = "toast-" + (new Date()).getTime();
             var delay = 3000;
             if (type === undefined) {
@@ -2460,7 +2487,11 @@
 
             var editor = ace.edit("json_definition");
             editor.$blockScrolling = Infinity;
-            editor.setTheme("ace/theme/textmate");
+            if ($('body').attr('builder-theme') === "dark") {
+                editor.setTheme("ace/theme/vibrant_ink");
+            } else {
+                editor.setTheme("ace/theme/textmate");
+            }
             editor.getSession().setTabSize(4);
             editor.getSession().setMode("ace/mode/json");
             editor.setAutoScrollEditorIntoView(true);
@@ -3180,6 +3211,9 @@
      * Render additional menus to adding bar
      */
     intBuilderMenu : function() {
+        if (CustomBuilder.systemTheme === undefined) {
+            CustomBuilder.systemTheme = $('body').attr("builder-theme");
+        }
         UI.userview_app_id = CustomBuilder.appId;
         
         if ($("#quick-nav-bar").find("#builder-quick-nav").length === 0) {
@@ -3270,6 +3304,21 @@
         }
         $("#quick-nav-bar").removeClass("active");
         
+        if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') {
+            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
+            $("#save-btn > i").removeClass("zmdi zmdi-check");
+            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            $('body').attr("builder-theme", CustomBuilder.systemTheme);
+            var iframes = $('iframe');
+            if (iframes.length > 0) {
+                var iframeBody = iframes.contents().find('body');
+                iframeBody.attr("builder-theme", CustomBuilder.systemTheme);
+                if (CustomBuilder.systemTheme === 'dark' && CustomBuilder.builderType !== "userview") {
+                    iframeBody.addClass("dark-mode");
+                }
+            }
+        }
+        
         setTimeout(function(){
             CustomBuilder.reloadBuilderMenu();
         }, 100); //delay the loading to prevent it block the builder ajax call
@@ -3298,7 +3347,7 @@
                 for (var j in builder.elements) {
                     var extra = '';
                     if (builder.value === "userview" && CustomBuilder.appPublished === "true") {
-                        extra = '<a class="launch" title="'+get_cbuilder_msg('ubuilder.launch')+'" href="'+CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+builder.elements[j].id+'" target="_blank"><i class="fas fa-play"></i></a>';
+                        extra = '<a class="launch" title="'+get_cbuilder_msg('ubuilder.launch')+'" href="'+CustomBuilder.contextPath+'/web/userview/'+CustomBuilder.appId+'/'+builder.elements[j].id+'" target="_blank"><i class="zmdi zmdi-play"></i></a>';
                     }
                     $(li).find("ul").append('<li class="item" data-id="'+builder.elements[j].id+'" ><a class="builder-link" href="'+builder.elements[j].url+'" target="_self">'+builder.elements[j].label+'</a>'+extra+'</li>');
                 }
@@ -3620,7 +3669,11 @@ _CustomBuilder.Builder = {
     /*
      * Render the json to canvas
      */
-    load: function(data, callback) {
+    load: function (data, callback) {
+        var builderTheme = $('body').attr("builder-theme");
+        if (builderTheme === "dark" && CustomBuilder.builderType !== "userview") {
+            CustomBuilder.Builder.frameBody.addClass("dark-mode");
+        }
         CustomBuilder.Builder.frameBody.addClass("initializing");
         
         var self = CustomBuilder.Builder;

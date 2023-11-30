@@ -1,8 +1,14 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="${lang}">
@@ -19,6 +25,9 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist8.css?build=<fmt:message key="build.number"/>" />
+        <c:if test="${theme == 'dark'}">
+            <link href="${pageContext.request.contextPath}/wro/darkTheme.css" rel="stylesheet" />
+        </c:if>
         <style>
             html, body
             {
@@ -42,7 +51,7 @@
         </script>    
     </head>
 
-    <body>
+    <body<c:if test="${theme == 'dark'}"> class="dark-mode"</c:if>>
         <div id="preview">
             <c:if test="${!empty error}">
                 <h3><fmt:message key="dbuilder.errorGenerating"/></h3>

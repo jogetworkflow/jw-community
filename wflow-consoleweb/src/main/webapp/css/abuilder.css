@@ -93,7 +93,7 @@ body {--builder-left-panel-width: 0px !important;}
 .nv-tags {
     font-size: 10px;
     line-height: 14px; 
-    padding: 0px 10px 10px;
+    padding: 5px 10px 10px;
 }
 .nv-tags label {
     display: inline;
@@ -111,6 +111,9 @@ body {--builder-left-panel-width: 0px !important;}
     height: 18px;
     vertical-align: top;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 2px 12px;
 }
 .nv-tag-plus{
     background: #999797;
@@ -121,37 +124,53 @@ body {--builder-left-panel-width: 0px !important;}
     opacity: 1;
 }
 .tag-red {
-    background:#eb5a46;
+    background:#F87168;
+    color: #5D1F1A;
 }
 .tag-pink {
-    background:#ff78cb;
+    background:#E774BB;
+    color: #50253F;
 }
 .tag-orange {
-    background:#ff9f1a;
+    background:#FEA362;
+    color: #702E00;
 }
 .tag-yellow {
-    background:#f2d600;
+    background:#E2B203;
+    color: #533F04;
 }
 .tag-green {
-    background:#61bd4f;
+    background:#4BCE97;
+    color: #164B35;
 }
 .tag-lime {
-    background:#51e898;
+    background:#B3DF72;
+    color: #37471F;
 }
 .tag-blue {
-    background:#0079bf;
+    background:#0055CC;
+    color: #FFFFFF;
 }
 .tag-sky {
-    background:#00c2e0;
+    background:#9DD9EE;
+    color: #164555;
 }
 .tag-purple {
-    background:#c377e0;
+    background:#5E4DB2;
+    color: #FFFFFF;
 }
 .tag-black {
-    background:#344563;
+    background:#44546F;
+    color: #FFFFFF;
 }
 .tooltipster-shadow.tooltipster-right .tooltipster-box{
     background: #fff;
+}
+.tooltipster-sidetip.tooltipster-right .tooltipster-arrow-border {
+    border-right-color: var(--theme-border-color-1, #e6e6e6);
+}
+.tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background {
+    border-right-color: var(--theme-primary-color-1, #ffffff);
 }
 #tooltip-tags {
     width: 250px;
@@ -161,24 +180,29 @@ body {--builder-left-panel-width: 0px !important;}
 }
 #tooltip-tags h4 {
     margin: 10px 0;
-    color: #000;
+    color: #44546F;
     border-bottom: 1px solid #e4e9e8;
     padding-bottom: 10px;
     position: relative;
     font-size: 16px;
+    text-align: center;
 }
 #tooltip-tags h4 a.close{
     position: absolute;
     right: 0px;
+    top: 1px;
+    opacity: 1;
+    font-size: 18px;
 }
 #tooltip-tags .tag-options .nv-tag {
-    width: calc(100% - 20px);
+    width: calc(100% - 25px);
     margin-bottom: 2px;
     padding: 5px;
     box-sizing: border-box;
     position: relative;
     cursor: pointer;
     height: 30px;
+    margin-right: 10px;
 }
 #tooltip-tags .tag-options .nv-tag .check {
     position: absolute;
@@ -195,22 +219,36 @@ body {--builder-left-panel-width: 0px !important;}
     padding: 10px 0;
 }
 #tooltip-tags .tag-buttons .delete{
-    color: red;
+    background-color: #091E420F;
+    color: #172B4D;
 }
 #tooltip-tags a {
     cursor: pointer;
-    color: #007bff;
+    color: #6c757d;
+}
+#tooltip-tags a.back{
+    float: left
 }
 #tooltip-tags .tag-options a {
     display: inline-block;
     margin-top: 8px;
+    font-size: 17px;
 }
 #tooltip-tags .field-row label{
     display: block;
-    color: #535353;
+    color: #44546F;
+    font-weight: 600;
+    font-size: 14px;
+}
+#tooltip-tags .close{
+    font-size: 1rem;
 }
 #tooltip-tags .field-row input {
     width: 100%;
+    border: 1px solid var(--theme-border-color-2, #e6e6e6);
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 3px;
 }
 #tooltip-tags .field-row .colors > div {
     text-align: center;
@@ -221,6 +259,7 @@ body {--builder-left-panel-width: 0px !important;}
 }
 #tooltip-tags .field-row .colors > div.checked i {
     visibility: visible;
+    padding-top: 4px;
 }
 #left-panel{
     border-right-color: transparent !important;
@@ -233,4 +272,44 @@ body {--builder-left-panel-width: 0px !important;}
     right: 0;
     margin-top: 50px;
     position: fixed;
+}
+#tooltip-tags > div > div.tag-buttons > a, #tooltip-tags > div.editLabel > div.tag-buttons > a.save.btn{
+    background-color: #0C66E4;
+    color: #fff;
+}
+#tooltip-tags > div > div.tag-buttons > a{
+    width: 100%;
+}
+#tooltip-tags > div.editLabel > div.fields > div,
+#tooltip-tags > div.addLabel > div.fields > div{
+    margin-bottom: 15px;
+}
+#tooltip-tags > div.editLabel > div.fields > div:nth-child(2) > div > div,
+#tooltip-tags > div.addLabel > div.fields > div:nth-child(2) > div > div{
+    height: 25px;
+    width: 46px;
+}
+#tooltip-tags .tag-buttons a{
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.nv-tags label:has(+ [data-id]) {
+    display: none;
+}
+.nv-tags{
+    padding-bottom: 0px !important;
+}
+.nv-tag-plus {
+    background: var(--theme-border-color-1, #e6e6e6) !important;
+    color: #212529 !important;
+}
+.tooltipster-sidetip .tooltipster-box {
+    border: 1px solid var(--theme-border-color-1, #e6e6e6);
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+body[builder-theme] .nv-tag-plus {
+    color: var(--theme-header-color-2) !important;
 }

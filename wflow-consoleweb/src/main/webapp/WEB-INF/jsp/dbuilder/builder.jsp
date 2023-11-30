@@ -13,6 +13,7 @@
 <c:set var="builderIcon" scope="request" value="fas fa-table"/>
 <c:set var="builderDef" scope="request" value="${datalist}"/>
 <c:set var="builderDefJson" scope="request" value="${json}"/>
+<c:set var="systemTheme" scope="request" value="${systemTheme}"/>
 <c:set var="builderCanvas" scope="request" value=""/>
 <c:set var="builderConfig" scope="request">
     {

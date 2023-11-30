@@ -74,6 +74,9 @@ public class ProcessBuilderWebController {
     @Autowired
     PackageDefinitionDao packageDefinitionDao;
     
+    @Autowired
+    SetupManager setupManager;
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/process/builder")
     public String processBuilder(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         // verify app version
@@ -88,6 +91,8 @@ public class ProcessBuilderWebController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        model.addAttribute("systemTheme", systemTheme);
         model.addAttribute("appId", appDef.getId());
         model.addAttribute("version", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);

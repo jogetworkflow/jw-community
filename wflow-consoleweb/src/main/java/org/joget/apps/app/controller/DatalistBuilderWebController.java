@@ -61,6 +61,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.joget.apps.datalist.model.DataListDisplayColumn;
 import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
+import org.joget.commons.util.SetupManager;
 
 @Controller
 public class DatalistBuilderWebController {
@@ -75,6 +76,8 @@ public class DatalistBuilderWebController {
     DatalistDefinitionDao datalistDefinitionDao;
     @Autowired
     PluginManager pluginManager;
+    @Autowired
+    SetupManager setupManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/datalist/builder/(*:id)")
     public String builder(ModelMap map, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
@@ -111,6 +114,9 @@ public class DatalistBuilderWebController {
         map.addAttribute("filterParam", new ParamEncoder(id).encodeParameterName(DataList.PARAMETER_FILTER_PREFIX));
         map.addAttribute("datalist", datalist);
         map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(listJson));
+        
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        map.addAttribute("systemTheme", systemTheme);
         
         response.addHeader("X-XSS-Protection", "0");
         

@@ -78,6 +78,20 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
+                        <label for="systemTheme"><fmt:message key="console.setting.general.label.system.theme"/></label>
+                        <span class="form-input">
+                            <select id="systemTheme" name="systemTheme">
+                                <option value="classic" <c:if test="${settingMap['systemTheme'] eq 'classic'}">selected</c:if>><fmt:message key="console.setting.general.label.classic.theme"/></option>
+                                <option value="light" <c:if test="${settingMap['systemTheme'] eq 'light'}">selected</c:if>><fmt:message key="console.setting.general.label.light.theme"/></option>
+                                <option value="dark" <c:if test="${settingMap['systemTheme'] eq 'dark'}">selected</c:if>><fmt:message key="console.setting.general.label.dark.theme"/></option>
+                            </select>
+                        </span>
+                    </div>
+                </span>
+            </div> 
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
                         <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
                         <span class="form-input">
                             <input id="defaultLandingPage" type="text" name="landingPage" value="<c:out value="${settingMap['landingPage']}"/>"/>

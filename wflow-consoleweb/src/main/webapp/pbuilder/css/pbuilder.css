@@ -241,3 +241,52 @@ body.readonly .running_activity{
     left:auto;
     right: 5px;
 }
+body[builder-theme] .builder-type ul li .builder-actions a {
+    font-size: 20px;
+}
+body[builder-theme] .participant_handle .participant_label{
+    font-weight: 500;
+    font-size: 13px;
+}
+body[builder-theme] .activity .node_label, body[builder-theme] .tool .node_label, body[builder-theme] .subflow .node_label {
+    font-size: 13px;
+}
+body[builder-theme] .transition_label {
+    font-size: 12px;
+}
+body[builder-theme] .tool {
+    background: #d9f8ea;
+}   
+body[builder-theme] .activity, body[builder-theme] .tool, body[builder-theme] .subflow {
+    border: solid 1px #cbd5e0;
+}
+body[builder-theme] .participant_handle {
+    background: #F9F9F9;
+}
+body[builder-theme] .participant > .participant_inner{
+    background-color: #f6f8fc;
+}
+body[builder-theme='dark'] .participant > .participant_inner {
+    background-color: #343a40;
+}
+body[builder-theme='dark'] {
+    background-color: #0F1014;
+}
+body[builder-theme='dark'] .participant_handle {
+    background: #1B1C22;
+    border: solid 1px #26272F;
+}
+body[builder-theme='dark'] .participant_handle .participant_label {
+    color: #CDCDDE;
+}
+body[builder-theme='dark'] .participant > .participant_inner {
+    border-top: solid 1px #26272F;
+    border-bottom: solid 1px #26272F;
+    border-right: solid 1px #26272F;
+}
+body[builder-theme='dark'] .participant{
+    background-color: #15171C;
+}
+body[builder-theme='dark'] .transition_label {
+    color: #CDCDDE;
+}

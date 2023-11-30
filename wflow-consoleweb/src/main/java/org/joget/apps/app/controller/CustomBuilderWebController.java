@@ -20,6 +20,7 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -49,6 +50,8 @@ public class CustomBuilderWebController {
     BuilderDefinitionDao builderDefinitionDao;
     @Autowired
     PluginManager pluginManager;
+    @Autowired
+    SetupManager setupManager;
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/cbuilders")
     public void consoleBuildersJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
@@ -356,6 +359,9 @@ public class CustomBuilderWebController {
         map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(builderJson));
         
         map.addAttribute("builderHTML", builder.getBuilderHTML(builderDefinition, json, request, response));
+        
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        map.addAttribute("systemTheme", systemTheme);
         
         response.addHeader("X-XSS-Protection", "0");
 

@@ -623,3 +623,22 @@ iframe.iframeloading {
     background-position: center 50%;
     background-size: 90% auto;
 }
+
+#adminBar[builder-theme] {
+    background: #333;
+}
+#adminBar[builder-theme] #quickEditModeOption > div > a:not(.off), 
+#adminBar[builder-theme] #adminBarButtons > div > a.current, 
+#adminBar[builder-theme] #adminBarButtons > div > a:hover {
+    background: #333;
+}
+#adminBar[builder-theme] #appCenter {
+    background: #333;
+}
+#adminBar[builder-theme] #appCenter i {
+    color: #009265;
+}
+#adminControl[builder-theme] {
+    background: #03543D;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}

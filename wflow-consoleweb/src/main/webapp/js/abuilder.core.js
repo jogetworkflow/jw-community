@@ -186,6 +186,9 @@ AppBuilder = {
                 continue;
             }
             var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div class="builder-title"><span class="icon" style="background: '+builder.color+'" ><i class="'+builder.icon+'"></i></span> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
+            if (builder.theme === 'light' || builder.theme === 'dark') {
+                builderDiv = $('<div class="builder-type builder-' + builder.value + '" data-builder-type="' + builder.value + '"><div class="builder-title"><span class="icon" style="color: ' + builder.color + '" ><i class="' + builder.icon + '"></i></span> ' + builder.label + ' <a class="addnew" data-builder-type="' + builder.value + '" title="' + get_cbuilder_msg("cbuilder.addnew") + '"><i class="las la-plus"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
+            }
             if (builder.elements && builder.elements.length > 0) {
                 for (var j in builder.elements) {
                     var action = "";
@@ -198,15 +201,15 @@ AppBuilder = {
                         actionTitle = ' ' +get_cbuilder_msg('abuilder.appNotPublished');
                     }
                     if (builder.value === "userview") {
-                        action = '<a class="launch '+actionClass+'" title="'+self.msg('launch')+actionTitle+'"><i class="fas fa-play"></i></a>';
+                        action = '<a class="launch '+actionClass+'" title="'+self.msg('launch')+actionTitle+'"><i class="zmdi zmdi-play"></i></a>';
                     } else if (builder.value === "process") {
-                        action = '<a class="runprocess '+actionClass+'" title="'+self.msg('runProcess')+actionTitle+'"><i class="fas fa-play"></i></a>';
+                        action = '<a class="runprocess '+actionClass+'" title="'+self.msg('runProcess')+actionTitle+'"><i class="zmdi zmdi-play"></i></a>';
                     }
                     if (builder.elements[j].subLabel !== undefined) {
                         itemClass = "has-sublabel";
                         subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
                     }
-                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-id">'+builder.elements[j].id+'</span><span class="item-label">'+builder.elements[j].label+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
+                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span><span class="item-id">'+builder.elements[j].id+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');

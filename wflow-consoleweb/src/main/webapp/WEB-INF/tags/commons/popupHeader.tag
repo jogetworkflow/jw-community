@@ -2,6 +2,7 @@
 <%@ tag import="org.joget.apps.app.service.AppUtil"%>
 <%@ attribute name="title" %>
 <%@ attribute name="bodyCssClass" required="false"%>
+<%@ attribute name="builderTheme" required="false"%>
 
 <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
@@ -45,4 +46,4 @@
             </c:if>
         </script>
     </head>
-    <body class="popupBody ${bodyCssClass}">
+    <body class="popupBody ${bodyCssClass}"<c:if test="${builderTheme != 'classic'}"> builder-theme="${builderTheme}"</c:if>>

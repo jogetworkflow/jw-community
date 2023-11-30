@@ -35,6 +35,7 @@ import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -65,6 +66,8 @@ public class UserviewBuilderWebController {
     BuilderDefinitionDao builderDefinitionDao;
     @Autowired
     PluginManager pluginManager;
+    @Autowired
+    SetupManager setupManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/builder/(*:userviewId)")
     public String builder(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
@@ -144,6 +147,9 @@ public class UserviewBuilderWebController {
         
         map.addAttribute("categories", categories);
         map.addAttribute("pageComponent", list);
+        
+        String systemTheme = setupManager.getSettingValue("systemTheme");
+        map.addAttribute("systemTheme", systemTheme);
         
         response.addHeader("X-XSS-Protection", "0");
 

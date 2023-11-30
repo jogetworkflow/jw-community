@@ -94,7 +94,7 @@
                 $(this).find("li.item").each(function(){
                     var liobj = $(this);
                     if ($(liobj).find(".nv-tags").length === 0) {
-                        $(liobj).append('<div class="nv-tags"><label><i class="las la-tags"></i>: </label> <span class="nv-tag-plus"><i class="las la-plus"></i></span></div>');
+                        $(liobj).prepend('<div class="nv-tags"><label><i class="las la-tags"></i>: </label> <span class="nv-tag-plus" Title="Add Tags"><i class="las la-plus"></i></span></div>');
                     }
                     var id = $(liobj).data("id");
                     
@@ -260,7 +260,7 @@
                         label = UI.escapeHTML(label);
                     }
                 }
-                html += '<div><div data-id="'+i+'" class="'+checked+' nv-tag tag-'+labels[i].color+'"><span>'+label+'</span><i class="check fas fa-check"></i></div><a data-id="'+i+'"><i class="fas fa-pencil-alt"></i></a></div>';
+                html += '<div><div data-id="'+i+'" class="'+checked+' nv-tag tag-'+labels[i].color+'"><span>'+label+'</span><i class="check fas fa-check"></i></div><a data-id="'+i+'"><i class="zmdi zmdi-edit"></i></a></div>';
             }
             return html;
         },

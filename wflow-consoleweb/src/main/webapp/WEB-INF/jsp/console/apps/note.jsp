@@ -1,7 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader bodyCssClass=" builder-popup no-header" />
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
 <style>
     .sticky-buttons {
         position: fixed;
@@ -51,7 +60,11 @@
             var textarea = $('textarea[name="description"]');
             editor.getSession().setValue(textarea.val());
             editor.getSession().setTabSize(4);
-            editor.setTheme("ace/theme/textmate");
+            if ($('body').attr('builder-theme') === "dark") {
+                editor.setTheme("ace/theme/vibrant_ink");
+            } else {
+                editor.setTheme("ace/theme/textmate");
+            }
             editor.getSession().setMode("ace/mode/text");
             editor.setAutoScrollEditorIntoView(true);
             editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue

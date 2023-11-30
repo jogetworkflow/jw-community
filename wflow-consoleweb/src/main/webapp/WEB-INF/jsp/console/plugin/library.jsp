@@ -4,6 +4,8 @@
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
     pageContext.setAttribute("rightToLeft", rightToLeft);
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
 %>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
@@ -26,6 +28,10 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
+
+<c:if test="${not empty theme and theme ne 'classic'}">
+        <link href="${pageContext.request.contextPath}/css/builderTheme.css" rel="stylesheet" />
+</c:if>
         
 <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">

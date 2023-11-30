@@ -2917,7 +2917,7 @@ PropertyEditor.Model.Type.prototype = {
             var toolTipId = '';
             if (description !== "" && this.properties.type !== "header") {
                 toolTipId = this.properties.name + (new Date()).getTime() + (Math.floor(Math.random() * 10000));;
-                toolTip = ' <i class="property-label-description fas fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
+                toolTip = ' <i class="property-label-description fas fa-info-circle" data-tooltip-content="#'+toolTipId+'"></i>';
             }
 
             html += '<div class="property-label-container">';
@@ -8736,6 +8736,13 @@ PropertyEditor.Type.HtmlEditor.prototype = {
                 height = parseInt(this.properties.height);
             } catch (err) {}
         }
+        
+        var themeSkin = "oxide";
+        var contentCss = "default";
+        if ($('body').attr('builder-theme') === "dark") {
+            themeSkin = "oxide-dark";
+            contentCss = "dark";
+        }
 
         tinymce.init({
             selector: '#' + this.id,
@@ -8749,6 +8756,8 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             extended_valid_elements:"style,link[href|rel]",
             custom_elements:"style,link,~link",
             valid_elements: '*[*]',
+            skin: themeSkin,
+            content_css: contentCss,
             promotion: false,
             setup: function(editor) {
                 editor.off('focus.tinymce');
@@ -8798,7 +8807,11 @@ PropertyEditor.Type.CodeEditor.prototype = {
         this.codeeditor.setValue(this.value);
         this.codeeditor.getSession().setTabSize(4);
         if (this.properties.theme !== undefined || this.properties.theme !== "") {
-            this.properties.theme = "textmate";
+            if ($('body').attr('builder-theme') === "dark") {
+                this.properties.theme = "vibrant_ink";
+            } else {
+                this.properties.theme = "textmate";
+            }
         }
         this.codeeditor.setTheme("ace/theme/" + this.properties.theme);
         if (this.properties.mode !== undefined && this.properties.mode !== "") {

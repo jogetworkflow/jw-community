@@ -65,6 +65,10 @@ body.dark-mode {
     --theme-primary-color: #007bff;
 }
 
+body.dark-mode {
+    background-color: var(--theme-background);
+}
+
 body:not(.horizontal_menu).dark-mode #sidebar {
     border-right: 1px solid var(--theme-border-color);
 }
@@ -559,6 +563,14 @@ body.dark-mode::-webkit-scrollbar-track {
 }
 
 body.dark-mode::-webkit-scrollbar-thumb {
+    background-color: #606060 !important;
+}
+
+body.dark-mode #navigation::-webkit-scrollbar-track {
+    background-color: #393939 !important;
+}
+
+body.dark-mode #navigation::-webkit-scrollbar-thumb {
     background-color: #606060 !important;
 }
 

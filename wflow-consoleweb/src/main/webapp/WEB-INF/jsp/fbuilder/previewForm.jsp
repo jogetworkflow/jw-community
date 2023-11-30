@@ -7,6 +7,8 @@
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
     pageContext.setAttribute("rightToLeft", rightToLeft);
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="${lang}">
@@ -21,6 +23,9 @@
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
+        </c:if>
+        <c:if test="${theme == 'dark'}">
+            <link href="${pageContext.request.contextPath}/wro/darkTheme.css" rel="stylesheet" />
         </c:if>
         <style>
             html, body
@@ -59,7 +64,7 @@
             });
         </script>
     </head>
-    <body>
+    <body<c:if test="${theme == 'dark'}"> class="dark-mode"</c:if>>
 
         <fieldset id="form-canvas">
             <c:out value="${elementTemplate}" escapeXml="false" />

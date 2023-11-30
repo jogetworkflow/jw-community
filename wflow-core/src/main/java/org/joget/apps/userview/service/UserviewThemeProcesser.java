@@ -163,6 +163,8 @@ public class UserviewThemeProcesser {
         data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
         String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
         data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+        String builderTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
+        data.put("builderTheme", builderTheme);
         String locale = AppUtil.getAppLocale();
         String language = AppUtil.getAppLanguage();
         data.put("locale", locale);

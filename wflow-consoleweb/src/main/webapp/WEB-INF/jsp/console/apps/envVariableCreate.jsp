@@ -1,6 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader bodyCssClass=" builder-popup"/>
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
+
+<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="${theme}"/>
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
     
@@ -47,7 +57,11 @@
             var textarea = $('textarea[name="value"]');
             editor.getSession().setValue(textarea.val());
             editor.getSession().setTabSize(4);
-            editor.setTheme("ace/theme/textmate");
+            if ($('body').attr('builder-theme') === "dark") {
+                editor.setTheme("ace/theme/vibrant_ink");
+            } else {
+                editor.setTheme("ace/theme/textmate");
+            }
             editor.getSession().setMode("ace/mode/text");
             editor.setAutoScrollEditorIntoView(true);
             editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
