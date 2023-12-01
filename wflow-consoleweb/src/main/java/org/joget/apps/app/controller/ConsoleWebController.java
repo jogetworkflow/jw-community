@@ -4948,13 +4948,15 @@ public class ConsoleWebController {
         try {
             in = pluginFile.getInputStream();
             jarname = pluginFile.getOriginalFilename();
-            pluginManager.upload(jarname, in);
-        } catch (Exception e) {
-            if (e.getCause().getMessage() != null && e.getCause().getMessage().contains("Invalid jar file")) {
-                map.addAttribute("errorMessage", "Invalid jar file");
+            
+            if (!jarname.endsWith(".jar")) {
+                map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("console.app.message.error.invalidJar"));
+                return "console/setting/pluginUpload";
             } else {
-                map.addAttribute("errorMessage", "Error uploading plugin");
+                pluginManager.upload(jarname, in);
             }
+        } catch (Exception e) {
+            map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("console.app.message.error.invalidJar"));
             return "console/setting/pluginUpload";
         } finally {
             if (in != null) {
