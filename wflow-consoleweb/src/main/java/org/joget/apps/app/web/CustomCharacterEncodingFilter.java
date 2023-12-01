@@ -25,12 +25,14 @@ public class CustomCharacterEncodingFilter extends CharacterEncodingFilter {
         if (url.contains("/")) {
             url = url.substring(url.lastIndexOf("/"));
         }
-        if (request.getSession() != null && request.getSession().getServletContext() != null &&
-                url.contains(".") && !(url.endsWith(".js") || url.endsWith(".css") ||
+        
+        //should not create session in this filter if session is not exist. It will invalidate the security context in some case.
+        if (url.contains(".") && !(url.endsWith(".js") || url.endsWith(".css") ||
                 url.endsWith(".html") || url.endsWith(".txt") || url.endsWith(".xml") ||
-                url.endsWith(".json"))) { 
+                url.endsWith(".json")) 
+                && request.getSession(false) != null && request.getSession(false).getServletContext() != null) { 
             //possible an application file
-            String ct = request.getSession().getServletContext().getMimeType(url);
+            String ct = request.getSession(false).getServletContext().getMimeType(url);
             if (ct != null && ct.startsWith("application/") && 
                     !(ct.contains("xml") || ct.contains("json") || 
                     ct.contains("javascript") || ct.contains("yaml"))) {
