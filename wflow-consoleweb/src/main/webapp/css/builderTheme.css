@@ -1733,8 +1733,8 @@ body[builder-theme].popupBody .property-editor-page-button-panel{
     position: fixed;
     bottom: -4px;
     margin-bottom: 0;
-    width: 96%;
-    left: 0;
+    width: 100%;
+    right: 0;
     padding: 15px 30px;
     padding-bottom: 0;
     border-top: 1px solid var(--theme-border-color-1);
@@ -1954,6 +1954,120 @@ body[builder-theme] .property-editor-container.narrow input[type=number].withUni
 }
 body[builder-theme] .css-styles-container .style-group > i.delete_action:hover {
     color: red;
+}
+body[builder-theme] .boxy-wrapper .title-bar .close {
+    color: var(--theme-link-color-1);
+}
+body[builder-theme] .boxy-wrapper.fixed {
+    border: 1px solid var(--theme-border-color-2);
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+body[builder-theme] .boxy-wrapper .boxy-content {
+    background-color: var(--theme-primary-color-1);
+    color: var(--theme-label-color-2);
+}
+body[builder-theme].popupBody #createForm .form-buttons,
+body[builder-theme].popupBody #createDatalist .form-buttons,
+body[builder-theme].popupBody #createUserview .form-buttons{
+    padding-bottom: 15px;
+}
+body[builder-theme].popupBody #advancedView {
+    padding: 5px 15px;
+    border-radius: 3px;
+}
+body[builder-theme].popupBody #advancedView > h5{
+    color: var(--theme-label-color-2);
+    font-weight: 500;
+    text-transform: none;
+    font-size: 15px;
+}
+body[builder-theme].popupBody a:not(.btn) {
+    color: var(--theme-active-color-2);
+}
+body[builder-theme].popupBody .form-row .form-input.withPrefix.large .prefix {
+    background-color: var(--theme-primary-color-3);
+    border: 1px solid var(--theme-border-color-1);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+body[builder-theme] .apmtable tr.row > td, 
+body[builder-theme] .apmtable tr.row-info > td, 
+body[builder-theme] .apmtable th {
+    border-left: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .apmtable {
+    border: 1px solid var(--theme-border-color-1);
+    color: var(--theme-label-color-2);
+}
+body[builder-theme] .apmtable .fixedrow {
+    background: var(--theme-primary-color-1);
+    border-bottom: 1px solid var(--theme-border-color-1);
+    font-weight: 500;
+}
+body[builder-theme] .apmtable th {
+    border-bottom: 1px solid var(--theme-border-color-1);
+    background-color: var(--theme-primary-color-3);
+    font-weight: 500;
+}
+body[builder-theme] .apmtable tr.even {
+    background: var(--theme-primary-color-1);
+}
+body[builder-theme] .apmtable tr.row:hover:not(.fixedrow) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme] .row-expand.rowlvl0 + .rowlvl1, 
+body[builder-theme] .row-expand.rowlvl1 + .rowlvl2 {
+    border-top: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .apmtable tr.last:not(.rowlvl0) {
+    border-bottom: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .apmtable .info-trigger {
+    color: var(--theme-label-color-2);
+}
+body[builder-theme='dark'] .apmtable .tab-contents .charts > div {
+    border: 1px solid var(--theme-border-color-1);
+    background-color: #ced4da;
+}
+body[builder-theme='dark'] .apmtable .chart-container{
+    background-color: #ced4da;
+}
+body[builder-theme] .apmtable .tabs {
+    border-bottom: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .apmtable .row-info {
+    border-top: 1px solid var(--theme-border-color-1);
+    border-bottom: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .apmtable .tabs li.active {
+    color: var(--theme-primary-color-4);
+    border-bottom: 2px solid var(--theme-primary-color-4);
+}
+body[builder-theme] .apmtable .tabs li:hover:not(.active) {
+    color: var(--theme-primary-color-4);
+}
+body[builder-theme] .apmtool .durationSelector{
+    background-color: var(--theme-primary-color-1);
+    border: 1px solid var(--theme-border-color-1);
+    color: var(--theme-label-color-1);
+}
+body[builder-theme] .apmtable .tab-contents .charts h4 {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #535353;
+}
+body[builder-theme] .trace-info > div:not(.additional) table {
+    color: var(--theme-label-color-2);
+}
+body[builder-theme] .entry .info .text:hover {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme] .apmtree .node .texts.show, 
+body[builder-theme] .apmtree .node .texts.hasMore:hover {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme] .apmtable tr.row-expand {
+    background-color: #F9F9F9;
 }
 
 /* Dark Theme CSS */

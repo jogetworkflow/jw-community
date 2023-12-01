@@ -304,7 +304,7 @@
             $("#builder_loader i.fa-stack-1x").attr("class", data.builderIcon + " fa-stack-1x");
             $("#save-btn").removeClass("unsaved");
             
-            if (CustomBuilder.builderType === data.builderType && CustomBuilder.builderType !== "app") {
+            if (CustomBuilder.builderType === data.builderType && CustomBuilder.systemTheme === data.systemTheme && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
                 CustomBuilder.appVersion = data.appVersion;
@@ -3670,9 +3670,15 @@ _CustomBuilder.Builder = {
      * Render the json to canvas
      */
     load: function (data, callback) {
-        var builderTheme = $('body').attr("builder-theme");
-        if (builderTheme === "dark" && CustomBuilder.builderType !== "userview") {
-            CustomBuilder.Builder.frameBody.addClass("dark-mode");
+        if (CustomBuilder.systemTheme === undefined) {
+            CustomBuilder.systemTheme = $('body').attr("builder-theme");
+        }
+        if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') {
+            if (CustomBuilder.systemTheme === "dark" && CustomBuilder.builderType !== "userview") {
+                CustomBuilder.Builder.frameBody.addClass("dark-mode");
+            } else {
+                CustomBuilder.Builder.frameBody.removeClass("dark-mode");
+            }
         }
         CustomBuilder.Builder.frameBody.addClass("initializing");
         

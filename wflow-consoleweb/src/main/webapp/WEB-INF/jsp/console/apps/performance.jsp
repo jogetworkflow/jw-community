@@ -1,11 +1,21 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.commons.util.HostManager"%>
 <%@ page import="org.joget.apm.APMUtil"%>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
 
 <c:set var="isGlowrootAvailable" value="<%= APMUtil.isGlowrootAvailable() %>"/>
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
-<commons:popupHeader bodyCssClass=" builder-popup no-header" />
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
+
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
 <c:choose>
     <c:when test="${isGlowrootAvailable}">
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>

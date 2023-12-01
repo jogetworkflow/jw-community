@@ -43,7 +43,10 @@ DatalistBuilder = {
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-datalist-style href="' + CustomBuilder.contextPath + '/css/datalist8.css" rel="stylesheet" />');
-            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false && $('body').attr("builder-theme") === 'dark') {
+            if (CustomBuilder.systemTheme === undefined) {
+                CustomBuilder.systemTheme = $('body').attr("builder-theme");
+            }
+            if (CustomBuilder.systemTheme === 'dark') {
                 CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/darkTheme.css" rel="stylesheet" />');
             }
             CustomBuilder.Builder.setHead('<link data-userview-style href="' + CustomBuilder.contextPath + '/css/userview8.css" rel="stylesheet" />');
