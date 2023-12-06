@@ -8,7 +8,7 @@
 
     <div id="main-body-content" style="text-align: left">
         <c:if test="${errorMessage != null}">
-            <div class="form-error">
+            <div class="form-errors">
                 ${errorMessage}
             </div>
         </c:if>
