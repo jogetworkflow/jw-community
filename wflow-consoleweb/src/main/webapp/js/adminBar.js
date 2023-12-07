@@ -12,6 +12,10 @@ var AdminBar = {
             return false;
         }
         
+        if (typeof HelpGuide !== "undefined") {
+            HelpGuide.hide();
+        }
+        
         if (AdminBar.builderMode && typeof AdvancedTools !== "undefined") {
             AdvancedTools.hideQuickOverlay();
         }

@@ -200,6 +200,8 @@
     },
     
     ajaxRenderBuilder: function(url) {
+        HelpGuide.hide();
+        
         $("#builder-quick-nav #builder-menu ul #appNotExist").hide();
         
         var rtl;
@@ -3269,6 +3271,7 @@
             
             $("#builder-quick-nav").off("click", "li.builder-icon");
             $("#builder-quick-nav").on("click", "li.builder-icon", function(){
+                HelpGuide.hide();
                 $("#quick-nav-bar").addClass("active");
                 return false;
             });

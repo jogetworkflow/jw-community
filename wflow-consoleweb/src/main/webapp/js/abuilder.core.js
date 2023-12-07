@@ -27,6 +27,8 @@ AppBuilder = {
         });
         $("#builder_canvas").off("click", " li.item a.delete");
         $("#builder_canvas").on("click", " li.item a.delete", function(){
+            HelpGuide.hide();
+            
             AppBuilder.deleteItem($(this).closest(".item"));
             return false;
         });
@@ -39,6 +41,8 @@ AppBuilder = {
         });
         $("#builder_canvas").off("click", " li.item a.runprocess");
         $("#builder_canvas").on("click", " li.item a.runprocess", function(){
+            HelpGuide.hide();
+            
             if (!$(this).hasClass("disabled")) {
                 var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
                 JPopup.show("runProcessDialog", url, {}, "");
@@ -47,6 +51,8 @@ AppBuilder = {
         });
         $("#builder_canvas").off("click", ".addnew");
         $("#builder_canvas").on("click", ".addnew", function(){
+            HelpGuide.hide();
+            
             var type = $(this).data("builder-type");
             if (type === "process") {
                 CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
