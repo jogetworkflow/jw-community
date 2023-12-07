@@ -3536,10 +3536,10 @@
         for (var i = 0; i < props.length; i++) {
             var name = props[i];
             if (typeof data[name] === "object") {
-                CustomBuilder.clearCustomStyling(data[name]);
+                CustomBuilder.clearCustomStyling(data[name], checker);
             } else if (Array.isArray(data[name])) {
                 for (var j = 0; j < data[name].length; j++) {
-                    CustomBuilder.clearCustomStyling(data[name][j]);
+                    CustomBuilder.clearCustomStyling(data[name][j], checker);
                 }
             } else if (name.indexOf("style-") === 0 || (checker !== undefined && checker(name))) {
                 delete data[name];

@@ -2304,7 +2304,9 @@ DatalistBuilder = {
                                 name.indexOf("rowAction") === 0 ||
                                 name.indexOf("column") === 0 ||
                                 name.indexOf("filter") === 0 ||
-                                name.indexOf("card") === 0
+                                name.indexOf("card") === 0 ||
+                                name.indexOf("link") === 0 ||
+                                name.indexOf("header") === 0
                                 ));
                     });
                 }
