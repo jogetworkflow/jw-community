@@ -1265,6 +1265,10 @@ public class AppServiceImpl implements AppService {
                 ByteArrayOutputStream baos = null;
 
                 try {
+                    // XML escape user input
+                    String escapedAppId = StringUtil.escapeString(appDefinition.getAppId(), StringUtil.TYPE_XML);
+                    String escapedAppName = StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML);
+
                     baos = new ByteArrayOutputStream();
                     
                     RegistryMatcher m = new RegistryMatcher();
@@ -1279,15 +1283,15 @@ public class AppServiceImpl implements AppService {
                     Map<String, String> replacement = new LinkedHashMap<String, String>();
                     
                     //replace id and name
-                    replacement.put("<id>"+copy.getAppId()+"</id>", "<id>"+appDefinition.getAppId()+"</id>");
-                    replacement.put("<name>"+copy.getName()+"</name>", "<name>"+appDefinition.getName()+"</name>");
+                    replacement.put("<id>"+copy.getAppId()+"</id>", "<id>"+escapedAppId+"</id>");
+                    replacement.put("<name>"+copy.getName()+"</name>", "<name>"+escapedAppName+"</name>");
                     appDefinitionXml = StringUtil.searchAndReplaceFirstByteContent(appDefinitionXml, replacement);
                     
                     replacement = new LinkedHashMap<String, String>();
-                    replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
-                    replacement.put("/app/"+copy.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
-                    replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
-                    replacement.put("app_fd_" + copy.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
+                    replacement.put("<appId>"+copy.getAppId()+"</appId>", "<appId>"+escapedAppId+"</appId>");
+                    replacement.put("/app/"+copy.getAppId()+"/", "/app/"+escapedAppId+"/");
+                    replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+escapedAppId+"/");
+                    replacement.put("app_fd_" + copy.getAppId() + "_pd", "app_fd_" + escapedAppId + "_pd"); //for process enhancement process data table
                     
                     String prefix = "";
                     //find table prefix in environment
@@ -1321,11 +1325,11 @@ public class AppServiceImpl implements AppService {
                     if (packageDef != null) {
                         xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
                         Map<String, String> replace = new HashMap<String, String>();
-                        replace.put("Id=\""+copy.getAppId()+"\"", "Id=\""+appId+"\"");
-                        replace.put("id=\""+copy.getAppId()+"\"", "id=\""+appId+"\"");
-                        replace.put("Name=\""+copy.getName()+"\"", "Name=\""+appDefinition.getName()+"\"");
-                        replace.put("name=\""+copy.getName()+"\"", "name=\""+appDefinition.getName()+"\"");
-                        
+                        replace.put("Id=\""+copy.getAppId()+"\"", "Id=\""+escapedAppId+"\"");
+                        replace.put("id=\""+copy.getAppId()+"\"", "id=\""+escapedAppId+"\"");
+                        replace.put("Name=\""+copy.getName()+"\"", "Name=\""+escapedAppName+"\"");
+                        replace.put("name=\""+copy.getName()+"\"", "name=\""+escapedAppName+"\"");
+
                         xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
                         
                         if (!templateReplace.isEmpty()) {
@@ -1367,7 +1371,7 @@ public class AppServiceImpl implements AppService {
 
         return errors;
     }
-    
+
     /**
      * Create a new app definition from template
      * @param appDefinition
