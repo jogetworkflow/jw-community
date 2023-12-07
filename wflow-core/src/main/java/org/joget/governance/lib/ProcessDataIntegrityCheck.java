@@ -74,7 +74,7 @@ public class ProcessDataIntegrityCheck extends GovHealthCheckAbstract {
     }
     
     private void checkOid(GovHealthCheckResult result, DataSource ds) {
-        String[] names = new String[]{"SHKActivities", "SHKActivityData", "SHKAndJoinTable", "SHKAssignmentsTable", "SHKCounters", "SHKDeadlines", 
+        String[] names = new String[]{"SHKActivities", "SHKActivityData", "SHKAndJoinTable", "SHKAssignmentsTable", "SHKDeadlines", 
             "SHKNextXPDLVersions", "SHKProcessData", "SHKProcessDefinitions", "SHKProcessRequesters", "SHKProcesses", "SHKResourcesTable", "SHKXPDLData", "SHKXPDLS"};
         
         Connection con = null;
