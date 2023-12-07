@@ -1987,12 +1987,6 @@ body[builder-theme].popupBody #advancedView > h5{
 body[builder-theme].popupBody a:not(.btn) {
     color: var(--theme-active-color-2);
 }
-body[builder-theme].popupBody .form-row .form-input.withPrefix.large .prefix {
-    background-color: var(--theme-primary-color-3);
-    border: 1px solid var(--theme-border-color-1);
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
 body[builder-theme] .apmtable tr.row > td, 
 body[builder-theme] .apmtable tr.row-info > td, 
 body[builder-theme] .apmtable th {
@@ -2075,11 +2069,14 @@ body[builder-theme] .apmtable tr.row-expand {
 body[builder-theme] .form-row .form-input.withPrefix .prefix {
     background: var(--theme-primary-color-3);
     border-right: 1px solid var(--theme-border-color-1);
-    height: 30px;
-    top: 1px;
-    left: 1px;
-    width: 50px;
+    height: 32px;
+    top: 0px;
+    left: 0px;
     border-radius: 0px;
+    background-color: var(--theme-primary-color-3);
+    border: 1px solid var(--theme-border-color-1);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
 body[builder-theme] .chosen-container-single .chosen-single-with-deselect span {
     color: var(--theme-input-color-1);

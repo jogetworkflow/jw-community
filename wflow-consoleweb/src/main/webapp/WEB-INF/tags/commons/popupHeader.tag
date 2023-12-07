@@ -46,4 +46,4 @@
             </c:if>
         </script>
     </head>
-    <body class="popupBody ${bodyCssClass}"<c:if test="${builderTheme != 'classic'}"> builder-theme="${builderTheme}"</c:if>>
+    <body class="popupBody ${bodyCssClass}"<c:if test="${not empty builderTheme and builderTheme ne 'classic'}"> builder-theme="${builderTheme}"</c:if>>
