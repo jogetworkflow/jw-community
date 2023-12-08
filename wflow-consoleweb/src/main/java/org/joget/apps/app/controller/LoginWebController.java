@@ -79,12 +79,19 @@ public class LoginWebController {
                 embedPrefix = "embed/";
             }
             
+            //extract queryString from saved url
+            String queryString = "";
+            if (savedUrl.contains("?")) {
+                queryString = savedUrl.substring(savedUrl.indexOf("?"));
+                savedUrl =  savedUrl.substring(0, savedUrl.indexOf("?"));
+            }
+            
             String[] urlKey = savedUrl.split("/");
             String appId = SecurityUtil.validateStringInput(urlKey[0]);
             String userviewId = SecurityUtil.validateStringInput(urlKey[1]);
 
             if (savedRequest == null) { //for userview logout
-                return "redirect:/web/" + embedPrefix + "userview/" + appId + "/" + userviewId;
+                return "redirect:/web/" + embedPrefix + "userview/" + appId + "/" + userviewId + queryString;
             }
         } else if (savedUrl.contains("/web/ulogin") || savedUrl.contains("/web/embed/ulogin")) {
             Boolean embed = false;
