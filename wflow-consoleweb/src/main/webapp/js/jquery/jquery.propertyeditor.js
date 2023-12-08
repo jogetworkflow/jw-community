@@ -10136,7 +10136,7 @@ PropertyEditor.Type.CssStyle.prototype = {
                 "font-style" : {"field" : "font-style", "label" : get_peditor_msg("style.fontStyle"), "class" : "input1"},
                 "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing"), "class" : "input1"},
                 "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor"), "class" : "input1"},
-                "text-decoration" : {"field" : "text-decoration", "label" : get_peditor_msg("style.textDecoration"), "class" : "input2"},
+                "text-decoration-line" : {"field" : "text-decoration-line", "label" : get_peditor_msg("style.textDecoration"), "class" : "input2"},
                 "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle"), "class" : "input1"}
             }
         },
@@ -10293,15 +10293,15 @@ PropertyEditor.Type.CssStyle.prototype = {
                 {value : 'justify', label : '<i class="la la-align-justify"></i>', title : get_peditor_msg("style.justify")}
             ]
         },
-        'text-decoration' : {
+        'text-decoration-line' : {
             type : 'selectbox',
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
                 {value : 'none', label : get_peditor_msg("style.none")},
-                {value : 'underline', label : '&lt;span style="text-decoration:underline;"&gt;' + get_peditor_msg("style.underline") + '&lt;/span&gt;'},
-                {value : 'overline', label : '&lt;span style="text-decoration:overline;"&gt;' + get_peditor_msg("style.overline") + '&lt;/span&gt;'},
-                {value : 'line-through', label : '&lt;span style="text-decoration:line-through;"&gt;' + get_peditor_msg("style.lineThrough") + '&lt;/span&gt;'},
-                {value : 'underline overline', label : '&lt;span style="text-decoration:underline overline;"&gt;' + get_peditor_msg("style.underlineOverline") + '&lt;/span&gt;'}
+                {value : 'underline', label : '&lt;span style="text-decoration-line:underline;"&gt;' + get_peditor_msg("style.underline") + '&lt;/span&gt;'},
+                {value : 'overline', label : '&lt;span style="text-decoration-line:overline;"&gt;' + get_peditor_msg("style.overline") + '&lt;/span&gt;'},
+                {value : 'line-through', label : '&lt;span style="text-decoration-line:line-through;"&gt;' + get_peditor_msg("style.lineThrough") + '&lt;/span&gt;'},
+                {value : 'underline overline', label : '&lt;span style="text-decoration-line:underline overline;"&gt;' + get_peditor_msg("style.underlineOverline") + '&lt;/span&gt;'}
             ],
             html : 'true'
         },
@@ -10309,11 +10309,11 @@ PropertyEditor.Type.CssStyle.prototype = {
             type : 'selectbox',
             options : [
                 {value : '', label : get_peditor_msg("style.default")},
-                {value : 'solid', label : '&lt;span style="text-decoration:underline;text-decoration-style:solid;"&gt;' + get_peditor_msg("style.solid") + '&lt;/span&gt;'},
-                {value : 'wavy', label : '&lt;span style="text-decoration:underline;text-decoration-style:wavy;"&gt;' + get_peditor_msg("style.wavy") + '&lt;/span&gt;'},
-                {value : 'dotted', label : '&lt;span style="text-decoration:underline;text-decoration-style:dotted;"&gt;' + get_peditor_msg("style.dotted") + '&lt;/span&gt;'},
-                {value : 'dashed', label : '&lt;span style="text-decoration:underline;text-decoration-style:dashed;"&gt;' + get_peditor_msg("style.dashed") + '&lt;/span&gt;'},
-                {value : 'double', label : '&lt;span style="text-decoration:underline;text-decoration-style:double;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
+                {value : 'solid', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:solid;"&gt;' + get_peditor_msg("style.solid") + '&lt;/span&gt;'},
+                {value : 'wavy', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:wavy;"&gt;' + get_peditor_msg("style.wavy") + '&lt;/span&gt;'},
+                {value : 'dotted', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:dotted;"&gt;' + get_peditor_msg("style.dotted") + '&lt;/span&gt;'},
+                {value : 'dashed', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:dashed;"&gt;' + get_peditor_msg("style.dashed") + '&lt;/span&gt;'},
+                {value : 'double', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:double;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
             ],
             html : 'true'
         },
