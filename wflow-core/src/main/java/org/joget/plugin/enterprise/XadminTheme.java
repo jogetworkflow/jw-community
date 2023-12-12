@@ -94,25 +94,26 @@ public class XadminTheme extends UniversalTheme {
         jsCssLink += "<script src=\""+path+"/lib/respond.min.js\"></script>\n";
         jsCssLink += "<![endif]-->\n";
 
-        // load bootstrap js and css only if in iframe OR embed window (#navigation not found)
+        // load bootstrap js and css only if not in index page
         if (!isIndex()) {
             jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/js/bootstrap4/css/bootstrap.min.css\">\n";
-            jsCssLink += "<script>loadScript(\""+path+"/js/bootstrap4/js/popper.min.js\");loadScript(\""+path+"/js/bootstrap4/js/bootstrap.min.js\");</script>";
+            jsCssLink += "<script>$(document).ready(function(){loadScript(\""+path+"/js/bootstrap4/js/popper.min.js\");loadScript(\""+path+"/js/bootstrap4/js/bootstrap.min.js\");});</script>";
         }
+
         if (data.containsKey("is_login_page") && ((Boolean) data.get("is_login_page"))) {
             jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/xadmin/css/login.css\">\n";
         }
-        
+
         jsCssLink += "<style>" + generateLessCss() + "</style>";
-        
+
         jsCssLink += "<script>";
         if (!"true".equalsIgnoreCase(getPropertyString("reopenTab")) || "true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
             jsCssLink += "var is_remember = false;";
         }
         jsCssLink += "var _enableResponsiveTable = true;</script>";
-        
+
         jsCssLink += getInternalJsCssLib(data);
-        
+
         return jsCssLink;
     }
     
