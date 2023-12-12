@@ -266,3 +266,11 @@ body .dataList .select_checkbox label i {
     border-radius: 0.25rem;
     margin-top: 4px;
 }
+
+@media (max-width: 767px) {
+    body .dataList .filters .filter-cell:last-child:after {
+        position: relative !important;
+        top: -2px !important;
+        left: -29px !important;
+    }
+}
