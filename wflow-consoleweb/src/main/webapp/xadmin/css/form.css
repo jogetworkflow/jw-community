@@ -268,7 +268,6 @@ body .editor-cell select:not([class^=ui]){
     color: inherit;
     background-color: #fff;
     border-radius: 2px;
-    float: left;
 }
 body input[disabled],
 body input[readonly] {
