@@ -768,6 +768,17 @@ public class StringUtil {
      * @return 
      */
     public static String decryptContent(String content) {
+        return decryptAndEscapeContent(content, null);
+    }
+    
+    /**
+     * Decrypt all keywords in the content which wrapped in SecurityUtil.ENVELOPE and escape it before replace
+     * with SecurityUtil.decrypt method
+     * @param content
+     * @param escapeType
+     * @return 
+     */
+    public static String decryptAndEscapeContent(String content, String escapeType) {
         //parse content
         if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
             Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
@@ -781,6 +792,12 @@ public class StringUtil {
                 if (!sList.isEmpty()) {
                     for (String s : sList) {
                         String tempS = SecurityUtil.decrypt(s);
+                        
+                        //support escape value with different syntax before replace it
+                        if (escapeType != null && !escapeType.isEmpty()) {
+                            tempS = StringUtil.escapeString(tempS, escapeType);
+                        }
+                        
                         content = content.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(tempS));
                     }
                 }

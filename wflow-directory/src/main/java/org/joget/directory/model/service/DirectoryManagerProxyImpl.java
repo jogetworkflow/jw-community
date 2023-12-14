@@ -126,11 +126,9 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
                             properties = StringUtil.decryptContent(properties);
                             propertyMap = CsvUtil.getPluginPropertyMap(properties);
                         } else {
+                            //the encypted password is not more escaped json syntax due to HashVariableSupportedMap changes. Manually escape it here before parsing to JSON object
+                            properties = StringUtil.decryptAndEscapeContent(properties, StringUtil.TYPE_JSON);
                             propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
-                            
-                            //using HashVariableSupportedMap to parse hash variable and decrypt content only when needed
-                            ((PropertyEditable) directoryManagerPlugin).setProperties(propertyMap);
-                            propertyMap = ((PropertyEditable) directoryManagerPlugin).getProperties();
                         }
                     }
 
