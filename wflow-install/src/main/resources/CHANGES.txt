@@ -2,6 +2,29 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.9
+=====
+f1c4d031b Fixed: wflow-consoleweb - Xadmin Theme - Elements in filter side panel on smaller screens not properly aligned @8.0-SNAPSHOT
+14175b72d Fixed: wflow-consoleweb - Xadmin Theme - Search icon for filter button on smaller screens not properly aligned @8.0-SNAPSHOT
+9de3e7231 Fixed: wflow-core - Xadmin Theme - Bootstrap dropdown sometimes not working @8.0-SNAPSHOT
+44d1049a7 Fixed: wflow-consoleweb - Property Editor - Text Decoration Style and Text decoration color not working. @8.0-SNAPSHOT
+922e9c619 Fixed: wflow-consoleweb - Mobile App - Login does not redirect correctly. @8.0-SNAPSHOT
+972849bd4 Fixed: wflow-consoleweb - App Composer - Hints feature is still enabled when navigating to a different page. @8.0-SNAPSHOT
+4369b9870 Fixed: wflow-directory - Directory Manager - Password contains `\` and `"` char can't parse correctly. @8.0-SNAPSHOT
+d1bf5f9bc Fixed: wflow-core: AppServiceImpl - When cloning an app from the application, "&" in the app name prevents the replication of app forms, datalists, and other elements. @8.0-SNAPSHOT
+5fee116fe Fixed: wflow-core - Process Data Integrity - Regression of 42b9c1d. SHKCounters table should not check anymore. @8.0-SNAPSHOT
+c42a19f84 Fixed: wflow-consoleweb - List Builder - “Styling (Link)“ styles still appears in other list templates when you opt for styling to be removed after template change @8.0-SNAPSHOT
+be66f0690 Modified: wflow-consoleweb - Security - Upgrade TinyMCE to 6.8.1 for CVE-2023-48219. @8.0-SNAPSHOT
+d012707db Modified: wflow-consoleweb - Plugin Upload - Modified error message to be highlighted @8.0-SNAPSHOT
+437467c8f Fixed: wflow-consoleweb - ConsoleWebController - Fixed file upload accepting zip file of the plugin @8.0-SNAPSHOT
+8a89698a6 Fixed: wflow-consoleweb - Login - Regression of 10a3b651. Login failed when the page resources haven't fully loaded. @8.0-SNAPSHOT
+e01bb3e40 Fixed: wflow-consoleweb - List Builder - Row action styling properties not update correctly based on template @8.0-SNAPSHOT
+f3c4db576 Added: wflow-core/wflow-consoleweb - builders - Added light and dark theme for builders. @8.0-SNAPSHOT
+2208e0e7d Modified: wflow-consoleweb - Plugin Upload - Modified Upload Plugin to only allow .jar files @8.0-SNAPSHOT
+6d4f7a3f2 Fixed: wflow-consoleweb - Form - Nested Grid data is not saving. T3463 @8.0-SNAPSHOT
+25f6b802b Fixed: wflow-consoleweb - Xadmin Theme - Features depended on Bootstrap Framework are not working @8.0-SNAPSHOT
+3efe3d6f6 Fixed: wflow-core - List Builder - "Simple Card" List template actions styling not applied T3382 @8.0-SNAPSHOT
+
 8.0.8
 =====
 639b589bf Fixed: wflow-core - List Inbox - Regression of 1ba2fe28. Not working when using form binder. @7.0-SNAPSHOT
