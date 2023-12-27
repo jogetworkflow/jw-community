@@ -80,6 +80,7 @@
         <security:intercept-url pattern="/web/json/plugin/**/service" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/app/**/plugin/**/service" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_ADMIN, ROLE_APPADMIN"/>
+        <security:intercept-url pattern="/web/socket/plugin/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/plugin/**" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         
         <!-- Web Console normal user paths -->
