@@ -65,12 +65,9 @@
         />
     
     <cache name="org.joget.cache.SF_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
-            diskPersistent="false">
+            maxElementsInMemory="5000"
+            eternal="true"
+            overflowToDisk="false">
         <cacheEventListenerFactory class="org.joget.commons.util.SessionFactoryCacheListenerFactory" />
     </cache>
     
