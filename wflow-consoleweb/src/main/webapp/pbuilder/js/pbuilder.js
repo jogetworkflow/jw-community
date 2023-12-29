@@ -2,6 +2,7 @@ ProcessBuilder = {
     currentProcessData : {},
     jsPlumb: null,
     readonly: false,
+    refreshTimeout: null,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -2633,7 +2634,7 @@ ProcessBuilder = {
             if (ProcessBuilder.jsPlumb.setContainer) { // for jsPlumb 1.6.2 onwards
                 ProcessBuilder.jsPlumb.setContainer(element);
             }
-
+             
             var deferreds = [];
             var dummy = $.Deferred();
             deferreds.push(dummy);
@@ -2649,6 +2650,8 @@ ProcessBuilder = {
             dummy.resolve();
 
             $.when.apply($, deferreds).then(function() {
+                ProcessBuilder.jsPlumb.setSuspendDrawing(true); //stop the rendering as it having slow performance when rendering large data
+                //
                 //render transitions
                 for (var i in elementObj.transitions) {
                     var childComponent = self.parseDataToComponent(elementObj.transitions[i]);
@@ -2657,6 +2660,8 @@ ProcessBuilder = {
                     self.renderElement(elementObj.transitions[i], temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
                 }
                 
+                //resume and refresh the transition rendering here, else it block everything for very long time.
+                ProcessBuilder.jsPlumb.setSuspendDrawing(false, true); 
                 
                 // bind event handling to new or moved connections
                 ProcessBuilder.jsPlumb.bind("connection", function(info) {
@@ -2673,7 +2678,11 @@ ProcessBuilder = {
                         ProcessBuilder.removeConnection(connection);
                     }
                 });
+                
                 callback(element);
+                
+                //the builder is ready but somehow the jsPlumb blocking the timeout to trigger. Remove the UI block manually
+                //CustomBuilder.Builder.frameBody.removeClass("initializing");
             });
         }
     },
@@ -2929,8 +2938,9 @@ ProcessBuilder = {
     //To redraw the connections when dragging participant
     dragParticipant : function(dragElement, component) {
         var self = CustomBuilder.Builder;
+        ProcessBuilder.jsPlumb.setSuspendDrawing(true);
         ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
-        ProcessBuilder.jsPlumb.repaintEverything();
+        ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
         return dragElement;
     },
     
@@ -3380,10 +3390,16 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         
         if (self.frameBody.find(".process").length > 0) {
-            setTimeout(function(){
+            if (ProcessBuilder.refreshTimeout) {
+                clearTimeout(ProcessBuilder.refreshTimeout);
+            }
+            
+            ProcessBuilder.refreshTimeout = setTimeout(function(){
+                ProcessBuilder.jsPlumb.setSuspendDrawing(true);
                 ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
-                ProcessBuilder.jsPlumb.repaintEverything();
-                ProcessBuilder.jsPlumb.repaintEverything(); //could be bug of the library, it had to repaint twice to draw in correct position
+                ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
+                
+                ProcessBuilder.refreshTimeout = null;
             }, 30);
         }
     },
