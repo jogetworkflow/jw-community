@@ -2680,9 +2680,6 @@ ProcessBuilder = {
                 });
                 
                 callback(element);
-                
-                //the builder is ready but somehow the jsPlumb blocking the timeout to trigger. Remove the UI block manually
-                //CustomBuilder.Builder.frameBody.removeClass("initializing");
             });
         }
     },
@@ -4736,8 +4733,9 @@ ProcessBuilder = {
      * Used to render advance tool > xpdl
      */                
     xpdlViewInit : function(view) {
+        $(view).addClass("ace_fullpage");
         $(view).html('');
-        $(view).append('<pre id="xpdl_definition"></pre><div class="sticky-buttons"><button class="upload-btn btn button btn-secondary">'+get_cbuilder_msg('pbuilder.label.uploadXpdl')+'</button> <button class="update-btn btn button btn-secondary">'+get_cbuilder_msg('cbuilder.update')+'</button></div>');
+        $(view).append('<pre id="xpdl_definition" style="height:100%"></pre><div class="sticky-buttons"><button class="upload-btn btn button btn-secondary">'+get_cbuilder_msg('pbuilder.label.uploadXpdl')+'</button> <button class="update-btn btn button btn-secondary">'+get_cbuilder_msg('cbuilder.update')+'</button></div>');
         
         var editor = ace.edit("xpdl_definition");
         editor.$blockScrolling = Infinity;
@@ -4749,8 +4747,6 @@ ProcessBuilder = {
         editor.getSession().setTabSize(4);
         editor.getSession().setMode("ace/mode/xml");
         editor.setAutoScrollEditorIntoView(true);
-        editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
-        editor.setOption("minLines", 10);
         editor.getSession().setValue(ProcessBuilder.toXpdl());
         editor.resize();
         

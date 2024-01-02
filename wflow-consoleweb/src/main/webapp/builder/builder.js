@@ -2483,9 +2483,10 @@
      */
     jsonDefViewInit : function(view) {
         if ($(view).find($("#json_definition")).length === 0) {
+            $(view).addClass("ace_fullpage");
             $(view).append($("#cbuilder-info").find("button").addClass("button").clone());
             $(view).find("button.button").wrap('<div class="sticky-buttons">');
-            $(view).prepend('<pre id="json_definition"></pre>');
+            $(view).prepend('<pre id="json_definition" style="height:100%"></pre>');
 
             var editor = ace.edit("json_definition");
             editor.$blockScrolling = Infinity;
@@ -2497,8 +2498,6 @@
             editor.getSession().setTabSize(4);
             editor.getSession().setMode("ace/mode/json");
             editor.setAutoScrollEditorIntoView(true);
-            editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
-            editor.setOption("minLines", 10);
             editor.resize();
             var textarea = $("#cbuilder-info").find('textarea[name="json"]').hide();
             $(textarea).on("change", function() {
