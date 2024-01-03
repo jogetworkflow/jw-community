@@ -1070,8 +1070,7 @@ public class AppUtil implements ApplicationContextAware {
                             data.put("params", request.getParameterMap());
                             data.put("context_path", request.getContextPath());
                             data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-                            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-                            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+                            data.put("right_to_left", isRTL());
                             String locale = AppUtil.getAppLocale();
                             data.put("locale", locale);
                             data.put("is_popup_view", true);

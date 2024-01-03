@@ -463,8 +463,6 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             data.put("is_login_page", false);
             data.put("context_path", request.getContextPath());
             data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
             String locale = AppUtil.getAppLocale();
             String language = AppUtil.getAppLanguage();
             data.put("locale", locale);
