@@ -6149,3 +6149,14 @@ a.btn.disabled,fieldset:disabled a.btn {
         margin-right: auto;
     }
 }
+body.rtl .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-radius: 0 4px 4px 0;
+}
+
+body.rtl .btn-group>.btn:last-child:not(:first-child), body.rtl .btn-group>.dropdown-toggle:not(:first-child) {
+    border-radius: 4px 0 0 4px;
+}
+
+.fc-toolbar-chunk, .btn-group {
+    display: flex;
+}

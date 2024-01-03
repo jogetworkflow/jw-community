@@ -48,6 +48,11 @@
     width:100%;
     padding-right: 20px;
 }
+body.rtl .dataList th.sortable a {
+    background-position-x: left;
+    padding-left: 20px;
+    padding-right: 0;
+}
 .dataList th.sorted a {
     opacity: 0.7;
 }
@@ -145,10 +150,12 @@ body.rtl .filter-cell .hasDatepicker + a + a{
 .search_filter_popup .filter-cell.hidden-filter{
     display:none !important;
 }
-.dataList .actions.right{
+.dataList .actions.right,
+body.rtl .dataList .actions.left {
     text-align:right;
 }
-.dataList .actions.left{
+.dataList .actions.left,
+body.rtl .dataList .actions.right{
     text-align:left;
 }
 .dataList .actions.top{
@@ -264,20 +271,28 @@ body.rtl .dataList span.pagelinks{
     line-height:34px;
     background-color:rgba(0,0,0,.05);
 }
-.dataList .pagelinks > *:nth-child(1){
-    border-left: 1px solid #dee2e6;
+.dataList .pagelinks > *:first-child{
     border-radius: 5px 0 0 5px;
 }
 .dataList .pagelinks > *:last-child{
     border-radius: 0 5px 5px 0;
 }
-.dataList .pagelinks > *:nth-child(1):last-child{
-    border-radius: 5px;
+body.rtl .dataList .pagelinks > *:last-child {
+    border-left: 1px solid #dee2e6;
+}
+body.rtl .dataList .pagelinks > *:last-child{
+    border-radius: 5px 0 0 5px;
+}
+body.rtl .dataList .pagelinks > *:first-child{
+    border-radius: 0 5px 5px 0;
 }
 @media (min-width: 768px) {
     .dataList span.pagelinks{
         display: inline-block;
         width: calc(100% - 200px);
+    }
+    body.rtl .noExportLinks span.pagelinks {
+        width: 100%;
     }
     .dataList .exportlinks{
         width: 200px;
@@ -629,6 +644,9 @@ body.rtl .dataList span.pagelinks{
     .filter_form:not(.popup) .filters .filter-cell span[class*='Label']{
         display: none;
     }
+    .dataList span.pagelinks {
+        display: block;
+    }
 }
 
 .dataList th[draggable] {
@@ -752,4 +770,8 @@ html:not(.ismobile) .dataList .show_hide_control:hover ul {
     box-sizing: border-box;
     width: 60%;
     white-space: unset !important;
+}
+body.rtl .dataList .pagebanner,
+body.rtl .dataList .exportlinks {
+    text-align: left;
 }
