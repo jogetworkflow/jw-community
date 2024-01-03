@@ -3648,6 +3648,7 @@ _CustomBuilder.Builder = {
         self.canvas = $("#builder_canvas");
         
         $("body").addClass("default-builder");
+        $("body").addClass(CustomBuilder.builderType);
         
         self._loadIframe(CustomBuilder.contextPath+'/builder/blank.jsp', callback);
         
