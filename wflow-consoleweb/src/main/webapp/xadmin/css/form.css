@@ -571,7 +571,7 @@ body .filter-cell select:not([class^="ui-"]){
 }
 body.rtl .filter-cell select:not([class^="ui-"]){
   padding-left: 30px;
-  padding-right: 0;
+  padding-right: 10px;
 }
   
 body select:not([class^="ui-"]):disabled {
