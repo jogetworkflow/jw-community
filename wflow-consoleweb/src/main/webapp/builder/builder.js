@@ -2474,6 +2474,63 @@
                     "background-repeat" : "repeat-x",
                     "background-size" : "contain"
                 });
+                
+                $(view).append('<div class="sticky-buttons"><button class="prev-btn btn button btn-secondary"><i class="las la-angle-up"></i></button> <button class="next-btn btn button btn-secondary"><i class="las la-angle-down"></i></button></div>');
+        
+                var findChange = function(isNext) {
+                    var tds = $("#diffoutput table tbody tr").find('> .replace, > .delete, > .insert');
+                    
+                    //find current change
+                    var index = -1;
+                    if ($("#diffoutput table tbody tr .current").length > 0) {
+                        index = $(tds).index($("#diffoutput table tbody tr .current"));
+                    }
+                    
+                    var row;
+                    var continueFind = false;
+                    
+                    do {
+                        var currentIndex = index;
+                        
+                        //find next or prev index
+                        if (isNext) {
+                            index++;
+                        } else {
+                            index--;
+                        }
+
+                        //check boundary
+                        if (index >= tds.length) {
+                            index = 0;
+                        }
+                        if (index < 0) {
+                            index = tds.length - 1;
+                        }
+
+                        row = $(tds).eq(index);
+                        
+                        if (isNext) {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").next().find("td").is(row);
+                        } else {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").prev().find("td").is(row);
+                        }
+                    } while (continueFind);
+                    
+                    $("#diffoutput table tbody tr .current").removeClass("current");
+                    $(row).addClass("current");
+                    
+                    $(view).animate({
+                        scrollTop: $(row).offset().top + $(view).scrollTop() - 150
+                    }, 500);
+                };
+        
+                $(view).find("button.next-btn").off("click").on("click", function() {
+                    findChange(true);
+                });
+
+                $(view).find("button.prev-btn").off("click").on("click", function() {
+                    findChange(false);
+                });
             }
         });
     },
