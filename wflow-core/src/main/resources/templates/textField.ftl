@@ -43,7 +43,6 @@
             left:0;
             color:light-grey;
         }
-        
     </style>
 
     <#if !(includeMetaData!) && element.properties.style! != "" >
@@ -69,116 +68,31 @@
     </#if>
 
     <script>
-        $('#incr_${elementParamName!}').on("click", function(e){
-        var elementId = "${elementParamName!}"; 
-        var element = document.getElementById(elementId);
-        var text = element.value;
-        var output = "";
-        let incrementVal = 1;
-        if ("${element.properties.incrementValue!}" !== "") {
-            incrementVal = parseFloat("${element.properties.incrementValue!}")
-        }
-        //If us, use . as decimal
-        if ("${element.properties.style!}" === "us"){
-            if (text === ""){
-                let sum = (0 + incrementVal).toFixed("${element.properties.numOfDecimal!}");
-                output += sum;
-            }
-            else{
-                if ("${element.properties.prefix!}" !== "" && "${element.properties.postfix!}" !== ""){
-                    if(text.split(" ")[0].charAt(0) === '-') {
-                        text = "-" + text.split(" ")[1];    
-                    } else{
-                        text = text.split(" ")[1];
-                    }
-                }else if ("${element.properties.prefix!}" !== ""){
-                    if(text.split(" ")[0].charAt(0) === '-') {
-                        text = "-" + text.split(" ")[1];    
-                    } else{
-                        text = text.split(" ")[1];
-                    }
-                }else if ("${element.properties.postfix!}" !== ""){
-                    text = text.split(" ")[0];
-                }
-                let sum = (parseFloat(text) + incrementVal).toFixed("${element.properties.numOfDecimal!}")
-                output += sum;
-            }
-        }
-        else if ("${element.properties.style!}" === "euro"){
-            if (text === ""){
-                let sum = (0 + incrementVal).toFixed("${element.properties.numOfDecimal!}");
-                sum = sum.replace('.',',');
-                output += sum;
-            }else{
-                if ("${element.properties.prefix!}" !== "" && "${element.properties.postfix!}" !== ""){
-                    if(text.split(" ")[0].charAt(0) === '-') {
-                        text = "-" + text.split(" ")[1];    
-                    } else{
-                        text = text.split(" ")[1];
-                    }
-                }else if ("${element.properties.prefix!}" !== ""){
-                    if(text.split(" ")[0].charAt(0) === '-') {
-                        text = "-" + text.split(" ")[1];    
-                    } else{
-                        text = text.split(" ")[1];
-                    }
-                }else if ("${element.properties.postfix!}" !== ""){
-                    text = text.split(" ")[0];
-                }
-                text = text.replace(',','.');
-                let sum = (parseFloat(text) + incrementVal).toFixed("${element.properties.numOfDecimal!}")
-                sum = sum.replace('.',',');
-                output += sum;
-            }
-        }
-    
-        var maxLength = "${element.properties.maxlength!}"
-    
-        if (maxLength === undefined || maxLength === "") {
-            element.value = output;
-            
-        } else { 
-            if (output.charAt(0) === '-') {
-                if (output.length - parseInt("${element.properties.numOfDecimal!}")-2 <= maxLength) {
-                    element.value = output;
-                }
-            }
-            else if (output.length - parseInt("${element.properties.numOfDecimal!}")-1 <= maxLength) {
-                element.value = output;
-            }
-        }  
-        $('.textfield_${element.properties.elementUniqueKey!}').numberFormatting({
-            format : '${element.properties.style!}',
-            numOfDecimal : '${element.properties.numOfDecimal!}',
-            useThousandSeparator : '${element.properties.useThousandSeparator!}',
-            prefix : '${element.properties.prefix!}',
-            postfix : '${element.properties.postfix!}'
-        });
-    })
+        function ${elementParamName!}_incrementDecrementValue(text, incrDecrValue){
+            console.log(text, incrDecrValue)
 
-        $('#decr_${elementParamName!}').on("click", function(e){
-            var elementId = "${elementParamName!}"; 
-            var element = document.getElementById(elementId);
-            var text = element.value;
-            var output = "";
-            let decrementVal = 1;
-            if ("${element.properties.decrementValue!}" !== "") {
-                decrementVal = parseFloat("${element.properties.decrementValue!}")
-            }
+            var sum = 0
             //If us, use . as decimal
             if ("${element.properties.style!}" === "us"){
+                //If text is empty, assume the original text's value as 0, and then, add/subtract by incrDecrValue
                 if (text === ""){
-                    let sum = (0 - decrementVal).toFixed("${element.properties.numOfDecimal!}");
-                    output += sum;
+                    sum = (0 + incrDecrValue).toFixed("${element.properties.numOfDecimal!}");
                 }
                 else{
+                    //The next few lines check if prefix and/or postfix is present, the reason for this is because
+                    //without catering the number (for example, in a situation, where the number is negative) for
+                    //the prefix, it can cause problem
+
+                    //If both prefix and prefix are present
                     if ("${element.properties.prefix!}" !== "" && "${element.properties.postfix!}" !== ""){
                         if(text.split(" ")[0].charAt(0) === '-') {
                             text = "-" + text.split(" ")[1];    
                         } else{
                             text = text.split(" ")[1];
                         }
-                    }else if ("${element.properties.prefix!}" !== ""){
+                    }
+                    //if only prefix is present
+                    else if ("${element.properties.prefix!}" !== ""){
                         if(text.split(" ")[0].charAt(0) === '-') {
                             text = "-" + text.split(" ")[1];    
                         } else{
@@ -187,24 +101,30 @@
                     }else if ("${element.properties.postfix!}" !== ""){
                         text = text.split(" ")[0];
                     }
-                    let sum = (parseFloat(text) - decrementVal).toFixed("${element.properties.numOfDecimal!}")
-                    output += sum;
+                    sum = (parseFloat(text) + incrDecrValue).toFixed("${element.properties.numOfDecimal!}")
                 }
             }
+            //If euro, use , as decimal
             else if ("${element.properties.style!}" === "euro"){
+                //If text is empty, assume the original text's value as 0, and then, add/subtract by incrDecrValue
                 if (text === ""){
-                    let sum = (0 - decrementVal).toFixed("${element.properties.numOfDecimal!}");
+                    sum = (0 + incrDecrValue).toFixed("${element.properties.numOfDecimal!}");
                     sum = sum.replace('.',',');
-                    output += sum;
-                }
-                else{
+                }else{
+                    //The next few lines check if prefix and/or postfix is present, the reason for this is because
+                    //without catering the number (for example, in a situation, where the number is negative) for
+                    //the prefix, it can cause problem
+
+                    //If both prefix and prefix are present
                     if ("${element.properties.prefix!}" !== "" && "${element.properties.postfix!}" !== ""){
                         if(text.split(" ")[0].charAt(0) === '-') {
                             text = "-" + text.split(" ")[1];    
                         } else{
                             text = text.split(" ")[1];
                         }
-                    }else if ("${element.properties.prefix!}" !== ""){
+                    }
+                    //if only prefix is present
+                    else if ("${element.properties.prefix!}" !== ""){
                         if(text.split(" ")[0].charAt(0) === '-') {
                             text = "-" + text.split(" ")[1];    
                         } else{
@@ -214,12 +134,67 @@
                         text = text.split(" ")[0];
                     }
                     text = text.replace(',','.');
-                    let sum = (parseFloat(text) - decrementVal).toFixed("${element.properties.numOfDecimal!}")
+                    sum = (parseFloat(text) + incrDecrValue).toFixed("${element.properties.numOfDecimal!}")
                     sum = sum.replace('.',',');
-                    output += sum;
                 }
             }
+            //Return the sum in string format to easily manipulate it
+            return "" + sum
+        }
+
+        $('#incr_${elementParamName!}').on("click", function(e){
+            var elementId = "${elementParamName!}"; 
+            var element = document.getElementById(elementId);
+            var text = element.value;
+            var output = "";
+            let incrementVal = 1;
+
+            if ("${element.properties.incrementValue!}" !== "") {
+                incrementVal = parseFloat("${element.properties.incrementValue!}")
+            }
+
+            output = ${elementParamName!}_incrementDecrementValue(text, incrementVal)
+
             var maxLength = "${element.properties.maxlength!}"
+        
+            if (maxLength === undefined || maxLength === "") {
+                element.value = output;
+                
+            } else { 
+                if (output.charAt(0) === '-') {
+                    if (output.length - parseInt("${element.properties.numOfDecimal!}")-2 <= maxLength) {
+                        element.value = output;
+                    }
+                }
+                else if (output.length - parseInt("${element.properties.numOfDecimal!}")-1 <= maxLength) {
+                    element.value = output;
+                }
+            }  
+
+            //Reformat back the new value, using the numberFormatting function
+            $('.textfield_${element.properties.elementUniqueKey!}').numberFormatting({
+                format : '${element.properties.style!}',
+                numOfDecimal : '${element.properties.numOfDecimal!}',
+                useThousandSeparator : '${element.properties.useThousandSeparator!}',
+                prefix : '${element.properties.prefix!}',
+                postfix : '${element.properties.postfix!}'
+            });
+        })
+
+        $('#decr_${elementParamName!}').on("click", function(e){
+            var elementId = "${elementParamName!}"; 
+            var element = document.getElementById(elementId);
+            var text = element.value;
+            var output = "";
+            let decrementVal = 1;
+            if ("${element.properties.decrementValue!}" !== "") {
+                decrementVal = parseFloat("-" + "${element.properties.decrementValue!}")
+            }
+            
+            output = ${elementParamName!}_incrementDecrementValue(text, decrementVal)
+
+            var maxLength = "${element.properties.maxlength!}"
+            
             if (maxLength === undefined || maxLength === "") {
                 element.value = output;
             } else {
@@ -233,6 +208,7 @@
                 }
             }  
 
+            //Reformat back the new value, using the numberFormatting function
             $('.textfield_${element.properties.elementUniqueKey!}').numberFormatting({
                 format : '${element.properties.style!}',
                 numOfDecimal : '${element.properties.numOfDecimal!}',
