@@ -471,7 +471,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             data.put("language", language);
             data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
             data.put("body_id", "offline");
-            data.put("body_classes", processer.getBodyClasses(rightToLeft, locale));
+            data.put("body_classes", processer.getBodyClasses(locale));
             data.put("base_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/");
             data.put("home_page_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/index");
             data.put("title", "{{TEMPLATE_TITLE}}");
