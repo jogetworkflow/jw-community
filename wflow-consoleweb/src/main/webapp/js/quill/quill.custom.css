@@ -11,3 +11,7 @@
     left:0px;
     right:0px;
 }
+body.rtl .ql-font .ql-picker-label,
+body.rtl .ql-header .ql-picker-label {
+    text-align: left;
+}
