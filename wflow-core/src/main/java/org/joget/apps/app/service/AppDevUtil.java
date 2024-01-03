@@ -1923,7 +1923,8 @@ public class AppDevUtil {
         if (appDef == null) {
             appDef = AppUtil.getCurrentAppDefinition();
         }
-        
+        AppDevUtil.dirSyncAppInBackground(appDef);
+
         Collection<String> plugins = new ArrayList<String>();
         if (!AppDevUtil.isGitDisabled()) {
             String baseDir = AppDevUtil.getAppDevBaseDirectory();
