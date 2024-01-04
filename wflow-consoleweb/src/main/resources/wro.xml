@@ -102,6 +102,7 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
+        <js>/js/priorityMenu.js</js>
     </group>
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
@@ -127,6 +128,7 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
+        <js>/js/priorityMenu.js</js>
     </group>
     <group name="xadmin.min">
         <css>/css/form.css</css>
@@ -171,6 +173,7 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
+        <js>/js/priorityMenu.js</js>
     </group> 
     <group name="quill">
         <css>/js/quill/quill.bubble.css</css>
