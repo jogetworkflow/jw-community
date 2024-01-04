@@ -234,10 +234,6 @@ body[builder-theme]#cbuilder:not(.datalist):not(.process) #element-select-name {
     float: right;
     left: 2px !important;
 }
-body[builder-theme]#cbuilder.datalist #element-select-name,
-body[builder-theme]#cbuilder.process #element-select-name{
-    left: -2px !important;
-}
 body[builder-theme]#cbuilder #top-panel .btn-group .btn.active-view {
     background-color: var(--theme-primary-color-1);
     border-color: var(--theme-active-color-1) !important;   

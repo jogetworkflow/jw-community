@@ -5319,11 +5319,19 @@ _CustomBuilder.Builder = {
         var right = offset.left + $(nameWrapper).width();
         var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
         if (right > frameRight) {
-            $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width) + "px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process')) {
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width + 2) + "px");
+            } else {
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width) + "px");
+            }
             $(nameWrapper).css("left", "unset");
         } else {
             $(nameWrapper).css("right", "unset");
-            $(nameWrapper).css("left", "-1px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process')) {
+                $(nameWrapper).css("left", "-2px");
+            } else {
+                $(nameWrapper).css("left", "-1px");
+            }
         }
         
         $(box).data("element", element);
