@@ -118,9 +118,10 @@ GovernanceUtil = {
         GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['suppressConfirm'])) {
             var pluginclass = $(item).closest("tr").attr("plugin-class");
+            var scroll = $("html").scrollTop();
             ConnectionManager.post(UI.base + "/web/governance/suppress", {
                 success : function(data) {
-                    GovernanceUtil.updateResult(data);
+                    GovernanceUtil.updateResult(data, scroll);
                     $.unblockUI();
                 }
             }, 
@@ -128,6 +129,8 @@ GovernanceUtil = {
                 pluginClass : pluginclass,
                 detail : $(item).find('.detail').html()
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
@@ -194,7 +197,7 @@ GovernanceUtil = {
         }
     },
 
-    updateResult : function(result) {
+    updateResult : function(result, scroll) {
         if (result !== null && result !== undefined && result !== "") {
             if (typeof result === 'string') {
                 result = JSON.decode(result);
@@ -267,6 +270,13 @@ GovernanceUtil = {
         });
 
         GovernanceUtil.renderSummaries();
+        
+        //to make sure the suppress action won't jump to page top
+        if (scroll) {
+            $('html').animate({
+                scrollTop: scroll
+            }, 1);
+        }
     },
 
     triggerNextRetrieveResult : function() {
