@@ -250,7 +250,7 @@ GovernanceUtil = {
                             $(li).addClass("suppressed");
                             $(li).append('<span class="btn-suppress btn">'+GovernanceUtil.msg["suppressed"]+'</span>');
                         } else {
-                            $(li).append('<a href="#" class="btn-suppress btn btn-warning btn-sm">'+GovernanceUtil.msg["suppress"]+'</a>');
+                            $(li).append('<a class="btn-suppress btn btn-warning btn-sm">'+GovernanceUtil.msg["suppress"]+'</a>');
                         }
                     }
 
