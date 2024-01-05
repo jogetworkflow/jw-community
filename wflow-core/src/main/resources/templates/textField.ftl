@@ -1,10 +1,10 @@
 <div class="form-cell" ${elementMetaData!}>
     <style>
-        #container {
+        #container_${elementParamName!} {
             position: relative;
         }
 
-        #text-container{
+        #text-container_${elementParamName!} {
             position: relative;
             width: 100%;
         }
@@ -63,13 +63,46 @@
     <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
         <div class="form-cell-value"><span>${valueLabel!?html}</span></div>
         <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="hidden" value="${value!?html}" />
+    <#elseif element.properties.style! != "" && element.properties.readonly! != 'true' && element.properties.readonlyLabel! != 'true'>
+            <div id="container_${elementParamName!}" 
+                <#if element.properties.size?has_content>
+                    <#if element.properties.size?number gte 14>
+                        style="width: ${element.properties.size!}%;"
+                    <#else>
+                        style="width: 14%;"
+                    </#if>
+                </#if>
+            >
+            <div id="text-container_${elementParamName!}" style="width: 100%;">
+                <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="text"
+                    value="${value!?html}" 
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9.,-]/g, '');"
+                    style="width:100%;"
+                    <#if element.properties.placeholder?has_content>placeholder="${element.properties.placeholder!}"
+                    <#else>
+                        placeholder='0'
+                    </#if> 
+                    <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> 
+                    <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+                <button type="button" id="incr_${elementParamName!}">
+                    <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-up-solid.svg">
+                </button>
+                <button type="button" id="decr_${elementParamName!}">
+                    <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-down-solid.svg">
+                </button>
+            </div>
+
+            <div id="indication">
+                Only numbers are allowed
+            </div>
+        </div>
     <#else>
         <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="text" placeholder="${element.properties.placeholder!?html}" <#if element.properties.size?has_content>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
     </#if>
 
     <script>
         function ${elementParamName!}_incrementDecrementValue(text, incrDecrValue){
-            console.log(text, incrDecrValue)
 
             var sum = 0
             //If us, use . as decimal
@@ -157,7 +190,7 @@
 
             var maxLength = "${element.properties.maxlength!}"
         
-            if (maxLength === undefined || maxLength === "") {
+            if (maxLength === undefined || maxLength === "" || isNaN(maxLength) === true) {
                 element.value = output;
                 
             } else { 
@@ -187,15 +220,18 @@
             var text = element.value;
             var output = "";
             let decrementVal = 1;
+
             if ("${element.properties.decrementValue!}" !== "") {
                 decrementVal = parseFloat("-" + "${element.properties.decrementValue!}")
+            }else {
+                decrementVal = parseFloat("-1")
             }
             
             output = ${elementParamName!}_incrementDecrementValue(text, decrementVal)
 
             var maxLength = "${element.properties.maxlength!}"
             
-            if (maxLength === undefined || maxLength === "") {
+            if (maxLength === undefined || maxLength === "" || isNaN(maxLength) === true) {
                 element.value = output;
             } else {
                 if (output.charAt(0) === '-') {
