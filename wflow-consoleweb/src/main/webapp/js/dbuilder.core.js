@@ -2292,6 +2292,21 @@ DatalistBuilder = {
      */
     saveBuilderProperties : function(container, properties) {
         var templateJson = "";
+
+        const renameStyleProperties = (conditionFunc)=> {
+            CustomBuilder.data.rowActions.forEach((rowAction) => {
+                Object.entries(rowAction.properties).forEach(([key, value]) => {
+                    // if property has "-style-", means that it is eg: link-style-... or header-style-...
+                    // put in new key and delete old key
+                    if (key.indexOf('-style-') !== -1) {
+                        const newKey = conditionFunc(key);
+                        rowAction.properties[newKey] = value;
+                        delete rowAction.properties[key];
+                    }
+                })
+            });
+        };
+
         if (CustomBuilder.data.template !== undefined && CustomBuilder.data.template !== null) {
             templateJson = JSON.encode(CustomBuilder.data.template);
             
@@ -2309,6 +2324,14 @@ DatalistBuilder = {
                                 name.indexOf("header") === 0
                                 ));
                     });
+                // if user wants to "keep styling", check if template is blank (Table Classic)
+                // then comment out the property, so it will not be parsed
+                } else if (properties.template.className !== "") {
+                    renameStyleProperties((key) => "_" + key);
+
+                // remove property comment if template is Table - Classic
+                } else if (properties.template.className === "" ) {
+                    renameStyleProperties((key) => key.substring(1));
                 }
             }
         }
