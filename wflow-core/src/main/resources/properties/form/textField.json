@@ -130,7 +130,7 @@
     },
     {
         name : 'incrementValue',
-        label : 'Increment value (use '.' as decimal point)',
+        label : '@@form.textField.incrementValue@@',
         type : 'textfield',
         regex_validation : '^[0-9]*[.,]?[0-9]*$',
         control_field : 'style',
@@ -139,7 +139,7 @@
     },
     {
         name : 'decrementValue',
-        label : 'Decrement value (use '.' as decimal point)',
+        label : '@@form.textField.decrementValue@@',
         type : 'textfield',
         regex_validation : '^[0-9]*[.,]?[0-9]*$',
         control_field : 'style',
