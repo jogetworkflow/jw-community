@@ -13,7 +13,10 @@
     margin-bottom: 0
 }
 #content li {
-    list-style:none;
+    list-style: none;
+}
+#content .richtexteditor li {
+    list-style: inherit;
 }
 a{
     text-decoration: none;
