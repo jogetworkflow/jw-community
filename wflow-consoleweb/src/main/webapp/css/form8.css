@@ -402,6 +402,9 @@ body.rtl .hasDatepicker + a + a{
     color: #f8d7da;
     right: 42px;
     top: 10px;
+    z-index: 1;
+}
+.datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
     z-index: 4;
 }
 .hasDatepicker + a + a:hover {
@@ -432,6 +435,23 @@ img.ui-datepicker-trigger {
 body input.no-manual-input{
     cursor: text;
     background-color: #fff;
+}
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;  
+}
+.datapicker-native.ui-screen-hidden.ios input{
+    width:100%;
+    -webkit-appearance: none;
+}
+.datapicker-native.ui-screen-hidden.ios.manual{
+    left:unset;
+    width: 25px;
 }
 
 /* subform */
@@ -1184,23 +1204,6 @@ body.rtl .handsontable .htCore tr td:last-child {
     .hasDatepicker + a + a{
         top: unset;
         bottom: 6px;
-    }
-    .datapicker-native.ui-screen-hidden.ios {
-        right: 15px;
-        top: unset;
-        bottom: 0px;
-        z-index: 2;
-        opacity: 0;
-        width: auto;
-        visibility: unset;  
-    }
-    .datapicker-native.ui-screen-hidden.ios input{
-        width:100%;
-        -webkit-appearance: none;
-    }
-    .datapicker-native.ui-screen-hidden.ios.manual{
-        left:unset;
-        width: 25px;
     }
 }
 @media screen and (max-width: 39.9375em) {

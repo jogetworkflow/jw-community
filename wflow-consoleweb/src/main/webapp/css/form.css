@@ -370,29 +370,29 @@ body input.no-manual-input{
     cursor: text;
     background-color: #fff;
 }
+.datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
+    z-index: 4;
+}
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;  
+}
+.datapicker-native.ui-screen-hidden.ios input{
+    width:100%;
+    -webkit-appearance: none;
+}
+.datapicker-native.ui-screen-hidden.ios.manual{
+    left:unset;
+    width: 25px;
+}
 
 .trigger:hover, .close-icon:hover{
     opacity: 0.8;
-}
-
-@media (max-width: 768px) {
-    .datapicker-native.ui-screen-hidden.ios {
-        right: 15px;
-        top: unset;
-        bottom: 0px;
-        z-index: 2;
-        opacity: 0;
-        width: auto;
-        visibility: unset;  
-    }
-    .datapicker-native.ui-screen-hidden.ios input{
-        width:100%;
-        -webkit-appearance: none;
-    }
-    .datapicker-native.ui-screen-hidden.ios.manual{
-        left:unset;
-        width: 25px;
-    }
 }
 
 /* File upload */
