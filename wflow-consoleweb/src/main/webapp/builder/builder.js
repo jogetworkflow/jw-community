@@ -531,6 +531,12 @@
         });
         CustomBuilder.updatePaletteFav();
         
+        CustomBuilder.overviewPath = null;
+        var params = UrlUtil.getUrlParams(window.location.search);
+        if (params !== undefined && params["overview_path"] !== undefined) {
+            CustomBuilder.overviewPath = params["overview_path"][0];
+        }
+        
         var builderCallback = function(){
             var jsonData = JSON.decode($("#cbuilder-json").val());
             $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(JSON.encode(jsonData));
@@ -1092,6 +1098,11 @@
         CustomBuilder.updatePasteIcons();
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["afterUpdate"], [CustomBuilder.data]);
+        
+        //if non default builder and addToUndo is false, it is after old CustomBuilder.loadJson
+        if ($("body").hasClass("default-builder") && addToUndo === false) {
+            CustomBuilder.handleOverviewPath();
+        }
     },
     
     /*
@@ -3548,6 +3559,23 @@
                 delete data[name];
             }
         }
+    },
+    
+    /**
+     *  Check and handle if there is overview path in the URL param for old design Custom Builder
+     */
+    handleOverviewPath: function() {
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            if (CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== "") {
+                CustomBuilder.callback(CustomBuilder.config.builder.callbacks["handleOverviewPath"], [CustomBuilder.overviewPath]);
+            } else {
+                //edit the path element
+                
+            }
+            
+            CustomBuilder.overviewPath = null;
+        }
     }
 };
 
@@ -3689,7 +3717,18 @@ _CustomBuilder.Builder = {
         
         var selectedELSelector = "";
         var selectedElIndex = 0;
-        if (self.selectedEl) {
+        
+        //find overview path element if overviewPath having value
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            if (CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== "") {
+                selectedELSelector = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"], [CustomBuilder.overviewPath]);
+            } else {
+                selectedELSelector = CustomBuilder.Builder.getOverviewPathElementSelector(CustomBuilder.overviewPath);
+            }
+            
+            CustomBuilder.overviewPath = null;
+        } else if (self.selectedEl) {
             if ($(self.selectedEl).is("[data-cbuilder-id]")) {
                 selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).data("cbuilder-id") +'"]';
             } else {
@@ -3742,6 +3781,81 @@ _CustomBuilder.Builder = {
         }
         
         $("#iframe-wrapper").show();
+    },
+    
+    getOverviewPathElementSelector : function(path) {
+        //check is setting page
+        var propertiesIndex = path.indexOf("properties.");
+        if (propertiesIndex === 0) {
+            setTimeout(function(){
+                $("#properties-btn").trigger("click");
+            }, 1);
+        } else {
+            return CustomBuilder.Builder.buildSelectorByPath(CustomBuilder.data, path);
+        }
+        
+        return "";
+    },
+    
+    /**
+     *  Utility method to get object by property
+     */
+    getObjectByProperty: function(obj, property, index) {
+        if (obj[property] !== undefined) {
+            if (index !== null) {
+                if (obj[property][index] !== undefined) {
+                    return obj[property][index];
+                }
+            } else {
+                return obj[property];
+            }
+        }
+        return null;
+    },
+    
+    /**
+     * Utility method to build selector based on overview path
+     */
+    buildSelectorByPath: function(obj, path) {
+        var selector = "";
+        if (obj !== null && obj !== undefined 
+                && path !== null && path !== undefined && path !== "") {
+            var splitpath = path.split(".");
+            var currentObj = obj;
+            
+            for (var i in splitpath) {
+                if (splitpath[i] == "propertise") {
+                    break;
+                }
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    console.log(splitpath[i]);
+                    currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
+                    console.log(currentObj);
+                    if (currentObj !== null) {
+                        if (currentObj['properties'] !== undefined && currentObj['properties']['id'] !== undefined) {
+                            selector += '[data-cbuilder-id="'+ currentObj['properties']['id'] +'"] ';
+                        } else if (currentObj['className'] !== undefined && currentObj['className'] !== "") {
+                            selector += '[data-cbuilder-classname="'+currentObj['className']+'"]:eq('+index+') ';
+                        }
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+        }
+        console.log(selector);
+        return selector;
     },
     
     /*

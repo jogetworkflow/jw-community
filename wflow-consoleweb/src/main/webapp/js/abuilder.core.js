@@ -504,25 +504,46 @@ AppBuilder = {
             var li = $('<li class="overview_data" data-tool="'+data[i].tool+'"></li>');
             var label = data[i].label;
             if (label === undefined || label === null || label === "") {
-                if (data[i].content.length < 30) {
+                if (data[i].content.length < 80) {
                     label = data[i].content;
                     data[i].content = "";
                 } else {
-                    label = data[i].content.substring(0, 30);
+                    var index = data[i].content.indexOf("\n"); //show only first line
+                    if (index !== -1) {
+                        label = data[i].content.substring(0, index);
+                    }
+                    if (label.length > 80) {
+                        label = label.substring(0, 80);
+                    }
                 }
             }
             li.append('<a class="path_link" href="'+url+'?overview_path='+encodeURIComponent(data[i].path)+'" target="_self">'+UI.escapeHTML(label)+'</a>');
             
             if (data[i].content !== undefined && data[i].content !== null && data[i].content !== "" && data[i].content !== label) {
-                li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content">'+UI.escapeHTML(data[i].content)+'</div></a>');
+                li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content" style="max-height:500px;">'+AppBuilder.prettyFormat(UI.escapeHTML(data[i].content))+'</div></a>');
             }
+            if (data[i].isError) {
+                li.addClass("error");
+            }
+            
             container.append(li);
         }
         
         container.append('<li class="overview_data no_record">No data found</li>');
     },
     
-    afterRenderOverview(tool) {
+    /**
+     * Convert space, newline & tab char to HTML
+     */
+    prettyFormat : function (content) {
+        content = content.replaceAll('\n', '<br/>');
+        content = content.replaceAll(' ', '&nbsp;');
+        content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;');
+        
+        return content;
+    },
+    
+    afterRenderOverview : function (tool) {
         $("#undefinedView").remove();
         
         $("body").addClass("overview_view");

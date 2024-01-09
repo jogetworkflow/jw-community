@@ -49,11 +49,24 @@ public class AppOverviewData extends HashMap {
      * @param content 
      */
     public void addItemData(String key, AppOverviewTool tool, String selector, String label, String content) {
+        addItemData(key, tool, selector, label, content, false);
+    }
+    
+    /**
+     * Add data to builder item
+     * @param key
+     * @param tool
+     * @param selector
+     * @param label
+     * @param content 
+     * @param isError 
+     */
+    public void addItemData(String key, AppOverviewTool tool, String selector, String label, String content, boolean isError) {
         BuilderItem item = getItem(key);
         if (item != null && tool != null 
                 && selector != null && !selector.isEmpty()
                 && content != null && !content.isEmpty()) {
-            item.getData().add(new Data(tool, selector, label, content));
+            item.getData().add(new Data(tool, selector, label, content, isError));
         }
     }
     
@@ -101,15 +114,17 @@ public class AppOverviewData extends HashMap {
         protected String path;
         protected String label;
         protected String content;
+        protected boolean isError = false;
         
         public Data(){
         }
         
-        public Data(AppOverviewTool tool, String path, String label, String content) {
+        public Data(AppOverviewTool tool, String path, String label, String content, boolean isError) {
             this.tool = tool.getClassName();
             this.path = path;
             this.label = label;
             this.content = content;
+            this.isError = isError;
         }
 
         public String getTool() {
@@ -142,6 +157,14 @@ public class AppOverviewData extends HashMap {
 
         public void setContent(String content) {
             this.content = content;
+        }
+
+        public boolean isIsError() {
+            return isError;
+        }
+
+        public void setIsError(boolean isError) {
+            this.isError = isError;
         }
     }
 }
