@@ -37,7 +37,8 @@
                     });
                 });
             </script>    
-        </c:if>    
+        </c:if>
+        <jsp:include page="archiveStatus.jsp" flush="true"/>  
             
         <div id="main-body-content-filter">
             <form>

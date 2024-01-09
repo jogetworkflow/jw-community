@@ -73,10 +73,12 @@ import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DistributedIdGenerator;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -89,6 +91,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
@@ -1849,7 +1852,9 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static boolean hasNonArchivedProcessData() {
         WorkflowAssignmentDao workflowAssignmentDao = (WorkflowAssignmentDao)AppUtil.getApplicationContext().getBean("workflowAssignmentDao");
-        return workflowAssignmentDao.hasNonHistoryCompletedProcess() || !isArchivedProcessDataModeEnabled();
+        SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+        
+        return (workflowAssignmentDao.hasNonHistoryCompletedProcess() && setupManager.getSettingValue(WorkflowManagerImpl.ARCHIVE_SETTING) == null) || !isArchivedProcessDataModeEnabled();
     }
     
     /**
@@ -1859,6 +1864,58 @@ public class AppUtil implements ApplicationContextAware {
         SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
         String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
         return "archive".equalsIgnoreCase(mode);
+    }
+    
+    /**
+     * Used to retrieve the archiving process status percentage
+     * negative value = paused
+     * 100 = completed or no migration running
+     */
+    public static double getArchivedProcessStatus() {
+        //not using setupManager due to the value is cached
+        SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+        Setting status = (result.isEmpty()) ? null : result.iterator().next();
+        
+        if (status != null) {
+            try {
+                JSONObject statusObj = new JSONObject(status.getValue());
+
+                //check the date to see if the archive migration thread is still running, assume it is stopped if no update for 15mins
+                if (statusObj.getString("state").equals("STARTED")) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    if ((new Date()).getTime() - sdf.parse(statusObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                        statusObj.put("state", "PAUSE");
+                        status.setValue(statusObj.toString());
+                        setupDao.saveOrUpdate(status);
+                    }
+                }
+                
+                double percentage = 0;
+                double total = statusObj.getDouble("total");
+                double completed = statusObj.getDouble("completed");
+                
+                if (total > completed) {
+                    percentage = completed/total * 100;
+                } else {
+                    percentage = 95;
+                }
+                
+                if (percentage == 0) {
+                    percentage = 1;
+                }
+                
+                if (statusObj.getString("state").equals("PAUSE")) {
+                    //make it negative value is the migration thread is not running
+                    percentage = percentage * -1;
+                }
+                
+                return percentage;
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, "");
+            }
+        }
+        return 100;
     }
     
     /**
