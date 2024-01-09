@@ -4347,6 +4347,7 @@ _CustomBuilder.Builder = {
      * Select an element in canvas
      */
     selectNode:  function(node, dragging) {
+        CustomBuilder.Builder.highlightEl = node;
         CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, true);
     },
     
