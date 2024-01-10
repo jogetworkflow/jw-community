@@ -20,7 +20,44 @@ DatalistBuilder = {
     availableFilters : {},
     availableFormatters : {},
     availableColumns : null,
-    template : "", 
+    template : "",
+    defaultTemplate : '<style>body{overflow: visible;min-width:fit-content;}.dataList{min-width: max-content;}</style>\
+                                        <table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
+                                            <thead>\
+                                                {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
+                                                    <tr>\
+                                                        {{column}}\
+                                                            <th>{{label||Sample Label}}<span class="overlay"></span></th>\
+                                                        {{column}}\
+                                                        <th class="gap"></th>\
+                                                        {{rowActions data-cbuilder-sort-horizontal data-cbuilder-style="[{\'class\' : \'.rowAction_body\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'.rowAction_header\', \'label\' : \'Header\'}, {\'prefix\' : \'link\', \'class\' : \'.rowAction_body > a\', \'label\' : \'Link\'}]"}}\
+                                                            <th>\
+                                                                {{rowAction}}\
+                                                                    <div class="rowAction rowAction_header" data-cbuilder-visible>{{header_label|| }}<span class="overlay"></span></div>\
+                                                                {{rowAction}}\
+                                                            </th>\
+                                                        {{rowActions}}\
+                                                    </tr>\
+                                                {{columns}}\
+                                            </thead>\
+                                            <tbody>\
+                                                {{rows data-cbuilder-sync}}\
+                                                    {{columns data-cbuilder-sync}}\
+                                                        <tr>\
+                                                            {{column}}\
+                                                                <td>{{body||Sample Value}}</td>\
+                                                            {{column}}\
+                                                            <td class="gap"></td>\
+                                                            {{rowActions data-cbuilder-sync}}\
+                                                                <td>\
+                                                                    {{rowAction}}<div class="rowAction rowAction_body">{{body}}</div>{{rowAction}}\
+                                                                </td>\
+                                                            {{rowActions}}\
+                                                        </tr>\
+                                                    {{columns}}\
+                                                {{rows}}\
+                                            </tbody>\
+                                        </table>',
 
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -716,43 +753,7 @@ DatalistBuilder = {
                 className : '',
                 properties : {}
             };
-            DatalistBuilder.template = '<style>body{overflow: visible;min-width:fit-content;}.dataList{min-width: max-content;}</style>\
-                                        <table class="xrounded_shadowed responsivetable defaulttemplate expandfirst">\
-                                            <thead>\
-                                                {{columns data-cbuilder-sort-horizontal data-cbuilder-prepend data-cbuilder-style="[{\'class\' : \'td\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'th\', \'label\' : \'Header\'}]"}}\
-                                                    <tr>\
-                                                        {{column}}\
-                                                            <th>{{label||Sample Label}}<span class="overlay"></span></th>\
-                                                        {{column}}\
-                                                        <th class="gap"></th>\
-                                                        {{rowActions data-cbuilder-sort-horizontal data-cbuilder-style="[{\'class\' : \'.rowAction_body\', \'label\' : \'Body\'}, {\'prefix\' : \'header\', \'class\' : \'.rowAction_header\', \'label\' : \'Header\'}, {\'prefix\' : \'link\', \'class\' : \'.rowAction_body > a\', \'label\' : \'Link\'}]"}}\
-                                                            <th>\
-                                                                {{rowAction}}\
-                                                                    <div class="rowAction rowAction_header" data-cbuilder-visible>{{header_label|| }}<span class="overlay"></span></div>\
-                                                                {{rowAction}}\
-                                                            </th>\
-                                                        {{rowActions}}\
-                                                    </tr>\
-                                                {{columns}}\
-                                            </thead>\
-                                            <tbody>\
-                                                {{rows data-cbuilder-sync}}\
-                                                    {{columns data-cbuilder-sync}}\
-                                                        <tr>\
-                                                            {{column}}\
-                                                                <td>{{body||Sample Value}}</td>\
-                                                            {{column}}\
-                                                            <td class="gap"></td>\
-                                                            {{rowActions data-cbuilder-sync}}\
-                                                                <td>\
-                                                                    {{rowAction}}<div class="rowAction rowAction_body">{{body}}</div>{{rowAction}}\
-                                                                </td>\
-                                                            {{rowActions}}\
-                                                        </tr>\
-                                                    {{columns}}\
-                                                {{rows}}\
-                                            </tbody>\
-                                        </table>';
+            DatalistBuilder.template = DatalistBuilder.defaultTemplate;
         }
     },
     
@@ -2292,19 +2293,102 @@ DatalistBuilder = {
      */
     saveBuilderProperties : function(container, properties) {
         var templateJson = "";
+        const deferreds = [];
 
-        const renameStyleProperties = (conditionFunc)=> {
-            CustomBuilder.data.rowActions.forEach((rowAction) => {
-                Object.entries(rowAction.properties).forEach(([key, value]) => {
-                    // if property has "-style-", means that it is eg: link-style-... or header-style-...
-                    // put in new key and delete old key
-                    if (key.indexOf('-style-') !== -1) {
-                        const newKey = conditionFunc(key);
-                        rowAction.properties[newKey] = value;
-                        delete rowAction.properties[key];
+        // Parses the template from retrieveTemplateHtml, then toggles the template styles on/off
+        const toggleStyleProperties = function (template, styleModifier) {
+            // parses template to find style prefixes (data-cbuilder-style), null if not found
+            const rowActionMatches = /{{rowActions.*data-cbuilder-style="(\[\{.*}])"}}/.exec(template);
+
+            // check if it has style prefix and JSON-ify, else null
+            const templateRowActionStyle = rowActionMatches
+                ? JSON.parse(rowActionMatches[1].replaceAll("'", '"'))
+                    .filter(function (item) { return item.prefix; })
+                : null;
+
+            // run for each item in CustomBuilder.data.rowActions[n].properties
+            CustomBuilder.data.rowActions.forEach(function (rowAction) {
+                Object.entries(rowAction.properties).forEach(function (prop) {
+                    const key = prop[0];
+                    const value = prop[1];
+
+                    // check if property begins with style- or prefix-style (regardless if commented)
+                    const modifyStyles = function(customRegex) {
+                        const customCheck = customRegex
+                            ? customRegex.test(key) && key.indexOf("-style-") !== -1
+                            : false;
+                        const isStyle = /^[-_]?style-/.test(key) || customCheck;
+                        if (isStyle) {
+                            // put in new key and delete old key
+                            const newKey = styleModifier(key);
+                            if (newKey) {
+                                rowAction.properties[newKey] = value;
+                                delete rowAction.properties[key];
+                            }
+                        }
+                    };
+
+                    // conditionally execute depending on templateRowActionStyle
+                    if (templateRowActionStyle) {
+                        templateRowActionStyle.forEach(function (style) {
+                            // check if it has style prefix and test key for prefix
+                            const prefixRegex = new RegExp("^[-_]?" + style.prefix);
+                            modifyStyles(prefixRegex);
+                        });
+                    } else {
+                        modifyStyles();
                     }
-                })
+                });
             });
+        };
+
+        // Fetches given rendering template, and toggles the styles using toggleStyleProperties
+        const retrieveTemplateHtml = function(data, toggleStyle, wait) {
+            // special case, if template is default (Table - Classic)
+            if (data.template.className === "") {
+                return toggleStyleProperties(DatalistBuilder.defaultTemplate, toggleStyle);
+            }
+            deferreds.push(wait);
+            CustomBuilder.cachedAjax({
+                type: "POST",
+                data: {
+                    "json": JSON.encode(data.template),
+                    "listId" : data.id
+                },
+                url: CustomBuilder.contextPath + '/web/dbuilder/getRenderingTemplate',
+                dataType : "text",
+                beforeSend: function (request) {
+                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    toggleStyleProperties(response, toggleStyle);
+                },
+                error: function() {
+                    window.alert("Template loading failed. Please try again.");
+                },
+                complete: function() {
+                    wait.resolve();
+                }
+            });
+        };
+
+        const toggleOnStyle = function(key) { if (key.indexOf("_") === 0) return key.substring(1); };
+        const toggleOffStyle = function(key) { if (key[0] !== "_") return "_" + key; };
+
+        // Toggle off old style, then toggle on new style
+        const toggleRowActionStyleProperties = function(oldProperties, newProperties) {
+            retrieveTemplateHtml(oldProperties, toggleOffStyle, $.Deferred());
+            retrieveTemplateHtml(newProperties, toggleOnStyle, $.Deferred());
+        };
+
+        const updateBuilder = function() {
+            CustomBuilder.data = $.extend(CustomBuilder.data, properties);
+            CustomBuilder.update();
+            if (templateJson !== JSON.encode(CustomBuilder.data.template)) {
+                CustomBuilder.loadJson(CustomBuilder.data, false);
+            } else {
+                DatalistBuilder.refreshTableLayout();
+            }
         };
 
         if (CustomBuilder.data.template !== undefined && CustomBuilder.data.template !== null) {
@@ -2325,23 +2409,19 @@ DatalistBuilder = {
                                     name.indexOf("list") === 0
                                 ));
                     });
-                // if user wants to "keep styling", check if template is blank (Table Classic)
-                // then comment out the property, so it will not be parsed
-                } else if (properties.template.className !== "") {
-                    renameStyleProperties((key) => "_" + key);
-
-                // remove property comment if template is Table - Classic
-                } else if (properties.template.className === "" ) {
-                    renameStyleProperties((key) => key.substring(1));
+                } else {
+                    toggleRowActionStyleProperties(CustomBuilder.data, properties);
                 }
             }
         }
-        CustomBuilder.data = $.extend(CustomBuilder.data, properties);
-        CustomBuilder.update();
-        if (templateJson !== JSON.encode(CustomBuilder.data.template)) {
-            CustomBuilder.loadJson(CustomBuilder.data, false);
+
+        // update builder depending if deferreds exist
+        if (deferreds.length > 0) {
+            $.when.apply($, deferreds).then(function() {
+                updateBuilder();
+            });
         } else {
-            DatalistBuilder.refreshTableLayout();
+            updateBuilder();
         }
     },
     
