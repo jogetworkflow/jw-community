@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -17,6 +20,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
+import org.joget.apps.datalist.model.DataListBinderDefault;
 import static org.joget.apps.datalist.model.DataListBinderDefault.USERVIEW_KEY_SYNTAX;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
@@ -228,15 +232,78 @@ public class DataListService {
      * @param filterQueryObjects
      * @return 
      */
-    public static DataListFilterQueryObject processFilterQueryObjects(DataListBinder binder, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
-        DataListFilterQueryObject obj = new DataListFilterQueryObject();
+    public static DataListFilterQueryObject processFilterQueryObjects(DataListBinderDefault binder, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
         String condition = "";
         Collection<String> values = new ArrayList<String>();
+
+        //Genarate the condition based on the filter properties in plugin
+        Object[] filters = (Object[]) properties.get("filters");
+        if (filters != null && filters.length > 0) {
+            Collection<DataListFilterQueryObject> conditionObjects = new ArrayList<DataListFilterQueryObject>();
+
+            for (Object o : filters) {
+                Map filterMap = (HashMap) o;
+                DataListFilterQueryObject obj = new DataListFilterQueryObject();
+                obj.setOperator(filterMap.get("join").toString());
+
+                String field = filterMap.get("field").toString();
+                field = binder.getColumnName(field);
+                String operator = filterMap.get("operator").toString();
+                String value = filterMap.get("value").toString();
+
+                String query = "";
+                String[] fvalues = null;
+
+                if ("IS TRUE".equals(operator) || "IS FALSE".equals(operator) || "IS NULL".equals(operator) || "IS NOT NULL".equals(operator)) {
+                    query = field + " " + operator;
+                    fvalues = new String[0];
+                } else if ("IN".equals(operator) || "NOT IN".equals(operator)) {
+                    List<String> queries = new ArrayList<String>();
+                    List<String> valuesList = new ArrayList<String>();
+                    fvalues = value.split(";");
+                    if (fvalues.length > 0) {
+                        for (String v : fvalues) {
+                            queries.add("("+field+" = ? or "+field+" like ? or "+field+" like ? or "+field+" like ?)");
+                            valuesList.add(v);
+                            valuesList.add(v + ";%");
+                            valuesList.add("%;" + v + ";%");
+                            valuesList.add("%;" + v);
+                        }
+                        if ("NOT IN".equals(operator)) {
+                            query += "NOT ";
+                        }
+                        query += "(" + StringUtils.join(queries, " or ") + ")";
+                        fvalues = valuesList.toArray(new String[0]);
+                    }
+                } else if ("=".equals(operator) || "<>".equals(operator)) {
+                    query = field + " " + operator + " ?";
+                    fvalues = new String[]{value};
+                }else if (!value.isEmpty()) {
+                    query = field + " " + operator + " ?";
+                    fvalues = new String[]{value};
+                }
+
+                if (!query.isEmpty()) {
+                    obj.setQuery(query);
+                    obj.setValues(fvalues);
+                    conditionObjects.add(obj);
+                }
+            }
+            
+            //processing the filter as single condition, then join it to `condition` & `filterValues` 
+            DataListFilterQueryObject conditionFilterObj = binder.processFilterQueryObjects(conditionObjects.toArray(new DataListFilterQueryObject[0]));
+            if (conditionFilterObj != null && !conditionFilterObj.getQuery().isEmpty()) {
+                condition = "(" + conditionFilterObj.getQuery() + ")";
+                if (conditionFilterObj.getValues() != null && conditionFilterObj.getValues().length > 0) {
+                    values.addAll(Arrays.asList(conditionFilterObj.getValues()));
+                }
+            }
+        }
+        
+        //This is the filter values from the list filter, loop to processing it
         if (filterQueryObjects != null && filterQueryObjects.length > 0) {
             for (int i = 0; i < filterQueryObjects.length; i++) {
-                if (condition.isEmpty()) {
-                    obj.setOperator(filterQueryObjects[i].getOperator());
-                } else {
+                if (!condition.isEmpty()) {
                     condition += " " + filterQueryObjects[i].getOperator() + " ";
                 }
                 condition += filterQueryObjects[i].getQuery();
@@ -250,6 +317,7 @@ public class DataListService {
             condition = " WHERE " + condition;
         }
         
+        //if extra condition property or the userview key has value, add it to condition as well
         String extraCondition = (properties.get("extraCondition") != null) ? properties.get("extraCondition").toString() : null;
         String keyName = null;
         if (properties.get(Userview.USERVIEW_KEY_NAME) != null) {
@@ -284,6 +352,8 @@ public class DataListService {
             condition += extraCondition;
         }
         
+        //return single filter query object after combined all query chunk
+        DataListFilterQueryObject obj = new DataListFilterQueryObject();
         obj.setQuery(condition);
         if (values.size() > 0){
             obj.setValues((String[]) values.toArray(new String[0]));
