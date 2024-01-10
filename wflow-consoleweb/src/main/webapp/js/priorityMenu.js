@@ -1,20 +1,20 @@
-//  global variables
-var navItems = [];
-var navItemWidth = [];
-var navItemVisible = [];
-var moreWidth = 0;
-var winWidth = 0;   
-
 $(document).ready(function () {
+    let navItems = [];
+    let navItemWidth = [];
+    let navItemVisible = [];
+    let moreWidth = 0;
+    let winWidth = 0;
+    const menuBreakpoint = 768;
+
     if ($("body").hasClass("horizontal_menu")){
-        if ($("body").hasClass("inline_menu") && $(window).outerWidth() >= 768){
+        if ($("body").hasClass("inline_menu") && $(window).outerWidth() >= menuBreakpoint){
             resizeMenuWidth();
         }
         winWidth = $(window).width();
         navItems = $('#category-container > li');
         // get width of each item, and list each as visible
         navItems.each(function () {
-            var itemWidth = $(this).outerWidth();
+            let itemWidth = $(this).outerWidth();
             navItemWidth.push(itemWidth);
             navItemVisible.push(true);
         });  
@@ -50,18 +50,19 @@ $(document).ready(function () {
         // delay is added so that menu loads in the items that fit properly
         setTimeout(formatNav, 250);
         // format navigation on page resize
-        var id;
+        let id;
         $(window).resize(function() {
-            var menuItemId = $(navItems[0]).prop('id');
-            if ($(window).outerWidth() >= 768){
-                var firstItemLength = $("#" + menuItemId).outerWidth();
+            let firstItemLength;
+            let menuItemId = $(navItems[0]).prop('id');
+            if ($(window).outerWidth() >= menuBreakpoint){
+                firstItemLength = $("#" + menuItemId).outerWidth();
             }
             //checks if the first menu item width is same as the one captured in navItemWIdth array 
             //if no, removes old content, remeasures and adds the lengths back in
-            if (firstItemLength != navItemWidth[0] && $(window).outerWidth() >= 768 ){;
+            if (firstItemLength != navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){;
                 navItemWidth.length = 0;
                 $('#category-container > li').each(function () {
-                    var itemWidth = $(this).outerWidth();
+                    let itemWidth = $(this).outerWidth();
                     navItemWidth.push(itemWidth);
                 }); 
             }
@@ -73,10 +74,10 @@ $(document).ready(function () {
             id = setTimeout(onResize, 500);
         });
         function onResize () {
-            if($(window).outerWidth() >= 768 && $("body").hasClass("inline_menu")){
+            if($(window).outerWidth() >= menuBreakpoint && $("body").hasClass("inline_menu")){
                 resizeMenuWidth();
             }else{
-                //to prevent the sidebar menu from being affected when less than 768px
+                //to prevent the sidebar menu from being affected when within menu breakpoint (less than 768px)
                 $("#sidebar").width("");
             }
             if(winWidth != $(window).width()){
@@ -88,9 +89,9 @@ $(document).ready(function () {
             }
         }
         function resizeMenuWidth (){
-            var headerlink = 0;
-            var headernav = 0;
-            var totalheaderlengths = 0;
+            let headerlink = 0;
+            let headernav = 0;
+            let totalheaderlengths = 0;
             
             headerlink = $('#header-link').outerWidth(true);
             headernav = $(".header-nav").width();
@@ -102,20 +103,20 @@ $(document).ready(function () {
         }
         function formatNav () {
             // initial variables
-            var room = true;
-            var count = 0;
-            var tempWidth = 0;
-            var totalWidth = 0; 
-            var containerWidth = $('#navigation').innerWidth();
-            var navPadding = 5; // for spacing around items
-            var numItems = navItems.length - 1;
+            let room = true;
+            let count = 0;
+            let tempWidth = 0;
+            let totalWidth = 0; 
+            let containerWidth = $('#navigation').innerWidth();
+            let navPadding = 5; // for spacing around items
+            let numItems = navItems.length - 1;
 
             // for each menu item
             navItems.each(function () {
                 // get width of menu with that item
                 tempWidth = totalWidth + navItemWidth[count] + navPadding;
-                // show all menu items if window is less than 768px
-                if ($(window).outerWidth() < 768){
+                // show all menu items if window is within menu breakpoint (less than 768px)
+                if ($(window).outerWidth() < menuBreakpoint){
                     $('#menu-more').before($('#moreSubMenu').children().first());
                     $('#menu-more').hide();
                 }
@@ -149,7 +150,7 @@ $(document).ready(function () {
                         $('#menu-more').show();
                     }
                     // move menu item to More dropdown
-                    var menuItemId = $(this).prop('id');
+                    let menuItemId = $(this).prop('id');
                     $("#" + menuItemId).appendTo($('#moreSubMenu'));
                     navItemVisible[count] = false;
                 }

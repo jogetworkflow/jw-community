@@ -1923,15 +1923,23 @@ body[builder-theme] #content main {
         display: none!important;
         position: absolute;
     }
+    body.horizontal_menu #sidebar ul#moreSubMenu.sub-menu {
+        top: 44px;
+    }
     body.horizontal_menu #sidebar ul#moreSubMenu li > ul > li{
-        display:block;
+        display: block;
     }
     #menu-more {
-        padding: 9px 0px 15px 5px;
-        cursor:pointer;
+        cursor: pointer;
+        color: var(--theme-sidebar-link, var(--theme-color2, #72777a));
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    i#menuMoreLink{
+        padding: 14px 15px 16px 10px;
     }
     ul#moreSubMenu.sub-menu > li > ul > li > a {
-        display:block;
+        display: block;
         padding: 10px 15px 10px 15px;
         color: var(--theme-sidebar-link, var(--theme-color2, #72777a));
         font-size: 13px;
@@ -1949,7 +1957,7 @@ body[builder-theme] #content main {
         flex: 0 0 auto;
     }
     body.horizontal_menu.inline_menu #header-info{
-        white-space:nowrap;
+        white-space: nowrap;
     }
     body.horizontal_menu.inline_menu .navbar .container-fluid{
         flex-wrap: nowrap;

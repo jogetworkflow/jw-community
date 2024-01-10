@@ -1779,15 +1779,14 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
         display: none!important;
         position: absolute;
     }
-    #menu-more {
-        cursor:pointer;
-        margin-top: 10px;
-        color:#ffffff;
+    body.horizontal_menu #sidebar li#menu-more{
+        cursor: pointer;
+        padding: 11px;
+        margin-top: 1px;
     }
     ul#moreSubMenu.sub-menu > li > ul > li > a {
-        display:block;
+        display: block;
         padding: 10px 15px 10px 15px;
-        color: rgba(255, 255, 255, 0.7);
         font-size: 13px;
     }
     ul#moreSubMenu.sub-menu > li:hover> ul{
@@ -1799,29 +1798,30 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     ul#moreSubMenu.sub-menu > li > ul{
         visibility: hidden;
     }
-    ul#moreSubMenu.sub-menu > li > a.dropdown:before{
-        right:15px;
+    body.horizontal_menu ul#moreSubMenu.sub-menu > li > a.dropdown:before {
+        right: 15px;
     }
     ul#moreSubMenu.sub-menu > li:hover{
-        position:relative;
+        position: relative;
     }
     ul#moreSubMenu.sub-menu{
         overflow: unset!important;
         max-height: none!important;
-        right:0;
+        right: 0;
+        top: 41px;
     }
     body.horizontal_menu #sidebar .nav {
-        flex-wrap:nowrap;
-        display:flex;
+        flex-wrap: nowrap;
+        display: flex;
     }
     #category-container > li {
         flex: 0 0 auto;
     }
     body.horizontal_menu #sidebar ul#moreSubMenu li > ul > li{
-        display:block;
+        display: block;
     }
     body.horizontal_menu .navbar {
-        white-space:nowrap;
+        white-space: nowrap;
     }
 }
 @media (min-width:768px) and (max-width:1279px) {
