@@ -1923,10 +1923,12 @@ public class AppDevUtil {
         if (appDef == null) {
             appDef = AppUtil.getCurrentAppDefinition();
         }
-        AppDevUtil.dirSyncAppInBackground(appDef);
 
         Collection<String> plugins = new ArrayList<String>();
         if (!AppDevUtil.isGitDisabled()) {
+            boolean requireUpdate = false;
+            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+            
             String baseDir = AppDevUtil.getAppDevBaseDirectory();
             String projectDirName = getAppGitDirectory(appDef);
             try {
@@ -1939,10 +1941,41 @@ public class AppDevUtil {
                     for (File file : files)
                     {
                         plugins.add(file.getName());
+                        
+                        //check is it exist in wflow app_plugins folder, if not then newer version exist
+                        if (!(new File(pluginManager.getBaseDirectory() + File.separator + file.getName()).exists())) {
+                            requireUpdate = true;
+                            break;
+                        }
                     }
                 }
             } catch (Exception e) {
                 LogUtil.error(AppDevUtil.class.getName(), e, "");
+            }
+            
+            //when the plugins in src are not matching with platform plugin
+            if (requireUpdate) {
+                try {
+                    //sync it and commit
+                    GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+                    AppDevUtil.syncAppPlugins(appDef);
+                    AppDevUtil.gitPullAndCommit(appDef, gitCommitHelper.getGit(), gitCommitHelper.getWorkingDir(), gitCommitHelper.getCommitMessage());
+                } catch (Exception e) {
+                    LogUtil.error(AppDevUtil.class.getName(), e, "");
+                }
+                
+                //retrieve new list
+                plugins.clear();
+                File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                String targetDirName = "plugins";
+                File targetDir = new File(projectDir, targetDirName);
+                if (targetDir.exists()) {
+                    File[] files = targetDir.listFiles();
+                    for (File file : files)
+                    {
+                        plugins.add(file.getName());
+                    }
+                }
             }
         } else {
             // combine all definitions into a string for matching
