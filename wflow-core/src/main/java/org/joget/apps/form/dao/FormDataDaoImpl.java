@@ -1150,7 +1150,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         // save into cache
         formSessionFactoryCache.remove(cacheKey);
-        formSessionFactoryCache.put(new net.sf.ehcache.Element(cacheKey, sf));
+        
+        net.sf.ehcache.Element cacheElement = new net.sf.ehcache.Element(cacheKey, sf);
+        if (actionType != ACTION_TYPE_LOAD) {
+            //it can stay as long as possible beause the cachekey contains field ids too. 
+            //when form design changed, cachekey changed too
+            cacheElement.setEternal(true);
+        }
+        formSessionFactoryCache.put(cacheElement);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " saved in cache");
         
         return sf;
@@ -1184,7 +1191,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @throws HibernateException 
      */
     protected void internalUpdateSchema(final SessionFactory sf, final ServiceRegistry sr, final Configuration configuration, final String entityName) throws HibernateException {
-        if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
+        if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) //for load
+                || entityName.startsWith(FORM_PREFIX_ENTITY)) { //for store
             boolean tableExist = false;
             
             //try to check the table is exist in database or not
