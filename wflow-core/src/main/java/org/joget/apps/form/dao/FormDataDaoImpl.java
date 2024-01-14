@@ -1220,7 +1220,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @throws HibernateException 
      */
     protected void internalUpdateSchema(final SessionFactory sf, final Metadata metadata, final String entityName) throws HibernateException {
-        if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
+        if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) //for load
+                || entityName.startsWith(FORM_PREFIX_ENTITY)) { //for store
             boolean tableExist = false;
             
             //try to check the table is exist in database or not
