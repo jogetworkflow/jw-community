@@ -20,7 +20,7 @@ GovernanceUtil = {
         });
 
         $('.deleteDataBtn').on("click", function(){
-            GovernanceUtil.cleanDate();
+            GovernanceUtil.cleanData();
         });
 
         $('.alertBtn').on("click", function(){
@@ -47,7 +47,7 @@ GovernanceUtil = {
             $(this).parent().toggleClass("show");
         });
         
-        $('.governance_report table').on("click", ".btn-suppress", function(){
+        $('.governance_report table').on("click", "a.btn-suppress", function(){
             GovernanceUtil.suppress($(this).closest("li"));
         });
         
@@ -96,6 +96,8 @@ GovernanceUtil = {
             {
                 pluginClass : pluginclass
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
@@ -111,6 +113,8 @@ GovernanceUtil = {
             {
                 pluginClass : pluginclass
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
     
@@ -134,15 +138,18 @@ GovernanceUtil = {
         }
     },
 
-    cleanDate: function() {
+    cleanData: function() {
         GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['deleteConfirm'])) {
             ConnectionManager.post(UI.base + "/web/governance/deleteData", {
                 success : function(data) {
                     alert(GovernanceUtil.msg['dataDeleted']);
+                    GovernanceUtil.updateResult("{}");
                     $.unblockUI();
                 }
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
