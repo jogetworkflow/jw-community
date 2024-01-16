@@ -23,6 +23,7 @@ public class GitCommitHelper {
     String commitMessage;
     boolean syncPlugins;
     boolean syncResources;
+    int mergeAttempts = 0;
 
     public GitCommitHelper() {
         commitMessage = "";
@@ -66,6 +67,14 @@ public class GitCommitHelper {
 
     public void setCommitMessage(String commitMessage) {
         this.commitMessage = commitMessage;
+    }
+
+    public int getMergeAttempts() {
+        return mergeAttempts;
+    }
+
+    public void incrementMergeAttempts() {
+        this.mergeAttempts++;
     }
 
     public void addCommitMessage(String newCommitMessage) {
