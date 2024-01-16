@@ -59,7 +59,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 import org.hibernate.proxy.HibernateProxy;
-import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.dao.*;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.DatalistDefinition;
@@ -69,7 +69,6 @@ import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
-import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
@@ -562,6 +561,7 @@ public class AppDevUtil {
                 gitAdd(git, path);
             }
             gitCommit(appDef, git, projectDir, "merged conflicts");
+            getGitCommitHelper(appDef).incrementMergeAttempts();
         }
     }
     
@@ -637,8 +637,21 @@ public class AppDevUtil {
                 .call();
         for (PushResult pr: pushResults) {
             for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
-                LogUtil.debug(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId() + " result: " + ref.getStatus());
-                if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
+                RemoteRefUpdate.Status refStatus = ref.getStatus();
+                LogUtil.debug(AppDevUtil.class.getName(), "Push to Git local repo " + appDef.getAppId() + " result: " + refStatus);
+                // Edge case:
+                // If previously attempted to merge, but conflict again, we get latest definitions from database
+                if (refStatus == RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD && gitCommitHelper.getMergeAttempts() > 1) {
+                    LogUtil.warn(AppDevUtil.class.getName(), "Fail to fast forward local commits.");
+                    // get latest json defs
+                    Map<String, String> defMap = getLatestJsonDefinitions(appDef);
+                    // save each file + commit
+                    defMap.forEach((path, json) -> {
+                        String commitMessage = path + ": resolve NO-FF - get from DB";
+                        fileSave(appDef, path, json, commitMessage);
+                    });
+                }
+                if (refStatus.toString().startsWith("REJECTED_")) {
                     try {
                         gitPullLocal(appDef, git, workingDir);
                     } catch (Exception e) {
@@ -655,7 +668,55 @@ public class AppDevUtil {
             LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout local repo " + appDef.getAppId() + " - " + e.getMessage());
         }
     }
-    
+
+    /**
+     * Gets the latest *Definition of the App
+     * @param appDef the AppDefinition
+     * @return A map containing key-value pairs of relative paths within the app directory and the respective definitions in JSON string
+     */
+    public static Map<String, String> getLatestJsonDefinitions(final AppDefinition appDef) {
+        final Map<String, String> defMap = new HashMap<>();
+        FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
+        DatalistDefinitionDao datalistDefinitionDao = (DatalistDefinitionDao) AppUtil.getApplicationContext().getBean("datalistDefinitionDao");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao) AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        BuilderDefinitionDao builderDefinitionDao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
+
+        for (FormDefinition def : formDefinitionDao.getFormDefinitionList(null, appDef, null, null, null, null)) {
+            String path = "forms" + File.separator + def.getId();
+            String json = formatJson(def.getJson());
+            defMap.put(path, json);
+        }
+        for (DatalistDefinition def : datalistDefinitionDao.getDatalistDefinitionList(null, appDef, null, null, null, null)) {
+            String path = "lists" + File.separator + def.getId();
+            String json = formatJson(def.getJson());
+            defMap.put(path, json);
+        }
+        for (UserviewDefinition def : userviewDefinitionDao.getUserviewDefinitionList(null, appDef, null, null, null, null)) {
+            String path = "userviews" + File.separator + def.getId();
+            String json = formatJson(def.getJson());
+            defMap.put(path, json);
+        }
+        for (BuilderDefinition def : builderDefinitionDao.getBuilderDefinitionList(null,null, appDef, null, null, null, null)) {
+            String path = "builder" + File.separator + def.getType() + File.separator + def.getId();
+            String json = formatJson(def.getJson());
+            defMap.put(path, json);
+        }
+
+        String appDefPath = "appDefinition.xml";
+        String appDefXml = getAppDefinitionXml(appDef);
+        defMap.put(appDefPath, appDefXml);
+
+        String appConfigPath = "appConfig.xml";
+        String appConfigXml = getAppConfigXml(appDef);
+        defMap.put(appConfigPath, appConfigXml);
+
+        String packageXpdlPath = "package.xpdl";
+        String packageXpdl = getPackageXpdl(appDef);
+        defMap.put(packageXpdlPath, packageXpdl);
+
+        return defMap;
+    }
+
     public static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException {
         String pullKeys = getPullUniqueKey();
         String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
