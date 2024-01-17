@@ -3648,6 +3648,7 @@ _CustomBuilder.Builder = {
         self.canvas = $("#builder_canvas");
         
         $("body").addClass("default-builder");
+        $("body").addClass(CustomBuilder.builderType);
         
         self._loadIframe(CustomBuilder.contextPath+'/builder/blank.jsp', callback);
         
@@ -5318,11 +5319,23 @@ _CustomBuilder.Builder = {
         var right = offset.left + $(nameWrapper).width();
         var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
         if (right > frameRight) {
-            $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width) + "px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark')
+                    && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process') && nameWrapper[0].id === 'element-select-name') {
+                // add 2 cause in light and dark mode theme the select border is 2px
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width + 2) + "px");
+            } else {
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width + 1) + "px");
+            }
             $(nameWrapper).css("left", "unset");
         } else {
             $(nameWrapper).css("right", "unset");
-            $(nameWrapper).css("left", "-1px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark')
+                    && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process') && nameWrapper[0].id === 'element-select-name') {
+                // add 2 cause in light and dark mode theme the select border is 2px
+                $(nameWrapper).css("left", "-2px");
+            } else {
+                $(nameWrapper).css("left", "-1px");
+            }
         }
         
         $(box).data("element", element);

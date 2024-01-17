@@ -1,7 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader bodyCssClass=" builder-popup"/>
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
 
+<c:if test="${not empty theme and theme ne 'classic'}">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+</c:if>
+
+<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="${theme}"/>
     <div id="main-body-header">
         <fmt:message key="console.app.message.import.po.label.title"/>
     </div>
@@ -23,7 +32,7 @@
             </div>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/importpo/submit?containerId=<c:out value="${containerId}" escapeXml="true" />&columnId=<c:out value="${columnId}" escapeXml="true" />&lang=<c:out value="${lang}" escapeXml="true" />" class="form blockui" enctype="multipart/form-data">
+        <form id="importPO" method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/importpo/submit?containerId=<c:out value="${containerId}" escapeXml="true" />&columnId=<c:out value="${columnId}" escapeXml="true" />&lang=<c:out value="${lang}" escapeXml="true" />" class="form blockui" enctype="multipart/form-data">
             <div class="form-row">
                 <label for="localeFile" class="upload"><fmt:message key="console.app.message.import.po.label.poFile"/></label>
                 <span class="form-input">

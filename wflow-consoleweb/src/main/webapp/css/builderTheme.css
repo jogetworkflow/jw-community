@@ -225,12 +225,12 @@ body[builder-theme] #cbuilder .drag-elements>.header .search .form-control {
 body[builder-theme]#cbuilder .components-list {
     scrollbar-gutter: stable;
 }
-body[builder-theme]#cbuilder #element-parent-name,
-body[builder-theme]#cbuilder #element-highlight-name{
+body[builder-theme]#cbuilder:not(.datalist):not(.process) #element-parent-name,
+body[builder-theme]#cbuilder:not(.datalist):not(.process) #element-highlight-name{
     float: right;
     left: 1px !important;
 }
-body[builder-theme]#cbuilder #element-select-name {
+body[builder-theme]#cbuilder:not(.datalist):not(.process) #element-select-name {
     float: right;
     left: 2px !important;
 }
@@ -875,6 +875,9 @@ body[builder-theme] textarea,
 body[builder-theme] select:not([class^=ui]){
     border-radius: 3px;
     color: var(--theme-input-color-1);
+}
+body[builder-theme] input[type=file]{
+    height: 35px;
 }
 body[builder-theme] input:not([type]):focus,
 body[builder-theme] input[type=text]:focus,
@@ -1712,17 +1715,17 @@ body[builder-theme] .flexigrid div.nBtn {
 body[builder-theme].popupBody{
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 }
-body[builder-theme].no-header .ui-dialog .ui-dialog-content {
+body[builder-theme] .ui-dialog .ui-dialog-content {
     padding: 0px !important;
     border-radius: 3px;
     border: 1px solid var(--theme-border-color-1);
 }
-body[builder-theme].no-header .ui-dialog{
+body[builder-theme] .ui-dialog{
     padding: 0px;
     border-radius: 3px !important;
     border: 0px;
 }
-body[builder-theme].popupBody .ui-dialog-titlebar {
+body[builder-theme] .ui-dialog-titlebar {
     position: absolute !important;
     top: 10px;
     right: 5px;
@@ -1731,12 +1734,13 @@ body[builder-theme].popupBody .ui-dialog-titlebar {
     border-bottom: 0;
 }
 body[builder-theme].popupBody .form-buttons,
-body[builder-theme].popupBody .property-editor-page-buttons, 
-body[builder-theme].popupBody .property-editor-page-button-panel{
+body[builder-theme].popupBody .property-editor-page-buttons,
+body[builder-theme].popupBody .property-editor-page-button-panel,
+body[builder-theme].popupBody .button-panel{
     position: fixed;
     bottom: -4px;
     margin-bottom: 0;
-    width: 100%;
+    width: 96%;
     right: 0;
     padding: 15px 30px;
     padding-bottom: 0;
@@ -1767,7 +1771,8 @@ body[builder-theme] .flexigrid div.pDiv input{
 }
 body[builder-theme].popupBody .form-buttons input[type='button'],
 body[builder-theme].popupBody .form-buttons input[type='submit'],
-body[builder-theme].popupBody .page-button-action input[type='button']{
+body[builder-theme].popupBody .page-button-action input[type='button'],
+body[builder-theme].popupBody #generate-btn{
     float: right;
     margin-left: 4px;
     height: 36px;
@@ -1971,8 +1976,13 @@ body[builder-theme] .boxy-wrapper .boxy-content {
 }
 body[builder-theme].popupBody #createForm .form-buttons,
 body[builder-theme].popupBody #createDatalist .form-buttons,
-body[builder-theme].popupBody #createUserview .form-buttons{
+body[builder-theme].popupBody #createUserview .form-buttons,
+body[builder-theme].popupBody #importPO .form-buttons{
     padding-bottom: 15px;
+}
+body[builder-theme].popupBody .pluginConfig .property-editor-page-button-panel,
+body[builder-theme].popupBody .button-panel{
+    padding-bottom: 5px;
 }
 body[builder-theme].popupBody #advancedView {
     padding: 5px 15px;
@@ -2081,7 +2091,49 @@ body[builder-theme] .form-row .form-input.withPrefix .prefix {
 body[builder-theme] .chosen-container-single .chosen-single-with-deselect span {
     color: var(--theme-input-color-1);
 }
-
+body[builder-theme] li.generator {
+    background: var(--theme-header-color-1);
+    border-radius: 5px;
+    padding: 15px 5px;
+    margin: 0 0 5px;
+    border: 1px solid var(--theme-border-color-1);
+    list-style: none;
+}
+body[builder-theme] li.generator .name {
+    padding: 0;
+    margin: 0 0 5px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--theme-label-color-1);
+    display: block;
+    text-transform: none;
+}
+body[builder-theme] .checkbox {
+    margin-left: 15px;
+    margin-top: 5px;
+    width: 4%;
+    color: var(--theme-label-color-1);
+}
+body[builder-theme] #generator_container div.list_content > a.advanced > i,
+body[builder-theme] #generator_container div.list_content > a.more > i{
+    margin-right: 5px;
+}
+body[builder-theme] .list_content {
+    width: 90%;
+}
+body[builder-theme] #generator_container .title{
+    text-transform: none;
+    font-weight: 600;
+    color: var(--theme-label-color-2);
+}
+body[builder-theme] .ui-dialog-titlebar-close:before, body[builder-theme] .ui-dialog-titlebar-close{
+    font-size: 20px;
+    position: absolute;
+    top: -5px;
+}
+body[builder-theme] #generator_container .list_content .more_info{
+    color: var(--theme-label-color-2);
+}
 /* Dark Theme CSS */
 body[builder-theme='dark'].popupBody{
     background-color: var(--theme-primary-color-1);
