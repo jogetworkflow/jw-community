@@ -55,7 +55,7 @@ public class GitRequestFilter implements Filter {
                         wum.setCurrentThreadUser(currentUser);
                         
                         Collection<AppDefinition> pushAppDefs = new LinkedHashSet<>();
-
+                        
                         for (String appId: gitCommitMap.keySet()) {
                             GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
 
@@ -63,6 +63,7 @@ public class GitRequestFilter implements Filter {
                                 try {
                                     Git git = gitCommitHelper.getGit();
                                     AppDefinition appDef = gitCommitHelper.getAppDefinition();
+                                    AppUtil.setCurrentAppDefinition(appDef); //to make sure log viewer able to capture the log to app log
 
                                     // perform commit
                                     String commitMessage = gitCommitHelper.getCommitMessage();
@@ -88,6 +89,7 @@ public class GitRequestFilter implements Filter {
                                     } catch (Exception e) {
                                         LogUtil.debug(GitRequestFilter.class.getName(), appId + " - " + e.getMessage());
                                     }
+                                    AppUtil.resetAppDefinition();
                                 }
                             }
                         }
@@ -104,6 +106,8 @@ public class GitRequestFilter implements Filter {
                                 String gitUsername = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME);
                                 String gitPassword = gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD);
                                 try {
+                                    AppUtil.setCurrentAppDefinition(appDef);
+                                    
                                     Git git = AppDevUtil.gitInit(projectDir);
                                     if (gitUri != null && !gitUri.trim().isEmpty()) {
 
@@ -116,6 +120,8 @@ public class GitRequestFilter implements Filter {
                                     }
                                 } catch (Exception ex) {
                                     LogUtil.error(getClass().getName(), ex, ex.getMessage());
+                                } finally {
+                                    AppUtil.resetAppDefinition();
                                 }
                             }
                         }
