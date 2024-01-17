@@ -261,7 +261,7 @@
                         </div>
                         <div class="element-properties-header">
                             <div class="search">
-                                <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.searchProperties"/>" type="text" data-cbuilder-action="propertySearch" data-cbuilder-on="keyup">
+                                <input class="form-control form-control-sm component-search" placeholder="<fmt:message key="cbuilder.search"/>" type="text" data-cbuilder-action="propertySearch" data-cbuilder-on="keyup">
                                 <button class="clear-backspace"  data-cbuilder-action="clearPropertySearch">
                                     <i class="la la-close"></i>
                                 </button>
