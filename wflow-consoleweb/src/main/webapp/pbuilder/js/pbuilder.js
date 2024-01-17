@@ -963,7 +963,7 @@ ProcessBuilder = {
                     delete transitionXpdlObj['Condition'];
                 }
 
-                if (transition.properties.type === 'CONDITION' && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
+                if (transition.properties.conditionHelper === "yes" && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
                     var conditionsJson = JSON.encode(transition.properties.conditions);
                     extendedAttribute.push({
                         "-Name": "PBUILDER_TRANSITION_CONDITIONS",
@@ -1273,12 +1273,20 @@ ProcessBuilder = {
                 
                 //deadline
                 if (activity.properties.deadlines !== undefined && activity.properties.deadlines.length > 0) {
+                    var actDeadline = ProcessBuilder.getArray(xpdlObj, 'Deadline');
                     var deadlines = [];
                     for (var d in activity.properties.deadlines) {
                         var deadline = activity.properties.deadlines[d];
-                        var dObj = {
-                            '-Execution' : deadline.execution
-                        };
+                        
+                        //use the existing obj to update is available
+                        var dObj;
+                        if (d < actDeadline.length) {
+                            dObj = actDeadline[d];
+                        } else {
+                            var dObj = {};
+                        }
+                        
+                        dObj['-Execution'] = deadline.execution;
                         
                         // determine condition
                         var deadlineCondition;
@@ -1429,7 +1437,9 @@ ProcessBuilder = {
                     ProcessBuilder.setArray(transitionRestriction['Split'], "TransitionRefs", "TransitionRef", transitionRefs);
                 } else {
                     activity.properties.split = "";
-                    delete transitionRestriction['Split'];
+                    if (transitionRestriction['Split'] !== undefined && transitionRestriction['Split']['-self-closing'] === undefined) {
+                        delete transitionRestriction['Split'];
+                    }
                 }
                 var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
                 if (targetConnSet.length > 1) {
@@ -1446,7 +1456,9 @@ ProcessBuilder = {
                     }
                 } else {
                     activity.properties.join = "";
-                    delete transitionRestriction['Join'];
+                    if (transitionRestriction['Join'] !== undefined && transitionRestriction['Join']['-self-closing'] === undefined) {
+                        delete transitionRestriction['Join'];
+                    }
                 }
                 if (activity.properties.split === "" && activity.properties.join === "") {
                     delete xpdlObj['TransitionRestrictions'];
