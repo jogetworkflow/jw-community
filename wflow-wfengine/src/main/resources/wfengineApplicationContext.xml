@@ -69,13 +69,16 @@
         </property>
     </bean> 
     
-    <!-- Hibernate SessionFactory added redundantly to create index -->
+    <!-- Hibernate SessionFactory added redundantly to create index & schema -->
     <bean id="workflowUpdateSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
                 <value>/org/joget/workflow/model/WorkflowProcessLink.hbm.xml</value>
+                <value>/org/joget/workflow/model/WorkflowProcessLinkHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessHistory.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
