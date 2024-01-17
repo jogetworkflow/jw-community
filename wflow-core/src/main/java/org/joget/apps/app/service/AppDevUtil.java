@@ -1470,12 +1470,16 @@ public class AppDevUtil {
                     pluginMatch = pluginClassName;
                 }
                 if (concatAppDef.contains(pluginMatch)) {
-                    // plugin used, copy
-                    String path = pluginManager.getOsgiPluginPath(pluginClassName);
-                    if (path != null) {
-                        File src = new File(path);
-                        File dest = new File(targetDir, src.getName());
-                        FileUtils.copyFile(src, dest);
+                    try {
+                        // plugin used, copy
+                        String path = pluginManager.getOsgiPluginPath(pluginClassName);
+                        if (path != null) {
+                            File src = new File(path);
+                            File dest = new File(targetDir, src.getName());
+                            FileUtils.copyFile(src, dest);
+                        }
+                    } catch (SecurityException e) {
+                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to copy " + pluginClassName + " due to cloud security manager");
                     }
                 }                
             }
