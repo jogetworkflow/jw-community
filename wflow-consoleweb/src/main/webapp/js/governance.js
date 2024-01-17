@@ -20,7 +20,7 @@ GovernanceUtil = {
         });
 
         $('.deleteDataBtn').on("click", function(){
-            GovernanceUtil.cleanDate();
+            GovernanceUtil.cleanData();
         });
 
         $('.alertBtn').on("click", function(){
@@ -47,7 +47,7 @@ GovernanceUtil = {
             $(this).parent().toggleClass("show");
         });
         
-        $('.governance_report table').on("click", ".btn-suppress", function(){
+        $('.governance_report table').on("click", "a.btn-suppress", function(){
             GovernanceUtil.suppress($(this).closest("li"));
         });
         
@@ -96,6 +96,8 @@ GovernanceUtil = {
             {
                 pluginClass : pluginclass
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
@@ -111,6 +113,8 @@ GovernanceUtil = {
             {
                 pluginClass : pluginclass
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
     
@@ -118,9 +122,10 @@ GovernanceUtil = {
         GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['suppressConfirm'])) {
             var pluginclass = $(item).closest("tr").attr("plugin-class");
+            var scroll = $("html").scrollTop();
             ConnectionManager.post(UI.base + "/web/governance/suppress", {
                 success : function(data) {
-                    GovernanceUtil.updateResult(data);
+                    GovernanceUtil.updateResult(data, scroll);
                     $.unblockUI();
                 }
             }, 
@@ -128,18 +133,23 @@ GovernanceUtil = {
                 pluginClass : pluginclass,
                 detail : $(item).find('.detail').html()
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
-    cleanDate: function() {
+    cleanData: function() {
         GovernanceUtil.blockUI();
         if (confirm(GovernanceUtil.msg['deleteConfirm'])) {
             ConnectionManager.post(UI.base + "/web/governance/deleteData", {
                 success : function(data) {
                     alert(GovernanceUtil.msg['dataDeleted']);
+                    GovernanceUtil.updateResult("{}");
                     $.unblockUI();
                 }
             });
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
         }
     },
 
@@ -194,7 +204,7 @@ GovernanceUtil = {
         }
     },
 
-    updateResult : function(result) {
+    updateResult : function(result, scroll) {
         if (result !== null && result !== undefined && result !== "") {
             if (typeof result === 'string') {
                 result = JSON.decode(result);
@@ -247,7 +257,7 @@ GovernanceUtil = {
                             $(li).addClass("suppressed");
                             $(li).append('<span class="btn-suppress btn">'+GovernanceUtil.msg["suppressed"]+'</span>');
                         } else {
-                            $(li).append('<a href="#" class="btn-suppress btn btn-warning btn-sm">'+GovernanceUtil.msg["suppress"]+'</a>');
+                            $(li).append('<a class="btn-suppress btn btn-warning btn-sm">'+GovernanceUtil.msg["suppress"]+'</a>');
                         }
                     }
 
@@ -267,6 +277,13 @@ GovernanceUtil = {
         });
 
         GovernanceUtil.renderSummaries();
+        
+        //to make sure the suppress action won't jump to page top
+        if (scroll) {
+            $('html').animate({
+                scrollTop: scroll
+            }, 1);
+        }
     },
 
     triggerNextRetrieveResult : function() {

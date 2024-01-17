@@ -11,7 +11,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
-import java.io.FileFilter;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -271,13 +270,9 @@ public class GovHealthCheckManager {
     public void cleanData() {
         File dir = new File(SetupManager.getBaseDirectory() + File.separator + "app_governance");
         if (dir.exists()) {
-            FileUtil.deleteContents(dir, new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return !file.getName().equalsIgnoreCase("latest.json");
-                }
-            });
+            FileUtil.deleteContents(dir);
         }
+        lastResultsJson.clear();
     }
     
     public final void initChecker() {
