@@ -6,6 +6,7 @@ import org.joget.workflow.model.*;
 import com.lutris.dods.builder.generator.query.DataObjectException;
 import com.lutris.dods.builder.generator.query.NonUniqueQueryException;
 import com.lutris.dods.builder.generator.query.QueryException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -64,6 +65,7 @@ import org.enhydra.shark.CustomWfActivityWrapper;
 import org.enhydra.shark.CustomWfProcessImpl;
 import org.enhydra.shark.CustomWfResourceImpl;
 import org.enhydra.shark.SharkUtil;
+import org.enhydra.shark.SharkUtilities;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
 import org.enhydra.shark.api.client.wfservice.PackageInvalid;
 import org.enhydra.shark.api.common.AssignmentFilterBuilder;
@@ -79,7 +81,6 @@ import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
-import org.joget.workflow.shark.model.SharkActivity;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.DeadlineThreadManager;
 import org.springframework.context.ApplicationContext;
@@ -4822,6 +4823,23 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (username == null) {
             username = getWorkflowUserManager().getCurrentUsername();
         }
+        
+        //check if the connection key counter in shark engine are larger than max integer, then reset it
+        try {
+            Field field = SharkUtilities.class.getDeclaredField("currentUsrId");
+            field.setAccessible(true);
+
+            int counter = (int) field.get(null);
+            
+            if (counter >= Integer.MAX_VALUE - 1) {
+                //reset the counter
+                field.set(null, 0);
+                LogUtil.info(WorkflowManagerImpl.class.getName(), "Reset shark engine connection counter due to reaching max integer");
+            }
+        } catch (Exception ex) {
+            LogUtil.error(WorkflowManagerImpl.class.getName(), ex, "Fail to reset connection. Please restart server.");
+        }
+        
         WMConnectInfo wmconnInfo = new WMConnectInfo(username, username, "WorkflowManager", "");
         sConn.connect(wmconnInfo);
         return sConn;
