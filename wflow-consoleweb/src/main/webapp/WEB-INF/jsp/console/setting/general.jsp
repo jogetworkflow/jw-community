@@ -350,7 +350,7 @@
                                 <option value="true" <c:if test="${'true' eq settingMap['deleteProcessOnCompletion']}"> selected</c:if>><fmt:message key="console.setting.general.label.deleteProcessOnCompletion"/></option>
                                 <option value="archive" <c:if test="${'archive' eq settingMap['deleteProcessOnCompletion']}"> selected</c:if>><fmt:message key="console.setting.general.label.archiveProcessOnCompletion"/></option>
                             </select>
-                            
+                            <jsp:include page="../monitor/archiveStatus.jsp" flush="true"/>
                             <div class="alert alert-warning" style="margin-top:10px;">
                                 <fmt:message key="console.monitoring.archiveProcessData.warn"/>
                             </div>

@@ -107,10 +107,10 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
 import org.joget.commons.util.PagingUtils;
-import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
@@ -131,6 +131,7 @@ import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
@@ -4649,16 +4650,7 @@ public class ConsoleWebController {
             
             //only run it after saved the value, workflow manager do check the value before run the migration
             if ("deleteProcessOnCompletion".equals(paramName) && "archive".equals(paramValue) && !"archive".equals(setting.getOriginalValue())) {
-                //run in new thread to prevent it keep the setting page waiting
-                Thread thread = new PluginThread(new Runnable() {
-                    
-                    @Override
-                    public void run() {
-                        workflowManager.internalMigrateProcessHistories();
-                    }
-                });
-                thread.setDaemon(true);
-                thread.start();
+                workflowManager.internalMigrateProcessHistories();
             }
         }
 
@@ -5273,6 +5265,25 @@ public class ConsoleWebController {
         workflowManager.internalMigrateProcessHistories();
         
         return "console/dialogClose";
+    }
+    
+    @RequestMapping(value = "/json/console/monitor/completed/process/archive/(*:mode)", method = RequestMethod.POST)
+    public void consoleMonitorArchivePauseResume(Writer writer, @RequestParam("mode") String mode) throws IOException {
+        if ("resume".equals(mode)) {
+            workflowManager.internalMigrateProcessHistories();
+        } else if ("pause".equals(mode)) {
+            //not using setupManager due to the value is cached
+            SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+            Setting status = (result.isEmpty()) ? null : result.iterator().next();
+           
+            if (status != null) {
+                status.setValue(status.getValue().replace("STARTED", "PAUSE"));
+                setupDao.saveOrUpdate(status);
+            }
+        }
+        
+        writer.write(Double.toString(AppUtil.getArchivedProcessStatus()));
     }
 
     @RequestMapping("/json/console/monitor/(*:mode)/list")
