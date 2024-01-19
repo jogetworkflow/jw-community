@@ -9,12 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -43,7 +38,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Component;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
@@ -976,7 +970,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 } else if (metadata != null && sf == null) {
                     //no change, use existing mapping file if session factory not exist
                     LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " get session factory");
-                    sf = getSessionFactory(entityName, cacheKey, actionType, metadata);
+                    sf = getSessionFactory(entityName, cacheKey, actionType, metadata, false);
                 }
             }
         }
@@ -1135,7 +1129,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         String cacheKey = getSessionFactoryCacheKey(entityName, tableName, rowSet);
         Metadata metadata = metadataSources.buildMetadata();
-        SessionFactory sf = getSessionFactory(entityName, cacheKey, actionType, metadata);
+        SessionFactory sf = getSessionFactory(entityName, cacheKey, actionType, metadata, true);
         
         return sf;
     }
@@ -1163,13 +1157,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return sf;
     }
     
-    protected SessionFactory getSessionFactory(final String entityName, String cacheKey, int actionType, final Metadata metadata) {
+    protected SessionFactory getSessionFactory(final String entityName, String cacheKey, int actionType, final Metadata metadata, boolean needUpdate) {
         SessionFactory sf = metadata.buildSessionFactory();
         sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory created");
 
-        // update schema
-        internalUpdateSchema(sf, metadata, entityName);
+        if (needUpdate) {
+            // update schema
+            internalUpdateSchema(sf, metadata, entityName);
+        }
         
         if (actionType == ACTION_TYPE_LOAD) {
             PersistentClass pc = metadata.getEntityBinding(entityName);
@@ -1190,9 +1186,6 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         sf.getStatistics().setStatisticsEnabled(true);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory created");
 
-        // update schema
-        internalUpdateSchema(sf, metadata, Arrays.toString(entities));
-        
         // save into cache
         joinFormSessionFactoryCache.remove(cacheKey);
         joinFormSessionFactoryCache.put(new net.sf.ehcache.Element(cacheKey, sf));
@@ -1209,52 +1202,48 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @throws HibernateException 
      */
     protected void internalUpdateSchema(final SessionFactory sf, final Metadata metadata, final String entityName) throws HibernateException {
-        // check table exists
-        final Set tableSet = new HashSet();
-        if (!entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
-            tableSet.add(entityName);
-        }
-        Session session = null;
-        try {
-            session = sf.openSession();
-            session.doWork(new Work() {
-                @Override
-                public void execute(Connection connection) throws SQLException {
-                    DatabaseMetaData dbm = connection.getMetaData();
-                    String tableEntityName = entityName;
-                    if (dbm.storesUpperCaseIdentifiers()) {
-                        tableEntityName = entityName.toUpperCase();
-                    } else if (dbm.storesLowerCaseIdentifiers()) {
-                        tableEntityName = entityName.toLowerCase();
-                    }
-                    ResultSet rs = dbm.getTables(null, null, tableEntityName, null);
-                    if (rs.next()) {
-                        tableSet.add(entityName);
-                    }
+        if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) //for load
+                || entityName.startsWith(FORM_PREFIX_ENTITY)) { //for store
+            boolean tableExist = false;
+            
+            //try to check the table is exist in database or not
+            Session session = null;
+            try {
+                session = sf.withOptions().autoJoinTransactions(true).openSession();
+                String query = "SELECT 1 FROM " + entityName + " e WHERE e.id = ?1";
+
+                Query q = session.createQuery(processQuery(query));
+
+                q.setFirstResult(0);
+                q.setMaxResults(1);
+                q.setParameter(1, "dummy_test_record_id");
+
+                q.list();
+                tableExist = true; //when no exception, the table is exist
+            } catch (Exception e) {
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "--- Form [" + entityName + "] schema not exist.");
+            } finally {
+                closeSession(session);
+            }
+            
+            if (!tableExist) {
+                // table does not exist, create it
+                try {
+                    new SchemaExport().create(EnumSet.of(TargetType.DATABASE), metadata);
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema created");
+                } catch (Exception e) {
+                    LogUtil.error(getClass().getName(), e, "Error creating schema");
                 }
-            });            
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-        if (tableSet.isEmpty()) {
-            // table does not exist, create it
-            try {
-                new SchemaExport().create(EnumSet.of(TargetType.DATABASE), metadata);
-                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema created");
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "Error creating schema");
-            }
-        } else {
-            // table exists, update it
-            try {
-                new SchemaUpdate().execute(EnumSet.of(TargetType.DATABASE), metadata);                
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "Error updating schema");
-            }
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema updated");                
-        }        
+            } else {
+                // table exists, update it
+                try {
+                    new SchemaUpdate().execute(EnumSet.of(TargetType.DATABASE), metadata);                
+                } catch (Exception e) {
+                    LogUtil.error(getClass().getName(), e, "Error updating schema");
+                }
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema updated");                
+            } 
+        }  
     }
     
     /**
@@ -1378,23 +1367,23 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     for (BuilderDefinition def : builderDefs) {
                         try {
                             JSONObject defObj = new JSONObject(def.getJson());
-                            JSONObject columnsObj = defObj.getJSONObject("columns");
-                            Iterator keys = columnsObj.keys();
-                            while (keys.hasNext()) {
-                                String c = (String) keys.next();
-                                if (!c.isEmpty()) {
-                                    String exist = checkDuplicateMap.get(c.toLowerCase());
-                                    if (exist != null && !exist.equals(c)) {
-                                        LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                        columnList.remove(exist);
-                                    }
-                                    checkDuplicateMap.put(c.toLowerCase(), c);
+                                JSONObject columnsObj = defObj.getJSONObject("columns");
+                                Iterator keys = columnsObj.keys();
+                                while (keys.hasNext()) {
+                                    String c = (String) keys.next();
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
 
-                                    if (pattern.matcher(c).matches()) {
-                                        columnList.add(c);
+                                        if (pattern.matcher(c).matches()) {
+                                            columnList.add(c);
+                                        }
                                     }
                                 }
-                            }
                         } catch (Exception e) {
                             LogUtil.error(FormDataDaoImpl.class.getName(), e, "fail to retrieve columns for custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]");
                         }
