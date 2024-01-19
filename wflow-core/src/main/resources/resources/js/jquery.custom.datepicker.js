@@ -12,7 +12,7 @@
                     
                     $(element).data("options", o);
 
-                    if (!/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                    if (!isIOS()) { 
                         o.beforeShow = function(input, inst) {
                             $(element).addClass("popup-picker");
                             setTimeout(function(){
@@ -105,7 +105,7 @@
                             $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");
                         }
 
-                        var clearBtn = $("<a class=\"close-icon\" type=\"reset\"></a>");
+                        var clearBtn = $("<a class=\"close-icon\"></a>");
                         $(element).next("a.trigger").after(clearBtn);
 
                         $(element).off("change.clearBtn");
@@ -229,19 +229,30 @@
         }
     });
     
+    //check is ipad device, ipad pro userAgent no more contains mobile keyword
+    function isIpadPro() {
+        return /Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 2;
+    };
+    
+    //check is IOS device
+    function isIOS() {
+        return /iPhone|iPod|iPad/.test(navigator.userAgent) || isIpadPro();
+    }
+    
     //check the browser is support the input type
     function isSupport(type) {
-        if (/Mobi/.test(navigator.userAgent)) { //only do it for mobile
+        if (/Mobi/.test(navigator.userAgent) || isIpadPro()) { //only do it for mobile
             var input = document.createElement('input');
             input.setAttribute('type',type);
 
             var notADateValue = 'not-a-date';
             input.setAttribute('value', notADateValue); 
 
-            return (input.value !== notADateValue);
+            return (input.value !== notADateValue) && //if date field is supported
+                    (isIOS() || (!isIOS() && input['showPicker'] !== undefined)); //is ios or showPicker is supported
         }
         return false;
-    };
+    }
     
     //create a hidden date input for the picker
     function createNativeField(element, type, o) {
@@ -249,7 +260,7 @@
             var attr = "";
             
             var cssClass = "";
-            if (/iPhone/.test(navigator.userAgent) || /iPad/.test(navigator.userAgent)) {
+            if (isIOS()) {
                 cssClass += "ios";
             }
             if (!$(element).is("[readonly]")) {
@@ -290,7 +301,7 @@
     function showDatepicker(element) {
         if ($(element).hasClass("use-native")) {
             var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker')[0];
-            if (!$(element).prev(".ui-screen-hidden").hasClass("ios")) {
+            if (!$(element).prev(".ui-screen-hidden").hasClass("ios")) { //only do it for non ios device, ios device is using css to place above field
                 try {
                     nativeField.showPicker(); 
                 } catch (e) {
