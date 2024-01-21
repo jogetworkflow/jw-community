@@ -82,7 +82,8 @@ AppBuilder = {
                     for (var i in response) {
                         $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+response[i].label+'" id="'+response[i].className.replace(/\./g, '_')+'" type="button" data-cbuilder-view="overview" data-toggle="button" aria-pressed="false" data-overview="'+response[i].className+'">'+response[i].icon+'</button>');
                     }
-                    
+                    $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="Overview Map" id="overviewmap-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="overviewMap" data-cbuilder-action="switchView" data-view-control><i class="las la-sitemap"></i> </button>');
+        
                     $("#builderToolbar [data-overview]").off("click").on("click", function(){
                         CustomBuilder.switchView();
                         AppBuilder.showOverview($(this).data("overview"));
@@ -93,10 +94,10 @@ AppBuilder = {
                         return false;
                     });
                 }
+        
+                callback();
             }
         });
-        
-        callback();
     },
     
     /*
@@ -443,7 +444,7 @@ AppBuilder = {
         });
     },
     
-    showOverview : function(tool) {
+    showOverview : function(tool, callback) {
         
         $("#undefinedView").html('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
         if ($(".item .overview_container").length === 0) {
@@ -474,12 +475,20 @@ AppBuilder = {
                             return false;
                         });
                         
-                        AppBuilder.afterRenderOverview(tool);
+                        if (callback) {
+                            callback();
+                        } else {
+                            AppBuilder.afterRenderOverview(tool);
+                        }
                     }
                 }
             });
         } else {
-            AppBuilder.afterRenderOverview(tool);
+            if (callback) {
+                callback();
+            } else {
+                AppBuilder.afterRenderOverview(tool);
+            }
         }
     },
     
@@ -581,11 +590,131 @@ AppBuilder = {
         }, 10);
     },
     
+    overviewMapViewInit : function(view) {
+        var header = $(view).prev();
+        $(header).html("");
+        $(header).append('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i>');
+        $(header).append('<div class="sticky-buttons" style="z-index:3;"><button id="mmCollapseAll" class="btn button btn-secondary">Collapse All</button> <button id="mmExpandAll" class="btn button btn-secondary">Expand All</button> <button id="mmScreenshot" class="btn button btn-secondary" style="display:none;">Screenshot</button></div>');
+        
+        $(view).html("");
+        $(view).attr("id", "jsmind_container");
+        $(view).css("overflow", "auto");
+        $(view).css("padding", "0px");
+        
+        loadCSS(CustomBuilder.contextPath + "/js/jsmind/jsmind.css");
+        loadScript(CustomBuilder.contextPath + "/js/jsmind/dom-to-image.min.js");
+        loadScript(CustomBuilder.contextPath + "/js/jsmind/jsmind.js", function(){
+            loadScript(CustomBuilder.contextPath + "/js/jsmind/jsmind.screenshot.js", function(){
+                //load overview data first before render the map
+                AppBuilder.showOverview("", function(){
+                    setTimeout(function(){
+                        $('.item .overview_container .overview_data').hide();
+                        var name = $("#builderElementName .title").text();
+
+                        var mind = {
+                            "meta":{
+                                "name":CustomBuilder.appId,
+                                "author":"joget.com",
+                                "version":"0.2"
+                            },
+                            "format":"node_tree",
+                            "data":{"id":CustomBuilder.appId,"topic":name,"children":[]}
+                        };
+                        var options = {                     
+                            container:'jsmind_container',   
+                            editable:true,                  
+                            theme:'clouds',
+                            view:{
+                                hmargin:200,
+                                vmargin:100,
+                                line_width:1
+                            },
+                            layout:{
+                                hspace:50
+                            }
+                        };
+                        var jm = new jsMind(options);
+                        jm.show(mind);
+
+                        //buttons handling
+                        $("#mmCollapseAll").off("click").on("click", function(){
+                            jm.collapse_all();
+                        });
+
+                        $("#mmExpandAll").off("click").on("click", function(){
+                            jm.expand_all();
+                        });
+
+                        //prepare for screenshot
+                        //Note: screenshot is an experimental feature of jsmind
+                        $("#mmScreenshot").off("click").on("click", function(){
+                            jm.shoot();
+                        });
+                        $("#mmScreenshot").show();
+
+                        //loop all builders
+                        $("#builders .builder-type").each(function(){
+                            if ($(this).find('.ul-wrapper ul li.item').length > 0) {
+                                var id = $(this).data("builder-type");
+                                var title = $(this).find('.builder-title').text();
+                                var color = $(this).find('.builder-title .icon').css("background-color");
+                                var icon = $(this).find('.builder-title .icon').html().replace('<i', '<i style="color:'+color+';"');
+
+                                jm.add_node(CustomBuilder.appId, id, icon + title, {}, "right");
+
+                                //loop items
+                                $(this).find('.ul-wrapper ul li.item').each(function(){
+                                    var item = $(this);
+                                    var itemId = id + "_" + $(this).data("id");
+                                    var itemTitle = $(this).find('.item-label').text();
+                                    var itemUrl = $(this).find('a.item-link').attr("href");
+
+                                    jm.add_node(id, itemId, icon + ' <a href="'+itemUrl+'">' + itemTitle + '</a>', {}, "right");
+
+                                    //loop overview plugins
+                                    $("#builderToolbar .advanced-tools [data-overview]").each(function(){
+                                        var overviewId = itemId + $(this).attr("id");
+                                        var overviewClass = $(this).data("overview");
+                                        var overviewTitle = $(this).html() + " " + $(this).attr("title");
+                                        if ($(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').length > 0) {
+                                            jm.add_node(itemId, overviewId, overviewTitle, {}, "right");
+
+                                            //loop overview data
+                                            var i = 0;
+                                            $(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').each(function(){
+                                                var dataLabel = $(this).find('a.path_link').text();
+                                                var dataUrl = $(this).find('a.path_link').attr("href");
+                                                
+                                                jm.add_node(overviewId, overviewId+"_"+i++, '<a href="'+dataUrl+'">' + UI.escapeHTML(dataLabel) + '</a>', {}, "right");
+                                            });
+
+                                            jm.collapse_node(overviewId);
+                                        }
+                                    });
+
+                                    jm.collapse_node(itemId);
+                                });
+
+                                jm.collapse_node(id);
+                            }
+                        });
+
+                        //disable further editing
+                        jm.disable_edit();
+
+                        //remove loading icon
+                        $(header).find(".dt-loading").remove();
+                    }, 200);    
+                });
+            });
+        });
+    },
+    
     /*
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
-        $(".advanced-tools [data-overview]").remove();
+        $(".advanced-tools [data-overview], #overviewmap-btn").remove();
         $("#unpublish-btn, #publish-btn, #versions-btn, #app-info").remove();
         $("#design-btn").attr("title", get_cbuilder_msg("cbuilder.design")).find("span").text(get_cbuilder_msg("cbuilder.design"));
         $("#export-btn").parent().remove();

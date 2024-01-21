@@ -65,7 +65,8 @@
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
                 "exportApp" : "AppBuilder.exportApp",
-                "overviewViewBeforeClosed" : "AppBuilder.overviewViewBeforeClosed"
+                "overviewViewBeforeClosed" : "AppBuilder.overviewViewBeforeClosed",
+                "overviewMapViewInit" : "AppBuilder.overviewMapViewInit"
             }
         },
         "advanced_tools" : {

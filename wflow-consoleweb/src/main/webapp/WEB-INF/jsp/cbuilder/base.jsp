@@ -15,7 +15,7 @@
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
         <c:set var="name" scope="request">
-            <c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
+            <span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
         </c:set>
         <c:set var="script" scope="request">
             ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}

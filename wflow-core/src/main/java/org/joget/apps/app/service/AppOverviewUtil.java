@@ -165,7 +165,7 @@ public class AppOverviewUtil {
             JSONObject nonPluginAttrs = null;
             
             //check is plugin or not, if it is plugin, scan it
-            if (obj.has("className") && obj.has("properties")) {
+            if (obj.has("className") && obj.has("properties") && !(obj.get("properties") instanceof String)) {
                 scan(key, path, obj.getString("className"), obj.getJSONObject("properties"), obj, data, tools);
             } else if (parent == null || (parent != null && !parent.has("className") && !parent.has("properties"))) {
                 nonPluginAttrs = new JSONObject();
