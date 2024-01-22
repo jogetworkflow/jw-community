@@ -827,7 +827,8 @@
                             </button> \
                         </div> \
                         <div class="drag-elements-sidepane sidepane"> \
-                            <div> \
+                            <div> \\n\
+                                <div class="ajaxLoader" style="display: none;"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div> \
                                 <ul class="components-list clearfix" data-type="leftpanel"> \
                                 </ul>\
                             </div> \
@@ -919,7 +920,12 @@
                 var categoryId = CustomBuilder.createPaletteCategory(category, tab);
                 var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
                 var eid = categoryId+"_"+className.replace(/\./g, "_");
-                var li = $('<li class="'+licss+'"><div id="'+eid+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a>'+UI.escapeHTML(label)+'</a></div><i class="lar la-star"></i></li>');
+                if(css === "marketplace-link"){
+                    //render seamless marketplace link
+                    var li = $('<a class="marketplaceLink ' + licss + '" style="order: 2;position: relative;"><div id="' + eid + '" class="' + css + '" onclick="CustomBuilder.Builder.loadSeamlessMarketplace(\'' + className + '\')">' + UI.escapeHTML(label) + '</div></a>');
+                } else {
+                    var li = $('<li class="' + licss + '"><div id="' + eid + '" element-class="' + className + '" class="builder-palette-element ' + css + '"> <a>' + UI.escapeHTML(label) + '</a></div><i class="lar la-star"></i></li>');
+                }
                 $(li).find('.builder-palette-element').prepend($(iconObj).clone());
                 $(container).append(li);
             }
@@ -3320,7 +3326,8 @@
                 }
             }
         }
-        
+        //add marketplace link in palette when builder init
+        CustomBuilder.Builder.initMarketplacePalette();
         setTimeout(function(){
             CustomBuilder.reloadBuilderMenu();
         }, 100); //delay the loading to prevent it block the builder ajax call
@@ -3360,6 +3367,9 @@
         container.after('<span class="seperator"></span><ul class="app_tools"></ul>');
         
         var appTools = $("#builder-menu > ul.app_tools");
+        if ($('body').hasClass('default-builder')){
+            appTools.append('<li><a title="Get add-ons" id="marketplace-btn" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()" data-cbuilder-view="marketplace"><i class="las la-plus"></i></a></li>');
+        }
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.notes')+'" id="appDesc-btn" data-cbuilder-view="appDesc" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/note" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-sticky-note"></i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.envVariable')+'" id="variables-btn" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
@@ -7182,9 +7192,170 @@ _CustomBuilder.Builder = {
                 $("#paste-element-btn").removeClass("disabled");
             }
         }
+    },
+    
+    /*
+    * initMarketplace Palette and add link based on builder type
+    */
+    initMarketplacePalette: function () {
+        if (CustomBuilder.builderType === "form") {
+            if ($('li.header.clearfix[data-section="components-Marketplace"]').length < 0) {
+                CustomBuilder.createPaletteCategory("Marketplace", "components");
+            }
+            CustomBuilder.initPaletteElement("Marketplace", "Form Element", get_cbuilder_msg("cbuilder.seamless.marketplace.more.form.element"), "", "", "", true, "marketplace-link", "", "");
+        } else if (CustomBuilder.builderType === "datalist") {
+            CustomBuilder.initPaletteElement(get_cbuilder_msg("dbuilder.type.actions"), "Datalist Action", get_cbuilder_msg("cbuilder.seamless.marketplace.more.list.element"), "", "", "", true, "marketplace-link", "", "");
+        } else if (CustomBuilder.builderType === "userview") {
+            if ($('li.header.clearfix[data-section="components-Marketplace"]').length < 0) {
+                CustomBuilder.createPaletteCategory("Marketplace", "components");
+            }
+            CustomBuilder.initPaletteElement("Marketplace", "Userview Menu", get_cbuilder_msg("cbuilder.seamless.marketplace.more.userview.element"), "", "", "", true, "marketplace-link", "", "");
+        }
+    },
+    
+    //call to open seamless marketplace
+    loadSeamlessMarketplace : function (type) {
+        var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/marketplace?type=' + CustomBuilder.builderType + "&pluginType=" + type;
+        JPopup.show("navCreateNewDialog", url, {}, "");
+    },
+    
+    //when link onclick get the plugin category and load it on seamless marketplace
+    handleChosenContainerClick : function () {
+        var optionElement = $(this).closest(".property-input").find("option:contains('" + $(this).text() + "')");
+        CustomBuilder.Builder.loadSeamlessMarketplace(optionElement.val());
+    },
+    
+    //check to reload palette or properties
+    reloadPaletteOrProperties: function (pluginCategory) {
+        var self = CustomBuilder.Builder;
+        var reload = self.removePropertiesCache(pluginCategory);
+
+        if (reload) {
+            //reload properties 
+            $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
+            self._showPropertiesPanel(self.selectedEl, self.selectedElData, self.component);
+        } else {
+            $(".drag-elements-sidepane.sidepane .ajaxLoader").show();
+            //reload palette 
+            if (CustomBuilder.builderType === 'form' || CustomBuilder.builderType === 'userview') {
+                var url = CustomBuilder.contextPath + '/web/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/' + CustomBuilder.builderType + '/palette/' + CustomBuilder.id;
+                CustomBuilder.Builder.reloadPalette(url);
+            } else if (CustomBuilder.builderType === 'datalist') {
+                //use back existing script to reload palette
+                var deferreds = [];
+                DatalistBuilder.initActionList(deferreds);
+            }
+            $(".drag-elements-sidepane.sidepane .ajaxLoader").hide();
+        }
+    },
+    
+    // Reload palette 
+    reloadPalette: function (url) {
+        // Make a GET rqeust to get reloaded palette data
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            data.success.elements.forEach(element => {
+                var {
+                    category,
+                    className,
+                    i18nLabel,
+                    icon,
+                    defaultPropertyValues,
+                    propertyOptions,
+                    template,
+                    developer,
+                    hidden,
+                    pwaValidationType,
+                    type
+                } = element;
+                //Check if the element already exists, then don't render it.
+                if (CustomBuilder.paletteElements[className] === undefined) {
+                    if (CustomBuilder.builderType === 'form') {
+                        var metadata = {
+                            builderTemplate: {
+                                dragHtml: "<div class=\"form-cell\">" + template + "</div>"
+                            },
+                            developer: developer
+                        };
+                        CustomBuilder.initPaletteElement(category, className, i18nLabel, icon, JSON.parse(propertyOptions), defaultPropertyValues, true, "", metadata, "");
+                    } else if (CustomBuilder.builderType === 'userview') {
+                        var metadata = {
+                            builderTemplate: JSON.parse(template),
+                            developer: developer,
+                            pwaValidation: pwaValidationType,
+                            type: type
+                        };
+
+                        if (type !== "menu") {
+                            category = get_cbuilder_msg("ubuilder.pageComponents");
+                        } else {
+                            category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + category;
+                        }
+                        CustomBuilder.initPaletteElement(category, className, i18nLabel, icon, JSON.parse(propertyOptions), defaultPropertyValues, !hidden, "", metadata);
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    },
+    
+    //user plugin categories to find the classname and remove it from the cache
+    //this part not completed yet wil need to find a better for this
+    removePropertiesCache: function (pluginName) {
+        var reloadProperties = false;
+        const nameToPluginClass = {
+            "Form Permission": "org.joget.apps.form.model.FormPermission",
+            "Form Validator": [
+                "org.joget.apps.form.model.FormValidator",
+                "org.joget.apps.form.model.FormMultiRowValidator"
+            ],
+            "Form Binder": [
+                "org.joget.apps.form.model.FormBinder",
+                "org.joget.apps.form.model.FormLoadElementBinder",
+                "org.joget.apps.form.model.FormStoreElementBinder",
+                "org.joget.apps.form.model.FormLoadMultiRowElementBinder",
+                "org.joget.apps.form.model.FormStoreMultiRowElementBinder"
+            ],
+            "Form Options Binder": "org.joget.apps.form.model.FormLoadOptionsBinder",
+            "Datalist Filter": "org.joget.apps.datalist.model.DataListFilterType",
+            "Datalist Formatter": "org.joget.apps.datalist.model.DataListColumnFormat",
+            "Datalist Binder": "org.joget.apps.datalist.model.DataListBinder",
+            "Userview Theme": "org.joget.apps.userview.model.UserviewTheme",
+            "Process Participant": "org.joget.workflow.model.ParticipantPlugin",
+            "Process Tool": "org.joget.plugin.base.ApplicationPlugin"
+        };
+    
+        const pluginClass = nameToPluginClass[pluginName];
+        if (pluginClass) {
+            reloadProperties = true;
+            const ajaxUrl = "/jw/web/property/json/getElements?classname=";
+            if ((pluginName === "Form Binder"|| pluginName === "Form Validator") && Array.isArray(pluginClass)) {
+                pluginClass.forEach((className) => {
+                    delete parent.PropertyEditor.Util.cachedAjaxCalls[ajaxUrl + className];
+                });
+            } else {
+                delete parent.PropertyEditor.Util.cachedAjaxCalls[ajaxUrl + pluginClass];
+            }
+        }
+        return reloadProperties;
     }
 }
 
 CustomBuilder = $.extend(true, {}, _CustomBuilder);
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+$(document).on('click', '.property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result', CustomBuilder.Builder.handleChosenContainerClick);
+$(document).on('click', '.property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result', CustomBuilder.Builder.handleChosenContainerClick);

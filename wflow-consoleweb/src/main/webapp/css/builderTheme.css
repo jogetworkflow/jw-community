@@ -1299,7 +1299,8 @@ body[builder-theme] .property-description {
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background{
     border-right-color: rgba(0, 0, 0, 0.85);
 }
-body[builder-theme] .property-editor-container .loaderIcon {
+body[builder-theme] .property-editor-container .loaderIcon,
+body[builder-theme] .drag-elements-sidepane .loaderIcon{
     color: #91caff;
 }
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-border{
