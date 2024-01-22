@@ -2577,3 +2577,19 @@ body.right-panel-mode-window #right-panel-window-resize  {
     margin-top: 150px;
     position: fixed;
 }
+.marketplace-link{
+    color: var(--blue);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 8px 0px;
+    font-size: 12px;
+}
+a.marketplaceLink {
+    position: absolute !important;
+    bottom: 0px;
+    width: 100%;
+}
+.drag-elements-sidepane.sidepane li:has(a.marketplaceLink){
+    padding-bottom: 30px;
+}

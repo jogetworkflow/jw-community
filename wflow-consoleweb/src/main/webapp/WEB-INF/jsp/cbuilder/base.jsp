@@ -215,6 +215,7 @@
                                     </div>
                                     <div class="drag-elements-sidepane sidepane">
                                         <div>
+                                            <div class="ajaxLoader" style="display: none;"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div>
                                             <ul class="components-list clearfix" data-type="leftpanel">
                                             </ul>
                                         </div>

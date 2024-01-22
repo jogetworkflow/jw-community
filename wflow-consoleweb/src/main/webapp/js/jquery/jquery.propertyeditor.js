@@ -9064,10 +9064,15 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if (this.properties.options !== undefined && this.properties.options !== null) {
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
+                var disabled = "";
                 if (valueString === option.value) {
                     selected = " selected";
                 }
-                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
+                }
+                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
@@ -9108,8 +9113,13 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
                 var cssClass = "";
+                var disabled = "";
                 if (value === option.value) {
                     selected = " selected";
+                }
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
                 }
                 if (option.developer_mode !== undefined && option.developer_mode !== "") {
                     var temp = option.developer_mode.split(";");
@@ -9118,7 +9128,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     }
                     cssClass = 'class="'+cssClass+'"';
                 }
-                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
             $("#" + this.id).html(html);
             $("#" + this.id).trigger("change");
@@ -9599,10 +9609,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         if (!((typeof thisObj.properties.options) === "undefined") && thisObj.properties.options !== null) {
             $.each(thisObj.properties.options, function(i, option) {
                 var selected = "";
+                var disabled = "";
                 if (valueString === option.value) {
                     selected = " selected";
                 }
-                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
+                }
+                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
@@ -9694,8 +9709,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 $.each(thisObj.properties.options, function(i, option) {
                     var selected = "";
                     var cssClass = "";
+                    var disabled = "";
                     if (value === option.value) {
                         selected = " selected";
+                    }
+                    //check if is marketplace then set disabled for the seamless marketplace option
+                    if (option.marketplace === 'true') {
+                        disabled = " disabled";
                     }
                     if (option.developer_mode !== undefined && option.developer_mode !== "") {
                         var temp = option.developer_mode.split(";");
@@ -9704,7 +9724,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                         }
                         cssClass = 'class="'+cssClass+'"';
                     }
-                    html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                    html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled +'>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 $(this).html(html);
                 $(this).trigger("change");
