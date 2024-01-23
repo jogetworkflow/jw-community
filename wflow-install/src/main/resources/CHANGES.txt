@@ -3,6 +3,13 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.43
+=================
+3734ebb46 Fixed: wflow-wfengine - Process - Fail to connection Shark Engine when total connections reach max integer number (> 2B). @7.0-SNAPSHOT
+5af9d547c Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.85. @7.0-SNAPSHOT
+342d40e0a Fixed: wflow-core - Form Data - Performance issue in Oracle & MSSQL db. T3585 @7.0-SNAPSHOT
+5da9fbd26 Fixed: wflow-core - List - Regression of c142a329. T3609 @7.0-SNAPSHOT
+
 CHANGES IN 7.0.42
 =================
 639b589bf Fixed: wflow-core - List Inbox - Regression of 1ba2fe28. Not working when using form binder. @7.0-SNAPSHOT
