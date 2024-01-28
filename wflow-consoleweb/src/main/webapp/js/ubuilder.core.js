@@ -643,6 +643,38 @@ UserviewBuilder = {
      * Load and render data, called from CustomBuilder.loadJson
      */
     load: function (data) {
+        
+        //handle overview path in edit page components
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined 
+                && CustomBuilder.overviewPath !== "" && CustomBuilder.overviewPath.indexOf(".referencePage.") !== -1) {
+            UserviewBuilder.mode = "page";
+            
+            //get menu data from path
+            var menuPath = CustomBuilder.overviewPath.substring(0, CustomBuilder.overviewPath.indexOf(".referencePage."));
+            var splitpath = menuPath.split(".");
+            UserviewBuilder.selectedMenu = CustomBuilder.data;
+            for (var i in splitpath) {
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    UserviewBuilder.selectedMenu = CustomBuilder.Builder.getObjectByProperty(UserviewBuilder.selectedMenu, property, index);
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+            
+            CustomBuilder.overviewPath = CustomBuilder.overviewPath.substring(CustomBuilder.overviewPath.indexOf(".referencePage.") + 15);
+            console.log(CustomBuilder.overviewPath);
+        }
+        
+        
         $("body").removeClass("page-component-editor");
         if (UserviewBuilder.mode === "page") {
             if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {

@@ -3722,9 +3722,9 @@ _CustomBuilder.Builder = {
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
             if (CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== undefined &&
                 CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== "") {
-                selectedELSelector = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"], [CustomBuilder.overviewPath]);
+                [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"], [data, CustomBuilder.overviewPath]);
             } else {
-                selectedELSelector = CustomBuilder.Builder.getOverviewPathElementSelector(CustomBuilder.overviewPath);
+                [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.Builder.getOverviewPathElementSelector(data, CustomBuilder.overviewPath);
             }
             
             CustomBuilder.overviewPath = null;
@@ -3783,18 +3783,21 @@ _CustomBuilder.Builder = {
         $("#iframe-wrapper").show();
     },
     
-    getOverviewPathElementSelector : function(path) {
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
         //check is setting page
         var propertiesIndex = path.indexOf("properties.");
         if (propertiesIndex === 0) {
             setTimeout(function(){
                 $("#properties-btn").trigger("click");
             }, 1);
+            
+            return ["", path.substring("properties.".length)];
         } else {
-            return CustomBuilder.Builder.buildSelectorByPath(CustomBuilder.data, path);
+            return CustomBuilder.Builder.buildSelectorByPath(data, path);
         }
-        
-        return "";
     },
     
     /**
@@ -3818,15 +3821,22 @@ _CustomBuilder.Builder = {
      */
     buildSelectorByPath: function(obj, path) {
         var selector = "";
+        var propertiesPath = "";
         if (obj !== null && obj !== undefined 
                 && path !== null && path !== undefined && path !== "") {
+            propertiesPath = path;
             var splitpath = path.split(".");
             var currentObj = obj;
             
             for (var i in splitpath) {
-                if (splitpath[i] == "propertise") {
+                //remove processed path from propertiesPath
+                propertiesPath = propertiesPath.substring(splitpath[i].length + 1);
+                
+                //stop the selector building when it reach the properties
+                if (splitpath[i] == "properties") {
                     break;
                 }
+                
                 try {
                     var index = null;
                     var property = splitpath[i];
@@ -3835,9 +3845,8 @@ _CustomBuilder.Builder = {
                         property = property.substring(0, property.indexOf('['));
                     }
                     
-                    console.log(splitpath[i]);
                     currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
-                    console.log(currentObj);
+                    
                     if (currentObj !== null) {
                         if (currentObj['properties'] !== undefined && currentObj['properties']['id'] !== undefined) {
                             selector += '[data-cbuilder-id="'+ currentObj['properties']['id'] +'"] ';
@@ -3854,8 +3863,8 @@ _CustomBuilder.Builder = {
                 }
             }
         }
-        console.log(selector);
-        return selector;
+        
+        return [selector, propertiesPath];
     },
     
     /*
