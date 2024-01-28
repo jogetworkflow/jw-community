@@ -12,10 +12,11 @@ public interface AppOverviewTool extends Plugin, PropertyEditable {
      * @param path
      * @param pluginClassName
      * @param properties
+     * @param propertiesString
      * @param parentObject 
      * @param data 
      */
-    public void scan(String key, String path, String pluginClassName, JSONObject properties, JSONObject parentObject, AppOverviewData data);
+    public void scan(String key, String path, String pluginClassName, JSONObject properties, String propertiesString, JSONObject parentObject, AppOverviewData data);
     
     /**
      * Get font icon to render in advance tools

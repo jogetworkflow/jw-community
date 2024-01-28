@@ -19,11 +19,13 @@ import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.ClassUtils;
@@ -39,7 +41,7 @@ public class AppOverviewUtil {
     public static String getOverview(AppDefinition appDef) {
         Map<String, AppOverviewTool> tools = getTools();
         
-        if (appDef != null) {
+        if (appDef != null && tools != null && !tools.isEmpty()) {
             BuilderDefinitionDao builderDefinitionDao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
             BuilderDefinition def = builderDefinitionDao.loadById(APP_OVERVIEW_DEFINITION, appDef);
             
@@ -49,7 +51,7 @@ public class AppOverviewUtil {
             
             if (def != null) {
                 //return the previous scan result if there is no last modified date is same or the tool list is same
-                if (def.getDateModified().equals(appDef.getDateModified()) && toolsList.equals(def.getName())) {
+                if (def.getDateModified().equals(appDef.getDateModified()) && Integer.toString(toolsList.hashCode()).equals(def.getName())) {
                     return def.getJson();
                 }
                 
@@ -67,13 +69,13 @@ public class AppOverviewUtil {
             if (def == null) {
                 def = new BuilderDefinition();
                 def.setId(APP_OVERVIEW_DEFINITION);
-                def.setName(toolsList);
+                def.setName(Integer.toString(toolsList.hashCode()));
                 def.setAppDefinition(appDef);
                 def.setJson(json);
                 
                 builderDefinitionDao.add(def);
             } else {
-                def.setName(toolsList);
+                def.setName(Integer.toString(toolsList.hashCode()));
                 def.setJson(json);
                 builderDefinitionDao.update(def);
             }
@@ -90,7 +92,7 @@ public class AppOverviewUtil {
      * @param data
      * @param tools 
      */
-    public static void scanApp(AppDefinition appDef, AppOverviewData data, Collection<AppOverviewTool> tools) {
+    protected static void scanApp(AppDefinition appDef, AppOverviewData data, Collection<AppOverviewTool> tools) {
         if (appDef != null) {
             Set<String> checkedKeys = new HashSet<String>();
             
@@ -127,7 +129,9 @@ public class AppOverviewUtil {
             }
             
             //scan Process & Mapping
-            
+            if (appDef.getPackageDefinition() != null) {
+                scanProcess(appDef, appDef.getPackageDefinition(), data, tools, checkedKeys);
+            }
             
             //remove deleted items
             data.checkAndRemoveDeletedItems(checkedKeys);
@@ -142,7 +146,7 @@ public class AppOverviewUtil {
      * @param tools
      * @param checkedKeys 
      */
-    public static void scanBuilderItem(String type, AbstractAppVersionedObject obj, AppOverviewData data, Collection<AppOverviewTool> tools, Set<String> checkedKeys) {
+    protected static void scanBuilderItem(String type, AbstractAppVersionedObject obj, AppOverviewData data, Collection<AppOverviewTool> tools, Set<String> checkedKeys) {
         String key = type + ":" + obj.getId();
         if (data.isItemRequireUpdate(key, obj.getDateModified())) {
             String json = obj.getJson();
@@ -157,16 +161,24 @@ public class AppOverviewUtil {
         checkedKeys.add(key);
     }
     
+    protected static void scanProcess(AppDefinition appDef, PackageDefinition packageDefinition, AppOverviewData data, Collection<AppOverviewTool> tools, Set<String> checkedKeys) {
+        
+    }
     
-    public static void scanJsonObject(String key, JSONObject parent, JSONObject obj, String path, AppOverviewData data, Collection<AppOverviewTool> tools) {
+    protected static void scanJsonObject(String key, JSONObject parent, JSONObject obj, String path, AppOverviewData data, Collection<AppOverviewTool> tools) {
         if (obj != null) {
             String pathPrefix = path + (!path.isEmpty()?".":"");
             
             JSONObject nonPluginAttrs = null;
             
             //check is plugin or not, if it is plugin, scan it
-            if (obj.has("className") && obj.has("properties") && !(obj.get("properties") instanceof String)) {
-                scan(key, path, obj.getString("className"), obj.getJSONObject("properties"), obj, data, tools);
+            if (obj.has("className") && obj.has("properties")) {
+                Object properties = obj.get("properties");
+                if (properties instanceof String) {
+                    properties = new JSONObject(properties.toString());
+                }
+                
+                scan(key, path, obj.getString("className"), (JSONObject) properties, obj, data, tools);
             } else if (parent == null || (parent != null && !parent.has("className") && !parent.has("properties"))) {
                 nonPluginAttrs = new JSONObject();
             }
@@ -194,7 +206,7 @@ public class AppOverviewUtil {
         }
     }
     
-    public static void scanJsonArray(String key, JSONObject parent, JSONArray arr, String path, AppOverviewData data, Collection<AppOverviewTool> tools, String propKey, JSONObject nonPluginAttrs) {
+    protected static void scanJsonArray(String key, JSONObject parent, JSONArray arr, String path, AppOverviewData data, Collection<AppOverviewTool> tools, String propKey, JSONObject nonPluginAttrs) {
         if (arr != null && arr.length() > 0) {
             Collection<String> temp = new ArrayList<String>();
             
@@ -218,14 +230,91 @@ public class AppOverviewUtil {
         }
     }
     
-    public static void scan(String key, String selector, String pluginClassName, JSONObject properties, JSONObject parent, AppOverviewData data, Collection<AppOverviewTool> tools) {
+    /**
+     * Scan a JSON object or a plugin properties
+     * 
+     * @param key
+     * @param selector
+     * @param pluginClassName
+     * @param properties
+     * @param parent
+     * @param data
+     * @param tools 
+     */
+    protected static void scan(String key, String selector, String pluginClassName, JSONObject properties, JSONObject parent, AppOverviewData data, Collection<AppOverviewTool> tools) {
+        //pass in the property in string too to prevent keep convert to string multiple time when needed in overview tool
+        String propertiesString = (properties != null)?properties.toString():"";
+        
+        //prepare a map of properties field type and properies field ids of a plugin
+        if (pluginClassName != null && !pluginClassName.isEmpty()) {
+            Map<String, Set<String>> fields = (Map<String, Set<String>>) data.getTempData(pluginClassName);
+            if (fields == null) {
+                data.putTempData(pluginClassName, getPluginPropertyFieldsAndType(pluginClassName));
+            }
+        }
+        
         for (AppOverviewTool tool : tools) {
-            tool.scan(key, selector, pluginClassName, properties, parent, data);
+            tool.scan(key, selector, pluginClassName, properties, propertiesString, parent, data);
         }
     }
     
-    public static void scanProcess(AppOverviewData data, Collection<AppOverviewTool> tools) {
+    /**
+     * Return a map of properties field type and field ids of a plugin
+     * 
+     * @param pluginClassName
+     * @return 
+     */
+    protected static Map<String, Set<String>> getPluginPropertyFieldsAndType(String pluginClassName) {
+        Map<String, Set<String>> fields = new HashMap<String, Set<String>>();
         
+        try {
+            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+            Plugin plugin = pluginManager.getPlugin(pluginClassName);
+
+            if (plugin != null && plugin instanceof PropertyEditable) {
+                String propertiesOptions = ((PropertyEditable)plugin).getPropertyOptions();
+                if (propertiesOptions != null && !propertiesOptions.isEmpty()) {
+                    JSONArray pages = new JSONArray(propertiesOptions);
+                    
+                    //loop page
+                    for (int i = 0; i < pages.length(); i++) {
+                        JSONObject page = (JSONObject) pages.get(i);
+
+                        if (page.has("properties")) {
+                            
+                            //loop properties
+                            JSONArray properties = (JSONArray) page.get("properties");
+                            for (int j = 0; j < properties.length(); j++) {
+                                
+                                //get the name and type
+                                JSONObject property = (JSONObject) properties.get(j);
+                                if (property.has("type") && property.has("name")) {
+                                    String name = property.getString("name");
+                                    String type = property.getString("type");
+                                    
+                                    //if there is mode
+                                    if (property.has("mode")) {
+                                        type += "_" + property.getString("mode");
+                                    }
+                                    
+                                    //add to type list
+                                    Set<String> typeFields = fields.get(type);
+                                    if (typeFields == null) {
+                                        typeFields = new HashSet<String>();
+                                        fields.put(type, typeFields);
+                                    }
+                                    typeFields.add(name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.debug(AppOverviewUtil.class.getName(), "Not able to retrieve properties fields of " + pluginClassName);
+        }
+        
+        return fields;
     }
     
     /**
@@ -233,14 +322,17 @@ public class AppOverviewUtil {
      * @return 
      */
     public static Map<String, AppOverviewTool> getTools() {
-        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-                
-        Collection<Plugin> list = pluginManager.list(AppOverviewTool.class);
         Map<String, AppOverviewTool> tools = new HashMap<String, AppOverviewTool>();
         
-        for (Plugin p : list) {
-            String name = ClassUtils.getUserClass(p).getName();
-            tools.put(name, (AppOverviewTool) pluginManager.getPlugin(name));
+        if (AppUtil.isEnterprise()) { //only support enterprise version
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+
+            Collection<Plugin> list = pluginManager.list(AppOverviewTool.class);
+
+            for (Plugin p : list) {
+                String name = ClassUtils.getUserClass(p).getName();
+                tools.put(name, (AppOverviewTool) pluginManager.getPlugin(name));
+            }
         }
         
         return tools;

@@ -71,6 +71,26 @@ public class AppOverviewData extends HashMap {
     }
     
     /**
+     * Use to hold temporary data for the scanning, data will get cleared when checkAndRemoveDeletedItems called 
+     * 
+     * @param key
+     * @param data 
+     */
+    public void putTempData(String key, Object data) {
+        put("TEMP::" + key, data);
+    }
+    
+    /**
+     * Retrieve temporary data for the scanning
+     * 
+     * @param key
+     * @return 
+     */
+    public Object getTempData(String key) {
+        return get("TEMP::" + key);
+    }
+    
+    /**
      * Retrieve the item by key
      * 
      * @param key
