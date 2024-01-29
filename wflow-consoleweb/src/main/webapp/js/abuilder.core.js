@@ -526,7 +526,15 @@ AppBuilder = {
                     }
                 }
             }
-            li.append('<a class="path_link" href="'+url+'?overview_path='+encodeURIComponent(data[i].path)+'" target="_self">'+UI.escapeHTML(label)+'</a>');
+            
+            var pathUrl = url;
+            if (pathUrl.indexOf("#") !== -1) {
+                pathUrl = pathUrl.substring(0, pathUrl.indexOf("#")) + '?overview_path='+encodeURIComponent(data[i].path) + pathUrl.substring(pathUrl.indexOf("#"));
+            } else {
+                pathUrl += '?overview_path='+encodeURIComponent(data[i].path);
+            }
+            
+            li.append('<a class="path_link" href="'+pathUrl+'" target="_self">'+UI.escapeHTML(label)+'</a>');
             
             if (data[i].content !== undefined && data[i].content !== null && data[i].content !== "" && data[i].content !== label) {
                 li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content" style="max-height:500px;">'+AppBuilder.prettyFormat(UI.escapeHTML(data[i].content))+'</div></a>');

@@ -162,7 +162,84 @@ public class AppOverviewUtil {
     }
     
     protected static void scanProcess(AppDefinition appDef, PackageDefinition packageDefinition, AppOverviewData data, Collection<AppOverviewTool> tools, Set<String> checkedKeys) {
-        
+        JSONObject xpdlAndMapping = AppUtil.getXpdlAndMappingJsonObj(appDef);
+        if (xpdlAndMapping != null && xpdlAndMapping.has("xpdl")) {
+            JSONObject xpdl = xpdlAndMapping.getJSONObject("xpdl");
+            JSONObject packageObj = (xpdl.has("Package"))?xpdl.getJSONObject("Package"):(new JSONObject());
+            JSONObject workflowProcessesObj = (packageObj.has("WorkflowProcesses"))?packageObj.getJSONObject("WorkflowProcesses"):(new JSONObject());
+            
+            //loop processes
+            if (workflowProcessesObj.has("WorkflowProcess")) {
+                JSONArray workflowProcessesArr = workflowProcessesObj.getJSONArray("WorkflowProcess");
+                
+                for (int i = 0; i < workflowProcessesArr.length(); i++) {
+                    JSONObject process = workflowProcessesArr.getJSONObject(i);
+                    
+                    String key = "process:" + process.getString("-Id");
+                    
+                    if (data.isItemRequireUpdate(key, packageDefinition.getDateModified())) {
+                        try {
+                            scanJsonObject(key, null, process, "xpdl.Package.WorkflowProcesses.WorkflowProcess["+i+"]", data, tools);
+                        } catch (Exception e) {
+                            LogUtil.error(AppOverviewUtil.class.getName(), e, key);
+                        }
+                    }
+
+                    checkedKeys.add(key);
+                }
+            }
+            
+            //scan form mapping
+            JSONObject formMapping = (xpdlAndMapping.has("activityForms"))?xpdlAndMapping.getJSONObject("activityForms"):(new JSONObject());
+            Iterator keys = formMapping.keys();
+            while (keys.hasNext()) {
+                String pkey = (String) keys.next();
+                if (!formMapping.isNull(pkey)) {
+                    String[] temp = pkey.split("::");
+                    Object value = formMapping.get(pkey);
+                    if (value instanceof JSONObject) {
+                        scanJsonObject("process:" + temp[0], null, (JSONObject) value, "activityForms." + pkey, data, tools);
+                    }
+                }
+            }
+            
+            //scan tool mapping
+            JSONObject toolMapping = (xpdlAndMapping.has("activityPlugins"))?xpdlAndMapping.getJSONObject("activityPlugins"):(new JSONObject());
+            keys = toolMapping.keys();
+            while (keys.hasNext()) {
+                String pkey = (String) keys.next();
+                if (!toolMapping.isNull(pkey)) {
+                    String[] temp = pkey.split("::");
+                    Object value = toolMapping.get(pkey);
+                    if (value instanceof JSONObject) {
+                        scanJsonObject("process:" + temp[0], null, (JSONObject) value, "activityPlugins." + pkey, data, tools);
+                    }
+                }
+            }
+            
+            //scan participant mapping
+            JSONObject participantMapping = (xpdlAndMapping.has("participants"))?xpdlAndMapping.getJSONObject("participants"):(new JSONObject());
+            keys = participantMapping.keys();
+            while (keys.hasNext()) {
+                String pkey = (String) keys.next();
+                if (!participantMapping.isNull(pkey)) {
+                    String[] temp = pkey.split("::");
+                    Object value = participantMapping.get(pkey);
+                    if (value instanceof JSONObject) {
+                        JSONObject participantMappingObj = (JSONObject) value;
+                        
+                        String type = (participantMappingObj.has("type"))?participantMappingObj.getString("type"):"";
+                        
+                        //check if plugin
+                        if ("plugin".equals(type) && participantMappingObj.has("value") && participantMappingObj.has("properties")) {
+                            scan("process:" + temp[0], "participants." + pkey, participantMappingObj.getString("value"), participantMappingObj.optJSONObject("properties"), null, data, tools);
+                        } else {
+                            scanJsonObject("process:" + temp[0], null, participantMappingObj, "participants." + pkey, data, tools);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     protected static void scanJsonObject(String key, JSONObject parent, JSONObject obj, String path, AppOverviewData data, Collection<AppOverviewTool> tools) {

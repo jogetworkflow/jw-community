@@ -58,6 +58,7 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
+import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
@@ -104,6 +105,10 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.HtmlUtils;
+import com.github.underscore.lodash.U;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import org.joget.apps.form.lib.DefaultFormBinder;
 
 /**
  * Utility methods is used by App in runtime
@@ -1941,5 +1946,150 @@ public class AppUtil implements ApplicationContextAware {
             value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
         }
         return value;
+    }
+    
+    public static String getXpdlAndMappingJson(AppDefinition appDef) {
+        return getXpdlAndMappingJsonObj(appDef).toString();
+    }
+    
+    public static JSONObject getXpdlAndMappingJsonObj(AppDefinition appDef) {
+        JSONObject jsonDef = new JSONObject();
+        
+        try {
+            String xpdl = getXpdl(appDef);
+            if (xpdl != null && !xpdl.isEmpty()) {
+                String xpdlJson = U.xmlToJson(xpdl);
+                jsonDef.put("xpdl", new JSONObject(xpdlJson));
+            }
+            
+            PackageDefinition packageDefinition = appDef.getPackageDefinition();
+            if (packageDefinition != null) {
+                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+                JSONObject activityForms = new JSONObject();
+                if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                    for (String k : activityFormMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityForm f = activityFormMap.get(k);
+
+                        populateActivityForm(o, f, appDef);
+                        activityForms.put(k, o);
+                    }
+                }
+                jsonDef.put("activityForms", activityForms);
+
+                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+                JSONObject activityPlugins = new JSONObject();
+                if (activityMap != null && !activityMap.isEmpty()) {
+                    for (String k : activityMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityPlugin p = activityMap.get(k);
+
+                        populateActivityPlugin(o, p);
+                        activityPlugins.put(k, o);
+                    }
+                }
+                jsonDef.put("activityPlugins", activityPlugins);
+
+                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+                JSONObject participants = new JSONObject();
+                if (participantMap != null && !participantMap.isEmpty()) {
+                    for (String k : participantMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageParticipant p = participantMap.get(k);
+
+                        populateParticipant(o, p);
+                        participants.put(k, o);
+                    }
+                }
+                jsonDef.put("participants", participants);
+            } else {
+                jsonDef.put("activityForms", new JSONObject());
+                jsonDef.put("activityPlugins", new JSONObject());
+                jsonDef.put("participants", new JSONObject());
+            }
+            
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        
+        return jsonDef;
+    }
+
+    protected static String getXpdl(AppDefinition appDef) {
+        try {
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            String xpdl = null;
+            if (packageDef != null) {
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+                if (content != null) {
+                    xpdl = new String(content, "UTF-8");
+                }
+            }
+            
+            if (xpdl == null) {
+                // read default xpdl
+                InputStream input = null;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                try {
+                    // get resource input stream
+                    String url = "/org/joget/apps/app/model/default.xpdl";
+                    
+                    PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
+                    if (input != null) {
+                        // write output
+                        byte[] bbuf = new byte[65536];
+                        int length = 0;
+                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
+                            out.write(bbuf, 0, length);
+                        }
+                        // form xpdl
+                        xpdl = new String(out.toByteArray(), "UTF-8");
+
+                        // replace package ID and name
+                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
+                        return xpdl;
+                    }
+                } finally {
+                    if (input != null) {
+                        input.close();
+                    }
+                }
+            }
+            return xpdl;
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        return null;
+    }
+    
+    protected static void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef) throws JSONException {
+        o.put("formId", f.getFormId());
+        o.put("formUrl", f.getFormUrl());
+        o.put("formIFrameStyle", f.getFormIFrameStyle());
+        o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
+        o.put("autoContinue", f.isAutoContinue());
+        o.put("type", (f.getType() != null)?f.getType():PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
+    }
+    
+    protected static void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
+        o.put("className", p.getPluginName());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
+    }
+    
+    protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
+        o.put("type", p.getType());
+        o.put("value", p.getValue());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
     }
 }
