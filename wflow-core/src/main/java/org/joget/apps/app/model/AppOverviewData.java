@@ -62,11 +62,24 @@ public class AppOverviewData extends HashMap {
      * @param isError 
      */
     public void addItemData(String key, AppOverviewTool tool, String selector, String label, String content, boolean isError) {
+        addItemData(key, tool, selector, label, content, false, null, null);
+    }
+    
+    /**
+     * Add data to builder item
+     * @param key
+     * @param tool
+     * @param selector
+     * @param label
+     * @param content 
+     * @param isError 
+     */
+    public void addItemData(String key, AppOverviewTool tool, String selector, String label, String content, boolean isError, String badge, String badgeColor) {
         BuilderItem item = getItem(key);
         if (item != null && tool != null 
                 && selector != null && !selector.isEmpty()
                 && content != null && !content.isEmpty()) {
-            item.getData().add(new Data(tool, selector, label, content, isError));
+            item.getData().add(new Data(tool, selector, label, content, isError, badge, badgeColor));
         }
     }
     
@@ -135,16 +148,20 @@ public class AppOverviewData extends HashMap {
         protected String label;
         protected String content;
         protected boolean isError = false;
+        protected String badge;
+        protected String badgeColor;
         
         public Data(){
         }
         
-        public Data(AppOverviewTool tool, String path, String label, String content, boolean isError) {
+        public Data(AppOverviewTool tool, String path, String label, String content, boolean isError, String badge, String badgeColor) {
             this.tool = tool.getClassName();
             this.path = path;
             this.label = label;
             this.content = content;
             this.isError = isError;
+            this.badge = badge;
+            this.badgeColor = badgeColor;
         }
 
         public String getTool() {
@@ -185,6 +202,22 @@ public class AppOverviewData extends HashMap {
 
         public void setIsError(boolean isError) {
             this.isError = isError;
+        }
+
+        public String getBadge() {
+            return badge;
+        }
+
+        public void setBadge(String badge) {
+            this.badge = badge;
+        }
+
+        public String getBadgeColor() {
+            return badgeColor;
+        }
+
+        public void setBadgeColor(String badgeColor) {
+            this.badgeColor = badgeColor;
         }
     }
 }

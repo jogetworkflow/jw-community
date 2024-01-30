@@ -537,7 +537,14 @@ AppBuilder = {
                 pathUrl += '?overview_path='+encodeURIComponent(data[i].path);
             }
             
-            li.append('<a class="path_link" href="'+pathUrl+'" target="_self">'+UI.escapeHTML(label)+'</a>');
+            var badge = "";
+            if (data[i].badge !== null && data[i].badge !== undefined && data[i].badge !== "") {
+                var badgeColor = (data[i].badgeColor !== null && data[i].badgeColor !== undefined && data[i].badgeColor !== "")?data[i].badgeColor:"#17a2b8";
+                
+                badge = '<span class="badge" style="border:1px solid;font-size:60%;display:inline-block;font-weight:900;vertical-align:middle; color:'+badgeColor+';border-color:'+badgeColor+';">'+UI.escapeHTML(data[i].badge)+'</span> ';
+            }
+            
+            li.append('<a class="path_link" href="'+pathUrl+'" target="_self">'+ badge + UI.escapeHTML(label)+'</a>');
             
             if (data[i].content !== undefined && data[i].content !== null && data[i].content !== "" && data[i].content !== label) {
                 li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content" style="max-height:500px;">'+AppBuilder.prettyFormat(UI.escapeHTML(data[i].content))+'</div></a>');
@@ -699,10 +706,10 @@ AppBuilder = {
                                             //loop overview data
                                             var i = 0;
                                             $(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').each(function(){
-                                                var dataLabel = $(this).find('a.path_link').text();
+                                                var dataLabel = $(this).find('a.path_link').html();
                                                 var dataUrl = $(this).find('a.path_link').attr("href");
                                                 
-                                                jm.add_node(overviewId, overviewId+"_"+i++, '<a href="'+dataUrl+'">' + UI.escapeHTML(dataLabel) + '</a>', {}, "right");
+                                                jm.add_node(overviewId, overviewId+"_"+i++, '<a href="'+dataUrl+'">' + dataLabel + '</a>', {}, "right");
                                             });
 
                                             jm.collapse_node(overviewId);
