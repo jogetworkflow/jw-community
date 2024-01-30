@@ -2309,6 +2309,25 @@ UserviewBuilder = {
         $('#cbuilder-preview').attr("target", "preview-screenshot-iframe");
         $('#cbuilder-preview').submit();
     },
+     
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        var selector = "";
+        var propertiesPath = path;
+        
+        if (path.indexOf("setting.") === 0) {
+            //it is properties page
+            setTimeout(function(){
+                $("#properties-btn").trigger("click");
+            }, 1);
+
+            return ["", path];
+        }
+        
+        return CustomBuilder.Builder.getOverviewPathElementSelector(data, path);
+    },
     
     /*
      * save a screenshot after builder saved

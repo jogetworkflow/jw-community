@@ -272,7 +272,7 @@ public class AppOverviewUtil {
                 }
                 
                 scan(key, path, obj.getString("className"), (JSONObject) properties, obj, data, tools);
-            } else if (parent == null || (parent != null && !parent.has("className") && !parent.has("properties"))) {
+            } else if (parent == null || !(parent != null && parent.has("className") && path.endsWith(".properties"))) {
                 nonPluginAttrs = new JSONObject();
             }
             
