@@ -82,7 +82,7 @@ AppBuilder = {
                     for (var i in response) {
                         $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+response[i].label+'" id="'+response[i].className.replace(/\./g, '_')+'" type="button" data-cbuilder-view="overview" data-toggle="button" aria-pressed="false" data-overview="'+response[i].className+'">'+response[i].icon+'</button>');
                     }
-                    $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="Overview Map" id="overviewmap-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="overviewMap" data-cbuilder-action="switchView" data-view-control><i class="las la-sitemap"></i> </button>');
+                    $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+get_cbuilder_msg('abuilder.overviewMap')+'" id="overviewmap-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="overviewMap" data-cbuilder-action="switchView" data-view-control><i class="las la-sitemap"></i> </button>');
         
                     $("#builderToolbar [data-overview]").off("click").on("click", function(){
                         CustomBuilder.switchView();
@@ -463,7 +463,7 @@ AppBuilder = {
                         }
                         
                         //render a toogle for show/hide no data record
-                        $("#builder_canvas .canvas-header").append(' <a id="toogle_no_overview_data"><i class="las la-check-square"></i> Hide No Data Items</a>');
+                        $("#builder_canvas .canvas-header").append(' <a id="toogle_no_overview_data"><i class="las la-check-square"></i> '+get_cbuilder_msg('abuilder.hideNoDataItems')+'</a>');
 
                         $("#toogle_no_overview_data").off("click").on("click", function(){
                             $("#builders").toggleClass("show_overview_no_data");
@@ -546,7 +546,7 @@ AppBuilder = {
             container.append(li);
         }
         
-        container.append('<li class="overview_data no_record">No data found</li>');
+        container.append('<li class="overview_data no_record">'+get_cbuilder_msg('abuilder.noDataFound')+'</li>');
     },
     
     /**
@@ -602,7 +602,7 @@ AppBuilder = {
         var header = $(view).prev();
         $(header).html("");
         $(header).append('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i>');
-        $(header).append('<div class="sticky-buttons" style="z-index:3;"><button id="mmCollapseAll" class="btn button btn-secondary">Collapse All</button> <button id="mmExpandAll" class="btn button btn-secondary">Expand All</button> <button id="mmScreenshot" class="btn button btn-secondary" style="display:none;">Screenshot</button></div>');
+        $(header).append('<div class="sticky-buttons" style="z-index:3;"><button id="mmCollapseAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.collapseAll')+'</button> <button id="mmExpandAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.expandAll')+'</button> <button id="mmScreenshot" class="btn button btn-secondary" style="display:none;">'+get_cbuilder_msg('cbuilder.screenshot')+'</button></div>');
         
         $(view).html("");
         $(view).attr("id", "jsmind_container");

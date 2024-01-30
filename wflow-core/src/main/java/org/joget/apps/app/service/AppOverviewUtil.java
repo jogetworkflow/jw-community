@@ -42,8 +42,15 @@ public class AppOverviewUtil {
         Map<String, AppOverviewTool> tools = getTools();
         
         if (appDef != null && tools != null && !tools.isEmpty()) {
+            String lang = AppUtil.getAppLocale();
+            if ("en_US".equals(lang)) {
+                lang = "";
+            } else {
+                lang = "_" + lang;
+            }
+            
             BuilderDefinitionDao builderDefinitionDao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
-            BuilderDefinition def = builderDefinitionDao.loadById(APP_OVERVIEW_DEFINITION, appDef);
+            BuilderDefinition def = builderDefinitionDao.loadById(APP_OVERVIEW_DEFINITION + lang, appDef);
             
             Gson gson = new Gson();
             AppOverviewData data;
@@ -68,7 +75,7 @@ public class AppOverviewUtil {
             String json = gson.toJson(data);
             if (def == null) {
                 def = new BuilderDefinition();
-                def.setId(APP_OVERVIEW_DEFINITION);
+                def.setId(APP_OVERVIEW_DEFINITION + lang);
                 def.setName(Integer.toString(toolsList.hashCode()));
                 def.setAppDefinition(appDef);
                 def.setJson(json);
