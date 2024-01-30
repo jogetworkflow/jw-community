@@ -47,7 +47,7 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
 .builder-type ul.overview_container li.overview_data + li {margin-top: 3px;}
 .builder-type ul.overview_container li.overview_data a {padding: 3px 5px; box-sizing: border-box;}
 .builder-type ul.overview_container li.overview_data a.path_link {flex: 1 1 auto!important; padding-right: 25px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
-.builder-type ul.overview_container li.overview_data a.path_link:hover{text-overflow: none; white-space: initial; overflow: auto;}
+.builder-type ul.overview_container li.overview_data a.path_link:hover{text-overflow: unset; white-space: initial; overflow: hidden; word-break: break-all;}
 .builder-type ul.overview_container li.overview_data a.more_detail{cursor: pointer;}
 .builder-type ul.overview_container li.overview_data a.more_detail:hover {color:#007bff;}
 .builder-type ul.overview_container li.overview_data a.more_detail:hover:after { content: ""; display: block; position: absolute; right: 9px; top: 22px; border-bottom: 5px solid #007bff; border-left: 5px solid transparent; border-right: 5px solid transparent; }

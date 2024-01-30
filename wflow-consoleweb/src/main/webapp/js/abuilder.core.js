@@ -513,7 +513,7 @@ AppBuilder = {
             var li = $('<li class="overview_data" data-tool="'+data[i].tool+'"></li>');
             var label = data[i].label;
             if (label === undefined || label === null || label === "") {
-                if (data[i].content.length < 80) {
+                if (data[i].content.indexOf("\n") === -1) {
                     label = data[i].content;
                     data[i].content = "";
                 } else {
