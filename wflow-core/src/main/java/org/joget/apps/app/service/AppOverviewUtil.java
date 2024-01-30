@@ -177,7 +177,16 @@ public class AppOverviewUtil {
             
             //loop processes
             if (workflowProcessesObj.has("WorkflowProcess")) {
-                JSONArray workflowProcessesArr = workflowProcessesObj.getJSONArray("WorkflowProcess");
+                
+                //the WorkflowProcess will be JSONObject when there is only 1 process, else it will be JSONArray
+                Object workflowProcessObj = workflowProcessesObj.get("WorkflowProcess");
+                JSONArray workflowProcessesArr;
+                if (workflowProcessObj instanceof JSONArray) {
+                    workflowProcessesArr = (JSONArray) workflowProcessObj;
+                } else {
+                    workflowProcessesArr = new JSONArray();
+                    workflowProcessesArr.put(workflowProcessObj);
+                }
                 
                 for (int i = 0; i < workflowProcessesArr.length(); i++) {
                     JSONObject process = workflowProcessesArr.getJSONObject(i);
