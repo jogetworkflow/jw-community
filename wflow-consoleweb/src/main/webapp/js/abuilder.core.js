@@ -517,11 +517,14 @@ AppBuilder = {
                     label = data[i].content;
                     data[i].content = "";
                 } else {
-                    var index = data[i].content.indexOf("\n"); //show only first line
+                    var tempContent = data[i].content.trim();
+                    var index = tempContent.indexOf("\n"); //show only first line
                     if (index !== -1) {
-                        label = data[i].content.substring(0, index);
+                        label = tempContent.substring(0, index);
                     }
-                    if (label.length > 80) {
+                    if (label === "") {
+                        label = tempContent.substring(0, 80);
+                    } else if (label.length > 80) {
                         label = label.substring(0, 80);
                     }
                 }
