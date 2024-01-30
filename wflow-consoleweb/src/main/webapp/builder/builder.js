@@ -1100,7 +1100,7 @@
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["afterUpdate"], [CustomBuilder.data]);
         
         //if non default builder and addToUndo is false, it is after old CustomBuilder.loadJson
-        if ($("body").hasClass("default-builder") && addToUndo === false) {
+        if (!$("body").hasClass("default-builder") && addToUndo === false) {
             CustomBuilder.handleOverviewPath();
         }
     },
@@ -3566,16 +3566,78 @@
      */
     handleOverviewPath: function() {
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            var path = CustomBuilder.overviewPath;
             if (CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== undefined &&
                 CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== "") {
-                CustomBuilder.callback(CustomBuilder.config.builder.callbacks["handleOverviewPath"], [CustomBuilder.overviewPath]);
+                CustomBuilder.callback(CustomBuilder.config.builder.callbacks["handleOverviewPath"], [path]);
             } else {
                 //edit the path element
-                
+                if (path.indexOf("properties") === 0) {
+                    //it is properties page
+                    setTimeout(function(){
+                        $("#properties-btn").trigger("click");
+                    }, 1);
+                } else {
+                    var element = $(CustomBuilder.buildLegacyBuilderSelectorByPath(CustomBuilder.data, path));
+                    if ($(element).length > 0) {
+                        if ($(element).find("> .element-options > .element-edit").length > 0) {
+                            $(element).find("> .element-options > .element-edit").trigger("click");
+                        } else {
+                            //no edit button, scroll to the element. cater for API builder
+                            $('#cbuilder #builder_canvas > div:not(#iframe-wrapper)').animate({
+                                scrollTop: $(element).offset().top
+                            }, 1);
+                        }
+                    }
+                }
             }
             
             CustomBuilder.overviewPath = null;
         }
+    },
+    
+    /**
+     * Utility method to build selector based on overview path for legacy custom builder
+     */
+    buildLegacyBuilderSelectorByPath: function(obj, path) {
+        var selector = "";
+        if (obj !== null && obj !== undefined 
+                && path !== null && path !== undefined && path !== "") {
+            var splitpath = path.split(".");
+            var currentObj = obj;
+            
+            for (var i in splitpath) {
+                //stop the selector building when it reach the properties
+                if (splitpath[i] == "properties") {
+                    break;
+                }
+                
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
+                    
+                    if (currentObj !== null) {
+                        if (currentObj['properties'] !== undefined && currentObj['properties']['id'] !== undefined) {
+                            selector += '#'+ currentObj['properties']['id'] + ' ';
+                        }
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+        }
+        
+        return selector;
     }
 };
 
