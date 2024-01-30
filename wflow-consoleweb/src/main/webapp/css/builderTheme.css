@@ -2083,6 +2083,9 @@ body[builder-theme] .chosen-container-single .chosen-single-with-deselect span {
 }
 
 /* Dark Theme CSS */
+body[builder-theme='dark'] .dt-loading {
+    color: #fefefe;
+}
 body[builder-theme='dark'].popupBody{
     background-color: var(--theme-primary-color-1);
 }
@@ -2245,7 +2248,8 @@ body[builder-theme='dark'] *::-webkit-scrollbar-thumb {
 body[builder-theme='dark']#cbuilder #top-panel {
     background-color: var(--theme-primary-color-1);
 }
-body[builder-theme='dark'] .advanced-tools-toogle, body[builder-theme='dark'] .advanced-tools, body[builder-theme='dark'] .secondary-tools {
+body[builder-theme='dark'] .advanced-tools-toogle, body[builder-theme='dark'] .advanced-tools, body[builder-theme='dark'] .secondary-tools,
+body[builder-theme='dark'] .builder-type ul.overview_container li.overview_data{
     background: #000;
 }
 body[builder-theme='dark'] #main-button-group {

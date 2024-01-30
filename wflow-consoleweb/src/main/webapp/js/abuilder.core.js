@@ -446,7 +446,7 @@ AppBuilder = {
     
     showOverview : function(tool, callback) {
         
-        $("#undefinedView").html('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3"></i>');
+        $("#undefinedView").html('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; margin:30px;"></i>');
         if ($(".item .overview_container").length === 0) {
             $.ajax({
                 type: "POST",
@@ -601,7 +601,7 @@ AppBuilder = {
     overviewMapViewInit : function(view) {
         var header = $(view).prev();
         $(header).html("");
-        $(header).append('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i>');
+        $(header).append('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000; margin:30px;"></i>');
         $(header).append('<div class="sticky-buttons" style="z-index:3;"><button id="mmCollapseAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.collapseAll')+'</button> <button id="mmExpandAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.expandAll')+'</button> <button id="mmScreenshot" class="btn button btn-secondary" style="display:none;">'+get_cbuilder_msg('cbuilder.screenshot')+'</button></div>');
         
         $(view).html("");
@@ -641,6 +641,9 @@ AppBuilder = {
                                 hspace:50
                             }
                         };
+                        if (CustomBuilder.systemTheme === 'dark') { //support builder theme
+                            options['theme'] = 'asphalt';
+                        }
                         var jm = new jsMind(options);
                         jm.show(mind);
 
@@ -666,6 +669,9 @@ AppBuilder = {
                                 var id = $(this).data("builder-type");
                                 var title = $(this).find('.builder-title').text();
                                 var color = $(this).find('.builder-title .icon').css("background-color");
+                                if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') { //support builder theme
+                                    color = $(this).find('.builder-title .icon').css("color");
+                                }
                                 var icon = $(this).find('.builder-title .icon').html().replace('<i', '<i style="color:'+color+';"');
 
                                 jm.add_node(CustomBuilder.appId, id, icon + title, {}, "right");
