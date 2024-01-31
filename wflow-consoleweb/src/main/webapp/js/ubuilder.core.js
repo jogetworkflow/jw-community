@@ -2322,8 +2322,11 @@ UserviewBuilder = {
             setTimeout(function(){
                 $("#properties-btn").trigger("click");
             }, 1);
+            
+            //remove setting.properties
+            propertiesPath = propertiesPath.substring(19);
 
-            return ["", path];
+            return ["", propertiesPath];
         }
         
         return CustomBuilder.Builder.getOverviewPathElementSelector(data, path);

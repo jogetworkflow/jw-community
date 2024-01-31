@@ -1677,6 +1677,7 @@
             propertyValues : elementProperty,
             showCancelButton:true,
             changeCheckIgnoreUndefined: true,
+            scrollToField: CustomBuilder.overviewPropertiesPath,
             cancelCallback: function() {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["cancelEditProperties"], [elementObj, element]);
             },
@@ -2268,7 +2269,8 @@
             closeAfterSaved : false,
             changeCheckIgnoreUndefined: true,
             autoSave: true,
-            saveCallback: CustomBuilder.saveBuilderProperties
+            saveCallback: CustomBuilder.saveBuilderProperties,
+            scrollToField: CustomBuilder.overviewPropertiesPath
         };
         $("body").addClass("stop-scrolling");
         
@@ -3577,6 +3579,8 @@
                     setTimeout(function(){
                         $("#properties-btn").trigger("click");
                     }, 1);
+                    
+                    CustomBuilder.overviewPropertiesPath = path.substring(11);
                 } else {
                     var element = $(CustomBuilder.buildLegacyBuilderSelectorByPath(CustomBuilder.data, path));
                     if ($(element).length > 0) {
@@ -3601,12 +3605,17 @@
      */
     buildLegacyBuilderSelectorByPath: function(obj, path) {
         var selector = "";
+        var propertiesPath = "";
         if (obj !== null && obj !== undefined 
                 && path !== null && path !== undefined && path !== "") {
+            propertiesPath = path;
             var splitpath = path.split(".");
             var currentObj = obj;
             
             for (var i in splitpath) {
+                //remove processed path from propertiesPath
+                propertiesPath = propertiesPath.substring(splitpath[i].length + 1);
+                
                 //stop the selector building when it reach the properties
                 if (splitpath[i] == "properties") {
                     break;
@@ -3635,6 +3644,8 @@
                     }
                 }
             }
+            
+            CustomBuilder.overviewPropertiesPath = propertiesPath;
         }
         
         return selector;
@@ -7056,6 +7067,7 @@ _CustomBuilder.Builder = {
             changeCheckIgnoreUndefined: true,
             editorPanelMode: true,
             closeAfterSaved: false,
+            scrollToField: CustomBuilder.overviewPropertiesPath,
             saveCallback: function(container, properties) {
                 var d = $(container).find(".property-editor-container").data("deferred");
                 d.resolve({
@@ -7110,6 +7122,16 @@ _CustomBuilder.Builder = {
             });
             $("#right-panel #style-properties-tab").find(".property-editor-container").attr("data-viewport", "desktop");
             $("#right-panel #style-properties-tab").find(".property-editor-container > .property-editor-pages").prepend(controls);
+            
+            //handle viewport style in overview path
+            if (CustomBuilder.overviewPropertiesPath !== undefined && CustomBuilder.overviewPropertiesPath !== null
+                    && CustomBuilder.overviewPropertiesPath !== "") {
+                if (CustomBuilder.overviewPropertiesPath.indexOf("style-tablet-") !== -1) {
+                    $(controls).find('[data-viewport="tablet"]').trigger("click");
+                } else if (CustomBuilder.overviewPropertiesPath.indexOf("style-mobile-") !== -1) {
+                    $(controls).find('[data-viewport="mobile"]').trigger("click");
+                }
+            }
         }
         
         if ($("body").hasClass("max-property-editor")) {

@@ -5119,7 +5119,7 @@ ProcessBuilder = {
         } else { //it is mapping
             var temp = path.split("::");
             var id = temp[1].substring(0, temp[1].indexOf("."));
-            propertiesPath = temp[1].substring(temp[1].indexOf("."));
+            propertiesPath = temp[1].substring(temp[1].indexOf(".") + 12);
             
             if (id === "processStartWhiteList") {
                 selector = '[data-cbuilder-classname="start"]';
