@@ -475,6 +475,78 @@ AppBuilder = {
                             return false;
                         });
                         
+                        //show details in popup dialog with edit link
+                        var aceEditor;
+                        var aceField;
+                        var showDetail = function(detailLink) {
+                            var frameBody = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("body");
+                            
+                            //set title with builder name & item name
+                            var title = $(detailLink).closest('.builder-type').find("> .builder-title").text() + " : ";
+                            title += $(detailLink).closest(".item").find("> .item-link > .item-label").text() + " ";
+                            $(frameBody).find("#main-body-header").text(title);
+                            
+                            //edit link
+                            var pathLink = $(detailLink).prev().attr("href");
+                            $(frameBody).find("#main-body-header").append(' <a class="btn edit_link" style="margin:0px 15px;padding:5px 10px; font-size:70%; vertical-align: middle; line-height: normal;"><i class="fas fa-pencil-square-o" aria-hidden="true"></i> '+get_cbuilder_msg('ubuilder.edit')+'</a>');
+                            $(frameBody).find("#main-body-header .edit_link").on("click", function(){
+                                CustomBuilder.ajaxRenderBuilder(pathLink);
+                                return false;
+                            });
+                            
+                            //adjust width & height
+                            var width = UI.getPopUpWidth("");
+                            var height = UI.getPopUpHeight("");
+                            $("iframe#overview_data_more_detail").css("width", width + "px");
+                            $("iframe#overview_data_more_detail").css("height", height + "px");
+                            $(frameBody).find("#main-body-content").css("height", (height - 53) + "px");
+                            
+                            //create code editor to show code
+                            $(frameBody).find("#main-body-content").html('<pre id="code_detail" class="ace_editor" style="width:100%; height:100%"></pre>');
+                            aceField = aceEditor.edit("code_detail");
+                            aceField.getSession().setTabSize(4);
+                            if (CustomBuilder.systemTheme === 'dark') { //support builder theme
+                                aceField.setTheme("ace/theme/vibrant_ink");
+                            } else {
+                                aceField.setTheme("ace/theme/textmate");
+                            }
+                            aceField.setReadOnly(true);
+                            aceField.setAutoScrollEditorIntoView(true);
+                            
+                            //update content
+                            var content = $(detailLink).find(".more_detail_content").text();
+                            aceField.setValue(content, -1);
+                            aceField.resize();
+                            aceField.renderer.updateFull();
+                            
+                            //show the popup
+                            JPopup.dialogboxes["overview_data_more_detail"].show();
+                            UI.adjustPopUpDialog(JPopup.dialogboxes["overview_data_more_detail"]);
+                        };
+                        
+                        $("#builders")
+                            .off("click.overviewDetail", ".overview_data .more_detail")
+                            .on("click.overviewDetail", ".overview_data .more_detail", function(){
+                                var detailLink = $(this);
+                                if ($("iframe#overview_data_more_detail").length === 0) {
+                                    JPopup.create("overview_data_more_detail", "", "", "");
+                                    $("iframe#overview_data_more_detail")[0].src = CustomBuilder.contextPath+'/builder/popup.jsp';
+                                    $("iframe#overview_data_more_detail").on("load", function(){
+                                        var frameBody = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("body");
+                                        $(frameBody).find("#main-body-content").css("padding", "0px");
+                                        
+                                        //wait for ace editor available
+                                        while (!aceEditor) {
+                                            aceEditor = $("iframe#overview_data_more_detail")[0].contentWindow.ace;
+                                        }
+                                        
+                                        showDetail(detailLink);
+                                    });
+                                } else {
+                                    showDetail(detailLink);
+                                }
+                            });
+                        
                         if (callback) {
                             callback();
                         } else {
@@ -547,7 +619,7 @@ AppBuilder = {
             li.append('<a class="path_link" href="'+pathUrl+'" target="_self">'+ badge + UI.escapeHTML(label)+'</a>');
             
             if (data[i].content !== undefined && data[i].content !== null && data[i].content !== "" && data[i].content !== label) {
-                li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content" style="max-height:500px;">'+AppBuilder.prettyFormat(UI.escapeHTML(data[i].content))+'</div></a>');
+                li.append('<a class="more_detail"><i class="las la-comment"></i><div class="more_detail_content" style="max-height:500px;">'+UI.escapeHTML(data[i].content)+'</div></a>');
             }
             if (data[i].isError) {
                 li.addClass("error");
