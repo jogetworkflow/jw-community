@@ -150,13 +150,16 @@ public class FormBuilderWebController {
     
     @RequestMapping(value = "/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/save", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         // load existing form definition and update fields

@@ -75,6 +75,8 @@ import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DistributedIdGenerator;
+import org.joget.commons.util.FileLimitException;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -106,6 +108,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -1998,5 +2001,32 @@ public class AppUtil implements ApplicationContextAware {
             value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
         }
         return value;
+    }
+    
+    /**
+     * Check to retrieve JSON from multipart file in POST body if json is null or empty
+     * @param json
+     * @return 
+     */
+    public static String getSubmittedJsonDefinition(String json) {
+        if (json == null || json.isEmpty()) {
+            // get json file in POST body
+            MultipartFile jsonFile = null;
+            try {
+                jsonFile = FileStore.getFile("jsonFile");
+            } catch (FileLimitException e) {
+                LogUtil.warn(AppUtil.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            }
+            
+            if (jsonFile != null) {
+                try {
+                    json =  new String(jsonFile.getBytes(), "UTF-8");
+                } catch (IOException e) {
+                    LogUtil.error(AppUtil.class.getName(), e, "Fail to retrieve submitted JSON definition");
+                }
+            }
+        }
+        
+        return json;
     }
 }
