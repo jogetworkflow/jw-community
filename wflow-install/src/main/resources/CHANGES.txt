@@ -2,6 +2,29 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.10
+======
+843089969 Fixed: wflow-consoleweb - JBoss EAP - Workaround for missing nested JSP include bug in JBoss EAP 7.4.14 @8.0-SNAPSHOT
+3734ebb46 Fixed: wflow-wfengine - Process - Fail to connection Shark Engine when total connections reach max integer number (> 2B). @7.0-SNAPSHOT
+a553dfc8c Fixed: jw-community - Archived Processes - Timout issue when migrating large set of completed processes to history tables. T3321 @8.0-SNAPSHOT
+ae5e90fa8 Fixed: wflow-core - Date Picker - Picker does not show on IPad device. T3564 @8.0-SNAPSHOT
+df0c52c93 Fixed: wflow-consoleweb - X-admin - X Admin theme Quill rich text editor has additional unordered lists -T3573 @8.0-SNAPSHOT
+48df91aba Fixed: wflow-wfengine - Regression on 27ce4ec2. 8.0-SNAPSHOT
+1923583b8 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.85. 8.0-SNAPSHOT
+8b7fa3a91 Fixed: wflow-core - AppDevUtil - Generate Assignment Process Form not appear in Git Repo. @8.0-SNAPSHOT
+f2b1b1e72 Fixed: wflow-consoleweb - List Builder - Row action styling properties issues. @8.0-SNAPSHOT
+6cc0abc8f Fixed: wflow-core - Form Data - Performance issue in Oracle & MSSQL db. T3585 @8.0-SNAPSHOT
+a192eb45e Fixed: wflow-consoleweb - Health Check - Cancel suppress action is lead to screen blocking infinitely. @8.0-SNAPSHOT
+bbd466f13 Fixed: wflow-core - Git - Cloud platform plugins breaking Git commit process. T3548 @8.0-SNAPSHOT
+e943dc109 Fixed: wflow-core - Export App - Exported plugins are not latest. @8.0-SNAPSHOT
+bccf33a91 Fixed: wflow-consoleweb - System Theme - Fixed System and builder theme CSS issues. @8.0-SNAPSHOT
+edf25c758 Fixed: wflow-consoleweb - Log Viewer - Git related logs are not visible in app composer log viewer. T3548 @8.0-SNAPSHOT
+1eb1d128c Fixed: wflow-consoleweb - Process Builder - Process XPDL updated when changing activity mapping. T3623 @8.0-SNAPSHOT
+5da9fbd26 Fixed: wflow-core - List - Regression of c142a329. T3609 @7.0-SNAPSHOT
+008141fea Fixed: wflow-consoleweb - Builders - Definition view slow loading when data is large. T3623 @8.0-SNAPSHOT
+27783a5b2 Fixed: wflow-consoleweb - Process Builder - Slow loading when process is large and complex. T3623 @8.0-SNAPSHOT
+b46b7803a Fixed: wflow-consoleweb - Plugin WebSocket - Unable to obtain HTTP session and logged in user. T3607 T3608 @8.0-SNAPSHOT
+
 8.0.9
 =====
 f1c4d031b Fixed: wflow-consoleweb - Xadmin Theme - Elements in filter side panel on smaller screens not properly aligned @8.0-SNAPSHOT

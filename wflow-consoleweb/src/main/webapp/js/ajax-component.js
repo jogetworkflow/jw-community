@@ -355,14 +355,19 @@ AjaxComponent = {
                 }
         
                 //it is file
-                response.blob().then((b)=>{
-                        var a = document.createElement("a");
+                var a = document.createElement("a");
+                a.setAttribute("download", filename);
+                //check environment
+                if (navigator.userAgent.toLowerCase().includes('android')) {
+                    // If the environment is Android, directly retrieve the URL from the response
+                    a.href = response.url;
+                    a.click();
+                } else {
+                    response.blob().then((b) => {
                         a.href = URL.createObjectURL(b);
-                        a.setAttribute("download", filename);
                         a.click();
-                    }
-                );
-        
+                    });
+                }
                 $(contentConatiner).removeClass("ajaxloading");
                 return null;
             } else {
