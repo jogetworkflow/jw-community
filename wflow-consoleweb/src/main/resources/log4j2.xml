@@ -54,6 +54,16 @@
         </Logger>        
         <Logger name="org.hibernate" level="error" additivity="true">
         </Logger>
+        <Logger name="org.hibernate.SQL" level="debug" additivity="true">
+        </Logger>                
+        <Logger name="org.hibernate.cache" level="debug" additivity="true">
+        </Logger>
+        <Logger name="org.hibernate.event.internal" level="debug" additivity="true">
+        </Logger>        
+        <Logger name="org.hibernate.event.internal.DefaultLoadEventListener" level="warn" additivity="true">
+        </Logger>        
+        <Logger name="org.apache.ignite.cache.hibernate" level="debug" additivity="true">
+        </Logger>        
         <Logger name="org.hibernate.tool.hbm2ddl.SchemaUpdate" level="fatal" additivity="true">
         </Logger>
         <Logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="fatal" additivity="true">

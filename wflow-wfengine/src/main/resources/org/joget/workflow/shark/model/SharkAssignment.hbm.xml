@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="SharkAssignment" lazy="false" name="org.joget.workflow.shark.model.SharkAssignment" table="SHKAssignmentsTable">
+        <cache usage="nonstrict-read-write" /> 
         <id column="oid" name="id" type="long"/>
         <property column="ResourceId" name="assigneeName" type="string"/>
         <property column="IsValid" name="isValid" type="boolean"/>

@@ -851,6 +851,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         String query = "SELECT e.userId, e.id FROM " + entityName + " e " + newCondition;
         Query q = session.createQuery(query);
+        q.setCacheable(true);
         if (params != null) {
             int i = 1;
             for (Object param : params) {
@@ -881,6 +882,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                     }
                 }
                 q = session.createQuery(query);
+                q.setCacheable(true);
 
                 int s = (start == null) ? 0 : start;
                 q.setFirstResult(s);
@@ -902,6 +904,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         Session session = findSession();
         String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         Query q = session.createQuery("SELECT COUNT(e.userId) FROM " + entityName + " e " + newCondition + " group by e.userId");
+        q.setCacheable(true);
 
         if (params != null) {
             int i = 1;

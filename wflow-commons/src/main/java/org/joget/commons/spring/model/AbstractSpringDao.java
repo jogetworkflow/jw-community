@@ -50,8 +50,13 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
     }
 
     protected Object find(String entityName, String id) {
-        Session session = findSession();
-        return session.get(entityName, id);
+        Object result = null;
+        String query = "WHERE id = ?1";
+        Collection list = find(entityName, query, new String[] {id}, null, null, 0, 1);
+        if (!list.isEmpty()) {
+            result = list.iterator().next();
+        }
+        return result;
     }
 
     protected List findByExample(String entityName, Object object) {
@@ -59,6 +64,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
         Criteria crit = session.createCriteria(object.getClass());
         Example example = Example.create(object);
         crit.add(example);
+        crit.setCacheable(true);
         return crit.list();        
     }
 
@@ -76,6 +82,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
             }
         }
         Query q = session.createQuery(query);
+        q.setCacheable(true);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -99,6 +106,7 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
         String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         Session session = findSession();
         Query q = session.createQuery("SELECT COUNT(*) FROM " + entityName + " e " + newCondition);
+        q.setCacheable(true);
 
         if (params != null) {
             int i = 1;

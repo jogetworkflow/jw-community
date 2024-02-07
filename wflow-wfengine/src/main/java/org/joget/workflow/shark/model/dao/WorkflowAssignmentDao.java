@@ -418,6 +418,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         Query q = session.createQuery(query);
+        q.setCacheable(true);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -620,6 +621,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         Session session = findSession();
         String query = "SELECT distinct e.processDefId FROM SharkProcess e WHERE e.processDefId like ?1";
         Query q = session.createQuery(query);
+        q.setCacheable(true);
         
         q.setParameter(1, packageId + "#%");
 
@@ -641,6 +643,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         Query q = session.createQuery(query);
+        q.setCacheable(true);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -826,6 +829,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String query = "SELECT e.id" + " FROM MigrateProcess e WHERE e.name like ?1 and e.state in (1000000, 1000002, 1000004) ORDER BY e.oid";
 
         Query q = session.createQuery(query);
+        q.setCacheable(true);
         q.setFirstResult(0);
 
         q.setParameter(1, packageId + "#%");
@@ -842,6 +846,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         String query = "SELECT e.processDefId" + " FROM MigrateActivity e WHERE e.processDefId like ?1";
 
         Query q = session.createQuery(query);
+        q.setCacheable(true);
         q.setFirstResult(0);
 
         q.setParameter(1, packageId + "#%");

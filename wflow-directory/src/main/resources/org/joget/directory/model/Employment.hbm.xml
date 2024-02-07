@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="Employment" name="org.joget.directory.model.Employment" table="dir_employment">
+        <cache usage="nonstrict-read-write" /> 
         <id column="id" name="id" type="string">
             <generator class="uuid"/>
         </id>
@@ -15,15 +16,17 @@
         <property column="organizationId" name="organizationId" type="string"/>
         <!-- join tables -->
         <many-to-one column="userId" entity-name="User" insert="false" name="user" update="false" lazy="false"/>
-        <many-to-one column="organizationId" entity-name="Organization" insert="false" name="organization" update="false"/>
-        <many-to-one column="departmentId" entity-name="Department" insert="false" name="department" update="false"/>
-        <many-to-one column="gradeId" entity-name="Grade" insert="false" name="grade" update="false"/>
+        <many-to-one column="organizationId" entity-name="Organization" insert="false" name="organization" update="false" lazy="proxy"/>
+        <many-to-one column="departmentId" entity-name="Department" insert="false" name="department" update="false" lazy="proxy"/>
+        <many-to-one column="gradeId" entity-name="Grade" insert="false" name="grade" update="false" lazy="proxy"/>
         <set name="hods" inverse="true">
+            <cache usage="nonstrict-read-write" /> 
             <key column="hod"/>
             <one-to-many entity-name="Department"/>
         </set>
         <one-to-one entity-name="EmploymentReportTo" name="employmentReportTo" property-ref="subordinate"/>
         <set name="subordinates" inverse="true" cascade="none">
+            <cache usage="nonstrict-read-write" /> 
             <key column="reportToId"/>
             <one-to-many entity-name="EmploymentReportTo"/>
         </set>

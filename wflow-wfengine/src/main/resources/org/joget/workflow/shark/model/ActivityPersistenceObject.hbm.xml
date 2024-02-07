@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="ActivityPersistenceObject" lazy="false" name="org.joget.workflow.shark.model.CustomActivityPersistenceObject" table="SHKActivities">
+        <cache usage="nonstrict-read-write" /> 
         <id column="oid" name="oid" type="long"/>
         <property column="Id" name="id" type="string"/>
         <property column="ActivitySetDefinitionId" name="activitySetDefinitionId" type="string"/>

@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
   <class entity-name="ResourceBundleMessage" lazy="false" name="org.joget.commons.spring.model.ResourceBundleMessage" table="wf_resource_bundle_message">
+    <cache usage="nonstrict-read-write" /> 
     <id name="id" type="string">
       <generator class="uuid"/>
     </id>
