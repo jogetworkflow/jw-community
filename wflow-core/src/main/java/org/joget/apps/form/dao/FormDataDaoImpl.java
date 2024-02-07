@@ -58,6 +58,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.IgniteCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
@@ -341,6 +342,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 }
             }
             Query q = session.createQuery(processQuery(query));
+            IgniteCacheManager.setCacheable(q, tableName);
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -414,6 +416,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         try {
             String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
             Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + newCondition));
+            IgniteCacheManager.setCacheable(q, tableName);
 
             if (params != null) {
                 int i = 1;
@@ -423,7 +426,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 }
             }
 
-            return ((Long) q.iterate().next());
+            return ((Long) q.list().get(0));
         } finally {
             closeSession(session);
         }
@@ -475,13 +478,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?1 order by e.dateCreated";
 
             Query q = session.createQuery(processQuery(query));
+            IgniteCacheManager.setCacheable(q, tableName);
 
             q.setFirstResult(0);
             q.setMaxResults(1);
             q.setParameter(1, value);
 
-            if (q.list().size() > 0) {
-                return ((String) q.iterate().next());
+            List results = q.list();
+            if (!results.isEmpty()) {
+                return ((String) results.get(0));
             }
             return null;
         } finally {
@@ -534,7 +539,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             closeSession(session);
         }
     }
-
+    
     /**
      * Call Hibernate to update DB schema
      * @param form
@@ -898,6 +903,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 if (!tableName.equals(pc.getTable().getName())) {
                     changes = true;
                 }
+                
+                // check for cache access strategy
+                String cacheAccessStrategy = pc.getCacheConcurrencyStrategy();
+                if (!"nonstrict-read-write".equals(cacheAccessStrategy)) {
+                    changes = true;
+                }
 
                 if (!changes) {
                     // get form fields
@@ -1018,6 +1029,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
+        configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
+        configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
+        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.util.IgniteHibernateRegionFactory");
+        configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
+        configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
         
         // set datasource
         DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
@@ -1638,6 +1654,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 }
             }
             Query q = session.createQuery(processQuery(query));
+            IgniteCacheManager.setCacheable(q, tableName);
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -1757,6 +1774,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String query = "SELECT COUNT("+selectField+") FROM " + tableName + " e " + joinQuery + conditionQuery + groupByQuery;
             
             Query q = session.createQuery(processQuery(query));
+            IgniteCacheManager.setCacheable(q, tableName);
 
             int i = 1;
             if (params != null) {
@@ -1775,7 +1793,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (groupBys != null && groupBys.length > 0) {
                 return ((long) q.list().size());
             } else {
-                return ((Long) q.iterate().next());
+                return ((Long) q.list().get(0));
             }
         } finally {
             closeSession(session);

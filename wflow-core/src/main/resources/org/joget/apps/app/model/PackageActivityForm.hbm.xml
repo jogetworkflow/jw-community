@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="PackageActivityForm" name="org.joget.apps.app.model.PackageActivityForm" table="app_package_activity_form">
+        <cache usage="nonstrict-read-write" /> 
         <composite-id>
             <key-property column="processDefId" name="processDefId" type="string"/>
             <key-property column="activityDefId" name="activityDefId" type="string"/>
@@ -17,7 +18,7 @@
         <property name="formIFrameStyle" type="string"/>
         <property name="autoContinue" type="boolean"/>
         <property name="disableSaveAsDraft" type="boolean"/>
-        <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false">
+        <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false" lazy="proxy">
             <column name="packageId"/>
             <column name="packageVersion"/>
         </many-to-one>

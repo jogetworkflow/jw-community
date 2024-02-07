@@ -107,6 +107,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
             }
         }
         Query q = findSession().createQuery(query);
+        q.setCacheable(true);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -141,6 +142,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         String query = "SELECT COUNT(*) FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
         query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
         Query q = findSession().createQuery(query);
+        q.setCacheable(true);
 
         if (params != null) {
             int i = 1;
@@ -150,10 +152,10 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
             }
         }
 
-        return ((Long) q.iterate().next()).longValue();
+        return ((Long) q.list().get(0)).longValue();
     }
 
-    /**gigi
+    /**
      * Gets the latest version for an object
      * @param id
      * @return
@@ -161,8 +163,9 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
     public Long getLatestVersion(final String id) {
         String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?1";
         Query q = findSession().createQuery(query);
+        q.setCacheable(true);
         q.setParameter(1, id);
-        Long value = (Long) q.iterate().next();
+        Long value = (Long) q.list().get(0);
         return (value != null) ? value.longValue() : new Long(0);
     }
 

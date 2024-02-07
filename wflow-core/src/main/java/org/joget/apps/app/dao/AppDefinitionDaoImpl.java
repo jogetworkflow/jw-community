@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
@@ -124,11 +125,12 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         // execute query and return result
         String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?1";
         Query q = findSession().createQuery(query);
+        q.setCacheable(true);
 
         q.setParameter(1, appId);
 
-        Iterator it = q.iterate();
-        return (it.hasNext()) ? ((Long)it.next()).longValue() : null;
+        List list = q.list();
+        return (!list.isEmpty()) ? ((Long)list.get(0)).longValue() : null;
     }
     
     @Override
@@ -153,6 +155,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
         }
         Query q = findSession().createQuery(query);
+        q.setCacheable(true);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);

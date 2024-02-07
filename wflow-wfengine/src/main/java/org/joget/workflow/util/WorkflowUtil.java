@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.hibernate.Cache;
+import org.hibernate.SessionFactory;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
@@ -443,6 +445,13 @@ public class WorkflowUtil implements ApplicationContextAware {
             request.setAttribute(attributeName, value);            
         }        
     }
-    
+
+    public static void clearCache() {
+        SessionFactory sf = (SessionFactory)appContext.getBean("workflowSessionFactory");
+        Cache cache = sf.getCache();
+        if (cache != null) {
+            cache.evictAllRegions();
+        }        
+    }
     
 }

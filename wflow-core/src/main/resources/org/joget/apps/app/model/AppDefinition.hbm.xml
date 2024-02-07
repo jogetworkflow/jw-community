@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="AppDefinition" name="org.joget.apps.app.model.AppDefinition" table="app_app">
+        <cache usage="nonstrict-read-write" /> 
         <composite-id>
             <key-property column="appId" name="id" type="string"/>
             <key-property column="appVersion" name="version" type="long"/>
@@ -14,6 +15,7 @@
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="formDefinitionList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -21,6 +23,7 @@
             <one-to-many entity-name="FormDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="datalistDefinitionList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -28,6 +31,7 @@
             <one-to-many entity-name="DatalistDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="userviewDefinitionList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -35,6 +39,7 @@
             <one-to-many entity-name="UserviewDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="builderDefinitionList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -42,6 +47,7 @@
             <one-to-many entity-name="BuilderDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="packageDefinitionList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -49,6 +55,7 @@
             <one-to-many entity-name="PackageDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="pluginDefaultPropertiesList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -56,6 +63,7 @@
             <one-to-many entity-name="PluginDefaultProperties"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="environmentVariableList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -63,6 +71,7 @@
             <one-to-many entity-name="EnvironmentVariable"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="messageList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -70,6 +79,7 @@
             <one-to-many entity-name="Message"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="resourceList">
+            <cache usage="nonstrict-read-write" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
