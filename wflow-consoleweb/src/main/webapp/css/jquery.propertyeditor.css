@@ -2585,3 +2585,21 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     margin-top: 150px;
     position: fixed;
 }
+th:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
+    position:relative;
+    float:right;
+    padding: 4px 0px 0px 0px;
+}
+.sortingTable{
+    margin: 10px 0px 0px 0px;
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    height: 32px;
+    color: #495057;
+    font-weight: 500;
+}
