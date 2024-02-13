@@ -1419,7 +1419,7 @@ ProcessBuilder.Actions = {
                         toNode.joinTransitions.splice(indexOf, 1);
                     }
                     if (toNode.joinTransitions.length === 1) {
-                        fromNode.join = "";
+                        toNode.join = "";
                     }
                 }
                 process.transitions.splice(t, 1);
