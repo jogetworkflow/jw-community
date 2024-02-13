@@ -12,7 +12,7 @@ public class DatabaseUtil {
         //provide option to disable the checking from JAVA_OPTS
         String collationChecking = System.getProperty(COLLATION_CHECKING, "true");
         if (!"true".equalsIgnoreCase(collationChecking)) {
-            LogUtil.info(DatabaseUtil.class.getName(), "Collaction auto fix is disabled");
+            LogUtil.info(DatabaseUtil.class.getName(), "Collation auto fix is disabled");
             return;
         }
         
