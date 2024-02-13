@@ -7795,15 +7795,29 @@ PropertyEditor.Type.Grid.prototype = {
                 /*check if the two rows should switch place,
                 based on the direction, asc or desc:*/
                 if (dir == "asc") {
-                    if (x.toLowerCase() > y.toLowerCase()) {
-                        //if so, mark as a switch and break the loop:
+                    //prevents infinite looping of the if(x.trim() == '') statement
+                    if  (x.trim() == '' && y.trim() == '' ){
+                        continue;
+                    //moves empty cells to the bottom of the row
+                    }else if(x.trim() == ''){
                         shouldSwitch= true;
                         break;
-                    }
+                    } else if ((x.toLowerCase().localeCompare(y.toLowerCase(), undefined,{numeric:true})) == 1 && !(y.trim() == '')) {
+                        //if == 1, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                    } 
                 } else if (dir == "desc") {
-                    if (x.toLowerCase() < y.toLowerCase()) {
-                        //if so, mark as a switch and break the loop:
-                        shouldSwitch = true;
+                    //prevents infinite looping of the if(x.trim() == '') statement
+                    if  (x.trim() == '' && y.trim() == '' ){
+                        continue;
+                    //moves empty cells to the bottom of the row
+                    }else if(x.trim() == ''){
+                        shouldSwitch= true;
+                        break;
+                    } else if ((y.toLowerCase().localeCompare(x.toLowerCase(), undefined,{numeric:true})) == 1 && !(y.trim() == '')) {
+                        //if == 1, mark as a switch and break the loop:
+                        shouldSwitch= true;
                         break;
                     }
                 }
@@ -7814,7 +7828,7 @@ PropertyEditor.Type.Grid.prototype = {
                 rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                 switching = true;
                 //Each time a switch is done, increase this count by 1:
-                switchcount ++;      
+                switchcount ++;
             } else {
                 /*If no switching has been done AND the direction is "asc",
                 set the direction to "desc" and run the while loop again.*/
