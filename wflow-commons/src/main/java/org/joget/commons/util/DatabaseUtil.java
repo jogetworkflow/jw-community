@@ -5,8 +5,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseUtil {
+    public static final String COLLATION_CHECKING = "wflow.collationChecking";
     
     public static void checkAndFixMySqlDbCollation(Connection connection) {
+        
+        //provide option to disable the checking from JAVA_OPTS
+        String collationChecking = System.getProperty(COLLATION_CHECKING, "true");
+        if (!"true".equalsIgnoreCase(collationChecking)) {
+            LogUtil.info(DatabaseUtil.class.getName(), "Collaction auto fix is disabled");
+            return;
+        }
+        
         String databaseCollation = null;
         String tableCharSet = null;
         String tableCollation = null;
