@@ -3689,6 +3689,11 @@ _CustomBuilder.Builder = {
         
         var selectedELSelector = "";
         var selectedElIndex = 0;
+        
+        //to handle change of id
+        var selectedELAltSelector = "";
+        var selectedElAltIndex = 0;
+        
         if (self.selectedEl) {
             if ($(self.selectedEl).is("[data-cbuilder-id]")) {
                 selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).data("cbuilder-id") +'"]';
@@ -3696,8 +3701,12 @@ _CustomBuilder.Builder = {
                 selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
                 selectedELSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
             }
-            
             selectedElIndex = self.frameBody.find(selectedELSelector).index(self.selectedEl);
+            
+            //to handle change of id
+            selectedELAltSelector = '[data-cbuilder-id="'+ $(self.selectedEl).parent().closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
+            selectedELAltSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
+            selectedElAltIndex = self.frameBody.find(selectedELAltSelector).index(self.selectedEl);
         } 
         
         self.frameBody.html("");
@@ -3715,6 +3724,13 @@ _CustomBuilder.Builder = {
             //reselect previous selected element
             if (selectedELSelector !== "") {
                 var element = self.frameBody.find(selectedELSelector);
+                
+                //to handle change of id
+                if (element.length === 0) {
+                    element = self.frameBody.find(selectedELAltSelector);
+                    selectedElIndex = selectedElAltIndex;
+                }
+                
                 if (element.length > 1) {
                     var elements = element;
                     do {
