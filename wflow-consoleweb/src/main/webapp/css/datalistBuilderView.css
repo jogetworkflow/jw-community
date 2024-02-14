@@ -465,6 +465,7 @@
     margin-bottom: 2px;
 }
 .dataList .filter-cell{
+    text-align: left;
     vertical-align: top;
     position: relative;
 }
@@ -1050,4 +1051,13 @@ html:not(.ismobile) .dataList .show_hide_control:hover ul {
 .body .dataList th.row_action:empty,
 .body .dataList td.row_action:empty{
     padding: 0 !important;
+}
+.dropdown-item{
+    display: block;
+    width: 100%;
+    border:0;
+    text-align: left;
+}
+.dropdown-item input{
+    min-width: auto !important;
 }
