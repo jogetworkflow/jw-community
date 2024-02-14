@@ -7802,7 +7802,7 @@ PropertyEditor.Type.Grid.prototype = {
                     }else if(x.trim() == ''){
                         shouldSwitch= true;
                         break;
-                    } else if ((x.toLowerCase().localeCompare(y.toLowerCase(), undefined,{numeric:true})) == 1 && !(y.trim() == '')) {
+                    } else if ((x.toLowerCase().localeCompare(y.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() == '')) {
                         //if == 1, mark as a switch and break the loop:
                         shouldSwitch= true;
                         break;
@@ -7815,7 +7815,7 @@ PropertyEditor.Type.Grid.prototype = {
                     }else if(x.trim() == ''){
                         shouldSwitch= true;
                         break;
-                    } else if ((y.toLowerCase().localeCompare(x.toLowerCase(), undefined,{numeric:true})) == 1 && !(y.trim() == '')) {
+                    } else if ((y.toLowerCase().localeCompare(x.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() == '')) {
                         //if == 1, mark as a switch and break the loop:
                         shouldSwitch= true;
                         break;
