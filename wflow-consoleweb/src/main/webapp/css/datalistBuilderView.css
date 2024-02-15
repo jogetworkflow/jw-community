@@ -818,6 +818,20 @@ body .filter-cell .form-button {
 .filter_form .filters .filter-cell .mobile_label{
     display: none;
 }
+.btn-group .multiselect-container .multiselect-filter>.fa-search {
+    padding-left: .5rem;
+    padding-bottom: .5rem;
+}
+span.multiselect-native-select .multiselect-container .form-check .form-check-label {
+    padding-left: 5px;
+}
+body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .multiselect-filter>input.multiselect-search {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+#content span.multiselect-native-select button.custom-select.waves-effect {
+    margin-bottom: 0px;
+}
 @media (max-width: 767px) {
     .dataList .swipeActions > .rowActionsContainer {
         position: absolute;
@@ -902,6 +916,7 @@ body .filter-cell .form-button {
     }
     .filter_form:not(.popup) .filters .filter-cell input {
         margin-top: 5px;
+        padding-right: 5px;
     }
     .filter_form:not(.popup) .filters .filter-cell .mobile_label {
         display: block;
@@ -912,6 +927,14 @@ body .filter-cell .form-button {
     .filter_form:not(.popup) .filters .filter-cell span[class*='label'],
     .filter_form:not(.popup) .filters .filter-cell span[class*='Label']{
         display: none;
+    }
+    .btn-group .multiselect-container .multiselect-filter>.fa-search {
+        padding-bottom: .5rem;
+    }
+    .multiselect-container .multiselect-all .form-check, 
+    .multiselect-container .multiselect-group .form-check, 
+    .multiselect-container .multiselect-option .form-check {
+        padding: 0 5px 0 15px !important;
     }
 }
 
