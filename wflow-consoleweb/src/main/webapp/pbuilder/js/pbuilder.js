@@ -4816,7 +4816,7 @@ ProcessBuilder = {
             }
         }
         
-        if (typeof obj === "object") {
+        if (typeof obj === "object" && !(obj instanceof String)) {
             for (var prop in obj) {
                 if (prop === "-self-closing") {
                     selfClosing = obj['-self-closing'];
@@ -4841,7 +4841,7 @@ ProcessBuilder = {
         if (name !== "") {
             if (selfClosing) {
                 xml = space + "<" + name + attrs + "/>\n";
-            } else if (typeof obj !== "object") {
+            } else if (typeof obj !== "object" || obj instanceof String) {
                 xml = space + "<" + name + ">" + body + "</" + name + ">\n";
             } else {
                 xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
@@ -4880,13 +4880,18 @@ ProcessBuilder = {
      * Update json def based on xpdl
      */
     updateJsonFromXpdl : function(xpdl, callback) {
+        var xpdlFile = new Blob([xpdl], {type : 'text/plain'});
+        var params = new FormData();
+        params.append("xpdlFile", xpdlFile);
+        
         $.ajax({
             type: "POST",
-            data: {
-                "xpdl": xpdl
-            },
+            data: params,
             url: CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/process/builder/xpdlJson',
             dataType : "json",
+            cache: false,
+            processData: false,
+            contentType: false,
             beforeSend: function (request) {
                 request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             },

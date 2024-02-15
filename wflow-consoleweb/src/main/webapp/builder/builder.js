@@ -20,7 +20,8 @@
             options : {
                 getDefinitionUrl : "",
                 rightPropertyPanel : false,
-                defaultBuilder : false
+                defaultBuilder : false,
+                submitDiff : false //use for saving, prepare diff and post together with json definition
             },
             callbacks : {
                 initBuilder : "",
@@ -1145,50 +1146,82 @@
             CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
             var self = CustomBuilder;
             var json = CustomBuilder.getJson();
-            $.post(CustomBuilder.saveUrl, {json : json} , function(data) {
-                var d = JSON.decode(data);
-                if(d.success == true){
-                    $("#save-btn").removeClass("unsaved");
-                    CustomBuilder.savedJson = json;
-                    $('#cbuilder-json-original').val(d.data);
-                    CustomBuilder.updateSaveStatus("0");
-                    CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
-                    
-                    if (d.properties !== undefined && d.properties !== null) {
-                        CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
-                    }
+            
+            var jsonFile = new Blob([json], {type : 'text/plain'});
+            var params = new FormData();
+            params.append("jsonFile", jsonFile);
+            
+            if (CustomBuilder.config.builder.options["submitDiff"]) {
+                //prepare diff file
+                // Parse the original JSON strings into JavaScript objects
+                const oldData = JSON.decode($('#cbuilder-json-original').val());
 
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
-                }else{
-                    CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
+                // Get the difference patch
+                const diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
 
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
-                }
+                // Convert the difference patch to a JSON string
+                const diffString = JSON.stringify(diff);
                 
-                //check builder name change
-                var name = CustomBuilder.getBuilderItemName();
-                if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
-                    if (name !== null) {
-                        $("#builderElementName .title span.item_name").text(name);
-
-                        $("head title").text(CustomBuilder.builderLabel + " : " + name);
-                    }
-                    
-                    //reload nav
-                    CustomBuilder.reloadBuilderMenu();
-                }
+                //submit it
+                var diffFile = new Blob([diffString], {type : 'text/plain'});
+                params.append("diffFile", diffFile);
+            }
         
-                setTimeout(function(){
-                    $("#save-btn").removeAttr("disabled");
-                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                        $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                        $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                        $("#save-btn > i").addClass("zmdi zmdi-check");
-                        $("body").removeClass("initializing");
-                        $("#loadingMessage").text("");
+            $.ajax({ 
+                type: "POST", 
+                url: CustomBuilder.saveUrl,
+                data: params,
+                cache: false,
+                processData: false,
+                contentType: false,
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success:function(data) {
+                    var d = JSON.decode(data);
+                    if(d.success == true){
+                        $("#save-btn").removeClass("unsaved");
+                        CustomBuilder.savedJson = json;
+                        $('#cbuilder-json-original').val(d.data);
+                        CustomBuilder.updateSaveStatus("0");
+                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
+
+                        if (d.properties !== undefined && d.properties !== null) {
+                            CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
+                        }
+
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
+                    }else{
+                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
+
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                     }
-                }, 3000);
-            }, "text");
+
+                    //check builder name change
+                    var name = CustomBuilder.getBuilderItemName();
+                    if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
+                        if (name !== null) {
+                            $("#builderElementName .title span.item_name").text(name);
+
+                            $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                        }
+
+                        //reload nav
+                        CustomBuilder.reloadBuilderMenu();
+                    }
+
+                    setTimeout(function(){
+                        $("#save-btn").removeAttr("disabled");
+                        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                            $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
+                            $("#save-btn > i").removeClass("las la-cloud-upload-alt");
+                            $("#save-btn > i").addClass("zmdi zmdi-check");
+                            $("body").removeClass("initializing");
+                            $("#loadingMessage").text("");
+                        }
+                    }, 3000);
+                }
+            });
         } else {
             setTimeout(function(){
                 $("#save-btn").removeAttr("disabled");
