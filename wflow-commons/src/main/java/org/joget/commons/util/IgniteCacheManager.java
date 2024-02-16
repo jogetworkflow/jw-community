@@ -68,7 +68,7 @@ public class IgniteCacheManager {
     /**
      * Clear all caches in the Ignite grid.
      */
-    public void clearAll() {
+    public static void clearAll() {
         if (started) {
             Ignite ignite = Ignition.getOrStart(igniteCfg);
             Collection<String> cacheNames = ignite.cacheNames();
@@ -83,7 +83,7 @@ public class IgniteCacheManager {
      * Clear a specific cache in the Ignite grid.
      * @param cacheName 
      */
-    public void clear(String cacheName) {
+    public static void clear(String cacheName) {
         if (started) {
             Ignite ignite = Ignition.getOrStart(igniteCfg);
             IgniteCache cache = ignite.getOrCreateCache(cacheName);
