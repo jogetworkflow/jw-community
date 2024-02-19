@@ -386,6 +386,9 @@
     padding:2px 4px;
     text-align:right;
 }
+body.rtl .dataList .exportlinks {
+    text-align:left;
+}
 .dataList div.exportlinks a {
     text-decoration: none
 }
