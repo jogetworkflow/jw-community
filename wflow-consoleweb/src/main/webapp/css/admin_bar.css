@@ -569,7 +569,8 @@ body.fixiosframe.stop-scrolling {
     }
 }
 @media screen and (max-width:680px) { 
-    #adminBar .analyzer-page {
+    #adminBar .analyzer-page,
+    body.quickEditModeActive .analyzer-page{
         display: none !important;
     }
     .quickOverlayButton a i {
