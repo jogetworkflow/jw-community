@@ -551,10 +551,19 @@ body.fixiosframe.stop-scrolling {
     background: #ff6100;
     position: absolute;
     right: 0;
-    padding: 2px 60px;
+    padding: 5px 60px;
     font-weight: bold;
     color: #fff;
     font-size: 18px;
+    font-family: arial;
+    line-height: 20px;
+}
+body.rtl #adminBar #environmentName{
+    right: unset;
+    left:0;
+}
+body.rtl #adminBar.adminBarInactive #environmentName{
+    left:auto;
 }
 @media screen and (min-width:681px) { 
     #page .analyzer-page {
@@ -569,7 +578,8 @@ body.fixiosframe.stop-scrolling {
     }
 }
 @media screen and (max-width:680px) { 
-    #adminBar .analyzer-page {
+    #adminBar .analyzer-page,
+    body.quickEditModeActive .analyzer-page{
         display: none !important;
     }
     .quickOverlayButton a i {
@@ -604,12 +614,6 @@ body.fixiosframe.stop-scrolling {
     #quickOverlayFrameDiv {
         height: calc(100% - 49px);
     }
-    #adminBar #environmentName{
-        height: 45px;
-        padding: 8px 45px;
-    }
-}
-@media screen and (max-width:400px) { 
     #adminBar #environmentName{
         max-width: 75px;
         height: 45px;

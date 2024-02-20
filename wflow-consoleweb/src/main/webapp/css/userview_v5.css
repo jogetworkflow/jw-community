@@ -6149,12 +6149,20 @@ a.btn.disabled,fieldset:disabled a.btn {
         margin-right: auto;
     }
 }
+body.rtl .accordion>.card>.card-header {
+    text-align: right;
+}
 body.rtl .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
     border-radius: 0 4px 4px 0;
 }
-
 body.rtl .btn-group>.btn:last-child:not(:first-child), body.rtl .btn-group>.dropdown-toggle:not(:first-child) {
     border-radius: 4px 0 0 4px;
+}
+body.rtl li.menu span {
+    text-align: right;
+}
+body.rtl .ContainerComponent {
+    text-align: right;
 }
 
 .fc-toolbar-chunk, .btn-group {

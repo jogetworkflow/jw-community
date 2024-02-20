@@ -262,6 +262,22 @@ body.rtl .dataList span.pagelinks{
 .dataList .pagelinks .pc.last:before{
     content:"\f101";
 }
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first:before{
+    content:"\f101";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev:before{
+    content:"\f105";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next:before{
+    content:"\f104";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before{
+    content:"\f100";
+}
 .dataList .pagelinks .pc.first-disabled,
 .dataList .pagelinks .pc.prev-disabled,
 .dataList .pagelinks .pc.next-disabled,

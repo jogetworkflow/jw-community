@@ -386,6 +386,9 @@
     padding:2px 4px;
     text-align:right;
 }
+body.rtl .dataList .exportlinks {
+    text-align:left;
+}
 .dataList div.exportlinks a {
     text-decoration: none
 }
@@ -543,6 +546,38 @@ body .filter-cell .form-button {
 
 .pagelinks .pc.last-disabled{
     background:url("../images/v3/ic_last_dis.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first{
+    background:url("../images/v3/ic_last.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev{
+    background:url("../images/v3/ic_next.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next{
+    background:url("../images/v3/ic_previous.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last{
+    background:url("../images/v3/ic_first.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first-disabled{
+    background:url("../images/v3/ic_last_dis.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev-disabled{
+    background:url("../images/v3/ic_next_dis.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next-disabled{
+    background:url("../images/v3/ic_previous_dis.png") no-repeat;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last-disabled{
+    background:url("../images/v3/ic_first_dis.png") no-repeat;
 }
 
 #preview-label {
