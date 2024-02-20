@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -78,12 +79,34 @@ public class FormServiceImpl implements FormService {
         }
         return html;
     }
-
+    
     /**
-     * Creates an element object from a JSON definition
-     * @param formJson
-     * @return
+     * Merge the request parameters from previous form data to new form data.
+     * Used for nested grid data
+     * 
+     * @param newFormData
+     * @param mergeFormData 
      */
+    @Override
+    public void mergeProcessedRequestParams(FormData newFormData, FormData mergeFormData) {
+        Map<String, String[]> requestParams = newFormData.getRequestParams();
+        Map<String, String[]> mergeRequestParams = mergeFormData.getRequestParams();
+        for (Entry<String, String[]> entry : mergeRequestParams.entrySet()) {
+            if (requestParams.containsKey(entry.getKey())) {
+                //if key exist but current value is empty
+                String[] values = entry.getValue();
+                if (values.length > 1 || (values.length == 1 && !values[0].isEmpty())) {
+                    String[] currentValues = requestParams.get(entry.getKey());
+                    if (currentValues.length == 0 || (currentValues.length == 1 && currentValues[0].isEmpty())) {
+                        requestParams.put(entry.getKey(), mergeRequestParams.get(entry.getKey()));
+                    }
+                }
+            } else {
+                requestParams.put(entry.getKey(), mergeRequestParams.get(entry.getKey()));
+            }
+        }
+    }
+    
     @Override
     public Element createElementFromJson(String elementJson) {
         return createElementFromJson(elementJson, true);

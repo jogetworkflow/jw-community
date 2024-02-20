@@ -378,6 +378,8 @@ public class FormBuilderWebController {
                 //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request 
                 FormData newFormData = new FormData();
                 newFormData = formService.retrieveFormDataFromRequest(newFormData, request);
+                //merge the data just in case there is new request parameter added for primary key of subform
+                formService.mergeProcessedRequestParams(newFormData, formData);
                 Map<String, String[]> requestParams = newFormData.getRequestParams();
                 if (requestParams != null && !requestParams.isEmpty()) {
                     requestParams.remove("_json");
