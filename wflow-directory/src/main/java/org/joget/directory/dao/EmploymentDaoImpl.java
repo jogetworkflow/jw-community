@@ -429,6 +429,14 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
                 int size = user.getEmployments().size();
                 for (Employment e : (Set<Employment>) user.getEmployments()) {
                     if (organization.getId().equals(e.getOrganizationId())) {
+                        
+                        //Unassign HOD
+                        if (e.getHods() != null && !e.getHods().isEmpty() && e.getDepartment() != null) {
+                            Department orgDepartment = e.getDepartment();
+                            orgDepartment.setHod(null);
+                            departmentDao.updateDepartment(orgDepartment);
+                        }
+                        
                         if (size > 1) {
                             delete("Employment", e);
                             size--;
