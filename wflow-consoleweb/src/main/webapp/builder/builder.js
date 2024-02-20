@@ -2516,6 +2516,25 @@
                         }
                     } while (continueFind);
                     
+                    //if it is prev, find the first row of current change block
+                    if (!isNext) {
+                        var preRow;
+                        continueFind = false;
+                        do {
+                            preRow = $(row).closest("tr").prev().find("td");
+                            
+                            if ($(preRow).length > 0) {
+                                continueFind = $(preRow).attr("class") === $(row).attr("class");
+
+                                if (continueFind) {
+                                    row = preRow;
+                                }
+                            } else {
+                                break;
+                            }
+                        } while (continueFind);
+                    }
+                    
                     $("#diffoutput table tbody tr .current").removeClass("current");
                     $(row).addClass("current");
                     
