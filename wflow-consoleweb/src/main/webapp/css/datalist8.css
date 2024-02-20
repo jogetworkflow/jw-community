@@ -549,6 +549,9 @@ body.rtl .dataList .pagelinks > *:first-child{
 .filter_form .filters .filter-cell .mobile_label{
     display: none;
 }
+.multiselect-container .multiselect-filter>input.multiselect-search{
+    padding-right: 5px;
+}
 @media (max-width: 767px) {
     .dataList .swipeActions > .rowActionsContainer {
         position: absolute;
