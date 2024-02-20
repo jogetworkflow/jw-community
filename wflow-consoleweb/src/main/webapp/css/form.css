@@ -406,6 +406,9 @@ ul.form-fileupload-value li a {display: inline-block;}
 .cgrid table {
     width: 100%;
 }
+.grid td {
+    vertical-align: top;
+}
 .grid th, .grid td {
     border: solid 1px silver;
     margin: 0px;
