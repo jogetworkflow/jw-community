@@ -1157,7 +1157,11 @@
                 const oldData = JSON.decode($('#cbuilder-json-original').val());
 
                 // Get the difference patch
-                const diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
+                let diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
+                
+                if (diff === null || diff === undefined) {
+                    diff = {};
+                }
 
                 // Convert the difference patch to a JSON string
                 const diffString = JSON.stringify(diff);
