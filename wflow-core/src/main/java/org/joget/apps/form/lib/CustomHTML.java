@@ -220,7 +220,12 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                         element.setProperty("id", name);
                         element.setParent(this);
                         String value = FormUtil.getElementPropertyValue(element, formData);
-                        newInputString = newInputString.replaceFirst("value=\"[^\\\"]*\"", "value=\"" + StringUtil.escapeRegex(StringEscapeUtils.escapeHtml(value)) + "\"");
+                        value = StringEscapeUtils.escapeHtml(value);
+                        
+                        //prevent unicode character double escaped 
+                        value = value.replaceAll("&amp;([#0-9a-zA-Z]+;)", "&$1");
+                        
+                        newInputString = newInputString.replaceFirst("value=\"[^\\\"]*\"", "value=\"" + StringUtil.escapeRegex(value) + "\"");
                     }
 
                     customHTML = customHTML.replaceFirst(StringUtil.escapeRegex(inputString), StringUtil.escapeRegex(newInputString));
@@ -245,8 +250,12 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                     element.setProperty("id", name);
                     element.setParent(this);
                     String value = FormUtil.getElementPropertyValue(element, formData);
+                    value = StringEscapeUtils.escapeHtml(value);
+                        
+                    //prevent unicode character double escaped 
+                    value = value.replaceAll("&amp;([#0-9a-zA-Z]+;)", "&$1");
 
-                    newTextareaString = newTextareaString.replaceFirst(">.*?</", ">" + StringUtil.escapeRegex(StringEscapeUtils.escapeHtml(value)) + "</");
+                    newTextareaString = newTextareaString.replaceFirst(">.*?</", ">" + StringUtil.escapeRegex(value) + "</");
 
                     customHTML = customHTML.replaceFirst(StringUtil.escapeRegex(textareaString), StringUtil.escapeRegex(newTextareaString));
                 }
