@@ -730,4 +730,18 @@ public interface AppService {
      * @return 
      */
     public Collection<AppDefinition> getUnprotectedAppList();
+    
+    /**
+     * Checking the zip file is containing the git src
+     * @param zip
+     * @return 
+     */
+    public boolean isGitSrcZip(byte[] zip);
+    
+    /**
+     * Import App Definition from git src in zip file
+     * @param zip
+     * @return 
+     */
+    public AppDefinition importAppDefFromGitSrc(byte[] zip);
 }
