@@ -116,7 +116,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             ApplicationContext ac = AppUtil.getApplicationContext();
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
-            if (startFormDef != null && startFormDef.getFormId() != null) {
+            if (startFormDef != null && startFormDef.getFormId() != null && !startFormDef.getFormId().isEmpty()) {
                 FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
                 FormDefinition formDef = formDefinitionDao.loadById(startFormDef.getFormId(), appDef);
@@ -221,7 +221,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
 
-            if ("Yes".equals(getPropertyString("runProcessDirectly")) && !((startFormDef != null && (startFormDef.getFormId() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))))) {
+            if ("Yes".equals(getPropertyString("runProcessDirectly")) 
+                    //start process form is null or empty and it is not external form
+                    && !((startFormDef != null && ((startFormDef.getFormId() != null && !startFormDef.getFormId().isEmpty()) || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))))) {
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     setProperty("view", "featureDisabled");
                 } else {
