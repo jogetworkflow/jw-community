@@ -193,10 +193,12 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
             AppService appService = (AppService) ac.getBean("appService");
             DataListService dataListService = (DataListService) ac.getBean("dataListService");
             String target = "_self";
+            String embed = "";
             if ("true".equalsIgnoreCase(getPropertyString("showPopup"))) {
                 target = "popup";
+                embed = "&embed=true";
             }
-            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", new String[]{target}, true, "message/userview/inboxMenu");
+            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", new String[]{embed,target}, true, "message/userview/inboxMenu");
             cacheDataList = dataListService.fromJson(json);
         }
         return cacheDataList;
