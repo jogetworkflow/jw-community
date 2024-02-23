@@ -5374,10 +5374,14 @@ body.rtl .left-nav{
 }
 body.rtl .page-content{
     left: 0 !important;
-    right: 220px !important;
+    right: 220px;
 }
 body.rtl .page-content .layui-tab-title{
     float: right;
+}
+body.rtl .page-content-bg{
+    left: 0;
+    right: 220px;
 }
 body.rtl .container .logo a{
     padding-right: 20px;
@@ -5392,18 +5396,12 @@ body.rtl .container .left_open{
 body.rtl .left-nav #nav li .nav_right{
     float: left;
 }
-body.rtl .left-nav #nav li a i{
-    padding-right: 0 !important;
-}
 body.rtl #page > div.container > ul{
     float: left !important;
 }
 body.rtl .layui-tab-title li .layui-tab-close{
     margin-right: 8px;
     margin-left: unset !important;
-}
-body.rtl div.x-nav > a{
-    float: left !important;
 }
 
 body.rtl .hasDatepicker + a + .close-icon, body.rtl .hasDatepicker + img + .close-icon{
@@ -5926,4 +5924,94 @@ span.multiselect-native-select button.custom-select {
 .left-nav #nav li .nav_right,
 .left-nav .menu-link span.pull-right.badge.rowCount {
     margin-left: auto;
+}
+
+body.rtl .left-nav #nav li a i {
+    padding-left: 10px;
+    padding-right: 0;
+}
+
+body.rtl .left-nav #nav li a {
+    border-left: none;
+    border-right: 4px solid transparent;
+}
+
+body.rtl .left-nav #nav li .nav_right,
+body.rtl .left-nav .menu-link span.pull-right.badge.rowCount,
+body.rtl .x-nav a {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+body.rtl .left-nav #nav li .sub-menu li a {
+    padding-right: 30px;
+    padding-left: 15px;
+}
+
+body.rtl .form-button + .form-button,
+body.rtl .btn + .btn,
+body.rtl .button + .button {
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+body.rtl #content ol, #content ul {
+    padding-left: 0;
+    padding-right: 30px;
+}
+
+body.rtl .form .form-row > label,
+body.rtl #form-canvas .form-cell .label,
+body.rtl #form-canvas .subform-cell .label {
+    text-align: left;
+    padding-right: 0;
+    padding-left: 15px;
+}
+
+body.rtl .form .form-buttons {
+    padding-left: 15px;
+    padding-right: 170px;
+}
+
+.x-nav,
+body.rtl .form-row {
+    display: flex;
+}
+
+.x-nav a {
+    margin-left: auto;
+}
+
+body.rtl td,
+body.rtl .subform-section-title,
+body.rtl .grid,
+body.rtl .grid-stack-item-header h4,
+body.rtl .dataList .filters,
+body.rtl .pagebanner,
+body.rtl .dataList .actions.left,
+body.rtl .print-button:before,
+body.rtl form#profile,
+body.rtl .subform-cell {
+    text-align: right;
+}
+
+body.rtl .dataList div.exportlinks {
+    float: left;
+}
+
+body.rtl .dataList span.pagelinks,
+body.rtl .form-cell-value,
+body.rtl .subform-cell-value {
+    float: right;
+}
+
+body.rtl .ui-html.ql-editor {
+    text-align: right;
+}
+
+body.rtl .form fieldset.has-legend legend {
+    transform: translate(15px, -15px);
+}
+body.rtl .ContainerComponent {
+    text-align: right;
 }

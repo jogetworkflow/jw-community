@@ -632,7 +632,7 @@ public class XadminTheme extends UniversalTheme {
             html += "<a><cite>" + ResourceBundleUtil.getMessage("ubuilder.pageNotFound") + "</cite></a>";
         }
         
-        html += "</span><a class=\"layui-btn layui-btn-small\" style=\"line-height:1.6em;margin-top:4px;float:right\" onclick=\"location.reload()\" title=\""+ResourceBundleUtil.getMessage("general.method.label.refresh")+"\"><i class=\"layui-icon layui-icon-refresh\" style=\"line-height:30px\"></i></a></div>";
+        html += "</span><a class=\"layui-btn layui-btn-small\" style=\"line-height:1.6em;margin-top:4px;\" onclick=\"location.reload()\" title=\""+ResourceBundleUtil.getMessage("general.method.label.refresh")+"\"><i class=\"layui-icon layui-icon-refresh\" style=\"line-height:30px\"></i></a></div>";
         return html;
     }
     
@@ -648,7 +648,8 @@ public class XadminTheme extends UniversalTheme {
         } else {
             icon = "<i class=\"iconfont left-nav-li\" lay-tips=\""+StringUtil.stripAllHtmlTag(label)+"\">&#xe6b4;</i>";
         }
-        return icon + "<cite>" + label + "</cite><i class=\"iconfont nav_right\">&#xe697;</i>";
+        String navRightIcon = AppUtil.isRTL() ? "&#xe6a7;" : "&#xe697;";
+        return icon + "<cite>" + label + "</cite><i class=\"iconfont nav_right\">"+navRightIcon+"</i>";
     }
     
     @Override

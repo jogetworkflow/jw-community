@@ -8748,7 +8748,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             selector: '#' + this.id,
             height: height,
             plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons codesample',
-            toolbar1: 'undo redo | insert | styles fontsize | forecolor backcolor bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample emoticons | removeformat print preview',
+            toolbar1: 'undo redo | insert | styles fontsize | forecolor backcolor | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample emoticons | removeformat print preview | ltr rtl',
             menubar: 'edit insert view format table tools',
             image_advtab: true,
             relative_urls: false,

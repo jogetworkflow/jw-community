@@ -463,15 +463,13 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             data.put("is_login_page", false);
             data.put("context_path", request.getContextPath());
             data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
             String locale = AppUtil.getAppLocale();
             String language = AppUtil.getAppLanguage();
             data.put("locale", locale);
             data.put("language", language);
             data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
             data.put("body_id", "offline");
-            data.put("body_classes", processer.getBodyClasses(rightToLeft, locale));
+            data.put("body_classes", processer.getBodyClasses(locale));
             data.put("base_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/");
             data.put("home_page_link", "/web/userview/" + appId + "/" + userviewId + "/" + userviewKey + "/index");
             data.put("title", "{{TEMPLATE_TITLE}}");

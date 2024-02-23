@@ -1283,3 +1283,12 @@ body.popupBody .form-section:first-of-type {
         padding-top: 0px !important;
     }
 }
+
+body.rtl .form-container [class*=form-cell-value]{
+    float: right;
+}
+
+body.rtl .ui-html.ql-editor,
+body.rtl table:not(.ui-datepicker-calendar) * {
+    text-align: right;
+}

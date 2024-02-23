@@ -1,3 +1,16 @@
+<style>
+    body.rtl #dataList_{{list.id}} .table-wrapper .ph_columns {
+        display: flex;
+    }
+    body.rtl #dataList_{{list.id}} .table-wrapper .card-body,
+    body.rtl #dataList_{{list.id}} .table-wrapper .ph_columns * {
+        text-align: right;
+    }
+    body.rtl #dataList_{{list.id}} .table-wrapper .card-body .label {
+        padding-left: 15px;
+        padding-right: 0;
+    }
+</style>
 <div class="cards row">
     {{rows data-cbuilder-highlight="@@datalist.simpleCardTemplate.card@@" data-cbuilder-style="[{'prefix' : 'card', 'class' : '.card', 'label' : '@@datalist.simpleCardTemplate.card@@'}]"}}
         <div class="{{columns_mobile}} {{columns_tablet}} {{columns_desktop}} p-2">
