@@ -95,6 +95,9 @@ public final class PluginThread extends Thread {
         private int serverPort;
         private Locale locale;
         private String remoteAddr;
+        private String localAddr;
+        private String localName;
+        private int localPort;
         
         public PluginThreadHttpRequest(HttpServletRequest request) {
             this.method = request.getMethod();
@@ -111,6 +114,9 @@ public final class PluginThread extends Thread {
             this.schema = request.getScheme();
             this.serverName = request.getServerName();
             this.serverPort = request.getServerPort();
+            this.localAddr = request.getLocalAddr();
+            this.localName = request.getLocalName();
+            this.localPort = request.getLocalPort();
             this.locale = request.getLocale();
             this.remoteAddr = request.getRemoteAddr();
             
@@ -456,17 +462,17 @@ public final class PluginThread extends Thread {
 
         @Override
         public String getLocalName() {
-            return null;
+            return this.localName;
         }
 
         @Override
         public String getLocalAddr() {
-            return null;
+            return this.localAddr;
         }
 
         @Override
         public int getLocalPort() {
-            return 0;
+            return this.localPort;
         }
 
         @Override
