@@ -31,6 +31,7 @@ import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.commons.util.FileLimitException;
@@ -105,38 +106,59 @@ public class ProcessBuilderWebController {
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/process/builder/save", method = RequestMethod.POST)
     @Transactional(rollbackFor = { RuntimeException.class, SQLException.class, JDBCException.class })
-    public String save(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app version
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
+        
         JSONObject jsonObject = new JSONObject();
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         String oriJson = getXpdlAndMappingJson(appDef, request);
         json = PropertyUtil.propertiesJsonStoreProcessing(oriJson, json);
         
+        String diff = "";
+        // get diff file in POST body
+        MultipartFile diffFile = null;
+        try {
+            diffFile = FileStore.getFile("diffFile");
+        } catch (FileLimitException e) {
+            LogUtil.warn(AppUtil.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+        }
+        
+        if (diffFile != null) {
+            try {
+                diff =  new String(diffFile.getBytes(), "UTF-8");
+            } catch (IOException e) {
+                LogUtil.error(AppUtil.class.getName(), e, "Fail to retrieve submitted diff file");
+            }
+        }
+        
         boolean success = true;
         String error = "";
         
         try {
-            if (!oriJson.equals(json)) {
-                JSONObject oriObject = new JSONObject(oriJson);
+            if (diff != null && !diff.isEmpty()) {
+                JSONObject diffObject = new JSONObject(diff);
                 JSONObject newObject = new JSONObject(json);
-
-                //compare xpdl
-                String oriXpdlJson = oriObject.getJSONObject("xpdl").toString();
-                String newXpdlJson = newObject.getJSONObject("xpdl").toString();
-                if (!oriXpdlJson.equals(newXpdlJson)) {
+        
+                //check there is change in xpdl
+                if (diffObject.has("xpdl")) {
+                    String newXpdlJson = newObject.getJSONObject("xpdl").toString();
                     String xpdl = U.jsonToXml(newXpdlJson);
+                    
                     try {
                         // deploy package
                         appService.deployWorkflowPackage(appId, version, xpdl.getBytes("UTF-8"), true);
-                        } catch (Exception ex) {
-                            success = false;
-                            error = ex.getMessage().replace(":", "");
+                    } catch (Exception ex) {
+                        success = false;
+                        error = ex.getMessage().replace(":", "");
                     }
                 }
                 
@@ -146,134 +168,155 @@ public class ProcessBuilderWebController {
                     if (packageDef == null) {
                         packageDef = packageDefinitionDao.createPackageDefinition(appDef, appDef.getVersion());
                     }
+                    
+                    boolean hasChanges = false;
+                    
+                    //check there is change in activity form mapping
+                    if (diffObject.has("activityForms")) {
+                        hasChanges = true;
+                        
+                        JSONObject newFormMappings = newObject.getJSONObject("activityForms");
+                        JSONObject diffFormMappings = diffObject.getJSONObject("activityForms");
+                        
+                        Iterator keys = diffFormMappings.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next().toString();
+                            if (key.startsWith("_")) {
+                                key = key.substring(1);
+                            }
+                            
+                            if (!newFormMappings.has(key)) { 
+                                //the mapping is removed
+                                String[] temp = key.substring(1).split("::");
+                                packageDef.removePackageActivityForm(temp[0], temp[1]);
+                            } else {
+                                //update it
+                                String[] temp = key.split("::");
+                                JSONObject mapping = newFormMappings.getJSONObject(key);
 
-                    JSONObject oldFormMappings = oriObject.getJSONObject("activityForms");
-                    JSONObject newFormMappings = newObject.getJSONObject("activityForms");
+                                PackageActivityForm activityForm = packageDef.getPackageActivityForm(temp[0], temp[1]);
+                                boolean isNew = false;
+                                if (activityForm == null) {
+                                    isNew = true;
+                                    activityForm = new PackageActivityForm();
+                                    activityForm.setProcessDefId(temp[0]);
+                                    activityForm.setActivityDefId(temp[1]);
+                                }
 
-                    //check form mapping deleted
-                    Iterator keys = oldFormMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        if (!newFormMappings.has(key)) {
-                            String[] temp = key.split("::");
-                            packageDef.removePackageActivityForm(temp[0], temp[1]);
+                                if (mapping.has("type") && mapping.has("formUrl") && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
+                                    activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
+                                    activityForm.setFormUrl(mapping.getString("formUrl"));
+                                    activityForm.setFormIFrameStyle(mapping.has("formIFrameStyle")?mapping.getString("formIFrameStyle"):"");
+                                    activityForm.setFormId(null);
+                                    activityForm.setDisableSaveAsDraft(null);
+                                } else if (mapping.has("formId")) {
+                                    activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
+                                    activityForm.setFormId(mapping.getString("formId"));
+                                    activityForm.setDisableSaveAsDraft(mapping.has("disableSaveAsDraft")?mapping.getBoolean("disableSaveAsDraft"):false);
+                                    activityForm.setFormUrl(null);
+                                    activityForm.setFormIFrameStyle(null);
+                                }
+                                activityForm.setAutoContinue(mapping.has("autoContinue")?mapping.getBoolean("autoContinue"):false);
+                                if (isNew) {
+                                    packageDef.addPackageActivityForm(activityForm);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //check there is change in plugin mapping
+                    if (diffObject.has("activityPlugins")) {
+                        hasChanges = true;
+                        
+                        JSONObject newPluginMappings = newObject.getJSONObject("activityPlugins");
+                        JSONObject diffPluginMappings = diffObject.getJSONObject("activityPlugins");
+                        
+                        Iterator keys = diffPluginMappings.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next().toString();
+                            if (key.startsWith("_")) {
+                                key = key.substring(1);
+                            }
+                            
+                            if (!newPluginMappings.has(key)) { 
+                                //the mapping is removed
+                                String[] temp = key.split("::");
+                                packageDef.removePackageActivityPlugin(temp[0], temp[1]);
+                            } else {
+                                //update it
+                                String[] temp = key.split("::");
+                                JSONObject mapping = newPluginMappings.getJSONObject(key);
+
+                                PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(temp[0], temp[1]);
+                                boolean isNew = false;
+                                if (activityPlugin == null) {
+                                    isNew = true;
+                                    activityPlugin = new PackageActivityPlugin();
+                                    activityPlugin.setProcessDefId(temp[0]);
+                                    activityPlugin.setActivityDefId(temp[1]);
+                                }
+
+                                activityPlugin.setPluginName(mapping.has("className")?mapping.getString("className"):"");
+                                activityPlugin.setPluginProperties(mapping.has("properties")?mapping.getJSONObject("properties").toString():"");
+
+                                if (isNew) {
+                                    packageDef.addPackageActivityPlugin(activityPlugin);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //check there is change in participant mapping
+                    if (diffObject.has("participants")) {
+                        hasChanges = true;
+                        
+                        JSONObject newParticipantMappings = newObject.getJSONObject("participants");
+                        JSONObject diffParticipantMappings = diffObject.getJSONObject("participants");
+                        
+                        Iterator keys = diffParticipantMappings.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next().toString();
+                            if (key.startsWith("_")) {
+                                key = key.substring(1);
+                            }
+                            
+                            if (!newParticipantMappings.has(key)) { 
+                                //the mapping is removed
+                                String[] temp = key.split("::");
+                                packageDef.removePackageParticipant(temp[0], temp[1]);
+                            } else {
+                                //update it
+                                String[] temp = key.split("::");
+                                JSONObject mapping = newParticipantMappings.getJSONObject(key);
+
+                                PackageParticipant participant = packageDef.getPackageParticipant(temp[0], temp[1]);
+                                boolean isNew = false;
+                                if (participant == null) {
+                                    isNew = true;
+                                    participant = new PackageParticipant();
+                                    participant.setProcessDefId(temp[0]);
+                                    participant.setParticipantId(temp[1]);
+                                }
+
+                                participant.setType(mapping.has("type")?mapping.getString("type"):"");
+                                participant.setValue(mapping.has("value")?mapping.getString("value"):"");
+
+                                if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType()) && mapping.has("properties")) {
+                                    participant.setPluginProperties(mapping.getJSONObject("properties").toString());
+                                } else {
+                                    participant.setPluginProperties(null);
+                                }
+
+                                if (isNew) {
+                                    packageDef.addPackageParticipant(participant);
+                                }
+                            }
                         }
                     }
 
-                    //check new/updated form mapping
-                    keys = newFormMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        String[] temp = key.split("::");
-                        JSONObject mapping = newFormMappings.getJSONObject(key);
-
-                        PackageActivityForm activityForm = packageDef.getPackageActivityForm(temp[0], temp[1]);
-                        boolean isNew = false;
-                        if (activityForm == null) {
-                            isNew = true;
-                            activityForm = new PackageActivityForm();
-                            activityForm.setProcessDefId(temp[0]);
-                            activityForm.setActivityDefId(temp[1]);
-                        }
-
-                        if (mapping.has("type") && mapping.has("formUrl") && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(mapping.getString("type")) && mapping.getString("formUrl") != null) {
-                            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
-                            activityForm.setFormUrl(mapping.getString("formUrl"));
-                            activityForm.setFormIFrameStyle(mapping.has("formIFrameStyle")?mapping.getString("formIFrameStyle"):"");
-                            activityForm.setFormId(null);
-                            activityForm.setDisableSaveAsDraft(null);
-                        } else if (mapping.has("formId")) {
-                            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
-                            activityForm.setFormId(mapping.getString("formId"));
-                            activityForm.setDisableSaveAsDraft(mapping.has("disableSaveAsDraft")?mapping.getBoolean("disableSaveAsDraft"):false);
-                            activityForm.setFormUrl(null);
-                            activityForm.setFormIFrameStyle(null);
-                        }
-                        activityForm.setAutoContinue(mapping.has("autoContinue")?mapping.getBoolean("autoContinue"):false);
-                        if (isNew) {
-                            packageDef.addPackageActivityForm(activityForm);
-                        }
+                    if (hasChanges) {
+                        packageDefinitionDao.saveOrUpdate(packageDef);
                     }
-
-                    //check plugin mapping deleted
-                    JSONObject oldPluginMappings = oriObject.getJSONObject("activityPlugins");
-                    JSONObject newPluginMappings = newObject.getJSONObject("activityPlugins");
-                    keys = oldPluginMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        if (!newPluginMappings.has(key)) {
-                            String[] temp = key.split("::");
-                            packageDef.removePackageActivityPlugin(temp[0], temp[1]);
-                        }
-                    }
-
-                    //check new/updated plugin mapping
-                    keys = newPluginMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        String[] temp = key.split("::");
-                        JSONObject mapping = newPluginMappings.getJSONObject(key);
-
-                        PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(temp[0], temp[1]);
-                        boolean isNew = false;
-                        if (activityPlugin == null) {
-                            isNew = true;
-                            activityPlugin = new PackageActivityPlugin();
-                            activityPlugin.setProcessDefId(temp[0]);
-                            activityPlugin.setActivityDefId(temp[1]);
-                        }
-
-                        activityPlugin.setPluginName(mapping.has("className")?mapping.getString("className"):"");
-                        activityPlugin.setPluginProperties(mapping.has("properties")?mapping.getJSONObject("properties").toString():"");
-
-                        if (isNew) {
-                            packageDef.addPackageActivityPlugin(activityPlugin);
-                        }
-                    }
-
-                    //check participant mapping deleted
-                    JSONObject oldParticipantMappings = oriObject.getJSONObject("participants");
-                    JSONObject newParticipantMappings = newObject.getJSONObject("participants");
-                    keys = oldParticipantMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        if (!newParticipantMappings.has(key)) {
-                            String[] temp = key.split("::");
-                            packageDef.removePackageParticipant(temp[0], temp[1]);
-                        }
-                    }
-
-                    //check new/updated participant mapping
-                    keys = newParticipantMappings.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next().toString();
-                        String[] temp = key.split("::");
-                        JSONObject mapping = newParticipantMappings.getJSONObject(key);
-
-                        PackageParticipant participant = packageDef.getPackageParticipant(temp[0], temp[1]);
-                        boolean isNew = false;
-                        if (participant == null) {
-                            isNew = true;
-                            participant = new PackageParticipant();
-                            participant.setProcessDefId(temp[0]);
-                            participant.setParticipantId(temp[1]);
-                        }
-
-                        participant.setType(mapping.has("type")?mapping.getString("type"):"");
-                        participant.setValue(mapping.has("value")?mapping.getString("value"):"");
-
-                        if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType()) && mapping.has("properties")) {
-                            participant.setPluginProperties(mapping.getJSONObject("properties").toString());
-                        } else {
-                            participant.setPluginProperties(null);
-                        }
-
-                        if (isNew) {
-                            packageDef.addPackageParticipant(participant);
-                        }
-                    }
-
-                    packageDefinitionDao.saveOrUpdate(packageDef);
                 }
             }
         } catch (Exception e) {
@@ -430,11 +473,28 @@ public class ProcessBuilderWebController {
      * @throws IOException 
      */
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/process/builder/xpdlJson", method = RequestMethod.POST)
-    public void getXpdlJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "xpdl") String xpdl) throws IOException {
+    public void getXpdlJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
+        }
+        
+        String xpdl = "";
+        // get xpdl file in POST body
+        MultipartFile xpdlFile = null;
+        try {
+            xpdlFile = FileStore.getFile("xpdlFile");
+        } catch (FileLimitException e) {
+            LogUtil.warn(AppUtil.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+        }
+
+        if (xpdlFile != null) {
+            try {
+                xpdl =  new String(xpdlFile.getBytes(), "UTF-8");
+            } catch (IOException e) {
+                LogUtil.error(AppUtil.class.getName(), e, "Fail to retrieve submitted XPDL");
+            }
         }
         
         String xpdlJson = U.xmlToJson(xpdl);
