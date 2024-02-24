@@ -2,6 +2,27 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.11
+======
+c0a3dbbfb Fixed: wflow-consoleweb - Builders - Can't save very large definition. T3623 @8.0-SNAPSHOT
+ec74f461e Fixed: jw-community - UI - RTL display issues. @8.0-SNAPSHOT
+d456bd677 Fixed: wflow-core - Run Process - Run process without confirmation screen does not work correctly. @8.0-SNAPSHOT
+75246ca3d Fixed: wflow-jdbc - Security - Update postgresql to 42.6.1 for CVE-2024-1597. @8.0-SNAPSHOT
+aa103682a Fixed: wflow-core - Log Viewer - Exception when broadcast message in cluster environment to other nodes. @8.0-SNAPSHOT
+d08eba472 Fixed: wflow-consoleweb - Universal/Progressive Theme - Multi select filter can't render correctly. @8.0-SNAPSHOT
+6b3f6f50e Fixed: wflow-consoleweb - UI - Default date format for Arabic locale is wrong causing date does not display correctly. @7.0-SNAPSHOT
+e0fdebb89 Fixed: wflow-core - Inbox - Popup rendered with UI header and menu when enable show assignment in popup. T3508 @7.0-SNAPSHOT
+b00f31676 Fixed: wflow-core - Text Field/Textarea/Custom HTML - Sanitization should not enable by default. T3785 @7.0-SNAPSHOT
+54eaf9370 Modified: jw-community - Security - Upgrade jackson-databind, jgit, Spring Framework and Spring Security. @8.0-SNAPSHOT
+8f2e98fb5 Fixed: wflow-consoleweb - Form - Grid cell is not vertical align top causing content hard to read when different hight. @8.0-SNAPSHOT
+a58614cf1 Fixed: wflow-consoleweb - Form/Process Builder - Undo/Redo can't reselect the element after id changed. @8.0-SNAPSHOT
+f5431502e Fixed: wflow-core - Form Grid - Regression of 6d4f7a3f. T3797 @8.0-SNAPSHOT
+58c56be5b Fixed: wflow-consoleweb - Ajax theme - addressed the issue where reports were not downloadable in the Ajax theme, and causing the Android app to crash. @8.0-SNAPSHOT
+f8dcb0469 Fixed: wflow-directory - Directory - HOD user unassigned from organization is not unassign from HOD. T3603 @7.0-SNAPSHOT
+7ffe7ca69 Fixed: wflow-consoleweb - General Setting - License Info is not showing in Arabic locale. @7.0-SNAPSHOT
+2b4b39006 Fixed: wflow-commons - Startup - No option to disable the new collation auto fix. T3788 @7.0-SNAPSHOT
+2921a22eb Fixed: wflow-consoleweb - Process Builder - Error caused by missing join type after removing a transition. T3508 @7.0-SNAPSHOT
+
 8.0.10
 ======
 843089969 Fixed: wflow-consoleweb - JBoss EAP - Workaround for missing nested JSP include bug in JBoss EAP 7.4.14 @8.0-SNAPSHOT
