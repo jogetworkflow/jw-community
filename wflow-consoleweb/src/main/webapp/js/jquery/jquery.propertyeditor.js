@@ -7431,7 +7431,7 @@ PropertyEditor.Type.Grid.prototype = {
             if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
-            html += '<th><span>' + column.label + '</span>' + required + '</th>';
+            html += '<th value="' + i + '"><span>' + column.label + '</span> <i class="fa fa-sort"></i>' + required + '</th>';
         });
         html += '<th class="property-type-grid-action-column"></th></tr>';
 
@@ -7539,8 +7539,15 @@ PropertyEditor.Type.Grid.prototype = {
                 html += '</td></tr>';
             });
         }
-
-        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        
+        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a><br>';                
+        //Sorting selectbox
+        html += '<select id="SortingOption">';
+        $.each(this.properties.columns, function(i, column) {
+            html += ' <option value="' + i +'"> '+ column.label +' </option>';
+        });
+        html += '</select>';
+        html += '<button class="sortingTable">Sort Alphabetically</button>';
         return html;
     },
     renderDefault: function() {
@@ -7596,6 +7603,32 @@ PropertyEditor.Type.Grid.prototype = {
                     return false;
                 }
             });
+        });
+        
+        //sorting (button)
+        $('.sortingTable').off("click");
+        $('.sortingTable').on("click", function() {
+            let chosenValue = $(this).parent().find('#SortingOption').val();
+            let parentTable = $(this).parent().find('table');
+            $('.tableSelected').removeClass('tableSelected');
+            parentTable.addClass('tableSelected');
+            $('td input').each(function(i,element){
+                $(element).attr('value',$(element).val());
+            });
+            grid.sortTable(chosenValue);
+        });
+        
+        //sorting (headers) 
+        $('.grid_header th').off("click");
+        $('.grid_header th').on("click", function() {
+            let headerValue = $(this).attr('value');
+            let parentTable = $(this).closest('table');
+            $('.tableSelected').removeClass('tableSelected');
+            parentTable.addClass('tableSelected');
+            $('td input').each(function(i,element){
+                $(element).attr('value',$(element).val());
+            });
+            grid.sortTable(headerValue);
         });
 
         //add
@@ -7704,6 +7737,121 @@ PropertyEditor.Type.Grid.prototype = {
             }
         }
     },
+    sortTable: function(n){
+        let grid = this;
+        let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        
+        table = document.querySelector(".tableSelected");
+
+        switching = true;
+        //Sorting direction set to ascending:
+        dir = "asc";
+        /*Loop that will continue until
+        no switching has been done:*/
+        while (switching) {
+            //start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /*Loop through all table rows (first row is skipped because its the header,
+             * second row is skipped cus its the grid-model*/
+            for (i = 2; i < (rows.length - 1); i++) {
+                //start by saying there should be no switching:
+                shouldSwitch = false;
+                /*Get two elements to compare,
+                one from current row and one from the next:*/
+                
+                //checks for inner text first
+                x = rows[i].getElementsByTagName("td")[n].getElementsByClassName('chosen-single')[0];
+                if (x !== undefined){
+                    x = x.innerText;
+                //then checkes for checkbox if inner text is undefined
+                }else if (rows[i].getElementsByTagName("td")[n].getElementsByTagName("input")[0].type == 'checkbox'){
+                    if (rows[i].getElementsByTagName("td")[n].getElementsByTagName("input")[0].checked){
+                        x = 'b';
+                    }else{
+                        x = 'a';
+                    }
+                //if both are not present then get the input value 
+                }else{
+                    x = rows[i].getElementsByTagName("td")[n].getElementsByTagName("input")[0].getAttribute("value");
+                }
+                
+                //checks for inner text first
+                y = rows[i + 1].getElementsByTagName("td")[n].getElementsByClassName('chosen-single')[0];
+                if (y !== undefined){
+                    y = y.innerText;
+                //then checkes for checkbox if inner text is undefined
+                }else if (rows[i + 1].getElementsByTagName("td")[n].getElementsByTagName("input")[0].type == 'checkbox'){
+                    if (rows[i + 1].getElementsByTagName("td")[n].getElementsByTagName("input")[0].checked){
+                        y = 'b';
+                    }else{
+                        y = 'a';
+                    }
+                //if both are not present then get the input value
+                }else{
+                    y = rows[i + 1].getElementsByTagName("td")[n].getElementsByTagName("input")[0].getAttribute("value");
+                }
+
+                /*check if the two rows should switch place,
+                based on the direction, asc or desc:*/
+                if (dir == "asc") {
+                    //prevents infinite looping of the if(x.trim() == '') statement
+                    if  (x.trim() == '' && y.trim() == '' ){
+                        continue;
+                    //moves empty cells to the bottom of the row
+                    }else if(x.trim() == ''){
+                        shouldSwitch= true;
+                        break;
+                    } else if ((x.toLowerCase().localeCompare(y.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() == '')) {
+                        //if == 1, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                    } 
+                } else if (dir == "desc") {
+                    //prevents infinite looping of the if(x.trim() == '') statement
+                    if  (x.trim() == '' && y.trim() == '' ){
+                        continue;
+                    //moves empty cells to the bottom of the row
+                    }else if(x.trim() == ''){
+                        shouldSwitch= true;
+                        break;
+                    } else if ((y.toLowerCase().localeCompare(x.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() == '')) {
+                        //if == 1, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /*If a switch has been marked, make the switch
+                and mark that a switch has been done:*/
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                //Each time a switch is done, increase this count by 1:
+                switchcount ++;
+            } else {
+                /*If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again.*/
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }        
+        //changes all sort icon back to default
+        let sortIcon = rows[0].getElementsByClassName('fa');
+        $(sortIcon).each(function(i,element){
+            $(element).attr('class','fa fa-sort');
+        });
+        //changes icon depending if it is ascending or decending 
+        if (dir == "asc"){
+            $(sortIcon[n]).attr('class','fa fa-sort-desc');
+        }else if (dir == "desc") {
+            $(sortIcon[n]).attr('class','fa fa-sort-asc');
+        }
+        grid.gridDisabledMoveAction(table);
+
+    },    
     gridActionAdd: function(object) {
         var grid = this;
         var table = $(object).prev('table');
