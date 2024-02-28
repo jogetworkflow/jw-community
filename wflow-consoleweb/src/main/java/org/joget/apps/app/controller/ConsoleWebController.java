@@ -1838,7 +1838,12 @@ public class ConsoleWebController {
         AppDefinition appDef = null;
         try {
             if (appZip != null) {
-                appDef = appService.importApp(appZip.getBytes());
+                byte[] bytes = appZip.getBytes();
+                if (appService.isGitSrcZip(bytes)) {
+                    appDef = appService.importAppDefFromGitSrc(bytes);
+                } else {
+                    appDef = appService.importApp(bytes);
+                }
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());

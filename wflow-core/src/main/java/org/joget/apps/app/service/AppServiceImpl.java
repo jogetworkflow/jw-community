@@ -96,6 +96,7 @@ import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -2614,7 +2615,7 @@ public class AppServiceImpl implements AppService {
         try {
             byte[] appData = getAppDataXmlFromZip(zip);
             byte[] xpdl = getXpdlFromZip(zip);
-            
+
             //for backward compatible
             Map<String, String> replacement = new HashMap<String, String>();
             replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -2631,10 +2632,10 @@ public class AppServiceImpl implements AppService {
 
             RegistryMatcher m = new RegistryMatcher();
             m.bind(Date.class, new CustomDateFormatTransformer());
-                    
+
             Serializer serializer = new Persister(m);
             AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
-
+            
             long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
 
             //Store appDef
@@ -2665,6 +2666,125 @@ public class AppServiceImpl implements AppService {
             throw e;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
+        }
+        return null;
+    }
+    
+    /**
+     * Checking the zip file is containing the git src
+     * @param zip
+     * @return 
+     */
+    @Override
+    public boolean isGitSrcZip(byte[] zip) {
+        //search for appConfig.xml file in zip
+        try (ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip))) {
+            ZipEntry entry = null;
+
+            while ((entry = in.getNextEntry()) != null) {
+                if (entry.getName().contains("appConfig.xml")) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppServiceImpl.class.getName(), e, "");
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Import App Definition from git src in zip file
+     * @param zip
+     * @return
+     */
+    @Override
+    @Transactional
+    public AppDefinition importAppDefFromGitSrc(byte[] zip) throws ImportAppException {
+        File temp = new File(FileManager.getBaseDirectory() + UuidGenerator.getInstance().getUuid());
+        try {
+            //unzip all files to temp dir
+            byte[] buffer = new byte[1024];
+            File appDefFile = null;
+
+            // Create output directory if it doesn't exist
+            if (!temp.exists()) {
+                temp.mkdirs();
+            }
+
+            try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zip))) {
+                ZipEntry zipEntry = zis.getNextEntry();
+                while (zipEntry != null) {
+                    String fileName = zipEntry.getName();
+                    if (!fileName.contains(File.separator + ".")) {
+                        File newFile = new File(temp.getAbsolutePath() + File.separator + fileName);
+                        if (zipEntry.isDirectory()) {
+                            newFile.mkdirs();
+                        } else {
+                            // Create all non-existent parent directories for the file
+                            new File(newFile.getParent()).mkdirs();
+
+                            // Write the file content
+                            try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                                int len;
+                                while ((len = zis.read(buffer)) > 0) {
+                                    fos.write(buffer, 0, len);
+                                }
+                            }
+                            
+                            if (zipEntry.getName().contains("appDefinition.xml")) {
+                                appDefFile = newFile;
+                            }
+                        }
+                    }
+                    zipEntry = zis.getNextEntry();
+                }
+            }
+            
+            if (appDefFile != null) {
+                AppDefinition appDef = null;
+                
+                //get appId and appVersion
+                try (FileInputStream fis = new FileInputStream(appDefFile)) {
+                    RegistryMatcher m = new RegistryMatcher();
+                    m.bind(Date.class, new CustomDateFormatTransformer());
+                    Serializer serializer = new Persister(m);
+                    appDef = serializer.read(AppDefinition.class, fis, false);
+                }
+                if (appDef != null) {
+                    long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
+                    long newAppVersion = appVersion + 1;
+                    
+                    AppDefinition newAppDef = new AppDefinition();
+                    newAppDef.setAppId(appDef.getAppId());
+                    newAppDef.setVersion(newAppVersion);
+                    newAppDef.setLicense(appDef.getLicense());
+                    
+                    AppDevUtil.setImportApp(true);
+                    
+                    //create new app def in db
+                    appDefinitionDao.saveOrUpdate(newAppDef);
+                    
+                    //copy git src
+                    File destDir = new File(AppDevUtil.getAppDevBaseDirectory(), AppDevUtil.getAppGitDirectory(newAppDef));
+                    FileUtils.deleteQuietly(destDir); //delete it if already exist
+                    destDir.mkdirs();
+                    FileUtils.copyDirectory(appDefFile.getParentFile(), destDir);
+                    
+                    //copy resources
+                    AppDevUtil.copyDirectory(newAppDef);
+                    
+                    //sync it and return the app def
+                    return appDefinitionDao.syncAppDefinition(newAppDef.getAppId(), newAppDef.getVersion());
+                }
+            }
+        } catch (ImportAppException e) {
+            throw e;
+        } catch (Exception e) {
+            LogUtil.error(getClass().getName(), e, "");
+        } finally {
+            FileUtils.deleteQuietly(temp); //remove the temp folder
+            AppDevUtil.setImportApp(null);
         }
         return null;
     }
