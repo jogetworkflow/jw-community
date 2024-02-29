@@ -8928,12 +8928,6 @@ PropertyEditor.Type.CodeMirror.prototype = {
         }
         
         this.codemirror.setValue(this.value);
-
-        this.codemirror.on('change', function() {
-            $(thisObj.editor).find("#" + thisObj.id).trigger("change");
-          });
-          
-        $(thisObj.editor).find("#" + thisObj.id).trigger("change");
     },
     pageShown: function() {
         this.codemirror.refresh();
