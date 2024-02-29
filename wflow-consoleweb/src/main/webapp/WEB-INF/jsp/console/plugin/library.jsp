@@ -20,6 +20,47 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/scrollTo/jquery.scrollTo.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/lib/codemirror.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/display/panel.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/buttons/buttons.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/xml/xml.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/css/css.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/clike/clike.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/sql/sql.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/display/fullscreen.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/lint/lint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/lint/htmlmixed-lint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/lint/javascript-lint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/lint/css-lint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/lint/json-lint.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/hint/jshint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/hint/htmlhint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/hint/csslint.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/hint/jsonlint.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/edit/matchbrackets.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/edit/closetag.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/fold/xml-fold.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/edit/closebrackets.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/dialog/dialog.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/search/searchcursor.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/search/search.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/search/jump-to-line.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/search/match-highlighter.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/scroll/annotatescrollbar.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/search/matchesonscrollbar.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/fold/foldcode.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/addon/fold/foldgutter.js"></script>
+
 <script type="text/javascript">// Immediately after the js include
     Dropzone.autoDiscover = false;
 </script>
@@ -28,6 +69,14 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/buttons/buttons.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/theme/ayu-mirage.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/display/fullscreen.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/lint/lint.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/dialog/dialog.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/search/matchesonscrollbar.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/codemirror/addon/fold/foldgutter.css" />
 
 <c:if test="${not empty theme and theme ne 'classic'}">
         <link href="${pageContext.request.contextPath}/css/builderTheme.css" rel="stylesheet" />

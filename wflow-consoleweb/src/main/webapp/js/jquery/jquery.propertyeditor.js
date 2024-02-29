@@ -8836,6 +8836,113 @@ PropertyEditor.Type.CodeEditor.prototype = {
 };
 PropertyEditor.Type.CodeEditor = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeEditor.prototype);
 
+PropertyEditor.Type.CodeMirror = function() {};
+PropertyEditor.Type.CodeMirror.prototype = {
+    codemirror: null,
+    shortname: "codemirror",
+    getData: function(useDefault) {
+        var data = new Object();
+        if (!this.isHidden()) {
+            var value = this.codemirror.getValue();
+            if (value === undefined || value === null || value === "") {
+                if (useDefault !== undefined && useDefault &&
+                    this.defaultValue !== undefined && this.defaultValue !== null) {
+                    value = this.defaultValue;
+                }
+            }
+            data[this.properties.name] = value;
+        }
+        return data;
+    },
+    renderField: function() {
+        return '<div id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
+    },
+    initScripting: function() {
+        var thisObj = this;
+        if (this.value === null) {
+            this.value = "";
+        }
+        
+        this.codemirror = CodeMirror(document.getElementById(this.id), {
+            lineNumbers: true,
+            mode: "text",
+            matchBrackets: true,
+            theme: "default",
+            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            lint: true,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            foldGutter: true,
+            lint: true,
+            lineWrapping: true,
+            highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+            extraKeys: {
+                "F12": function(cm) {
+                  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                },
+                "Esc": function(cm) {
+                  if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                },
+                "Ctrl-F": function(cm) {
+                  cm.execCommand("findPersistent");
+                },
+                "Ctrl-=": function(cm) {
+                  modifyFontSize(true);
+                },
+                "Ctrl--": function(cm) {
+                  modifyFontSize(false);
+                },
+                "Ctrl-R": function(cm) {
+                  cm.execCommand("replaceAll")
+                }
+              }
+          });
+
+        if (this.properties.mode !== undefined && this.properties.mode !== "") {
+            if (this.properties.mode === "html"){
+                this.codemirror.setOption("mode", "htmlmixed");
+            }
+            else if (this.properties.mode === "java"){
+                this.codemirror.setOption("mode", "text/x-java");
+            }else if (this.properties.mode === "json"){
+                this.codemirror.setOption("mode", "application/json");
+            }else if (this.properties.mode === "sql"){
+                this.codemirror.setOption("mode", "sql");
+            }else if (this.properties.mode === "css"){
+                this.codemirror.setOption("mode", "css");
+            }else if (this.properties.mode === "javascript"){
+                this.codemirror.setOption("mode", "javascript");
+            }else if (this.properties.mode === "xml"){
+                this.codemirror.setOption("mode", "xml");
+            }else {
+                this.codemirror.setOption("mode", "text");
+            }
+        }
+
+        function modifyFontSize(increase){
+            var wrapper = thisObj.codemirror.getWrapperElement();
+            var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
+            var newSize = increase ? currentSize + 2 : currentSize - 2;
+            wrapper.style.fontSize = newSize + 'px';
+            thisObj.codemirror.refresh()
+        }
+        
+        this.codemirror.setValue(this.value);
+
+        this.codemirror.on('change', function() {
+            $(thisObj.editor).find("#" + thisObj.id).trigger("change");
+          });
+          
+        $(thisObj.editor).find("#" + thisObj.id).trigger("change");
+    },
+    pageShown: function() {
+        this.codemirror.refresh();
+    }
+};
+
+PropertyEditor.Type.CodeMirror = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeMirror.prototype);
+
+
 PropertyEditor.Type.ElementSelect = function() {};
 PropertyEditor.Type.ElementSelect.prototype = {
     shortname: "elementselect",
@@ -10789,8 +10896,8 @@ PropertyAssistant = {
             delete keys[e.which];
         });
         
-        $(element).off("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor");
-        $(element).on("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor", function() {
+        $(element).off("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor, .code-editor");
+        $(element).on("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor, .code-editor", function() {
             var field = $(this);
             $(element).find(".assist_icon").remove();
             var container = $(field).parent();
@@ -11137,6 +11244,14 @@ PropertyAssistant = {
                     value = " " + value;
                 }
                 codeeditor.session.insert(PropertyAssistant.currentCaretPosition, value);
+            } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
+                var id = $(PropertyAssistant.currentField).closest(".code-editor").attr("id");
+                var codeeditor = document.querySelector('#'+id + " .CodeMirror").CodeMirror;
+                var old = codeeditor.getValue();
+                if (old !== "") {
+                    value = " " + value;
+                }
+                codeeditor.getDoc().replaceRange(value, PropertyAssistant.currentCaretPosition);
             } else {
                 var org = $(PropertyAssistant.currentField).val();
                 var output = "";
@@ -11718,7 +11833,11 @@ PropertyAssistant = {
             var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
             var codeeditor = ace.edit(id);
             return codeeditor.getCursorPosition();
-        } else {
+        } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
+            var id = $(PropertyAssistant.currentField).closest(".code-editor").attr("id");
+            var codeeditor = document.querySelector('#'+id + " .CodeMirror").CodeMirror;
+            return codeeditor.getCursor();
+        }  else {
             // Initialize
             var iCaretPos = 0;
 
