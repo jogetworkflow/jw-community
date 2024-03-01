@@ -9530,14 +9530,27 @@ Toolbar.DEFAULTS = {
       this.quill.format('direction', value, _quill2.default.sources.USER);
     },
     indent: function indent(value) {
-      var range = this.quill.getSelection();
-      var formats = this.quill.getFormat(range);
-      var indent = parseInt(formats.indent || 0);
-      if (value === '+1' || value === '-1') {
-        var modifier = value === '+1' ? 1 : -1;
-        if (formats.direction === 'rtl') modifier *= -1;
-        this.quill.format('indent', indent + modifier, _quill2.default.sources.USER);
-      }
+     var range = this.quill.getSelection() || { index: 0, length: 0 }; 
+     var formats = this.quill.getFormat(range);
+     var lines;
+
+     if (!range || range.length === 0) {
+         var cursorIndex = range.index;
+         lines = this.quill.getLines(cursorIndex, 1);
+     } else {
+         lines = this.quill.getLines(range.index, range.length);
+     }
+
+     lines.forEach(function(line) {
+         var indent = parseInt(line.formats().indent || 0);
+         if (value === '+1' || value === '-1') {
+             var modifier = value === '+1' ? 1 : -1;
+             if (formats.direction === 'rtl') modifier *= -1;
+             line.format('indent', indent + modifier);
+         }
+     });
+
+     this.quill.update(Quill.sources.USER);
     },
     link: function link(value) {
       if (value === true) {
