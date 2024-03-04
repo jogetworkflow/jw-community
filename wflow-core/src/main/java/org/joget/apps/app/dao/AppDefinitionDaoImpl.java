@@ -13,7 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.AbstractFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -595,7 +596,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             if (pluginDir.exists()) {
                 // find all plugin files
                 final String[] extensions = new String[] { "jar" };
-                Iterator<File> fileIterator = FileUtils.iterateFiles(pluginDir, new AbstractFileFilter() {
+                Iterator<File> fileIterator = FileUtils.iterateFiles(pluginDir, new FileFileFilter() {
                     @Override
                     public boolean accept(File file) {
                         String path = file.getName();
@@ -603,7 +604,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                         String ext = (dotIndex >= 0) ? path.substring(dotIndex + 1) : path;
                         return ArrayUtils.contains(extensions, ext);
                     }
-                }, new AbstractFileFilter() {
+                }, new DirectoryFileFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
                         return true;
