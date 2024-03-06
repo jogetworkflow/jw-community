@@ -1971,7 +1971,7 @@ public class AppUtil implements ApplicationContextAware {
                         JSONObject o = new JSONObject();
                         PackageActivityForm f = activityFormMap.get(k);
 
-                        populateActivityForm(o, f, appDef);
+                        populateActivityForm(o, f);
                         activityForms.put(k, o);
                     }
                 }
@@ -2065,7 +2065,7 @@ public class AppUtil implements ApplicationContextAware {
         return null;
     }
     
-    protected static void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef) throws JSONException {
+    protected static void populateActivityForm(JSONObject o, PackageActivityForm f) throws JSONException {
         o.put("formId", f.getFormId());
         o.put("formUrl", f.getFormUrl());
         o.put("formIFrameStyle", f.getFormIFrameStyle());

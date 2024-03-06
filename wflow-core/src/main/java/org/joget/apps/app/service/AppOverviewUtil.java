@@ -272,7 +272,7 @@ public class AppOverviewUtil {
                 }
                 
                 scan(key, path, obj.getString("className"), (JSONObject) properties, obj, data, tools);
-            } else if (parent == null || !(parent != null && parent.has("className") && path.endsWith(".properties"))) {
+            } else if (parent == null || !(parent.has("className") && path.endsWith(".properties"))) {
                 nonPluginAttrs = new JSONObject();
             }
             
@@ -429,5 +429,115 @@ public class AppOverviewUtil {
         }
         
         return tools;
+    }
+    
+    /**
+     * Find all hash variables with the prefix used in a property value
+     * 
+     * @param valueStr
+     * @param hashVariablePrefix
+     * @param key
+     * @param path
+     * @param plugin
+     * @param data 
+     */
+    public static void findHashVariables(String valueStr, String hashVariablePrefix, String key, String path, AppOverviewTool plugin, AppOverviewData data) {
+        if (valueStr.contains(hashVariablePrefix)) {
+            //find all hash variables with the prefix
+            int index = valueStr.indexOf(hashVariablePrefix);
+            while (index > 0) {
+                char startChar = valueStr.charAt(index-1);
+                String hashVariable = "";
+
+                if (startChar == '{') {
+                    //if it is nested hash variable, find closing
+                    hashVariable = valueStr.substring(index-1, valueStr.indexOf("}", index + 10) + 1);
+                    int count = StringUtils.countMatches(hashVariable, "{");
+                    if (count > 1) {
+                        int nextCharIndex = index + hashVariable.length();
+                        while (count > 1 && nextCharIndex < valueStr.length()) {
+                            char nextChar = valueStr.charAt(nextCharIndex);
+                            if (nextChar == '}') {
+                                count--;
+                            } else if (nextChar == '{') {
+                                count++;
+                            }
+                            hashVariable += nextChar;
+                            nextCharIndex++;
+                        }
+                    }
+                } else {
+                    hashVariable = valueStr.substring(index-1, valueStr.indexOf("#", index + 10) + 1);
+                }
+
+                if (!hashVariable.isEmpty()) {
+                    data.addItemData(key, plugin, path, "", hashVariable);
+
+                    //find next hash variable
+                    index = valueStr.indexOf(hashVariablePrefix, index + hashVariable.length() - 1);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Retrieve all OSGI plugins list for scanning usage
+     * 
+     * @param data
+     * @return 
+     */
+    public static Map<String, String> getOsgiPlugins(AppOverviewData data) {
+        Map<String, String> osgiPlugins = (Map<String, String>) data.getTempData("osgiPluginsList");
+            
+        if (osgiPlugins == null) {
+            osgiPlugins = new HashMap<String, String>();
+
+            // get osgi plugins
+            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+            Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
+
+            for (Plugin plugin: pluginList) {
+                osgiPlugins.put(ClassUtils.getUserClass(plugin).getName(), plugin.getI18nLabel());
+            }
+            data.putTempData("osgiPluginsList", osgiPlugins); //add it for other plugin to use
+        }
+        
+        return osgiPlugins;
+    }
+    
+    /**
+     * Retrieve all plugins list for scanning usage
+     * 
+     * @param data
+     * @return 
+     */
+    public static Map<String, String> getAllPlugins(AppOverviewData data) {
+        Map<String, String> allPlugins = (Map<String, String>) data.getTempData("allPluginsList");
+
+        if (allPlugins == null) {
+            allPlugins = new HashMap<String, String>();
+
+            // get all plugins
+            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+            Collection<Plugin> pluginList = pluginManager.list(null);
+
+            for (Plugin plugin: pluginList) {
+                allPlugins.put(ClassUtils.getUserClass(plugin).getName(), plugin.getI18nLabel());
+            }
+
+            //add joget default classes
+            allPlugins.put("org.joget.apps.userview.model.Userview", "");
+            allPlugins.put("org.joget.apps.userview.model.UserviewCategory", "");
+            allPlugins.put("org.joget.apps.userview.model.UserviewSetting", "");
+            allPlugins.put("org.joget.apps.userview.model.UserviewPage", "");
+            allPlugins.put("org.joget.apps.userview.model.UserviewLayout", "");
+            allPlugins.put("org.joget.apps.userview.model.UserviewPermission", "");
+
+            data.putTempData("allPluginsList", allPlugins); //add it for other plugin to use
+        }
+            
+        return allPlugins;   
     }
 }
