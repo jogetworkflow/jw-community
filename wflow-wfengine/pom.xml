@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-wfengine</artifactId>
     <packaging>jar</packaging>
-    <version>8.1-RELEASE</version>
+    <version>8.1-SNAPSHOT</version>
     <name>wflow-wfengine</name>
     <url>http://www.joget.org</url>
     <build>

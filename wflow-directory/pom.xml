@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-directory</artifactId>
     <name>wflow-directory</name>
-    <version>8.1-RELEASE</version>
+    <version>8.1-SNAPSHOT</version>
     <url>http://www.joget.org</url>
     <build>
         <plugins>

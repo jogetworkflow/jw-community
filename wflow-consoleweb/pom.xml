@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-consoleweb</artifactId>
     <packaging>war</packaging>
-    <version>8.1-RELEASE</version>
+    <version>8.1-SNAPSHOT</version>
     <name>wflow-consoleweb</name>
     <url>http://www.joget.org</url>
     <scm>
