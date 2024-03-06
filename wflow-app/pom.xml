@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-app</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1-RELEASE</version>
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
@@ -17,7 +17,7 @@
         <module>../wflow-plugin-base</module>
         <module>../wflow-plugin-archetype</module>
         <module>../wflow-directory</module>
-		<module>../wflow-commons</module>
+	<module>../wflow-commons</module>
         <module>../wflow-wfengine</module>
         <module>../wflow-core</module>
         <module>../wflow-consoleweb</module>
