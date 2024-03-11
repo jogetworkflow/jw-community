@@ -101,6 +101,9 @@ public final class JavaScriptServlet extends HttpServlet {
     private static final Map<String, BiFunction<CsrfGuard, HttpServletRequest, String>> JS_REPLACEMENT_MAP = new HashMap<>();
 
     static {
+        /* CUSTOM : Adding a system property flag to disable domainStrict */
+        String domainStrict = System.getProperty("wflow.domainStrict");
+        
         JS_REPLACEMENT_MAP.put(TOKEN_NAME_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getTokenName()));
         JS_REPLACEMENT_MAP.put(TOKEN_VALUE_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(getMasterToken(request, csrfGuard)));
         JS_REPLACEMENT_MAP.put(UNPROTECTED_EXTENSIONS_IDENTIFIER, (csrfGuard, request) -> String.valueOf(csrfGuard.getJavascriptUnprotectedExtensions()));
@@ -116,7 +119,9 @@ public final class JavaScriptServlet extends HttpServlet {
         JS_REPLACEMENT_MAP.put(INJECT_INTO_DYNAMIC_NODES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoDynamicallyCreatedNodes()));
         JS_REPLACEMENT_MAP.put(INJECT_INTO_XHR_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isAjaxEnabled()));
         JS_REPLACEMENT_MAP.put(TOKENS_PER_PAGE_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isTokenPerPageEnabled()));
-        JS_REPLACEMENT_MAP.put(DOMAIN_STRICT_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptDomainStrict()));
+        
+        /* CUSTOM : override the domain strict value if system property exist*/
+        JS_REPLACEMENT_MAP.put(DOMAIN_STRICT_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(("false".equalsIgnoreCase(domainStrict))?false:csrfGuard.isJavascriptDomainStrict()));
         JS_REPLACEMENT_MAP.put(ASYNC_XHR, (csrfGuard, request) -> Boolean.toString(!csrfGuard.isForceSynchronousAjax()));
     }
 
