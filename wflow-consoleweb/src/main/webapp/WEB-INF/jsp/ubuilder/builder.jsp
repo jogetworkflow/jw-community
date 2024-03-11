@@ -125,7 +125,8 @@
                 "previewViewInit" : "UserviewBuilder.previewViewInit",
                 "previewViewBeforeClosed" : "UserviewBuilder.previewViewBeforeClosed",
                 "screenshotViewInit" : "UserviewBuilder.screenshotViewInit",
-                "builderSaved" : "UserviewBuilder.builderSaved"
+                "builderSaved" : "UserviewBuilder.builderSaved",
+                "getOverviewPathElementSelector" : "UserviewBuilder.getOverviewPathElementSelector"
             }
         },
         "advanced_tools" : {

@@ -11948,6 +11948,58 @@ PropertyAssistant = {
                 editor.render();
                 $(element).data("editor", editor);
                 
+                //scroll to the field
+                if (o.scrollToField !== null && o.scrollToField !== undefined && o.scrollToField !== "") {
+                    var scrollAndExpandToField = function(fieldElement) {
+                        if ($(element).find(fieldElement).length > 0) {
+                            if ($(fieldElement).eq(0).closest(".property-page-show").hasClass("collapsed")) {
+                                $(fieldElement).eq(0).closest(".property-page-show").removeClass("collapsed");
+                            }
+
+                            if ($(fieldElement).eq(0).closest('.property-editor-container').hasClass('single-page')) {
+                                $(fieldElement).eq(0).closest('.property-editor-pages').animate({
+                                    scrollTop: $(fieldElement).eq(0).offset().top + $(fieldElement).eq(0).closest('.property-editor-pages').scrollTop() - 200
+                                }, 1);
+                            } else {
+                                var pageId = $(fieldElement).eq(0).closest(".property-page-show").attr("id");
+                                editor.changePage(null, pageId);
+                                
+                                var scroll = $(fieldElement).eq(0).offset().top - 100 + $(fieldElement).eq(0).closest('.property-editor-property-container').scrollTop();
+                                scroll = scroll - $(fieldElement).eq(0).closest('.property-editor-property-container').offset().top;
+                                
+                                $(fieldElement).eq(0).closest('.property-editor-property-container').animate({
+                                    scrollTop: scroll 
+                                }, 1);
+                            }
+                        }
+                    };
+                    
+                    setTimeout(function(){
+                        if (o.scrollToField.indexOf('.properties.') !== -1) { // it is element select field
+                            var names = o.scrollToField.split('.');
+                            var fieldSelector = "";
+                            var altFieldSelector = "";
+                            for (var i in names) {
+                                if (names[i] !== "properties") { 
+                                    if (names[i].indexOf('[') !== -1 && names[i].indexOf(']') !== -1 ) {
+                                        //to handle multi element select
+                                        var index = parseInt(names[i].substring(names[i].indexOf('[') + 1, names[i].indexOf(']')));
+                                        var property = names[i].substring(0, names[i].indexOf('['));
+                                        fieldSelector += '.property-page-show [property-name="'+property+'"] .repeater-rows-container .repeater-row:eq('+index+') ';
+                                        altFieldSelector += "_" + property;
+                                    } else {
+                                        fieldSelector += '.property-page-show [property-name="'+names[i]+'"] ';
+                                        altFieldSelector += "_" + names[i];
+                                    }
+                                    scrollAndExpandToField(fieldSelector + ', [name$="' + altFieldSelector + '"]');
+                                }
+                            }
+                        } else {
+                            scrollAndExpandToField('.property-page-show [property-name="'+o.scrollToField+'"]');
+                        }
+                    }, 1000);
+                }
+                
                 return false;
             });
         }

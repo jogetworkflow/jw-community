@@ -275,9 +275,14 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
     @Override
     public void updateDateModified(AppDefinition appDef) {
+        updateDateModified(appDef, new Date());
+    }
+    
+    @Override
+    public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
         Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appID and e.version = :appVersion");
-        query.setParameter("dateModified", new Date());
+        query.setParameter("dateModified", date);
         query.setParameter("appID", appDef.getAppId());
         query.setParameter("appVersion", appDef.getVersion());
         query.executeUpdate();

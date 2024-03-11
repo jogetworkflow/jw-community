@@ -64,7 +64,9 @@
                 "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
-                "exportApp" : "AppBuilder.exportApp"
+                "exportApp" : "AppBuilder.exportApp",
+                "overviewViewBeforeClosed" : "AppBuilder.overviewViewBeforeClosed",
+                "overviewMapViewInit" : "AppBuilder.overviewMapViewInit"
             }
         },
         "advanced_tools" : {
@@ -82,6 +84,12 @@
             },
             "definition" : {
                 disabled : true
+            },
+            "i18n" : {
+                disabled : true
+            },
+            "xray" : {
+                 disabled : true
             }
         },
         "msg" : {

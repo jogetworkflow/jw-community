@@ -42,6 +42,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppOverviewTool;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
@@ -60,6 +61,7 @@ import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -3800,6 +3802,32 @@ public class ConsoleWebController {
         }
         
         AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
+    public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        if (appDef != null) {
+            writer.write(AppOverviewUtil.getOverview(appDef));
+        }
+    }
+    
+    @RequestMapping("/json/console/app/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
+        
+        JSONArray jsonArr = new JSONArray();
+        for (AppOverviewTool tool : tools.values()) {
+            JSONObject obj = new JSONObject();
+            obj.put("icon", tool.getIcon());
+            obj.put("label", tool.getI18nLabel());
+            obj.put("className", tool.getClassName());
+            
+            jsonArr.put(obj);
+        }
+        
+        AppUtil.writeJson(writer, jsonArr, callback);
     }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
