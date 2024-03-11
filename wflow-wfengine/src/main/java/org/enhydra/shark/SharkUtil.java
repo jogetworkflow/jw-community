@@ -1,17 +1,24 @@
 package org.enhydra.shark;
 
+import com.lutris.appserver.server.sql.CachedDBTransaction;
+import com.lutris.appserver.server.sql.DBTransaction;
+import com.lutris.dods.builder.generator.query.DataObjectException;
+import com.lutris.util.ConfigException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.enhydra.dods.DODS;
 import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.WfProcess;
 import org.enhydra.shark.api.client.wfservice.AdminMisc;
 import org.enhydra.shark.api.client.wfservice.SharkConnection;
 import org.enhydra.shark.api.client.wfservice.WMEntity;
+import org.enhydra.shark.instancepersistence.data.ActivityDO;
 import org.enhydra.shark.xpdl.XMLComplexElement;
 import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLUtil;
@@ -258,4 +265,31 @@ public class SharkUtil {
             sConn.disconnect();
         }
     } 
+    
+    /**
+     * write transaction immediately instead of write before next query execute, so that any exception can be handled directly
+     * @param shandle
+     * @throws Exception 
+     */
+    public static void transactionWrite(WMSessionHandle shandle) throws Exception {
+        String dbName = ActivityDO.get_logicalDBName();
+        try {
+            if (DODS.getDatabaseManager().getConfig().getBoolean("DB." + dbName + ".JTA", DODS.getDatabaseManager().getConfig().getBoolean("defaults.JTA", false))){
+                DBTransaction transaction = DODS.getDatabaseManager().createTransaction(dbName);
+                
+                if ((transaction != null) && ((transaction instanceof CachedDBTransaction))) {
+                    if (((CachedDBTransaction)transaction).getAutoWrite()) {
+                        try {
+                            transaction.write();
+                        } catch (SQLException sqle) {
+                            throw new DataObjectException("Couldn't write transaction: " + sqle);
+                        }
+                        ((CachedDBTransaction) transaction).dontAggregateDOModifications();
+                    }
+                }
+            }
+        } catch (ConfigException e) {
+            //ignore
+        }
+    }
 }
