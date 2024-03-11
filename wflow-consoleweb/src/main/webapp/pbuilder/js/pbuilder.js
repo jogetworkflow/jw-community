@@ -4889,7 +4889,8 @@ ProcessBuilder = {
                         var data = eval(response);
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
-                            CustomBuilder.loadJson(CustomBuilder.getJson(), true); //update through loadJson addToUndo to make sure package id does not change.
+                            var json = JSON.encode(CustomBuilder.data);
+                            CustomBuilder.loadJson(json, true); //update through loadJson addToUndo to make sure package id does not change.
                         }
                     } catch (err) {}
                 }  
