@@ -427,7 +427,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Language code
      */
     public static String getAppLanguage() {
-        return LocaleContextHolder.getLocale().getLanguage();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().getLanguage());
     }
     
     /**
@@ -435,7 +435,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return timezone id
      */
     public static String getAppTimezone() {
-        return LocaleContextHolder.getTimeZone().getID();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getTimeZone().getID());
     }
     
     /**
