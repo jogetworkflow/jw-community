@@ -40,7 +40,6 @@ try {
                 <%= ResourceBundleUtil.getMessage("general.error.error500Description", locale) %>
                 <br><br>
                 <ul style="text-align:left; display:inline-block">
-                    <li><%= ResourceBundleUtil.getMessage("console.footer.label.revision") %></li>
                     <li><%= ResourceBundleUtil.getMessage("general.error.url", locale) %>: ${pageContext.errorData.requestURI}</li>
                     <li><%= ResourceBundleUtil.getMessage("general.error.date", locale) %>: <fmt:formatDate pattern="d MMM yyyy HH:mm:ss" value="<%= new Date() %>"/></li>
                     <%= ResourceBundleUtil.getMessage("general.error.errorDetails", locale) %>
