@@ -11,9 +11,14 @@ UserviewBuilder = {
     initBuilder: function (callback) {
         $('#builderToolbar').prepend('<button id="save-content-btn" class="btn btn-success" style="display:none;"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button>');
         
-        $('#builderToolbar').off("click");
-        $('#builderToolbar').on("click", function() {
+        $('#save-content-btn').off("click");
+        $('#save-content-btn').on("click", function() {
             UserviewBuilder.mode = "userview";
+            if (!$("#design-btn").hasClass("active-view")) {
+                setTimeout(function(){
+                    $("#design-btn").trigger("click");
+                }, 1);
+            }
             UserviewBuilder.load(CustomBuilder.data);
         });
         

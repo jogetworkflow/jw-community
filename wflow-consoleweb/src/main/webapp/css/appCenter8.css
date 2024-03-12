@@ -441,6 +441,12 @@ body.rtl #page {
     padding-right: 140px !important;
 }
 
+@media (max-width: 1279px) {
+    body.rtl #page {
+        padding-right: 0px !important;
+    }
+}
+
 header.navbar {
     width: calc(100% - 140px);
 }
