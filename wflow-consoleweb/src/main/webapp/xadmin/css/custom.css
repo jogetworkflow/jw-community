@@ -121,6 +121,9 @@ table th, table td{
 body {
     color: #666;
 }
+body.rtl {
+    direction: rtl;
+}
 .x-admin-sm body {
     font-size: 12px;
 }
