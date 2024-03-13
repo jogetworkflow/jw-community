@@ -5077,7 +5077,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0) {
+            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0 || $(target).closest('.tox-tiered-menu').length > 0) {
                 self.mousedown = false;
                 return true;
             }
