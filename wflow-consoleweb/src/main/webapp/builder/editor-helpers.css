@@ -109,7 +109,7 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
 [data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):not([data-cbuilder-uneditable]){
     position: relative;
 }
-[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):not([data-cbuilder-uneditable]):after{
+[data-cbuilder-classname][data-cbuilder-noncontainer]:not([data-cbuilder-visible]):not([data-cbuilder-ignore-dragging]):not([data-cbuilder-uneditable]):not([data-cbuilder-inlineedit-element]):after{
     content: '';
     position: absolute;
     left: 0px;
