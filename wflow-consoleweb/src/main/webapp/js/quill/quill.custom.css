@@ -15,3 +15,6 @@ body.rtl .ql-font .ql-picker-label,
 body.rtl .ql-header .ql-picker-label {
     text-align: left;
 }
+svg {
+    vertical-align: baseline;
+}
