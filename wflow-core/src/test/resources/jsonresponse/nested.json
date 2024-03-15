@@ -1,0 +1,51 @@
+{
+    "error": false,
+    "msg": "countries and states retrieved",
+    "data": [
+        {
+            "name": "Afghanistan",
+            "iso3": "AFG",
+            "iso2": "AF",
+            "states": [
+                {
+                    "name": "Badakhshan",
+                    "state_code": "BDS"
+                },
+                {
+                    "name": "Badghis",
+                    "state_code": "BDG"
+                },
+                {
+                    "name": "Baghlan",
+                    "state_code": "BGL"
+                }
+            ]
+        },
+        {
+            "name": "Albania",
+            "iso3": "ALB",
+            "iso2": "AL",
+            "states": [
+                {
+                    "name": "Berat County",
+                    "state_code": "01"
+                },
+                {
+                    "name": "Berat District",
+                    "state_code": "BR"
+                }
+            ]
+        },
+        {
+            "name": "Algeria",
+            "iso3": "DZA",
+            "iso2": "DZ",
+            "states": [
+                {
+                    "name": "Adrar Province",
+                    "state_code": "02"
+                }
+            ]
+        }
+    ]
+}

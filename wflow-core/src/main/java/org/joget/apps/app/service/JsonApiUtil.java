@@ -199,7 +199,31 @@ public class JsonApiUtil {
     }
     
     public static Object getObjectFromMap(String key, Map object) {
-        if (key.contains(".")) {
+        if (key.endsWith("<>") || key.endsWith("[]")) { //to support retrieve map or array for looping in option binder
+            key = key.substring(0, key.length() - 2);
+        }
+        
+        /* added {} annotation to handle the keys which contains . eg { "user.Org":"Joget Inc"} 
+    
+         Using annotation like {user.Org} in the field mapping it will be able to parse the records
+         */
+        if (key.startsWith("{")) {
+            String key1 = key.substring(1, key.indexOf("}")); //{search.name}
+            Object tempObject = object.get(key1);
+
+            String subKey = key.replace("{" + key1 + "}", ""); //{search.name}.first to .first
+            if (subKey.startsWith(".")) {
+                subKey = subKey.substring(0, 1);  //first
+            }
+            if (subKey.length() > 0) {
+
+                if (tempObject != null && tempObject instanceof Map) {
+                    return getObjectFromMap(subKey, (Map) tempObject);
+                }
+            }
+
+            return tempObject;
+        } else if (key.contains(".")) {
             String subKey = key.substring(key.indexOf(".") + 1);
             key = key.substring(0, key.indexOf("."));
 
