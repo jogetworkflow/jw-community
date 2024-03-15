@@ -1367,23 +1367,23 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     for (BuilderDefinition def : builderDefs) {
                         try {
                             JSONObject defObj = new JSONObject(def.getJson());
-                            JSONObject columnsObj = defObj.getJSONObject("columns");
-                            Iterator keys = columnsObj.keys();
-                            while (keys.hasNext()) {
-                                String c = (String) keys.next();
-                                if (!c.isEmpty()) {
-                                    String exist = checkDuplicateMap.get(c.toLowerCase());
-                                    if (exist != null && !exist.equals(c)) {
-                                        LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                        columnList.remove(exist);
-                                    }
-                                    checkDuplicateMap.put(c.toLowerCase(), c);
+                                JSONObject columnsObj = defObj.getJSONObject("columns");
+                                Iterator keys = columnsObj.keys();
+                                while (keys.hasNext()) {
+                                    String c = (String) keys.next();
+                                    if (!c.isEmpty()) {
+                                        String exist = checkDuplicateMap.get(c.toLowerCase());
+                                        if (exist != null && !exist.equals(c)) {
+                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                            columnList.remove(exist);
+                                        }
+                                        checkDuplicateMap.put(c.toLowerCase(), c);
 
-                                    if (pattern.matcher(c).matches()) {
-                                        columnList.add(c);
+                                        if (pattern.matcher(c).matches()) {
+                                            columnList.add(c);
+                                        }
                                     }
                                 }
-                            }
                         } catch (Exception e) {
                             LogUtil.error(FormDataDaoImpl.class.getName(), e, "fail to retrieve columns for custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]");
                         }
