@@ -14,6 +14,7 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
@@ -262,7 +263,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
             if (request.getParameter(PARAM_NAME) != null 
                     && (locale == null || !request.getParameter(PARAM_NAME).equals(locale.toString()))) {
                 locale = null;
-                String paramValue = request.getParameter(PARAM_NAME);
+                String paramValue = StringUtil.stripAllHtmlTag(request.getParameter(PARAM_NAME));
                 String[] temp = paramValue.split("_");
 
                 if (temp.length == 1 && !temp[0].isEmpty()) {
