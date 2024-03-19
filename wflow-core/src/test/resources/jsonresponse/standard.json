@@ -1,0 +1,27 @@
+{
+    "error": false,
+    "msg": "countries and cities retrieved",
+    "data": [
+        {
+            "iso2": "AF",
+            "iso3": "AFG",
+            "country": "Afghanistan",
+            "cities": [
+                "Herat",
+                "Kabul",
+                "Kandahar"
+            ]
+        },
+        {
+            "iso2": "AL",
+            "iso3": "ALB",
+            "country": "Albania",
+            "cities": [
+                "Elbasan",
+                "Petran",
+                "Pogradec",
+                "Shkoder"
+            ]
+        }
+    ]
+}

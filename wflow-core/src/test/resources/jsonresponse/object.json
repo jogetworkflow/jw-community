@@ -1,0 +1,27 @@
+{
+    "error": false,
+    "msg": "countries and states retrieved",
+    "data": {
+        "AFG": {
+            "name": "Afghanistan",
+            "states": {
+                "BDS": "Badakhshan",
+                "BDG": "Badghis",
+                "BGL": "Baghlan"
+            }
+        },
+        "ALB": {
+            "name": "Albania",
+            "states": {
+                "01": "Berat County",
+                "BR": "Berat District"    
+            }
+        },
+        "DZA": {
+            "name": "Algeria",
+            "states": {
+                "02": "Adrar Province"
+            }
+        }
+    }
+}

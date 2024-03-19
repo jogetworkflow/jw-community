@@ -39,7 +39,7 @@ tr.even { background: #f8f8f8;}
 .progress_cont:after {color: #28a745; position: absolute; display: block; left: 50%; top: 50%; content: attr(data-pct); font-weight: bold; font-size: 3.5em; transform: translate(-50%, -50%);}
 [data-status="fail"] .progress_cont:after {color: #dc3545;}
 [data-status="warn"] .progress_cont:after {color: #ffc107;}
-.governance_charts {display: flex; justify-content: center; align-items: flex-start; }
+.governance_charts {display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap;}
 .category_chart {cursor: pointer; display: block; width: 150px; margin: 0 30px 30px;}
 .category_chart .progress_label {text-align: center; font-size: 16px; margin: 10px 0;}
 .moreInfo {margin-top: 10px;}
@@ -50,3 +50,10 @@ tr.even { background: #f8f8f8;}
 .btn-suppress{background: #7e8c8e !important;}
 .details li.suppressed .btn-suppress {opacity: 0.8; cursor: default;}
 #status_selector{margin-right: 15px;}
+@media screen and (max-width: 480px) {
+    .governance_report table, .governance_report table thead, .governance_report table tbody {display:block;}
+    .governance_report table thead th:last-child {display: none;}
+    .governance_report table tr {display:flex; flex-wrap:wrap; width: 100%;}
+    .governance_report table tbody td, .governance_report table thead th {display:block; flex:1; width: auto;}
+    .governance_report table tbody tr th, .governance_report table tbody tr td:last-child {width:100%; flex:auto; border-top: 1px solid #ccc;  border-bottom: 1px solid #ccc;}
+}

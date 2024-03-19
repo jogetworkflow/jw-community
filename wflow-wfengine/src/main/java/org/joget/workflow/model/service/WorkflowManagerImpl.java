@@ -4905,7 +4905,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         WMConnectInfo wmconnInfo = new WMConnectInfo(username, username, "WorkflowManager", "");
-        sConn.connect(wmconnInfo);
+        synchronized (username) { //to prevent concurrent requests create resource for the nonexist username and causing duplicate key issue 
+            sConn.connect(wmconnInfo);
+        }
         return sConn;
     }
 

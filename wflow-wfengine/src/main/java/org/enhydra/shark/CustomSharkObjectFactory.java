@@ -7,6 +7,7 @@ import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.api.internal.working.WfProcessMgrInternal;
 import org.enhydra.shark.api.internal.working.WfRequesterInternal;
+import org.enhydra.shark.api.internal.working.WfResourceInternal;
 
 public class CustomSharkObjectFactory extends SharkObjectFactory {
 
@@ -29,5 +30,13 @@ public class CustomSharkObjectFactory extends SharkObjectFactory {
     @Override
     public WfActivityInternal createActivity(ActivityPersistenceObject po, WfProcessInternal process) throws Exception {
         return new CustomWfActivityImpl(po, process);
+    }
+    
+    @Override
+    public WfResourceInternal createResource(WMSessionHandle shandle, String resourceKey) throws Exception {
+        WfResourceInternal resource = new WfResourceImpl(shandle, resourceKey);
+        //write transaction now instead of write before next query to prevent duplicate key issue when concurrent request
+        SharkUtil.transactionWrite(shandle); 
+        return resource;
     }
 }
