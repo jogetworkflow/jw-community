@@ -310,6 +310,15 @@ AppBuilder = {
     },
     
     /*
+     * Update the app name if changed
+     */
+    builderSaved: function() {
+        //update app name
+        var name = CustomBuilder.data.name + " v" + CustomBuilder.appVersion;
+        $("#builderElementName > .title > span").text(name);
+    },
+    
+    /*
      * Action implementation of top panel to publish the app
      */
     publishApp: function() {
