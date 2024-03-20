@@ -5211,7 +5211,9 @@ _CustomBuilder.Builder = {
         return $(target).find("> .mce-edit-focus").length > 0  //inline editing is focused
                 || $(target).closest('.mce-content-body[contenteditable]').length > 0 //the event target is within the inline editor
                 || $(target).closest('.tox-tinymce').length > 0 //the event target is toolbar
-                || $(target).closest('.tox-tiered-menu').length > 0; // the event target is toolbar menu
+                || $(target).closest('.tox-tiered-menu').length > 0 // the event target is toolbar menu
+                || $(target).closest('.tox-dialog').length > 0 // the event target is form dialog box for html editor
+                || $(target).closest('.tox-tbtn').length > 0; // the event target is additional toolbar menu for rich text
     },
     
     /*
