@@ -161,7 +161,7 @@ public class DefaultValidator extends FormValidator {
         
         if (values != null && values.length > 0) {
             for (String val : values) {
-                if (val != null && !val.isEmpty() && !val.matches("^[-]?\\d+(\\.\\d+)?$")) {
+                if (val != null && !val.isEmpty() && !val.matches("^[-]?\\d+([.,]\\d+)?$")) {
                     result = false;
                     data.addFormError(id, message);
                     break;
