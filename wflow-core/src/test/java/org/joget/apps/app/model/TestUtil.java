@@ -44,7 +44,7 @@ public class TestUtil {
                 reader.close();
             }
         }
-        return fileContents;
+        return fileContents.trim();
     }
     
     public static AppDefinition createAppDefinition(String id, Long version) {
