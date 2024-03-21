@@ -62,6 +62,7 @@
                 "load" : "AppBuilder.load",
                 "getBuilderProperties" : "AppBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
+                "builderSaved" : "AppBuilder.builderSaved",
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
                 "exportApp" : "AppBuilder.exportApp"
