@@ -182,4 +182,12 @@ public class FileStore {
         fileStore.set(new HashMap<String, MultipartFile>());
         filesExceedLimit.set(new ArrayList<String>());
     }
+    
+    /**
+     * Method used by the system to clear the limit of a profile after profile removed
+     * request is finish processing
+     */
+    public static void clearLimit(String profile) {
+        fileSizeLimitMap.remove(profile);
+    }
 }
