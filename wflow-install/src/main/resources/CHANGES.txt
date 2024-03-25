@@ -2,6 +2,28 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.0.12
+======
+b48f76d66 Fixed: jw-community - Security - Update commons-compress to 1.26.0 and commons-io to 2.15.1 for CVE-2024-26308. @7.0-SNAPSHOT
+39d207159 Fixed: wflow-commons - Settings - File size limit does not follow cloud profile setting. @8.0-SNAPSHOT
+bc3143b6c Modified: wflow-consoleweb - CSRF Guard - Adding system property flag  to support fix domain checking. @8.0-SNAPSHOT
+3b20d410e Fixed: wflow-consoleweb - Builders - Fixed UI builder component inline editing not working when using mouse. @8.0-SNAPSHOT
+38428250a Fixed: wflow-consoleweb - App Composer - Regression of c0a3dbbf. App settings can't save. @8.0-SNAPSHOT
+5d57bc4f1 Fixed: wflow-core - Security - Reflected XSS using locale lang parameter. T3983 @8.0-SNAPSHOT
+4c7fcf223 Fixed: wflow-core - Default Validator - Fixed basic numeric validator not passing European formatting style. @8.0-SNAPSHOT
+94af2fcdf Fixed: wflow-consoleweb - Health Check - Not display correctly for mobile. @8.0-SNAPSHOT
+2ded072ed Fixed: wflow-consoleweb - I18n - Missing labels for ar locale on list paging. @8.0-SNAPSHOT
+e98d4eaa0 Fixed: wflow-consoleweb - Quill Editor - Rich text editor unordered list bugs @8.0-SNAPSHOT
+bab98cc7d Fixed: wflow-consoleweb - UI Builder - When in other advanced tools page and click  button, it does not back to design view. @8.0-SNAPSHOT
+99428af70 Fixed: wflow-wfengine - Workflow Manager - Prevent shark create resource exception during concurrent request. @8.0-SNAPSHOT
+f64401727 Fixed: wflow-core - JSON API Form Option Binder - Can't support nested structure for grouping and options. T3989 @8.0-SNAPSHOT
+0999910ab Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.86. @8.0-SNAPSHOT
+8a6ab7cea Fixed: wflow-core - Security - Update bouncycastle to 1.77 and jose4j to 0.9.6. @7.0-SNAPSHOT
+9a7b35213 Fixed: wflow-consoleweb - App Center - Fixed Blank space for side-bar navigation in app center when in RTL. @8.0-SNAPSHOT
+56437109b Fixed: wflow-consoleweb - Process Builder - Update from XPDL is not working correctly. @8.0-SNAPSHOT
+663b5ff2d Fixed: wflow-consoleweb - X-admin - Fixed process status process information process starter info in arabic for x-admin theme not in rtl. @7.0-SNAPSHOT
+67baf2a62 Fixed: wflow-consoleweb - Security - Remove version and build number from error page. @7.0-SNAPSHOT
+
 8.0.11
 ======
 c0a3dbbfb Fixed: wflow-consoleweb - Builders - Can't save very large definition. T3623 @8.0-SNAPSHOT
