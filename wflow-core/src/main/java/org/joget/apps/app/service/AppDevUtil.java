@@ -4,12 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -923,7 +923,7 @@ public class AppDevUtil {
                 String currentContents = FileUtils.readFileToString(file, "UTF-8");
                 isNew = currentContents == null;
                 toSave = (isNew || !cleanForCompare(currentContents).equals(cleanForCompare(fileContents)));
-            } catch(FileNotFoundException e) {
+            } catch(NoSuchFileException e) {
                 // ignore
             }
              
@@ -1002,7 +1002,7 @@ public class AppDevUtil {
             if (file != null && file.isFile()) {
                 try {
                     return FileUtils.readFileToString(file, "UTF-8");
-                } catch (FileNotFoundException ex) {
+                } catch (NoSuchFileException ex) {
                     LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
                 }
             } else {
@@ -1023,7 +1023,7 @@ public class AppDevUtil {
             if (file != null && file.isFile()) {
                 try {
                     json = FileUtils.readFileToString(file, "UTF-8");
-                } catch (FileNotFoundException ex) {
+                } catch (NoSuchFileException ex) {
                     LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
                 }
             } else {
@@ -1752,7 +1752,7 @@ public class AppDevUtil {
                             results.add(newObj);
                         }
                     }
-                } catch (FileNotFoundException ex) {
+                } catch (NoSuchFileException ex) {
                     LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
                 }
             }
