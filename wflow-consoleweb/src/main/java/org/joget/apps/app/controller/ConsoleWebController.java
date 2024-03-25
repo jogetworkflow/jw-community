@@ -6259,7 +6259,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
-    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String json) throws JSONException, IOException {
+    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "json", required = false) String json) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         String oldProperties = "{}";  
@@ -6283,6 +6283,9 @@ public class ConsoleWebController {
         }
         
         try {
+            //retrieve from request body if the json is send in file
+            json = AppUtil.getSubmittedJsonDefinition(json);
+
             json = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, json);
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);
