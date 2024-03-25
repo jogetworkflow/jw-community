@@ -3,6 +3,22 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.1.44
+=================
+b48f76d66 Fixed: jw-community - Security - Update commons-compress to 1.26.0 and commons-io to 2.15.1 for CVE-2024-26308. @7.0-SNAPSHOT
+7d408dcda Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.86. @7.0-SNAPSHOT
+8a6ab7cea Fixed: wflow-core - Security - Update bouncycastle to 1.77 and jose4j to 0.9.6. @7.0-SNAPSHOT
+663b5ff2d Fixed: wflow-consoleweb - X-admin - Fixed process status process information process starter info in arabic for x-admin theme not in rtl. @7.0-SNAPSHOT
+67baf2a62 Fixed: wflow-consoleweb - Security - Remove version and build number from error page. @7.0-SNAPSHOT
+6b3f6f50e Fixed: wflow-consoleweb - UI - Default date format for Arabic locale is wrong causing date does not display correctly. @7.0-SNAPSHOT
+e0fdebb89 Fixed: wflow-core - Inbox - Popup rendered with UI header and menu when enable show assignment in popup. T3508 @7.0-SNAPSHOT
+b00f31676 Fixed: wflow-core - Text Field/Textarea/Custom HTML - Sanitization should not enable by default. T3785 @7.0-SNAPSHOT
+22a9ce3ea Modified: jw-community - Security - Upgrade jackson-databind, jgit, Spring Framework and Spring Security. @8.0-SNAPSHOT
+f8dcb0469 Fixed: wflow-directory - Directory - HOD user unassigned from organization is not unassign from HOD. T3603 @7.0-SNAPSHOT
+7ffe7ca69 Fixed: wflow-consoleweb - General Setting - License Info is not showing in Arabic locale. @7.0-SNAPSHOT
+2b4b39006 Fixed: wflow-commons - Startup - No option to disable the new collation auto fix. T3788 @7.0-SNAPSHOT
+2921a22eb Fixed: wflow-consoleweb - Process Builder - Error caused by missing join type after removing a transition. T3508 @7.0-SNAPSHOT
+
 CHANGES IN 7.1.43
 =================
 3734ebb46 Fixed: wflow-wfengine - Process - Fail to connection Shark Engine when total connections reach max integer number (> 2B). @7.0-SNAPSHOT
