@@ -13,13 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  */
 public class FileStore {
-    private static Integer fileSizeLimit;
+    private static Map<String, Integer> fileSizeLimitMap = new HashMap<String, Integer>(); 
     
     /**
      * Get the file size limit of the system in byte
      * @return 
      */
     public static long getFileSizeLimitLong() {
+        Integer fileSizeLimit = getFileSizeLimit();
         if (fileSizeLimit != -1) {
             return fileSizeLimit * 1024 * 1024L;
         }
@@ -30,7 +31,7 @@ public class FileStore {
      * Method call to refresh the file size limit based on system setting
      */
     public static void updateFileSizeLimit() {
-        fileSizeLimit = -1;
+        Integer fileSizeLimit = -1;
         
         SetupManager setupManager = (SetupManager) SecurityUtil.getApplicationContext().getBean("setupManager");
         Setting setting = setupManager.getSettingByProperty("fileSizeLimit");
@@ -38,10 +39,15 @@ public class FileStore {
         if (setting != null && setting.getValue() != null && !setting.getValue().isEmpty()) {
             try {
                 fileSizeLimit = Integer.parseInt(setting.getValue());
+                
+                
             } catch (Exception e) {
                 LogUtil.debug(FileStore.class.getName(), "System Setting for File Size limit is not a valid number");
             }
         }
+        
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        fileSizeLimitMap.put(profile, fileSizeLimit);
     }
     
     /**
@@ -49,8 +55,12 @@ public class FileStore {
      * @return 
      */
     public static int getFileSizeLimit() {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        Integer fileSizeLimit = fileSizeLimitMap.get(profile);
+        
         if (fileSizeLimit == null) {
             updateFileSizeLimit();
+            fileSizeLimit = fileSizeLimitMap.get(profile);
         }
         return fileSizeLimit;
     }
@@ -171,5 +181,13 @@ public class FileStore {
     public static void clear() {
         fileStore.set(new HashMap<String, MultipartFile>());
         filesExceedLimit.set(new ArrayList<String>());
+    }
+    
+    /**
+     * Method used by the system to clear the limit of a profile after profile removed
+     * request is finish processing
+     */
+    public static void clearLimit(String profile) {
+        fileSizeLimitMap.remove(profile);
     }
 }
