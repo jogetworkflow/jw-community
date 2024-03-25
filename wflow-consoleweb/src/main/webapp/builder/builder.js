@@ -4547,6 +4547,7 @@ _CustomBuilder.Builder = {
                         }
                         
                         if (inilineEditEl !== null) {
+                            $(target).attr('data-cbuilder-inlineedit-element', '');
                             var inlineid = $(inilineEditEl).attr("id");
                             if (inlineid === undefined || inlineid === null || inlineid === "") {
                                 inlineid = "inline_" + CustomBuilder.uuid();
@@ -4793,6 +4794,9 @@ _CustomBuilder.Builder = {
                 }
             }
             var target = $(eventTarget);
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
+                return true;
+            }
             
             if ($(target).closest(".ui-draggable-handle").length > 0) {
                 return;
@@ -5056,7 +5060,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mouseup.builder touchend.builder", function (event) {
             self.mousedown = false;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 return true;
             }
             if (self.isDragging)
@@ -5077,7 +5081,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 self.mousedown = false;
                 return true;
             }
@@ -5175,7 +5179,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.off("click.builder");
         self.frameHtml.on("click.builder", function (event) {
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 return true;
             }
             if (!$(target).is("[data-cbuilder-classname]")) {
@@ -5198,6 +5202,18 @@ _CustomBuilder.Builder = {
             event.preventDefault();
             return false;    
         });
+    },
+    
+    /*
+     * Used to check the current event target is from the inline editor
+     */
+    isInlineEditing : function(target) {
+        return $(target).find("> .mce-edit-focus").length > 0  //inline editing is focused
+                || $(target).closest('.mce-content-body[contenteditable]').length > 0 //the event target is within the inline editor
+                || $(target).closest('.tox-tinymce').length > 0 //the event target is toolbar
+                || $(target).closest('.tox-tiered-menu').length > 0 // the event target is toolbar menu
+                || $(target).closest('.tox-dialog').length > 0 // the event target is form dialog box for html editor
+                || $(target).closest('.tox-tbtn').length > 0; // the event target is additional toolbar menu for rich text
     },
     
     /*
