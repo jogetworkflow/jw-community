@@ -36,7 +36,6 @@ public class TextField extends Element implements FormBuilderPaletteElement {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "textField.ftl";
-        String type = "";
 
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
@@ -57,7 +56,6 @@ public class TextField extends Element implements FormBuilderPaletteElement {
         
         if (element != null && element instanceof Map) {
             Map elementMap = (Map) element;
-            String className = (String) elementMap.get("className");
             Map<String, Object> properties = (Map<String, Object>) elementMap.get("properties");
             
             dataModel.put("validator", properties.get("type"));
