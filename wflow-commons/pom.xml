@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-commons</artifactId>
     <packaging>jar</packaging>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.44</version>
     <name>wflow-commons</name>
     <url>http://www.joget.org</url>
     <build>
