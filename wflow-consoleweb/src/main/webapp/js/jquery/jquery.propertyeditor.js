@@ -8877,12 +8877,6 @@ PropertyEditor.Type.CodeMirror.prototype = {
             lineWrapping: true,
             highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
             extraKeys: {
-                "F12": function(cm) {
-                  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                },
-                "Esc": function(cm) {
-                  if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                },
                 "Ctrl-F": function(cm) {
                   cm.execCommand("findPersistent");
                 },
@@ -8919,6 +8913,12 @@ PropertyEditor.Type.CodeMirror.prototype = {
             }
         }
 
+        //Set dark theme if dark theme mode is activated
+        if ($('body').attr('builder-theme') === "dark") {
+            this.codemirror.setOption("theme", "ayu-mirage");
+        }
+
+        //Function to modify font size
         function modifyFontSize(increase){
             var wrapper = thisObj.codemirror.getWrapperElement();
             var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
@@ -8926,8 +8926,74 @@ PropertyEditor.Type.CodeMirror.prototype = {
             wrapper.style.fontSize = newSize + 'px';
             thisObj.codemirror.refresh()
         }
+
+        //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
+        //to exit full scree mode, and F1 to toggle help panel
+        $('#' + this.id).on('keydown', function(event) {
+            // Check if the Esc key is pressed
+            if (event.key === 'Escape') {
+                // Stop event propagation
+                if (thisObj.codemirror.getOption("fullScreen")) {
+                    thisObj.codemirror.setOption("fullScreen", false);
+                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 20);
+                }
+                event.stopPropagation();
+            }else if (event.key === "F1") {
+                event.preventDefault();
+                if (panels[panelId]) {
+                    panels[panelId].clear();
+                    delete panels[panelId];
+                    thisObj.codemirror.setSize(null,300)
+                } else {
+                    addPanel("bottom");
+                }
+            }else if (event.key === 'F12'){
+                event.preventDefault();
+                if (thisObj.codemirror.getOption("fullScreen")) {
+                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 20);
+                    thisObj.codemirror.setOption("fullScreen", false);
+                }else{
+                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 8999);
+                    thisObj.codemirror.setOption("fullScreen", true);
+                }
+            }
+        });
+
+        var panels = {};
+        var panelId = "";
+
+        function makePanel(where) {
+            var node = document.createElement("div");
+            var label;
+
+            node.id = "panel-" + thisObj;
+            node.className = "panel " + where;
+
+            label = $("<span>").text("F1 to toggle helper panel | F12 to toggle fullscreen | Ctrl+F to toggle search bar | Ctrl + R to Replace").appendTo(node);
+
+            if ($('body').attr('builder-theme') === "dark"){
+                label.css({
+                    "color": "white"
+                })
+            }else{
+                label.css({
+                    "color": "black"
+                })
+            }
+
+            return node;
+        }
+
+        function addPanel(where) {
+            var node = makePanel(where);
+            panelId = "panel-" + thisObj.id;
+            panels[panelId] = thisObj.codemirror.addPanel(node, {position: where, stable: true});
+        }
         
         this.codemirror.setValue(this.value);
+
+        //Initialize panel
+        addPanel("bottom")
     },
     pageShown: function() {
         this.codemirror.refresh();
