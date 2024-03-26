@@ -1067,13 +1067,13 @@ public class FormUtil implements ApplicationContextAware {
                     Iterator<String> it = row.stringPropertyNames().iterator();
                     // get the key based on the "value" property
                     String optionValue = row.getProperty(PROPERTY_VALUE);
-                    if (optionValue == null) {
+                    if (optionValue == null && !it.isEmpty()) {
                         // no "value" property, use first property instead
                         String key = it.next();
                         optionValue = row.getProperty(key);
                     }
                     
-                    if(row.getProperty(PROPERTY_SELECTED) != null && (row.getProperty(PROPERTY_SELECTED).equalsIgnoreCase("true"))){
+                    if (optionValue != null && row.getProperty(PROPERTY_SELECTED) != null && (row.getProperty(PROPERTY_SELECTED).equalsIgnoreCase("true"))){
                         value = optionValue;
                         break;
                     }
