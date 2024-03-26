@@ -15,7 +15,7 @@
   position: fixed;
   white-space: pre;
   white-space: pre-wrap;
-  z-index: 100;
+  z-index: 99999;
   max-width: 600px;
   opacity: 0;
   transition: opacity .4s;
