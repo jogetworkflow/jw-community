@@ -3307,13 +3307,15 @@ public class AppServiceImpl implements AppService {
                 while ((length = in.read(temp, 0, 1024)) != -1) {
                     out.write(temp, 0, length);
                 }
-
+                
+                in.close();
+                out.close();
                 return out.toByteArray();
             }
             out.flush();
-            out.close();
         }
         in.close();
+        out.close();
 
         return null;
     }
