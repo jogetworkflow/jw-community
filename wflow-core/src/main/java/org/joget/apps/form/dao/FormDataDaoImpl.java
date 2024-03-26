@@ -1112,6 +1112,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (actionType == ACTION_TYPE_LOAD) {
             // locate entity hbm mapping file
             String path = getFormMappingPath();
+            if (entityName.contains("..")) {
+                throw new HibernateException("EntityName has illegal characters, entityName = " + entityName + ".");
+            }
             String filename = entityName + ".hbm.xml";        
             File mappingFile = new File(path, filename);
             try {
