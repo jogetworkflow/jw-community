@@ -50,6 +50,16 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             dataModel.put("valueLabel", valueLabel);
         }
         dataModel.put("value", value);
+
+        //Get the validator type  
+        Object element = getProperty("validator");
+        
+        if (element != null && element instanceof Map) {
+            Map elementMap = (Map) element;
+            Map<String, Object> properties = (Map<String, Object>) elementMap.get("properties");
+            
+            dataModel.put("validator", properties.get("type"));
+        }
         
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
