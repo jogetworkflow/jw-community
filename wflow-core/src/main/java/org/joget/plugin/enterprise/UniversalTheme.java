@@ -1058,9 +1058,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     protected String getCategoryLink(UserviewCategory category, Map<String, Object> data) {
-        UserviewMenu menu = category.getMenus().iterator().next();
-        if (menu.isHomePageSupported()) {
-            return menu.getUrl();
+        if (!category.getMenus().isEmpty()) {
+            UserviewMenu menu = category.getMenus().iterator().next();
+            if (menu.isHomePageSupported()) {
+                return menu.getUrl();
+            }            
         }
         return "";
     }

@@ -203,6 +203,7 @@ public class TestAppService {
             
             // verify form
             Collection<FormDefinition> formDefList = importedApp.getFormDefinitionList();
+            assertTrue(!formDefList.isEmpty());
             FormDefinition importedFormDef = formDefList.iterator().next();
             assertTrue(TEST_FORM_ID.equals(importedFormDef.getId()));
             
@@ -454,6 +455,7 @@ public class TestAppService {
 
             // load and verify data for form D
             FormRowSet rowSetD = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_D, valueD);
+            assertTrue(!rowSetD.isEmpty());
             FormRow rowD = rowSetD.iterator().next();
             boolean verifyD = valueD.equals(rowD.get("id")) && valueD.equals(rowD.get("d1")) && valueD.equals(rowD.get("d2"));
             dId = rowD.get("id").toString();
@@ -461,6 +463,7 @@ public class TestAppService {
             // load and verify data for form C
             String generatedIdForC = (String) rowD.get("cid");
             FormRowSet rowSetC = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_C, generatedIdForC);
+            assertTrue(!rowSetC.isEmpty());
             FormRow rowC = rowSetC.iterator().next();
             boolean verifyC = generatedIdForC.equals(rowC.get("id")) && valueC.equals(rowC.get("c1")) && generatedIdForC.equals(rowD.get("cid"));
             cId = rowC.get("id").toString();
@@ -468,6 +471,7 @@ public class TestAppService {
             // load and verify data for form A
             String generatedIdForA = (String) rowC.get("aid");
             FormRowSet rowSetA = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_A, generatedIdForA);
+            assertTrue(!rowSetA.isEmpty());
             FormRow rowA = rowSetA.iterator().next();
             boolean verifyA = generatedIdForA.equals(rowA.get("id")) && valueA.equals(rowA.get("a1")) && generatedIdForC.equals(rowA.get("bid"));
             aId = rowA.get("id").toString();
@@ -489,6 +493,7 @@ public class TestAppService {
             String resultValueD = (String)result.get("d1");
             String resultValueC = (String)((Map<String,Object>)result.get("formC")).get("c1");
             Collection<Map<String, Object>> resultE = (Collection<Map<String, Object>>)((Map<String,Object>)result.get("formC")).get("eref");
+            assertTrue(!resultE.isEmpty());
             String resultValueE1 = (String)resultE.iterator().next().get("e1");
             boolean verifyFormData = 
                     resultValueD.equals(valueD) &&

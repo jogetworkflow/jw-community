@@ -129,6 +129,7 @@ public class TestDirectoryManager {
         child.setParent(loadedDept);
         departmentDao.updateDepartment(child);
         Collection<Department> subDepartments = departmentDao.getDepartmentsByParentId(null, TEST_DEPARTMENT_PARENT, null, null, null, null);
+        Assert.isTrue(!subDepartments.isEmpty());
         Assert.isTrue(((Department) subDepartments.iterator().next()).getId().equals(child.getId()));
 
         // assign dept HOD
@@ -166,6 +167,7 @@ public class TestDirectoryManager {
         addEmployment(TEST_USER_HOD, TEST_DEPARTMENT_CHILD, TEST_ORGANIZATION);
         employmentDao.assignUserReportTo(TEST_USER, TEST_USER_HOD);
         userHodList = directoryManager.getUserHod(TEST_USER);
+        Assert.isTrue(!userHodList.isEmpty());
         User userHod = userHodList.iterator().next();
         Assert.isTrue(TEST_USER_HOD.equals(userHod.getUsername()));        
     }

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -70,6 +71,9 @@ public class DynamicDataSourceManager {
             properties = profilePropertyManager.newInstance();
             FileInputStream fis = null;
             try {
+                if (profile.contains("..")) {
+                    throw new IOException("Profile contains illegal characters.");
+                }
                 fis = new FileInputStream(new File(determineFilePath(profile)));
                 properties.load(fis);
                 
@@ -279,6 +283,9 @@ public class DynamicDataSourceManager {
         FileOutputStream fos = null;
         try {
             String currentProfile = getCurrentProfile();
+            if (currentProfile.contains("..")) {
+                throw new IOException("Current profile contains illegal characters.");
+            }
             fis = new FileInputStream(new File(determineFilePath(currentProfile)));
             properties.load(fis);
             properties.setProperty(key, value);
