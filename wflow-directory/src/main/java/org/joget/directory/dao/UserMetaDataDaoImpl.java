@@ -34,6 +34,17 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
 
         return null;
     }
+
+    @Override
+    public Collection<UserMetaData> getUserMetaDatasByKeyValue(String key, String value) {
+        Collection<UserMetaData> result = null;
+        try {
+            result = (Collection<UserMetaData>) find("UserMetaData", "WHERE e.key = ? AND e.value = ?", new Object[]{key, value}, null, null, null, null);
+        } catch (Exception e) {
+            LogUtil.error(UserDaoImpl.class.getName(), e, "Get User Meta Data Error!");
+        }
+        return result;
+    }
     
     public Boolean addUserMetaData(UserMetaData data) {
         try {
@@ -82,5 +93,20 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
             return false;
         }
     }
-    
+
+    @Override
+    public Boolean deleteUserMetaDatasByUsernameKey(String username, String key) {
+        try {
+            Collection<UserMetaData> collection = (Collection<UserMetaData>) find("UserMetaData", "WHERE e.username = ? AND e.key = ?", new Object[]{username, key}, null, null, null, null);
+            if (collection != null) {
+                for (UserMetaData data : collection) {
+                    delete("UserMetaData", data);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Error!");
+            return false;
+        }
+    }
 }

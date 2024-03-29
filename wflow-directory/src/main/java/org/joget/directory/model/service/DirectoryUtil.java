@@ -1,8 +1,5 @@
 package org.joget.directory.model.service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.Department;
@@ -13,6 +10,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility methods to quick access to Directory Manager 
@@ -137,11 +138,24 @@ public class DirectoryUtil implements ApplicationContextAware {
      * @return 
      */
     public static String getLoginFormFooter() {
+        StringBuilder sb = new StringBuilder();
+        boolean isEnterprise = false;
+        try {
+            Class.forName("org.joget.apps.license.LicenseManager");
+            isEnterprise = true;
+        } catch (Exception ignored) {}
+
+        if (isEnterprise) {
+            IdentityProviderManager identityProviderManager = (IdentityProviderManager) appContext.getBean("identityProviderManager");
+            String loginButtonsHtml = identityProviderManager.getLoginFooterHtml();
+            sb.append(loginButtonsHtml);
+        }
+
         UserSecurity us = getUserSecurity();
         if (us != null) {
-            return us.getLoginFormFooter();
+            sb.append(us.getLoginFormFooter());
         }
-        return "";
+        return sb.toString();
     }
 
     /**

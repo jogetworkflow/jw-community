@@ -109,6 +109,7 @@
                 </div>
             </div>
         </div>
+        <jsp:include page="idp.jsp" flush="true"/>
     </div>
 </div>
 

@@ -24,6 +24,7 @@ import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
+import org.joget.directory.model.service.IdentityProviderManager;
 import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
 import org.joget.directory.model.service.DirectoryUtil;
@@ -192,13 +193,20 @@ public class UserProfileMenu extends UserviewMenu {
         setProperty("nonWesternDigitLocale", StringUtils.join(nonWesternDigitLocale, ";"));
         setProperty("enableUserLocale", enableUserLocale);
         setProperty("localeStringList", localeStringList);
-        
+
+        // Get profile footer from IdP Manager
+        StringBuilder sbProfileFooter = new StringBuilder();
+        IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
+        String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
+        sbProfileFooter.append(idpProfileFooter);
+
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             setProperty("policies", us.passwordPolicies());
-            setProperty("userProfileFooter", us.getUserProfileFooter(user));
+            sbProfileFooter.append(us.getUserProfileFooter(user));
         }
-        
+
+        setProperty("userProfileFooter", sbProfileFooter.toString());
         String url = getUrl() + "?action=submit";
         setProperty("actionUrl", url);
     }

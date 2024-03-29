@@ -87,6 +87,7 @@ import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.model.service.IdentityProviderManager;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.Group;
@@ -1309,16 +1310,22 @@ public class ConsoleWebController {
                 }
             }
         }
-        
+
+        // Get profile footer from IdP Manager
+        StringBuilder sbProfileFooter = new StringBuilder();
+        IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
+        String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
+        sbProfileFooter.append(idpProfileFooter);
+
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             map.addAttribute("policies", us.passwordPolicies());
-            map.addAttribute("userProfileFooter", us.getUserProfileFooter(user));
+            sbProfileFooter.append(us.getUserProfileFooter(user));
         } else {
             map.addAttribute("policies", "");
-            map.addAttribute("userProfileFooter", "");
         }
 
+        map.addAttribute("userProfileFooter", sbProfileFooter.toString());
         map.addAttribute("enableUserLocale", enableUserLocale);
         map.addAttribute("localeStringList", localeStringList);
 
@@ -1394,14 +1401,21 @@ public class ConsoleWebController {
             }
             model.addAttribute("enableUserLocale", enableUserLocale);
             model.addAttribute("localeStringList", localeStringList);
-            
+
+            // Get profile footer from IdP Manager
+            StringBuilder sbProfileFooter = new StringBuilder();
+            IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
+            String idpProfileFooter = identityProviderManager.getProfileFooterHtml(currentUser);
+            sbProfileFooter.append(idpProfileFooter);
+
             if (us != null) {
                 model.addAttribute("policies", us.passwordPolicies());
-                model.addAttribute("userProfileFooter", us.getUserProfileFooter(currentUser));
+                sbProfileFooter.append(us.getUserProfileFooter(currentUser));
             } else {
                 model.addAttribute("policies", "");
                 model.addAttribute("userProfileFooter", "");
             }
+            model.addAttribute("userProfileFooter", sbProfileFooter.toString());
 
             return "console/profile";
         } else {
