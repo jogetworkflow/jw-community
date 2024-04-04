@@ -123,6 +123,16 @@
         }]
     },
     {
+        "name" : "handleFilters",
+        "label" : "@@datalist.jsonapibinder.autoHandleFilters@@",
+        "type" : "checkbox",
+        "value" : "true",       
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
+    },
+    {
         "name" : "debugMode",
         "label" : "@@app.jsontool.debugMode@@",
         "description" : "@@app.jsontool.debugMode.desc@@",

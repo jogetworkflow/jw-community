@@ -336,6 +336,17 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.16.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.cqengine</groupId>
+            <artifactId>cqengine</artifactId>
+            <version>3.6.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

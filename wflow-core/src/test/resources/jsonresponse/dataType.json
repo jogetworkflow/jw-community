@@ -1,0 +1,47 @@
+{
+    "data": [
+        {
+            "stringVal": "Afghanistan",
+            "intVal": 10,
+            "doubleVal": 345.23,
+            "booleanVal": true,
+            "dateVal": "2024-04-23T18:25:43.511Z"
+        },
+        {
+            "stringVal": "Albania",
+            "intVal": 233,
+            "doubleVal": 2311.23,
+            "booleanVal": false,
+            "dateVal": "2024-04-01T15:25:43.511Z"
+        },
+        {
+            "stringVal": "Berat County",
+            "intVal": 33,
+            "doubleVal": 433.23,
+            "booleanVal": true,
+            "dateVal": "2024-04-20T18:25:43.511Z"
+        },
+        {
+            "stringVal": "Algeria",
+            "intVal": 3,
+            "doubleVal": 1.23,
+            "booleanVal": true,
+            "dateVal": "2024-04-01T18:25:43.511Z"
+        },
+        {
+            "stringVal": "Adrar Province",
+            "intVal": 122,
+            "doubleVal": 0.23,
+            "booleanVal": true,
+            "dateVal": "2024-04-22T18:25:43.511Z"
+        },
+        {
+            "stringVal": "Kandahar",
+            "intVal": 32,
+            "doubleVal": 12.23,
+            "booleanVal": false,
+            "dateVal": "2024-04-25T18:25:43.511Z"
+        }
+    ]
+}
+
