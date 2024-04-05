@@ -46,7 +46,7 @@
                 </div>
             </div>
             <c:if test="${!empty envName}">
-                <span id="environmentName"><c:out value="${envName}"/></span>
+                <span id="environmentName"><span><c:out value="${envName}"/></span></span>
             </c:if>
         </div>
             
