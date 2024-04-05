@@ -300,7 +300,7 @@ public class TestPluginMethods {
         Assert.assertEquals(StringUtils.join(((Map)resultList.get(5)).values(), ", "), "countries and states retrieved, DZA, Adrar Province, false, Algeria, 02");
     }
     
-    //@Test
+    @Test
     public void testJsonApiListBinderRecursiveGetColumns() throws IOException {
         Map<String, DataListColumn> columns = new HashMap<String, DataListColumn>();
         
@@ -465,6 +465,27 @@ public class TestPluginMethods {
         filtered = JsonApiDatalistBinder.filterResult(resultList, filters.toArray(new DataListFilterQueryObject[0]), sampleKeys, sample);
         Assert.assertEquals(filtered.size(), 1);
         Assert.assertEquals(StringUtils.join(((Map)filtered.get(0)).values(), ", "), "10, 345.23, 2024-04-23T18:25:43.511Z, Afghanistan, true");
+        
+        //stringVal contains 'a' and dateVal range from 2024-04-22 00:00:00.0 to 2024-04-24 00:00:00.0
+        f1.setQuery("lower(stringVal) like lower(?)");
+        f1.setValues(new String[]{"%a%"});
+        f2.setQuery("CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' ', SUBSTRING(dateVal, 11, 5), ':00.0') >= ? and CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' ', SUBSTRING(dateVal, 11, 5), ':00.0') <= ?");
+        f2.setValues(new String[]{"2024-04-22 00:00:00.0", "2024-04-24 00:00:00.0"});
+        filtered = JsonApiDatalistBinder.filterResult(resultList, filters.toArray(new DataListFilterQueryObject[0]), sampleKeys, sample);
+        Assert.assertEquals(filtered.size(), 2);
+        Assert.assertEquals(StringUtils.join(((Map)filtered.get(0)).values(), ", "), "10, 345.23, 2024-04-23T18:25:43.511Z, Afghanistan, true");
+        Assert.assertEquals(StringUtils.join(((Map)filtered.get(1)).values(), ", "), "122, 0.23, 2024-04-22T18:25:43.511Z, Adrar Province, true");
+        
+        //stringVal contains 'a' and dateVal range from 2024-04-22 00:00:00.0 to 2024-04-24 00:00:00.0
+        f1.setQuery("lower(stringVal) like lower(?)");
+        f1.setValues(new String[]{"%a%"});
+        f2.setQuery("CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' 00:00:00.0') >= ? and CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' 00:00:00.0') <= ?");
+        f2.setValues(new String[]{"2024-04-22 00:00:00.0", "2024-04-24 00:00:00.0"});
+        filtered = JsonApiDatalistBinder.filterResult(resultList, filters.toArray(new DataListFilterQueryObject[0]), sampleKeys, sample);
+        Assert.assertEquals(filtered.size(), 2);
+        Assert.assertEquals(StringUtils.join(((Map)filtered.get(0)).values(), ", "), "10, 345.23, 2024-04-23T18:25:43.511Z, Afghanistan, true");
+        Assert.assertEquals(StringUtils.join(((Map)filtered.get(1)).values(), ", "), "122, 0.23, 2024-04-22T18:25:43.511Z, Adrar Province, true");
+        
         
     }
 }

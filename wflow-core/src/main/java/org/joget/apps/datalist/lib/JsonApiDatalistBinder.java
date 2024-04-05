@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.app.service.AppUtil;
@@ -275,7 +277,7 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
      */
     public static DataListCollection filterResult(DataListCollection resultList, DataListFilterQueryObject[] filterQueryObjects, List<String> sampleKeys, Map<String, Object> sample) {
         Query<Map> query = translateFiltersToQuery(filterQueryObjects, sampleKeys, sample);
-
+        
         if (query != null) {
             IndexedCollection<Map> data = new ConcurrentIndexedCollection<Map>();
             data.addAll(resultList);
@@ -298,10 +300,12 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
      * @return 
      */
     protected static Query<Map> translateFiltersToQuery(DataListFilterQueryObject[] filterQueryObjects, List<String> sampleKeys, Map<String, Object> sample) {
+        Map<String, Attribute> attrs = new HashMap<>();
+        
         List<Query<Map>> queries = new ArrayList<Query<Map>>();
         
         for (DataListFilterQueryObject f : filterQueryObjects) {
-            Query<Map> q = translateQuery(f.getQuery(), f.getValues(), 0, sampleKeys, sample);
+            Query<Map> q = translateQuery(f.getQuery(), f.getValues(), 0, sampleKeys, sample, attrs);
             if (q != null) {
                 queries.add(q);
             }
@@ -323,9 +327,10 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
      * @param index
      * @param sampleKeys
      * @param sample
+     * @param attrs
      * @return 
      */
-    protected static Query<Map> translateQuery(String query, String[] values, int index, List<String> sampleKeys, Map<String, Object> sample) {
+    protected static Query<Map> translateQuery(String query, String[] values, int index, List<String> sampleKeys, Map<String, Object> sample, Map<String, Attribute> attrs) {
         String lowercaseQuery = query.toLowerCase();
         
         if (lowercaseQuery.contains("and") || lowercaseQuery.contains("or")) {
@@ -334,8 +339,8 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             if (queryParts.size() > 1) {
                 Collection<Query<Map>> queries = new ArrayList<Query<Map>>();
                 for (String qp : queryParts) {
-                    queries.add(translateQuery(queryParts.get(0), values, index, sampleKeys, sample));
-                    index += StringUtils.countMatches(queryParts.get(0), "?"); //? is the placeholder for value
+                    queries.add(translateQuery(qp, values, index, sampleKeys, sample, attrs));
+                    index += StringUtils.countMatches(qp, "?"); //? is the placeholder for value
                 }
                 if ("AND".equals(operation)) {
                     return new And<Map>(queries);
@@ -343,11 +348,11 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                     return new Or<Map>(queries);
                 }
             } else if (queryParts.size() == 1) {
-                return translateQuery(queryParts.get(0), values, index, sampleKeys, sample);
+                return translateQuery(queryParts.get(0), values, index, sampleKeys, sample, attrs);
             }
         } else {
             //prepare attribute
-            Attribute attr = createAttribute(query, lowercaseQuery, sampleKeys, sample);
+            Attribute attr = createAttribute(query, lowercaseQuery, sampleKeys, sample, attrs);
             
             //prepare the compare value
             String value = values[index];
@@ -442,9 +447,10 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
      * @param lowercaseQuery
      * @param sampleKeys
      * @param sample
+     * @param attrs
      * @return 
      */
-    public static Attribute createAttribute(final String query, final String lowercaseQuery, List<String> sampleKeys, Map<String, Object> sample) {
+    public static Attribute createAttribute(final String query, final String lowercaseQuery, List<String> sampleKeys, Map<String, Object> sample, Map<String, Attribute> attrs) {
         //find the name
         String attrname = "";
         
@@ -465,6 +471,15 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
         } else if (lowercaseQuery.contains("cast(? as big_decimal)")) {
             attrname += "_decimal";
             type = BigDecimal.class;
+        } else if (lowercaseQuery.matches("concat\\(substring\\(.+, \\d+, 4\\), '-', substring\\(.+, \\d+, 2\\), '-', substring\\(.+, \\d+, 2\\), ' ', substring\\(.+, \\d+, 5\\), ':00.0'\\).+")) {
+            attrname += "_datetime";
+        } else if (lowercaseQuery.matches("concat\\(substring\\(.+, \\d+, 4\\), '-', substring\\(.+, \\d+, 2\\), '-', substring\\(.+, \\d+, 2\\), ' 00:00:00.0'\\).+")) {
+            attrname += "_date";
+        }
+        
+        //reuse created attribute for better performance
+        if (attrs.containsKey(attrname)) {
+            return attrs.get(attrname);
         }
         
         Attribute<Map, Object> attr = new SimpleAttribute<Map, Object>(Map.class, type, attrname) {
@@ -476,11 +491,45 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                         value = value.toString().toLowerCase();
                     } else if (lowercaseQuery.contains("cast(? as big_decimal)")) {
                         value = BigDecimal.valueOf(Double.valueOf(value.toString()));
+                    } else if (lowercaseQuery.matches("concat\\(substring\\(.+, \\d+, 4\\), '-', substring\\(.+, \\d+, 2\\), '-', substring\\(.+, \\d+, 2\\), ' ', substring\\(.+, \\d+, 5\\), ':00.0'\\).+")
+                            || lowercaseQuery.matches("concat\\(substring\\(.+, \\d+, 4\\), '-', substring\\(.+, \\d+, 2\\), '-', substring\\(.+, \\d+, 2\\), ' 00:00:00.0'\\).+")) {
+                        String dateValue = "";
+                        String valueStr = value.toString();
+                        
+                        int count = 0;
+                        Pattern pattern = Pattern.compile("substring\\([^,]+,\\s*(\\d+),\\s*(\\d+)\\)");
+                        Matcher matcher = pattern.matcher(lowercaseQuery);
+                        while (matcher.find()) {
+                            int start = Integer.parseInt(matcher.group(1));
+                            int length = Integer.parseInt(matcher.group(2));
+                            
+                            if (count == 0) { //year
+                                dateValue += valueStr.substring(start, start + length);
+                            } else if (count == 1) { //month
+                                dateValue += "-" + valueStr.substring(start, start + length);
+                            } else if (count == 2) { //day
+                                dateValue += "-" + valueStr.substring(start, start + length);
+                            } else if (count == 3 && length == 5) { //time
+                                dateValue += " " + valueStr.substring(start, start + length) + ":00.0";
+                            } else if (count > 3) {
+                                break;
+                            }
+                            
+                            count++;
+                        }
+                        
+                        //append time if not yet handle
+                        if (!dateValue.contains(":00.0")) {
+                            dateValue += " 00:00:00.0";
+                        }
+                        return dateValue;
                     }
                 }
                 return value;
             }
         };
+        
+        attrs.put(attrname, attr);
         
         return attr;
     }
