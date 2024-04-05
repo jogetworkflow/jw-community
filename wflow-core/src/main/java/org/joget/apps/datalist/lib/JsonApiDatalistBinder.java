@@ -109,9 +109,12 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
             
             Object o = results;
             String prefix = "";
-            if (multirowBaseObject.contains(".")) {
-                prefix = multirowBaseObject.substring(0, multirowBaseObject.indexOf("."));
-                o = results.get(prefix);
+            
+            if (multirowBaseObject.startsWith("<>")) { //need to loop and create row based on the base object key
+                Map<String, Object> base = new HashMap<>();
+                base.put("data", o);
+                o = base;
+                multirowBaseObject = "data" + multirowBaseObject;
             }
             
             recursiveGetColumns(o, columns, prefix, multirowBaseObject, "true".equals(getPropertyString("joinObjectKeysAndValues")));
@@ -162,10 +165,15 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                 }
             } else if (o instanceof Map && base.startsWith(prefix + "<>")) { //loop object key as row
                 Map m = (Map) o;
+                int max = 0;
                 for (Object k : m.keySet()) {
                     String newPrefix = prefix + "<>";
                     if (base.equals(prefix + "<>")) {
                         newPrefix = "";
+                    }
+                    
+                    if (max > 5) { //to prevent empty object, loop a few data
+                        break; 
                     }
                    
                     recursiveGetColumns(k, columns, (!newPrefix.isEmpty()?(newPrefix+"."):"") + "KEY", base, joinObjectKeysAndValues);//add key
@@ -175,6 +183,8 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                         newPrefix = "VALUE";
                     }
                     recursiveGetColumns(value, columns, newPrefix, base, joinObjectKeysAndValues);
+                    
+                    max++;
                 }
             } else if (o instanceof Map) {
                 if (!prefix.isEmpty()) {
@@ -226,9 +236,12 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
 
                 Object o = results;
                 String prefix = "";
-                if (multirowBaseObject.contains(".")) {
-                    prefix = multirowBaseObject.substring(0, multirowBaseObject.indexOf("."));
-                    o = results.get(prefix);
+                
+                if (multirowBaseObject.startsWith("<>")) { //need to loop and create row based on the base object key
+                    Map<String, Object> base = new HashMap<>();
+                    base.put("data", o);
+                    o = base;
+                    multirowBaseObject = "data" + multirowBaseObject;
                 }
 
                 recursiveGetData(o, resultList, new HashMap<String, Object>(), prefix, multirowBaseObject, "true".equals(getPropertyString("joinObjectKeysAndValues")), sample);
@@ -500,7 +513,7 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
                         Pattern pattern = Pattern.compile("substring\\([^,]+,\\s*(\\d+),\\s*(\\d+)\\)");
                         Matcher matcher = pattern.matcher(lowercaseQuery);
                         while (matcher.find()) {
-                            int start = Integer.parseInt(matcher.group(1));
+                            int start = Integer.parseInt(matcher.group(1)) - 1; //substring in db start at index 1
                             int length = Integer.parseInt(matcher.group(2));
                             
                             if (count == 0) { //year

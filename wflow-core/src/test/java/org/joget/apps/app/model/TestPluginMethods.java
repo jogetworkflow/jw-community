@@ -469,7 +469,7 @@ public class TestPluginMethods {
         //stringVal contains 'a' and dateVal range from 2024-04-22 00:00:00.0 to 2024-04-24 00:00:00.0
         f1.setQuery("lower(stringVal) like lower(?)");
         f1.setValues(new String[]{"%a%"});
-        f2.setQuery("CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' ', SUBSTRING(dateVal, 11, 5), ':00.0') >= ? and CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' ', SUBSTRING(dateVal, 11, 5), ':00.0') <= ?");
+        f2.setQuery("CONCAT(SUBSTRING(dateVal, 1, 4), '-', SUBSTRING(dateVal, 6, 2), '-', SUBSTRING(dateVal, 9, 2), ' ', SUBSTRING(dateVal, 12, 5), ':00.0') >= ? and CONCAT(SUBSTRING(dateVal, 1, 4), '-', SUBSTRING(dateVal, 6, 2), '-', SUBSTRING(dateVal, 9, 2), ' ', SUBSTRING(dateVal, 12, 5), ':00.0') <= ?");
         f2.setValues(new String[]{"2024-04-22 00:00:00.0", "2024-04-24 00:00:00.0"});
         filtered = JsonApiDatalistBinder.filterResult(resultList, filters.toArray(new DataListFilterQueryObject[0]), sampleKeys, sample);
         Assert.assertEquals(filtered.size(), 2);
@@ -479,7 +479,7 @@ public class TestPluginMethods {
         //stringVal contains 'a' and dateVal range from 2024-04-22 00:00:00.0 to 2024-04-24 00:00:00.0
         f1.setQuery("lower(stringVal) like lower(?)");
         f1.setValues(new String[]{"%a%"});
-        f2.setQuery("CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' 00:00:00.0') >= ? and CONCAT(SUBSTRING(dateVal, 0, 4), '-', SUBSTRING(dateVal, 5, 2), '-', SUBSTRING(dateVal, 8, 2), ' 00:00:00.0') <= ?");
+        f2.setQuery("CONCAT(SUBSTRING(dateVal, 1, 4), '-', SUBSTRING(dateVal, 6, 2), '-', SUBSTRING(dateVal, 9, 2), ' 00:00:00.0') >= ? and CONCAT(SUBSTRING(dateVal, 1, 4), '-', SUBSTRING(dateVal, 6, 2), '-', SUBSTRING(dateVal, 9, 2), ' 00:00:00.0') <= ?");
         f2.setValues(new String[]{"2024-04-22 00:00:00.0", "2024-04-24 00:00:00.0"});
         filtered = JsonApiDatalistBinder.filterResult(resultList, filters.toArray(new DataListFilterQueryObject[0]), sampleKeys, sample);
         Assert.assertEquals(filtered.size(), 2);

@@ -147,5 +147,15 @@
         "label":"@@app.jsontool.sampleResponse@@",
         "type" : "codeeditor",
         "mode"   : "json"
+    },
+    {
+        "name" : "joinObjectKeysAndValues",
+        "label" : "@@datalist.jsonapibinder.joinObjectKeysAndValues@@",
+        "description" : "@@datalist.jsonapibinder.joinObjectKeysAndValues.desc@@",
+        "type" : "checkbox",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
     }]
 }]
