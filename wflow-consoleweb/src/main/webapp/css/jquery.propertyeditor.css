@@ -1259,7 +1259,6 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 }
 .pewrapper .perow td select + span.label{
     transform: none;
-    top:4px;
 }
 .pewrapper .error {
     border:1px solid red;
