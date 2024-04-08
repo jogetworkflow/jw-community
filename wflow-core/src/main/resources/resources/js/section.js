@@ -81,7 +81,7 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
     }
 };
 
-VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, isRegex) {
+VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, operator) {
     //get enabled input field oni
     controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, :disabled, [disabled=false]");
     controlEl = $(controlEl).filter(":not(.section-visibility-disabled)"); //must put in newline to avoid conflict with above condition
@@ -98,29 +98,77 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
         
         if ($(controlEl).length > 0) {
             $(controlEl).each(function() {
-                match = thisObject.isMatch($(this).val(), controlValue, isRegex);
+                match = thisObject.isMatch($(this).val(), controlValue, operator);
                 if (match) {
                     return false;
                 }
             });
         } else {
-            match = thisObject.isMatch("", controlValue, isRegex);
+            match = thisObject.isMatch("", controlValue, operator);
         }
     }
     return match;
 };
-VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
-    if (isRegex !== undefined && "true" === isRegex) {
-        try {
-            var regex = new RegExp(controlValue);
-            var result = regex.exec(value);
-            return result.length > 0 && result[0] === value;
-        } catch (err) {
-            return false;
+VisibilityMonitor.prototype.isMatch = function(fieldValue, controlValue, operator) {
+    var result = false;
+    if (fieldValue !== null) {
+        var fieldValueNumber = null;
+        var controlValueNumber = null;
+        var isNumeric = false;
+        if (fieldValue !== "") {
+            if (controlValue !== null && controlValue !== "" && !isNaN(fieldValue) && !isNaN(controlValue)) {
+                try {
+                    fieldValueNumber = parseFloat(fieldValue);
+                    controlValueNumber = parseFloat(controlValue);
+                    isNumeric = true;
+                } catch (err) {}
+            }
+            if (isNumeric) {
+                if (operator === "") {
+                    result = fieldValueNumber == controlValueNumber;
+                } else if (">" === operator) {
+                    result = fieldValueNumber > controlValueNumber;
+                } else if (">=" === operator) {
+                    result = fieldValueNumber >= controlValueNumber;
+                } else if ("<" === operator) {
+                    result = fieldValueNumber < controlValueNumber;
+                } else if ("<=" === operator) {
+                    result = fieldValueNumber <= controlValueNumber;
+                }
+            } else {
+                if (operator === "") {
+                    result = fieldValue === controlValue;
+                } else if (">" === operator) {
+                    result = fieldValue > controlValue;
+                } else if (">=" === operator) {
+                    result = fieldValue >= controlValue;
+                } else if ("<" === operator) {
+                    result = fieldValue < controlValue;
+                } else if ("<=" === operator) {
+                    result = fieldValue <= controlValue;
+                } else if ("isTrue" === operator) {
+                    result = fieldValue.toLowerCase() === "true" || fieldValue === "1";
+                } else if ("isFalse" === operator) {
+                    result = fieldValue.toLowerCase() === "false" || fieldValue === "0";
+                } else if ("contains" === operator) {
+                    result = fieldValue.indexOf(controlValue) >= 0;
+                } else if ("listContains" === operator) {
+                    var list = fieldValue.split(";");
+                    result = $.inArray(controlValue, list) >= 0;
+                } else if ("in" === operator) {
+                    var list = controlValue.replaceAll("__", ";").split(";");
+                    result = $.inArray(fieldValue, list) >= 0;
+                } else if ("true" === operator) {
+                    try {
+                        var regex = new RegExp(controlValue);
+                        var regexResult = regex.exec(fieldValue);
+                        result = regexResult.length > 0 && regexResult[0] === fieldValue;
+                    } catch (err) {}
+                }
+            }
         }
-    } else {
-        return value === controlValue;
     }
+    return result;
 };
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var thisObject = this;

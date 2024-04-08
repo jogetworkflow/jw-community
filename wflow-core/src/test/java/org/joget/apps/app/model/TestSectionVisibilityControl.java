@@ -7,6 +7,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.junit.Assert;
@@ -561,5 +562,92 @@ public class TestSectionVisibilityControl {
         String template = e.render(formData, false);
         
         return template.contains("style=\"display: none\"");
+    }
+    
+    @Test
+    public void testCheckValue() throws IOException  {
+        //equal : number
+        Assert.assertTrue(Section.checkValue("123", "", "123"));
+        Assert.assertFalse(Section.checkValue("123", "", "124"));
+        //equal : decimal
+        Assert.assertTrue(Section.checkValue("123.23", "", "123.230"));
+        Assert.assertFalse(Section.checkValue("123.23", "", "123.231"));
+        //equal : string
+        Assert.assertTrue(Section.checkValue("abc", "", "abc"));
+        Assert.assertFalse(Section.checkValue("abc", "", "abcd"));
+        
+        //greater than : number
+        Assert.assertTrue(Section.checkValue("123", ">", "122"));
+        Assert.assertFalse(Section.checkValue("123", ">", "124"));
+        //greater than : decimal
+        Assert.assertTrue(Section.checkValue("123.23", ">", "123.21"));
+        Assert.assertFalse(Section.checkValue("123.23", ">", "124.00"));
+        //greater than : string
+        Assert.assertTrue(Section.checkValue("abc", ">", "aba"));
+        Assert.assertFalse(Section.checkValue("abc", ">", "abd"));
+        
+        //greater than or equal to : number
+        Assert.assertTrue(Section.checkValue("123", ">=", "123"));
+        Assert.assertTrue(Section.checkValue("123", ">=", "122"));
+        Assert.assertFalse(Section.checkValue("123", ">=", "124"));
+        //greater than or equal to : decimal
+        Assert.assertTrue(Section.checkValue("123.23", ">=", "123.23"));
+        Assert.assertTrue(Section.checkValue("123.23", ">=", "123.21"));
+        Assert.assertFalse(Section.checkValue("123.23", ">=", "124.00"));
+        //greater than or equal to : string
+        Assert.assertTrue(Section.checkValue("abc", ">=", "abc"));
+        Assert.assertTrue(Section.checkValue("abc", ">=", "aba"));
+        Assert.assertFalse(Section.checkValue("abc", ">=", "abd"));
+        
+        //lesser than : number
+        Assert.assertTrue(Section.checkValue("123", "<", "124"));
+        Assert.assertFalse(Section.checkValue("123", "<", "122"));
+        //lesser than : decimal
+        Assert.assertTrue(Section.checkValue("123.23", "<", "123.24"));
+        Assert.assertFalse(Section.checkValue("123.23", "<", "123.21"));
+        //lesser than : string
+        Assert.assertTrue(Section.checkValue("abc", "<", "abd"));
+        Assert.assertFalse(Section.checkValue("abc", "<", "aba"));
+        
+        //lesser than or equal to : number
+        Assert.assertTrue(Section.checkValue("123", "<=", "123"));
+        Assert.assertTrue(Section.checkValue("123", "<=", "124"));
+        Assert.assertFalse(Section.checkValue("123", "<=", "122"));
+        //lesser than or equal to : decimal
+        Assert.assertTrue(Section.checkValue("123.23", "<=", "123.23"));
+        Assert.assertTrue(Section.checkValue("123.23", "<=", "123.24"));
+        Assert.assertFalse(Section.checkValue("123.23", "<=", "123.21"));
+        //lesser than or equal to : string
+        Assert.assertTrue(Section.checkValue("abc", "<=", "abc"));
+        Assert.assertTrue(Section.checkValue("abc", "<=", "abd"));
+        Assert.assertFalse(Section.checkValue("abc", "<=", "aba"));
+        
+        //is true
+        Assert.assertTrue(Section.checkValue("true", "isTrue", ""));
+        Assert.assertTrue(Section.checkValue("1", "isTrue", ""));
+        Assert.assertFalse(Section.checkValue("false", "isTrue", ""));
+        Assert.assertFalse(Section.checkValue("0", "isTrue", ""));
+        
+        //is false
+        Assert.assertTrue(Section.checkValue("false", "isFalse", ""));
+        Assert.assertTrue(Section.checkValue("0", "isFalse", ""));
+        Assert.assertFalse(Section.checkValue("true", "isFalse", ""));
+        Assert.assertFalse(Section.checkValue("1", "isFalse", ""));
+        
+        //contains
+        Assert.assertTrue(Section.checkValue("This is a long value", "contains", "long"));
+        Assert.assertFalse(Section.checkValue("This is a long value", "contains", "long1"));
+        
+        //List contains
+        Assert.assertTrue(Section.checkValue("value1;value2;value3", "listContains", "value2"));
+        Assert.assertFalse(Section.checkValue("value1;value2;value3", "listContains", "value4"));
+        
+        //in
+        Assert.assertTrue(Section.checkValue("value1", "in", "value1;value2;value3"));
+        Assert.assertFalse(Section.checkValue("value4", "in", "value1;value2;value3"));
+        
+        //regex
+        Assert.assertTrue(Section.checkValue("a", "true", "a|b"));
+        Assert.assertFalse(Section.checkValue("c", "true", "a|b"));
     }
 }

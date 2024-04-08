@@ -1,17 +1,25 @@
 package org.joget.apps.form.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.plugin.base.PluginWebSupport;
 import org.json.JSONObject;
 import org.mozilla.javascript.Scriptable;
 
-public class Section extends Element implements FormBuilderEditable, FormContainer {
+public class Section extends Element implements FormBuilderEditable, FormContainer, PluginWebSupport {
     protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
     private Collection<Map<String, String>> rules = null;
     private Map<String, Element> elements = new HashMap<String, Element>();
@@ -187,7 +195,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                     if ("(".equals(field) || ")".equals(field) ) {
                         rule += field;
                     } else {
-                        rule += checkValue(formData, field, value, "true".equalsIgnoreCase(regex));
+                        rule += checkValue(formData, field, value, regex);
                     }
                 }
                 
@@ -204,7 +212,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         }
     }
     
-    protected boolean checkValue(FormData formData, String field, String value, boolean isRegex) {
+    protected boolean checkValue(FormData formData, String field, String value, String operator) {
         Element controlElement = elements.get(field);
         if (controlElement != null) {
             // check for matching values
@@ -215,21 +223,73 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                     paramValue = new String[]{""};
                 }
                 for (String v : paramValue) {
-                    if (isRegex) {
-                        try {
-                            if (v.matches(value)) {
-                                return true;
-                            }
-                        } catch (Exception e){}
-                    } else {
-                        if (v.equals(value)) {
-                            return true;
-                        }
+                    if (checkValue(v, operator, value)) {
+                        return true;
                     }
                 }
             }
         }
         return false;
+    }
+    
+    public static boolean checkValue(String fieldValue, String operator, String value) {
+        boolean result = false;
+        if (fieldValue != null) {
+            Double fieldValueNumber = null;
+            Double valueNumber = null;
+            boolean isNumeric = false;
+            if (!fieldValue.isEmpty()) {
+                try {
+                    fieldValueNumber = Double.parseDouble(fieldValue);
+                    valueNumber = Double.parseDouble(value);
+                    isNumeric = true;
+                } catch (Exception e) {
+                    //ignore
+                }
+                
+                if (isNumeric) {
+                    int compare = Double.compare(fieldValueNumber, valueNumber);
+                    if (operator.isEmpty()) {
+                        result = compare == 0;
+                    } else if (">".equals(operator)) {
+                        result = compare > 0;
+                    } else if (">=".equals(operator)) {
+                        result = compare >= 0;
+                    } else if ("<".equals(operator)) {
+                        result = compare < 0;
+                    } else if ("<=".equals(operator)) {
+                        result = compare <= 0;
+                    }
+                } else {
+                    if (operator.isEmpty()) {
+                        result = fieldValue.equals(value);
+                    } else if (">".equals(operator)) {
+                        result = fieldValue.compareTo(value) > 0;
+                    } else if (">=".equals(operator)) {
+                        result = fieldValue.compareTo(value) >= 0;
+                    } else if ("<".equals(operator)) {
+                        result = fieldValue.compareTo(value) < 0;
+                    } else if ("<=".equals(operator)) {
+                        result = fieldValue.compareTo(value) <= 0;
+                    } else if ("isTrue".equals(operator)) {
+                        result = fieldValue.equalsIgnoreCase("true") || fieldValue.equals("1");
+                    } else if ("isFalse".equals(operator)) {
+                        result = fieldValue.equalsIgnoreCase("false") || fieldValue.equals("0");
+                    } else if ("contains".equals(operator)) {
+                        result = fieldValue.contains(value);
+                    } else if ("listContains".equals(operator)) {
+                        String[] list = fieldValue.split(";");
+                        result = ArrayUtils.contains(list, value);
+                    } else if ("in".equals(operator)) {
+                        String[] list = value.replaceAll("__", ";").split(";");
+                        result = ArrayUtils.contains(list, fieldValue);
+                    } else if ("true".equals(operator)) {
+                        result = fieldValue.matches(StringEscapeUtils.unescapeJavaScript(value));
+                    }
+                }
+            }
+        }
+        return result;
     }
     
     @Override
@@ -258,5 +318,11 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         } 
         
         return styles;
+    }
+    
+    @Override
+    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String script = AppUtil.readPluginResource(RulesDecisionPlugin.class.getName(), "/properties/form/sectionVisibilityEditor.js", null, false, null);
+        response.getWriter().write(script);
     }
 }
