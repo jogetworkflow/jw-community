@@ -8919,11 +8919,19 @@ PropertyEditor.Type.CodeMirror.prototype = {
         }
 
         //Function to modify font size
+        //Function to modify font size
         function modifyFontSize(increase){
             var wrapper = thisObj.codemirror.getWrapperElement();
             var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
             var newSize = increase ? currentSize + 2 : currentSize - 2;
+
+            //Increase fontsize o code and help message
+            if ($("#panel-"+thisObj.id).length > 0){
+                var helpMessage = $("#panel-"+thisObj.id + " span").get(0);
+                helpMessage.style.fontSize = newSize + 'px';
+            }
             wrapper.style.fontSize = newSize + 'px';
+
             thisObj.codemirror.refresh()
         }
 
@@ -8941,11 +8949,14 @@ PropertyEditor.Type.CodeMirror.prototype = {
             }else if (event.key === "F1") {
                 event.preventDefault();
                 if (panels[panelId]) {
+                    //Resets height
+                    thisObj.codemirror.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
                     panels[panelId].clear();
                     delete panels[panelId];
-                    thisObj.codemirror.setSize(null,300)
+                    resetHeight();
                 } else {
-                    addPanel("bottom");
+                    addPanel("top");
+                    resetHeight();
                 }
             }else if (event.key === 'F12'){
                 event.preventDefault();
@@ -8964,24 +8975,38 @@ PropertyEditor.Type.CodeMirror.prototype = {
 
         function makePanel(where) {
             var node = document.createElement("div");
-            var label;
+            var label, msg, fontSize;
 
-            node.id = "panel-" + thisObj;
+            node.id = "panel-" + thisObj.id;
             node.className = "panel " + where;
+            
+            var wrapper = thisObj.codemirror.getWrapperElement();
+            var fontSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size')) + "px";
 
-            label = $("<span>").text("F1 to toggle helper panel | F12 to toggle fullscreen | Ctrl+F to toggle search bar | Ctrl + R to Replace").appendTo(node);
+            msg = get_peditor_msg('peditor.codemirror.helpMessage')
+            label = $("<span>").text(msg).appendTo(node);
 
             if ($('body').attr('builder-theme') === "dark"){
                 label.css({
-                    "color": "white"
+                    "color": "white",
+                    "background-color": "grey",
+                    "font-size": fontSize
                 })
             }else{
                 label.css({
-                    "color": "black"
+                    "color": "black",
+                    "background-color": "yellow",
+                    "font-size": fontSize
                 })
             }
 
             return node;
+        }
+
+        function resetHeight(){
+            //Make CodeMirror unscrollable, and height follows the code written 
+            $("#" + thisObj.id).find(".CodeMirror").css({"height":"auto", "minHeight":"300px"});
+            $("#" + thisObj.id).find(".CodeMirror-scroll").css({"maxHeight":"auto", "minHeight":"300px"});
         }
 
         function addPanel(where) {
@@ -8993,7 +9018,9 @@ PropertyEditor.Type.CodeMirror.prototype = {
         this.codemirror.setValue(this.value);
 
         //Initialize panel
-        addPanel("bottom")
+        addPanel("top")
+
+        resetHeight();
     },
     pageShown: function() {
         this.codemirror.refresh();
@@ -10968,6 +10995,13 @@ PropertyAssistant = {
             var display = container.css("display");
             if (display === "inline") {
                 container.css("display", "block");
+            }
+
+            //If it contains CodeMirror, change the container to CodeMirror's container
+            //Without changing the container, the property assistant will initialize
+            //on the panel 
+            if ($(container).has(".code-editor .CodeMirror").length > 0){
+                container = $(container).find(".code-editor .CodeMirror"); 
             }
             
             $(container).append('<i class="assist_icon la la-user-astronaut" title="'+get_peditor_msg('peditor.assit')+'"></i>');
