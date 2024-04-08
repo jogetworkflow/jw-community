@@ -1294,16 +1294,7 @@ public class AppServiceImpl implements AppService {
                     replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+escapedAppId+"/");
                     replacement.put("app_fd_" + copy.getAppId() + "_pd", "app_fd_" + escapedAppId + "_pd"); //for process enhancement process data table
                     
-                    String prefix = "";
-                    //find table prefix in environment
-                    if (copy.getEnvironmentVariableList() != null) {
-                        for (EnvironmentVariable env : copy.getEnvironmentVariableList()) {
-                            if (env.getId().equals("table_prefix")) {
-                                prefix = env.getValue();
-                                break;
-                            }
-                        }
-                    }
+                    String prefix = findCommonTablePrefix(copy);
                         
                     Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                     JSONObject templateConfig = AppUtil.getAppTemplateConfig(copy);
@@ -1479,16 +1470,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
                 
-                String prefix = "";
-                //find table prefix in environment
-                if (zipApp.getEnvironmentVariableList() != null) {
-                    for (EnvironmentVariable env : zipApp.getEnvironmentVariableList()) {
-                        if (env.getId().equals("table_prefix")) {
-                            prefix = env.getValue();
-                            break;
-                        }
-                    }
-                }
+                String prefix = findCommonTablePrefix(zipApp);
                 
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
@@ -3854,5 +3836,46 @@ public class AppServiceImpl implements AppService {
         }
         
         return messages;
+    }
+    
+    /**
+     * Find the table prefix from env variable or compare all table name
+     * @param appDef
+     * @return 
+     */
+    protected String findCommonTablePrefix(AppDefinition appDef) {
+        String prefix = "";
+        //find table prefix in environment
+        if (appDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable env : appDef.getEnvironmentVariableList()) {
+                if (env.getId().equals("table_prefix")) {
+                    prefix = env.getValue();
+                    break;
+                }
+            }
+        }
+        if (prefix.isEmpty()) {
+            List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);
+            if (tableNameList != null && !tableNameList.isEmpty()) {
+                
+                String firstString = tableNameList.get(0);
+                int length = firstString.length();
+                
+                for (int i = 0; i < length; i++) {
+                    char c = firstString.charAt(i);
+                    for (int j = 1; j < tableNameList.size(); j++) {
+                        String compare = tableNameList.get(j);
+                        if (i >= compare.length() || compare.charAt(i) != c) {
+                            prefix = firstString.substring(0, i);
+                            break;
+                        }
+                    }
+                    if (!prefix.isEmpty()) {
+                        break; //prefix is already found
+                    }
+                }
+            }
+        }
+        return prefix;
     }
 }
